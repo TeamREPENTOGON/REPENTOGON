@@ -633,6 +633,7 @@ unordered_map<string, std::array<int, 15> > CompletionMarks;
 string jsonpath;
 
 void SaveCompletionMarksToJson() {
+	if (!initializedrendercmpl) { return; }
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -662,7 +663,7 @@ void LoadCompletionMarksFromJson() {
 
 
 bool PreMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1047;
+	const int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -686,7 +687,7 @@ bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	return true;
 }
 void PostMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1048;
+	const int callbackid = 1048;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -718,16 +719,16 @@ int ischartainted = false;
 int hidemarks = false;
 
 XMLAttributes GetPlayerDataForMarks(int playerid) {
-	XMLAttributes playerdata = XMLStuff.PlayerData->nodes[playerid];
+	XMLAttributes playerdata = XMLStuff.PlayerData->GetNodeById(playerid);
 	if (playerdata.count("completionparent") > 0) {
 		string aidx = playerdata["sourceid"] + "-" + playerdata["completionparent"];
 		if (XMLStuff.PlayerData->bynamemod.count(aidx) == 0) {
 			if (XMLStuff.PlayerData->byname.count(playerdata["completionparent"]) > 0) {
-				return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->byname[playerdata["completionparent"]]];
+				return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->byname[playerdata["completionparent"]]);
 			}
 		}
 		else {
-			return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->bynamemod[aidx]];
+			return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->bynamemod[aidx]);
 		}
 	}
 	return playerdata;
@@ -753,15 +754,17 @@ string GetMarksIdx(int playerid) {
 	return idx;
 }
 
-array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
-	array<int, 15> marks;
-	if (XMLStuff.PlayerData->nodes.count(playerid) > 0) {
+array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender = false) {
+	array<int, 15> marks; 
+	if ((XMLStuff.PlayerData->nodes.count(playerid) > 0) || !initializedrendercmpl) {
 		XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
-		hidemarks = false;
-		if (playerdata.count("nomarks") > 0) {
-			if (strcmp(stolower((char*)playerdata["sourceid"].c_str()).c_str(), "false") == 0) {
-				hidemarks = true;
+		if (forrender) {
+			hidemarks = false;
+			if (playerdata.count("nomarks") > 0) {
+				if (playerdata["nomarks"] != "false") {
+					hidemarks = true;
+				}
 			}
 		}
 		if (marks[CompletionType::ULTRA_GREED] == 2) {
@@ -796,18 +799,27 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 	return { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 }
 
-
-HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
+/*
+HOOK_METHOD(Game,StartDebug, (int levelStage, int stageType, int difficulty, std_string* unk)->void) {
+	//callsaveslot when instantstart is ran
+	printf("[REPENTOGON] It's instant launch mode! %d %d %d %s \n", levelStage, stageType, difficulty, unk->c_str());
+	g_Manager->SetSaveSlot(0); //normally the game does this as soon as it enters the main menu but since it never does here, it never does
+	super(levelStage, stageType, difficulty, unk);
+}
+*/
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	int saveslot = 1;
+	if (slot > 0) { saveslot = slot; }
 	jsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
 	jsonpath.append("completionmarks").append(to_string(saveslot)).append(".json");
-
-	LoadCompletionMarksFromJson();
+	
 	if (!initializedrendercmpl) {
 		InitMarkRenderTypes();
 		initreversenum();
 		initmarkstoevents();
 	}
-	super(saveslot);
+	LoadCompletionMarksFromJson();
+	super(slot);
 }
 
 
@@ -860,7 +872,7 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 			if (g_Game->IsHardMode()) {
 				marktype = 2;
 			}
-			if (CompletionMarks[idx][eEvent] != marktype) {
+			if (CompletionMarks[idx][eEvent] < marktype) {
 				if (PreMarksCallbackTrigger(eEvent, playertype)) {
 					CompletionMarks[idx][eEvent] = marktype;
 					RunTrackersForMark(eEvent, playertype);
@@ -873,22 +885,45 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 	super(eEvent);
 }
 
+bool postponepromptrender = false;
+HOOK_METHOD_PRIORITY(GenericPrompt, Render,100, () -> void) {
+	if (!postponepromptrender) {
+		super();
+	}
+}
+
+HOOK_METHOD_PRIORITY(GenericPopup, Render, 100, () -> void) {
+	if (!postponepromptrender) {
+		super();
+	}
+}
+
 HOOK_METHOD(PauseScreen, Render, () -> void) {
-	super();
 	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
 	if ((playertype > 40) && (this->status != 2)) {
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
+		postponepromptrender = true;
+		super();
+		postponepromptrender = false;
+
+		NullFrame* nul = this->mainsprite.GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();
 
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(playertype, anm);
+		array marks = GetMarksForPlayer(playertype, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
-			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
+			cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
 		}
+		if (this->notinfocus){
+			this->_controllerconnectionpopup.Render();
+		}
+		g_Game->GetGenericPrompt()->Render();
+	}
+	else {
+		super();
 	}
 }
 
@@ -903,13 +938,13 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 	if (this->SelectedCharacterID > 17) {
 
 		Vector* ref = &g_MenuManager->_ViewPosition;
-		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
+//		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(selectedchar, anm);
+		array marks = GetMarksForPlayer(selectedchar, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = selectedchar;
-			cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
+			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
 		}
 
 	}
@@ -921,6 +956,7 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 array<int, 12> actualmarks = { CompletionType::MOMS_HEART,CompletionType::SATAN,CompletionType::MEGA_SATAN,CompletionType::HUSH,CompletionType::ISAAC,CompletionType::BLUE_BABY,CompletionType::MOTHER,CompletionType::DELIRIUM,CompletionType::BEAST,CompletionType::ULTRA_GREED,CompletionType::BOSS_RUSH,CompletionType::LAMB };
 LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 {
+	if (!initializedrendercmpl) { return 0; }
 	int playertype = 0;
 	int length = 0;
 	array<int, 15> marks = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -993,6 +1029,7 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 
 LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 {
+	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
@@ -1008,6 +1045,7 @@ LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 
 LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 {
+	if (!initializedrendercmpl) { return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		string idx = GetMarksIdx(playertype);
@@ -1028,6 +1066,7 @@ LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 
 LUA_FUNCTION(Lua_IsaacFillCompletionMarks)
 {
+	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1063,6 +1102,7 @@ array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,Completio
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
 LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 {
+	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int group = (int)luaL_checkinteger(L, 2);
 	array g = tboth;
@@ -1096,6 +1136,7 @@ LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 
 LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 {
+	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1124,6 +1165,7 @@ LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 
 LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 {
+	if (!initializedrendercmpl) {  return 0; }
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int value = (int)luaL_checkinteger(L, 3);

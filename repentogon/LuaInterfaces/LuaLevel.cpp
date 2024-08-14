@@ -2,6 +2,11 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include "Level.h"
+#include "LuaEntitySaveState.h"
+
+LevelASM levelASM;
+
 LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int roomIDX = (int)luaL_checkinteger(L, 2);
@@ -43,6 +48,17 @@ LUA_FUNCTION(lua_LevelSetName) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	return 0;
+}
+LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->_greedwavesclearedwithoutredheartdamage);
+	return 1;
+}
+
 LUA_FUNCTION(lua_LevelIsStageAvailable) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int levelStage = (int)luaL_checkinteger(L, 2);
@@ -55,6 +71,64 @@ LUA_FUNCTION(Lua_GetDimension) {
 	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushinteger(L, level->GetDimension());
 	return 1;
+}
+
+LUA_FUNCTION(Lua_GetForceSpecialQuest) {
+	lua_pushinteger(L, (int)levelASM.ForceSpecialQuest);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetForceSpecialQuest) {
+	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetMyosotisPickups) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = (&level->_myosotisPickups);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelIsAltPath) {
+	bool ret = false;
+	// If ForceSpecialQuest is -1, quest doors are disabled
+	if (levelASM.ForceSpecialQuest > -1) {
+		// ForceSpecialQuest 0 defaults to vanilla behavior
+		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_stageType == 4 || g_Game->_stageType == 5);
+	}
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
+/*
+HOOK_METHOD(Level, IsAltPath, () -> bool) {
+	bool ret = false;
+	// If ForceSpecialQuest is -1, quest doors are disabled
+	if (levelASM.ForceSpecialQuest > -1) {
+		// ForceSpecialQuest 0 defaults to vanilla behavior
+		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_stageType == 4 || g_Game->_stageType == 5);
+	}
+	return ret;
+}
+*/
+
+bool CheckQuest(Level* level, const int levelStage, const int expected, const int quest) {
+	unsigned int stage;
+	if (g_Game->_difficulty < 2 && levelASM.ForceSpecialQuest > -1) {
+		if (stage = g_Game->_stage, 5 < stage - 1 || (g_Game->_stateFlags & 0x10000) == 0 && level->IsAltPath()) {
+			return (levelASM.ForceSpecialQuest == quest || levelStage == expected || (levelStage == expected - 1 && (g_Game->_curses & 2) != 0));
+		}
+	}
+	return false;
+}
+
+HOOK_METHOD(Level, HasMirrorDimension, () -> bool) {
+	return CheckQuest(this, g_Game->_stage, 2, 1);
+}
+
+HOOK_METHOD(Level, HasAbandonedMineshaft, () -> bool) {
+	return CheckQuest(this, g_Game->_stage, 4, 2);
 }
 
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
@@ -80,12 +154,18 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
-		{	"HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
-		{	"HasMirrorDimension", Lua_LevelHasMirrorDimension },
-		{	"HasPhotoDoor", Lua_LevelHasPhotoDoor },
-		{	"SetName", lua_LevelSetName },
-		{	"IsStageAvailable", lua_LevelIsStageAvailable },
+		{ "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
+		{ "HasMirrorDimension", Lua_LevelHasMirrorDimension },
+		{ "HasPhotoDoor", Lua_LevelHasPhotoDoor },
+		{ "SetName", lua_LevelSetName },
+		{ "IsStageAvailable", lua_LevelIsStageAvailable },
 		{ "GetDimension", Lua_GetDimension},
+		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
+		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+		{ "GetMyosotisPickups", Lua_GetMyosotisPickups },
+
+		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
+		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },
 		{ NULL, NULL }
 	};
 

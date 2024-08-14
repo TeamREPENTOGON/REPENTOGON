@@ -17,6 +17,15 @@ __thiscall void Manager::LoadChallenges(char *xmlpath, bool ismod);
 "68(????????)ffd683f8ff74??24113c1074??6800040000e8????????68????????68????????8bf0680004000056e8????????83c4146a0068????????56ff15????????50ff15????????56e8????????8b35???????":
 reference std_string g_SaveDataPath;
 
+"a2(????????)75??6a00":
+reference bool g_isfullscreenrendering;
+
+"8915(????????)a3":
+reference unsigned int g_WindowSizeX;
+
+"a3(????????)75??803d????????00":
+reference unsigned int g_WindowSizeY;
+
 /*
 "":
 __stdcall static void __stdcall Manager::RestartGame(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >) //from remix 2 zhl
@@ -28,7 +37,7 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 __thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge,  Seeds unk, int difficulty);
 
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
@@ -48,7 +57,22 @@ static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase
 "558bec83e4f881ec80000000568b35????????57f68664a2040001":
 __thiscall void Manager::Render();
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2) { {{
+"558bec83e4c083ec34a1":
+__thiscall void Manager::ResizeWindow(int windowWidth,int windowHeight);
+
+"558bec83e4f8515356578b7d??85ff":
+__thiscall void Manager::ResizeWindowCallback(int windowWidth,int windowHeight);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ece8000000a1????????33c58945??8a43":
+__thiscall void Manager::SetFullscreenRendering(bool value);
+
+"558bec81ec18040000":
+__thiscall void Manager::SetSaveSlot(unsigned int slot);
+
+"558bec518b0d????????8b55":
+__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup);
+
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -65,14 +89,33 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
+	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
+	
 }} 
-
+	
+	int _state : 0x8;
     PersistentGameData _persistentGameData : 0x14;
+	GameState _gamestate : 0xf34;
     StringTable _stringTable : 0x4a234;
 	SoundEffects _sfxManager : 0x29de0;
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
+	//ModManager _modManager : 0x29FD8;
 	ANM2 _cursorSprite : 0x1ea840;
+	ANM2 _buttonsSprite : 0x4a284;
+	Font _font7_TeamMeat_10 : 0x10a514;
+	Font _font8_TeamMeat_12 : 0x12a550;	
+	unsigned int _framecount : 0x4a264;
+	Music _musicmanager : 0x29a78;
+	bool _networkPlay : 0x1ea804;
+	bool _rerunAvailable : 0x1ea6c1;
+	bool _startingFromRerun : 0x1ea6c2;
+	bool _debugStart : 0x1ea72c;
+	bool _starting : 0x1ea6c0;
+	Seeds _startSeeds : 0x1ea6cc;
+	void* _unk_runstart : 0x4a268;
+	bool _startCutscene : 0x1ea830;
+
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":

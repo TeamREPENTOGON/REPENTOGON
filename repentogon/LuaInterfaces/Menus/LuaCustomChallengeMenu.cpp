@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_CustomChallengeMenu_SetSelectedChallengeID)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CustomChallengeMenuMT);
 	Menu_CustomChallenge* menu = g_MenuManager->GetMenuCustomChallenge();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_MainMenu_SetSelectedPage)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->CurrentPage = (int)luaL_checkinteger(L, 2);
+	menu->CurrentPage = (int)luaL_checkinteger(L, 1);
 	menu->LoadPreview();
 
 	return 0;
@@ -64,7 +64,7 @@ LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 	menu->LoadPreview();
 
 	return 0;

@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_CollectionMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }
@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_CollectionMenu_SetSelectedPage)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
-	menu->SelectedPage = (int)luaL_checkinteger(L, 2);
+	menu->SelectedPage = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

@@ -4,10 +4,20 @@ __thiscall void RoomTransition::ChangeRoom();
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
 __thiscall void RoomTransition::StartBossIntro(unsigned int bossID1,unsigned int bossID2);
 
+"558bec6aff68????????64a1????????5083ec5ca1????????33c58945??535657508d45??64a3????????8bd98bbb":
+__thiscall void RoomTransition::Update();
+
+"558bec83e4f881ecb8000000":
+__thiscall void RoomTransition::Render();
+
 struct RoomTransition depends (ANM2) { {{
-	inline int GetTransitionMode() { return *(int*)((char*)this); }
-	inline ANM2* GetVersusScreenSprite() { return (ANM2*)((char*)this + 0x38); }
+	inline int GetTransitionMode() { return this->_mode; }
+	inline ANM2* GetVersusScreenSprite() { return &this->_versusScreenANM2; }
 	inline bool IsRenderingBossIntro() {
 		return GetTransitionMode() == 2;
 	}
-}} } : 0x344;
+}}
+	int _mode : 0x0;
+	ANM2 _versusScreenANM2: 0x38;
+	ANM2 _playerExtraPortraitANM2 : 0x224;
+} : 0x344;

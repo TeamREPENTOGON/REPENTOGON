@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
 	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }
@@ -86,6 +86,24 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_GetTimeLeftSeconds)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_DailyChallengeMenu_GetState)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
+	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
+	lua_pushinteger(L, menu->State);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_DailyChallengeMenu_SetState)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
+	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
+	menu->State = (int)luaL_checkinteger(L, 1);
+
+	return 0;
+}
+
 static void RegisterDailyChallengeMenuGame(lua_State* L)
 {
 	lua_newtable(L);
@@ -98,6 +116,9 @@ static void RegisterDailyChallengeMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetTimeLeftHours", Lua_DailyChallengeMenu_GetTimeLeftHours);
 	lua::TableAssoc(L, "GetTimeLeftMinutes", Lua_DailyChallengeMenu_GetTimeLeftMinutes);
 	lua::TableAssoc(L, "GetTimeLeftSeconds", Lua_DailyChallengeMenu_GetTimeLeftSeconds);
+	lua::TableAssoc(L, "GetState", Lua_DailyChallengeMenu_GetState);
+	lua::TableAssoc(L, "SetState", Lua_DailyChallengeMenu_SetState);
+
 	lua_setglobal(L, lua::metatables::DailyChallengeMenuMT);
 }
 

@@ -55,8 +55,38 @@ TypeInfo std_vector_uint {
     Align 4;
 }; 
 
-TypeInfo vector_Point {
+TypeInfo vector_MusicEntry {
     Size 12;
+    Align 4;
+}; 
+
+TypeInfo vector_Curse {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo vector_ColorParams {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo vector_SoundEffect {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo deque_Point {
+    Size 20;
+    Align 4;
+};
+
+TypeInfo deque_string {
+    Size 20;
+    Align 4;
+};
+
+TypeInfo deque_console_historyentry {
+    Size 20;
     Align 4;
 };
 
@@ -71,6 +101,16 @@ TypeInfo vector_TemporaryEffect {
 };
 
 TypeInfo std_vector_int {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_float {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_vector2 {
     Size 12;
     Align 4;
 };
@@ -99,7 +139,7 @@ TypeInfo CRITICAL_SECTION {
     Align 4;
 };
 
-TypeInfo RoomConfigPtrVector {
+TypeInfo RoomConfigRoomPtrVector {
     Size 12;
     Align 4;
 };
@@ -145,10 +185,10 @@ TypeInfo vector_PoolItem {
 };
 
 // Something goofy seemed to be happening with std::vector<bool> in zhl
-/*TypeInfo vector_bool {
-	Size 12;
+TypeInfo vector_bool {
+	Size 16;
 	Align 4;
-};*/
+};
 
 TypeInfo vector_TrinketPoolItem {
 	Size 12;
@@ -168,4 +208,19 @@ TypeInfo vector_SmeltedTrinketDesc {
 TypeInfo vector_CostumeSpriteDesc {
     Size 12;
     Align 4;
+};
+
+TypeInfo deque_LootListEntry {
+	Size 20;
+	Align 4;
+};
+
+TypeInfo vector_BossPoolEntry {
+	Size 12;
+	Align 4;
+};
+
+TypeInfo vector_HomingLaserBezier {
+	Size 12;
+	Align 4;
 };

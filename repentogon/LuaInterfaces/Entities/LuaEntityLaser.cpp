@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 {
@@ -45,19 +46,10 @@ LUA_FUNCTION(Lua_EntityLaserSetShrink)
 LUA_FUNCTION(Lua_EntityLaserGetTimeout)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetTimeout());
+	lua_pushinteger(L, *laser->GetTimeout());
 
 	return 1;
 }
-
-LUA_FUNCTION(Lua_EntityLaserSetTimeout)
-{
-	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetTimeout() = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
 
 LUA_FUNCTION(Lua_EntityLaserGetScale)
 {
@@ -72,6 +64,22 @@ LUA_FUNCTION(Lua_EntityLaserSetScale)
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
 	*laser->GetScale() = (float)luaL_checknumber(L, 2);
 	laser->ResetSpriteScale();
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityLaserGetDamageMultiplier)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushnumber(L, laser->_damageMultiplier);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetDamageMultiplier)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	laser->_damageMultiplier = (float)luaL_checknumber(L, 2);
 
 	return 0;
 }
@@ -126,6 +134,34 @@ LUA_FUNCTION(Lua_EntityLaserRotateToAngle)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserRecalculateSamplesNextUpdate)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	EntityLaserPlus* laserPlus = GetEntityLaserPlus(laser);
+	if (laserPlus) {
+		laserPlus->recalculateSamplesNextUpdate = true;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityLaserIsMultidimensionalTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushboolean(L, laser->_multidimensionalTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserIsPrismTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushboolean(L, laser->_prismTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetPrismTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	laser->_prismTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -138,12 +174,17 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetOneHit", Lua_EntityLaserGetOneHit },
 		{ "GetScale", Lua_EntityLaserGetScale },
 		{ "SetScale", Lua_EntityLaserSetScale },
+		{ "GetDamageMultiplier", Lua_EntityLaserGetDamageMultiplier },
+		{ "SetDamageMultiplier", Lua_EntityLaserSetDamageMultiplier },
 		{ "GetShrink", Lua_EntityLaserGetShrink },
 		{ "SetShrink", Lua_EntityLaserSetShrink },
 		{ "GetTimeout", Lua_EntityLaserGetTimeout },
-		{ "SetTimeout", Lua_EntityLaserSetTimeout },
 		{ "ResetSpriteScale", Lua_EntityLaserResetSpriteScale },
 		{ "RotateToAngle", Lua_EntityLaserRotateToAngle },
+		{ "RecalculateSamplesNextUpdate", Lua_EntityLaserRecalculateSamplesNextUpdate },
+		{ "IsMultidimensionalTouched", Lua_EntityLaserIsMultidimensionalTouched },
+		{ "IsPrismTouched", Lua_EntityLaserIsPrismTouched },
+		{ "SetPrismTouched", Lua_EntityLaserSetPrismTouched },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);

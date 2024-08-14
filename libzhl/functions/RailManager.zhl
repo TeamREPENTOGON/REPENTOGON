@@ -1,0 +1,8 @@
+struct RailManager depends (Room, ANM2) { {{
+	
+}} 
+
+    Room* _room : 0x0;
+	uint8_t _gridflags[447] : 0x4;
+	ANM2 _sprite : 0x1c4;
+} : 0x2d8;

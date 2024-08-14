@@ -9,7 +9,8 @@
 * This file contains fixes/support for Null Items and Null Costumes, primarily via ASM patches.
 * 
 * 1. Fixes the game not properly loading null items from mod's XMLs in the first place.
-* 2. Allows for mods to assign costumes to their null items by given them the same ID in their XMLs.
+* 2. Allow mods to assign costumes to their null items by giving them the same relative ID in their respective XMLs.
+* 3. Allow mods to assign costumes to heir characters in players.xml via a new "modcostume" attribute (must match the costume's relative ID).
 */
 
 // Track the latest mod to be loading XML data, same as the XMLData code.
@@ -109,9 +110,9 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 
 	if (XMLStuff.NullItemData->byrelativeid.count(modRelativeKey) > 0) {
 		const unsigned int nullItemID = XMLStuff.NullItemData->byrelativeid[modRelativeKey];
-		const XMLAttributes& nullItemXml = XMLStuff.NullItemData->nodes[nullItemID];
+		const XMLAttributes& nullItemXml = XMLStuff.NullItemData->GetNodeById(nullItemID);
 		const ItemConfig_Item* nullItem = g_Manager->GetItemConfig()->GetNullItem(nullItemID);
-		g_Game->GetConsole()->Print(costume->anm2Path, 0xffffffff, 60);
+
 		if (!nullItem || nullItem->name != nullItemXml.at("name")) {
 			const std::string err = "WARNING: Trying to match costume [" + std::string(costume->anm2Path) + "] "
 				+ "to a NullItem with same mod-relative ID [" + std::to_string(costume->id) + "] from mod [" + lastModIdButCooler + "], "
@@ -120,6 +121,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 			ZHL::Log(err.c_str());
 			if (!nullItem) return false;
 		}
+
 		// This mod defined a null costume and a null item with the same relative ID.
 		// Assign the ID of that null item to this costume and return true to skip the game generating a new null item.
 		costume->id = nullItemID;
@@ -150,7 +152,95 @@ void ASMPatchTieModdedCostumesToModdedNullItems() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+/*
+* Hook that allows mods to assign one of their costumes to a player, if the mod-relative "id" of the costume and the "modcostume" attribute of the player matches.
+* This allows the costume to be permanantly applied to the player, including during the mineshaft sequence, like the hair of vanilla characters.
+*/
+HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void) {
+	UpdateLastModId(modentry);
+
+	super(xmlpath, modentry);
+
+	if (lastModIdButCooler.empty()) return;
+
+	// Check the XMLData of all players added by this mod.
+	for (const int id : XMLStuff.PlayerData->bymod[lastModIdButCooler]) {
+
+		if (id == 0 || XMLStuff.PlayerData->nodes.count(id) == 0) continue;
+
+		const XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(id);
+		EntityConfig_Player* playerConfig = g_Manager->GetEntityConfig()->GetPlayer(id);
+
+		if (!playerConfig || playerConfig->_name != playerXML.at("name")) {
+			ZHL::Log("WARNING: Player ID [%d] used in XMLData for player [%s] does not match corresponding EntityConfig_Player [%s]!\n", id, playerXML.at("name").c_str(), (playerConfig ? playerConfig->_name : "<NULL>").c_str());
+			if (!playerConfig) continue;
+		}
+
+		if (playerConfig->_costumeID == -1 && playerXML.count("modcostume") > 0) {
+			const std::string modRelativeKey = lastModIdButCooler + playerXML.at("modcostume");
+			if (XMLStuff.NullCostumeData->byrelativeid.count(modRelativeKey) > 0) {
+				// Found a null costume from the same mod that matches the player's "modcostume" attribute.
+				playerConfig->_costumeID = XMLStuff.NullCostumeData->byrelativeid[modRelativeKey];
+			}
+		}
+	}
+}
+
+/*
+* AddCostume makes no effort to check whether Item* is nullptr, and will gladly attempt to access it regardless.
+* In fact, in some situations it will turn Item* null, then go ahead and access it later anyways!
+* Thus, fixing this requires multiple patches. The easy one is hooking the function to immediately reject nullptrs,
+* but the cases of turning Item* into a nullptr will need to be manually patched to bail out instead.
+*/
+
+// Immediately return if Item* is nullptr
+HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnly)->void) {
+	if (item == nullptr)
+		return;
+	super(item, itemStateOnly);
+}
+
+void ASMPatchAddCostumeNullptrs() {
+	// Patch #1
+	SigScan scanner("c1f80283f82d");
+	scanner.Scan();
+
+	if (!scanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch AddCostume nullptr crash #1!\n");
+		return;
+	}
+
+	void* addr = (char*)scanner.GetAddress() + 6;
+
+	ASMPatch patch;
+	patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JG, (char*)addr + 0x6)
+		.AddRelativeJump((char*)addr + 0x569);
+
+	sASMPatcher.PatchAt(addr, &patch);
+
+
+	// Patch #2
+	SigScan scanner2("c1f80283f87d");
+	scanner2.Scan();
+
+	if (!scanner2.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch AddCostume nullptr crash #2!\n");
+		return;
+	}
+
+	addr = (char*)scanner2.GetAddress() + 6;
+
+	ASMPatch patch2;
+	patch2.AddConditionalRelativeJump(ASMPatcher::CondJumps::JG, (char*)addr + 0x6)
+		.AddRelativeJump((char*)addr + 0x519);
+
+	sASMPatcher.PatchAt(addr, &patch2);
+}
+
+
+// Function called in ASMPatches.cpp to run patches at the appropriate time.
 void PatchNullItemAndNullCostumeSupport() {
 	ASMPatchFixLoadingNullItemsFromXml();
 	ASMPatchTieModdedCostumesToModdedNullItems();
+	ASMPatchAddCostumeNullptrs();
 }

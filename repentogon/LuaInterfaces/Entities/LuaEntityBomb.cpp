@@ -93,7 +93,7 @@ LUA_FUNCTION(Lua_BombSetLoadCostumes)
 {
 	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	bomb->_loadCostumes = lua::luaL_checkboolean(L, 2);
+	bomb->_loadCostumes = lua::luaL_optboolean(L, 2, true);
 	return 0;
 }
 
@@ -108,6 +108,42 @@ LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
 	}
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_BombGetRocketAngle) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushnumber(L, bomb->_rocketAngle);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetRocketAngle) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_rocketAngle = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BombGetRocketSpeed) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushnumber(L, bomb->_rocketSpeed);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetRocketSpeed) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_rocketSpeed = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BombIsPrismTouched) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushboolean(L, bomb->_prismTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetPrismTouched) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_prismTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -128,6 +164,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
 		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
 		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
+		{ "GetRocketAngle", Lua_BombGetRocketAngle },
+		{ "SetRocketAngle", Lua_BombSetRocketAngle },
+		{ "GetRocketSpeed", Lua_BombGetRocketSpeed },
+		{ "SetRocketSpeed", Lua_BombSetRocketSpeed },
+		{ "IsPrismTouched", Lua_BombIsPrismTouched },
+		{ "SetPrismTouched", Lua_BombSetPrismTouched },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

@@ -2,9 +2,7 @@ struct GridEntity_Wall : public GridEntity {
 	__vtable {
 		skip; // Free
 		skip; // PostInit
-		
-		"558bec83e4f883ec308379??00":
-        void Update();
+		skip; // Update
 		
 		override
 		"558bec83e4f8a1????????83ec3c":

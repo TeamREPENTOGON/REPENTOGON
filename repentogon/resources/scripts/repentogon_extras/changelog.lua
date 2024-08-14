@@ -2,13 +2,13 @@
 local _ModCallbacks = ModCallbacks
 local _MainMenuType = MainMenuType
 local _ButtonAction = ButtonAction
-local _SoundEffect = SoundEffect 
+local _SoundEffect = SoundEffect
 
 local ChangeLog = {
     ["AssetsLoaded"] = false,
     ["NoteOffset"] = Vector(275, 190),
     ["PaperOffset"] = Vector(-37, -15),
-    ["VersionOffset"] = Vector(100, 0),
+    ["VersionOffset"] = Vector(238, 240),
     ["ChangelogSprite"] = Sprite(),
     ["NoteSprite"] = Sprite(),
 
@@ -26,7 +26,7 @@ local ChangeLog = {
     ["Sheets"] = --TODO: implement the ability to have multiple sheets with unique sprites and stuff
     {
         [1] = {
-            ["Text"] = require("repentogon_extras/changelog_official_text"),
+            ["Text"] = Isaac.RGON_GetChangelog(),
             ["TextArray"] = {},
         },
     },
@@ -107,6 +107,16 @@ local MaxPollCIdx = 3
 
 local UseFade = false
 
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
+
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -131,22 +141,34 @@ function ChangeLog.MenuRender()
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.NoteOffset))
     local versionPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.VersionOffset)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON 2d210f8", versionPosition.X + 1, versionPosition.Y + 1,
-        KColor(0, 0, 0, 0.3), 200, true)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON 2d210f8", versionPosition.X, versionPosition.Y,
-        KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
-    if MenuManager:GetActiveMenu() == _MainMenuType.TITLE then
+    local versionString = "REPENTOGON " .. REPENTOGON.Version
+
+    Cl.VersionFont:DrawStringUTF8(versionString, versionPosition.X + 1, versionPosition.Y + 1,
+        KColor(0, 0, 0, 0.3), 200) -- shadow
+    Cl.VersionFont:DrawStringUTF8(versionString, versionPosition.X, versionPosition.Y,
+        KColor(67 / 255, 5 / 255, 5 / 255, 1), 200) -- text
+    local ActiveMenu=MenuManager:GetActiveMenu()
+
+    if ActiveMenu == _MainMenuType.TITLE or ActiveMenu==0 then    --reserve menu id 0 for changelog to prevent inputs, mdoders: please do not use that specific id, you already have almost 2^32 of them!...
+        UpdateMaxPollCIdx()
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 
             if Cl.CurrentState == true then
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
                 Cl.ChangelogSprite:Play("SwapIn")
+                MenuManager.SetActiveMenu(0)    --block inputs
             else
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
                 Cl.ChangelogSprite:Play("SwapOut")
+                MenuManager.SetActiveMenu(1)    --unblock inputs
             end
             ShouldBeRendered = true
+        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENUBACK) and Cl.CurrentState==true then
+            Cl.CurrentState=false
+            SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
+            Cl.ChangelogSprite:Play("SwapOut")
+            MenuManager.SetActiveMenu(1)    --unblock inputs
         end
         if ShouldBeRendered then
             local LogRenderPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.PaperOffset)
@@ -163,6 +185,7 @@ function ChangeLog.MenuRender()
                 170 *
                 NullScale
                 .Y                                                               --170 is a total height of the paper, should get it exposed in the table
+                local TextStretchFactor=0
                 for _, iterline in pairs(Cl.Sheets[1].TextArray) do
                     if string.find(iterline, "/f/") then
                         UseFade = true
@@ -173,6 +196,12 @@ function ChangeLog.MenuRender()
                     local XOffset = (-BoxSize / 2) * NullScale.X
                     local FullY = LogRenderPosition.Y + NullPos.Y + 40 * NullScale.Y + YOffset * NullScale.Y +
                     ScrollOffset
+--                    if FullY<500 then
+--                    print(line,"fully-minoffset",FullY - MinOffset,",minoffset:",(MinOffset + Cl.ScrollMargin * NullScale.Y),",maxoffset:",(MaxOffset - Cl.ScrollMargin * NullScale.Y)) end
+--                    print("checking",FullY-MinOffset)
+                    if ((MaxOffset - FullY) < 0.0) or ((FullY - MinOffset) < 0.0) then
+                        goto skiptonextline
+                    end
                     if FullY < (MinOffset + Cl.ScrollMargin * NullScale.Y) or FullY > (MaxOffset - Cl.ScrollMargin * NullScale.Y) then
                         if FullY - MinOffset < Cl.ScrollMargin * NullScale.Y then
                             Cl.FontColor.Alpha = (FullY - MinOffset) / Cl.ScrollMargin
@@ -186,8 +215,10 @@ function ChangeLog.MenuRender()
                     if UseFade then
                         Cl.FontColor.Alpha = Cl.FontColor.Alpha * 0.75
                     end
-                    Cl.Font:DrawStringScaledUTF8(line, LogRenderPosition.X + NullPos.X + XOffset, FullY, NullScale.X,
+                    TextStretchFactor=math.min(1.0, BoxSize/Cl.Font:GetStringWidthUTF8(line) )    --this way the long lines of text get squished horizontally
+                    Cl.Font:DrawStringScaledUTF8(line, LogRenderPosition.X + NullPos.X + XOffset, FullY, NullScale.X*TextStretchFactor,
                         NullScale.Y, Cl.FontColor, 0, false)
+                    ::skiptonextline::
                     YOffset = YOffset + Cl.LineHeight
                 end
             end
@@ -226,11 +257,11 @@ REPENTOGON.Extras.ChangeLog = ChangeLog
 local curattempt=0
 function ChangeLog.LoadAssets()
     if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
-        Cl.ChangelogSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog.anm2", true)
+        Cl.ChangelogSprite:LoadRGON("gfx/ui/changelog.anm2", true)
         Cl.ChangelogSprite:Play("SwapOut")
         Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
 
-        Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
+        Cl.NoteSprite:LoadRGON("gfx/ui/changelog_tab_paper.anm2", true)
         Cl.NoteSprite:Play("Idle")
         curattempt=curattempt+1
         if curattempt>5 then

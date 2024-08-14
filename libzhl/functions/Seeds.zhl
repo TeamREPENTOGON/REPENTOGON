@@ -1,9 +1,22 @@
+"558bec51568d45??8bf1":
+static int Seeds::String2Seed(std_string *str);
+
+"558bec51f30f7e05????????a1????????53":
+__fastcall void Seeds::constructor();
+
+"558bec53568bf18b4d??57894e":
+__thiscall void Seeds::set_start_seed(unsigned int seed); 
+
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf18975??f30f7e05":
+__thiscall void Seeds::construct_from_copy(Seeds* right);
+
 // sorry for the mess, this is a direct ghidra export :(
-struct Seeds {
+struct Seeds depends (RNG,ANM2){
     bool _isCustomRun : 0x0;
     unsigned int _gameStartSeed : 0x4;
-    unsigned int _unkSeed : 0x8;
+    RNG _rng : 0x8;
     int _stageSeeds[14] : 0x18;
     unsigned int _playerInitSeed : 0x50;
+	unsigned int _unkseed : 0x54;
     int _seedEffectsCount : 0x58;
 } : 0x5c;

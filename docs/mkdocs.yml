@@ -1,0 +1,415 @@
+copyright: Copyright &copy; 2024 REPENTOGON developers
+edit_uri: edit/main/documentation/docs/
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/TeamREPENTOGON/REPENTOGON
+    name: REPENTOGON source code and documentation
+  version:
+    default: rep
+    provider: mike
+extra_css:
+- css/custom.css
+extra_javascript:
+- https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js
+- https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+- js/tablesort.number.min.js
+- js/customJS.js
+- js/jquery.mark.min.js
+home_button1_icon: ''
+home_button1_name: Install
+home_button1_theme: md-button md-button--primary
+home_button1_url: install.html
+home_button2_name: Docs
+home_button2_theme: md-button
+home_button2_url: docs.html
+home_button3_name: Blog
+home_button3_theme: md-button
+home_button3_url: blog/index.html
+home_cover_image: img/repentoMEGA.gif
+home_description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
+  Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
+  on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
+  and performance enhancements. This is analogous to a "script extender" for other
+  games like Skyrim.
+
+  <br>
+
+  <br>
+
+  REPENTOGON is the result of thousands of hours of combined work by over a dozen
+  modders responsible for some of the most popular mods for Isaac. Frustrated with
+  the shortcomings of the API, we''ve decided to take matters into our own hands.
+
+  <br>
+
+  <br>
+
+  Thanks to our changes to the API, you can expect mods to run faster out of the box,
+  and our extra features empower mod developers to push the performance envelope for
+  mods further than ever before. Furthermore, highly requested features that were
+  previously impossible for a traditional mod, such as completion marks for modded
+  characters on the main menu and Devil and Planetarium room chance manipulation,
+  are all here. <strike>We even added 30+ rideable dragons!</strike>
+
+  '
+home_tagline: A new era for Isaac modding begins now.
+markdown_extensions:
+- toc:
+    permalink: "\u2693\uFE0E"
+    toc_depth: 3
+- pymdownx.highlight:
+    linenums: true
+- pymdownx.superfences:
+    custom_fences:
+    - class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
+      name: mermaid
+- pymdownx.inlinehilite
+- pymdownx.snippets:
+    check_paths: true
+    url_download: true
+- admonition
+- pymdownx.details
+- pymdownx.emoji:
+    emoji_generator: !!python/name:material.extensions.emoji.to_svg ''
+    emoji_index: !!python/name:material.extensions.emoji.twemoji ''
+- pymdownx.tabbed:
+    alternate_style: true
+- attr_list
+nav:
+- Home: ./index.md
+- Install: ./install.md
+- Docs:
+  - Home: ./docs.md
+  - Last visited:
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+  - Frequently used:
+    - Isaac: Isaac.md
+    - Entity: Entity.md
+    - EntityPlayer: EntityPlayer.md
+    - EntityNPC: EntityNPC.md
+    - EntityEffect: EntityEffect.md
+    - Game: Game.md
+    - Room: Room.md
+    - Level: Level.md
+    - ModCallbacks: enums/ModCallbacks.md
+  - Enums:
+    - Achievement: enums/Achievement.md
+    - AddHealthType: enums/AddHealthType.md
+    - AnimRenderFlags: enums/AnimRenderFlags.md
+    - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
+    - AutocompleteType: enums/AutocompleteType.md
+    - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
+    - BlendFactor: enums/BlendFactor.md
+    - BlendType: enums/BlendType.md
+    - BombCostumeLayer: enums/BombCostumeLayer.md
+    - BossType: enums/BossType.md
+    - ButtonActionBitwise: enums/ButtonActionBitwise.md
+    - CameraStyle: enums/CameraStyle.md
+    - CompletionType: enums/CompletionType.md
+    - ConsoleFont: enums/ConsoleFont.md
+    - DebugFlag: enums/DebugFlag.md
+    - DeliriumCallbacks: enums/DeliriumCallbacks.md
+    - DialogButtons: enums/DialogButtons.md
+    - DialogIcons: enums/DialogIcons.md
+    - DialogReturn: enums/DialogReturn.md
+    - Dimension: enums/Dimension.md
+    - DipSubType: enums/DipSubType.md
+    - DwmWindowAttribute: enums/DwmWindowAttribute.md
+    - Ending: enums/Ending.md
+    - EntityPoopVariant: enums/EntityPoopVariant.md
+    - EntityTag: enums/EntityTag.md
+    - EventCounter: enums/EventCounter.md
+    - ExtraHudStyle: enums/ExtraHudStyle.md
+    - FadeoutTarget: enums/FadeoutTarget.md
+    - FollowerPriority: enums/FollowerPriority.md
+    - GLSLType: enums/GLSLType.md
+    - Giantbook: enums/Giantbook.md
+    - GibFlag: enums/GibFlag.md
+    - GridPoopVariant: enums/GridPoopVariant.md
+    - HealthType: enums/HealthType.md
+    - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiColor: enums/ImGuiColor.md
+    - ImGuiData: enums/ImGuiData.md
+    - ImGuiElement: enums/ImGuiElement.md
+    - ImGuiNotificationType: enums/ImGuiNotificationType.md
+    - ItemAnim: enums/ItemAnim.md
+    - KnifeSubType: enums/KnifeSubType.md
+    - KnifeVariant: enums/KnifeVariant.md
+    - Language: enums/Language.md
+    - LineCheckMode: enums/LineCheckMode.md
+    - MainMenuType: enums/MainMenuType.md
+    - MinimapState: enums/MinimapState.md
+    - ModCallbacks: enums/ModCallbacks.md
+    - MouseButton: enums/MouseButton.md
+    - NullPickupSubType: enums/NullPickupSubType.md
+    - PauseMenuStates: enums/PauseMenuStates.md
+    - PedestalType: enums/PedestalType.md
+    - PillCardSlot: enums/PillCardSlot.md
+    - PlayerVariant: enums/PlayerVariant.md
+    - PocketItemType: enums/PocketItemType.md
+    - PressurePlateVariant: enums/PressurePlateVariant.md
+    - ProceduralEffectActionType: enums/ProceduralEffectActionType.md
+    - ProceduralEffectConditionType: enums/ProceduralEffectConditionType.md
+    - ProjectileMode: enums/ProjectileMode.md
+    - PurityState: enums/PurityState.md
+    - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
+    - RoomSubType: enums/RoomSubType.md
+    - ShaderType: enums/ShaderType.md
+    - SlotVariant: enums/SlotVariant.md
+    - SpecialQuest: enums/SpecialQuest.md
+    - StbGridType: enums/StbGridType.md
+    - StbPoopSubType: enums/StbPoopSubType.md
+    - StbRailVariant: enums/StbRailVariant.md
+    - StbRockSubType: enums/StbRockSubType.md
+    - StbTeleporterSubType: enums/StbTeleporterSubType.md
+    - StbType: enums/StbType.md
+    - TaintedMarksGroup: enums/TaintedMarksGroup.md
+    - TeleporterVariant: enums/TeleporterVariant.md
+    - WeaponModifier: enums/WeaponModifier.md
+    - WispSubType: enums/WispSubType.md
+    - XMLNode: enums/XMLNode.md
+  - Ambush: Ambush.md
+  - Backdrop: Backdrop.md
+  - BossPool:
+    - BossPool: BossPool.md
+    - BossPoolManager: BossPoolManager.md
+  - Camera: Camera.md
+  - Capsule: Capsule.md
+  - CcpContainer: 
+    - RoomConfigSet: CcpContainer_RoomConfigSet.md
+  - ChallengeParam: ChallengeParam.md
+  - Color: Color.md
+  - ColorModifier: ColorModifier.md
+  - ColorParams: ColorParams.md
+  - Console: Console.md
+  - CostumeSpriteDesc: CostumeSpriteDesc.md
+  - DailyChallenge: DailyChallenge.md
+  - Debug: Debug.md
+  - Entity:
+    - Entity: Entity.md
+    - EntityBomb: EntityBomb.md
+    - EntityDelirium: EntityDelirium.md
+    - EntityEffect: EntityEffect.md
+    - EntityFamiliar: EntityFamiliar.md
+    - EntityKnife: EntityKnife.md
+    - EntityLaser: EntityLaser.md
+    - EntityNPC: EntityNPC.md
+    - EntityPlayer: EntityPlayer.md
+    - EntityPickup: EntityPickup.md
+    - EntityProjectile: EntityProjectile.md
+    - EntitySlot: EntitySlot.md
+    - EntityTear: EntityTear.md
+  - EntityConfig:
+    - EntityConfig: EntityConfig.md
+    - EntityConfigBaby: EntityConfigBaby.md
+    - EntityConfigEntity: EntityConfigEntity.md
+    - EntityConfigPlayer: EntityConfigPlayer.md
+  - Font: Font.md
+  - FXParams: FXParams.md
+  - Game: Game.md
+  - GridEntity:
+    - GridEntity: GridEntity.md
+    - GridEntityDecoration: GridEntityDecoration.md
+    - GridEntityDoor: GridEntityDoor.md
+    - GridEntityFire: GridEntityFire.md
+    - GridEntityGravity: GridEntityGravity.md
+    - GridEntityLock: GridEntityLock.md
+    - GridEntityPressurePlate: GridEntityPressurePlate.md
+    - GridEntityRock: GridEntityRock.md
+    - GridEntityStairs: GridEntityStairs.md
+    - GridEntityStatue: GridEntityStatue.md
+    - GridEntityTeleporter: GridEntityTeleporter.md
+    - GridEntityTrapDoor: GridEntityTrapDoor.md
+    - GridEntityWall: GridEntityWall.md
+    - GridEntityWeb: GridEntityWeb.md
+  - History:
+    - History: History.md
+    - HistoryItem: HistoryItem.md
+  - HUDs:
+    - DebugRenderer: DebugRenderer.md
+    - HUD: HUD.md
+    - Minimap: Minimap.md
+    - PlayerHUD: PlayerHUD.md
+    - PlayerHUDHeart: PlayerHUDHeart.md
+    - ScoreSheet: ScoreSheet.md
+  - ImGui: ImGui.md
+  - Isaac: Isaac.md
+  - ItemConfig:
+    - ItemConfig: ItemConfig.md
+    - ItemConfig - Item: ItemConfig_Item.md
+    - ItemConfig - PillEffect: ItemConfig_PillEffect.md
+  - ItemOverlay: ItemOverlay.md
+  - ItemPool: ItemPool.md
+  - Input: Input.md
+  - Level: Level.md
+  - LevelGenerator:
+    - LevelGenerator: LevelGenerator.md
+    - LevelGeneratorEntry: LevelGeneratorEntry.md
+    - LevelGeneratorRoom: LevelGeneratorRoom.md
+  - LootList:
+    - LootList: LootList.md
+    - LootListEntry: LootListEntry.md
+  - Menus:
+    - MenuManager: menus/MenuManager.md
+    - BestiaryMenu: menus/BestiaryMenu.md
+    - ChallengeMenu: menus/ChallengeMenu.md
+    - CharacterMenu: menus/CharacterMenu.md
+    - CollectionMenu: menus/CollectionMenu.md
+    - ControllerSelectMenu: menus/ControllerSelectMenu.md
+    - CustomChallengeMenu: menus/CustomChallengeMenu.md
+    - CutscenesMenu: menus/CutscenesMenu.md
+    - DailyChallengeMenu: menus/DailyChallengeMenu.md
+    - KeyConfigMenu: menus/KeyConfigMenu.md
+    - MainMenu: menus/MainMenu.md
+    - ModsMenu: menus/ModsMenu.md
+    - OptionsMenu: menus/OptionsMenu.md
+    - PauseMenu: menus/PauseMenu.md
+    - SaveMenu: menus/SaveMenu.md
+    - SpecialSeedsMenu: menus/SpecialSeedsMenu.md
+    - StatsMenu: menus/StatsMenu.md
+    - TitleMenu: menus/TitleMenu.md
+  - MultiShotParams: MultiShotParams.md
+  - MusicManager: MusicManager.md
+  - NightmareScene: NightmareScene.md
+  - Options: Options.md
+  - PersistentGameData: PersistentGameData.md
+  - PlayerManager: PlayerManager.md
+  - Procedural Items:
+    - ProceduralItemManager: ProceduralItemManager.md
+    - ProceduralEffect: ProceduralEffect.md
+    - ProceduralItem: ProceduralItem.md
+  - PocketItem: PocketItem.md
+  - ProjectileParams: ProjectileParams.md
+  - RailManager: RailManager.md
+  - Rendering:
+    - Beam: renderer/Beam.md
+    - BlendMode: renderer/BlendMode.md
+    - DestinationQuad: renderer/DestinationQuad.md
+    - GLSLValue: renderer/GLSLValue.md
+    - Image: renderer/Image.md
+    - Pipeline: renderer/Pipeline.md
+    - Point: renderer/Point.md
+    - Renderer: renderer/Renderer.md
+    - RenderSet: renderer/RenderSet.md
+    - Shader: renderer/Shader.md
+    - SourceQuad: renderer/SourceQuad.md
+    - Shape: renderer/Shape.md
+    - Transformer: renderer/Transformer.md
+    - Vertex: renderer/Vertex.md
+    - VertexBuffer: renderer/VertexBuffer.md
+    - VertexDescriptor: renderer/VertexDescriptor.md
+  - REPENTOGON: Repentogon.md
+  - RNG: RNG.md
+  - Room: Room.md
+  - RoomConfig:
+    - RoomConfig: RoomConfig.md
+    - RoomConfigStage: RoomConfigStage.md
+    - GridEntitiesSaveStateVector: GridEntitiesSaveStateVector.md
+    - RoomConfigHolder: RoomConfigHolder.md
+    - RoomConfigRoom: RoomConfigRoom.md
+    - RoomDescriptor: RoomDescriptor.md
+    - EntitiesSaveState: EntitiesSaveState.md
+    - EntitiesSaveStateVector: EntitiesSaveStateVector.md
+  - RoomTransition: RoomTransition.md
+  - Sprite:
+    - AnimationData: AnimationData.md
+    - AnimationFrame: AnimationFrame.md
+    - AnimationLayer: AnimationLayer.md
+    - LayerState: LayerState.md
+    - NullFrame: NullFrame.md
+    - Sprite: Sprite.md
+  - StageTransition: StageTransition.md
+  - Vector: Vector.md
+  - Weapon: Weapon.md
+  - WeightedOutcomePicker: WeightedOutcomePicker.md
+  - XMLData: XMLData.md
+- Blog: blog/index.md
+- Changes:
+  - General: changes/General.md
+  - Debugging: changes/Debugging.md
+  - UI: changes/UI.md
+- XML:
+  - XML Overview: xml/overview.md
+  - XMLData: XMLData.md
+  - achievements.xml: xml/achievements.md
+  - ambush.xml: xml/ambush.md
+  - backdrops.xml: xml/backdrops.md
+  - bosscolors.xml: xml/bosscolors.md
+  - costumes.xml: xml/costumes.md
+  - cutscenes.xml: xml/cutscenes.md
+  - challenges.xml: xml/challenges.md
+  - entities2.xml: xml/entities.md
+  - giantbook.xml: xml/giantbook.md
+  - items.xml: xml/items.md
+  - pocketitems.xml: xml/pocketitems.md
+  - players.xml: xml/players.md
+# - Custom Rendering: renderer/CustomRendering.md
+- Tags: tags.md
+- Example Mods:
+  - Capsules: examples/Capsules.md
+  - Deal Chance: examples/DealChance.md
+  - Weighted Outcomes: examples/WeightedOutcomes.md
+  - Beams: examples/Beams.md
+  - Color Modifiers: examples/ColorModifiers.md
+- Lua 5.4 Docs: https://www.lua.org/manual/5.4/
+plugins:
+- blog:
+    authors: false
+    blog_toc: true
+- search:
+    separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+- tags:
+    tags_file: tags.md
+repo_name: TeamREPENTOGON/REPENTOGON
+repo_url: https://github.com/TeamREPENTOGON/REPENTOGON
+site_name: 'BoI: REPENTOGON'
+site_url: https://repentogon.com
+theme:
+  custom_dir: overrides
+  favicon: img/favicon.ico
+  features:
+  - search.suggest
+  - search.highlight
+  - search.share
+  - navigation.tabs
+  - navigation.instant
+  - navigation.top
+  icon:
+    repo: fontawesome/brands/github
+  logo: img/favicon.ico
+  name: material
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    toggle:
+      icon: material/weather-night
+      name: Switch to dark mode
+  - accent: amber
+    media: '(prefers-color-scheme: dark)'
+    primary: amber
+    scheme: slate
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to light mode
+use_directory_urls: false

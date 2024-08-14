@@ -4,43 +4,31 @@ __thiscall void RoomConfig::LoadCurses(char* xmlpath,bool ismod);
 "558bec8b45??83f8ff75??a1":
 static cleanup unsigned int RoomConfig::GetStageID(unsigned int LevelStage<ecx>, unsigned int StageType<edx>, unsigned int Mode);
 
-
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b894010100":
 __thiscall void RoomConfig::LoadStages(char *xmlpath);
-
-"558bec6aff68????????64a1????????5083ec10535657a1????????33c5508d45??64a3????????8bd9895d??8b43??85c0":
-__thiscall void RoomConfig::DannyDeleto();
-
-"558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8d91":
-__thiscall void RoomConfig::UnloadStage(int stageid);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6c":
 __thiscall void RoomConfig::LoadStageBinary(unsigned int Stage, unsigned int Mode);
 
-struct RoomConfig
-{
-    int32_t StageId : 0x0; // 0x0
-    int32_t Mode : 0x4; // 0x4
-    int32_t Type : 0x8; // 0x8
-    uint32_t Variant : 0xc; // 0xC
-    int32_t Subtype : 0x10; // 0x10
-    std_string Name : 0x14; // 0x14
-    int32_t Difficulty : 0x2c; // 0x2C
-    float InitialWeight : 0x30; // 0x30
-    float Weight : 0x34; // 0x34
-    int32_t Doors : 0x38; // 0x38
-    int32_t unk7 : 0x3c; // 0x3C
-    RoomSpawn* Spawns : 0x40; // 0x40
-    uint16_t SpawnCount : 0x44; // 0x44
-    int8_t Width : 0x46; // 0x46
-    int8_t Height : 0x47; // 0x47
-    int32_t Shape : 0x48; // 0x48
-    int32_t unk9 : 0x4c; // 0x4C
-    int32_t unk10 : 0x50; // 0x50
-    int32_t unk11 : 0x54; // 0x54
-    int32_t unk12 : 0x58; // 0x58
+// RoomConfigHolder
 
-    {{
-    bool LIBZHL_API IsValidGridIndex(lua_Integer index, bool includeWalls = true) const;
-    }}
-} : 0x5C; // 0x5C 
+"558bec518b55??5356578b7d":
+__thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t mode);
+
+"558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
+__thiscall RoomConfig_Room* RoomConfig::GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
+
+"558bec6aff68????????64a1000000005083ec18535657a1????????33c5508d45f464a3000000008b7d0c8b553069f7c4000000":
+RoomConfigRoomPtrVector RoomConfig::GetRooms(int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode);
+
+"558bec518b55??8b45":
+__thiscall void RoomConfig::ResetRoomWeights(unsigned int Stage, int Mode);
+
+struct RoomConfig depends (RoomConfig_Stage, RoomConfig_Curse, RoomConfig_Miniboss)
+{
+    RoomConfig_Stage _stages[37] : 0x0;
+	vector_Curse _curses : 0x1c54;
+	RoomConfig_Miniboss _miniboss : 0x1c60;
+	RoomConfig_Room* _rooms : 0x1e20;
+	unsigned int _roomCount : 0x1e24;
+} : 0x1e28;

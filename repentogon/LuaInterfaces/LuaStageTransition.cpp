@@ -17,12 +17,13 @@ LUA_FUNCTION(lua_StageTransition_GetSame) {
 	return 1;
 }
 
-LUA_FUNCTION(lua_GameGetStageTransition) {
+/*LUA_FUNCTION(lua_GameGetStageTransition) {
 	StageTransition** transition = (StageTransition**)lua_newuserdata(L, sizeof(StageTransition*));
 	*transition = g_Game->GetStageTransition();
 	luaL_setmetatable(L, lua::metatables::StageTransitionMT);
 	return 1;
 }
+*/
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();

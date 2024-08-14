@@ -4,5 +4,22 @@ __thiscall void Cutscene::Init(char *xmlresourcespath);
 "558bec83ec208b15":
 __thiscall void Cutscene::Show(int cutsceneid);
 
-struct Cutscene depends (Vector) {
+"c701000000008bc1c741??00000000c741??00000000c741??0f000000c741??00000000c741??00000000c741??00000000":
+__thiscall CutsceneEntry* CutsceneEntry::Constructor();
+
+"56578bf933f68b47??8b57??2bc2c1f80285c074??8b0c":
+__thiscall void CutsceneEntry::Destructor();
+
+"568bf15733ffc746??ffffffff":
+__thiscall void CutsceneEntry::Unload();
+
+struct CutsceneEntry {
+    int  _id : 0x0;
+    std_string _name : 0x4;
+    bool _isVideo : 0x45;
+} : 0x48;
+struct Cutscene depends (Vector, CutsceneEntry) {
+    int _state : 0x0;
+    CutsceneEntry _cutscenes[27] : 0x4;
+    int _queuedCutscene : 0x79c;
 } : 0x7b0;

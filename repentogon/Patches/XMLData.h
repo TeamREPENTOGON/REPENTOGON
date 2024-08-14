@@ -14,6 +14,18 @@
 #include "rapidxml.hpp"
 using namespace std;
 
+/* Modifiers for character stats, allow to override the computation of Eden's stats, 
+ * which we use in order to define stats for modded characters.
+ */
+namespace PlayerStats {
+	extern float modCharacterFireDelay;
+	extern float modCharacterSpeed;
+	extern float modCharacterDamage;
+	extern float modCharacterRange;
+	extern float modCharacterShotSpeed;
+	extern float modCharacterLuck;
+}
+
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 template<>
 struct hash<tuple<int, int, int>> {
@@ -42,6 +54,7 @@ struct hash<tuple<int, int>> {
 typedef unordered_map<string, string> XMLAttributes;
 typedef unordered_map<int, XMLAttributes> XMLNodes;
 typedef unordered_map<string, std::vector <XMLAttributes>> XMLChilds;
+typedef unordered_map<int, std::vector <XMLAttributes>> XMLRelEnt;
 typedef unordered_map<int, XMLChilds> XMLKinder;
 typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
 typedef unordered_map<string, int> XMLNodeIdxLookup;
@@ -69,12 +82,12 @@ inline string stringlower(const char* str)
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;
-	vector<int> Get(string index) {
+	vector<int> Get(const string &index) {
 		if (tab.find(index) != tab.end()) {
 			return tab[index];
 		}
 	}
-	void Set(string index,int id) {
+	void Set(const string &index,int id) {
 		if (tab.find(index) != tab.end()) {
 			vector<int> v;
 			v.push_back(id);
@@ -90,13 +103,18 @@ class XMLDataHolder {
 public:
 	XMLNodes nodes;
 	XMLKinder childs;
+	unordered_map<string, int> childbyname;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
+	unordered_map<int, int> byorder;
 	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
 	XMLNodeTable byfilepathmulti;
+	// Holds the contents of the "customtags" attribute, converted to lowercase and parsed into a set.
+	unordered_map<int, set<string>> customtags;
 	int maxid;
 	int defmaxid;
+	bool stuffset = false;
 
 	void Clear() {
 		nodes.clear();
@@ -106,10 +124,11 @@ public:
 		bymod.clear();
 		byrelativeid.clear();
 		byfilepathmulti.tab.clear();
+		customtags.clear();
 		maxid = defmaxid;
 	}
 
-	void ClearByPath(string path) {
+	void ClearByPath(const string &path) {
 		if (byfilepathmulti.tab.find(path) != byfilepathmulti.tab.end()) {
 			for each (int idx in byfilepathmulti.Get(path)) {
 				XMLAttributes node = nodes[idx];
@@ -125,14 +144,78 @@ public:
 		}
 	}
 
-	XMLAttributes GetNodeByName(string name) {
-		return this->nodes[this->byname[name]];
+	XMLAttributes  GetNodeById(int name) {
+		auto iter = this->nodes.find(name);
+		if (iter == this->nodes.end()) { return XMLAttributes(); }
+		else { return iter->second; }
 	}
-	XMLAttributes GetNodeByNameMod(string name) {
-		return this->nodes[this->bynamemod[name]];
+
+	XMLAttributes  GetNodeByOrder(int name) {
+		auto iter = this->byorder.find(name);
+		if (iter == this->byorder.end()) { return XMLAttributes(); }
+		else { return this->GetNodeById(iter->second); }
 	}
-	XMLAttributes GetNodesByMod(string name) {
-		return this->nodes[this->bynamemod[name]];
+
+	XMLAttributes GetNodeByName(const string &name) {
+		auto iter = this->byname.find(name);
+		if (iter == this->byname.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
+	}
+	XMLAttributes GetNodeByNameMod(const string &name) {
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
+	}
+	XMLAttributes GetNodesByMod(const string &name) {
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
+	}
+
+	XMLChilds GetChildsById(int name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else {Childs = XMLChilds();}
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByOrder(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByOrder(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byorder[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	bool HasCustomTag(const int id, const std::string tag) {
+		if (this->customtags.find(id) == this->customtags.end()) {
+			return false;
+		}
+		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
@@ -151,6 +234,9 @@ public:
 				child["sourceid"] = lastmodid;
 			}
 			this->childs[id][stringlower(auxnodebabe->name())].push_back(child);
+			if (child.find("name") != child.end()) { //this wont be used too much but it's needed for some cases
+				this->childbyname[child["name"]] = this->childs[id][stringlower(auxnodebabe->name())].size();
+			}
 		}
 	}
 
@@ -191,6 +277,7 @@ public:
 	XMLNodeIdxLookup stages;
 	XMLNodeIdxLookup backdrops;
 	XMLNodeIdxLookup achievements;
+	XMLChilds achievlistpermod;
 
 	void Clear() {
 		nodes.clear();
@@ -224,6 +311,8 @@ public:
 		stages.clear();
 		backdrops.clear();
 		achievements.clear();
+		achievlistpermod.clear();
+		byorder.clear();
 		maxid = 0;
 	
 	}
@@ -278,8 +367,29 @@ class XMLLocustColor : public XMLDataHolder {
 
 };
 
+struct CustomReviveInfo {
+	bool item = false;  // Grants a revive when item/trinket is held.
+	bool effect = false;  // Grants a revive when the corresponding TemporaryEffect is applied.
+	bool hidden = false;  // Revive is not counted on the HUD.
+	bool chance = false;  // Adds a "?" to the hud when held.
+};
+
 class XMLItem : public XMLDataHolder {
-	
+public:
+	vector<XMLAttributes> customachievitems;
+	// Holds info related to custom revive effects. Populated by parsing "customtags".
+	unordered_map<int, CustomReviveInfo> customreviveitems;
+	// Holds the contents of the "customcache" attribute, converted to lowercase and parsed into a set.
+	unordered_map<int, set<string>> customcache;
+
+	const set<string>& GetCustomCache(const int id) {
+		return this->customcache[id];
+	}
+
+	bool HasCustomCache(const int id, const std::string tag) {
+		const set<string>& customcache = GetCustomCache(id);
+		return customcache.find(stringlower(tag.c_str())) != customcache.end();
+	}
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -330,6 +440,11 @@ class XMLChallenge : public XMLDataHolder {
 
 };
 
+class XMLBossColor : public XMLDataHolder {
+public:
+	unordered_map<tuple<int,int>, int> bytypevar;	
+};
+
 class XMLCurse : public XMLDataHolder {
 public:
 	XMLCurse(int m) {
@@ -348,12 +463,13 @@ public:
 					nodes.erase(idx);
 					childs.erase(idx);
 					maxid = maxid / 2 ;
+					stuffset = true; //this is to set the thing as a 2ndpass is going to be made
 				}
 			}
 		}
 };
 
-class XMLTrinket : public XMLDataHolder {
+class XMLTrinket : public XMLItem {
 public:
 	unordered_map<string, int> bypickup;
 };
@@ -361,11 +477,13 @@ public:
 class XMLCard : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLPill : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLStage : public XMLDataHolder {
@@ -378,6 +496,19 @@ class XMLPlayer : public XMLDataHolder {
 };
 
 class XMLBackdrop : public XMLDataHolder {
+public:
+	XMLRelEnt relfxlayers; //<backdripid, vector<fxlayerid>>
+	XMLRelEnt relfxrays;	//<backdripid, vector<fxrayid>>
+	XMLRelEnt relfxparams; //<backdripid, vector<fxparamid>>
+	vector<XMLAttributes> GetRelatedFXLayers(int backdropid) {
+		return relfxlayers[backdropid];
+	}
+	vector<XMLAttributes> GetRelatedFXRays(int backdropid) {
+		return relfxrays[backdropid];
+	}
+	vector<XMLAttributes> GetRelatedFXParams(int backdropid) {
+		return relfxparams[backdropid];
+	}
 };
 
 class XMLEntity {
@@ -391,6 +522,8 @@ public:
 	unordered_map<string, tuple<int, int, int>> bybossid;
 	XMLNodeIdxLookup bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
+	// Holds the contents of an entity's "customtags" attribute, converted to lowercase and parsed into a set.
+	unordered_map<tuple<int, int, int>, set<string>> customtags;
 
 	void Clear() {
 		nodes.clear();
@@ -399,34 +532,120 @@ public:
 		bynamemod.clear();
 		bymod.clear();
 		bytypevar.clear();
+		customtags.clear();
 		maxid = 0;
 	}
 
-	XMLAttributes GetNodeByName(string name) {
-		return this->nodes[this->byname[name]];
+	XMLAttributes GetNodeById(const tuple<int, int, int> &name) {
+		auto iter = this->nodes.find(name);
+		if (iter == this->nodes.end()) { return XMLAttributes(); }
+		else { return iter->second; }
 	}
-	XMLAttributes GetNodeByNameMod(string name) {
-		return this->nodes[this->bynamemod[name]];
+
+	XMLAttributes GetNodeByName(const string &name) {
+		auto iter = this->byname.find(name);
+		if (iter == this->byname.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
-	XMLAttributes GetNodesByMod(string name) {
-		return this->nodes[this->bynamemod[name]];
+
+	XMLAttributes GetNodeByOrder(int name) {
+		auto iter = this->byorder.find(name);
+		if (iter == this->byorder.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
+	XMLAttributes GetNodeByNameMod(const string &name) {
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
+	}
+
+	XMLChilds GetChildsById(const tuple<int, int, int>& name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByOrder(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByOrder(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byorder[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(const tuple<int, int, int>& name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	//XMLAttributes GetNodesByMod(const string &name) { //not set up for now (unused anyway)
+		//auto iter = this->bymod.find(name);
+		//if (iter == this->bymod.end()) { return XMLAttributes(); }
+		//return this->GetNodeById(iter->second);
+	//}
+
 	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
-		tuple idx = { type, var, sub };
-		XMLAttributes none;
-		if (this->nodes.count({ type, var, sub }) > 0) {
-			return this->nodes[{ type, var, sub }];
+		auto iter = this->nodes.find({ type, var, sub });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		else if (strict) {
-			return none;
+		if (strict) {
+			return XMLAttributes();
 		}
-		else if (this->nodes.count({ type, var, 0 })) {
-			return this->nodes[{ type, var, 0 }];
+		iter = this->nodes.find({ type, var, 0 });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		else if (this->nodes.count({ type, 0, 0 })) {
-			return this->nodes[{ type, 0, 0 }];
+		iter = this->nodes.find({ type, 0, 0 });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		return none;
+		return XMLAttributes();
+	}
+
+	const set<string>& GetCustomTags(int type, int var, int sub) {
+		auto iter = this->customtags.find({ type, var, sub });
+		if (iter != this->customtags.end()) {
+			return iter->second;
+		}
+		iter = this->customtags.find({ type, var, 0 });
+		if (iter != this->customtags.end()) {
+			return iter->second;
+		}
+		return this->customtags[{ type, 0, 0 }];
+	}
+
+	const set<string>& GetCustomTags(const EntityConfig_Entity& entity) {
+		return GetCustomTags(entity.id, entity.variant, entity.subtype);
+	}
+
+	bool HasCustomTag(int type, int var, int sub, const std::string tag) {
+		const set<string>& customtags = GetCustomTags(type, var, sub);
+		return customtags.find(stringlower(tag.c_str())) != customtags.end();
+	}
+
+	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string tag) {
+		return HasCustomTag(entity.id, entity.variant, entity.subtype, tag);
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, tuple<int, int, int> id) {
@@ -476,12 +695,98 @@ struct XMLData {
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
 	XMLGeneric* PlayerFormData = new XMLGeneric(14);
+	XMLGeneric* FxLayerData = new XMLGeneric(0);
+	XMLGeneric* FxParamData = new XMLGeneric(0);
+	XMLGeneric* FxRayData = new XMLGeneric(0);
+	XMLBossColor* BossColorData = new XMLBossColor();
 
 	XMLMod* ModData = new XMLMod();
 
-	
+	// Holds all known customcache strings.
+	set<string> AllCustomCaches = {"familiarmultiplier"};
 };
 
+
+
+inline bool isvalidid(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return ((returnval != 0) || (str == "0"));
+		}
+	}
+	return false;
+}
+
+inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		if (!isvalidid(item)) {
+			if (xmldata->byname.find(item) != xmldata->byname.end()) {
+				parsedlist += to_string(xmldata->byname[item]) + ",";
+			}
+		}
+		else {
+			parsedlist += item + ",";
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	std::string lastItem = names.substr(start);
+	if (!isvalidid(lastItem)) {
+		if (xmldata->byname.find(lastItem) != xmldata->byname.end()) {
+			parsedlist += to_string(xmldata->byname[lastItem]);
+		}
+	}
+	else {
+		parsedlist += lastItem;
+	}
+	//printf("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
+	return parsedlist;
+}
+
+inline bool MultiValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr) {
+		string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute(attrname)->value()), xmldata);
+		xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+		auxnode->remove_attribute(attr);
+		auxnode->append_attribute(newAttr);
+		return true;
+	}
+	return false;
+}
+
+inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr && (!isvalidid(attr->value()))) {
+		string val = string(attr->value());
+		if (xmldata->byname.find(val) != xmldata->byname.end()) {
+			string parseditemlist = to_string(xmldata->byname[val]);
+			xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+			auxnode->remove_attribute(attr);
+			auxnode->append_attribute(newAttr);
+			return true;
+		}
+	}
+	return false;
+}
+
+inline int GetMaxIdFromChilds(xml_node<char>* parentnode,const char* attrname = "id") {
+	int maxid = -1;
+	for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+		xml_attribute<char>* attr = auxnodebabe->first_attribute(attrname);
+		if (attr && (stoi(attr->value()) > maxid)) {
+			maxid = stoi(attr->value());
+		}
+	}
+	return maxid;
+}
 
 extern unordered_map<string, int> xmlnodeenum;
 inline void initxmlnodeenum() {
@@ -509,6 +814,10 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["giantbook"] = 22;
 	xmlnodeenum["bossrush"] = 23;
 	xmlnodeenum["playerforms"] = 24;
+	xmlnodeenum["bosscolors"] = 25;
+	xmlnodeenum["fxlayers"] = 26;
+	xmlnodeenum["fxparams"] = 27;
+	xmlnodeenum["fxrays"] = 28;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -517,13 +826,16 @@ inline void initxmlmaxnodeenum() {
 	xmlmaxnode["giantbook.xml"] = 46;
 	xmlmaxnode["nightmares.xml"] = 16;
 	xmlmaxnode["playerforms.xml"] = 14;
+	xmlmaxnode["cutscenes.xml"] = 26;
+	xmlmaxnode["backdrops.xml"] = 60;
 }
 
 extern unordered_map<string, int> xmlfullmerge;
 inline void initxmlfullmergelist() {
-
+	xmlfullmerge["bosscolors.xml"] = 1;	
 }
 
+extern XMLDataHolder* xmlnodetypetodata[35];
 extern XMLData XMLStuff;
 
 #endif

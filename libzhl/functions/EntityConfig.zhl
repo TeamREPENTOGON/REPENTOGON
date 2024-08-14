@@ -7,7 +7,7 @@ __thiscall void EntityConfig::LoadPlayers(char *xmlpath, ModEntry* modentry);
 "558bec83ec108b45??538b5d??56c1e00c":
 __thiscall EntityConfig_Entity* EntityConfig::GetEntity(int id, int variant, int subtype);
 
-struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityConfig_Boss) {
+struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityConfig_Boss, EntityConfig_Baby) {
     // The EntityConfig_Entity's might be stored in some kind of tree structure?
     {{
         inline std::vector<EntityConfig_Player>* GetPlayers() { return (std::vector<EntityConfig_Player>*)((char*)this + 0x8); }
@@ -16,6 +16,13 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
 		        return nullptr;
 	        }
             return &this->GetPlayers()->at(ptype);
+        }
+        inline std::vector<EntityConfig_Baby>* GetBabies() { return (std::vector<EntityConfig_Baby>*)((char*)this + 0x14); }
+        inline EntityConfig_Baby* GetBaby(const int id) {
+            if (id < 0 || id >= (int)this->GetBabies()->size()) {
+		        return nullptr;
+	        }
+            return &this->GetBabies()->at(id);
         }
         inline std::vector<EntityConfig_Boss>* GetBosses() { return (std::vector<EntityConfig_Boss>*)((char*)this + 0x20); }
     }}

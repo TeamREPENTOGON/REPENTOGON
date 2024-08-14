@@ -10,6 +10,9 @@ __thiscall void Console::Print(const std_string &text, unsigned int color, unsig
 "558bec6aff68????????64a1????????5081ec14020000":
 __thiscall void Console::FillOmnicomplete();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec20a1????????33c58945??5657508d45??64a3????????8bf18b56":
+__thiscall void Console::SubmitInput(bool unk);
+
 "558bec83ec3c535657":
 __thiscall void Console::ProcessInput();
 
@@ -17,18 +20,17 @@ __thiscall void Console::ProcessInput();
 __thiscall void Console::Render();
 
 "558bec6aff68????????64a1????????5083ec54a1????????33c58945??535657508d45??64a3????????f30f115d":
-__thiscall std_deque_console_historyentry* Console::RenderHistory(Font *font, float unk, float unk2, bool unk3);
+__thiscall deque_console_historyentry* Console::RenderHistory(Font *font, float unk, float unk2, bool unk3);
 
 "558bec81ec0c010000a1????????33c58945??57":
 __thiscall void Console::SaveCommandHistory();
 
 struct Console depends (Console_HistoryEntry) {
 {{
-    inline int* GetState() { return (int*)((char*)this + 0x20); }
-	
-	inline std_deque_console_historyentry *GetHistory() { return (std_deque_console_historyentry*)((char*)this + 0x60); }
-	inline deque_string *GetCommandHistory() { return (deque_string*)((char*)this + 0x74); }
-	
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 
+int _state : 0x20;
+std_string _input : 0x3c;
+deque_console_historyentry _history : 0x60;
+deque_string _commandHistory : 0x74;
 } : 0x88;

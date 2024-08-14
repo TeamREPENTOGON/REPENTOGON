@@ -2,9 +2,30 @@
 
 #include <vector>
 #include <list>
+#include <fstream>
 
 #include "libzhl.h"
 
+namespace SigCache {
+	void FlushCache();
+	size_t FindCacheEntryBySig(size_t sighash);
+	void LoadCache();
+	
+	void WriteCacheEntry(size_t sighash, size_t address);
+	void InvalidateCache(size_t offset);
+	void ResetSigFile();
+
+	struct SigCacheEntry {
+		size_t _sighash;
+		size_t _address;
+	};
+
+	extern std::ofstream _writebuffer;
+	extern std::vector<SigCacheEntry> _entries;
+	extern std::string _sigcachepath;
+	extern bool IsLoaded;
+	extern bool IsIndirectMode;
+};
 class LIBZHL_API SigScan
 {
 public:
@@ -27,10 +48,12 @@ private:
 	static unsigned char *s_pLastStartAddress;
 	static unsigned char *s_pLastAddress;
 	static std::list<Match> s_lastMatches;
+	static size_t s_sigCounter;
 
 private:
 	size_t m_iLength;
 	unsigned char *m_sig;
+	size_t m_sighash;
 	unsigned char *m_mask;
 	std::list<Match> m_matches;
 
@@ -44,6 +67,7 @@ public:
 	SigScan(const char *sig);
 	~SigScan();
 
+	static void FlushCache();
 	bool Scan(Callback callback = NULL);
 
 	void *GetAddress() const {return m_pAddress;}

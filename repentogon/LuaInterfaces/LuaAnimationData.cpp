@@ -140,7 +140,7 @@ LUA_FUNCTION(Lua_AnimationDataGetAllLayers)
 LUA_FUNCTION(Lua_AnimationDataIsLoopingAnimation)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
-	lua_pushinteger(L, animationData->IsLoopingAnimation());
+	lua_pushboolean(L, animationData->IsLoopingAnimation());
 	return 1;
 }
 

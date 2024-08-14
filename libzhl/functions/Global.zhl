@@ -36,6 +36,7 @@ extern "C" {
 struct Console_HistoryEntry;
 struct History_HistoryItem;
 struct EntitySaveState;
+struct LootListEntry;
 
 struct EntityId {
     int type;
@@ -48,8 +49,12 @@ struct IntPair {
 };
 
 // When adding typedefs, remember to define them in ExtraTypes!
-typedef std::vector<Point> vector_Point;
-typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
+typedef std::vector<MusicEntry> vector_MusicEntry;
+typedef std::vector<SoundEffect> vector_SoundEffect;
+typedef std::vector<RoomConfig_Curse> vector_Curse;
+typedef std::deque<Point> deque_Point;
+typedef std::vector<ColorParams> vector_ColorParams;
+typedef std::deque<Console_HistoryEntry> deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
@@ -65,10 +70,13 @@ typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::vector<GridEntityDesc> vector_GridEntityDesc;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
-typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
+typedef std::vector<Entity_Player*> vector_EntityPlayerPtr;
 typedef std::vector<ItemConfig_Item*> vector_ItemPtr;
 typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 typedef std::vector<WeightedOutcomePicker_Outcome> vector_Outcome;
+typedef std::vector<BossPool_Entry> vector_BossPoolEntry;
+typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
+typedef std::vector<float> std_vector_float;
 
 struct PoolItem {
 	uint32_t _itemID;
@@ -76,17 +84,19 @@ struct PoolItem {
 	float _weight;
 	float _decreaseBy;
 	float _removeOn;
-	char _pad[4];
+        bool _isUnlocked;
+        bool _isSpecial;
+	char _pad[2];
 	
 	//std_string _itemName;
 };
 
 typedef std::vector<PoolItem> vector_PoolItem;
 // Something goofy seemed to be happening with std::vector<bool> in zhl
-// typedef std::vector<bool> vector_bool;
+typedef std::vector<bool> vector_bool;
 
-struct RoomConfig;
-typedef std::vector<RoomConfig*> RoomConfigPtrVector;
+struct RoomConfig_Room;
+typedef std::vector<RoomConfig_Room*> RoomConfigRoomPtrVector;
 
 struct SmeltedTrinketDesc {
 	short _trinketNum;
@@ -94,6 +104,7 @@ struct SmeltedTrinketDesc {
 };
 typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
 typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
+typedef std::deque<LootListEntry> deque_LootListEntry;
 
 }}
 
@@ -187,6 +198,40 @@ enum eRoomShape
     ROOMSHAPE_LBL,
     ROOMSHAPE_LBR,
     MAX_ROOMSHAPES
+};
+
+enum eRoomType {
+    ROOM_NULL = 0,
+    ROOM_DEFAULT = 1,
+    ROOM_SHOP = 2,
+    ROOM_ERROR = 3,
+    ROOM_TREASURE = 4,
+    ROOM_BOSS = 5,
+    ROOM_MINIBOSS = 6,
+    ROOM_SECRET = 7,
+    ROOM_SUPERSECRET = 8,
+    ROOM_ARCADE = 9,
+    ROOM_CURSE = 10,
+    ROOM_CHALLENGE = 11,
+    ROOM_LIBRARY = 12,
+    ROOM_SACRIFICE = 13,
+    ROOM_DEVIL = 14,
+    ROOM_ANGEL = 15,
+    ROOM_DUNGEON = 16,
+    ROOM_BOSSRUSH = 17,
+    ROOM_ISAACS = 18,
+    ROOM_BARREN = 19,
+    ROOM_CHEST = 20,
+    ROOM_DICE = 21,
+    ROOM_BLACK_MARKET = 22,
+    ROOM_GREED_EXIT = 23,
+    ROOM_PLANETARIUM = 24,
+    ROOM_TELEPORTER = 25,
+    ROOM_TELEPORTER_EXIT = 26,
+    ROOM_SECRET_EXIT = 27,
+    ROOM_BLUE = 28,
+    ROOM_ULTRASECRET = 29,
+    NUM_ROOMTYPES = 30
 };
 
 enum eDoorSlots 
@@ -1250,6 +1295,46 @@ enum LevelStage
         NUM_BACKWARDS_STAGES = 7 // Save stages up to Mausoleum II for the Ascent (7 stages)
 };
 
+enum eStbType {
+    STB_SPECIAL_ROOMS = 0,
+    STB_BASEMENT = 1,
+    STB_CELLAR = 2,
+    STB_BURNING_BASEMENT = 3,
+    STB_CAVES = 4,
+    STB_CATACOMBS = 5,
+    STB_FLOODED_CAVES = 6,
+    STB_DEPTHS = 7,
+    STB_NECORPOLIS = 8,
+    STB_DANK_DEPTHS = 9,
+    STB_WOMB = 10,
+    STB_UTERO = 11,
+    STB_SCARRED_WOMB = 12,
+    STB_BLUE_WOMB = 13,
+    STB_SHEOL = 14,
+    STB_CATHEDRAL = 15,
+    STB_DARK_ROOM = 16,
+    STB_CHEST = 17,
+    STB_UNUSED1 = 18,
+    STB_UNUSED2 = 19,
+    STB_UNUSED3 = 20,
+    STB_UNUSED4 = 21,
+    STB_UNUSED5 = 22,
+    STB_UNUSED6 = 23,
+    STB_THE_SHOP = 24,
+    STB_ULTRA_GREED = 25,
+    STB_THE_VOID = 26,
+    STB_DOWNPOUR = 27,
+    STB_DROSS = 28,
+    STB_MINES = 29,
+    STB_ASHPIT = 30,
+    STB_MAUSOLEUM = 31,
+    STB_GEHENNA = 32,
+    STB_CORPSE = 33,
+    STB_UNUSED7 = 34,
+    STB_HOME = 35,
+    STB_BACKWARDS = 36
+};
+
 static DWORD GetBaseAddress()
 {
         return (DWORD)GetModuleHandle(NULL);
@@ -1293,11 +1378,33 @@ enum BagOfCraftingPickup : uint8_t
 enum RailType : uint8_t {
     RAIL_HORIZONTAL = 0,
     RAIL_VERTICAL = 1,
-    RAIL_UP_RIGHT = 2,
-    RAIL_DOWN_RIGHT = 3,
-    RAIL_UP_LEFT = 4,
-    RAIL_DOWN_LEFT = 5,
-    RAIL_CROSSING = 6,
+    RAIL_DOWN_TO_RIGHT = 2,
+    RAIL_DOWN_TO_LEFT = 3,
+    RAIL_UP_TO_RIGHT = 4,
+    RAIL_UP_TO_LEFT = 5,
+    RAIL_CROSSROAD = 6,
+    RAIL_END_LEFT = 7,
+    RAIL_END_RIGHT = 8,
+    RAIL_END_UP = 9,
+    RAIL_END_DOWN = 10,
+    RAIL_HORIZONTAL_CART_LEFT = 16,
+    RAIL_HORIZONTAL_CART_RIGHT = 32,
+    RAIL_VERTICAL_CART_UP = 17,
+    RAIL_VERTICAL_CART_DOWN = 33,
+    RAIL_MINESHAFT_HORIZONTAL_1 = 80,
+    RAIL_MINESHAFT_HORIZONTAL_2 = 96,
+    RAIL_MINESHAFT_HORIZONTAL_3 = 112,
+    RAIL_MINESHAFT_VERTICAL_1 = 81,
+    RAIL_MINESHAFT_VERTICAL_2 = 97,
+    RAIL_MINESHAFT_VERTICAL_3 = 113,
+    RAIL_MINESHAFT_DOWN_TO_RIGHT_1 = 82,
+    RAIL_MINESHAFT_DOWN_TO_RIGHT_2 = 98,
+    RAIL_MINESHAFT_DOWN_TO_LEFT_1 = 83,
+    RAIL_MINESHAFT_DOWN_TO_LEFT_2 = 99,
+    RAIL_MINESHAFT_UP_TO_RIGHT_1 = 84,
+    RAIL_MINESHAFT_UP_TO_RIGHT_2 = 100,
+    RAIL_MINESHAFT_UP_TO_LEFT_1 = 85,
+    RAIL_MINESHAFT_UP_TO_LEFT_2 = 101,
     RAIL_DOOR_LEFT = 144,
     RAIL_DOOR_BOTTOM = 145,
     RAIL_DOOR_RIGHT = 160,
@@ -1365,6 +1472,185 @@ enum eItemPoolType {
     NUM_ITEMPOOLS = 31
 };
 
+enum EntityFlag : UINT64 {
+	FLAG_NO_STATUS_EFFECTS = 1,			// prevent freeze/poison/slow/charm/confusion/fear/burn
+	FLAG_NO_INTERPOLATE = 1 << 1,			// do not interpolate position
+	FLAG_APPEAR = 1 << 2,					// play appear animation after Init
+	FLAG_RENDER_FLOOR = 1 << 3,				// will be rendered to floor texture
+	FLAG_NO_TARGET = 1 << 4,					// will not be a target of NPCs or familiars
+	FLAG_FREEZE = 1 << 5,					// freezing effect
+	FLAG_POISON = 1 << 6,					// poison effect
+	FLAG_SLOW = 1 << 7,						// slowing (velocity)
+	FLAG_CHARM = 1 << 8,						// Charmed
+	FLAG_CONFUSION = 1 << 9,					// Confused
+	FLAG_MIDAS_FREEZE = 1 << 10,				// Midas frozen
+	FLAG_FEAR = 1 << 11,						// Fleeing in Fear (like Mom's Pad)
+	FLAG_BURN = 1 << 12,						// Caused by Fire Mind tears, works like poison except with Red color effect.
+	FLAG_RENDER_WALL = 1 << 13,				// will be rendered to wall texture
+	FLAG_INTERPOLATION_UPDATE = 1 << 14,		// entity is updating at 60 fps, and this is an odd frame
+	FLAG_APPLY_GRAVITY = 1 << 15,			// In sidescrolling room, this indicates that we're in a gravity zone.
+	FLAG_NO_BLOOD_SPLASH = 1 << 16,
+	FLAG_NO_REMOVE_ON_TEX_RENDER = 1 << 17,	// for FLAG_RENDER_FLOOR and FLAG_RENDER_WALL
+	FLAG_NO_DEATH_TRIGGER = 1 << 18,
+
+	// NOTE: Those next flags share the same bit but have a different meaning depending on entity type
+	FLAG_NO_SPIKE_DAMAGE = 1 << 19,			// EntityNPC: shouldn't take any damage from spikes
+	FLAG_LASER_POP = 1 << 19,					// EntityTear: Pop tear fired by a laser, should decelerate very quickly for the first few frames
+	FLAG_ITEM_SHOULD_DUPLICATE = 1 << 19,		// EntityPickup: item pedestal affected by Damocles, will be duplicated at the end of the current frame
+
+	FLAG_BOSSDEATH_TRIGGERED = 1 << 20,
+	FLAG_DONT_OVERWRITE = 1 << 21,			// Used in entityfactory to not remove this entity if there is no space left for new entity
+	FLAG_SPAWN_STICKY_SPIDERS = 1 << 22,		// Used by Sticky bombs to generate spiders on death
+	FLAG_SPAWN_BLACK_HP = 1 << 23,			// Used by black hp drop tear flag to drop a black hp on enemy death
+	FLAG_SHRINK = 1 << 24,					// God's flesh effect
+	FLAG_NO_FLASH_ON_DAMAGE = 1 << 25,		// Entity will not flash red when damaged
+	FLAG_NO_KNOCKBACK = 1 << 26,				// Bombs and farts have no knockback effects
+	FLAG_SLIPPERY_PHYSICS = 1 << 27,			// Standing on a slippery surface
+	FLAG_ADD_JAR_FLY = 1 << 28,				// Adds a fly to the jar when killed
+	FLAG_FRIENDLY = 1 << 29,					// Charmed and m_CharmCountdown<0
+	FLAG_NO_PHYSICS_KNOCKBACK = 1 << 30,		// No knockback from general collisions
+	FLAG_DONT_COUNT_BOSS_HP = 1 << 31,		// Do not count boss hp
+	FLAG_NO_SPRITE_UPDATE = (UINT64)1 << 32,			// Do not update sprite animation
+	FLAG_CONTAGIOUS = (UINT64)1 << 33,				// Used for Contagious item (if the enemy is infected)
+	FLAG_BLEED_OUT = (UINT64)1 << 34,					// Used for Mom's Razor
+	FLAG_HIDE_HP_BAR = (UINT64)1 << 35,				// Added for Ultra Greed so his HP can be hidden after he "dies" since his entity sticks around
+	FLAG_NO_DAMAGE_BLINK = (UINT64)1 << 36,			// Player was given a short period of invulnerability by something other than damage, don't blink
+	FLAG_PERSISTENT = (UINT64)1 << 37,				// Entity persists between rooms
+
+	FLAG_BACKDROP_DETAIL = (UINT64)1 << 38,			// Was spawned as a backdrop decoration, should be deleted if the current backdrop changes (due to Delirium)
+	FLAG_AMBUSH = (UINT64)1 << 39,					// Enemy was spawned by some sort of ambush (Greed Mode, challenge rooms), don't collide with the player for a few frames
+	FLAG_GLITCH = (UINT64)1 << 40,					// Glitched out, has different effects depending on the entity
+	FLAG_SPIN = (UINT64)1 << 41,						// Used by Spin to Win, causes a familiar to rapidly spin around its owner
+	FLAG_NO_REWARD = (UINT64)1 << 42,					// Doesn't spawn any kind of reward on death
+	FLAG_REDUCE_GIBS = (UINT64)1 << 43,				// Spawn less gibs on death
+	FLAG_TRANSITION_UPDATE = (UINT64)1 << 44,			// Updates during room/stage transitions
+	FLAG_NO_PLAYER_CONTROL = (UINT64)1 << 45,			// Cannot be controlled by players
+	FLAG_NO_QUERY = (UINT64)1 << 46,					// Hide from query results
+	FLAG_KNOCKED_BACK = (UINT64)1 << 47,				// Strong knockback: Forcefy moved in a specified direction for a short duration
+	FLAG_APPLY_IMPACT_DAMAGE = (UINT64)1 << 48,		// Inflicts damage upon colliding with enemies, takes damage when colliding with walls
+	FLAG_ICE_FROZEN = (UINT64)1 << 49,				// Frozen solid
+	FLAG_ICE = (UINT64)1 << 50,						// Flagged to become frozen on death
+	FLAG_MAGNETIZED = (UINT64)1 << 51,				// Magnetized: Attracts nearby enemies, projectiles and pickups
+	FLAG_BAITED = (UINT64)1 << 52,					// Baited: Is targeted by nearby enemies
+	FLAG_KILLSWITCH = (UINT64)1 << 53,				// Killed by a killswitch
+	FLAG_WEAKNESS = (UINT64)1 << 54,					// Weakness effect from Reverse Strength
+	FLAG_EXTRA_GORE = (UINT64)1 << 55,				// Spawns more gibs on death
+	FLAG_BRIMSTONE_MARKED = (UINT64)1 << 56,			// Marked by Azazel B, takes extra damage from Brimstone attacks
+	FLAG_HELD = (UINT64)1 << 57,						// Picked up by a player
+	FLAG_THROWN = (UINT64)1 << 58,					// Thrown by a player
+	FLAG_FRIENDLY_BALL = (UINT64)1 << 59,				// Used to detect enemies spawned by Friendly Ball
+
+	FLAG_STATUS_EFFECTS = (UINT64)(FLAG_FREEZE + FLAG_POISON + FLAG_SLOW + FLAG_CHARM + FLAG_CONFUSION + FLAG_MIDAS_FREEZE + FLAG_FEAR + FLAG_BURN + FLAG_SHRINK + FLAG_FRIENDLY + FLAG_BLEED_OUT + FLAG_ICE_FROZEN + FLAG_ICE + FLAG_MAGNETIZED + FLAG_BAITED + FLAG_WEAKNESS + FLAG_BRIMSTONE_MARKED),
+	FLAG_NON_STATUS_EFFECTS = (((UINT64)1 << 60) - 1) - FLAG_STATUS_EFFECTS,
+};
+
+enum eBossId {
+    BOSS_NULL = 0,
+    BOSS_MONSTRO = 1,
+    BOSS_LARRY_JR = 2,
+    BOSS_CHUB = 3,
+    BOSS_GURDY = 4,
+    BOSS_MONSTRO_II = 5,
+    BOSS_MOM = 6,
+    BOSS_SCOLEX = 7,
+    BOSS_MOMS_HEART = 8,
+    BOSS_FAMINE = 9,
+    BOSS_PESTILENCE = 10,
+    BOSS_WAR = 11,
+    BOSS_DEATH = 12,
+    BOSS_DUKE_OF_FLIES = 13,
+    BOSS_PEEP = 14,
+    BOSS_LOKI = 15,
+    BOSS_BLASTOCYST = 16,
+    BOSS_GEMINI = 17,
+    BOSS_FISTULA = 18,
+    BOSS_GISH = 19,
+    BOSS_STEVEN = 20,
+    BOSS_CHAD = 21,
+    BOSS_HEADLESS_HORSEMAN = 22,
+    BOSS_FALLEN = 23,
+    BOSS_SATAN = 24,
+    BOSS_IT_LIVES = 25,
+    BOSS_HOLLOW = 26,
+    BOSS_CARRION_QUEEN = 27,
+    BOSS_GURDY_JR = 28,
+    BOSS_HUSK = 29,
+    BOSS_BLOAT = 30,
+    BOSS_LOKII = 31,
+    BOSS_BLIGHTED_OVUM = 32,
+    BOSS_TERATOMA = 33,
+    BOSS_WIDOW = 34,
+    BOSS_MASK_OF_INFAMY = 35,
+    BOSS_WRETCHED = 36,
+    BOSS_PIN = 37,
+    BOSS_CONQUEST = 38,
+    BOSS_ISAAC = 39,
+    BOSS_BLUE_BABY = 40,
+    BOSS_DADDY_LONG_LEGS = 41,
+    BOSS_TRIACHNID = 42,
+    BOSS_HAUNT = 43,
+    BOSS_DINGLE = 44,
+    BOSS_MEGA_MAW = 45,
+    BOSS_GATE = 46,
+    BOSS_MEGA_FATTY = 47,
+    BOSS_CAGE = 48,
+    BOSS_MEGA_GURDY = 49,
+    BOSS_DARK_ONE = 50,
+    BOSS_ADVERSARY = 51,
+    BOSS_POLYCEPHALUS = 52,
+    BOSS_MR_FRED = 53,
+    BOSS_LAMB = 54,
+    BOSS_MEGA_SATAN = 55,
+    BOSS_GURGLINGS = 56,
+    BOSS_STAIN = 57,
+    BOSS_BROWNIE = 58,
+    BOSS_FORSAKEN = 59,
+    BOSS_LITTLE_HORN = 60,
+    BOSS_RAG_MAN = 61,
+    BOSS_ULTRA_GREED = 62,
+    BOSS_HUSH = 63,
+    BOSS_DANGLE = 64,
+    BOSS_TURDLINGS = 65,
+    BOSS_FRAIL = 66,
+    BOSS_RAG_MEGA = 67,
+    BOSS_SISTERS_VIS = 68,
+    BOSS_BIG_HORN = 69,
+    BOSS_DELIRIUM = 70,
+    BOSS_ULTRA_GREEDIER = 71,
+    BOSS_MATRIARCH = 72,
+    BOSS_PILE = 73,
+    BOSS_REAP_CREEP = 74,
+    BOSS_BEELZEBLUB = 75,
+    BOSS_WORMWOOD = 76,
+    BOSS_RAINMAKER = 77,
+    BOSS_VISAGE = 78,
+    BOSS_SIREN = 79,
+    BOSS_TUFF_TWINS = 80,
+    BOSS_HERETIC = 81,
+    BOSS_HORNFEL = 82,
+    BOSS_GREAT_GIDEON = 83,
+    BOSS_BABY_PLUM = 84,
+    BOSS_SCOURGE = 85,
+    BOSS_CHIMERA = 86,
+    BOSS_ROTGUT = 87,
+    BOSS_MOTHER = 88,
+    BOSS_MOM_MAUSOLEUM = 89,
+    BOSS_MOMS_HEART_MAUSOLEUM = 90,
+    BOSS_MIN_MIN = 91,
+    BOSS_CLOG = 92,
+    BOSS_SINGE = 93,
+    BOSS_BUMBINO = 94,
+    BOSS_COLOSTOMIA = 95,
+    BOSS_SHELL = 96,
+    BOSS_TURDLET = 97,
+    BOSS_RAGLICH = 98,
+    BOSS_DOGMA = 99,
+    BOSS_BEAST = 100,
+    BOSS_HORNY_BOYS = 101,
+    BOSS_CLUTCH = 102,
+    BOSS_CADAVRA = 103
+};
+
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
@@ -1378,6 +1664,12 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
+
+"558bec6aff68????????64a1????????5081ece4010000a1????????33c58945??5657508d45??64a3????????837d??01":
+__cdecl void IsaacStartup(int param_1, int param_2);
+
+"a1(????????)895d??8945":
+reference char* ModReferences; // ModReference data from RegisterMod 
 
 struct GlobalPost {
 {{

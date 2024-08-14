@@ -1,26 +1,10 @@
-#include <vector>
-#include <stdexcept>
-
-#include "ASMPatcher.hpp"
-#include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-
-struct FireProjectilesStorage {
-	std::vector<Entity_Projectile*> projectiles;
-	bool inUse = false;
-};
-
-thread_local FireProjectilesStorage projectilesStorage;
-
-static std::vector<Entity_Projectile*>& InitProjectileStorage() {
-	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
-	projectiles.clear();
-	projectilesStorage.inUse = true;
-	return projectiles;
-}
+#include "../../Patches/XMLData.h"
+#include "../../Patches/ASMPatches/ASMEntityNPC.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
@@ -221,7 +205,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
 	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
 	float fallSpeed = (float)luaL_optnumber(L, 4, -8.0f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, target, yOffset, fallSpeed), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, yOffset, target , fallSpeed), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -240,10 +224,10 @@ LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
 	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float velocity = (float)luaL_optnumber(L, 3, -24.0f);
-	float yOffset = (float)luaL_optnumber(L, 4, -8.0f);
+	float velocity = (float)luaL_optnumber(L, 3, -8.f);
+	float yOffset = (float)luaL_optnumber(L, 4, -24.f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, yOffset, target, velocity ), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -281,8 +265,8 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
 	}
 
 	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const int variant = luaL_optinteger(L, 4, 0);
-	const float yPosOffset = luaL_optnumber(L, 5, -10.0f);
+	const int variant = (int)luaL_optinteger(L, 4, 0);
+	const float yPosOffset = (float)luaL_optnumber(L, 5, -10.0f);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowRockSpider(origin, target, entity, variant, yPosOffset), lua::Metatables::ENTITY_NPC);
 
@@ -298,7 +282,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
 	}
 
 	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const float yPosOffset = luaL_optnumber(L, 4, -10.0f);
+	const float yPosOffset = (float)luaL_optnumber(L, 4, -10.0f);
 	bool big = lua::luaL_optboolean(L, 5, false);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowLeech(origin, entity, yPosOffset, target, big), lua::Metatables::ENTITY_NPC);
@@ -319,6 +303,82 @@ LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
 	return 0;
 }*/
 
+
+LUA_FUNCTION(Lua_IsBossColor) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//lua_pushnumber(L, npc->_bosscoloridx);
+	std::tuple idx = { npc->_type,npc->_variant };
+	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
+		vector<XMLAttributes> vecnodes = XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
+		if ((npc->_subtype > 0) && (vecnodes.size() > (npc->_subtype - 1))) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	lua_pushinteger(L, npc->_championRegenTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	if (npc->_type == 904) {
+		Entity_Player* player = npc->_sirenPlayerEntity;
+		if (player) {
+			lua::luabridge::UserdataPtr::push(L, npc->_sirenPlayerEntity, lua::Metatables::ENTITY_PLAYER);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_GetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus && entityPlus->isFlyingOverride.has_value()) {
+		lua_pushboolean(L, *entityPlus->isFlyingOverride);
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_SetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = lua::luaL_checkboolean(L, 2);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = std::nullopt;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const float defaultDamage = luaL_checknumber(L, 2);
+	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
+
+	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
+
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -343,6 +403,14 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
 		//{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
+		{ "GetFlyingOverride", Lua_EntityNPC_GetFlyingOverride },
+		{ "SetFlyingOverride", Lua_EntityNPC_SetFlyingOverride },
+		{ "ClearFlyingOverride", Lua_EntityNPC_ClearFlyingOverride },
+
+		{ "IsBossColor", Lua_IsBossColor },
+		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
+		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
+		{ "TrySplit", Lua_EntityNPC_TrySplit },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
@@ -359,67 +427,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowStrider", Lua_EntityNPC_ThrowStrider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowRockSpider", Lua_EntityNPC_ThrowRockSpider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowLeech", Lua_EntityNPC_ThrowLeech);
-}
-
-void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	for (Entity_Projectile* projectile : projectiles) {
-		projectilesStorage.projectiles.push_back(projectile);
-	}
-}
-
-void __stdcall FireBossProjectilesEx_Internal(Entity_Projectile* projectile) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	projectilesStorage.projectiles.push_back(projectile);
-}
-
-void PatchFireProjectiles() {
-	const char* signature = "33c92b55b4c1fa02894ddc8955e4";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI |
-		Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3 | Reg::XMM4 | Reg::XMM5, true);
-	patch.PreserveRegisters(registers);
-	// patch.MoveFromMemory(GPReg::EBP, -0x4C, GPReg::ESI, true);
-	patch.LoadEffectiveAddress(GPReg::EBP, -0x4C, GPReg::ESI);
-	patch.Push(GPReg::ESI);
-	patch.AddInternalCall(FireProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\x33\xc9\x2b\x55\xb4");
-	patch.AddRelativeJump((char*)addr + 0x5);
-
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void PatchFireBossProjectiles() {
-	const char* signature = "f30f104424388bf883c414";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::GP_REGISTERS_STACKLESS | Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3, true);
-	patch.PreserveRegisters(registers);
-	patch.Push(GPReg::EAX);
-	patch.AddInternalCall(FireBossProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\xF3\x0f\x10\x44\x24\x38");
-	patch.AddRelativeJump((char*)addr + 0x6);
-
-	sASMPatcher.PatchAt(addr, &patch);
 }

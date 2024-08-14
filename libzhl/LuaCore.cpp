@@ -468,6 +468,14 @@ namespace lua {
 	}
 
 	namespace callbacks {
+		bool CheckInteger(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			bool res = (int)lua_isinteger(L, -1);
+			lua_pop(L, 1);
+			return res;
+		}
+
 		int ToInteger(lua_State* L, int stackPosition) {
 			lua_pushinteger(L, stackPosition);
 			lua_gettable(L, -2);
@@ -721,6 +729,7 @@ namespace lua {
 		const char* BeamMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
 		const char* BlendModeMT = "BlendMode";
+		const char* BossPoolMT = "BossPool";
 		const char* CameraMT = "Camera";
 		const char* CapsuleMT = "Capsule";
 		const char* ChallengeMenuMT = "ChallengeMenu";
@@ -732,14 +741,17 @@ namespace lua {
 		const char* ColorModifierMT = "ColorModifier";
 		const char* CustomChallengeMenuMT = "CustomChallengeMenu";
 		const char* CutscenesMenuMT = "CutscenesMenu";
+		const char* GenericPromptMT = "GenericPrompt";
 		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* DailyChallengeMenuMT = "DailyChallengeMenu";
 		const char* DebugRendererMT = "DebugRenderer";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
+		const char* ColorParamsMT = "ColorParams";
 		const char* EntityConfigMT = "EntityConfig";
 		const char* EntityConfigEntityMT = "EntityConfigEntity";
 		const char* EntityConfigPlayerMT = "EntityConfigPlayer";
+		const char* EntityConfigBabyMT = "EntityConfigBaby";
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* FXParamsMT = "FXParams";
@@ -771,6 +783,7 @@ namespace lua {
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* NullFrameMT = "NullFrame";
 		const char* OptionsMenuMT = "OptionsMenu";
+		const char* PauseMenuMT = "PauseMenu";
 		const char* PersistentGameDataMT = "PersistentGameData";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
@@ -782,7 +795,8 @@ namespace lua {
 		const char* ProceduralItemManagerMT = "ProceduralItemManager";
 		const char* RngMT = "RNG";
 		const char* RoomMT = "Room";
-		const char* RoomConfigHolderMT = "RoomConfigHolder";
+		const char* RoomConfigSetMT = "RoomConfigSet";
+		const char* RoomConfigStageMT = "RoomConfigStage";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 		const char* RoomTransitionMT = "RoomTransition";
@@ -796,6 +810,10 @@ namespace lua {
 		const char* WeaponMT = "Weapon";
 		const char* WeightedOutcomePickerMT = "WeightedOutcomePicker";
 		const char* CostumeSpriteDescMT = "CostumeSpriteDesc";
+		const char* RailManagerMT = "RailManager";
+		const char* LootListMT = "LootList";
+		const char* LootListEntryMT = "LootListEntry";
+		const char* MinimapConfigMT = "MinimapConfig";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

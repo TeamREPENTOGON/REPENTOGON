@@ -10,14 +10,19 @@
 #include <sstream>
 
 namespace REPENTOGON {
-	static char titlebar[128];
 	static auto gameStartTime = std::chrono::high_resolution_clock::now();
 	static std::string optionsPath(std::string((char*)&g_SaveDataPath) + "Repentogon/");
+	extern char stocktitle[256];
+	extern char moddedtitle[256];
 
 	static void ChangeWindowTitle(const char* text) {
-		sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)%s", VERSION, text);
-		SetWindowTextA(GetActiveWindow(), titlebar);
+		sprintf(stocktitle, "The Binding of Isaac: Repentance (+ REPENTOGON %s)%s", VERSION, text);
+		SetWindowTextA(GetActiveWindow(), stocktitle);
 	}
+
+	static void SetStockWindowTitle() {
+		SetWindowTextA(GetActiveWindow(), stocktitle);
+	};
 
 	inline std::string FloatToStringPrecision(float number, int precision) {
 		std::stringstream ss;
@@ -42,6 +47,13 @@ namespace REPENTOGON {
 		char newText[128];
 		sprintf(newText, " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
 		ChangeWindowTitle(newText);
+	}
+
+	static std::string GetRGONGfxAbsolutePath(const char* relpath) {
+		char buffer[MAX_PATH];
+		DWORD length = GetCurrentDirectoryA(MAX_PATH, buffer);
+		std::string base = std::string(buffer);
+		return base + "/resources-repentogon/" + std::string(relpath);
 	}
 
 	static const char* GetRepentogonDataPath() {

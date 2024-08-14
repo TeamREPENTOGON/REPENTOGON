@@ -1,4 +1,5 @@
 #include "ASMPatcher.hpp"
+#include "../Patches/ASMPatches.h"
 #include "ConsoleMega.h"
 #include "CustomImGui.h"
 #include "GameOptions.h"
@@ -12,6 +13,7 @@
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
 #include "UnifontSupport.h"
+#include "Lang.h"
 
 #include <Windows.h>
 #include <format>
@@ -33,14 +35,13 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 HWND window;
 WNDPROC windowProc;
 bool menuShown = false;
+bool disableCloseWithESC = false;
 bool leftMouseClicked = false;
 bool settingsLoaded = false;
 std::string iniFilePath;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
 static bool shutdownInitiated = false;
-static bool imguiResized;
-static ImVec2 imguiSizeModifier;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
@@ -84,10 +85,10 @@ void AddWindowContextMenu(bool* pinned)
 {
 	if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 	{
-		ImGui::MenuItem("Pin Window", NULL, pinned);
+		ImGui::MenuItem(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW, NULL, pinned);
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) && ImGui::BeginTooltip()) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Pinning a window will keep it visible even after closing Dev Tools.");
+			ImGui::TextUnformatted(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC);
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
@@ -98,10 +99,12 @@ void AddWindowContextMenu(bool* pinned)
 
 ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
-	if (ImGui::Button("Change")) {
+	if (ImGui::Button(LANG.IMGUI_CHANGE_KEY_BTN_NAME)) {
 		wasPressed = true;
+		disableCloseWithESC = true;
 	}
 
+	ImGuiKey returnValue = ImGuiKey_None;
 	if (wasPressed && ImGui::BeginTooltip()) {
 		ImGui::SetWindowFocus();
 		int firstKey = static_cast<int>(ImGuiKey_Tab);
@@ -109,27 +112,28 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 		if (isController) {
 			firstKey = static_cast<int>(ImGuiKey_GamepadStart);
 			lastKey = static_cast<int>(ImGuiKey_GamepadRStickDown);
-			ImGui::Text("Press a button on your controller.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL);
 		}
 		else {
-			ImGui::Text("Press a key on your keyboard.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD);
 		}
-		ImGui::Text("Press ESC to cancel input");
+		ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_ESC);
 
 		std::list<ImGuiKey>* keys = GetPressedKeys();
 		for (auto key = keys->begin(); key != keys->end(); ++key) {
 			if (*key == static_cast<int>(ImGuiKey_Escape)) {
 				wasPressed = false;
-				return ImGuiKey_None;
+				disableCloseWithESC = false;
 			}
-			if (*key >= firstKey && *key <= lastKey) {
+			else if (*key >= firstKey && *key <= lastKey) {
 				wasPressed = false;
-				return *key;
+				disableCloseWithESC = false;
+				returnValue = *key;
 			}
 		}
 		ImGui::EndTooltip();
 	}
-	return ImGuiKey_None;
+	return returnValue;
 }
 
 // extended ImGui::Begin function to allow for custom savedata loading
@@ -265,6 +269,9 @@ bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
 	}
 }
 
+float WINMouseWheelMove_Vert = 0;
+float WINMouseWheelMove_Hori = 0;
+
 static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -273,12 +280,20 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 
 	// Enable the overlay using the grave key, disable using ESC
-	if (uMsg == WM_KEYDOWN) {
+	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
 
 		switch (wParam) {
 		case VK_OEM_3: {
 			menuShown = true;
+			break;
+		}
+
+		case VK_RETURN: {
+			if (menuShown && !console.inputBuf[0] && console.focused) {
+				menuShown = false;
+				return true;
+			}
 			break;
 		}
 
@@ -293,7 +308,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 	}
 
-	if (menuShown && *g_Game->GetConsole()->GetState() != 2) {
+	if (menuShown && g_Game->GetConsole()->_state != 2) {
 		// Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
 		std::vector keys = pressedKeys;
 		for (WPARAM key : keys) {
@@ -310,7 +325,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
 		// Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
-		*g_Game->GetConsole()->GetState() = 2;
+		g_Game->GetConsole()->_state = 2;
 
 		// Console should steal focus by default, if visible.
 		// Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
@@ -318,7 +333,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		console.reclaimFocus = true;
 	}
 
-	if (!menuShown && *g_Game->GetConsole()->GetState() != 0) {
+	if (!menuShown && g_Game->GetConsole()->_state != 0) {
 		std::vector keys = pressedKeys;
 		for (WPARAM key : keys) {
 			ImGui_ImplWin32_WndProcHandler(hWnd, WM_KEYUP, key, lParam);
@@ -330,9 +345,11 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			ImGui_ImplWin32_WndProcHandler(hWnd, WM_LBUTTONUP, 0, lParam);
 		}
 
-		*g_Game->GetConsole()->GetState() = 0;
+		g_Game->GetConsole()->_state = 0;
 	}
 
+	WINMouseWheelMove_Vert = 0;
+	WINMouseWheelMove_Hori = 0;
 
 	// Track what keys are being pressed so we can release them the next time ImGui state changes
 	switch (uMsg) {
@@ -354,6 +371,14 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_KEYUP: {
 		pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());
 
+		break;
+	}
+	case WM_MOUSEWHEEL: {
+		WINMouseWheelMove_Vert = (float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+		break;
+	}
+	case WM_MOUSEHWHEEL: {
+		WINMouseWheelMove_Hori = (float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
 		break;
 	}
 	}
@@ -399,11 +424,65 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
+
+
+
+//luamod error popup
+string luamoderrorcache = "";
+bool popupdismissed = false;
+bool popupscrolled = false;
+bool popupwasenterreleased = false;
+
+HOOK_METHOD(LuaEngine, LuamodCMD, (char* modname) -> char*) {
+	luamoderrorcache = "";
+	popupdismissed = false;
+	popupscrolled = false;
+	popupwasenterreleased = false;
+	char* success = super(modname);
+	std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
+	if ((!success) && (history->size() > 1)) {
+		luamoderrorcache = history->at(1)._text;
+	}
+	return success;
+}
+
+void RenderLuamodErrorPopup() {
+	if ((luamoderrorcache.length() > 0) && (!popupdismissed) && (menuShown)) {
+		ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
+		ImGui::OpenPopup("Luamod Error");
+		if (ImGui::BeginPopupModal("Luamod Error", NULL)) {
+				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Border)) {
+					ImGui::TextWrapped(luamoderrorcache.c_str());
+					if (!popupscrolled) {
+						ImGui::SetScrollHereY(1.0f);
+						popupscrolled = true; // Prevent scrolling every frame
+					}
+				}
+				ImGui::EndChild();
+				float buttonX = (ImGui::GetWindowWidth() - buttonWidth) * 0.5f;
+				ImGui::SetCursorPosX(buttonX);
+				if (ImGui::Button("Close") || ImGui::IsKeyPressed(ImGuiKey_Escape) || (ImGui::IsKeyPressed(ImGuiKey_Enter) && popupwasenterreleased)) {
+					popupdismissed = true;
+					ImGui::CloseCurrentPopup();
+					console.reclaimFocus = true;
+				}
+				popupwasenterreleased = !ImGui::IsKeyPressed(ImGuiKey_Enter);
+		}
+		ImGui::EndPopup();
+	}
+}
+//luamod error popup end
+
 ImFont* imFontUnifont = NULL;
 
-HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
-{
+void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
+
+	static float unifont_global_scale = 1;
+	WINMouseWheelMove_Vert = 0; // Windows doesn't call callbacks all the time, so this values is "sticking"
+	WINMouseWheelMove_Hori = 0;
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
@@ -419,6 +498,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		ImGui::GetStyle().FrameRounding = 4.0f; // rounded edges (default was 0)
 		ImGui::GetStyle().FramePadding.x = 6.0f; // more padding inside of objects to prevent ugly text clipping (default was 4)
 		ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
+		ImGui::GetStyle().DisplayWindowPadding = ImVec2(100.0f, 100.0f); // This should ensure that more of the window is visible when resizing.
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = NULL; // Disable vanilla .ini file management
@@ -429,7 +509,6 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		ImGui::CaptureMouseFromApp();
 		ImGui::CaptureKeyboardFromApp();
-
 		ImFontConfig cfg;
 		cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
 		cfg.OversampleH = 1;
@@ -441,20 +520,41 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		static UnifontRange unifont_ranges;
 
-		const int unifont_base_size = 13;
+		float font_base_size = 13;
 		cfg.MergeMode = false;
-		cfg.SizePixels = unifont_base_size;
-		imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
+		cfg.SizePixels = font_base_size;
+		if (!repentogonOptions.enableUnifont) {
+			imFontUnifont = io.Fonts->AddFontDefault(&cfg);
+			cfg.MergeMode = true;
+		}
+		else {
+			// the pixel perfect size for unifont is 16px
+			float size_config[5][2] = {
+				{13,1},
+				{16,1},
+				{14,1},//12px unifont can't tell 3 and 9, so use 14 here
+				{16,0.5},
+				{8,1}
+			};
+			font_base_size = size_config[repentogonOptions.unifontRenderMode][0];
+			unifont_global_scale = size_config[repentogonOptions.unifontRenderMode][1];
+
+			if (repentogonOptions.unifontRenderMode == UNIFONT_RENDER_NORMAL) {
+				imFontUnifont = io.Fonts->AddFontDefault(&cfg); // this font is better for english word, but only perfect in 13px
+			}
+			else {
+				cfg.SizePixels = font_base_size;
+				imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+			}
+			cfg.MergeMode = true;
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, unifont_ranges.Get());
+		}
 		ImGui::GetIO().FontDefault = imFontUnifont;
-		cfg.MergeMode = true;
-		if (repentogonOptions.enableUnifont)
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
 		// icon font
 		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
 		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
+		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
 	
-
 		imguiInitialized = true;
 		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
@@ -465,11 +565,14 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
-;
+	float scale_to_set = g_PointScale;
+	if (repentogonOptions.imGuiScale != 0) {
+		scale_to_set = repentogonOptions.imGuiScale;
+	};
 	if (g_PointScale > 0) {
-		imFontUnifont->Scale = g_PointScale;
-		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale;
-		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale;
+		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
+		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * scale_to_set * unifont_global_scale;
 	}
 		
 
@@ -486,24 +589,15 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		glBindTexture(GL_TEXTURE_2D, last_texture);
 	}
 	
-	imguiResized = false;
-	static ImVec2 oldSize = ImVec2(0, 0);
-	if ((oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) &&
-		(oldSize.x > 1 && oldSize.y > 1) &&
-		(ImGui::GetMainViewport()->Size.x > 1 && ImGui::GetMainViewport()->Size.y > 1)) { // no operator? (megamind stares intently at the camera)
-		imguiResized = true;
-		imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
-	}
-	oldSize = ImGui::GetMainViewport()->Size;
-
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
-				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
-				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
-				ImGui::MenuItem(ICON_FA_GEARS" Game Options", NULL, &gameOptionsWindow.enabled);
-				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
-				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
+			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
+			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
+				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
+				ImGui::MenuItem(LANG.BAR_LOG_VIEWER, NULL, &logViewer.enabled);
+				ImGui::MenuItem(LANG.BAR_GAME_OPTIONS, NULL, &gameOptionsWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_PERFORMANCE, NULL, &performanceWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_STYLE_EDITOR, NULL, &show_app_style_editor);
 				ImGui::EndMenu();
 			}
 			customImGui.DrawMenu();
@@ -513,27 +607,53 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		}
 	}
 
-	console.Draw(menuShown);
 	logViewer.Draw(menuShown);
 	performanceWindow.Draw(menuShown);
 	gameOptionsWindow.Draw(menuShown);
+	LANG.DrawReportWindow(menuShown);
 
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		WindowBeginEx("Dear ImGui Style Editor", &show_app_style_editor);
+		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();
 	}
 
+	// render console very late to make auto-focus work properly
+	console.Draw(menuShown);
+
+	RenderLuamodErrorPopup(); //above the konsol
+
+	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);
 
 	ImGui::Render();
 
 	// Draw the overlay
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
-	return super(hdc);
+
+/*
+* Initially, we were hooking wglSwapBuffers directly for ImGui. This worked, but wouldn't appear in screen sharing in Discord and streaming in OBS.
+* The only solution for this is to inject ImGui earlier than Discord and OBS do, and we need an assembly patch for that.
+* Manager::Render calls SwapBuffers three times- this call was the one that seemed to actually fire for me, but this might need more testing.
+* We push HWND to the stack twice. The first push will be taken as an argument for ImGui, and the second for SwapBuffers.
+*/
+void HookImGui() {
+	SigScan scanner("ffb0????????ffd75f");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
+	void* imguiAddr = &RunImGui;
+	ASMPatch patch;
+	patch.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+		.AddInternalCall(imguiAddr)
+		.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 HOOK_METHOD(Console, Render, ()->void)
@@ -562,8 +682,11 @@ HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
 	super();
 }
 
+
 extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
+extern float WINMouseWheelMove_Vert;  //I don't know if this needs to be added to the end of the file, but I don't see any errors
+extern float WINMouseWheelMove_Hori;

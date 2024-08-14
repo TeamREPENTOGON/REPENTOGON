@@ -1,6 +1,9 @@
 "558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??c707????????c747??00000000c747??00000000":
 __thiscall void Entity::constructor();
 
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf980bf????????00":
+__thiscall void Entity::destructor();
+
 /*
 "558bec518b45088d4d08": //bad signature
 static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, float Pitch);
@@ -54,7 +57,7 @@ __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 __thiscall uint32_t Entity::GetHitListIndex();
 
 "558bec83e4f883ec5c53568b35":
-__thiscall Entity_Effect* Entity::DoGroundImpactEffects(Vector * pos, Vector * velocity, float strength);
+static void Entity::DoGroundImpactEffects(Vector * pos, Vector * velocity, float strength<xmm3>);
 
 "558bec51568b75??f30f115d":
 __thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
@@ -63,13 +66,16 @@ __thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * tar
 __thiscall bool Entity::IgnoreEffectFromFriendly(EntityRef* source);
 
 "558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a03":
-__thiscall void Entity::MakeBloodPoof(Vector * pos, ColorMod * color, float size<xmm2>);
+__thiscall Entity_Effect * Entity::MakeBloodPoof(Vector * pos, ColorMod * color, float size<xmm2>);
 
 "558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a01":
-__thiscall void Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float size<xmm2>);
+__thiscall Entity_Effect * Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float size<xmm2>);
 
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition(bool unused);
+
+"8b81????????85c074??83f80374??83f80174??83f80274??32c0":
+__thiscall bool Entity::IsFlying();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
@@ -89,7 +95,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	}
 	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
 	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
-	inline bool* IsDead() { return (bool*)((char*)this + 0x16b); }
+	inline bool* IsDead() { return &this->_dead; }
 	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
 	inline int* GetPauseTime() { return (int*)((char*)this + 0x274); }
 	inline Vector* GetPosition() { return (Vector*)((char*)this + 0x294); }
@@ -103,6 +109,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     }
 
     inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
+	inline RNG GetDropRNG() { return *(RNG*)((char*)this + 0x334); }
 	
 	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
 	
@@ -116,16 +123,25 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		this->constructor();
 	}
 }} 
-    unsigned int _index : 0x20; //0x20
-    unsigned int _collisionIndex : 0x24; //0x24
-    unsigned int _type : 0x28; //0x28
-    unsigned int _variant : 0x2c; //0x2c
-    unsigned int _subtype : 0x30; //0x30
+    unsigned int _index : 0x20;
+    unsigned int _collisionIndex : 0x24;
+    unsigned int _type : 0x28;
+    unsigned int _variant : 0x2c;
+    unsigned int _subtype : 0x30;
+	unsigned int _spawnerType : 0x34;
+	unsigned int _spawnerVariant: 0x38;
 	ANM2 _sprite : 0x3c;
-    unsigned int _shadowSize : 0x150; //0x150   
-	unsigned int _flags[2] : 0x160;
-    bool _dead : 0x168; 
-    bool _visible : 0x169; // 0x169 
+    unsigned int _shadowSize : 0x150;
+	unsigned long long _flags : 0x160;
+    bool _valid : 0x168; 
+    bool _visible : 0x169;
+	bool _exists : 0x16a;
+	bool _dead : 0x16b;
+	// 0x184 is a boolean related to collisions.
+	unsigned short _entityExtraDataPtrUpperBytes : 0x186;
+	bool _collidesWithGrid : 0x188;
+	unsigned short _entityExtraDataPtrLowerBytes : 0x18a;
+	vector_ColorParams _colorParams : 0x1a4;
 	int _fireDamageCountdown : 0x208;
 	int _damageCountdown : 0x20c;
 	int _freezeCountdown : 0x210;
@@ -155,7 +171,9 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
+	Entity * _parent : 0x314;
 	Entity * _child : 0x318;
+	Entity * _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
 
     __vtable {
@@ -200,7 +218,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		"8d81????????81c1e4000000":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };
 } : 0x360;

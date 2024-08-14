@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/XMLData.h"
 
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
@@ -351,6 +352,30 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryFloorAlt)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityConfigEntityGetCustomTags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const std::set<std::string>& customtags = XMLStuff.EntityData->GetCustomTags(*entity);
+
+	lua_newtable(L);
+	int i = 0;
+	for (const std::string& tag : customtags) {
+		lua_pushinteger(L, ++i);
+		lua_pushstring(L, tag.c_str());
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushboolean(L, XMLStuff.EntityData->HasCustomTag(*entity, tag));
+	return 1;
+}
+
 /*
 * EntityConfigPlayer Functions
 */
@@ -696,6 +721,62 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetTaintedCounterpart)
 }
 
 /*
+* EntityConfigBaby Functions
+*/
+
+LUA_FUNCTION(Lua_EntityConfigGetBaby)
+{
+	const int id = (int)luaL_checkinteger(L, 1);
+
+	EntityConfig_Baby* babyConfig = g_Manager->GetEntityConfig()->GetBaby(id);
+
+	if (babyConfig == nullptr) {
+		lua_pushnil(L);
+	}
+	else {
+		EntityConfig_Baby** toLua = (EntityConfig_Baby**)lua_newuserdata(L, sizeof(EntityConfig_Baby*));
+		*toLua = babyConfig;
+		luaL_setmetatable(L, lua::metatables::EntityConfigBabyMT);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigGetMaxBabyID)
+{
+	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetBabies()->size() - 1);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetId)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushinteger(L, baby->id);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetName)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushstring(L, baby->name.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetSpritesheetPath)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushstring(L, baby->gfx.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetAchievementID)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushinteger(L, baby->achievementID);
+	return 1;
+}
+
+/*
 * Registration Stuff
 */
 
@@ -704,6 +785,8 @@ static void RegisterEntityConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetEntity", Lua_EntityConfigGetEntity);
 	lua::TableAssoc(L, "GetPlayer", Lua_EntityConfigGetPlayer);
 	lua::TableAssoc(L, "GetMaxPlayerType", Lua_EntityConfigGetMaxPlayerType);
+	lua::TableAssoc(L, "GetBaby", Lua_EntityConfigGetBaby);
+	lua::TableAssoc(L, "GetMaxBabyID", Lua_EntityConfigGetMaxBabyID);
 	lua_setglobal(L, lua::metatables::EntityConfigMT);
 }
 
@@ -743,7 +826,9 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "GetBestiaryOffset", Lua_EntityConfigEntityGetBestiaryOffset },
 		{ "GetBestiaryScale", Lua_EntityConfigEntityGetBestiaryScale },
 		{ "GetBestiaryFloorAlt", Lua_EntityConfigEntityGetBestiaryFloorAlt },
-		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts},
+		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts },
+		{ "GetCustomTags", Lua_EntityConfigEntityGetCustomTags },
+		{ "HasCustomTag", Lua_EntityConfigEntityHasCustomTag },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);
@@ -788,6 +873,17 @@ static void RegisterEntityConfigPlayer(lua_State* L) {
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigPlayerMT, lua::metatables::EntityConfigPlayerMT, functions);
 }
 
+static void RegisterEntityConfigBaby(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ "GetID", Lua_EntityConfigBabyGetId },
+		{ "GetName", Lua_EntityConfigBabyGetName },
+		{ "GetSpritesheetPath", Lua_EntityConfigBabyGetSpritesheetPath },
+		{ "GetAchievementID", Lua_EntityConfigBabyGetAchievementID },
+		{ NULL, NULL }
+	};
+	lua::RegisterNewClass(L, lua::metatables::EntityConfigBabyMT, lua::metatables::EntityConfigBabyMT, functions);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -799,4 +895,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityConfig(_state);
 	RegisterEntityConfigEntity(_state);
 	RegisterEntityConfigPlayer(_state);
+	RegisterEntityConfigBaby(_state);
 }

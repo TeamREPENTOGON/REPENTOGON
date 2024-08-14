@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
   - cron: "0 0 * * *"
+  pull_request:
+    branches:
+      - main
 
 env:
   BUILD_TYPE: Release
@@ -17,19 +20,15 @@ jobs:
       with:
         submodules: 'true'
         fetch-depth: 0
-          
-    - name: Generate changelog
+
+    - name: Generate version info
       run: |
-        echo "return [[" > ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        echo "]]" >> ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        echo "Resulting lua file:"
-        type ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
         echo "#pragma once" > ${{github.workspace}}/repentogon/Version.h
         $sha = git rev-parse --short HEAD
-        echo "#define VERSION `"$sha`"" >> ${{github.workspace}}/repentogon/Version.h
-        (gc ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog.lua
-
+        echo "#define VERSION `"nightly-$sha`"" >> ${{github.workspace}}/repentogon/Version.h
+        (gc ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "nightly-$sha" | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua
+        (gc ${{github.workspace}}/updater/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "nightly-$sha";' | Out-File -encoding ASCII ${{github.workspace}}/updater/Updater.cpp
+          
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
@@ -43,11 +42,14 @@ jobs:
         mkdir artifact
         mv resources artifact
         mv resources-repentogon artifact
-        mv dsound.dll artifact
+        if (Test-Path dsound.dll) { mv dsound.dll artifact }
+        if (Test-Path launcher.dll) { mv launcher.dll artifact }
+        if (Test-Path injector.exe) { mv injector.exe artifact }
         mv libzhl.dll artifact
         mv zhlREPENTOGON.dll artifact
-        mv Lua5.3.3r.dll artifact
+        mv Lua5.4.dll artifact
         mv freetype.dll artifact
+        cp ${{github.workspace}}/changelog.txt artifact/rgon_changelog.txt
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3

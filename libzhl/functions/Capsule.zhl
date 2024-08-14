@@ -1,13 +1,20 @@
 "558bec83e4f883ec0cf30f1045":
 __thiscall void Capsule::constructor(Vector* Position, Vector* Multiplier, float Rotation, float size<xmm2>);
 
+"558bec83e4f883ec0c8b55":
+__thiscall void Capsule::constructor2(Vector* Position, Vector* TargetPosition, float size<xmm3>);
+
 "558bec83e4f883ec58f30f103d":
 static cleanup bool Capsule::Collide(Capsule* Cap1<ecx>, Capsule* Cap2<edx>, Vector* retHitLocation);
 
 struct Capsule depends (Vector) { {{
 	
-	Capsule(Vector* pos, Vector* mult, float rot = 0.0f, float size = 0.0f) {
+	Capsule(Vector* pos, Vector* mult, float rot, float size) {
 		this->constructor(pos, mult, rot, size);
+	}
+	
+	Capsule(Vector* pos, Vector* targetPos, float size) {
+		this->constructor2(pos, targetPos, size);
 	}
 	
 	inline Vector* GetPosition() { return &_position; }

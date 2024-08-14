@@ -4,9 +4,6 @@
 [submodule "libs/zydis"]
 	path = libs/zydis
 	url = https://github.com/zyantific/zydis.git
-[submodule "libs/imgui"]
-	path = libs/imgui
-	url = https://github.com/ocornut/imgui
 [submodule "libs/NaturalSort"]
 	path = libs/NaturalSort
 	url = https://github.com/scopeInfinity/NaturalSort
@@ -32,3 +29,12 @@
 [submodule "libs/mINI"]
 	path = libs/mINI
 	url = https://github.com/pulzed/mINI
+[submodule "libs/curl"]
+	path = libs/curl
+	url = https://github.com/curl/curl
+[submodule "libs/cryptopp-cmake"]
+	path = libs/cryptopp-cmake
+	url = https://github.com/abdes/cryptopp-cmake
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = https://github.com/TeamREPENTOGON/imgui

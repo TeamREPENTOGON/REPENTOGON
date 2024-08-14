@@ -1,6 +1,59 @@
+"558bec83ec1056ff75??8bf18b0d":
+__thiscall void TemporaryEffects::AddCollectibleEffect(int coltype, bool addcostume, int count);
+
+"558bec8079??00565775??8b41??8b49??3bc174??8b7d??8b308b1683fa0174??83fa0374??83fa0475??397e??74??83c00c3bc175??33c0":
+__thiscall TemporaryEffect* TemporaryEffects::GetCollectibleEffect(int coltype);
+
+"558bec8079??0075??ff75":
+__thiscall int TemporaryEffects::GetCollectibleEffectNum(int coltype);
+
+"558bec8079??00565775??8b41??8b49??3bc174??8b7d??8b308b1683fa0174??83fa0374??83fa0475??397e??74??83c00c3bc175??5f":
+__thiscall bool TemporaryEffects::HasCollectibleEffect(int coltype);
+
+"558bec83ec0c56ff75":
+__thiscall void TemporaryEffects::RemoveCollectibleEffect(int coltype, int count);
+
+
+"558bec8b55??83ec1056":
+__thiscall void TemporaryEffects::AddNullEffect(int nulleffectid, bool addcostume, int count);
+
+"558BEC8079??005675??8B41??8B49??3BC174??8B75??8B10833A0075??3972??74??83C00C3BC175??33C05E5DC20400??????????????????????????????558bec8079??0075??ff75":
+__thiscall TemporaryEffect* TemporaryEffects::GetNullEffect(int nulleffectid);
+
+"558bec8079??005675??8b41??8b49??3bc174??8b75??8b10833a0075??3972??74??83c00c3bc175??33c05e5dc204008b40":
+__thiscall int TemporaryEffects::GetNullEffectNum(int nulleffectid);
+
+"558bec8079??005675??8b41??8b49??3bc174??8b75??8b10833a0075??3972??74??83c00c3bc175??32c0":
+__thiscall bool TemporaryEffects::HasNullEffect(int nulleffectid);
+
+"558bec83e4f88b55??83ec0c5685d2":
+__thiscall void TemporaryEffects::RemoveNullEffect(int nulleffectid, int count);
+
+
+"558beca1????????83ec108b55":
+__thiscall void TemporaryEffects::AddTrinketEffect(int trinkettype, bool addcostume, int count);
+
+"558BEC8079??005675??8B41??8B49??3BC174??8B75??8B10833A0275??3972??74??83C00C3BC175??33C05E5DC20400??????????????????????????????558bec8079??0075??8b41??8b49??3bc174??8b55??391074??83c00c3bc175??33c0":
+__thiscall TemporaryEffect* TemporaryEffects::GetTrinketEffect(int trinkettype);
+
+"558bec8079??005675??8b41??8b49??3bc174??8b75??8b10833a0275??3972??74??83c00c3bc175??33c05e5dc204008b40":
+__thiscall int TemporaryEffects::GetTrinketEffectNum(int trinkettype);
+
+"558bec8079??005675??8b41??8b49??3bc174??8b75??8b10833a0275??3972??74??83c00c3bc175??32c0":
+__thiscall bool TemporaryEffects::HasTrinketEffect(int trinkettype);
+
+"558beca1????????83ec0c8b55":
+__thiscall void TemporaryEffects::RemoveTrinketEffect(int trinkettype, int count);
+
+
+"558bec5356578bf9807f??0075":
+__thiscall void TemporaryEffects::AddEffect(TemporaryEffect* Effect, bool addcostume, int count);
+
+
 struct TemporaryEffects
 {
     vector_TemporaryEffect _effects : 0x4;
-    int _disabled: 0x14; // Should be bool though...
-    Entity_Player* _player : 0x18;
-} : 0x1c;
+    bool _shouldEvaluateCache : 0x10;
+    bool _disabled : 0x11;
+    Entity_Player* _player : 0x14;
+} : 0x18;

@@ -10,6 +10,9 @@ __thiscall void Music::PlayJingle(int musicid, int unusedInt, bool unusedBool);
 "558bec5651":
 __thiscall void Music::Fadein(unsigned int Id, float Volume, float FadeRate);
 
+"558bec690184010000":
+__thiscall void Music::Fadeout(float FadeRate);
+
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b89c010100":
 __thiscall void Music::LoadConfig(char* xmlpath,bool ismod);
 
@@ -19,10 +22,42 @@ __thiscall void Music::DisableLayer(int id);
 "558bec83e4f851568bf18b4d":
 __thiscall void Music::EnableLayer(int id, bool instant);
 
-struct Music {
+"558bec568bf18b4d??8bd183e11f":
+__thiscall bool Music::IsLayerEnabled(unsigned int id);
+
+"53691984010000565703d98b4b??85c974??8b018b40??ffd084c074??8b4b??85c974??8b01ff50??66c743??0001":
+__thiscall void Music::Pause();
+
+"6901840100008d49":
+__thiscall void Music::ResetPitch();
+
+"53691984010000565703d98b4b??85c974??8b018b40??ffd084c074??8b4b??85c974??8b01ff50??66c743??0100":
+__thiscall void Music::Resume();
+
+"69118401000056":
+__thiscall void Music::UpdateVolume();
+
+"558beca1????????f30f1045":
+__thiscall void Music::VolumeSlide(float TargetVolume, float FadeRate);
+
+struct Music depends (MusicEntry) {
 {{
 	inline void StopJingle() {
 		*(int*)((char*)this + 0x348) = 0;
 		*(int*)((char*)this + 0x364) = -99;
 	};
-}} } : 0x368;
+	
+	  bool LIBZHL_API ValidateMusicID(int id, int& max);
+}} 
+	unsigned int _currentStream : 0x0;
+	// i'll add StreamSet later
+	unsigned int _currentId : 0x30c;
+	unsigned int _queuedId : 0x310;
+	float _pitch : 0x314;
+	float _targetPitch : 0x318;
+	vector_MusicEntry _entries : 0x31c;
+	bool _enabled : 0x328;
+	// and Stream
+	float _jingleVolumeMaybe : 0x360;
+	int _jingleCountdownMaybe : 0x364;
+} : 0x368;

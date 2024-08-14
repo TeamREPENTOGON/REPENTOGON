@@ -1,3 +1,9 @@
+"558bec81ec8c000000a1":
+__thiscall void Menu_CustomChallenge::Render();
+
+"558bec6aff68????????64a1????????5083ec24a1????????33c58945??535657508d45??64a3????????8bf98b35":
+__thiscall void Menu_CustomChallenge::Update();
+
 struct Menu_CustomChallenge depends (ANM2) {
 {{
 	inline ANM2* GetCustomChallengeSprite() { return &this->CustomChallengeSprite; }

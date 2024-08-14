@@ -11,7 +11,8 @@ struct ItemOverlay depends (ANM2) {
 	inline int* GetDelay() { return &_delay; } 
 	inline Entity_Player* GetPlayer() { &_player; }
 }}
-
+	
+	int _state :0x0;
 	int _overlayID : 0x4;
 	ANM2 _sprite : 0x8;
 	int _delay : 0x1144;

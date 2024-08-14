@@ -10,6 +10,9 @@ __thiscall void MenuManager::Init();
 "558bec83e4f881ece0000000a1????????56":
 __thiscall void MenuManager::Render();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec1856578b3d":
+__thiscall void MenuManager::Update();
+
 "558bec83ec68a1????????33c58945??56578bf9807f??00":
 __thiscall void MenuManager::RenderButtonLayout();
 
@@ -67,8 +70,7 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
     Seeds _seedsObject : 0x4b8;
     Menu_Title _menuTitle : 0x514;
     Menu_Save _menuSave : 0x634;
-    GenericPrompt GenericPopup_genericPrompt : 0xcc8;
-    char _UNUSED80ee0[204] : 0x80ee0;
+    char _UNUSED80ee0[192] : 0x80eec;
     Menu_Game _menuGame : 0x80fac;
     Menu_DailyChallenge _menuDailyChallenge : 0x8130c;
     Menu_Character _menuCharacter : 0x101c00;
@@ -88,4 +90,6 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
 	ColorModState _targetColorModState : 0x10e0f8; // 0x10e0f8
 	ColorModState _lerpColorModState : 0x10e110; // 0x10e110
 	ANM2 _flySprite : 0x10e138; //0x10e138
+	float _scrollinterpolationX : 0x10e128;
+	float _scrollinterpolationY : 0x10e12c;
 } : 0x10e24c;

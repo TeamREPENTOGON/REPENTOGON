@@ -5,6 +5,7 @@
 #include "natural_sort.hpp"
 #include "LuaCore.h"
 #include "UnifontSupport.h"
+#include "Lang.h"
 
 #include <sstream>
 #include <cctype>
@@ -12,7 +13,7 @@
 
 extern int handleWindowFlags(int flags);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
+extern bool menuShown;
 extern ImVec2 imguiSizeModifier;
 
 struct ConsoleCommand {
@@ -118,8 +119,11 @@ struct ConsoleMega : ImGuiWindowObject {
     std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
+    bool commandFromHistory = false;
     bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
+    bool focused = false;
+    bool commandNeedScrollChange = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -141,6 +145,7 @@ struct ConsoleMega : ImGuiWindowObject {
         DELIRIOUS,
         PLAYER,
 		ACHIEVEMENT,
+        MODFOLDER,
         CUSTOM
     };
 
@@ -158,60 +163,6 @@ struct ConsoleMega : ImGuiWindowObject {
         enabled = true;
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
-		
-		RegisterCommand("achievement", "UnLocks achievements", "UnLocks achievements", true, ACHIEVEMENT);
-        RegisterCommand("addplayer", "Spawns a new player", "Spawns a new player entity. On default, it spawns Isaac with controller ID 0.\nPlayer ID -1 lets you take control of a random enemy in the room.\nExample:\n(addplayer 7 1) Spawns Azazel and can be controlled with the second input device (controller 1 in most cases)", false, PLAYER);
-        RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
-        RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
-        RegisterCommand("clearcache", "Clear the sprite cache", "Clears the game's sprite cache. This can be useful for trying to deal with memory issues.\nThis also has the side effect of reloading modded sprites without needing a full game restart.", true);
-        RegisterCommand("clearseeds", "Clear easter egg seeds in the current run", "Clears any \"special\" seed effects in the current run.\nExample:\nThe seed effect GFVE LLLL is applied in a run. Running clearseeds will remove this effect.", false);
-        RegisterCommand("combo", "Give items from a specified pool", "Gives a specified number of items from a specified item pool.\nExample:\n(combo 4.6) will give six random items from the Angel item pool.\nNo, I don't know why they made a bespoke ID system for this one (1) command.", false, COMBO);
-        RegisterCommand("copy", "Copy previous commands to clipboard", "Copies a specified amount of previous console commands to the system clipboard.\nExample:\n(copy 3) will copy the previous three commands.", true);
-        RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
-        RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", true, CURSE);
-        RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true, CUTSCENE);
-        RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
-        RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false, DELIRIOUS);
-        RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
-        RegisterCommand("forceroom", "Force a room to be used in level generator", "Allows to set any room as \"forced room\". Said room gets weight of 1000, making it more likely to appear on floor with reseed command.", false, GOTO);
-		RegisterCommand("fullrestart", "Closes and reopens the game", "Closes and reopens the game", true);
-        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
-        RegisterCommand("giveitem2", "Give player 2 items, trinkets, cards, and pills", "Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.", false, ITEM, { "g2" });
-        RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false, GOTO);
-        RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false, GRID);
-        RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
-        RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
-		RegisterCommand("lockachievement", "Locks achievements", "Locks achievements", true,ACHIEVEMENT);
-        RegisterCommand("lua", "Run Lua code", "Runs the given Lua code immediately. Anything which would work in a standard file will work here.\nThis command also has shorthand which is just (l).", true);
-        RegisterCommand("luamem", "Display lua memory usage", "Displays the currently used RAM of LUA.", true);
-        RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
-        RegisterCommand("luareset", "[EXPERIMENTAL] Reset the Lua context", "Destroys the current Lua context and recreates it from scratch. This is mostly a backend command meant to help sync up networked play.\nThis has Unforeseen Consequences if done in-game, please only do this on the menu unless you know what you're doing. Please?", true);
-        RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
-        RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO, {"m"});
-        RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false, METRO);
-        RegisterCommand("netdelay", "Change network delay", "Changes network delay to a specified value. Can be useful if you see stutters during online gameplay.", true);
-        RegisterCommand("netstart", "Initialize online coop", "Connects player(s) with specified Steam ID to your game (online multiplayer). Allows up to 4 players.\nExample:\nnetstart <steam_user_id1> <steam_user_id2>", true);
-        RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true, SFX);
-        RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
-        RegisterCommand("profstop", "[BROKEN] Stop profiling", "Supposed to stop profiling but profiling is broken because we can't have nice things.", true);
-        RegisterCommand("remove", "Remove an item", "Removes an item from the player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM, {"r"});
-        RegisterCommand("remove2", "Remove an item", "Removes an item from the second player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM, { "r2" });
-        RegisterCommand("reloadfx", "Reload floor overlays", "Reloads the current floor's effects.", false);
-        RegisterCommand("reloadshaders", "Reload in-game shaders", "Reloads any currently loaded shaders.", false);
-        RegisterCommand("reloadwisps", "Reload wisps", "Reloads wisps spawned by Book of Virtues and locusts spawned by Abyss.", false);
-        RegisterCommand("repeat", "Repeat prior commands", "Repeats the previously entered command X amount of times.\nExample:\n(giveitem 1) is used to give the player The Sad Onion. (repeat 5) is then used to give the player The Sad Onion five more times.", true);
-        RegisterCommand("reseed", "Reseed the current floor", "Reseeds the current floor, generating a brand new layout for it.", false);
-        RegisterCommand("restart", "Restart on a new run", "Restarts the game on a new run. Accepts an optional argument which is the character ID.\nExample:\n(restart 3) starts a new run as Judas.", false, PLAYER);
-        RegisterCommand("restock", "Restocks all shops", "Restocks all shops.", false);
-        RegisterCommand("rewind", "Reset game to last room state", "Makes the game forget about the changes in current room and teleports Isaac back to previous room. Can be used to fix desynchronization issues if you use this command in a room where it happened. (Glowing Hourglass-like effect)", false);
-        RegisterCommand("seed", "Start a new run with the given seed", "Starts a new run with the given seed.\nExample:\n(seed N1CA L1SY) will start a new run with the seed N1CA L1SY.", false);
-        RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false, ENTITY);
-        RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
-        RegisterCommand("time", "Print game time", "Prints the total amount of time passed on the run.", false);
-        RegisterCommand("testbosspool", "Print list of bosses for current floor", "Prints a list of boss names and percentage chance (100%=10000) for current floor.", false);
-		
-        
-
 
         // Note: these are *functionally* identical, but not *literally* identical to the vanilla macros.
         // The vanilla macros reference items by name, which works for vanilla but not in a modded scenario where item names can change.
@@ -229,6 +180,61 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterMacro("ug", std::vector<std::string>{ "stage 11a", "goto s.boss.6000" });
         RegisterMacro("ugg", std::vector<std::string>{ "stage 11a", "goto s.boss.6000", "g c1", "g c1", "g c341", "g c341", "g c153", "g c51", "g c18", "g c190", "debug 3"});
 
+    }
+
+    void InitAfterLanguageAvaliable() {
+        windowName = LANG.CONSOLE_WINDOW_NAME;
+        
+        RegisterCommand("achievement", LANG.CONSOLE_ACHIEVEMENT_DESC, LANG.CONSOLE_ACHIEVEMENT_HELP, true, ACHIEVEMENT);
+        RegisterCommand("addplayer", LANG.CONSOLE_ADD_PLAYER_DESC, LANG.CONSOLE_ADD_PLAYER_HELP, false, PLAYER);
+        RegisterCommand("challenge", LANG.CONSOLE_CHALLENGE_DESC, LANG.CONSOLE_CHALLENGE_HELP, false, CHALLENGE);
+        RegisterCommand("clear", LANG.CONSOLE_CLEAR_DESC, LANG.CONSOLE_CLEAR_HELP, true);
+        RegisterCommand("clearcache", LANG.CONSOLE_CLEARCACHE_DESC, LANG.CONSOLE_CLEARCACHE_HELP, true);
+        RegisterCommand("clearseeds", LANG.CONSOLE_CLEARSEEDS_DESC, LANG.CONSOLE_CLEARSEEDS_HELP, false);
+        RegisterCommand("combo", LANG.CONSOLE_COMBO_DESC, LANG.CONSOLE_COMBO_HELP, false, COMBO);
+        RegisterCommand("copy", LANG.CONSOLE_COPY_DESC, LANG.CONSOLE_COPY_HELP, true);
+        RegisterCommand("costumetest", LANG.CONSOLE_COSTUMETEST_DESC, LANG.CONSOLE_COSTUMETEST_HELP, false);
+        RegisterCommand("curse", LANG.CONSOLE_CURSE_DESC, LANG.CONSOLE_CURSE_HELP, true, CURSE);
+        RegisterCommand("cutscene", LANG.CONSOLE_CUTSCENE_DESC, LANG.CONSOLE_CUTSCENE_HELP, true, CUTSCENE);
+        RegisterCommand("debug", LANG.CONSOLE_DEBUG_DESC, LANG.CONSOLE_DEBUG_HELP, false, DEBUG_FLAG);
+        RegisterCommand("delirious", LANG.CONSOLE_DELIRIOUS_DESC, LANG.CONSOLE_DELIRIOUS_HELP, false, DELIRIOUS);
+        RegisterCommand("eggs", LANG.CONSOLE_EGGS_DESC, LANG.CONSOLE_EGGS_HELP, true);
+        RegisterCommand("forceroom", LANG.CONSOLE_FORCEROOM_DESC, LANG.CONSOLE_FORCEROOM_HELP, false, GOTO);
+        RegisterCommand("fullrestart", LANG.CONSOLE_FULLRESTART_DESC, LANG.CONSOLE_FULLRESTART_HELP, true);
+        RegisterCommand("giveitem", LANG.CONSOLE_GIVEITEM_DESC, LANG.CONSOLE_GIVEITEM_HELP, false, ITEM, { "g" });
+        RegisterCommand("giveitem2", LANG.CONSOLE_GIVEITEM2_DESC, LANG.CONSOLE_GIVEITEM2_HELP, false, ITEM, { "g2" });
+        RegisterCommand("goto", LANG.CONSOLE_GOTO_DESC, LANG.CONSOLE_GOTO_HELP, false, GOTO);
+        RegisterCommand("gridspawn", LANG.CONSOLE_GRIDSPAWN_DESC, LANG.CONSOLE_GRIDSPAWN_HELP, false, GRID);
+        RegisterCommand("help", LANG.CONSOLE_HELP_DESC, LANG.CONSOLE_HELP_HELP, true);
+        RegisterCommand("listcollectibles", LANG.CONSOLE_LISTCOLLECTIBLES_DESC, LANG.CONSOLE_LISTCOLLECTIBLES_HELP, false);
+        RegisterCommand("lockachievement", LANG.CONSOLE_LOCKACHIEVEMENT_DESC, LANG.CONSOLE_LOCKACHIEVEMENT_HELP, true, ACHIEVEMENT);
+        RegisterCommand("lua", LANG.CONSOLE_LUA_DESC, LANG.CONSOLE_LUA_HELP, true);
+        RegisterCommand("luamem", LANG.CONSOLE_LUAMEM_DESC, LANG.CONSOLE_LUAMEM_HELP, true);
+        RegisterCommand("luamod", LANG.CONSOLE_LUAMOD_DESC, LANG.CONSOLE_LUAMOD_HELP, true, MODFOLDER);
+        RegisterCommand("luareset", LANG.CONSOLE_LUARESET_DESC, LANG.CONSOLE_LUARESET_HELP, true);
+        RegisterCommand("luarun", LANG.CONSOLE_LUARUN_DESC, LANG.CONSOLE_LUARUN_HELP, true);
+        RegisterCommand("macro", LANG.CONSOLE_MACRO_DESC, LANG.CONSOLE_MACRO_HELP, false, MACRO, { "m" });
+        RegisterCommand("metro", LANG.CONSOLE_METRO_DESC, LANG.CONSOLE_METRO_HELP, false, METRO);
+        RegisterCommand("netdelay", LANG.CONSOLE_NETDELAY_DESC, LANG.CONSOLE_NETDELAY_HELP, true);
+        RegisterCommand("netstart", LANG.CONSOLE_NETSTART_DESC, LANG.CONSOLE_NETSTART_HELP, true);
+        RegisterCommand("playsfx", LANG.CONSOLE_PLAYSFX_DESC, LANG.CONSOLE_PLAYSFX_HELP, true, SFX);
+        RegisterCommand("prof", LANG.CONSOLE_PROF_DESC, LANG.CONSOLE_PROF_HELP, true);
+        RegisterCommand("profstop", LANG.CONSOLE_PROFSTOP_DESC, LANG.CONSOLE_PROFSTOP_HELP, true);
+        RegisterCommand("remove", LANG.CONSOLE_REMOVE_DESC, LANG.CONSOLE_REMOVE_HELP, false, ITEM, { "r" });
+        RegisterCommand("remove2", LANG.CONSOLE_REMOVE2_DESC, LANG.CONSOLE_REMOVE2_HELP, false, ITEM, { "r2" });
+        RegisterCommand("reloadfx", LANG.CONSOLE_RELOADFX_DESC, LANG.CONSOLE_RELOADFX_HELP, false);
+        RegisterCommand("reloadshaders", LANG.CONSOLE_RELOADSHADERS_DESC, LANG.CONSOLE_RELOADSHADERS_HELP, false);
+        RegisterCommand("reloadwisps", LANG.CONSOLE_RELOADWISPS_DESC, LANG.CONSOLE_RELOADWISPS_HELP, false);
+        RegisterCommand("repeat", LANG.CONSOLE_REPEAT_DESC, LANG.CONSOLE_REPEAT_HELP, true);
+        RegisterCommand("reseed", LANG.CONSOLE_RESEED_DESC, LANG.CONSOLE_RESEED_HELP, false);
+        RegisterCommand("restart", LANG.CONSOLE_RESTART_DESC, LANG.CONSOLE_RESTART_HELP, false, PLAYER);
+        RegisterCommand("restock", LANG.CONSOLE_RESTOCK_DESC, LANG.CONSOLE_RESTOCK_HELP, false);
+        RegisterCommand("rewind", LANG.CONSOLE_REWIND_DESC, LANG.CONSOLE_REWIND_HELP, false);
+        RegisterCommand("seed", LANG.CONSOLE_SEED_DESC, LANG.CONSOLE_SEED_HELP, false);
+        RegisterCommand("spawn", LANG.CONSOLE_SPAWN_DESC, LANG.CONSOLE_SPAWN_HELP, false, ENTITY);
+        RegisterCommand("stage", LANG.CONSOLE_STAGE_DESC, LANG.CONSOLE_STAGE_HELP, false, STAGE);
+        RegisterCommand("time", LANG.CONSOLE_TIME_DESC, LANG.CONSOLE_TIME_HELP, false);
+        RegisterCommand("testbosspool", LANG.CONSOLE_TESTBOSSPOOL_DESC, LANG.CONSOLE_TESTBOSSPOOL_HELP, false);
     }
 
     const ConsoleCommand* GetCommandByName(std::string& commandName) {
@@ -252,12 +258,16 @@ struct ConsoleMega : ImGuiWindowObject {
         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
         const ConsoleCommand* command = GetCommandByName(commandName);
         // redirect "giveitem" command to allow for trinket, card and pill being given using their name.
-        if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()))
+        if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()) && cmdlets[1].size() >= 2)
         {
-          AutocompleteEntry firstEntry = autocompleteBuffer.front();
-          if (firstEntry.autocompleteText.at(firstEntry.autocompleteText.find(" ")+1) != 'c')
+          
+          char firstLetter = cmdlets.at(1).at(0);
+          char secondLetter = cmdlets.at(1).at(1);
+          // check if the second part of the command is not of format [letter][digit]
+          if (!(isalpha(firstLetter) && isdigit(secondLetter)))
           {
-            // if first autocomplete entry is not a collectible, replace console input with autocomplete entry.
+            // replace console input (the name of an item to give) with autocomplete entry (its shorthand + id).
+            AutocompleteEntry firstEntry = autocompleteBuffer.front();
             return firstEntry.autocompleteText;
           }
         }
@@ -270,21 +280,37 @@ struct ConsoleMega : ImGuiWindowObject {
 
         std::string printin = std::string(">") + input + "\n";
         std::string out;
+        bool clear = false;
 
-        if (!console->GetCommandHistory()->empty()) {
-            std::string lastCommand = console->GetCommandHistory()->front();
-            if (lastCommand != input)
-                console->GetCommandHistory()->push_front(input);
+        if (console->_commandHistory.size() > 1 && console->_commandHistory.front() == input && !commandFromHistory)
+            clear = true;
+
+        // For whatever asinine reason, the vanilla console makes a distinction between commands typed out and commands entered from history.
+        // Commands sent from history are entirely purged from previous history first, so they don't duplicate.
+        // We need to be careful to always keep at least one command in history, or the game is Not Happy.
+        if (commandFromHistory) {
+            std::deque<std::string> newHistory;
+
+            for (std::string command : console->_commandHistory) {
+                if (command != input) {
+                    newHistory.push_back(command);
+                }
+            }
+
+            if (!newHistory.empty())
+                console->_commandHistory = newHistory;
         }
-        else {
-            console->GetCommandHistory()->push_front(input);
-        }
-        console->Print(printin, 0xFF808080, 0x96u);
-        console->RunCommand(std::string(input), &out, NULL);
-        console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
+
+        console->_input = input;
+        console->SubmitInput(false);
+
+        if (clear)
+            console->_commandHistory.pop_front();
+
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
         autocompleteBuffer.clear();
+        reclaimFocus = true;
     }
 
     void Draw(bool isImGuiActive) {
@@ -294,36 +320,37 @@ struct ConsoleMega : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-;            }
-
+            focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
-            std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
+            std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
+
+            ImGui::SetWindowFontScale(1.0f);
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            if (ImGui::BeginChild("Text View", ImVec2(0, (-14 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize))), true)) {
+            bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);
+
+            if (!isImGuiActive)
+            {
+              textboxHeight = 0;
+            }
+            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Border)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
                 */
                 for (auto entry = history->rbegin(); entry != history->rend(); ++entry) {
-                    int colorMap = entry->GetColorMap();
+                    int colorMap = entry->GetColorMap() & 0xFFFFFFFF;
 
-                    /* 
-                    * The vanilla console stores color as a bitwise flag because we can't have nice things.
-                    * g_colorDouble is used for other things but it isn't really evident what those things are yet, so this will have to do.
-                    * Decomp shows it as 0 but it... clearly isn't, so whatever.
-                    */
+                    // The vanilla console stores color as a bitwise flag because we can't have nice things.
 
-                    float red = (float)((colorMap >> 0x10 & 0xFF) + g_colorDouble) / 255.f;
-                    float green = (float)((colorMap >> 8 & 0xFF) + g_colorDouble) / 255.f;
-                    float blue = (float)((colorMap & 0xFF) + g_colorDouble) / 255.f;
+                    float red = (float)(colorMap >> 0x10 & 0xFF) / 255.f;
+                    float green = (float)(colorMap >> 8 & 0xFF) / 255.f;
+                    float blue = (float)(colorMap & 0xFF) / 255.f;
 
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
                     ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
-                    ImGui::TextUnformatted(UpdateFont(entry->_text.c_str())); // needs to be TextUnformatted to prevent unintentional formatting
+                    ImGui::TextUnformatted(entry->_text.c_str()); // needs to be TextUnformatted to prevent unintentional formatting
                     ImGui::PopTextWrapPos();
                     ImGui::PopStyleColor();
                 }
@@ -333,87 +360,103 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             ImGui::EndChild();
 
-            ImGui::Separator();
-
-            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-            if (!autocompleteBuffer.empty()) {
+            if (isImGuiActive) {
+              ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+              if (!autocompleteBuffer.empty()) {
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
                 ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
                 if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
-                    if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
-                        for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
-                            AutocompleteEntry entry = autocompleteBuffer[i];
-                            bool isSelected = autocompletePos == i;
-                            ImGui::TableNextRow();
-                            ImGui::TableNextColumn();
+                  if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
+                    for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
+                      AutocompleteEntry entry = autocompleteBuffer[i];
+                      bool isSelected = autocompletePos == i;
+                      ImGui::TableNextRow();
+                      ImGui::TableNextColumn();
 
-                            if (isSelected) {
-                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
-                                if (autocompleteNeedFocusChange) {
-                                    ImGui::SetScrollHereY();
-                                    autocompleteNeedFocusChange = false;
-                                }
-                            } else
-                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-
-                            if (ImGui::Selectable(entry.autocompleteText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
-                                strcpy(inputBuf, entry.autocompleteText.c_str());
-                                autocompletePos = i;
-                                autocompleteNeedFocusChange = true;
-                                reclaimFocus = true;
-                            }
-
-                            if (!entry.autocompleteDesc.empty()) {
-                                entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
-                                ImGui::TableNextColumn();
-                                ImGui::TextUnformatted(UpdateFont(entry.autocompleteDesc.c_str()));
-                            }
-
-                            ImGui::PopStyleColor();
+                      if (isSelected) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                        if (autocompleteNeedFocusChange) {
+                          ImGui::SetScrollHereY();
+                          autocompleteNeedFocusChange = false;
                         }
-                        ImGui::EndTable();
+                      }
+                      else
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+
+                      if (ImGui::Selectable(entry.autocompleteText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
+                        strcpy(inputBuf, entry.autocompleteText.c_str());
+                        autocompletePos = i;
+                        autocompleteNeedFocusChange = true;
+                        reclaimFocus = true;
+                      }
+
+                      if (!entry.autocompleteDesc.empty()) {
+                        entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
+                      }
+
+                      ImGui::PopStyleColor();
                     }
-                    ImGui::EndPopup();
+                    ImGui::EndTable();
+                  }
+                  ImGui::EndPopup();
                 }
                 ImGui::OpenPopup("Console Autocomplete");
-            }
-            ImVec2 drawPos = ImGui::GetCursorPos();
+              }
+              ImVec2 drawPos = ImGui::GetCursorPos();
 
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-            if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", UpdateFont(inputBuf), 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
-                char* s = inputBuf;
-                Strtrim(s);
-                std::string fixedCommand = FixSpawnCommand(s);
-                s = (char*)fixedCommand.c_str();
-                if (s[0])
-                    ExecuteCommand(s);
-                reclaimFocus = true;
-            }
-            ImGui::PopItemWidth();
+              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
+                
+              // This works around multiline losing focus on enter (genius!)
+              //if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
+              //   ImGui::SetKeyboardFocusHere(0);
 
-            ImGui::SetItemDefaultFocus();
-            if (reclaimFocus) {
-                ImGui::SetKeyboardFocusHere(-1);
-                reclaimFocus = false;
-            }
+              if (reclaimFocus) {
+                  ImGui::SetKeyboardFocusHere(0);
+                  reclaimFocus = false;
+              }
 
-            // Handle preview text
-            std::string previewText;
-            if (!autocompleteBuffer.empty() && autocompletePos >= 0 && autocompletePos < autocompleteBuffer.size())
-            {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+                  char* s = inputBuf;
+                  Strtrim(s);
+                  std::string fixedCommand = FixSpawnCommand(s);
+                  s = (char*)fixedCommand.c_str();
+                  if (s[0])
+                      ExecuteCommand(s);
+                  ImGui::SetKeyboardFocusHere(0);
+              }
+              ImGui::PopItemWidth();
+
+              ImGui::SetItemDefaultFocus();
+
+              // Handle hint
+              if (!inputBuf[0])
+              {
+                  ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+
+                  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+                  ImGui::Text(LANG.CONSOLE_CMD_HINT);
+                  ImGui::PopStyleColor();
+              }
+
+              // Handle preview text
+              if (!autocompleteBuffer.empty() && autocompletePos >= 0 && autocompletePos < autocompleteBuffer.size())
+              {
                 AutocompleteEntry entry = autocompleteBuffer[autocompletePos];
-                previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
+                std::string previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
+
+                // render at end of input text
+                ImVec2 textSize = ImGui::CalcTextSize(inputBuf);
+                ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+                ImGui::Text(previewText.c_str());
+                ImGui::PopStyleColor();
+              }
             }
-            // render at end of input text
-            ImVec2 textSize = ImGui::CalcTextSize(inputBuf);
-            ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
-            
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-            ImGui::Text(previewText.c_str());
-            ImGui::PopStyleColor();
         }
         
-        UpdateFont();
         ImGui::End(); // close window element
     }
 
@@ -427,6 +470,32 @@ struct ConsoleMega : ImGuiWindowObject {
     {
         switch (data->EventFlag)
         {
+            case ImGuiInputTextFlags_CallbackAlways:
+            {
+
+                // To help accomodate for the horizontal scrollbar hacks we've implemented in ImGui, we handle scrolling manually.
+                // I don't like it, but it's still much better than how we used to handle this (we didn't)
+
+                float textSize = ImGui::CalcTextSize("h").x; //TODO Since the font is monospace, it shouldn't matter what character this is, but it might matter for localization.
+
+                // Handle insertions and deletions of any length
+                static int bufLength = 0;
+                ImGui::SetScrollX(ImGui::GetScrollX() + (textSize * (data->BufTextLen - bufLength)));
+                
+                bufLength = data->BufTextLen;
+
+                // Handle arrow keys + command history
+                if (data->CursorPos * textSize < ImGui::GetScrollX()) {
+                    ImGui::SetScrollX(data->CursorPos * textSize);
+                }
+
+                if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x) {
+                    ImGui::SetScrollX(textSize + data->CursorPos * textSize - ImGui::GetContentRegionAvail().x - imFontUnifont->Scale);
+                }
+
+                break;
+            }
+
             case ImGuiInputTextFlags_CallbackCompletion:
             {
                 if (autocompleteBuffer.size() > 0) {
@@ -447,10 +516,12 @@ struct ConsoleMega : ImGuiWindowObject {
             {
                 if (autocompleteActive) return 0; // Dont execute callback when ImGuiInputTextFlags_CallbackCompletion does its thing
 
+                commandFromHistory = false;
+
                 std::string strBuf = data->Buf;
                 std::vector<std::string> cmdlets = ParseCommand(strBuf);
                 autocompleteBuffer.clear();
-                autocompletePos = 0;
+                autocompletePos = -1;
 
                 if (cmdlets.size() == 1) {
                     bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
@@ -461,7 +532,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             }
                     }
                 }
-
+                
                 if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                     std::string commandName = cmdlets.front();
                     commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
@@ -508,8 +579,9 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case GOTO: {
                             unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                            RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
-                            RoomConfig* config = stage.configs;
+                            RoomConfig_Stage* stage = &g_Game->GetRoomConfig()->_stages[stbID];
+                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode()];
+                            RoomConfig_Room* config = set->_configs;
                             std::map<int, std::string> specialRoomTypes = {
                                 std::pair<int, std::string>(1, "default"),
                                 std::pair<int, std::string>(2, "shop"),
@@ -542,95 +614,114 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(29, "ultrasecret"),
                             };
 
-                            for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
+                            for (unsigned int i = 1; i < set->_count; ++i) {
+                                if (config->Type != 1) {
+                                    entries.insert(AutocompleteEntry(std::string("x.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                    config++;
+                                    continue;
+                                };
                                 entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
 
-                            RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
-                            config = special.configs;
+                            RoomConfig_Stage* special = &g_Game->GetRoomConfig()->_stages[0];
+                            RoomSet* specialSet = &special->_rooms[g_Game->IsGreedMode()];
+                            config = specialSet->_configs;
 
-                            for (unsigned int i = 0; i < special.nbRooms; ++i) {
+                            for (unsigned int i = 0; i < specialSet->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
 
-                            for (auto& specialType : specialRoomTypes) {
-                                entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
-                            }
-                                
                             break;
                         }
 
                         case STAGE: {
 
+                            StringTable * stringTable = g_Manager->GetStringTable();
+                            unsigned int language = stringTable->language;
+
+                            auto GetStr = [&](const char* key, const char* postfix = "") {
+                                char buff[256];
+                                uint32_t unk;
+                                const char* en = stringTable->GetString("Stages", 0, key, &unk);
+                                if (language) {
+                                    const char* tr = stringTable->GetString("Stages", language, key, &unk);
+                                    sprintf_s(buff, "%s%s %s%s", en, postfix, tr, postfix);
+                                }
+                                else {
+                                    sprintf_s(buff, "%s%s", en, postfix);
+                                }
+                                return std::string(buff);
+                            };
+
                             if (g_Game->IsGreedMode()) {
                                 entries = {
-                                    AutocompleteEntry("1", "Basement"),
-                                    AutocompleteEntry("1a", "Cellar"),
-                                    AutocompleteEntry("1b", "Burning Basement"),
-                                    AutocompleteEntry("2", "Caves"),
-                                    AutocompleteEntry("2a", "Catacombs"),
-                                    AutocompleteEntry("2b", "Flooded Caves"),
-                                    AutocompleteEntry("3", "Depths"),
-                                    AutocompleteEntry("3a", "Necropolis"),
-                                    AutocompleteEntry("3b", "Dank Depths"),
-                                    AutocompleteEntry("4", "Womb"),
-                                    AutocompleteEntry("4a", "Utero"),
-                                    AutocompleteEntry("4b", "Scarred Womb"),
-                                    AutocompleteEntry("5", "Sheol"),
-                                    AutocompleteEntry("6", "The Shop"),
-                                    AutocompleteEntry("7", "Ultra Greed")
+                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME")),
+                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME")),
+                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME")),
+                                    AutocompleteEntry("2", GetStr("CAVES_NAME")),
+                                    AutocompleteEntry("2a", GetStr("CATACOMBS_NAME")),
+                                    AutocompleteEntry("2b", GetStr("FLOODED_CAVES_NAME")),
+                                    AutocompleteEntry("3", GetStr("DEPTHS_NAME")),
+                                    AutocompleteEntry("3a", GetStr("NECROPOLIS_NAME")),
+                                    AutocompleteEntry("3b", GetStr("DANK_DEPTHS_NAME")),
+                                    AutocompleteEntry("4", GetStr("WOMB_NAME")),
+                                    AutocompleteEntry("4a", GetStr("UTERO_NAME")),
+                                    AutocompleteEntry("4b", GetStr("SCARRED_WOMB_NAME")),
+                                    AutocompleteEntry("5", GetStr("SHEOL_NAME")),
+                                    AutocompleteEntry("6", GetStr("THE_SHOP_NAME")),
+                                    AutocompleteEntry("7", GetStr("ULTRA_GREED_NAME"))
                                 };
                             }
                             else {
                                 entries = {
-                                    AutocompleteEntry("1", "Basement I"),
-                                    AutocompleteEntry("1a", "Cellar I"),
-                                    AutocompleteEntry("1b", "Burning Basement I"),
-                                    AutocompleteEntry("1c", "Downpour I"),
-                                    AutocompleteEntry("1d", "Dross I"),
-                                    AutocompleteEntry("2", "Basement II"),
-                                    AutocompleteEntry("2a", "Cellar II"),
-                                    AutocompleteEntry("2b", "Burning Basement II"),
-                                    AutocompleteEntry("2c", "Downpour II"),
-                                    AutocompleteEntry("2d", "Dross II"),
-                                    AutocompleteEntry("3", "Caves I"),
-                                    AutocompleteEntry("3a", "Catacombs I"),
-                                    AutocompleteEntry("3b", "Flooded Caves I"),
-                                    AutocompleteEntry("3c", "Mines I"),
-                                    AutocompleteEntry("3d", "Ashpit I"),
-                                    AutocompleteEntry("4", "Caves II"),
-                                    AutocompleteEntry("4a", "Catacombs II"),
-                                    AutocompleteEntry("4b", "Flooded Caves II"),
-                                    AutocompleteEntry("4c", "Mines II"),
-                                    AutocompleteEntry("4d", "Ashpit II"),
-                                    AutocompleteEntry("5", "Depths I"),
-                                    AutocompleteEntry("5a", "Necropolis I"),
-                                    AutocompleteEntry("5b", "Dank Depths I"),
-                                    AutocompleteEntry("5c", "Mausoleum I"),
-                                    AutocompleteEntry("5d", "Gehenna I"),
-                                    AutocompleteEntry("6", "Depths II"),
-                                    AutocompleteEntry("6a", "Necropolis II"),
-                                    AutocompleteEntry("6b", "Dank Depths II"),
-                                    AutocompleteEntry("6c", "Mausoleum II"),
-                                    AutocompleteEntry("6d", "Gehenna II"),
-                                    AutocompleteEntry("7", "Womb I"),
-                                    AutocompleteEntry("7a", "Utero I"),
-                                    AutocompleteEntry("7b", "Scarred Womb I"),
-                                    AutocompleteEntry("7c", "Corpse I"),
-                                    AutocompleteEntry("8", "Womb II"),
-                                    AutocompleteEntry("8a", "Utero II"),
-                                    AutocompleteEntry("8b", "Scarred Womb II"),
-                                    AutocompleteEntry("8c", "Corpse II"),
-                                    AutocompleteEntry("9", "??? / Blue Womb"),
-                                    AutocompleteEntry("10", "Sheol"),
-                                    AutocompleteEntry("10a", "Cathedral"),
-                                    AutocompleteEntry("11", "Dark Room"),
-                                    AutocompleteEntry("11a", "Chest"),
-                                    AutocompleteEntry("12", "The Void"),
-                                    AutocompleteEntry("13", "Home (day)"),
-                                    AutocompleteEntry("13a", "Home (night)")
+                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME", " I")),
+                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME", " I")),
+                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME", " I")),
+                                    AutocompleteEntry("1c", GetStr("DOWNPOUR_NAME", " I")),
+                                    AutocompleteEntry("1d", GetStr("DROSS_NAME", " I")),
+                                    AutocompleteEntry("2", GetStr("BASEMENT_NAME", " II")),
+                                    AutocompleteEntry("2a", GetStr("CELLAR_NAME", " II")),
+                                    AutocompleteEntry("2b", GetStr("BURNING_BASEMENT_NAME", " II")),
+                                    AutocompleteEntry("2c", GetStr("DOWNPOUR_NAME", " II")),
+                                    AutocompleteEntry("2d", GetStr("DROSS_NAME", " II")),
+                                    AutocompleteEntry("3", GetStr("CAVES_NAME", " I")),
+                                    AutocompleteEntry("3a", GetStr("CATACOMBS_NAME", " I")),
+                                    AutocompleteEntry("3b", GetStr("FLOODED_CAVES_NAME", " I")),
+                                    AutocompleteEntry("3c", GetStr("MINES_NAME", " I")),
+                                    AutocompleteEntry("3d", GetStr("ASHPIT_NAME", " I")),
+                                    AutocompleteEntry("4", GetStr("CAVES_NAME", " II")),
+                                    AutocompleteEntry("4a", GetStr("CATACOMBS_NAME", " II")),
+                                    AutocompleteEntry("4b", GetStr("FLOODED_CAVES_NAME", " II")),
+                                    AutocompleteEntry("4c", GetStr("MINES_NAME", " II")),
+                                    AutocompleteEntry("4d", GetStr("ASHPIT_NAME", " II")),
+                                    AutocompleteEntry("5", GetStr("DEPTHS_NAME", " I")),
+                                    AutocompleteEntry("5a", GetStr("NECROPOLIS_NAME", " I")),
+                                    AutocompleteEntry("5b", GetStr("DANK_DEPTHS_NAME", " I")),
+                                    AutocompleteEntry("5c", GetStr("MAUSOLEUM_NAME", " I")),
+                                    AutocompleteEntry("5d", GetStr("GEHENNA_NAME", " I")),
+                                    AutocompleteEntry("6", GetStr("DEPTHS_NAME", " II")),
+                                    AutocompleteEntry("6a", GetStr("NECROPOLIS_NAME", " II")),
+                                    AutocompleteEntry("6b", GetStr("DANK_DEPTHS_NAME", " II")),
+                                    AutocompleteEntry("6c", GetStr("MAUSOLEUM_NAME", " II")),
+                                    AutocompleteEntry("6d", GetStr("GEHENNA_NAME", " II")),
+                                    AutocompleteEntry("7", GetStr("WOMB_NAME", " I")),
+                                    AutocompleteEntry("7a", GetStr("UTERO_NAME", " I")),
+                                    AutocompleteEntry("7b", GetStr("SCARRED_WOMB_NAME", " I")),
+                                    AutocompleteEntry("7c", GetStr("CORPSE_NAME", " I")),
+                                    AutocompleteEntry("8", GetStr("WOMB_NAME", " II")),
+                                    AutocompleteEntry("8a", GetStr("UTERO_NAME", " II")),
+                                    AutocompleteEntry("8b", GetStr("SCARRED_WOMB_NAME", " II")),
+                                    AutocompleteEntry("8c", GetStr("CORPSE_NAME", " II")),
+                                    AutocompleteEntry("9", LANG.CONSOLE_STAGE_BLUE_WOMB),
+                                    AutocompleteEntry("10", GetStr("SHEOL_NAME")),
+                                    AutocompleteEntry("10a", GetStr("CATHEDRAL_NAME")),
+                                    AutocompleteEntry("11", GetStr("DARK_ROOM_NAME")),
+                                    AutocompleteEntry("11a", GetStr("CHEST_NAME")),
+                                    AutocompleteEntry("12", GetStr("THE_VOID_NAME")),
+                                    AutocompleteEntry("13", LANG.CONSOLE_STAGE_HOME_DAY),
+                                    AutocompleteEntry("13a", LANG.CONSOLE_STAGE_HOME_NIGHT)
                                 };
                             }
                             break;
@@ -746,39 +837,46 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case DEBUG_FLAG: {
                             entries = {
-                                AutocompleteEntry("1", "Entity Positions"),
-                                AutocompleteEntry("2", "Grid"),
-                                AutocompleteEntry("3", "Infinite HP"),
-                                AutocompleteEntry("4", "High Damage"),
-                                AutocompleteEntry("5", "Show Room Info"),
-                                AutocompleteEntry("6", "Show Hitspheres"),
-                                AutocompleteEntry("7", "Show Damage Values"),
-                                AutocompleteEntry("8", "Infinite Item Charges"),
-                                AutocompleteEntry("9", "High Luck"),
-                                AutocompleteEntry("10", "Quick Kill"),
-                                AutocompleteEntry("11", "Grid Info"),
-                                AutocompleteEntry("12", "Player Item Info"),
-                                AutocompleteEntry("13", "Show Grid Collision Points"),
-                                AutocompleteEntry("14", "Show Lua Memory Usage")
+                                AutocompleteEntry("1", LANG.CONSOLE_DEBUG_HINT_1 ),
+                                AutocompleteEntry("2", LANG.CONSOLE_DEBUG_HINT_2 ),
+                                AutocompleteEntry("3", LANG.CONSOLE_DEBUG_HINT_3 ),
+                                AutocompleteEntry("4", LANG.CONSOLE_DEBUG_HINT_4 ),
+                                AutocompleteEntry("5", LANG.CONSOLE_DEBUG_HINT_5 ),
+                                AutocompleteEntry("6", LANG.CONSOLE_DEBUG_HINT_6 ),
+                                AutocompleteEntry("7", LANG.CONSOLE_DEBUG_HINT_7 ),
+                                AutocompleteEntry("8", LANG.CONSOLE_DEBUG_HINT_8 ),
+                                AutocompleteEntry("9", LANG.CONSOLE_DEBUG_HINT_9 ),
+                                AutocompleteEntry("10", LANG.CONSOLE_DEBUG_HINT_10 ),
+                                AutocompleteEntry("11", LANG.CONSOLE_DEBUG_HINT_11 ),
+                                AutocompleteEntry("12", LANG.CONSOLE_DEBUG_HINT_12 ),
+                                AutocompleteEntry("13", LANG.CONSOLE_DEBUG_HINT_13 ),
+                                AutocompleteEntry("14", LANG.CONSOLE_DEBUG_HINT_14)
                             };
                             break;
                         }
 
                         case ITEM: {
-                            std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
-                                {XMLStuff.ItemData->nodes, "c"},
-                                {XMLStuff.TrinketData->nodes, "t"},
-                                {XMLStuff.CardData->nodes, "k"},
-                                {XMLStuff.PillData->nodes, "p"},
+                            std::vector<std::tuple<XMLNodes, std::string, const char *>> XMLPairs = {
+                                {XMLStuff.ItemData->nodes, "c", "Items"},
+                                {XMLStuff.TrinketData->nodes, "t", "Items"},
+                                {XMLStuff.CardData->nodes, "k", "PocketItems"},
+                                {XMLStuff.PillData->nodes, "p", "PocketItems"},
                             };
 
+                            StringTable * stringTable = g_Manager->GetStringTable();
+                            unsigned int language = stringTable->language;
                             for (auto& XMLPair : XMLPairs) {
-                                for (auto& node : XMLPair.first) {
+                                for (auto& node : std::get<0>(XMLPair)) {
                                     int id = node.first;
                                     if (id == 0) // dont display NULL item and trinket
                                       continue;
                                     std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
+                                    auto& untranslated_name = node.second["untranslatedname"];
+                                    if (language && untranslated_name.length() != 0 && untranslated_name[0] == '#') {
+                                        uint32_t unk;
+                                        name = name + " " + stringTable->GetString(std::get<2>(XMLPair), language, untranslated_name.substr(1).c_str(), &unk);
+                                    }
+                                    entries.insert(AutocompleteEntry(std::get<1>(XMLPair)+ std::to_string(id), name));
                                 }
                             }
                             break;
@@ -801,22 +899,22 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case COMBO: {
                             entries = {
-                                AutocompleteEntry("0.", "Treasure"),
-                                AutocompleteEntry("1.", "Shop"),
-                                AutocompleteEntry("2.", "Boss"),
-                                AutocompleteEntry("3.", "Devil"),
-                                AutocompleteEntry("4.", "Angel"),
-                                AutocompleteEntry("5.", "Secret"),
-                                AutocompleteEntry("6.", "Library"),
-                                AutocompleteEntry("7.", "Challenge"),
-                                AutocompleteEntry("8.", "Golden Chest"),
-                                AutocompleteEntry("9.", "Red Chest"),
-                                AutocompleteEntry("10.", "Beggar"),
-                                AutocompleteEntry("11.", "Demon Beggar"),
-                                AutocompleteEntry("12.", "Curse"),
-                                AutocompleteEntry("13.", "Key Master"),
-                                AutocompleteEntry("14.", "Boss Rush"),
-                                AutocompleteEntry("15.", "Dungeon"),
+                                AutocompleteEntry("0.", LANG.CONSOLE_COMBO_HINT_0 ),
+                                AutocompleteEntry("1.", LANG.CONSOLE_COMBO_HINT_1 ),
+                                AutocompleteEntry("2.", LANG.CONSOLE_COMBO_HINT_2 ),
+                                AutocompleteEntry("3.", LANG.CONSOLE_COMBO_HINT_3 ),
+                                AutocompleteEntry("4.", LANG.CONSOLE_COMBO_HINT_4 ),
+                                AutocompleteEntry("5.", LANG.CONSOLE_COMBO_HINT_5 ),
+                                AutocompleteEntry("6.", LANG.CONSOLE_COMBO_HINT_6 ),
+                                AutocompleteEntry("7.", LANG.CONSOLE_COMBO_HINT_7 ),
+                                AutocompleteEntry("8.", LANG.CONSOLE_COMBO_HINT_8 ),
+                                AutocompleteEntry("9.", LANG.CONSOLE_COMBO_HINT_9 ),
+                                AutocompleteEntry("10.", LANG.CONSOLE_COMBO_HINT_10 ),
+                                AutocompleteEntry("11.", LANG.CONSOLE_COMBO_HINT_11 ),
+                                AutocompleteEntry("12.", LANG.CONSOLE_COMBO_HINT_12 ),
+                                AutocompleteEntry("13.", LANG.CONSOLE_COMBO_HINT_13 ),
+                                AutocompleteEntry("14.", LANG.CONSOLE_COMBO_HINT_14 ),
+                                AutocompleteEntry("15.", LANG.CONSOLE_COMBO_HINT_15 ),
                             };
                             break;
                         }
@@ -1003,10 +1101,20 @@ struct ConsoleMega : ImGuiWindowObject {
                             XMLNodes achievs = XMLStuff.AchievementData->nodes;
                             for (auto& node : achievs) {
                                 int id = node.first;
-                                std::string name;
-                                name = node.second["name"];
+                                if (id > 0) { //to exclude negative achievement hackies
+                                    std::string name;
+                                    name = node.second["name"];
 
-                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
+                            }
+                            break;
+                        }
+                        case MODFOLDER: {
+                            for (auto& node : XMLStuff.ModData->nodes) {
+                                if (node.second["enabled"] == "true") {
+                                    entries.insert(AutocompleteEntry(node.second["realdirectory"], node.second["name"]));
+                                }
                             }
                             break;
                         }
@@ -1017,7 +1125,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             extern std::bitset<500> CallbackState;
 
-                            int callbackId = 1120;
+                            const int callbackId = 1120;
                             if (CallbackState.test(callbackId - 1000)) {
                                 lua_State* L = g_LuaEngine->_state;
                                 lua::LuaStackProtector protector(L);
@@ -1104,6 +1212,9 @@ struct ConsoleMega : ImGuiWindowObject {
                             [](unsigned char c) { return std::tolower(c); });
 
                         if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
+                            if (autocompleteBuffer.size() > 10) {       //autocomplete result cap is defined here
+                                break;
+                            };
                             autocompleteBuffer.push_back(entry);
                         }
                     }
@@ -1112,7 +1223,7 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             case ImGuiInputTextFlags_CallbackHistory:
             {
-                std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
+                std::deque<std::string> history = (g_Game->GetConsole())->_commandHistory;
                 autocompleteBuffer.clear();
 
                 const int prev_history_pos = historyPos;
@@ -1127,11 +1238,14 @@ struct ConsoleMega : ImGuiWindowObject {
                             historyPos = 0;
                 }
 
-                if (prev_history_pos != historyPos) {;
+                if (prev_history_pos != historyPos) {
                     std::string entry = historyPos ? history[historyPos - 1] : "";
                     entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+                    autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, entry.c_str());
+                    autocompleteActive = false;
+                    commandFromHistory = true;
                 }
                 break;
             }

@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetProceduralItemManager) {
+/*LUA_FUNCTION(Lua_GetProceduralItemManager) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ProceduralItemManager** ud = (ProceduralItemManager**)lua_newuserdata(L, sizeof(void*));
 	*ud = game->GetProceduralItemManager();
 	luaL_setmetatable(L, lua::metatables::ProceduralItemManagerMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_PIMCreateProceduralItem)
 {

@@ -1,12 +1,16 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec98000000a1????????33c58945??5657508d45??64a3????????8bf9897d":
 __thiscall void PauseScreen::Render();
 
-struct PauseScreen {
+struct PauseScreen depends(ANM2, GenericPopup, Menu_Options) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 526620); } 
-	inline ANM2* GetANM2() { return (ANM2*)((char*)this + 44); }
-	//inline ANM2* GetANM22() { return (ANM2*)((char*)this + 92); } // ?? another sprite, it can be rendered but I suspect its the same one loaded at a different offset?
-	inline ANM2* GetStatsANM2() { return (ANM2*)((char*)this + 368); }	
 }} 
     int status : 0x0;
+	bool notinfocus: 0x4;
+	int selectedelement: 0x8;
+	ANM2 mainsprite : 0x2c;
+	ANM2 statssprite : 0x140; 
+	ANM2 mystuffminispritebase : 0x254;
+	GenericPopup _controllerconnectionpopup : 0x368;
+	Menu_Options menuoptions : 0x806a8;
 } : 0x80a38;

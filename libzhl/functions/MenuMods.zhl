@@ -1,3 +1,9 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8bf9897d??8b35":
+__thiscall void Menu_Mods::Update();
+
+"558bec81ec24010000a1????????33c58945??538bd9":
+__thiscall void Menu_Mods::Render();
+
 struct Menu_Mods depends (ANM2) {
     {{
          inline ANM2* GetModsMenuSprite() { return &this->ModsMenuSprite; }
@@ -8,7 +14,7 @@ struct Menu_Mods depends (ANM2) {
     float PositionY : 0xC;
     ANM2 ModsMenuSprite : 0x10;
     int State : 0x124; /* 1 = was changed */
-    void* _pointerToSelectedMod : 0x128;
+    ModEntry* _pointerToSelectedMod : 0x128;
     float _scrollPositionX : 0x1ac;
     float _scrollPositionY : 0x1b0;
 } : 0x1b4;

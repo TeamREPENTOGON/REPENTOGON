@@ -2,21 +2,21 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetPlayerManager) {
+/*LUA_FUNCTION(Lua_GetPlayerManager) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 3);
-	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -84,9 +84,13 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int trinket = (int)luaL_checkinteger(L, 1);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 3);
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
+	RNG* rng = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	}
+
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 3, true);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -122,7 +126,7 @@ LUA_FUNCTION(Lua_AnyoneHasTrinket)
 LUA_FUNCTION(Lua_GetPlayers) {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 
-	std::vector<Entity_Player**> players = playerManager->_playerList;
+	std::vector<Entity_Player*>& players = playerManager->_playerList;
 
 	lua_newtable(L);
 
@@ -198,6 +202,69 @@ LUA_FUNCTION(Lua_AnyPlayerTypeHasBirthright)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_AnyPlayerTypeHasTrinket)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	int trinket = (int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
+
+	for (Entity_Player* player : g_Game->_playerManager._playerList)
+	{
+		if (player->HasTrinket(trinket, ignoreModifiers) && player->GetPlayerType() == playerType)
+		{
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+
+	lua_pushboolean(L, false);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AnyPlayerTypeHasCollectible)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	int collectible = (int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
+
+	for (Entity_Player* player : g_Game->_playerManager._playerList)
+	{
+		if (player->HasCollectible(collectible, ignoreModifiers) && player->GetPlayerType() == playerType)
+		{
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+
+	lua_pushboolean(L, false);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpawnSelectedBaby) 
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	const int babyType = (int)luaL_checkinteger(L, 1);
+	const int controllerIndex = (int)luaL_checkinteger(L, 2);
+
+	playerManager->spawn_selected_baby(babyType, controllerIndex);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RemoveCoPlayer)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	auto* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
+
+	playerManager->RemoveCoPlayer(player, false);
+	return 0;
+}
+
+
 static void RegisterPlayerManager(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
 	lua_newtable(L);
@@ -216,7 +283,10 @@ static void RegisterPlayerManager(lua_State* L) {
 		lua::TableAssoc(L, "AnyoneIsPlayerType", Lua_AnyoneIsPlayerType);
 		lua::TableAssoc(L, "FirstBirthrightOwner", Lua_FirstBirthrightOwner);
 		lua::TableAssoc(L, "AnyPlayerTypeHasBirthright", Lua_AnyPlayerTypeHasBirthright);
-		
+		lua::TableAssoc(L, "AnyPlayerTypeHasTrinket", Lua_AnyPlayerTypeHasTrinket);
+		lua::TableAssoc(L, "AnyPlayerTypeHasCollectible", Lua_AnyPlayerTypeHasCollectible);
+		lua::TableAssoc(L, "SpawnSelectedBaby", Lua_SpawnSelectedBaby);
+		lua::TableAssoc(L, "RemoveCoPlayer", Lua_RemoveCoPlayer);
 
 		lua_setglobal(L, "PlayerManager");
 }

@@ -29,7 +29,18 @@ LUA_FUNCTION(Lua_PickupSetForceBlind) {
 
 LUA_FUNCTION(Lua_PickupIsBlind) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool isBlind = pickup->IsBlind();
+	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, true); // wish I implemented that method properly before...
+
+	bool isBlind = false;
+	if (pickup->_variant == 100) {
+		if (checkForcedBlindOnly) {
+			isBlind = pickup->IsBlind();
+		}
+		else if (pickup->IsBlind() || !pickup->_sprite._layerState[1]._spriteSheetPath.compare("gfx/Items/Collectibles/questionmark.png")) {
+			isBlind = true;
+		}
+	}
+	
 
 	lua_pushboolean(L, isBlind);
 	return 1;
@@ -90,11 +101,15 @@ LUA_FUNCTION(Lua_PickupCanReroll)
 
 LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	RNG* rng = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	}
 	int velType = (int)luaL_optinteger(L, 3, 0);
+
 	Vector velocity;
-	Isaac::GetRandomPickupVelocity(&velocity, pos, velType, rng);
-	lua::luabridge::UserdataPtr::push(L, &velocity, lua::Metatables::VECTOR);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
 
 	return 1;
 }
@@ -123,6 +138,7 @@ LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
 	if (pickup->_cycleCollectibleCount < 8) {
 		pickup->_cycleCollectibleList[pickup->_cycleCollectibleCount] = id;
 		pickup->_cycleCollectibleCount += 1;
+		res = true;
 	}
 
 	lua_pushboolean(L, res);
@@ -131,7 +147,7 @@ LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
 
 LUA_FUNCTION(Lua_PickupTryFlip) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->TryFlip());
+	lua_pushboolean(L, pickup->TryFlip(nullptr, 0));
 	return 1;
 }
 
@@ -139,6 +155,63 @@ LUA_FUNCTION(Lua_PickupGetPriceSprite) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua::luabridge::UserdataPtr::push(L, &pickup->_priceANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupGetAlternatePedestal) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushinteger(L, pickup->GetAlternatePedestal());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+
+	lua_newtable(L);
+
+	for (unsigned int i = 0; i < pickup->_cycleCollectibleCount; i++) {
+		lua_pushinteger(L, pickup->_cycleCollectibleList[i]);
+		lua_rawseti(L, -2, i + 1);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	for (int i = 0; i < 7; i++) {
+		pickup->_cycleCollectibleList[i] = 0; 
+	}
+	pickup->_cycleCollectibleCount = 0;
+
+	return 0;
+}
+LUA_FUNCTION(Lua_PickupGetPickupGhost) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Effect* pickupGhost = pickup->_pickupGhost;
+	lua::luabridge::UserdataPtr::push(L, pickupGhost, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	pickup->UpdatePickupGhosts();
+	return 0;
+}
+
+/*LUA_FUNCTION(Lua_PickupIsChest) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
+	lua_pushboolean(L, pickup->IsChest(variant));
+	return 1;
+}
+*/
+
+
+LUA_FUNCTION(Lua_PickupTriggerTheresOptionsPickup) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	pickup->TriggerTheresOptionsPickup();
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -164,8 +237,17 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		// i REALLY want a TryReroll but even looking through UseActiveItem i can't tell how the new id is determined
 		{ "TryFlip", Lua_PickupTryFlip },
 		{ "GetPriceSprite", Lua_PickupGetPriceSprite },
+		{ "GetAlternatePedestal", Lua_PickupGetAlternatePedestal },
+		{ "GetCollectibleCycle", Lua_PickupGetCollectibleCycle },
+		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
+		//{ "IsChest", Lua_PickupIsChest },
+		{ "GetPickupGhost", Lua_PickupGetPickupGhost },
+		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhosts },
+		{ "TriggerTheresOptionsPickup", Lua_PickupTriggerTheresOptionsPickup },
 		{ NULL, NULL }
 	};
 
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PICKUP, functions);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity);
 }

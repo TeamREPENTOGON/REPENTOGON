@@ -7,6 +7,51 @@ __thiscall bool Entity_Tear::HandleCollision(Entity* collider, bool low);
 "558bec83e4f083ec1856":
 __thiscall Entity_Tear* Entity_Tear::MakeMultidimensionalCopy(Entity * spawner);
 
-struct Entity_Tear : public Entity {
+"558bec83e4f883ec4ca1????????33c4894424??f30f100d":
+__thiscall void Entity_Tear::ResetSpriteScale();
+
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??e8????????c745??00000000c706":
+__thiscall void Entity_Tear::Constructor();
+
+struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+		override
+		"558bec6aff68????????64a1????????50b8a0210000":
+		void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
+	
+	int _scaleAnimNum : 0x3ac;
 	float _deadEyeIntensity : 0x3b4;
+	ANM2 _tearHaloANM2 : 0x3fc;
+	ANM2 _tearEffectANM2 : 0x510;
+	ANM2 _deadEyeANM2 : 0x624;
+	BitSet128 _tearFlags : 0x378;
+	bool _multidimensionalTouched : 0x3b8;
+	bool _prismTouched : 0x3b9;
 } : 0x778;

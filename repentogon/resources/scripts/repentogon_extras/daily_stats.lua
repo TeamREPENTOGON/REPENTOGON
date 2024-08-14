@@ -9,13 +9,16 @@ local GetStageGoal = 0
 local isAltPath = false
 local isHardMode = false
 local isMegaSatan = false
+local diffOffsetFrameNum = 0
 
 local ScheduleRefresh = true
 
 local StreakSheet = Sprite()
 local TotalSheet = Sprite()
-local GoalDestinationIcon = Sprite()
-local HardModeIcon = Sprite()
+--local GoalDestinationIcon = Sprite()
+--local HardModeIcon = Sprite()
+
+local LeaderboardSprite = Sprite()
 
 local StreakPos = Vector(212, 12) + Vector(36, 24)
 StreakSheet.Offset = Vector(-36, -24)
@@ -65,13 +68,17 @@ local function LoadAssets()
         TotalSheet:Load("gfx/ui/main menu/seedselectionwidget.anm2", true)
         TotalSheet:SetFrame("Eggs", 0)
 
-        GoalDestinationIcon:Load("gfx/ui/hudpickups.anm2", true)
-        GoalDestinationIcon:SetAnimation("Destination", true)
-        GoalDestinationIcon:SetFrame(7)
+        --GoalDestinationIcon:Load("gfx/ui/hudpickups.anm2", true)
+        --GoalDestinationIcon:SetAnimation("Destination", true)
+        --GoalDestinationIcon:SetFrame(7)
 
-        HardModeIcon:Load("gfx/ui/hudpickups.anm2", true)
-        HardModeIcon:SetAnimation("Idle", true)
-        HardModeIcon:SetFrame(4)
+        --HardModeIcon:Load("gfx/ui/hudpickups.anm2", true)
+        --HardModeIcon:SetAnimation("Idle", true)
+        --HardModeIcon:SetFrame(4)
+		
+		LeaderboardSprite:LoadRGON("gfx/ui/daily_destinations.anm2", true)
+		LeaderboardSprite:SetAnimation("Destination", true)
+		LeaderboardSprite:SetFrame(0)
     end
     if not font:IsLoaded() then
         font:Load("font/teammeatfont10.fnt")
@@ -86,8 +93,8 @@ Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderDailyStats()
     if ScheduleRefresh and MenuManager:GetActiveMenu() == _MainMenuType.DAILYRUN then
-        local dailyChallenge = Isaac.GetDailyChallenge()
-		local challengeParam = dailyChallenge:GetChallengeParams()
+        local dailyChallenge = DailyChallenge
+		local challengeParam = dailyChallenge.GetChallengeParams()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_STREAK)
         TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_PLAYED)
         GetStageGoal = challengeParam:GetEndStage()
@@ -105,6 +112,7 @@ local function RenderDailyStats()
         --StageGoalText = "Goal Stage: "..GetStageGoal
         isHardMode = challengeParam:GetDifficulty() == 1
         isMegaSatan = challengeParam:IsMegaSatanRun()
+		diffOffsetFrameNum = isHardMode and 7 or 0
     end
     if DailyChallengeMenu:IsLeaderboardVisible() then
         return
@@ -115,14 +123,17 @@ local function RenderDailyStats()
     pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(286, 90))
     TotalSheet:RenderLayer(0, pos)
     if isMegaSatan then
-        GoalDestinationIcon:SetFrame(6)
+        --GoalDestinationIcon:SetFrame(6)
+		LeaderboardSprite:SetFrame(6 + diffOffsetFrameNum)
     else
-        GoalDestinationIcon:SetFrame(GetGoalDestination(GetStageGoal, isAltPath))
+        --GoalDestinationIcon:SetFrame(GetGoalDestination(GetStageGoal, isAltPath))
+		LeaderboardSprite:SetFrame(GetGoalDestination(GetStageGoal, isAltPath) + diffOffsetFrameNum)
     end
-    GoalDestinationIcon:RenderLayer(0, Vector(pos.X + 69, pos.Y - 32))
-    if isHardMode then
+    --GoalDestinationIcon:RenderLayer(0, Vector(pos.X + 69, pos.Y - 32))
+	LeaderboardSprite:RenderLayer(0, Vector(pos.X + 78, pos.Y - 26))
+    --[[if isHardMode then
         HardModeIcon:RenderLayer(0, Vector(pos.X + 75, pos.Y - 82))
-    end
+    end]]
     font:DrawStringUTF8(TotalStreakText, pos.X - TextLen, pos.Y - 9, fontcolor, 0, false)
 end
 

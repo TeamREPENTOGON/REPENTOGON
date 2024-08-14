@@ -16,7 +16,7 @@ LUA_FUNCTION(Lua_ModsMenu_GetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::ModsMenuMT);
 	Menu_Mods* menu = g_MenuManager->GetMenuMods();
-	lua_pushinteger(L, menu->SelectedElement);
+	lua_pushinteger(L, menu->SelectedElement + 1);
 
 	return 1;
 }
@@ -25,7 +25,17 @@ LUA_FUNCTION(Lua_ModsMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::ModsMenuMT);
 	Menu_Mods* menu = g_MenuManager->GetMenuMods();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	int newPosition = (int)luaL_checkinteger(L, 1) - 1;
+
+
+	if (newPosition >= (int)g_Manager->GetModManager()->_mods.size())
+		newPosition = g_Manager->GetModManager()->_mods.size() - 1;
+
+	if (newPosition < 0)
+		newPosition = 0;
+
+	menu->_pointerToSelectedMod = *(ModEntry**)g_Manager->GetModManager() + (newPosition * 4);
+	menu->SelectedElement = newPosition;
 
 	return 0;
 }

@@ -3,14 +3,15 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 #include "AchievementsStuff.h"
+#include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
-std::map<int, bool> characterUnlockData;
+#include <tuple>
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
 	super(type, variant, subtype, initSeed);
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[subtype];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(subtype);
 	std::map<std::string, int*> intValues = {
 		std::pair<std::string, int*> {"heartcontainers", this->GetMaxHearts()},
 		std::pair<std::string, int*> {"redhearts", this->GetRedHearts()},
@@ -25,7 +26,6 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		if (!playerXML[value.first].empty())
 			*value.second = stoi(playerXML[value.first]);
 	}
-
 	// Special cases, where direct setting doesn't work right
 
 	if (!playerXML["blackhearts"].empty()) {
@@ -41,10 +41,13 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		this->AddBombs(stoi(playerXML["gigabombs"]));
 		this->AddGigaBombs(stoi(playerXML["gigabombs"]));
 	}
+	this->update_red_hearts(); 
+	this->update_golden_hearts(); 
+	this->update_bone_hearts(); 
 }
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	int orig = super();
 
@@ -58,64 +61,39 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
 	return orig;
 }
 
-bool playerStatOverride = true;
-int playerStatOverrideId;
+namespace PlayerStats {
+	float modCharacterSpeed = 0;
+	float modCharacterFireDelay = 0;
+	float modCharacterDamage = 0;
+	float modCharacterRange = 0;
+	float modCharacterShotSpeed = 0;
+	float modCharacterLuck = 0;
+}
 
 HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
-	int id = this->GetPlayerType();
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
-	playerStatOverride = false;
-	std::map<std::string, float*> damageValues = {
-	std::pair<std::string, float*> {"speedmodifier", this->GetEdenSpeed()},
-	std::pair<std::string, float*> {"firedelaymodifier", this->GetEdenFireDelay()},
-	std::pair<std::string, float*> {"damagemodifier", this->GetEdenDamage()},
-	std::pair<std::string, float*> {"rangemodifier", this->GetEdenRange()},
-	std::pair<std::string, float*> {"shotspeedmodifier", this->GetEdenShotSpeed()},
-	std::pair<std::string, float*> {"luckmodifier", this->GetEdenLuck()},
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
+	std::tuple<std::string, float*, float> statValues[] = {
+	std::tuple<std::string, float*, float> {"speedmodifier", &PlayerStats::modCharacterSpeed, 1},
+	std::tuple<std::string, float*, float> {"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1},
+	std::tuple<std::string, float*, float> {"damagemodifier", &PlayerStats::modCharacterDamage, 1},
+	std::tuple<std::string, float*, float> {"rangemodifier", &PlayerStats::modCharacterRange, 40},
+	std::tuple<std::string, float*, float> {"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1},
+	std::tuple<std::string, float*, float> {"luckmodifier", &PlayerStats::modCharacterLuck, 1},
 	};
 
-	for (std::pair<std::string, float*> value : damageValues) {
-		if (!playerXML[value.first].empty()) {
-			playerStatOverride = true;
-			playerStatOverrideId = id;
-			*value.second = stof(playerXML[value.first]);
-		}
-			
+	for (std::tuple<std::string, float*, float> value : statValues) {
+		*std::get<1>(value) = 0;
+
+		if (!playerXML[std::get<0>(value)].empty())
+			*std::get<1>(value) = stof(playerXML[std::get<0>(value)]) * std::get<2>(value);
 	}
-
-	std::string costumeSuffix = g_Manager->GetPlayerConfig()->at(this->GetPlayerType())._costumeSuffixName;
-
-	if (playerStatOverride) {
-		*this->GetPlayerTypeMutable() = 9; // EDEN
-		// Temporarily hijack Eden's costume suffix to match ours as well. Otherwise, the White Fireplace ghost won't have our modded character's costumes :(
-		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName = costumeSuffix;
-	}
-
 	super();
-
-	if (playerStatOverride) {
-		*this->GetPlayerTypeMutable() = id;
-		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName.clear();
-	}
 }
-
-HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlags) -> void) {
-	if (playerStatOverride) {
-		*player->GetPlayerTypeMutable() = playerStatOverrideId;
-	}
-
-	super(player, cacheFlags);
-
-	if (playerStatOverride) {
-		*player->GetPlayerTypeMutable() = 9;
-	}
-}
-
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	int orig = super(keeper);
 
@@ -128,42 +106,36 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 
 
 bool characterUnlocked(int id) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
-	int achievement;
+	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(id);
+	std::string const& achievement = att["achievement"];
 
-	if (!playerXML["achievement"].empty()) {
-		try {
-			achievement = stoi(playerXML["achievement"]);
+	if (!achievement.empty()) {
+		char* end = NULL;
+		long id = strtol(achievement.c_str(), &end, 0);
+		if (id == 0 && end == achievement.c_str()) {
+			id = GetAchievementIdByName(achievement);
 		}
-		catch (std::invalid_argument) {
-			achievement = GetAchievementIdByName(playerXML["achievement"]);
-		}
-
-		return g_Manager->GetPersistentGameData()->Unlocked(achievement);
+		return g_Manager->GetPersistentGameData()->Unlocked(id);
 	}
 	return true;
 }
 
 HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(id);
 
-	if (!characterUnlocked(id)) {
-		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
-		if ((*portrait) != nullptr) {
-			(*portrait)->Play(playerXML["name"].c_str(), false);
-			(*portrait)->SetLayerFrame(0, 1);
-			(*portrait)->_color = *color;
-			(*portrait)->_scale = *scale;
-			(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
-		}
+	ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
+	if ((*portrait) != nullptr) {
+		(*portrait)->Play(playerXML["name"].c_str(), true);
+		(*portrait)->SetLayerFrame(0, !characterUnlocked(id) ? 1 : 0);
+		(*portrait)->_color = *color;
+		(*portrait)->_scale = *scale;
+		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
 	}
-	else
-		super(id, pos, color, scale);
 }
 
 HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
 	bool disableState;
 	std::vector<const char*> layersToDisable = {
 		"Item Name",
@@ -209,7 +181,7 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 	super(CharacterId, RenderPos, DefaultSprite);
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
 
 	if (!characterUnlocked(CharacterId))
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
@@ -225,7 +197,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 	// First, for modded characters, build a list of all bSkinParents
 	for (unsigned int i = 41; i < g_Manager->GetPlayerConfig()->size(); ++i) {
-		XMLAttributes playerXML = XMLStuff.PlayerData->nodes[g_Manager->GetPlayerConfig()->at(i)._id];
+		XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(g_Manager->GetPlayerConfig()->at(i)._id);
 		if (!playerXML["bskinparent"].empty()) {
 			logViewer.AddLog("[REPENTOGON]", "Pushing back %s as a b-skin parent\n", playerXML["bskinparent"].c_str());
 			bSkinParents.push_back(playerXML["bskinparent"]);
@@ -273,7 +245,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 			offset++;
 		}
 		else {
-			XMLAttributes playerXML = XMLStuff.PlayerData->nodes[player._id];
+			XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(player._id);
 
 			// This character is invalid for the current menu, skip
 			if ((GetSelectedCharacterMenu() == 0 && !playerXML["bskinparent"].empty()) ||

@@ -520,17 +520,20 @@ inline void initsimplifiedeventsenum() {
 	simplifiedeventsenum["BATTERY_BUM_COLLECTIBLE_PAYOUTS"] = 495; //counts how often the battery bum paid out with a collectible item
 }
 
-
+extern unordered_map<int, int > Conditionals; //condid - achievid
 extern unordered_map<string, int > Achievements; //1 unlocked != 1 locked
 extern unordered_map<int, unordered_map<int,vector<int>> > CompletionMarkListeners;
 extern unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
+extern unordered_map<int, vector<int>> AchievementListeners; //achievementid - achievements to complete
 extern unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
 extern string achivjsonpath;
+extern int nextSkipAchiev; // Modded achievement to skip if second arg of TryUnlock is true
 
-extern int toint(string str);
+extern int toint(const string &str);
 
 inline void IncreaseAchievementCounter(int achievementid) {
-	string achievement = XMLStuff.AchievementData->nodes[achievementid]["name"] +  XMLStuff.AchievementData->nodes[achievementid]["sourceid"];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
+	string achievement = node["name"] + node["sourceid"];
 	if (Achievements[achievement] != 1) {
 		Achievements[achievement] += 1;
 		if (Achievements[achievement] == 1) {
@@ -539,16 +542,45 @@ inline void IncreaseAchievementCounter(int achievementid) {
 	}
 }
 
-inline void AddMarkTracker(int achievementid, int marktype, int charaid = 0) {
-	CompletionMarkListeners[marktype][charaid].push_back(achievementid);
+
+
+inline bool MeetsComaSeparatedAchievs(const string& names) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	if (pos == std::string::npos) {
+		return g_Manager->_persistentGameData.Unlocked(toint(names));
+	}
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		int id = toint(item);
+		if (!g_Manager->_persistentGameData.Unlocked(id)) {
+			return false;
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	item = names.substr(start, names.length());
+	int id = toint(item);
+	if (!g_Manager->_persistentGameData.Unlocked(id)) {
+		return false;
+	}
+	return true;
 }
 
-inline void RunTrackersForMark(int marktype, int charaid = 0) {
+inline void AddMarkTracker(int achievementid, int marktype, int charaid = -1) {
+	if (find(CompletionMarkListeners[marktype][charaid].begin(), CompletionMarkListeners[marktype][charaid].end(), achievementid) == CompletionMarkListeners[marktype][charaid].end()) {
+		CompletionMarkListeners[marktype][charaid].push_back(achievementid);
+	}
+}
+
+inline void RunTrackersForMark(int marktype, int charaid = -1) {
 	for each (int achievementid in CompletionMarkListeners[marktype][charaid]) {
 		IncreaseAchievementCounter(achievementid);
 	}
-	if (charaid > 0) {
-		for each (int achievementid in CompletionMarkListeners[marktype][0]) {
+	if (charaid >= 0) {
+		for each (int achievementid in CompletionMarkListeners[marktype][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
@@ -558,44 +590,111 @@ inline void AddBossDeathTracker(int achievementid, tuple<int, int, int>* boss, i
 	BossDeathListeners[*boss][charaid].push_back(achievementid);
 }
 
-inline void RunTrackersForBossDeath(tuple<int, int, int>* boss,int charaid = 0) {
+inline void RunTrackersForBossDeath(tuple<int, int, int>* boss,int charaid = -1) {
 	for each (int achievementid in BossDeathListeners[*boss][0]) {
 		IncreaseAchievementCounter(achievementid);
 	}
-	if (charaid > 0) {
-		for each (int achievementid in BossDeathListeners[*boss][0]) {
+	if (charaid >= 0) {
+		for each (int achievementid in BossDeathListeners[*boss][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
 }
 
-inline void AddEventCounterTracker(int achievementid,int eventid,int charaid = 0) {
-	EventCounterListeners[eventid][charaid].push_back(achievementid);
+inline void AddEventCounterTracker(int achievementid,int eventid,int charaid = -1) {
+	if (find(EventCounterListeners[eventid][charaid].begin(), EventCounterListeners[eventid][charaid].end(), achievementid) == EventCounterListeners[eventid][charaid].end()) {
+		EventCounterListeners[eventid][charaid].push_back(achievementid);
+	}
 }
 
-inline void RunTrackersForEventCounter(int eventid, int charaid = 0) {
+
+inline void RunTrackersForEventCounter(int eventid, int charaid = -1) {
 	for each (int achievementid in EventCounterListeners[eventid][charaid]) {
 		IncreaseAchievementCounter(achievementid);
 	}
-	if (charaid > 0) {
-		for each (int achievementid in EventCounterListeners[eventid][0]) {
+	if (charaid >= 0) {
+		for each (int achievementid in EventCounterListeners[eventid][-1]) {
 			IncreaseAchievementCounter(achievementid);
 		}
 	}
 }
 
 
-inline int GetAchievementIdByName(std::string name) {
-	if (XMLStuff.AchievementData->byname.count(name) > 0) {
+inline int GetAchievementIdByName(const std::string &name) {
+	if (XMLStuff.AchievementData->byname.find(name) != XMLStuff.AchievementData->byname.end()) {
 		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(name);
-		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
+		if ((ent.end() != ent.begin()) &&  (ent.count("id") > 0) && (ent["id"].length() > 0)) {
 			return stoi(ent["id"]);
 		}
 	};
-	return 0;
+	return -1;
 }
 
+inline void AddAChievListener4Item(const string& item, int achievementid) {
+	int isnumba = toint(item);
+	if (isnumba == 0) {
+		isnumba = GetAchievementIdByName(item);
+	}
+	if (find(AchievementListeners[isnumba].begin(), AchievementListeners[isnumba].end(), achievementid) == AchievementListeners[isnumba].end()) {
+		AchievementListeners[isnumba].push_back(achievementid);
+	}
+}
 
+inline void AddAchievCounterTracker(int achievementid, const string& achievs, const string& idx) {
+	size_t start = 0;
+	size_t pos = achievs.find(',');
+	string item;
+	while (pos != std::string::npos) {
+		item = achievs.substr(0, pos);
+		AddAChievListener4Item(item, achievementid);
+		Achievements[idx] -= 1;
+		start = pos + 1;
+		pos = achievs.find(',', start);
+	}
+	//Achievements[idx] -= 1;
+	std::string lastItem = achievs.substr(start);
+	AddAChievListener4Item(lastItem, achievementid);
+}
+
+inline void RunTrackersForAchievementCounter(int achievementid) {
+	for each (int toincrease in AchievementListeners[achievementid]) {
+		IncreaseAchievementCounter(toincrease);
+	}
+}
+
+inline void AddTrackers4Achiev(string idx,int i, XMLAttributes node) {
+	if (node.count("count") > 0) {
+		Achievements[idx] = -(toint(node["count"]) - 1);
+	}
+
+	int completionchara = -1;
+	if (node.count("conditioncharacter") > 0) {
+		completionchara = XMLStuff.PlayerData->byname[node["conditioncharacter"]];
+	}
+
+	if (node.count("conditiontype") > 0) {
+		printf("[Achiev] Mark tracker for '%s' with condition %s \n", node["conditiontype"].c_str(), node["conditionvalue"].c_str());
+		if (node["conditiontype"] == "completionmark") {
+			AddMarkTracker(i, reversemarksenum[node["conditionvalue"]], completionchara);
+		}
+		else if (node["conditiontype"] == "event") {
+			AddEventCounterTracker(i, simplifiedeventsenum[node["conditionvalue"]], completionchara);
+		}
+		else if (node["conditiontype"] == "achievement") {
+			AddAchievCounterTracker(i, node["conditionvalue"], idx);
+		}
+	}
+}
+
+inline void AccomplishCondition(int condid) {
+	int achievementid = Conditionals[condid];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
+	string idx = node["name"] + node["sourceid"];
+	Achievements[idx] += 1;
+	if (Achievements[idx] == 1) {
+		g_Manager->GetPersistentGameData()->TryUnlock(achievementid);
+	}
+}
 
 inline void InitAchievs() {
 	Achievements.clear();
@@ -603,29 +702,36 @@ inline void InitAchievs() {
 	CompletionMarkListeners.clear();
 	EventCounterListeners.clear();
 	BossDeathListeners.clear();
-	for each (auto & att in XMLStuff.AchievementData->nodes)
+	AchievementListeners.clear();
+	Conditionals.clear();
+	int condid = 0;
+	for (int i = 638; i <= XMLStuff.AchievementData->maxid; i++)
 	{
-		if (att.first > 638) {
-			XMLAttributes node = att.second;
+		XMLAttributes node = XMLStuff.AchievementData->GetNodeById(i);
+		if (node["name"].length() > 0) {
 			string idx = node["name"] + node["sourceid"];
 			Achievements[idx] = 0;
-			if (node.count("count") > 0) {
-				Achievements[idx] = -(toint(node["count"]) - 1);
-			}
 
-			int completionchara = 0;
-			if (node.count("characondition") > 0) {
-				completionchara = XMLStuff.PlayerData->byname[node["characondition"]];
+			string achievcond = "";
+			//if (node["conditiontype"] == "achievement") { achievcond += node["conditionvalue"]; }
+			for each (XMLAttributes child in XMLStuff.AchievementData->childs[i]["condition"]) {
+				condid++;
+				Conditionals[-condid] = i;
+				XMLStuff.AchievementData->nodes[-condid] = child;
+				XMLStuff.AchievementData->nodes[-condid]["id"] = to_string(-condid);
+				XMLStuff.AchievementData->nodes[-condid]["sourceid"] = node["sourceid"];
+				XMLStuff.AchievementData->nodes[-condid]["name"] = idx + "-Cond-" + XMLStuff.AchievementData->nodes[-condid]["conditiontype"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditionvalue"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditioncharacter"];
+				XMLStuff.AchievementData->nodes[-condid]["hidden"] = "true";
+				XMLStuff.AchievementData->byname[XMLStuff.AchievementData->nodes[-condid]["name"]] = -condid;
+				XMLStuff.AchievementData->bynamemod[XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"]] = -condid;
+				node["conditiontype"] = "achievement";
+				if (achievcond.length() > 0) { achievcond += ","; }
+				achievcond += XMLStuff.AchievementData->nodes[-condid]["name"];
+				AddTrackers4Achiev(XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"], -condid, child);
 			}
-
-			if (node.count("markcondition") > 0) {
-				printf("[Achiev] Mark tracker for '%s' with condition %s \n", node["characondition"].c_str(), node["markcondition"].c_str());
-				AddMarkTracker(att.first, reversemarksenum[node["markcondition"]], completionchara);				
-			}else if (node.count("eventcondition") > 0) {
-				printf("[Achiev] Event tracker for '%s' with condition %s \n", node["characondition"].c_str(), node["eventcondition"].c_str());
-				AddEventCounterTracker(att.first, simplifiedeventsenum[node["eventcondition"]], completionchara);
-			}
-
+			node["conditionvalue"] = achievcond;
+			XMLStuff.AchievementData->nodes[i] = node;
+			AddTrackers4Achiev(idx, i, node);
 		}
 	}
 }

@@ -10,12 +10,12 @@ SCRIPT_PATH = os.path.realpath(__file__)
 SOURCE_DIRECTORY = os.path.dirname(SCRIPT_PATH)
 
 ENUM_FILE_PATH = os.path.join(SOURCE_DIRECTORY, "../repentogon/resources/scripts/enums_ex.lua")
-DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../documentation/")
+DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../docs/")
 
 if "GITHUB_WORKSPACE" in os.environ:
     SOURCE_DIRECTORY = os.environ["GITHUB_WORKSPACE"]
     ENUM_FILE_PATH = os.path.join(SOURCE_DIRECTORY, "repentogon/resources/scripts/enums_ex.lua")
-    DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/")
+    DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "docs/")
 
 
 data = []

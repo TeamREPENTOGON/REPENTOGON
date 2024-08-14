@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_KeyConfigMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }
@@ -43,7 +43,7 @@ LUA_FUNCTION(Lua_KeyConfigMenu_SetSelectedColumn)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
-	menu->SelectedColumn = (int)luaL_checkinteger(L, 2);
+	menu->SelectedColumn = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

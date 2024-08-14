@@ -23,6 +23,8 @@ LuaRender::ContextQueue LuaRender::RenderContextQueue;
 LuaRender::RenderContext LuaRender::ElementsRenderContext;
 LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
+static constexpr bool EnableCustomRendering = false;
+
 // ============================================================================
 // Image
 
@@ -220,7 +222,7 @@ LUA_FUNCTION(lua_Quad_GetBottomRight) {
 
 static void SetQuadComponent(lua_State* L, Vector* (*fn)(QuadVar const&)) {
 	Vector* component = fn(GetQuad(L));
-	*component = lua::GetUserdata<Vector>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*component = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 }
 
 LUA_FUNCTION(lua_Quad_SetTopLeft) {
@@ -250,7 +252,7 @@ static void RegisterQuadClasses(lua_State* L) {
 		{ "GetBottomLeft", lua_Quad_GetBottomLeft },
 		{ "GetBottomRight", lua_Quad_GetBottomRight },
 		{ "SetTopLeft", lua_Quad_SetTopLeft },
-		{ "SetTopLeft", lua_Quad_SetTopRight },
+		{ "SetTopRight", lua_Quad_SetTopRight },
 		{ "SetBottomLeft", lua_Quad_SetBottomLeft },
 		{ "SetBottomRight", lua_Quad_SetBottomRight },
 		{ NULL, NULL }
@@ -2138,7 +2140,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 		throw std::runtime_error("Bad.");
 	}
 
-	int callbackId = 1136;
+	const int callbackId = 1136;
 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
 		GL::InitProjectionMatrix();
 
@@ -2372,6 +2374,10 @@ LUA_FUNCTION(Lua_Renderer_RenderSet) {
 
 HOOK_METHOD(KAGE_Memory_MemoryPoolDescriptor, Allocate, (uint32_t n) -> void*) {
 	void* result = super(n);
+	if (!EnableCustomRendering) {
+		return result;
+	}
+
 	// ZHL::Log("Allocating memory in descriptor %p. Amount is %u, base is located at %p, result is at %p\n", this, n, GetBase(), result);
 
 	ptrdiff_t diff = (ptrdiff_t)result - (ptrdiff_t)GetBase();
@@ -2527,8 +2533,10 @@ namespace LuaRender {
 		applyImagePatch.AddInternalCall(LuaPreDrawElements);
 		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
-		sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
-		sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+		if (EnableCustomRendering) {
+			sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
+			sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+		}
 	}
 
 #define PAD(D, T, N) D.AddAttribute(T, N)

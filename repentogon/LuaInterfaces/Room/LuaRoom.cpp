@@ -1,6 +1,12 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "Room.h"
+
+#include "../../Patches/CustomItemPools.h"
+
+RoomASM roomASM;
+extern uint32_t hookedbackdroptype;
 
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -152,28 +158,35 @@ LUA_FUNCTION(Lua_RoomGetEffects)
 
 LUA_FUNCTION(lua_RoomGetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_Integer index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 
-	if (!room->IsValidGridIndex(index, false)) {
-		return luaL_error(L, "Invalid grind index %lld\n", index);
+	if (!room->_descriptor->Data->IsAllowedGridIndex(index)) {
+		// return luaL_error(L, "Invalid grid index %I\n", index);
+		lua_pushnil(L);
+	} else {
+		uint8_t railType = room->GetRailType((uint8_t)index);
+		if (railType == 255) {
+			lua_pushnil(L);
+		}
+		else {
+			lua_pushinteger(L, railType);
+		}
 	}
-
-	lua_pushinteger(L, room->GetRailType((uint8_t)index));
 
 	return 1;
 }
 
 LUA_FUNCTION(lua_RoomSetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_Integer index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 
 	if (!room->IsValidGridIndex(index, false)) {
-		return luaL_error(L, "Invalid grind index %lld\n", index);
+		return luaL_error(L, "Invalid grid index %d\n", index);
 	}
 
-	lua_Integer rail = luaL_checkinteger(L, 3);
+	int rail = (int)luaL_checkinteger(L, 3);
 	if (!Room::IsValidRailType(rail)) {
-		return luaL_error(L, "Invalid rail type %lld\n", index);
+		return luaL_error(L, "Invalid rail type %d\n", rail);
 	}
 
 	room->SetRailType((uint8_t)index, (RailType)rail);
@@ -289,6 +302,181 @@ LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	roomASM.ForceSpecialQuestDoor = lua::luaL_optboolean(L, 2, false);
+	lua_pushboolean(L, room->TrySpawnSpecialQuestDoor());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetLavaIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_lavaIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetLightningIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushnumber(L, g_Game->_lightningIntensity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetLightningIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	g_Game->_lightningIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomDoLightningStrike) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	RNG rng; // oppa tyrone style
+	rng.game_constructor(seed, 35);
+	float intensity = 1.3f + rng.RandomFloat()*.6f;
+	
+	g_Game->_lightningIntensity = intensity;
+	g_Manager->_sfxManager.Play(472, 1.0, 90, false, 0.9f + rng.RandomFloat() * 0.2f, 0);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetRainIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushnumber(L, room->_rainIntensity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetRainIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_rainIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->_numRainSpawners);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.GetBackdropType, I think
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	if (hookedbackdroptype != 0) {
+		lua_pushinteger(L, hookedbackdroptype);
+		return 1;
+	}
+	else {
+		Backdrop* bg = room->GetBackdrop();
+		lua_pushinteger(L, bg->backdropId);
+		return 1;
+	}
+}
+
+LUA_FUNCTION(Lua_RoomSaveState) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->SaveState();
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetBossVictoryJingle) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->GetBossVictoryJingle());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetItemPool) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	const int poolType = (int)luaL_checkinteger(L, 2);
+
+	if (poolType < POOL_NULL || poolType >= CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+	}
+
+	roomASM.ItemPool = poolType;
+
+	return 0;
+}
+
+inline int TrySpecialPool(Room* room) {
+	const uint32_t roomType = room->_roomType;
+
+	if (room->_bossId == BOSS_FALLEN) {
+		return ROOM_DEVIL;
+	}
+
+	if (roomType == ROOM_BOSS) {
+		if (*g_Game->GetLevelStateFlags() & (1 << 17)) {
+			return ROOM_DEVIL;
+		}
+		return roomType;
+	}
+
+	if (roomType == ROOM_TREASURE) {
+		if (g_Game->IsGreedMode() && (room->_descriptor->GridIndex != g_Game->_greedModeTreasureRoomIdx)) {
+			return ROOM_BOSS;
+		}
+		if (room->_descriptor->Flags & (1 << 11)) {
+			return ROOM_DEVIL;
+		}
+		return roomType;
+	}
+
+	if (roomType == ROOM_CHALLENGE && (room->_descriptor->Data->Subtype == 1)) {
+		return ROOM_BOSS;
+	}
+
+	return roomType;
+}
+
+LUA_FUNCTION(Lua_RoomGetItemPool) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	seed = seed != 0 ? seed : 1;
+	bool raw = lua::luaL_optboolean(L, 3, false);
+
+	const RoomConfig_Room* roomData = room->_descriptor->Data;
+	if (g_Manager->_starting || roomData == nullptr)
+	{
+		lua_pushinteger(L, POOL_NULL);
+		return 1;
+	}
+
+	if (roomASM.ItemPool != POOL_NULL || raw) {
+		lua_pushinteger(L, roomASM.ItemPool);
+		return 1;
+	}
+
+	if ((roomData->Type == ROOM_DEFAULT) && (roomData->StageId == STB_HOME) && roomData->Subtype == 2) {
+		lua_pushinteger(L, POOL_MOMS_CHEST);
+		return 1;
+	}
+
+	uint32_t roomType = TrySpecialPool(room);
+	int poolType = g_Game->_itemPool.GetPoolForRoom(roomType, seed);
+	poolType = poolType != POOL_NULL ? poolType : POOL_TREASURE;
+
+	lua_pushinteger(L, poolType);
+	return 1;
+}
+
+HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
+	roomASM.WaterDisabled = false;
+	roomASM.ItemPool = POOL_NULL;
+	super(param_1, desc);
+	//printf("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
+	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
+		this->_waterAmount = 1.0f;
+		//printf("setting water\n");
+	}
+}
+
+HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int) {
+	if (roomASM.ItemPool != POOL_NULL) {
+		return g_Game->_itemPool.GetCollectible(roomASM.ItemPool, seed, noDecrease, COLLECTIBLE_NULL);
+	}
+	return super(seed, noDecrease);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -324,6 +512,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetGreedWaveTimer", Lua_RoomGetGreedWaveTimer},
 		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
 		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
+		{ "TrySpawnSpecialQuestDoor", Lua_RoomTrySpawnSpecialQuestDoor},
+		{ "SetLavaIntensity", Lua_RoomSetLavaIntensity},
+		{ "GetLightningIntensity", Lua_RoomGetLightningIntensity},
+		{ "SetLightningIntensity", Lua_RoomSetLightningIntensity},
+		{ "DoLightningStrike", Lua_RoomDoLightningStrike},
+		{ "GetRainIntensity", Lua_RoomGetRainIntensity},
+		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
+		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
+		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
+		{ "SaveState", Lua_RoomSaveState},
+		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
+		{ "SetItemPool", Lua_RoomSetItemPool },
+		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

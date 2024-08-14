@@ -164,6 +164,7 @@ namespace lua {
         extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* BestiaryMenuMT;
         extern LIBZHL_API const char* BlendModeMT;
+        extern LIBZHL_API const char* BossPoolMT;
         extern LIBZHL_API const char* CameraMT;
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* ChallengeMenuMT;
@@ -175,14 +176,17 @@ namespace lua {
         extern LIBZHL_API const char* ColorModifierMT;
         extern LIBZHL_API const char* CustomChallengeMenuMT;
         extern LIBZHL_API const char* CutscenesMenuMT;
+        extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* DailyChallengeMenuMT;
         extern LIBZHL_API const char* DebugRendererMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
+        extern LIBZHL_API const char* ColorParamsMT;
         extern LIBZHL_API const char* EntityConfigMT;
         extern LIBZHL_API const char* EntityConfigEntityMT;
         extern LIBZHL_API const char* EntityConfigPlayerMT;
+        extern LIBZHL_API const char* EntityConfigBabyMT;
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* FXParamsMT;
@@ -214,6 +218,7 @@ namespace lua {
         extern LIBZHL_API const char* NightmareSceneMT;
         extern LIBZHL_API const char* NullFrameMT;
         extern LIBZHL_API const char* OptionsMenuMT;
+        extern LIBZHL_API const char* PauseMenuMT;
         extern LIBZHL_API const char* PersistentGameDataMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
@@ -225,7 +230,8 @@ namespace lua {
         extern LIBZHL_API const char* ProceduralItemManagerMT;
         extern LIBZHL_API const char* RngMT;
         extern LIBZHL_API const char* RoomMT;
-        extern LIBZHL_API const char* RoomConfigHolderMT;
+        extern LIBZHL_API const char* RoomConfigSetMT;
+        extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
         extern LIBZHL_API const char* RoomTransitionMT;
@@ -239,6 +245,10 @@ namespace lua {
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* WeightedOutcomePickerMT;
         extern LIBZHL_API const char* CostumeSpriteDescMT;
+        extern LIBZHL_API const char* RailManagerMT;
+        extern LIBZHL_API const char* LootListMT;
+        extern LIBZHL_API const char* LootListEntryMT;
+        extern LIBZHL_API const char* MinimapConfigMT;
     }
 
     LIBZHL_API void UnloadMetatables();
@@ -541,6 +551,7 @@ namespace lua {
     LIBZHL_API void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj);
 
     namespace callbacks {
+        LIBZHL_API bool CheckInteger(lua_State* L, int stackPosition);
         LIBZHL_API int ToInteger(lua_State* L, int stackPosition);
         LIBZHL_API double ToNumber(lua_State* L, int stackPosition);
         LIBZHL_API bool ToBoolean(lua_State* L, int stackPosition);
