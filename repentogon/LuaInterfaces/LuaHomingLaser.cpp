@@ -5,7 +5,6 @@
 LUA_FUNCTION(Lua_EntityLaserGetHomingLaser)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
-	const char* nullLayerName = luaL_checkstring(L, 2);
 	HomingLaser* toLua = &laser->_homingLaser;
 	if (toLua == nullptr) {
 		lua_pushnil(L);
@@ -30,6 +29,8 @@ LUA_FUNCTION(Lua_HomingLaserApplyHook)
 
 static void RegisterHomingLaser(lua_State* L)
 {
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_LASER, "GetHomingLaser", Lua_EntityLaserGetHomingLaser);
+
 	lua::RegisterVariableGetter(L, lua::Metatables::ENTITY_LASER, "HomingLaser", Lua_EntityLaserGetHomingLaser);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_ENTITY_LASER, "HomingLaser", Lua_EntityLaserGetHomingLaser);
 
