@@ -1,5 +1,44 @@
+"558bec83e4f883ec2056578bf9f30f115424":
+__thiscall void HomingLaser::ApplyHook(float scale<xmm1>, float sinOffset<xmm2>);
+
+"558bec83e4f083ec7856578bf9f30f1047":
+__thiscall void HomingLaser::ApplyHorizontalTurn();
+
+"558bec83e4f883ec3c538bd9f30f115424":
+__thiscall void HomingLaser::ApplyRing(float scale<xmm1>, float param_3<xmm2>);
+
+"558bec83e4f883ec28568bf1f30f115424??57f30f114c24":
+__thiscall void HomingLaser::ApplyWiggle(float scale<xmm1>, float param_3<xmm2>);
+
+"558bec83e4f083ec7856578bf9f30f114c24":
+__thiscall void HomingLaser::Boomerang(float RangeRelated<xmm1>, float always60f<xmm2>, float MaxDistance<xmm3>);
+
 "558bec6aff68????????64a1????????5083ec54535657a1????????33c5508d45??64a3????????f30f114d":
 __thiscall void HomingLaser::CalculateSamples(float param_2<xmm1>);
+
+"558bec83e4f883ec34538bd95657":
+__thiscall Entity * HomingLaser::ClipSamplesToEntity(Vector * ret1, Vector * ret2, int Type, int Variant);
+
+"558bec83e4f883ec14538bd9f30f114c24":
+__thiscall bool HomingLaser::ClipSamplesToLength(float param_2<xmm1>);
+
+"558bec83e4f883ec2c5356578bf98b47":
+__thiscall void HomingLaser::ClipSamplesToWall(Vector * PositionOffset);
+
+"558bec83e4f883ec1c8b45??894c24":
+__thiscall bool HomingLaser::CollideWithGrid(Vector * pos, int collisionClass);
+
+"558bec83e4f8518b41??53":
+__thiscall void HomingLaser::CollideWithPlayer();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec385657a1????????33c5508d45??64a3????????0f28c2":
+__thiscall void HomingLaser::ComputeCircleLaser(Vector * pos, int param_3, float param_4<xmm2>, Entity * spawner);
+
+"558bec83e4f083ec5856578bf9":
+__thiscall void HomingLaser::Orbit(float param_2<xmm1>);
+
+"558bec83e4f883ec20568d71":
+__thiscall void HomingLaser::OptimizeSamples(float param_2<xmm1>);
 
 struct HomingLaser_Bezier {
 } : 0x18;
