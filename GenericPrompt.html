@@ -7305,10 +7305,53 @@
 </ul>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">newPrompt</span> <span class="o">=</span> <span class="n">GenericPrompt</span><span class="p">()</span>
-<span class="kd">local</span> <span class="n">currentPrompt</span> <span class="o">=</span> <span class="n">Game</span><span class="p">():</span><span class="n">GetGenericPrompt</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
+<p>This code creates a generic popup that opens when pressing the "Minus"-button. It prints the selected option to the console and displays some dummy text. 
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">myPrompt</span> <span class="o">=</span> <span class="n">GenericPrompt</span><span class="p">()</span>
+<span class="n">myPrompt</span><span class="p">:</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">myPrompt</span><span class="p">:</span><span class="n">SetText</span><span class="p">(</span><span class="s2">&quot;Some test text&quot;</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">false</span>
+
+<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">myRenderFunction</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="n">myPrompt</span><span class="p">:</span><span class="n">Render</span><span class="p">()</span>
+<span class="kr">end</span> 
+<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_RENDER</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">myRenderFunction</span><span class="p">)</span>
+
+<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">myUpdateFunction</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> 
+    <span class="n">myPrompt</span><span class="p">:</span><span class="n">Update</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="c1">-- true = Process user inputs</span>
+    <span class="kr">if</span> <span class="n">wasPromptDisplayed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">myPrompt</span><span class="p">:</span><span class="n">IsActive</span><span class="p">()</span> <span class="kr">then</span> <span class="c1">-- prompt was closed by user </span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User selected option: &quot;</span><span class="o">..</span><span class="n">myPrompt</span><span class="p">:</span><span class="n">GetSubmittedSelection</span><span class="p">())</span> 
+        <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">false</span> 
+    <span class="kr">end</span>
+    <span class="kr">if</span> <span class="n">Input</span><span class="p">.</span><span class="n">IsButtonTriggered</span><span class="p">(</span><span class="n">Keyboard</span><span class="p">.</span><span class="n">KEY_MINUS</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="kr">then</span> <span class="c1">-- on Pressing minus button will open prompt </span>
+        <span class="n">myPrompt</span><span class="p">:</span><span class="n">Show</span><span class="p">()</span> 
+        <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">true</span> 
+    <span class="kr">end</span> 
+<span class="kr">end</span> 
+<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_UPDATE</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">myUpdateFunction</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
 </details>
 </details>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">⚓︎</a></h2>
