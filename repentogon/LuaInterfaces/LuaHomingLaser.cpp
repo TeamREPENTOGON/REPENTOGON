@@ -19,10 +19,19 @@ LUA_FUNCTION(Lua_EntityLaserGetHomingLaser)
 LUA_FUNCTION(Lua_HomingLaserApplyHook)
 {
 	HomingLaser* homing = *lua::GetUserdata<HomingLaser**>(L, 1, lua::metatables::HomingLaserMT);
-	float scale = luaL_checknumber(L, 2);
-	float sinOffset = luaL_checknumber(L, 3);
+	bool shouldOptimize = false;
+	if (homing->_samples.size() < 3) {
+		homing->_samples = homing->_nonOptimizedSamples;
+		shouldOptimize = true;
+	}
+
+	float scale = (float)luaL_checknumber(L, 2);
+	float sinOffset = (float)luaL_checknumber(L, 3);
 
 	homing->ApplyHook(scale, sinOffset);
+
+	if (shouldOptimize)
+		homing->OptimizeSamples(0.001f);
 
 	return 0;
 }
