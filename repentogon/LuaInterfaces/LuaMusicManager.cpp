@@ -48,7 +48,13 @@ LUA_FUNCTION(Lua_MusicManager_Fadein) {
 LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
+	int duration = (int)luaL_optinteger(L, 3, 140);
+	if (duration < 0)
+		return luaL_argerror(L, 3, "Duration must be greater than zero!");
 	music->PlayJingle(musicId, 140, false);
+
+	//duration was inlined and (at least most) calls to the func had it stripped from the args, just set it ourselves
+	music->_jingleCountdownMaybe = duration;
 
 	return 0;
 }

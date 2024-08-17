@@ -1,5 +1,6 @@
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "../../LuaInterfaces/Room/Room.h"
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
 *  Boss rooms can't be changed in this manner as they have more setup, and will crash if forced above 2.
@@ -90,6 +91,19 @@ void ASMPatchMegaSatanEnding() {
 		.AddRelativeJump((char*)addr + 0x5) // jmp isaac-ng.XXXXXXXX
 		.AddBytes("\x83\xC4\x04")
 		.AddRelativeJump((char*)addr + 0x1F);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchWaterDisabler() {
+	SigScan scanner("c685ebfaff????8b");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	void* boolPtr = &roomASM.WaterDisabled;
+	printf("[REPENTOGON] Patching Room::Init water disabler bool at %p\n", addr);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))
+		.AddBytes("\xc6\x05").AddBytes(ByteBuffer().AddAny((char*)&boolPtr, 4)).AddBytes("\x01")
+		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -198,3 +212,13 @@ void ASMPatchRoomClearDelay() {
 	sASMPatcher.PatchAt(((char*)addrs[1] + 0x2), &patch3);
 }
 */
+
+void ASMPatchTrySpawnBlueWombDoor() {
+	SigScan scanner("83f8087c??8b83");
+	scanner.Scan();
+	void* addr = (char*)scanner.GetAddress() + 7;
+	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
+	ASMPatch patch;
+	patch.AddBytes("\xE0");
+	sASMPatcher.FlatPatch(addr, &patch);
+}

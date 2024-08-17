@@ -20,3 +20,4 @@ void ASMPatchTrinketRender();
 void ASMPatchPickupUpdatePickupGhosts();
 void ASMPatchProjectileDeath();
 void ASMPatchTearDeath();
+void ASMPatchPrePlayerGiveBirth();

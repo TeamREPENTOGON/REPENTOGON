@@ -4,6 +4,8 @@ void ASMPatchBlueWombCurse();
 void ASMPatchVoidGeneration();
 void PatchSpecialQuest();
 void PatchDealRoomVariant();
+void PatchOverrideDataHandling();
+void PatchLevelGeneratorTryResizeEndroom();
 
 const int stageidToAchievement[36] = {
 	-1, // Special Rooms

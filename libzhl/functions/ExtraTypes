@@ -70,6 +70,11 @@ TypeInfo vector_ColorParams {
     Align 4;
 };
 
+TypeInfo vector_SoundEffect {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo deque_Point {
     Size 20;
     Align 4;
@@ -96,6 +101,16 @@ TypeInfo vector_TemporaryEffect {
 };
 
 TypeInfo std_vector_int {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_float {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_vector2 {
     Size 12;
     Align 4;
 };
@@ -170,10 +185,10 @@ TypeInfo vector_PoolItem {
 };
 
 // Something goofy seemed to be happening with std::vector<bool> in zhl
-/*TypeInfo vector_bool {
-	Size 12;
+TypeInfo vector_bool {
+	Size 16;
 	Align 4;
-};*/
+};
 
 TypeInfo vector_TrinketPoolItem {
 	Size 12;
@@ -197,5 +212,15 @@ TypeInfo vector_CostumeSpriteDesc {
 
 TypeInfo deque_LootListEntry {
 	Size 20;
+	Align 4;
+};
+
+TypeInfo vector_BossPoolEntry {
+	Size 12;
+	Align 4;
+};
+
+TypeInfo vector_HomingLaserBezier {
+	Size 12;
 	Align 4;
 };

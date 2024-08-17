@@ -2,18 +2,45 @@
 #include "Log.h"
 
 bool Room::IsValidRailType(int rail) {
-	if (rail < 0) {
-		return false;
-	}
-	else if (rail > RailType::RAIL_NONE) {
+	if (rail < 0 || rail > RailType::RAIL_NONE) {
 		return false;
 	}
 	else {
-		return rail <= RailType::RAIL_CROSSING || 
-			rail == RAIL_DOOR_LEFT || 
-			rail == RAIL_DOOR_RIGHT || 
-			rail == RAIL_DOOR_TOP || 
-			rail == RAIL_DOOR_BOTTOM;
+		return rail <= RailType::RAIL_CROSSROAD ||
+			rail == RailType::RAIL_HORIZONTAL ||
+			rail == RailType::RAIL_VERTICAL ||
+			rail == RailType::RAIL_DOWN_TO_RIGHT ||
+			rail == RailType::RAIL_DOWN_TO_LEFT ||
+			rail == RailType::RAIL_UP_TO_RIGHT ||
+			rail == RailType::RAIL_UP_TO_LEFT ||
+			rail == RailType::RAIL_CROSSROAD ||
+			rail == RailType::RAIL_END_LEFT ||
+			rail == RailType::RAIL_END_RIGHT ||
+			rail == RailType::RAIL_END_UP ||
+			rail == RailType::RAIL_END_DOWN ||
+			rail == RailType::RAIL_HORIZONTAL_CART_LEFT ||
+			rail == RailType::RAIL_HORIZONTAL_CART_RIGHT ||
+			rail == RailType::RAIL_VERTICAL_CART_UP ||
+			rail == RailType::RAIL_VERTICAL_CART_DOWN ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_1 ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_2 ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_3 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_1 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_2 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_3 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_RIGHT_1 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_RIGHT_2 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_LEFT_1 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_LEFT_2 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_RIGHT_1 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_RIGHT_2 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_LEFT_1 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_LEFT_2 ||
+			rail == RailType::RAIL_DOOR_LEFT ||
+			rail == RailType::RAIL_DOOR_BOTTOM ||
+			rail == RailType::RAIL_DOOR_RIGHT ||
+			rail == RailType::RAIL_DOOR_TOP ||
+			rail == RailType::RAIL_NONE;
 	}
 }
 
@@ -22,7 +49,25 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 		return false;
 	}
 
+	/* Help regarding drawings:
+	 *  - Walls are represented with xxx.
+	 *  - In a room with out-of-bounds part, out-of-bounds parts are 
+	 *    represented with ***.
+	 *  - Numbers represent the grid index of in-bounds non-walls grids.
+	 */
 	switch (Shape) {
+    /* |-----------------------------------------------------------|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |xxx 016                                                 xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                 118 xxx|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |------------------------------------------------------------
+     */
 	case ROOMSHAPE_1x1: {
 		if (includeWalls) {
 			return index <= 134;
@@ -34,6 +79,18 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 				index >= 16; /* Top wall */
 		}
 
+    /* |-----------------------------------------------------------|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |xxx 046                                                 xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                 088 xxx|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |------------------------------------------------------------
+     */
 	case ROOMSHAPE_IH:
 		if (includeWalls) {
 			return index >= 30 && index <= 104;
@@ -45,12 +102,111 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 				index % 15 != 14; 
 		}
 
+    /* |-----------------------------------------------------------|
+     * |*** *** *** *** xxx xxx xxx xxx xxx xxx xxx *** *** *** ***|
+     * |*** *** *** *** xxx 020                 xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                 114 xxx *** *** *** ***|
+     * |*** *** *** *** xxx xxx xxx xxx xxx xxx xxx *** *** *** ***|
+     * |------------------------------------------------------------
+     */
 	case ROOMSHAPE_IV:
+		if (includeWalls) {
+		  return index % 15 >= 4 && index % 15 <= 10 && 
+			index >= 4 && index <= 130;
+		} else {
+		  return index % 15 >= 5 && index % 15 <= 9 && 
+			index >= 20 && index <= 114;
+		}
+    /* |-----------------------------------------------------------|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |xxx 016                                                 xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                     xxx|
+     * |xxx                                                 223 xxx|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |-----------------------------------------------------------|
+     */
 	case ROOMSHAPE_1x2:
-	case ROOMSHAPE_IIV:
-	case ROOMSHAPE_2x1:
-		break;
+		if (includeWalls) {
+		  return index >= 0 && index <= 239;
+		} else {
+		  return index % 15 != 0 && index % 15 != 14 &&
+			index >= 16 && index <= 223;
+		}
 
+    /* |-----------------------------------------------------------|
+     * |*** *** *** *** xxx xxx xxx xxx xxx xxx xxx *** *** *** ***|
+     * |*** *** *** *** xxx 020                 xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                     xxx *** *** *** ***|
+     * |*** *** *** *** xxx                 214 xxx *** *** *** ***|
+     * |*** *** *** *** xxx xxx xxx xxx xxx xxx xxx *** *** *** ***|
+     * |-----------------------------------------------------------|
+     */
+	case ROOMSHAPE_IIV:
+		if (includeWalls) {
+		  return index % 15 >= 4 && index % 15 <= 10 && 
+			index >= 4 && index <= 230;
+		} else {
+		  return index % 15 <= 5 && index % 15 <= 9 && 
+			index >= 20 && index <= 214;
+		}
+
+    /* |---------------------------------------------------------------------------------------------------------------|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |xxx 029                                                                                                     xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                     224 xxx|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |---------------------------------------------------------------------------------------------------------------|
+     */
+	case ROOMSHAPE_2x1:
+		if (includeWalls) {
+		  return index >= 0 && index <= 251;
+		} else {
+		  return index % 28 != 0 && index % 28 != 27 && 
+			index >= 29 && index <= 224;
+		}
+
+    /* |---------------------------------------------------------------------------------------------------------------|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |xxx 085                                                                                                     xxx|
+     * |xxx                                                                                                         xxx|
+     * |xxx                                                                                                     166 xxx|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***|
+     * |---------------------------------------------------------------------------------------------------------------|
+     */
 	case ROOMSHAPE_IIH:
 		if (includeWalls) {
 			return index >= 56 && index <= 195;
@@ -62,33 +218,215 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 				index % 28 != 27;
 		}
 
+    /* |---------------------------------------------------------------------------------------------------------------|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |028 029                                                                                                     055|
+     * |056                                                                                                         083|
+     * |084                                                                                                         111|
+     * |112                                                                                                         139|
+     * |140                                                                                                         167|
+     * |168                                                                                                         195|
+     * |196                                                                                                         223|
+     * |224                                                                                                         251|
+     * |252                                                                                                         279|
+     * |280                                                                                                         307|
+     * |308                                                                                                         335|
+     * |336                                                                                                         363|
+     * |364                                                                                                         391|
+     * |392                                                                                                     418 419|
+     * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+     * |---------------------------------------------------------------------------------------------------------------|
+     */
 	case ROOMSHAPE_2x2:
-		break;
+		if (includeWalls) {
+		  return index >= 0 && index <= 447;
+		} else {
+		  return index % 28 != 0 && index % 28 != 27 &&
+			index >= 29 && index <= 418;
+		}
 
+    /* |---------------------------------------------------------------------------------------------------------------|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx 042                                             054 xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx 210                                             222 xxx|
+	 * |xxx 225                                                                                                     xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                     418 xxx|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |---------------------------------------------------------------------------------------------------------------|
+     */
 	case ROOMSHAPE_LTL:
 		if (includeWalls) {
-			/* if (index <= 447) {
-				// Any index in the right half is valid
-				if (index % 28 > 12) {
-					return true;
-				}
-				else {
-					// Otherwise index must be higher than the first valid index
-					return index >= 181;
-				}
-			} 
+			if (index >= 196) {
+				return index <= 447;
+			}
+			else if (index >= 0) {
+				return index % 28 >= 13;
+			}
 			else {
 				return false;
-			} */
-			return index <= 447 && ((index % 28 > 12 || index >= 181));
+			}
 		}
 		else {
-			return true;
+			if (index >= 224) {
+				return index >= 225 && index <= 418 &&
+					index % 28 != 0 && index % 28 != 27;
+			}
+			else if (index >= 0) {
+				return index >= 42 && index <= 222 &&
+					index % 28 >= 14 && index % 28 <= 26;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 
+	/* |---------------------------------------------------------------------------------------------------------------|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx 029                                             041 xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx 197                                             209 xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |xxx 225                                                                                                     xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                     418 xxx|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |---------------------------------------------------------------------------------------------------------------|
+	 */
+	case ROOMSHAPE_LTR:
+		if (includeWalls) {
+			if (index >= 196) {
+				return index <= 447;
+			}
+			else if (index >= 0) {
+				return index % 28 <= 14;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			if (index >= 225) {
+				return index <= 418 && 
+					index % 28 != 0 && index % 28 != 27;
+			}
+			else if (index >= 0) {
+				return index >= 29 && index <= 209 &&
+					index % 28 >= 1 && index % 28 <= 13;
+			}
+			else {
+				return false;
+			}
+		}
+
+	/* |---------------------------------------------------------------------------------------------------------------|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |xxx 029                                                                                                     xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx 238                                             250 xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx                                                     xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx 406                                             418 xxx|
+	 * |*** *** *** *** *** *** *** *** *** *** *** *** *** xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |---------------------------------------------------------------------------------------------------------------|
+	 */
+	case ROOMSHAPE_LBL:
+		if (includeWalls) {
+			if (index >= 265) {
+				return index <= 447 && index % 28 >= 13;
+			}
+			else if (index >= 0) {
+				return index <= 251;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			if (index >= 238) {
+				return index <= 418 && index % 28 >= 14 && index % 28 <= 26;
+			}
+			else if (index >= 0) {
+				return index >= 29 && index <= 222 && 
+					index % 28 != 0 && index % 28 != 27;
+			}
+			else {
+				return false;
+			}
+		}
+
+	/* |---------------------------------------------------------------------------------------------------------------|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |xxx 029                                                                                                     xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                         xxx|
+	 * |xxx                                                                                                     222 xxx|
+	 * |xxx 225                                             237 xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx                                                     xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx 393                                             405 xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx *** *** *** *** *** *** *** *** *** *** *** *** ***|
+	 * |---------------------------------------------------------------------------------------------------------------|
+	 */
+	case ROOMSHAPE_LBR:
+		if (includeWalls) {
+			if (index >= 252) {
+				return index <= 447 && index % 27 <= 14;
+			}
+			else if (index >= 0) {
+				return index <= 251;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			if (index >= 225) {
+				return index <= 405 && 
+					index % 28 != 0 && index % 28 <= 13;
+			}
+			else if (index >= 29) {
+				return index <= 222 &&
+					index % 28 != 0 && index % 28 != 27;
+			}
+			else {
+				return false;
+			}
+		}
+
 	default:
-		return true;
+		return false;
 	}
 }
 

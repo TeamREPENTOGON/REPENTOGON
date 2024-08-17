@@ -10,7 +10,10 @@ __thiscall Entity_Tear* Entity_Tear::MakeMultidimensionalCopy(Entity * spawner);
 "558bec83e4f883ec4ca1????????33c4894424??f30f100d":
 __thiscall void Entity_Tear::ResetSpriteScale();
 
-struct Entity_Tear depends (ANM2) : public Entity {
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??e8????????c745??00000000c706":
+__thiscall void Entity_Tear::Constructor();
+
+struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
 	__vtable {
 		skip; // Free
 		skip; // Init
@@ -48,4 +51,7 @@ struct Entity_Tear depends (ANM2) : public Entity {
 	ANM2 _tearHaloANM2 : 0x3fc;
 	ANM2 _tearEffectANM2 : 0x510;
 	ANM2 _deadEyeANM2 : 0x624;
+	BitSet128 _tearFlags : 0x378;
+	bool _multidimensionalTouched : 0x3b8;
+	bool _prismTouched : 0x3b9;
 } : 0x778;

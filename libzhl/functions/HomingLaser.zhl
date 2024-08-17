@@ -1,0 +1,19 @@
+"558bec6aff68????????64a1????????5083ec54535657a1????????33c5508d45??64a3????????f30f114d":
+__thiscall void HomingLaser::CalculateSamples(float param_2<xmm1>);
+
+struct HomingLaser_Bezier {
+} : 0x18;
+
+struct HomingLaser depends (Entity, Vector, HomingLaser_Bezier) {
+	Entity* _entity : 0x0;
+	Vector _origin : 0x4;
+	Vector _endPoint : 0xc;
+	float _unkFloat1 : 0x14;
+	unsigned int _sampleNum : 0x18;
+	std_vector_vector2 _samples : 0x1c;
+	std_vector_vector2 _nonOptimizedSamples : 0x28;
+	std_vector_int _unkVec : 0x34;
+	int _unkInt : 0x40;
+	float _unkFloat2 : 0x44;
+	vector_HomingLaserBezier _bezier : 0x48;
+} : 0x54;

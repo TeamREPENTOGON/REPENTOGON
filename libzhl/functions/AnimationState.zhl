@@ -16,6 +16,9 @@ __thiscall int AnimationState::NextEventTrigger(const char* eventName);
 "558bec83ec0c568bf15783ec08":
 __thiscall void AnimationState::AdvancePosition(int amount);
 
+"558bec51568b75??0f28ca578bf9f30f114d??8b57??85d274??85f678??3b72??7c??68????????6a03e8????????8b57??83c408f30f104d??8b47??8b0c??8d3c??c1e6040372??85c978??6bd16c":
+__thiscall void AnimationState::AdvanceLayerPosition(int layerID, float frame<xmm2>);
+
 "568bf1c746??00000000c746??00000000":
 __thiscall void AnimationState::Rewind();
 

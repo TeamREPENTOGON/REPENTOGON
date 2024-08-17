@@ -4,6 +4,7 @@
 
 #include "../../Patches/XMLData.h"
 #include "../../Patches/ASMPatches/ASMEntityNPC.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
@@ -204,7 +205,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
 	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
 	float fallSpeed = (float)luaL_optnumber(L, 4, -8.0f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, target, yOffset, fallSpeed), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, yOffset, target , fallSpeed), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -223,10 +224,10 @@ LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
 	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float velocity = (float)luaL_optnumber(L, 3, -24.0f);
-	float yOffset = (float)luaL_optnumber(L, 4, -8.0f);
+	float velocity = (float)luaL_optnumber(L, 3, -8.f);
+	float yOffset = (float)luaL_optnumber(L, 4, -24.f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, yOffset, target, velocity ), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -338,6 +339,64 @@ LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus && entityPlus->isFlyingOverride.has_value()) {
+		lua_pushboolean(L, *entityPlus->isFlyingOverride);
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_SetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = lua::luaL_checkboolean(L, 2);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = std::nullopt;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const float defaultDamage = (float)luaL_checknumber(L, 2);
+	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
+
+	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const int layerId = (int)luaL_checkinteger(L, 2);
+	std::string newSpriteSheet = luaL_checkstring(L, 3);
+	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
+
+	std::string input;
+
+	npc->translate_gfx_path(input, newSpriteSheet);
+	npc->_sprite.ReplaceSpritesheet(layerId, input);
+
+	if (loadGraphics) {
+		npc->_sprite.LoadGraphics(false);
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -361,10 +420,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
 		//{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
+		{ "GetFlyingOverride", Lua_EntityNPC_GetFlyingOverride },
+		{ "SetFlyingOverride", Lua_EntityNPC_SetFlyingOverride },
+		{ "ClearFlyingOverride", Lua_EntityNPC_ClearFlyingOverride },
 
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
+		{ "TrySplit", Lua_EntityNPC_TrySplit },
+		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

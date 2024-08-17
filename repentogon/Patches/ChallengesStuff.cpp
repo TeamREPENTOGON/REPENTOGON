@@ -108,7 +108,7 @@ HOOK_METHOD(Manager, StartNewGame, (int playerType, int challenge, Seeds unk, in
 	if (g_MenuManager != NULL) {
 		if ((g_MenuManager->_selectedMenuID == 15)) {
 			int sel = g_MenuManager->GetMenuCustomChallenge()->SelectedElement;
-			if ((sel == 1) || ((visiblechallenges.size() - 1) < (sel - 46))) {
+			if ((sel == 1) || ((int)(visiblechallenges.size() - 1) < (sel - 46))) {
 				return super(0, 1, unk, difficulty);
 			}
 			return super(playerType, visiblechallenges[sel - 46], unk, difficulty);

@@ -6,6 +6,10 @@ tags:
 
 ## Functions
 
+### AddBibleUpgrade () {: aria-label='Functions' }
+#### void AddBibleUpgrade ( int Add, [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
+
+___
 ### CanSpawnCollectible () {: aria-label='Functions' }
 #### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean ignoreLocked ) {: .copyable aria-label='Functions' }
 
@@ -45,6 +49,11 @@ ___
 ### GetNumAvailableTrinkets () {: aria-label='Functions' }
 #### int GetNumAvailableTrinkets ( ) {: .copyable aria-label='Functions' }
 Returns the amount of trinkets available in the item pool.
+
+___
+### GetNumItemPools () {: aria-label='Functions' }
+#### int GetNumItemPools ( ) {: .copyable aria-label='Functions' }
+Retrieves the total number of item pools in the game, including custom item pools.
 
 ___
 ### GetPillColor () {: aria-label='Functions' }

@@ -5,6 +5,9 @@
 __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *param_3);
 */
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec085657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void Entity_Player::constructor();
+
 "558bec83e4f883ec0c5356578bf98bb7":
 __thiscall void Entity_Player::update_red_hearts();
 
@@ -46,6 +49,9 @@ __thiscall void Entity_Player::AddPrettyFly();
 "558bec83ec085356578b7d??8bd985ff":
 __thiscall void Entity_Player::AddCoins(int amount);
 
+"558bec6aff68????????64a1????????5081ecb4000000a1????????33c58945??53":
+__thiscall void Entity_Player::ControlActiveItem(int slot);
+
 "558bec83e4f883ec208b4d":
 static cleanup PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
 
@@ -67,8 +73,20 @@ __thiscall void Entity_Player::TriggerRoomExit(bool unk);
 "558bec83e4f883ec7ca1????????33c4894424??538bd9":
 __thiscall bool Entity_Player::TriggerDeath(bool checkOnly);
 
+"6a01e8????????c3":
+__thiscall bool Entity_Player::WillPlayerRevive();
+
 "558bec83e4f883ec08568bf15780be????????00":
 __thiscall void Entity_Player::Revive();
+
+"558bec83e4f881ecc4000000a1????????33c4898424????????538bd9":
+__thiscall void Entity_Player::ReviveFromCollectible(uint32_t itemID, bool ownedByThisPlayer);
+
+"558bec83ec24a1????????33c58945??53568bf1":
+__thiscall void Entity_Player::ReviveFromTrinket(uint32_t trinketID);
+
+"8b81????????0fbf91":
+__thiscall int Entity_Player::GetExtraLives();
 
 "558bec568bf1e8????????8b45??8986":
 __thiscall void Entity_Player::SetItemState(CollectibleType collectible);
@@ -144,7 +162,7 @@ __thiscall int Entity_Player::AddActiveCharge(unsigned int charge, int slot, boo
 __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity_Pickup* existingCollectible, bool removeFromPlayerForm);
 
 "558bec515356578b7d??8bd9895d":
-__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible);
+__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible, bool unusedBool);
 
 "558bec83e4f8518a55":
 __thiscall void Entity_Player::AddHearts(int hearts, bool unk);
@@ -201,6 +219,9 @@ __thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool 
 "558bec83e4f85153568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketRemoved(unsigned int trinketID);
 
+"558bec83e4f883ec0c5356576a0068????????8bf1":
+__thiscall void Entity_Player::TriggerEchoChamber(uint32_t pocketItemType, int cardOrPillColor);
+
 "558bec83e4f85153565733f6":
 __thiscall int Entity_Player::GetWeaponModifiers();
 
@@ -249,6 +270,9 @@ __thiscall void Entity_Player::CheckPoopSpellQueue();
 "558bec6aff68????????64a1????????5081ec78010000":
 __thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
 
+"558bec83e4f8515356578b7d??8bf185ff":
+__thiscall void Entity_Player::RemoveCostume(ItemConfig_Item * Item);
+
 "558bec8b55??5685d278??a1????????8bb0????????8b80????????2bc6c1f8023bd07d??8b04??6a00":
 __thiscall void Entity_Player::AddNullCostume(int costumeid);
 
@@ -269,6 +293,9 @@ __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 
 "558bec518b15????????535633f6":
 __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
+
+"558bec83e4f883ec2ca1????????33c4894424??538bd956578b7d":
+__thiscall bool Entity_Player::TryRemoveTrinket(uint32_t id);
 
 "558bec83ec30a1????????33c58945??53":
 __thiscall bool Entity_Player::TryRemoveSmeltedTrinket(unsigned int id);
@@ -296,7 +323,13 @@ __thiscall void Entity_Player::ClearCollectibleAnim(CollectibleType collectible)
 __thiscall unsigned int Entity_Player::GetMaxPocketItems();
 
 "558bec515356578bf9e8????????8b5d":
-__thiscall void Entity_Player::AddPocketItem(unsigned int slot, unsigned int itemID);
+__thiscall void Entity_Player::AddPocketItem(int id, uint32_t pocketItemType);
+
+"558bec8b55??85d278??83fa0473??8b45??8984??????????c784??????????01000000":
+__thiscall void Entity_Player::SetCard(int slot, int card);
+
+"558bec8b55??85d278??83fa0473??8b45??8984??????????c784??????????00000000":
+__thiscall void Entity_Player::SetPill(int slot, int pillColor);
 
 "558bec568bf1e8????????8b0d":
 __thiscall void Entity_Player::AddBoneOrbital(Vector* Position);
@@ -407,6 +440,9 @@ __thiscall void Entity_Player::MorphToCoopGhost();
 "558bec8b45??538bd983f8ff":
 __thiscall void Entity_Player::RemovePocketItem(int slot);
 
+"558bec53568b75??8bd95783feff":
+__thiscall void Entity_Player::DropPocketItem(int slot, Vector* pos);
+
 "558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bf9":
 __thiscall void Entity_Player::RerollAllCollectibles(RNG * rng, bool includeActives);
 
@@ -515,6 +551,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
 	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
 	inline int* GetGoldenHearts() { return (int*)((char*)this + 0x186C); }
+	inline vector_EntitySaveState* GetMovingBoxContents() {return &this->_movingBoxContents; }
 	inline int* GetBoneHearts() {return (int*)((char*)this + 0x1CA8); }
 	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
 	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
@@ -595,6 +632,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _gnawedLeafTimer : 0x12c4;
 	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x12d8;
+	int _damageCooldown : 0x1308;
 	int _playerType: 0x130c;
 	float _damage : 0x13b8;
 	float _movespeed : 0x14ac;
@@ -609,6 +647,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
 	uint32_t _cacheFlags : 0x14b8;
+	int8_t _tearDisplacement : 0x14bc;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	int _bombPlaceDelay : 0x1544;
 	int _controllerIndex : 0x154c;
@@ -622,7 +661,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	KColor _footprintColor2 : 0x1794;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
+	uint32_t _conceptionFamiliarFlags : 0x1858;
 	int _babySkin : 0x1a0c;
+	vector_EntitySaveState _movingBoxContents : 0x1c9c;
 	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;

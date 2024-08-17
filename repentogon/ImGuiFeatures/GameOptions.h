@@ -160,7 +160,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                 if (ImGui::BeginTabItem(LANG.OPT_VIS)) {
                     if (ImGui::BeginTable("Visual Effects_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         AddNewTableRow();
-                        ImGui::SliderFloat(LANG.OPT_VIS_GAMMA, &g_Manager->GetOptions()->_gamma, 0.0f, 1.0f, "%.2f");
+                        ImGui::SliderFloat(LANG.OPT_VIS_GAMMA, &g_Manager->GetOptions()->_gamma, 0.0f, 2.0f, "%.2f");
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_gamma, 1.0f);
                         AddNewTableRow();
                         ImGui::SliderFloat(LANG.OPT_VIS_EXPOSURE, &g_Manager->GetOptions()->_exposure, 0.0f, 1.0f, "%.2f");
@@ -308,6 +308,33 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_INTERPOLV2, &repentogonOptions.interpolV2);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_INTERPOLV2_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.interpolV2, false);
+                        AddNewTableRow();
+                        ImGui::SliderInt(LANG.OPT_REPENTOGON_MARSDOUBLETAP, &repentogonOptions.marsDoubleTapWindow, 2, 20, "%d", ImGuiSliderFlags_AlwaysClamp);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_MARSDOUBLETAP_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.marsDoubleTapWindow, 10);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FILE_MAP, &repentogonOptions.fileMap);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
+                        /*
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.renderDebugFindInRadius, false);
+                        */ //causes Evil Eye Funkies
 
                         ImGui::EndTable();
                     }

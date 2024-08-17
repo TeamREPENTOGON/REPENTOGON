@@ -4,8 +4,16 @@ __thiscall void Entity_Familiar::AddToFollowers();
 "558bec6aff68????????64a1????????5083ec34535657a1????????33c5508d45??64a3????????8bd98b83":
 __thiscall void Entity_Familiar::AddToDelayed();
 
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??e8????????c745??000000008d86":
+__thiscall void Entity_Familiar::Constructor();
+
 "8b41??483dea000000":
 __thiscall int Entity_Familiar::GetFollowerPriority();
+
+// GetMultiplier returns a float in XMM0/ST0 (or whatever), but ZHL doesn't support that yet.
+// For now, just allow calling the function to trigger evaluation for my ASM patch at the end of the function, which caches the result.
+"558bec83e4f883ec0853568bf18b86":
+__thiscall void Entity_Familiar::GetMultiplier();
 
 "558bec83e4c083ec745356578bf9e8":
 __thiscall void Entity_Familiar::Render(Vector *offset);
@@ -47,8 +55,11 @@ __thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
 "8b41??3d84030000":
 __thiscall bool Entity_Familiar::CanCharm();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ece800000056":
+__thiscall void Entity_Familiar::WispInit();
 
-struct Entity_Familiar depends (ColorMod) : public Entity {
+
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
@@ -60,6 +71,7 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 	bool _isFollower : 0xcc4;
 	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;
+	ItemConfig_Item* _item : 0xe20;
 	ColorMod _dirtColor : 0xe28;
 	
     __vtable {

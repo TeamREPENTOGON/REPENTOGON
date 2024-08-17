@@ -50,9 +50,10 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         //MC_PRE_DEVIL_APPLY_ITEMS
         if (CallbackState.test(1130 - 1000)) {
 
-            lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+            lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1130)
+                .pushnil()
                 .push(chance)
                 .call(1);
 
@@ -110,7 +111,6 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
-                .push(chance)
                 .call(1);
 
             if (!preApplyStagePenaltyResult) {
@@ -141,9 +141,10 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
     if (CallbackState.test(1132 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults preApplySpecialItemsResult = lua::LuaCaller(L).push(1132)
+            .pushnil()
             .push(chance)
             .call(1);
 
@@ -170,9 +171,10 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     //MC_POST_DEVIL_CALCULATE
     if (CallbackState.test(1133 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults postDevilCalculateResult = lua::LuaCaller(L).push(1133)
+            .pushnil()
             .push(chance)
             .call(1);
 
@@ -287,6 +289,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
+                .pushnil()
                 .push(treasureRoomsVisited)
                 .call(1);
 
@@ -315,9 +318,10 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
         if (CallbackState.test(1113 - 1000)) {
 
-            lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+            lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1113)
+                .pushnil()
                 .push(chance)
                 .call(1);
 
@@ -343,9 +347,10 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
     if (CallbackState.test(1114 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults preApplyLensResult = lua::LuaCaller(L).push(1114)
+            .pushnil()
             .push(chance)
             .call(1);
 
@@ -362,9 +367,10 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_POST_PLANETARIUM_CALCULATE
     if (CallbackState.test(1115 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults postCalculateResult = lua::LuaCaller(L).push(1115)
+            .pushnil()
             .push(chance)
             .call(1);
 

@@ -13,13 +13,16 @@ __thiscall void RoomConfig::LoadStageBinary(unsigned int Stage, unsigned int Mod
 // RoomConfigHolder
 
 "558bec518b55??5356578b7d":
-__thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
+__thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t mode);
 
 "558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
 __thiscall RoomConfig_Room* RoomConfig::GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
 
 "558bec6aff68????????64a1000000005083ec18535657a1????????33c5508d45f464a3000000008b7d0c8b553069f7c4000000":
 RoomConfigRoomPtrVector RoomConfig::GetRooms(int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode);
+
+"558bec518b55??8b45":
+__thiscall void RoomConfig::ResetRoomWeights(unsigned int Stage, int Mode);
 
 struct RoomConfig depends (RoomConfig_Stage, RoomConfig_Curse, RoomConfig_Miniboss)
 {

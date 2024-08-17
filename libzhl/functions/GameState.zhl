@@ -1,2 +1,4 @@
-struct GameState {
+struct GameState depends (GameStateItemPool, Seeds){
+    GameStateItemPool _itemPool : 0x1e080;
+    Seeds _seeds : 0x1e3d8;
 } : 0x20294;

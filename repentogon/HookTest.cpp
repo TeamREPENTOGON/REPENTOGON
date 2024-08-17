@@ -294,3 +294,25 @@ HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
 		}
 	}
 }
+
+HOOK_METHOD(Entity_NPC, Hornfel_UpdateAI, () -> void) {
+	switch (_state) {
+	case 6:
+	case 7:
+		if (!GetMinecart()) {
+			printf("Warning! Hornfel is about to blow this game! (I hate this red thing, I spit on you)\n");
+			//restoring summon state while Hornfel is out of the room
+			_state = 13, _entityGridCollisionClass = 5, _entityCollisionClass = 4, _visible = true;
+			break;
+		}
+	}
+	super();
+}
+
+HOOK_METHOD(Entity_NPC, Hornfel_UpdateFrame, () -> void) {
+	if (_state == 4 || _state == 13) {
+		//printf("Trying to switch states, mm?\n");
+		return;
+	}
+	super();
+}

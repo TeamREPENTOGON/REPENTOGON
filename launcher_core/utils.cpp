@@ -1,6 +1,20 @@
-#include "utils.h"
-#include <stdio.h>
-#include <stdarg.h>
+#include "launcher/utils.h"
+#include <cstdio>
+#include <cstdarg>
+
+#include <atomic>
+
+int argc = 0;
+char** argv = NULL;
+
+static bool cliInitialized = false;
+
+void InitCLI() {
+    if (cliInitialized)
+        return;
+
+    argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+}
 
 PCHAR* CommandLineToArgvA(PCHAR CmdLine, int* _argc)
 {
@@ -80,4 +94,17 @@ PCHAR* CommandLineToArgvA(PCHAR CmdLine, int* _argc)
 
     (*_argc) = argc;
     return argv;
+}
+
+bool HasCommandLineArgument(const char* arg)
+{
+    if (!argv)
+        argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+
+    for (int i = 1; i < argc; ++i)
+    {
+        if (_stricmp(argv[i], arg) == 0) return true;
+    }
+
+    return false;
 }

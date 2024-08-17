@@ -75,15 +75,15 @@ HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	std::tuple<std::string, float*, float> statValues[] = {
-	std::tuple<std::string, float*, float> {"speedmodifier", &PlayerStats::modCharacterSpeed, 1},
-	std::tuple<std::string, float*, float> {"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1},
-	std::tuple<std::string, float*, float> {"damagemodifier", &PlayerStats::modCharacterDamage, 1},
-	std::tuple<std::string, float*, float> {"rangemodifier", &PlayerStats::modCharacterRange, 40},
-	std::tuple<std::string, float*, float> {"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1},
-	std::tuple<std::string, float*, float> {"luckmodifier", &PlayerStats::modCharacterLuck, 1},
+	{"speedmodifier", &PlayerStats::modCharacterSpeed, 1.f},
+	{"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1.f},
+	{"damagemodifier", &PlayerStats::modCharacterDamage, 1.f},
+	{"rangemodifier", &PlayerStats::modCharacterRange, 40.f},
+	{"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1.f},
+	{"luckmodifier", &PlayerStats::modCharacterLuck, 1.f},
 	};
 
-	for (std::tuple<std::string, float*, float> value : statValues) {
+	for (auto& value : statValues) {
 		*std::get<1>(value) = 0;
 
 		if (!playerXML[std::get<0>(value)].empty())

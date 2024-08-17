@@ -29,6 +29,16 @@ ___
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetLootList () {: aria-label='Functions' }
+#### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
+Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
+
+___
+### GetPickupGhost () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) GetPickupGhost ( ) {: .copyable aria-label='Functions' }
+Returns the `EffectVariant.PICKUP_GHOST` EntityEffect visible through Guppy's Eye. If not visible, returns `nil`.
+
+___
 ### GetPriceSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPriceSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -82,6 +92,11 @@ ___
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
+### TriggerTheresOptionsPickup () {: aria-label='Functions' }
+#### void TriggerTheresOptionsPickup ( ) {: .copyable aria-label='Functions' }
+Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
+
+___
 ### TryFlip () {: aria-label='Functions' }
 #### boolean TryFlip ( ) {: .copyable aria-label='Functions' }
 Will try to flip the collectible, such as when using the Flip item on a collectible pedestal with a second, holographic collectible present behind the first one. Returns `true` if successful, `false` otherwise or if used on non-collectible EntityPickups.
@@ -97,5 +112,10 @@ ___
 Attempts to remove the collectible from an item pedestal.
 
 Returns `true` if a collectible was successfully removed from the pedestal. Returns `false` if the pedestal was already empty, or if called on a non-collectible EntityPickup.
+
+___
+### UpdatePickupGhosts () {: aria-label='Functions' }
+#### void UpdatePickupGhosts ( ) {: .copyable aria-label='Functions' }
+Updates the `EffectVariant.PICKUP_GHOST` EntityEffect in accordance to the pickup's current [LootList](LootList.md)
 
 ___

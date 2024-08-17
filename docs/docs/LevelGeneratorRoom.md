@@ -28,8 +28,8 @@ In order to check if a door at a given slot is available, use the DoorSlot enume
 ???+ example "Example"
     This tests if the DoorSlot `LEFT0` is available.
     ```lua
-    if room:DoorMask() & (1 << DoorSlot.LEFT0) then
-        print ("Room has a door on slot LEFT0)
+    if room:DoorMask() & (1 << DoorSlot.LEFT0) ~= 0 then
+        print("Room has a door in slot LEFT0")
     end
     ```
 

@@ -30,6 +30,11 @@ ___
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
 
 ___
+### GetCollectibleNum () {: aria-label='Modified Functions' }
+#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
+
+___
 ### GetMultiShotParams () {: aria-label='Modified Functions' }
 #### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `MultiShotParams` object.
@@ -43,8 +48,15 @@ Compared to the vanilla function, this implementation has been further augmented
 
 ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) SlotId ) {: .copyable aria-label='Modified Functions' }
+#### [PocketItem](PocketItem.md) GetPocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Modified Functions' }
+Gets the card/pill/rune in the specified pocket slot.
+
 Now returns a proper `PocketItem` object.
+
+___
+### HasCollectible () {: aria-label='Modified Functions' }
+#### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false, boolean IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
 
@@ -70,6 +82,13 @@ ___
 #### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
+### AddCustomCacheTag () {: aria-label='Functions' }
+#### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
+Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
+
+See [items.xml](xml/items.md) for more information on custom caches.
+
+___
 ### AddInnateCollectible () {: aria-label='Functions' }
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1 ) {: .copyable aria-label='Functions' }
 
@@ -87,6 +106,26 @@ ___
 ### AddLocust () {: aria-label='Functions' }
 #### void AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
+???- info "Supported Items"
+    There are a few items which spawn unique locusts.
+    
+    - Breakfast (default)
+    - The Inner Eye
+    - Spoon Bender
+    - Cricket's Head
+    - Number One
+    - Blood of the Martyr
+    - Halo of Flies
+    - The Common Cold
+    - Brimstone
+    - Ipecac
+    - Mutant Spider
+    - Fire Mind
+    - Scorpio
+    - Holy Light
+    - Jacob's Ladder
+    - 120 Volt
+
 ___
 ### AddSmeltedTrinket () {: aria-label='Functions' }
 #### boolean AddSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean FirstTimePickingUp = true ) {: .copyable aria-label='Functions' }
@@ -99,12 +138,26 @@ ___
 #### void AddUrnSouls ( int Count = 0 ) {: .copyable aria-label='Functions' }  
 
 ___
+### BlockCollectible () {: aria-label='Functions' }
+#### void BlockCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }  
+Blocks the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html). This will make it so the game thinks you don't have the item, even if it's in your inventory.
+
+___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
 #### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanCrushRocks () {: aria-label='Functions' }
 #### boolean CanCrushRocks ( ) {: .copyable aria-label='Functions' }
+
+???- info "Info"
+    Returns `true` if the player has one of the following items / effects / transformations.
+    
+    - The Nail
+    - Leo
+    - Thunder Thighs
+    - Mega Mush
+    - Stompy
 
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
@@ -198,8 +251,17 @@ ___
 Returns the current charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetBloodLustCounter () {: aria-label='Functions' }
+#### int GetBloodLustCounter ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBodyMoveDirection () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }    
+#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBombPlaceDelay () {: aria-label='Functions' }
+#### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
+Default bomb place delay is `30 frames`.
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -209,6 +271,14 @@ Returns how many times the player has taken damage with the Cambion Conception i
 ___
 ### GetCambionPregnancyLevel () {: aria-label='Functions' }
 #### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
+Corresponds to the current visible state of Cambion Conception's costume (0-2).
+
+___
+### GetCustomCacheValue () {: aria-label='Functions' }
+#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
+Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
+
+See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetCollectiblesList () {: aria-label='Functions' }
@@ -225,16 +295,48 @@ Returns a table with the amount of each collectible the player has, without coun
     ```
 
 ___
+### GetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### int GetConceptionFamiliarFlags ( ) {: .copyable aria-label='Functions' }
+Returns the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
+
+___
 ### GetCostumeLayerMap () {: aria-label='Functions' }
 #### table GetCostumeLayerMap ( ) {: .copyable aria-label='Functions' }
 Returns table of player sprite layers data for costumes with the following fields:
 
 |Field|Type|Comment|
 |:--|:--|:--|
-| costumeIndex | int | Index of active/visible costume for layer. |
-| layerID | int | |
-| priority | int | |
-| isBodyLayer | boolean | |
+| costumeIndex | int | Index of active/visible costume for that layer.  `-1` if no costume is on that layer. |
+| layerID | int | ID of the sprite's layer corresponding to its anm2 file. `-1` if no costume is on that layer. |
+| priority | int | Costume's priority as listed in `costumes2.xml`. `-1` if no costume is on that layer. |
+| isBodyLayer | boolean | `true` if the costume is a body costume. `false` if not or if no costume is on that layer. |
+
+???- info "More Layer Map Info"
+
+    The returned table's index order corresponds to PlayerSpriteLayer. However, due to the differences in the starting index of arrays between Lua and C++, CostumeLayerMap's index needs to be decreased by 1 and it's costumeIndex increased by 1 in order to get accurate information.
+
+    Below is a snippet of code that displays all currently occupied costume layers.
+    Prints are sectioned as such: PlayerSpriteLayer - Layer Name - Item Name/NullItemID - Anm2 filepath
+
+    ???+ example "Example Code"
+        ```lua
+        local player = Isaac.GetPlayer()
+        local map = Isaac.GetPlayer():GetCostumeLayerMap()
+        print("-------------------------------------------------------------------")
+        local costumeSpriteDescs = player:GetCostumeSpriteDescs()
+        for layer, mapData in ipairs(map) do
+            if mapData.costumeIndex == -1 then goto continue end
+            local costumeSpriteDesc = costumeSpriteDescs[mapData.costumeIndex + 1]
+            local sprite = costumeSpriteDesc:GetSprite()
+            local itemConfig = costumeSpriteDesc:GetItemConfig()
+            local layerName = sprite:GetLayer(mapData.layerID):GetName()
+            local costumeName = itemConfig.Name ~= "" and Isaac.GetString("Items", itemConfig.Name) or "NullItemID "..itemConfig.ID
+            local spritePath = sprite:GetFilename()
+            print(layer - 1, "-", layerName, "-", costumeName, "-", spritePath)
+            ::continue::
+        end
+        print("-------------------------------------------------------------------")
+        ```
 
 ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
@@ -363,6 +465,11 @@ ___
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetHallowedGroundCountdown () {: aria-label='Functions' }
+#### int GetHallowedGroundCountdown ( ) {: .copyable aria-label='Functions' }
+Returns the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
+
+___
 ### GetHeadDirectionLockTime () {: aria-label='Functions' }
 #### int GetHeadDirectionLockTime ( ) {: .copyable aria-label='Functions' }
 How long the player's head should be forced to stay in its current direction. `-1` (or lower) indicates the direction is not currently locked.
@@ -389,7 +496,7 @@ ___
 ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
-Returns how many hearts have been collected with the Immaculate Conception item.
+Returns how many hearts have been collected with the Immaculate Conception item. Resets to 0 after spawning a familiar/soul heart.
 
 ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
@@ -439,6 +546,11 @@ ___
 #### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetMovingBoxContents () {: aria-label='Functions' }
+#### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetMovingBoxContents ( ) {: .copyable aria-label='Functions' }
+Returns the pickups that are stored on the player through the use of the Moving Box collectible.
+
+___
 ### GetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### int GetNextUrethraBlockFrame ( ) {: .copyable aria-label='Functions' }
 Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
@@ -452,6 +564,10 @@ ___
 ### GetPlayerFormCounter () {: aria-label='Functions' }
 #### int GetPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html) PlayerFormID ) {: .copyable aria-label='Functions' } 
 Returns the amount of collectibles the player has tied to the specified transformation.
+
+___
+### GetPlayerIndex () {: aria-label='Functions' }
+#### int GetPlayerIndex ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPonyCharge () {: aria-label='Functions' }
@@ -491,6 +607,25 @@ ___
 ### GetSpeedModifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
 For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rolled.
+
+___
+### GetSpoofedCollectiblesList () {: aria-label='Functions' }
+#### table[] GetSpoofedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| CollectibleID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
+| AppendedCount | int | |
+| IsBlocked | boolean | |
+
+___
+### GetTearDisplacement () {: aria-label='Functions' }
+#### int GetTearDisplacement ( ) {: .copyable aria-label='Functions' }
+Returns the player's TearDisplacement value, used to check what eye the player is shooting from.
+
+???+ info "Return info"
+    - `1` Right eye
+    - `-1` Left eye
 
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
@@ -546,6 +681,16 @@ ___
 Returns a table of [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) corresponding to the item wisps the player has.
 
 ___
+### HasChanceRevive () {: aria-label='Functions' }
+#### boolean HasChanceRevive ( ) {: .copyable aria-label='Functions' }
+Returns true if a "?" would be displayed on the player's extra life count (ie, the player has Guppy's Collar, or a modded revive item with the `chancerevive` string in REPENTOGON's [customtags items.xml attribute](xml/items.md)).
+
+___
+### HasGoldenTrinket () {: aria-label='Functions' }
+#### boolean HasGoldenTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+Returns true if you have a golden variant of the provided [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html).
+
+___
 ### HasInstantDeathCurse () {: aria-label='Functions' }
 #### boolean HasInstantDeathCurse ( ) {: .copyable aria-label='Functions' }
 Returns true when the player is in the Lost form triggered by either the white fire in Downpour or Soul of The Lost. (or when in Tainted Jacob's ghost form when being touched by Dark Esau)
@@ -580,6 +725,11 @@ ___
 Returns true if the animation associated with the collectible is visible.
 
 ___
+### IsCollectibleBlocked () {: aria-label='Functions' }
+#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
+
+___
 ### IsCollectibleCostumeVisible () {: aria-label='Functions' }
 #### boolean IsCollectibleCostumeVisible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int PlayerSpriteLayerID ) {: .copyable aria-label='Functions' }
 #### boolean IsCollectibleCostumeVisible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, string PlayerSpriteLayerName ) {: .copyable aria-label='Functions' }
@@ -610,6 +760,7 @@ Returns `true` if the player is the non-active form of Tainted Lazarus with Birt
 ___
 ### IsInvisible () {: aria-label='Functions' }
 #### boolean IsInvisible ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the player has the Faded Polaroid / Camo Undies effect active.
 
 ___
 ### IsItemCostumeVisible () {: aria-label='Functions' }
@@ -657,7 +808,7 @@ Removes the collectible from the player associated with the specified history in
 
 ___
 ### RemovePocketItem () {: aria-label='Functions' }
-#### void RemovePocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+#### void RemovePocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### RemovePoopSpell () {: aria-label='Functions' }
@@ -696,6 +847,7 @@ ___
 ### SetBagOfCraftingContent () {: aria-label='Functions' }
 #### void SetBagOfCraftingContent ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] ContentTable ) {: .copyable aria-label='Functions' }
 Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
+
 ___
 ### SetBagOfCraftingOutput () {: aria-label='Functions' }
 #### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
@@ -707,6 +859,10 @@ ___
 Sets the specified slot in the player's Bag of Crafting to the specified pickup.
 
 ___
+### SetBlackHeart () {: aria-label='Functions' }
+#### void SetBlackHeart ( int BlackHeart ) {: .copyable aria-label='Functions' }
+
+___
 ### SetBladderCharge () {: aria-label='Functions' }
 #### void SetBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
 Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
@@ -715,14 +871,29 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
     The player's head turns pitch black when this function is used without Kidney Stone.
 
 ___
+### SetBloodLustCounter () {: aria-label='Functions' }
+#### void SetBloodLustCounter ( int Counter ) {: .copyable aria-label='Functions' }
+
+___
+### SetBombPlaceDelay () {: aria-label='Functions' }
+#### void SetBombPlaceDelay ( int Delay ) {: .copyable aria-label='Functions' }
+
+___
 ### SetCambionConceptionState () {: aria-label='Functions' }
 #### void SetCambionConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how much damage has been taken for the Cambion Conception item.
+
+Note that the game only spawns a familiar when the player takes damage, if this counter is now at 15, 30, 60 or 90. You cannot trigger a birth directly with this function.
 
 ___
 ### SetCanShoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+
+___
+### SetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### void SetConceptionFamiliarFlags ( [ConceptionFamiliarFlag](enums/ConceptionFamiliarFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Sets the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
 
 ___
 ### SetControllerIndex () {: aria-label='Functions' }
@@ -784,6 +955,11 @@ ___
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
 
 ___
+### SetHallowedGroundCountdown () {: aria-label='Functions' }
+#### void SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+Sets the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
+
+___
 ### SetHeadDirection () {: aria-label='Functions' }
 #### void SetHeadDirection ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction, int Time, boolean Force = false ) {: .copyable aria-label='Functions' }
 Locks the player's head animation to the specified [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html). `Force` will override existing head direction locks, such as the one from firing Mom's Knife.
@@ -797,6 +973,10 @@ ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }
 #### void SetImmaculateConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how many hearts have been collected for the Immaculate Conception item.
+
+Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.
+
+If you set a value that is greater than 14, the value is automatically capped at 14, meaning that the next heart picked up will spawn a familiar.
 
 ___
 ### SetItemState () {: aria-label='Functions' }
@@ -994,13 +1174,18 @@ ___
 Tries to remove the specified smelted trinket from the player.
 
 ___
+### UnblockCollectible () {: aria-label='Functions' }
+#### void UnblockCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Unblocks the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) that was blocked through [BlockCollectible](EntityPlayer.md#blockcollectible).
+
+___
 ### UpdateIsaacPregnancy () {: aria-label='Functions' }
 #### void UpdateIsaacPregnancy ( boolean UpdateCambion ) {: .copyable aria-label='Functions' }
 Set `true` if you want to update the [Cambion Conception](https://bindingofisaacrebirth.fandom.com/wiki/Cambion_Conception) costume, otherwise updates the [Immaculate Conception](https://bindingofisaacrebirth.fandom.com/wiki/Immaculate_Conception) costume.
 
 ___
 ### VoidHasCollectible () {: aria-label='Functions' }
-#### boolean VoidHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ID ) {: .copyable aria-label='Functions' }
+#### boolean VoidHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns true if the specified collectible has been consumed by the Void collectible.
 
 ___

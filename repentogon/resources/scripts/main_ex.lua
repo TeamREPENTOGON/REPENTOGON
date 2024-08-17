@@ -53,6 +53,13 @@ function require(modname)
 	return ret
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- COLOR STUFF
+----------------------------------------------------------------------------------------------------
+
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 
@@ -112,6 +119,13 @@ for colorName, colorData in pairs(colorPresets) do
 	quickRegisterColorPreset(colorName, table.unpack(colorData))
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING UTILITIES
+----------------------------------------------------------------------------------------------------
+
+
 -- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
 	-- TODO directly pcall in here?
@@ -139,6 +153,22 @@ end
 local function checkInteger(val)
 	if math.type(val) ~= "integer" then
 		return "bad return type (number has no integer representation)"
+	end
+end
+
+local function checkNumberGreaterThanFunction(minimum)
+	return function(val)
+		if val <= minimum then
+			return "bad return value (number must be > " .. minimum .. ")"
+		end
+	end
+end
+
+local function checkNumberGreaterOrEqualFunction(minimum)
+	return function(val)
+		if val < minimum then
+			return "bad return value (number must be >= " .. minimum .. ")"
+		end
 	end
 end
 
@@ -382,6 +412,14 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["table"] = checkTableTypeFunction({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
 	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
 	},
@@ -486,6 +524,20 @@ local typecheckWarnFunctions = {
 		["boolean"] = true,
 		["table"] = checkTableIndexes({ Discharge = "boolean", Remove = "boolean", ShowAnim = "boolean", }),
 	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = {
+		["boolean"] = true,
+		["number"] = checkNumberGreaterThanFunction(0),
+	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = {
+		["boolean"] = true,
+		["number"] = checkNumberGreaterThanFunction(0),
+	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
 }
 
 local boolCallbacks = {
@@ -495,6 +547,7 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
 	ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD,
 	ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH,
+	ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES,
 	ModCallbacks.MC_PRE_USE_CARD,
 	ModCallbacks.MC_PRE_USE_PILL,
 	ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR,
@@ -505,8 +558,11 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_MEGA_SATAN_ENDING,
 	ModCallbacks.MC_PRE_PLAYER_USE_BOMB,
 	ModCallbacks.MC_PRE_PLAYER_TAKE_DMG,
+	ModCallbacks.MC_PRE_PLAYER_COLLECT_CARD,
+	ModCallbacks.MC_PRE_PLAYER_COLLECT_PILL,
+	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_CAMBION,
+	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE,
 }
-
 for _, callback in ipairs(boolCallbacks) do
 	typecheckFunctions[callback] = { ["boolean"] = true }
 end
@@ -525,9 +581,7 @@ local intCallbacks = {
 	ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE,
 	ModCallbacks.MC_PLAYER_GET_HEART_LIMIT,
 	ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE,
-
 }
-
 for _, callback in ipairs(intCallbacks) do
 	typecheckFunctions[callback] = { ["number"] = checkInteger }
 end
@@ -572,6 +626,13 @@ rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 		setExpectedTypes(tbl)
 	end
 end)
+
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- ERROR LOGGING / DISPLAY
+----------------------------------------------------------------------------------------------------
+
 
 local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
 	level = level + 1
@@ -787,6 +848,13 @@ local function logError(callbackID, modName, err)
 	end
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING FOR CALLBACK RETURN VALUES
+----------------------------------------------------------------------------------------------------
+
+
 local function typeCheckCallback(callback, callbackID, ret, ...)
 	local typeCheck = typecheckFunctions[callbackID]
 	if typeCheck then
@@ -830,6 +898,13 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 	end
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING FOR CALLBACK SYSTEM APIS (AddCallback, RemoveCallback, etc)
+----------------------------------------------------------------------------------------------------
+
+
 -- Function argument type checking for AddCallback, RemoveCallback, etc.
 local CALLBACK_ID_TYPE = "Callback ID"
 local function checkArgType(index, val, expectedType, level)
@@ -858,6 +933,13 @@ end
 local function checkNumberArg(index, val, level) checkArgType(index, val, "number", level) end
 local function checkFunctionArg(index, val, level) checkArgType(index, val, "function", level) end
 local function checkCallbackIdArg(index, val, level) checkArgType(index, val, CALLBACK_ID_TYPE, level) end
+
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- CALLBACK SYSTEM CORE
+----------------------------------------------------------------------------------------------------
+
 
 local Callbacks = {}
 
@@ -1104,35 +1186,89 @@ local function RunCallbackInternal(callbackID, callback, ...)
 	end
 end
 
--- Default callback behaviour (first returned value terminates the callback).
-function _RunCallback(callbackID, param, ...)
-	local ret
 
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- RUNCALLBACK LOGIC
+----------------------------------------------------------------------------------------------------
+
+
+-- Default callback behaviour (first returned non-nil value terminates the callback).
+local function DefaultRunCallbackLogic(callbackID, param, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
-		ret = RunCallbackInternal(callbackID, callback, ...)
+		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
-			break
+			return ret
 		end
 	end
-
-	if callbackID == ModCallbacks.MC_PRE_MOD_UNLOAD then
-		-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
-		RemoveAllCallbacksForMod(...)  --- First arg for MC_PRE_MOD_UNLOAD is the mod being unloaded.
-	end
-
-	return ret
 end
 
--- Additive callback behaviour (values returned from a callback replace the value of the first arg for later callbacks).
--- Doesn't currently support an optional param (would need to update all callbacks that use this to add one).
-function _RunAdditiveCallback(callbackID, value, ...)
-	for callback in GetCallbackIterator(callbackID) do
+local function PreModUnloadCallbackLogic(callbackID, param, mod, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		RunCallbackInternal(callbackID, callback,  mod, ...)
+	end
+
+	-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
+	RemoveAllCallbacksForMod(mod)
+end
+
+-- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
+-- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
+local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
 			value = ret
 		end
 	end
 	return value
+end
+
+local function RunAdditiveSecondArgCallback(callbackID, param, arg1, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+-- Older paramless version of the additive callback logic, preserved because it was a global.
+function _RunAdditiveCallback(callbackID, value, ...)
+	RunAdditiveFirstArgCallback(callbackID, nil, value, ...)
+end
+
+local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
+		if type(ret) == "boolean" and ret == false then
+			return
+		elseif type(ret) == "number" and ret > 0 then
+			pillCard = ret
+		end
+	end
+	return pillCard
 end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
@@ -1187,17 +1323,82 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 	return combinedRet
 end
 
+-- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
+-- Terminate early if the player is revived by any means.
+function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, ...)
+		if ret == false or not player:IsDead() then
+			return ret
+		end
+	end
+	return true
+end
+
+-- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
-
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
-
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
+rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
+
+
+-- Defines non-default callback handling logic to be used for specific callbacks.
+-- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
+local CustomRunCallbackLogic = {
+	[ModCallbacks.MC_PRE_MOD_UNLOAD] = PreModUnloadCallbackLogic,
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_POST_DEVIL_CALCULATE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_CUSTOM_CACHE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
+}
+
+for _, callback in ipairs({
+	ModCallbacks.MC_PRE_FAMILIAR_RENDER,
+	ModCallbacks.MC_PRE_NPC_RENDER,
+	ModCallbacks.MC_PRE_PLAYER_RENDER,
+	ModCallbacks.MC_PRE_PICKUP_RENDER,
+	ModCallbacks.MC_PRE_TEAR_RENDER,
+	ModCallbacks.MC_PRE_PROJECTILE_RENDER,
+	ModCallbacks.MC_PRE_KNIFE_RENDER,
+	ModCallbacks.MC_PRE_EFFECT_RENDER,
+	ModCallbacks.MC_PRE_BOMB_RENDER,
+	ModCallbacks.MC_PRE_SLOT_RENDER,
+}) do
+	CustomRunCallbackLogic[callback] = _RunPreRenderCallback
+end
+
+
+function _RunCallback(callbackID, param, ...)
+	-- Check for custom logic.
+	local runCallbackLogic = CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic
+
+	return runCallbackLogic(callbackID, param, ...)
+end
 
 Isaac.RunCallbackWithParam = _RunCallback
 
 function Isaac.RunCallback(callbackID, ...)
 	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
+
+
+-----------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+---- MISC STUFF
+-----------------------------------------------------------------------------------------------------
+
 
 --Menuman Hub
 MenuManager.MainMenu = MainMenu
@@ -1315,6 +1516,15 @@ function FontMT.__call(_,FontPath)
 	return out,isloaded
 end
 
+--Get rid of the GetCollectible compatibility wrapper
+local ItemPoolMT = getmetatable(ItemPool).__class
+local OldIndex = ItemPoolMT.__index
+local NewIndex = {}
+
+NewIndex.GetCollectible = ItemPoolMT.GetCollectible
+rawset(ItemPoolMT, "__index", function(self, k)
+	return NewIndex[k] or OldIndex(self, k)
+end)
 
 local beamWeakTable = setmetatable({}, {__mode = "k"})
 local OldBeam = Beam
@@ -1323,8 +1533,6 @@ function Beam(spr, layer, UseOverlay, UnkBool)
 	beamWeakTable[result] = spr
 	return result
 end
-
-
 
 --res load error stuff end
 

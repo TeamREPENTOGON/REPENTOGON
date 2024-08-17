@@ -5,6 +5,14 @@ set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 set (CMAKE_BUILD_TYPE "Debug")
 set (ZHL_LOG_FILE "" CACHE PATH "Path to the file in which logs will be written")
 
+if (NOT CMAKE_ZHL_VERSION)
+    set (CMAKE_ZHL_VERSION "dev")
+endif ()
+
+if (NOT CMAKE_REPENTOGON_VERSION)
+    set (CMAKE_REPENTOGON_VERSION "dev")
+endif ()
+
 project(RepExtender)
 
 find_package(OpenGL REQUIRED)
@@ -57,7 +65,8 @@ add_subdirectory("libs/curl")
 # Crypto++
 option(CRYPTOPP_BUILD_TESTING "" OFF)
 add_subdirectory("libs/cryptopp-cmake")
-target_compile_options(cryptopp PUBLIC "/MD")
+# wd4996 ignore warning C4996: use of deprecated function
+target_compile_options(cryptopp PUBLIC "/MD" "/wd4996")
 
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
@@ -88,19 +97,38 @@ LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURC
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
+target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
 # ZHL Launcher
 add_library (zhlLauncher SHARED ${CMAKE_SOURCE_DIR}/launcher/launcher.cpp)
 
+FILE(GLOB LAUNCHER_CORE_SRC ${CMAKE_SOURCE_DIR}/launcher_core/*.cpp)
+add_library(launcher_core STATIC ${LAUNCHER_CORE_SRC})
+target_compile_options(launcher_core PUBLIC "/MD")
+
 # Injected DLL
-FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
+set(UPDATER_BASE_BUILD_DIR "${CMAKE_SOURCE_DIR}/updater_rsrc")
+configure_file(${CMAKE_SOURCE_DIR}/updater/updater.rc.in ${CMAKE_SOURCE_DIR}/updater/updater.rc)
+FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp ${CMAKE_SOURCE_DIR}/updater/updater.rc)
 add_library(dsound SHARED ${LAUNCHER_SRC})
-target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
-target_link_libraries(dsound libcurl cryptopp)
+target_include_directories(dsound PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
+# target_link_libraries(dsound libcurl cryptopp)
 target_compile_options(dsound PUBLIC "/MD" "/wd4996")
-target_link_libraries(dsound Imagehlp)
+target_link_libraries(dsound Imagehlp launcher_core)
+
+# Embedded Updater
+
+add_executable(UpdaterBase ${CMAKE_SOURCE_DIR}/updater/Updater.cpp)
+target_include_directories(UpdaterBase PRIVATE ${CURL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(UpdaterBase PRIVATE libcurl cryptopp launcher_core)
+# wd4003 ignore warning C4003: not enough arguments for function-like macro invocation
+target_compile_options(UpdaterBase PUBLIC "/MD" "/wd4003")
+add_custom_command (TARGET UpdaterBase POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:UpdaterBase> "${CMAKE_SOURCE_DIR}/updater_rsrc")
+
+add_dependencies(dsound UpdaterBase)
 
 # ImGUI
 enable_language(RC)
@@ -174,6 +202,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
@@ -215,7 +244,7 @@ add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
+target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp Imagehlp)
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

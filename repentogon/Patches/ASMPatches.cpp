@@ -3,8 +3,14 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
+#include "CustomCache.h"
 #include "FamiliarTags.h"
+#include "GetCoinValue.h"
+#include "PocketItems.h"
 #include "Anm2Extras.h"
+#include "ExtraLives.h"
+#include "EntityPlus.h"
+#include "CustomItemPools.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -13,6 +19,7 @@
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
+#include "ASMPatches/ASMPlayerManager.h"
 #include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMTweaks.h"
@@ -90,6 +97,7 @@ void PerformASMPatches() {
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
+	ASMPatchPrePlayerGiveBirth();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -109,6 +117,8 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	PatchDealRoomVariant();
+	//PatchOverrideDataHandling();
+	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
 	ASMPatchModsMenu();
@@ -117,21 +127,34 @@ void PerformASMPatches() {
 	// Room
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
+	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
+	ASMPatchTrySpawnBlueWombDoor();
 
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
+	ASMPatchesForExtraLives();
+	ASMPatchMarsDoubleTapWindow();
 
 	// Render
 	LuaRender::PatchglDrawElements();
 	PatchStatHudPlanetariumChance();
 
+	//PlayerManager
+	ASMPatchSpawnSelectedBaby();
+
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
+	ASMPatchesForGetCoinValue();
+	ASMPatchesForAddRemovePocketItemCallbacks();
+	ASMPatchesForEntityPlus();
+	ASMPatchesForCustomCache();
+	ASMPatchesForCustomItemPools();
+	ExtraASMPatchesForCustomItemPools();
 	HookImGui();
 
 	// Sprite
@@ -149,4 +172,11 @@ void PerformASMPatches() {
 	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
 		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
 	}
+
+	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
+
+	//if (!ASMPatches::FixHushFXVeins()) {
+	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
+	//}
+	
 }

@@ -1,4 +1,252 @@
-v1.??? -
+v1.0.11c -
+Additions:
+* CharacterMenu:
+	- [Get/Set]ActiveStatus()
+	- CharacterMenuStatus enum
+/newline/
+Fixes:
+	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
+	- Fixed SetRail index checks
+/newline/
+v1.0.11b -
+Bug fixes:
+	- Fixed a crash that could occur randomly when using custom item pools
+/newline/
+v1.0.11a -
+Bug fixes:
+	- Fixed a division by zero that occured when shuffling an empty item pool
+/newline/
+v1.0.11 -
+Additions:
+* Itempools:
+	- Added support for new custom itempools through itempools.xml on the content folder
+	- Isaac.GetPoolIdByName(poolName) - returns the id of a given custom pool. Returns -1 if the pool is not found.
+	- Room:SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
+	- Room:GetItemPool(int Seed, boolean Raw) - Retrieves the pooltype the game would use to generate random collectibles in the current room.
+	- ItemPool:GetNumItemPools() - Retrieves the total number of itempools in the game, including custom itempools.
+* GenericPrompt:
+	- GenericPrompt constructor
+	- Initialize(boolean SmallPrompt = false)
+	- Show()
+	- IsActive()
+	- Update(boolean ProcessInput)
+	- Render()
+	- SetText(string Text1 = "", string Text2 = "", string Text3 = "", string Text4 = "", string Text5 = "")
+	- GetSprite()
+	- GetCurrentSelection() - (0 - No, 1 - Yes)
+	- GetSubmittedSelection() - (0 - None, 1 - Yes, 2 - No)
+* ModCallbacks:
+	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
+	- MC_POST_FORCE_PILL_EFFECT
+	- MC_EVALUATE_CUSTOM_CACHE(Player, CustomCacheTag, float value)
+		Cache-style evaluation for custom player attributes.
+		Return a number to modify the value. Modified values are passed to the next callback.
+		CustomCacheTags must always be all lowercase.
+		Optional param: CustomCacheTag
+	- MC_EVALUATE_FAMILIAR_MULTIPLIER(Familiar, float mult, Player)
+		Called when a familiar's cached multiplier needs to be re-evaluated.
+		Return a number to modify the multiplier. Modified values are passed to the next callback.
+		Optional param: FamiliarVariant
+* EntityPlayer:
+	- GetMovingBoxContents()
+	- GetTearDisplacement() - Returns the player's TearDisplacement value, used to check what eye the player is shooting from. 1 means that the last shot was from the right eye, -1 means the opposite.
+	- AddCustomCacheTag(string OR {string, string, ...}, bool evaluateItemsNow) - Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
+	- GetCustomCacheValue(string CustomCacheTag) - Returns the current cached value for the specified CustomCacheTag. Will return 0 by default if the provided tag has not been evaluated.
+* EntityFamiliar:
+	- GetMultiplier() - Returns the "multiplier" for the familiar, from effects such as BFFs or Hive Mind. Typically used to multiply things such as familiar damage.
+	- InvalidateCachedMultiplier() - Makes it so that the next time GetMultiplier is called, MC_EVALUATE_FAMILIAR_MULTIPLIER is triggered to recalculate/allow modifying the multiplier.
+* EntityNPC:
+	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
+	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
+	- TrySplit(float DefaultDamage, EntityRef Source, DoScreenEffects = true)
+	- ReplaceSpritesheet(int LayedId, string PngFilename, bool LoadGraphics = false) - Appends _champion/stage suffix to PngFilename if possible.
+* EntityLaser:
+	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
+	- IsMultidimensionalTouched()
+	- [Is/Set]PrismTouched()
+* EntityTear:
+	- [Is/Set]MultidimensionalTouched()
+	- [Is/Set]PrismTouched()
+* EntityBomb:
+	- [Is/Set]PrismTouched()
+* EntityKnife:
+	- [Is/Set]MultidimensionalTouched()
+	- [Is/Set]PrismTouched()
+* EntityPickup:
+	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
+* LayerState:
+	- GetFlip[X/Y](), SetFlip[X/Y]()
+* Game:
+	- GetGenericPrompt()
+* Level:
+	- GetMyosotisPickups() - returns the pickups that will be transferred to the next floor by the myosotis trinket effect
+* ItemConfigItem:
+	- HasCustomCacheTag
+	- GetCustomCacheTags
+* Added support for a "customcache" attribute in items.xml
+	- Formatted as a space-separated list of string tags, same as other similar attributes.
+	- Capitalization is ignored - tags are converted to all lowercase.
+	- Whenever an item/trinket/effect is added or removed, triggers MC_EVALUATE_CUSTOM_CACHE on the player for each tag specified for that item.
+	- MC_EVALUATE_CUSTOM_CACHE will evaluate a number value (starts at 0 by default) which can be retrieved afterwards with player:GetCustomCacheValue(tag)
+	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
+	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
+/newline/	
+Fixes:
+	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
+	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
+	- Fix ???/Blue Womb rooms generating in The Void even when not using Better Void Generation
+	- Fix Void Portal rooms potentially not being generated in The Void
+	- Fix room weights not correctly being reset when reseeding in The Void
+	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
+	- Fix Isaac's Heart being immune to lasers
+/newline/
+v1.0.10c -
+Additions:
+* RoomDescriptor:
+	InitSeeds(RNG)
+* ModCallbacks:
+	- MC_PRE_PLAYER_ADD_COSTUME(ItemConfigItem, Player, ItemStateOnly)
+		Called before the costume is added to the player. Return ItemConfigItem to replace the costume or true to cancel adding it entirely.
+	- MC_PRE_PLAYER_REMOVE_COSTUME(ItemConfigItem, Player)
+		Called before the costume is removed from the player. Return true to cancel the removal.
+/newline/
+* Fixes:
+	- Fixed a severe issue with Isaac.PlayCutscene() causing potential corruption when called for custom cutscene.
+	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
+	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
+	- Fixed an issue in ItemPool:GetCollectible that prevented passing ItemPoolType.POOL_NULL.
+/newline/
+Modified:
+* RoomConfigHolder:
+	- GetRoomByStageTypeAndVariant(StbType, Type, Variant, Mode = -1)
+* Re-enabled "Extra debug render for FindInRadius" option.
+/newline/
+v1.0.10b -
+Modified:
+* MusicManager:
+	PlayJingle(Music ID, int Duration)
+* Fixes:
+	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
+* Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
+/newline/
+v1.0.10a -
+Additions:
+* EntityPlayer:
+	- SetBlackHeart(int BlackHeart)
+	- GetCambionFamiliarFlags()
+	- SetCambionFamiliarFlags(CambionFamiliarFlag flags)
+* ModCallbacks:
+	- MC_PRE_FORTUNE_DISPLAY
+		Called before a fortune paper is displayed.
+	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
+		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
+	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed) 
+		Return integer to overwrite target room index.
+	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
+		Called after the Glowing Hourglass state is saved/loaded
+	- MC_PRE/POST_PLAYER_ADD_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called before/after a card/pill gets added to the player's inventory.
+		On PRE: Return a different ID to change the card/pill added, or false to cancel adding it entirely.
+	- MC_POST_PLAYER_REMOVE_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called after a card/pill gets removed from the player's inventory by any means (dropped, direct removal, use, etc).
+	- MC_PRE/POST_PLAYER_COLLECT_CARD (EntityPlayer, EntityPickup)
+		Called before/after a player picks up a card/pill off the ground.
+		On PRE: Return false to prevent the card/pill from being picked up.
+	- MC_POST_PLAYER_DROP_CARD/PILL (EntityPlayer, EntityPickup, PillCardSlot)
+		Called after a player drops a card/pill onto the ground from their inventory.
+	- MC_PRE_PLAYER_GIVE_BIRTH_CAMBION/IMMACULATE (EntityPlayer, CambionFamiliarFlag)
+		Return false to cancel the familiar being added.
+* EntityLaser:
+	- GetDamageMultiplier()
+	- SetDamageMultiplier(float Mult)
+* EntityKnife:
+	- GetIsSwinging()
+	- SetIsSwinging(bool)
+	- GetIsSpinAttack()
+	- SetIsSpinAttack(bool)
+* EntityFamiliar:
+	- GetItemConfig()
+* PlayerHUDHeart:
+	- IsEternalHeartOverlayVisible()
+	- IsFadingHeart()
+* PlayerManager:
+	- RemoveCoPlayer(Entity_Player)
+* DailyChallengeMenu:
+	- Get/SetState
+* Enums:
+	- CambionFamiliarFlag
+* Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
+* RoomDescriptor.OverrideData is no longer forcibly changed by RoomDescriptor.FLAG_SURPRISE_MINIBOSS
+/newline/
+Modified:
+* Isaac:
+	PlayCutscene(CutsceneID, ClearGameState = false)
+* Game:
+	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
+* EntityNPC:
+	ShootMaggotProjectile(Position, Target, FallingSpeed = -8.0, YOffset = -24.0)
+* EntityPlayer:
+	Fixed vanilla crash when AddNullCostume is given an invalid id; along with other potential crashes in AddCostume
+* Callbacks:
+	- MC_PRE_PLAYERHUD_TRINKET_RENDER
+		Fixed returning true to cancel rendering.
+	- MC_PLAYER_GET_ACTIVE_MAX_CHARGE / MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
+		Will no longer run for empty active item slots.
+		Now provide the current charge value as an argument.
+		Returning a value no longer stops the callback, and changes the charge value passed to the next callback.
+		If the final result of the callback is <0, the result is treated as 0.
+* The game no longer prematurely ends the daily run if there was console input, instead blocking it
+/newline/
+Fixes:
+* Game():GetDizzyAmount() now returns the intended value, instead of 0
+* Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
+* Fixed binders for EntityNPC: ThrowMaggot, ShootMaggotProjectile functions.
+/newline/
+v1.0.9d -
+Fixes:
+* Fixed a bug with the autoupdater
+/newline/
+v1.0.9c -
+Fixes:
+* Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
+/newline/
+v1.0.9b -
+Additions:
+* Camera:
+	- IsPosVisible(position: Vector) : bool
+* Game:
+	- RecordPlayerCompletion(CompletionType)
+* ModCallbacks:
+	- MC_POST_COMPLETION_EVENT
+		POST version of MC_PRE_COMPLETION_EVENT. Called when a player completes something that would award a mark (end bosses, tainted unlocks)
+* Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
+* Updater now runs asynchronously, meaning that you should no longer encounter the "white screen" issue.
+* Improved mods' startup speed once again!
+* Minor fix for a file map.
+* "clearcache" command now reloads the file map.
+* Fixed a regression that resulted in a severe slowdown for certain commands' autocomplete prompts. This fix has also made file map noticeably faster :D
+* Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
+/newline/
+v1.0.9a -
+Additions:
+* Game:
+	- ClearErasedEnemies(): void
+	- GetShopVisits(): int
+	- AddShopVisits(count: int): void
+* EntitySlot:
+	- GetShellGameAnimationIndex() : int
+	- SetShellGameAnimationIndex(index: int) : void
+	- GetTriggerTimerNum() : int
+	- SetTriggerTimerNum(num: int) : void
+- Sorry about the startup line in 1.0.9, half of it was a lie, now it's not! This update enables "file map" functionality, speeding up file lookup, positively affecting the startup time. It shouldn't cause any issue, but if it does don't hesitate to report issues, in the meantime you can disable it in REPENTOGON's options window.
+/newline/
+* Bug fixes
+    - Fixed a bug that caused the giveitem command to crash when the object to
+    give was reduced to a single letter
+	- Fix "goto [s/x]." command autocomplete
+	- Fixed incorrect type set for Slot->_timeout (int -> short)
+/newline/
+v1.0.9 -
 Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
@@ -34,6 +282,7 @@ Additions:
 		IsCollectibleBlocked(int itemID)
 	- HasGoldenTrinket
 	- Get/SetHallowedGroundCountdown
+	- HasChanceRevive - Returns true if a "?" would be displayed on the player's extra life count (ie, Guppy's Collar)
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
@@ -112,20 +361,30 @@ Additions:
 	- MC_POST_ROOM_TRANSITION_UPDATE ()
 	- MC_POST_ROOM_TRANSITION_RENDER ()
 	- MC_PRE_X_UPDATE (EntityX) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/KNIFE/PROJECTILE/LASER/EFFECT/SLOT, return true to skip internal code, same as MC_PRE_NPC_UPDATE
+	- MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES (EntityPlayer) - Akin to MC_PRE_TRIGGER_PLAYER_DEATH, but runs right after the game is done checking for vanilla revives.
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
-* Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
-* Improved startup time!
+* Added the following customtags for items.xml:
+	* "nometronome" - Prevents the item from being picked by Metronome
+	* "revive" - Each copy of the collectible/trinket/null effect held counts as an extra life (on the HUD, etc) and prevents the game from deleting the run save upon death, making reviving the player safe. You must still remove the item and actually revive the player yourself.
+	* "reviveeffect" - Same as "revive", but applies to the corresponding TemporaryEffect of the collectible/trinket (you'd probably want to set their effects to be persistent). There is no difference between "revive" and "reviveeffect" for null items.
+	* "chancerevive" - If item is counted as an extra life, displays a "?" next to the extra life count, like Guppy's Collar.
+	* "hiddenrevive" - If item is counted as an extra life, this prevents it from being counted on the hud. Overrides "chancerevive".
+* Improved startup time! (for both REPENTOGON and the game itself)
+* Buffed Trisagion
+* Added a new option in "Vanilla tweaks" section called "Fast lasers", it tracks the game's lag and (if present) reduces the number of samples used by lasers to ensure better performance
+
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
-	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
+	* Fix Downpour/Dross rooms generated in The Void not having any water
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
 v1.0.8c - 
 Fixes:

@@ -33,7 +33,7 @@ Now no longer crashes the game when given a seed equal `0`.
 ___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }
 #### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) Player = nil ) {: .copyable aria-label='Modified Functions' }
-Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
+Fixed the crash that sometimes occurred due to an incorrect call on the C++ side.
 `Player` is now optional (will default to `GetPlayer(0)`).
 
 ___
@@ -48,6 +48,16 @@ ___
 ### AddDebugFlags () {: aria-label='Functions' }
 #### void AddDebugFlags ( [DebugFlag](enums/DebugFlag.md) Flag ) {: .copyable aria-label='Functions' }
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`).
+
+___
+### AddShopVisits () {: aria-label='Functions' }
+#### void AddShopVisits ( int Count ) {: .copyable aria-label='Functions' }
+Adds the amount of shops the player has entered this run.
+
+___
+### ClearErasedEnemies () {: aria-label='Functions' }
+#### void ClearErasedEnemies ( ) {: .copyable aria-label='Functions' }
+Clears out all enemies listed as an erased enemy, allowing them to spawn again.
 
 ___
 ### DevolveEnemy () {: aria-label='Functions' }
@@ -69,6 +79,19 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
+### GetDizzyAmount () {: aria-label='Functions' }
+#### float GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
+Returns the current dizzy amount akin to Wavy Cap.
+
+___
+### GetGenericPrompt () {: aria-label='Functions' }
+#### [GenericPrompt](GenericPrompt.md) GetGenericPrompt ( ) {: .copyable aria-label='Functions' }
+Returns the currently active `GenericPrompt` object.
+
+???+ bug "Bug"
+	  Crashes the game if used during a run while no prompts are active.
+
+___
 ### GetLerpColorModifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetLerpColorModifier ( ) {: .copyable aria-label='Functions' }
 Returns the lerped color modifier. This is formatted as the absolute rate of change (ie, all values are positive).
@@ -81,6 +104,11 @@ ___
 ### GetPlanetariumsVisited () {: aria-label='Functions' }
 #### int GetPlanetariumsVisited ( ) {: .copyable aria-label='Functions' }
 Returns the amount of planetariums the player has entered this run.
+
+___
+### GetShopVisits () {: aria-label='Functions' }
+#### int GetShopVisits ( ) {: .copyable aria-label='Functions' }
+Returns the amount of shops the player has entered this run.
 
 ___
 ### GetTargetColorModifier () {: aria-label='Functions' }
@@ -119,8 +147,28 @@ ___
 Returns `true` if the current run is a rerun.
 
 ___
+### RecordPlayerCompletion () {: aria-label='Functions' }
+#### void RecordPlayerCompletion ( [CompletionType](enums/CompletionType.md) Type ) {: .copyable aria-label='Functions' }
+Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
+
+___
+### SetBloom () {: aria-label='Functions' }
+#### void SetBloom ( float Duration, float Amount ) {: .copyable aria-label='Functions' }
+
+___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### SetDizzyAmount () {: aria-label='Functions' }
+#### void SetDizzyAmount ( float TargetIntensity , float CurrentIntensity ) {: .copyable aria-label='Functions' }
+Sets the dizzy amount akin to Wavy Cap.
+
+The current intensity of the effect will gradually move towards the "TargetIntensity".
+
+Providing "CurrentIntensity" to this function is optional. If provided, the current intensity is instantly changed to that amount. If unspecified, the current intensity will remain unchanged.
+???+ warning "Warning"
+    Best to stay within `0`-`1` and increment by 0.1 while using this function. `1` has the most extreme effect on the screen while `0` removes the effect.
 
 ___
 ### SetDonationModAngel () {: aria-label='Functions' }

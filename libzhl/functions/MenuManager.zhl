@@ -70,8 +70,7 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
     Seeds _seedsObject : 0x4b8;
     Menu_Title _menuTitle : 0x514;
     Menu_Save _menuSave : 0x634;
-    GenericPrompt GenericPopup_genericPrompt : 0xcc8;
-    char _UNUSED80ee0[204] : 0x80ee0;
+    char _UNUSED80ee0[192] : 0x80eec;
     Menu_Game _menuGame : 0x80fac;
     Menu_DailyChallenge _menuDailyChallenge : 0x8130c;
     Menu_Character _menuCharacter : 0x101c00;

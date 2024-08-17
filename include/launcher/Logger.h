@@ -29,6 +29,8 @@ private:
 	bool _flushOnLog = false;
 	// Close the log file after a call to SetOutputFile
 	bool _closeOnChange = false;
+	// Output on stdout / stderr as well
+	bool _synchronizeWithStdout = false;
 
 public:
 	static Logger* instance() {
@@ -41,6 +43,7 @@ public:
 	void SetOutputFile(FILE* file, bool closeOnChange);
 	void SetKillOnFatal(bool on);
 	void SetFlushOnLog(bool on);
+	void SynchronizeWithStdout(bool on);
 
 	void Log(LogLevel level, const char* fmt, va_list va);
 	void Log(LogLevel level, const char* fmt, ...);

@@ -104,12 +104,12 @@ nav:
     - ? ''
       : snippets/PLACEHOLDER.md
   - Frequently used:
-    - Isaac.: Isaac.md
+    - Isaac: Isaac.md
     - Entity: Entity.md
-    - -- EntityPlayer: EntityPlayer.md
-    - -- EntityNPC: EntityNPC.md
-    - -- EntityEffect: EntityEffect.md
-    - 'Game():': Game.md
+    - EntityPlayer: EntityPlayer.md
+    - EntityNPC: EntityNPC.md
+    - EntityEffect: EntityEffect.md
+    - Game: Game.md
     - Room: Room.md
     - Level: Level.md
     - ModCallbacks: enums/ModCallbacks.md
@@ -124,6 +124,7 @@ nav:
     - BlendType: enums/BlendType.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
+    - ButtonActionBitwise: enums/ButtonActionBitwise.md
     - CameraStyle: enums/CameraStyle.md
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
@@ -134,6 +135,7 @@ nav:
     - DialogReturn: enums/DialogReturn.md
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
+    - DwmWindowAttribute: enums/DwmWindowAttribute.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EntityTag: enums/EntityTag.md
@@ -189,8 +191,13 @@ nav:
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
+  - BossPool:
+    - BossPool: BossPool.md
+    - BossPoolManager: BossPoolManager.md
   - Camera: Camera.md
   - Capsule: Capsule.md
+  - CcpContainer: 
+    - RoomConfigSet: CcpContainer_RoomConfigSet.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - ColorModifier: ColorModifier.md
@@ -221,12 +228,14 @@ nav:
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
+  - GenericPrompt: GenericPrompt.md
   - GridEntity:
     - GridEntity: GridEntity.md
     - GridEntityDecoration: GridEntityDecoration.md
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityFire: GridEntityFire.md
     - GridEntityGravity: GridEntityGravity.md
+    - GridEntityLock: GridEntityLock.md
     - GridEntityPressurePlate: GridEntityPressurePlate.md
     - GridEntityRock: GridEntityRock.md
     - GridEntityStairs: GridEntityStairs.md
@@ -249,14 +258,19 @@ nav:
   - Isaac: Isaac.md
   - ItemConfig:
     - ItemConfig: ItemConfig.md
+    - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
+  - Input: Input.md
   - Level: Level.md
   - LevelGenerator:
     - LevelGenerator: LevelGenerator.md
     - LevelGeneratorEntry: LevelGeneratorEntry.md
     - LevelGeneratorRoom: LevelGeneratorRoom.md
+  - LootList:
+    - LootList: LootList.md
+    - LootListEntry: LootListEntry.md
   - Menus:
     - MenuManager: menus/MenuManager.md
     - BestiaryMenu: menus/BestiaryMenu.md
@@ -293,22 +307,25 @@ nav:
     - Beam: renderer/Beam.md
     - BlendMode: renderer/BlendMode.md
     - DestinationQuad: renderer/DestinationQuad.md
-    # - GLSLValue: renderer/GLSLValue.md
+    - GLSLValue: renderer/GLSLValue.md
     - Image: renderer/Image.md
-    # - Pipeline: renderer/Pipeline.md
+    - Pipeline: renderer/Pipeline.md
     - Point: renderer/Point.md
-    # - Renderer: renderer/Renderer.md
-    # - RenderSet: renderer/RenderSet.md
-    # - Shader: renderer/Shader.md
+    - Renderer: renderer/Renderer.md
+    - RenderSet: renderer/RenderSet.md
+    - Shader: renderer/Shader.md
     - SourceQuad: renderer/SourceQuad.md
     - Shape: renderer/Shape.md
-    # - Transformer: renderer/Transformer.md
-    # - Vertex: renderer/Vertex.md
-    # - VertexBuffer: renderer/VertexBuffer.md
-    # - VertexDescriptor: renderer/VertexDescriptor.md
+    - Transformer: renderer/Transformer.md
+    - Vertex: renderer/Vertex.md
+    - VertexBuffer: renderer/VertexBuffer.md
+    - VertexDescriptor: renderer/VertexDescriptor.md
+  - REPENTOGON: Repentogon.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:
+    - RoomConfig: RoomConfig.md
+    - RoomConfigStage: RoomConfigStage.md
     - GridEntitiesSaveStateVector: GridEntitiesSaveStateVector.md
     - RoomConfigHolder: RoomConfigHolder.md
     - RoomConfigRoom: RoomConfigRoom.md

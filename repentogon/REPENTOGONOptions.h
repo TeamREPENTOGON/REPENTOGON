@@ -34,9 +34,16 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
 			ini["VanillaTweaks"]["SkipIntro"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
+			ini["VanillaTweaks"]["FastLasers"] = "0";
+			ini["VanillaTweaks"]["InterpolV2"] = "0";
+			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
+			ini["internal"]["LastSaveFile"] = "0";
+			ini["internal"]["FileMap"] = "1";
+			ini["internal"]["ImGuiScale"] = "0";
+			ini["internal"]["RenderDebugFindInRadius"] = "0";
 			iniFile.generate(ini, true);
 		}
 
@@ -49,8 +56,15 @@ struct REPENTOGONOptions {
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
+		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
+		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
+		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
+		fileMap = defstoi(ini["internal"]["FileMap"], 1);
+		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
+		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
 		printf("Loaded REPENTOGON INI\n");
 	}
 
@@ -87,8 +101,15 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
+		Write("VanillaTweaks", "FastLasers", fastLasers);
+		Write("VanillaTweaks", "InterpolV2", interpolV2);
+		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
+		Write("internal", "LastSaveFile", lastSaveFile);
+		Write("internal", "FileMap", fileMap);
+		Write("internal", "ImGuiScale", imGuiScale);
+		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
 	}
 
 	mINI::INIStructure ini;
@@ -100,8 +121,15 @@ struct REPENTOGONOptions {
 	bool enableUnifont;
 	bool statHUDPlanetarium;
 	int unifontRenderMode;
+	bool fastLasers;
+	int lastSaveFile;
 	bool skipIntro;
+	bool interpolV2;
+	int marsDoubleTapWindow;
+	bool fileMap;
+	int imGuiScale;
 	std::string optionsPath;
+	bool renderDebugFindInRadius;
 };
 
 extern REPENTOGONOptions repentogonOptions;

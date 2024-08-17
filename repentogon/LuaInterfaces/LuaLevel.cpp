@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 
 #include "Level.h"
+#include "LuaEntitySaveState.h"
 
 LevelASM levelASM;
 
@@ -49,7 +50,7 @@ LUA_FUNCTION(lua_LevelSetName) {
 
 LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	level->_greedwavesclearedwithoutredheartdamage = (uint32_t)luaL_checkinteger(L, 2);
 	return 0;
 }
 LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
@@ -80,6 +81,13 @@ LUA_FUNCTION(Lua_GetForceSpecialQuest) {
 LUA_FUNCTION(Lua_SetForceSpecialQuest) {
 	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_GetMyosotisPickups) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = (&level->_myosotisPickups);
+	return 1;
 }
 
 LUA_FUNCTION(Lua_LevelIsAltPath) {
@@ -154,6 +162,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDimension", Lua_GetDimension},
 		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
 		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+		{ "GetMyosotisPickups", Lua_GetMyosotisPickups },
 
 		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
 		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },

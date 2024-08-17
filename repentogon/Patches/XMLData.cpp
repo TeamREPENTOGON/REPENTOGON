@@ -811,17 +811,31 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 
 // Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
 // Ex: "tag1 tag2 tag3"
-// For the 'customtags' attribute.
+// For tag-like attributes like 'customtags' and 'customcache'.
 void ParseTagsString(const string& str, set<string>& out) {
-	const string customtagsstr = stringlower(str.c_str());
-	if (!customtagsstr.empty()) {
-		stringstream tagstream(customtagsstr);
+	const string tagsstr = stringlower(str.c_str());
+	if (!tagsstr.empty()) {
+		stringstream tagstream(tagsstr);
 		string tag;
 		while (getline(tagstream, tag, ' ')) {
 			if (!tag.empty()) {
 				out.insert(tag);
 			}
 		}
+	}
+}
+
+// If the item has the appropriate customtags, adds it to the customreviveitems map
+// to make it more efficient to check if the player has any of them layer.
+void CheckCustomRevive(const int id, XMLItem* data) {
+	const bool hasReviveTag = data->HasCustomTag(id, "revive");
+	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
+	if (hasReviveTag || hasReviveEffectTag) {
+		CustomReviveInfo* info = &data->customreviveitems[id];
+		info->item = hasReviveTag;
+		info->effect = hasReviveEffectTag;
+		info->hidden = data->HasCustomTag(id, "hiddenrevive");
+		info->chance = data->HasCustomTag(id, "chancerevive");
 	}
 }
 
@@ -1139,6 +1153,14 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (item.find("relativeid") != item.end()) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 					if (item.find("customtags") != item.end()) {
 						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.ItemData);
+					}
+					if (item.find("customcache") != item.end()) {
+						ParseTagsString(item["customcache"], XMLStuff.ItemData->customcache[id]);
+						ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
+					}
+					if (id == 247 || id == 248) {
+						XMLStuff.ItemData->customcache[id].insert("familiarmultiplier");
 					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
@@ -1205,6 +1227,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (trinket.find("relativeid") != trinket.end()) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 					if (trinket.find("customtags") != trinket.end()) {
 						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.TrinketData);
+					}
+					if (trinket.find("customcache") != trinket.end()) {
+						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->customcache[id]);
+						ParseTagsString(trinket["customcache"], XMLStuff.AllCustomCaches);
 					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
@@ -1247,6 +1274,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 				if (item.find("customtags") != item.end()) {
 					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
+					CheckCustomRevive(id, XMLStuff.NullItemData);
+				}
+				if (item.find("customcache") != item.end()) {
+					ParseTagsString(item["customcache"], XMLStuff.NullItemData->customcache[id]);
+					ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
@@ -2057,18 +2089,23 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			{
 				itempool[stringlower(attr->name())] = string(attr->value());
 			}
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent){
+
+			bool isNewPool = XMLStuff.PoolData->byname.find(itempool["name"]) == XMLStuff.PoolData->byname.end();
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->maxid = XMLStuff.PoolData->maxid + 1;
 				id = XMLStuff.PoolData->maxid;
 			}
-			else {
+			else
+			{
 				id = XMLStuff.PoolData->byname[itempool["name"]];
 			}
 
 			itempool["sourceid"] = lastmodid;
 			XMLStuff.PoolData->ProcessChilds(auxnode, id);
 			
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
 				XMLStuff.PoolData->bymod[lastmodid].push_back(id);
 				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
@@ -2602,7 +2639,7 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 	tuple idx = { etype,evar };
 		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
 			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-			if ((esub > 0) && (vecnodes.size() > (esub-1))) {
+			if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
 				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
 				return 1;
 			}
@@ -2833,7 +2870,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 }
 
 char* GetResources(char* xml,const string &dir,const string &filename) {
-	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
+	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string & path : paths) {
 		ifstream file(path.c_str());
 		if (file.is_open()) {
@@ -3226,7 +3263,12 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
-
+			// Skip this mod if it does not even have the corresponding XML, to save time and memory during startup.
+			// However, DON'T skip if we are in the middle of hijacking a cutscenes XML reload as part of the custom cutscenes support,
+			// since that messes things up and causes all cutscenes to become the intro cutscene.
+			if (!std::filesystem::exists(contentsdir) && queuedhackyxmlvalue == 0) {
+				continue;
+			};
 			xml_document<char>* xmldoc = new xml_document<char>();
 			if (XMLParse(xmldoc, xml, filename)) {
 				xml_node<char>* root = xmldoc->first_node();
