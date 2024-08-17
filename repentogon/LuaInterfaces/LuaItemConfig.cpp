@@ -2,6 +2,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "../Patches/XMLData.h"
+#include "../Patches/CardsExtras.h"
 
 XMLItem* GetItemXML(const ItemConfig_Item* config) {
 	if (config->type == 0) {
@@ -90,6 +91,76 @@ LUA_FUNCTION(Lua_ItemConfigCard_ModdedCardFront_propget) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfigCard_GetInitialWeight) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	lua_pushnumber(L, config_EX->initialWeight);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_GetWeight) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	lua_pushnumber(L, config_EX->weight);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_SetWeight) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	float weight = (float)luaL_checknumber(L, 2);
+
+	weight = max(weight, 0.0f);
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	config_EX->weight = weight;
+	config_EX->invalidateVanillaMethod = weight != 1.0f;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_GetAvailabilityCondition) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, config_EX->availabilityFuncRef);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_SetAvailabilityCondition) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+
+	config_EX->SetAvailabilityCondition(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_ClearAvailabilityCondition) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+
+	config_EX->ClearAvailabilityCondition(L);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_GetHidden) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+
+	lua_pushboolean(L, config_EX->hidden);
+	return 1;
+}
+
+void RegisterCardFunctions(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ "GetAvailabilityCondition", Lua_ItemConfigCard_GetAvailabilityCondition },
+		{ "SetAvailabilityCondition", Lua_ItemConfigCard_SetAvailabilityCondition },
+		{ "ClearAvailabilityCondition", Lua_ItemConfigCard_ClearAvailabilityCondition },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterFunctions(L, lua::Metatables::CARD, functions);
+	lua::RegisterFunctions(L, lua::Metatables::CONST_CARD, functions);
+}
+
 LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
 	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectSubClass);
@@ -149,6 +220,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 
 	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "ModdedCardFront",Lua_ItemConfigCard_ModdedCardFront_propget);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "Hidden", Lua_ItemConfigCard_GetHidden);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "InitialWeight", Lua_ItemConfigCard_GetInitialWeight);
+	lua::RegisterVariable(_state, lua::Metatables::CARD, "Weight", Lua_ItemConfigCard_GetWeight, Lua_ItemConfigCard_SetWeight);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_CARD, "Hidden", Lua_ItemConfigCard_GetHidden);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_CARD, "InitialWeight", Lua_ItemConfigCard_GetInitialWeight);
+	RegisterCardFunctions(_state);
+
 	FixItemConfigPillEffects(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);

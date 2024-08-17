@@ -1,6 +1,9 @@
 "558bec515368dd020000":
 __thiscall void ItemConfig::Init();
 
+"558bec515356578bf933c9":
+__thiscall void ItemConfig::Unload();
+
 "558beca1????????8b55??85c0":
 __thiscall ItemConfig_Item* ItemConfig::GetCollectible(int id);
 
