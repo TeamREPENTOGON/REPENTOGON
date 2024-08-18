@@ -272,7 +272,7 @@ LUA_FUNCTION(Lua_CreatePointDummy) {
 		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 	}
 
-	bool worldSpace = lua::luaL_optboolean(L, 4, true);
+	bool worldSpace = lua::luaL_optboolean(L, 4, false);
 
 	Point* toLua = lua::place<Point>(L, lua::metatables::PointMT, *pos, spritesheetCoord, widthMod, color, worldSpace);
 	luaL_setmetatable(L, lua::metatables::PointMT);
