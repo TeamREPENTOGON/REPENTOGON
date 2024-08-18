@@ -1,3 +1,33 @@
+v1.xx -
+Additions:
+* Point:
+	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
+	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from screenspace to worldspace when rendering
+/newline/
+Modified:
+* Beam:
+	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
+	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
+	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
+/newline/
+v1.0.11c -
+Additions:
+* CharacterMenu:
+	- [Get/Set]ActiveStatus()
+	- CharacterMenuStatus enum
+/newline/
+Fixes:
+	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
+	- Fixed SetRail index checks
+/newline/
+v1.0.11b -
+Bug fixes:
+	- Fixed a crash that could occur randomly when using custom item pools
+/newline/
+v1.0.11a -
+Bug fixes:
+	- Fixed a division by zero that occured when shuffling an empty item pool
+/newline/
 v1.0.11 -
 Additions:
 * Itempools:
@@ -41,6 +71,7 @@ Additions:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
 	- TrySplit(float DefaultDamage, EntityRef Source, DoScreenEffects = true)
+	- ReplaceSpritesheet(int LayedId, string PngFilename, bool LoadGraphics = false) - Appends _champion/stage suffix to PngFilename if possible.
 * EntityLaser:
 	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
 	- IsMultidimensionalTouched()
