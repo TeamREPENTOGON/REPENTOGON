@@ -52,17 +52,6 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	return 1;
 }
 
-/*
-void ConstructPoint(lua_State* L, Point& point, uint8_t offset) {
-	point._pos = *lua::GetUserdata<Vector*>(L, offset, lua::Metatables::VECTOR, "Vector");
-	point._spritesheetCoordinate = (float)luaL_checknumber(L, offset+1);
-	point._width = (float)luaL_optnumber(L,	offset+2, 1.0f);
-
-	if (lua_type(L, offset+3) == LUA_TUSERDATA)
-		point._color = *lua::GetUserdata<ColorMod*>(L, offset+3, lua::Metatables::COLOR, "Color");
-}
-*/
-
 LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Point point;
@@ -257,15 +246,15 @@ LUA_FUNCTION(Lua_BeamRenderer__gc) {
 // Point
 LUA_FUNCTION(Lua_CreatePointDummy) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	float widthMod = (float)luaL_optnumber(L, 2, 1.0f);
-	float spritesheetCoord = (float)luaL_optnumber(L, 3, 0.0f);
+	float spritesheetCoord = (float)luaL_checknumber(L, 2);
+	float widthMod = (float)luaL_optnumber(L, 3, 1.0f);
 
 	ColorMod color;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
 		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 	}
 
-	bool worldSpace = lua::luaL_optboolean(L, 4, false);
+	bool worldSpace = lua::luaL_optboolean(L, 5, false);
 
 	Point* toLua = lua::place<Point>(L, lua::metatables::PointMT, *pos, spritesheetCoord, widthMod, color, worldSpace);
 	luaL_setmetatable(L, lua::metatables::PointMT);
