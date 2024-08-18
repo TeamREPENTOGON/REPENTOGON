@@ -2,8 +2,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-constexpr auto POINT_VECTOR_SIZE = 8;
-
 const char* errors[4] = {
 	"Must have at least two points",
 	"Overlay AnimState is NULL!",
@@ -44,31 +42,26 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	
 	bool useOverlay = lua::luaL_checkboolean(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
-	int vectorSize = (int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
-	if (vectorSize < 2) {
-		return luaL_error(L, "Must allocate at least two points");
-	}
-
 
 	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamMT, layerID, useOverlay, unk);
 	toLua->_anm2.construct_from_copy(sprite);
-	toLua->_anm2.GetLayer(layerID)->_wrapSMode = 0;
-	toLua->_anm2.GetLayer(layerID)->_wrapTMode = 1;
+	//toLua->_anm2.GetLayer(layerID)->_wrapSMode = 0;
+	//toLua->_anm2.GetLayer(layerID)->_wrapTMode = 1;
 
 	luaL_setmetatable(L, lua::metatables::BeamMT);
 	return 1;
 }
 
+/*
 void ConstructPoint(lua_State* L, Point& point, uint8_t offset) {
 	point._pos = *lua::GetUserdata<Vector*>(L, offset, lua::Metatables::VECTOR, "Vector");
 	point._spritesheetCoordinate = (float)luaL_checknumber(L, offset+1);
 	point._width = (float)luaL_optnumber(L,	offset+2, 1.0f);
 
-	if (lua_type(L, offset+3) == LUA_TUSERDATA) {
+	if (lua_type(L, offset+3) == LUA_TUSERDATA)
 		point._color = *lua::GetUserdata<ColorMod*>(L, offset+3, lua::Metatables::COLOR, "Color");
-	}
-
 }
+*/
 
 LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
@@ -80,11 +73,12 @@ LUA_FUNCTION(Lua_BeamAdd) {
 	else
 	{
 		point._pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-		point._width = (float)luaL_optnumber(L, 3, 1.f);
-		point._spritesheetCoordinate = (float)luaL_optnumber(L, 4, 0.0f);
-		if (lua_gettop(L) > 4) {
+		point._spritesheetCoordinate = (float)luaL_optnumber(L, 3, 0.0f);
+		point._width = (float)luaL_optnumber(L, 4, 1.f);
+		if (lua_type(L,5) == LUA_TUSERDATA) {
 			point._color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 		}
+		point._worldSpace = lua::luaL_optboolean(L, 6, false);
 	}
 
 	beam->_points.push_back(point);
@@ -120,14 +114,13 @@ LUA_FUNCTION(Lua_BeamRender) {
 
 	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
-	
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
 		Vector posBuffer;
 		if (it->_worldSpace)
 			LuaEngine::Isaac_WorldToScreen(&posBuffer, &it->_pos);
 		else
 			posBuffer = it->_pos;
-		g_BeamRenderer->Add(&posBuffer, &it->_color, it->_width, it->_spritesheetCoordinate);
+		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_width, it->_spritesheetCoordinate);
 	}
 
 	g_BeamRenderer->End();
@@ -221,8 +214,8 @@ LUA_FUNCTION(Lua_BeamSetLayer)
 		}
 	}
 	beam->_layer = layerID;
-	beam->GetANM2()->GetLayer(layerID)->_wrapSMode = 0;
-	beam->GetANM2()->GetLayer(layerID)->_wrapTMode = 1;
+	//beam->GetANM2()->GetLayer(layerID)->_wrapSMode = 0;
+	//beam->GetANM2()->GetLayer(layerID)->_wrapTMode = 1;
 	return 0;
 }
 
