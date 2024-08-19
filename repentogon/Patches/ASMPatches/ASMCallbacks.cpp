@@ -100,7 +100,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::entityTakeDmgCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		unsigned int entityType = *entity->GetType();
 
@@ -880,8 +880,9 @@ void ASMPatchTrinketRender() {
 
 	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
 	ASMPatch patch;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::EAX | ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
 	patch
+		.Push(ASMPatch::Registers::EAX)				// manually restoring later
 		.PreserveRegisters(savedRegisters)
 		.AddBytes("\x8B\x9C\x24\x80").AddZeroes(3)	//(mov ebx,esp+0x80), playerhud aka (this)
 		.Push(ASMPatch::Registers::EAX)				//cropoffset ptr which resides in eax
@@ -893,16 +894,17 @@ void ASMPatchTrinketRender() {
 		.Push(ASMPatch::Registers::EAX)				//	slot
 		.Push(ASMPatch::Registers::EBX)				//hud from the ebx
 		.AddInternalCall(&RunTrinketRenderCallback)
+		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
 		.AddBytes("\x84\xC0") // test al, al
-		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false
+		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
+		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, push edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
 		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
 		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
 		.AddBytes("\x66\x0F\x7E\x5C\x24\x34")		//movd esp+0x34, xmm3
+		.AddRelativeJump((char*)addr + 0x7);		//jump for true, continue with rendering
 
-		.AddRelativeJump((char*)addr + 0x7);
-
-		sASMPatcher.PatchAt(addr, &patch);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 //MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (1335)
@@ -1029,4 +1031,58 @@ void ASMPatchTearDeath() {
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_PRE_PLAYER_GIVE_BIRTH_CAMBION (1474)
+// MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE (1475)
+bool __stdcall RunPrePlayerGiveBirthCallback(Entity_Player* player, const uint32_t flag, const bool isCambion) {
+	const int callbackid = isCambion ? 1474 : 1475;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(flag)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.push(flag)
+			.call(1);
+
+		if (!results && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == false) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void PreBirthPatch(void* addr, const bool isCambion) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(isCambion)
+		.Push(ASMPatch::Registers::EAX)  // ConceptionFamiliarFlag
+		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
+		.AddInternalCall(RunPrePlayerGiveBirthCallback)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x19)  // Jump for true, negate birth
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the 10 bytes we overwrote.
+		.AddRelativeJump((char*)addr + 0xA);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchPrePlayerGiveBirth() {
+	SigScan cambionSig("818f????????000200000bc2");
+	cambionSig.Scan();
+	void* cambionAddr = cambionSig.GetAddress();
+	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
+	PreBirthPatch(cambionAddr, true);  // Cambion
+
+	SigScan immaculateSig("818f????????000200000bc6");
+	immaculateSig.Scan();
+	void* immaculateAddr = immaculateSig.GetAddress();
+	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
+	PreBirthPatch(immaculateAddr, false);  // Immaculate
 }

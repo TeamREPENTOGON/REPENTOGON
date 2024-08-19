@@ -1,7 +1,7 @@
 "558bec83ec78a1????????33c58945??535657ff75":
 __thiscall void Menu_Save::select_save_slot(uint32_t slot);
 
-struct Menu_Save depends (ANM2) { 
+struct Menu_Save depends (ANM2, GenericPrompt) { 
     {{
          inline ANM2* GetSaveSelectMenuSprite() { return &this->SaveSelectMenuSprite; }
          inline ANM2* GetDeleteButtonSprite() { return &this->DeleteButtonSprite; }
@@ -21,4 +21,6 @@ struct Menu_Save depends (ANM2) {
     ANM2 Save3DrawingSprite : 0x354;
     ANM2 DeleteButtonSprite : 0x46c;
     ANM2 DeletePopupSprite : 0x580;
-} : 0x694;
+	GenericPrompt _deleteSavePrompt : 0x694;
+	int _getMostRecentBackupDateRelated : 0x808b4;
+} : 0x808b8;

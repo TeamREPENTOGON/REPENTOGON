@@ -182,4 +182,30 @@ namespace ASMPatches {
 			return true;
 		}
 	}
+
+	bool FixHushFXVeins() {
+		// update_vein_tree
+		SigScan signature("76??8d70");
+		if (!signature.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		ASMPatch patch;
+		patch.AddBytes("\xEB"); // jmp
+		sASMPatcher.FlatPatch(addr, &patch);
+
+		// RenderVeins
+		SigScan signature2("83bf????????0074??8d87");
+		if (!signature2.Scan()) {
+			return false;
+		}
+
+		void* addr2 = signature2.GetAddress();
+		ASMPatch patch2;
+		patch2.AddBytes("\xEB\x07\x90\x90\x90\x90\x90"); // jmp
+		sASMPatcher.FlatPatch(addr2, &patch2);
+
+		return true;
+	}
 }

@@ -14,8 +14,8 @@
 
 LUA_FUNCTION(Lua_DebugRendererGet) {
 	DebugRenderer* debugRenderer = g_Game->GetDebugRenderer();
-	int index = (int)luaL_checkinteger(L, 1);
-	bool unk = lua_toboolean(L, 2);
+	int index = (int)luaL_optinteger(L, 1, -1);
+	bool unk = lua::luaL_optboolean(L, 2, false);
 	Shape** ud = (Shape**)lua_newuserdata(L, sizeof(Shape*));
 	*ud = debugRenderer->Get(index, unk);
 	luaL_setmetatable(L, lua::metatables::ShapeMT);

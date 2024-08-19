@@ -267,6 +267,20 @@ LUA_FUNCTION(lua_CharMenu_SetCharacterWheelWidth)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_CharMenu_GetActiveStatus) {
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
+	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
+	lua_pushinteger(L, menu->Status);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CharMenu_SetActiveStatus) {
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
+	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
+	menu->Status = (int)luaL_checkinteger(L, 1);
+	return 0;
+}
+
 static void RegisterStatsMenuGame(lua_State* L)
 {
 	lua_newtable(L);
@@ -300,6 +314,8 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "SetScrollSpeed", lua_CharMenu_SetScrollSpeed);
 	lua::TableAssoc(L, "GetCharacterWheelWidth", lua_CharMenu_GetCharacterWheelWidth);
 	lua::TableAssoc(L, "SetCharacterWheelWidth", lua_CharMenu_SetCharacterWheelWidth);
+	lua::TableAssoc(L, "GetActiveStatus", Lua_CharMenu_GetActiveStatus);
+	lua::TableAssoc(L, "SetActiveStatus", Lua_CharMenu_SetActiveStatus);
 	lua_setglobal(L, lua::metatables::CharacterMenuMT);
 }
 

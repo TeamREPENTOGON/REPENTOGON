@@ -32,6 +32,10 @@ ShiftIdx is now optional, with the default value set to 35.
 ___
 ## Functions 
 
+### GetShiftIdx () {: aria-label='Functions' }
+#### int GetShiftIdx ( ) {: .copyable aria-label='Functions' }
+
+___
 ### PhantomFloat () {: aria-label='Functions' }
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
 Generates a random float between `0` (inclusive) and `1` (exclusive).
@@ -44,11 +48,23 @@ ___
 Behaves identically to RandomInt without advancing the internal state of the RNG object.
 
 ___
+### PhantomNext () {: aria-label='Functions' }
+#### int PhantomNext ( ) {: .copyable aria-label='Functions' }
+
+___
+### PhantomPrevious () {: aria-label='Functions' }
+#### int PhantomPrevious ( ) {: .copyable aria-label='Functions' }
+
+___
 ### PhantomVector () {: aria-label='Functions' }
 #### [Vector](Vector.md) PhantomVector ( ) {: .copyable aria-label='Functions' }
 Returns a random vector with length `1`. Multiply this vector by a number for larger random vectors.
 
 This does not advance the internal state of the RNG object.
+
+___
+### Previous () {: aria-label='Functions' }
+#### int Previous ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### RandomVector () {: aria-label='Functions' }

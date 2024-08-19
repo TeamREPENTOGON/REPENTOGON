@@ -80,10 +80,16 @@ Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
 ### GetDizzyAmount () {: aria-label='Functions' }
-#### int GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
-Returns the current dizzy amount akin to Wavy Cap
+#### float GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
+Returns the current dizzy amount akin to Wavy Cap.
+
+___
+### GetGenericPrompt () {: aria-label='Functions' }
+#### [GenericPrompt](GenericPrompt.md) GetGenericPrompt ( ) {: .copyable aria-label='Functions' }
+Returns the currently active `GenericPrompt` object.
+
 ???+ bug "Bug"
-    Currently this function only returns `0`. Using [SetDizzyAmount](Game.md#setdizzyamount) or the Wavy Cap collectible has no effect on this function.
+	  Crashes the game if used during a run while no prompts are active.
 
 ___
 ### GetLerpColorModifier () {: aria-label='Functions' }
@@ -141,6 +147,11 @@ ___
 Returns `true` if the current run is a rerun.
 
 ___
+### RecordPlayerCompletion () {: aria-label='Functions' }
+#### void RecordPlayerCompletion ( [CompletionType](enums/CompletionType.md) Type ) {: .copyable aria-label='Functions' }
+Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
+
+___
 ### SetBloom () {: aria-label='Functions' }
 #### void SetBloom ( float Duration, float Amount ) {: .copyable aria-label='Functions' }
 
@@ -150,12 +161,12 @@ ___
 
 ___
 ### SetDizzyAmount () {: aria-label='Functions' }
-#### void SetDizzyAmount ( float Amount , float Intensity) {: .copyable aria-label='Functions' }
+#### void SetDizzyAmount ( float TargetIntensity , float CurrentIntensity ) {: .copyable aria-label='Functions' }
 Sets the dizzy amount akin to Wavy Cap.
 
-`Amount` is the amount that the screen will be affected. Screen will slowly reach the desired intensity. Also works in reverse if current intensity is higher than the `Amount`.
+The current intensity of the effect will gradually move towards the "TargetIntensity".
 
-`Intensity` is the starting intensity of the effect.
+Providing "CurrentIntensity" to this function is optional. If provided, the current intensity is instantly changed to that amount. If unspecified, the current intensity will remain unchanged.
 ???+ warning "Warning"
     Best to stay within `0`-`1` and increment by 0.1 while using this function. `1` has the most extreme effect on the screen while `0` removes the effect.
 

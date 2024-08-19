@@ -19,6 +19,9 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod, BlendMode) { {{
     unsigned int _magFilterMode : 0x24;  // 0x24
     unsigned int _wrapSMode : 0x28;  // 0x28
     unsigned int _wrapTMode : 0x2c;  // 0x2C
+	bool _unk[2] : 0x30;
+	bool _flipX : 0x32;
+	bool _flipY : 0x33;
     Vector _size : 0x34; // 0x34
     float _rotation : 0x3c;  // 0x3c
     Vector _pos : 0x40;  // 0x40

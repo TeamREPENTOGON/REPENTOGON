@@ -28,6 +28,14 @@ ___
 #### string GetHeartOverlayAnim ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsEternalHeartOverlayVisible () {: aria-label='Functions' }
+#### boolean IsEternalHeartOverlayVisible ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsFadingHeart () {: aria-label='Functions' }
+#### boolean IsFadingHeart ( ) {: .copyable aria-label='Functions' }
+
+___
 ### IsGoldenHeartOverlayVisible () {: aria-label='Functions' }
 #### boolean IsGoldenHeartOverlayVisible ( ) {: .copyable aria-label='Functions' }
 

@@ -1459,7 +1459,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1488,7 +1488,7 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetType())
@@ -1517,7 +1517,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1546,7 +1546,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1575,7 +1575,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1604,7 +1604,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1633,7 +1633,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1662,7 +1662,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1691,7 +1691,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1721,7 +1721,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 		
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.push(*this->GetVariant())
@@ -1986,35 +1986,85 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	super();
 }
 
+// MC_PLAYER_GET_ACTIVE_MAX_CHARGE (below) can get triggered multiple times in a single call to some functions.
+// Some result caching is done here specifically for those functions, to reduce how many times the callback runs.
+// Unfortunately these callbacks can still run quite a few times per frame in some situations.
+bool cacheMaxChargeCallback = false;
+std::unordered_map<int, int> cachedMaxCharge;
+
+HOOK_METHOD(Entity_Player, ControlActiveItem, (int slot) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
+HOOK_METHOD(Entity_Player, AddActiveCharge, (unsigned int charge, int slot, bool unk, bool overcharge, bool force) -> int) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	const int result = super(charge, slot, unk, overcharge, force);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+
+	return result;
+}
+
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot, pos, alpha, unk, size);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
 //PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
 HOOK_OVERLOADED_METHOD(Entity_Player, GetActiveMaxCharge, int, (int, int), (int item, int vardata) -> int) {
+	const int normalMaxCharge = super(item, vardata);
+
 	const int callbackid = 1072;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (item != 0 && CallbackState.test(callbackid - 1000)) {
+		if (cacheMaxChargeCallback && cachedMaxCharge.find(item) != cachedMaxCharge.end()) {
+			return cachedMaxCharge[item];
+		} else {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(item)
-			.push(item)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(vardata)
-			.call(1);
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(item)
+				.push(item)
+				.push(this, lua::Metatables::ENTITY_PLAYER)
+				.push(vardata)
+				.push(normalMaxCharge)
+				.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+			if (!result && lua_isinteger(L, -1)) {
+				const int newMaxCharge = std::max((int)lua_tointeger(L, -1), 0);
+				if (cacheMaxChargeCallback) {
+					cachedMaxCharge[item] = newMaxCharge;
+				}
+				return newMaxCharge;
 			}
 		}
 	}
-	return super(item, vardata);
+
+	return normalMaxCharge;
 }
 
 //PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE (id: 1073)
 HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
+	const int normalMinCharge = super(slot);
+
 	const int callbackid = 1073;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (this->GetActiveItem(slot) != 0 && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -2024,15 +2074,15 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 			.push(this->GetActiveItem(slot))
 			.push(slot)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(normalMinCharge)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
-			}
+		if (!result && lua_isinteger(L, -1)) {
+			return std::max((int)lua_tointeger(L, -1), 0);
 		}
 	}
-	return super(slot);
+
+	return normalMinCharge;
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
@@ -2369,7 +2419,7 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 					return;
 			}
 			else if (lua_isinteger(L, -1)) {
-				int retCompletion = lua_tointeger(L, -1);
+				int retCompletion = (int)lua_tointeger(L, -1);
 				if (retCompletion >= 0 && retCompletion <= 17)
 					completion = retCompletion;
 				else
@@ -2600,9 +2650,10 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
 			.push(modCount)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(CollectibleID)
@@ -4061,6 +4112,68 @@ HOOK_METHOD(Entity_Player, Revive, () -> void) {
 			.push(ent, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
+} 
+
+// MC_PRE_FORTUNE_DISPLAY (1483)
+HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
+	const int callbackId = 1483;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
+	super(param_1);
+}
+
+// MC_PRE_ITEM_TEXT_DISPLAY (1484)
+HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+	const int callbackId = 1484;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &title[0], wcslen(title), NULL, 0, NULL, NULL);
+		std::string strTitle(sizeNeededTitle, 0);
+		WideCharToMultiByte(CP_UTF8, 0, title, wcslen(title), &strTitle[0], sizeNeededTitle, NULL, NULL);
+		 
+		int sizeNeededSubtitle = WideCharToMultiByte(CP_UTF8, 0, &subtitle[0], wcslen(subtitle), NULL, 0, NULL, NULL);
+		std::string strSubtitle(sizeNeededSubtitle, 0);
+		WideCharToMultiByte(CP_UTF8, 0, subtitle, wcslen(subtitle), &strSubtitle[0], sizeNeededSubtitle, NULL, NULL);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(strTitle.c_str())
+			.push(strSubtitle.c_str())
+			.push(isSticky)
+			.push(isCurseDisplay)
+			.call(1);
+		 
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			} 
+		} 
+	}
+
+	super(title, subtitle, isSticky, isCurseDisplay);
 }
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
@@ -4243,53 +4356,327 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 				bcktype = backdropid;
 				//super(backdropid, loadgraphics);
 				//return;
+				
+				XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
+				uint32_t refbackdrop = toint(node["reftype"]);
+				if (XMLStuff.BackdropData->backdropState.second != bcktype && XMLStuff.BackdropData->backdropState.first != refbackdrop) {
+					if (!SwapBackdrop(this, XMLStuff.BackdropData->backdropState.first, XMLStuff.BackdropData->backdropState.first))
+						return;
+					XMLStuff.BackdropData->backdropState.first = 0;
+					XMLStuff.BackdropData->backdropState.second = 0;
+				}
+
+				if (bcktype > 60 && XMLStuff.BackdropData->nodes.count(bcktype) > 0) {
+					uint32_t refbackdrop = toint(node["reftype"]);
+					if (refbackdrop > 60) {
+						//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
+						g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60\n");
+						return;
+					}
+					if (refbackdrop < 1) {
+						if (tobool(node["reversewatergfx"]))
+							refbackdrop = 3;
+						else
+							refbackdrop = 1;
+					}
+
+					if (!SwapBackdrop(this, bcktype, refbackdrop))
+						return;
+
+					XMLStuff.BackdropData->backdropState.first = refbackdrop;
+					XMLStuff.BackdropData->backdropState.second = bcktype;
+					XMLStuff.BackdropData->overrideName = node["name"];
+
+					super((uint32_t)refbackdrop, loadgraphics);
+
+					if (CallbackState.test(callbackId2 - 1000)) {
+						lua_State* L = g_LuaEngine->_state;
+						lua::LuaStackProtector protector(L);
+						lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+						lua::LuaResults result = lua::LuaCaller(L).push(callbackId2)
+							.push(bcktype)
+							.push(bcktype)
+							.call(1);
+					}
+					return;
+				}
+				
+			}
+		}
+	}
+	super(bcktype, loadgraphics);
+}
+
+//MC_PRE_BOSS_SELECT (1280)
+HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRNG) -> int) {
+	int bossId = super(leveltype, levelvariant, unusedRNG);
+
+	const int callbackid = 1280;
+	const auto stageId = RoomConfig::GetStageID(leveltype, levelvariant, -1);
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(bossId)
+			.push(bossId)
+			.push(&_pool[stageId], lua::metatables::BossPoolMT)
+			.push(leveltype)
+			.push(levelvariant)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				bossId = (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return bossId;
+}
+
+//PRE_GET_RANDOM_ROOM_INDEX (1290)
+HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) -> int) {
+	int ret = super(IAmErrorRoom, Seed);
+
+	const int callbackid = 1290;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ret)
+			.push(IAmErrorRoom)
+			.push(Seed)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				return (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return ret;
+}
+
+//PRE_FORCE_ADD_PILL_EFFECT (1128), temporarily disabled
+HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
+	int ret = -1;
+	int callbackid = 1128;
+	// if (CallbackState.test(callbackid - 1000)) {
+	// 	lua_State* L = g_LuaEngine->_state;
+	// 	lua::LuaStackProtector protector(L);
+
+	// 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	// 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+	// 		.pushnil()
+	// 		.push(ID)
+	// 		.call(1);
+
+	// 	if (!result) {
+	// 		if (lua_isinteger(L, -1)) {
+	// 			ret = (int)lua_tointeger(L, -1);
+	// 		};
+	// 	}
+	// };
+
+	if (ret == -1) {
+		ret = super(ID);
+	};
+
+//POST_FORCE_PILL_EFFECT (1129)
+	callbackid = 1129;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ID)
+			.push(ret)
+			.call(1);
+	};
+
+	return ret;
+};
+
+inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
+	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
+		return 0;
+	}
+
+	if (gameState == &g_Game->_glowingHourglassStates[1]._gameState) {
+		return 1;
+	}
+
+	return -1;
+}
+
+//POST_GLOWING_HOURGLASS_SAVE (1300)
+HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1300;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
+}
+
+//POST_GLOWING_HOURGLASS_LOAD (1301)
+HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState, startGame);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1301;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
+}
+
+inline bool IsCoopBaby(Entity_Player* player) {
+	return player->_variant == 1 || player->_isCoopGhost;
+}
+
+//PRE/POST_PLAYER_ADD_COSTUME (1281/1283)
+HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnly) -> void) {
+	if (IsCoopBaby(this)) {
+		return;
+	}
+
+	const int preCallbackid = 1281;
+	if (CallbackState.test(preCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(itemStateOnly)
+			.call(1);
+
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				auto* retItem = lua::GetUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
+				if (retItem) {
+					item = retItem;
+				}
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
 			}
 		}
 	}
 
-	XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
-	uint32_t refbackdrop = toint(node["reftype"]);
-	if (XMLStuff.BackdropData->backdropState.second != bcktype && XMLStuff.BackdropData->backdropState.first != refbackdrop) {
-		if (!SwapBackdrop(this, XMLStuff.BackdropData->backdropState.first, XMLStuff.BackdropData->backdropState.first))
-			return;
-		XMLStuff.BackdropData->backdropState.first = 0;
-		XMLStuff.BackdropData->backdropState.second = 0;
+	super(item, itemStateOnly);
+
+	const int postCallbackid = 1283;
+	if (CallbackState.test(postCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(itemStateOnly)
+			.call(1);
 	}
+}
 
-	if (bcktype > 60 && XMLStuff.BackdropData->nodes.count(bcktype) > 0) {
-		uint32_t refbackdrop = toint(node["reftype"]);
-		if (refbackdrop > 60) {
-			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
-			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60\n");
-			return;
-		}
-		if (refbackdrop < 1) {
-			if (tobool(node["reversewatergfx"]))
-				refbackdrop = 3;
-			else
-				refbackdrop = 1;
-		}
-
-		if (!SwapBackdrop(this, bcktype, refbackdrop))
-			return;
-
-		XMLStuff.BackdropData->backdropState.first = refbackdrop;
-		XMLStuff.BackdropData->backdropState.second = bcktype;
-		XMLStuff.BackdropData->overrideName = node["name"];
-
-		super((uint32_t)refbackdrop, loadgraphics);
-
-		if (CallbackState.test(callbackId2 - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackId2)
-				.push(bcktype)
-				.push(bcktype)
-				.call(1);
-		}
+//PRE/POST_PLAYER_REMOVE_COSTUME (1282/1284)
+HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
+	if (!item || IsCoopBaby(this)) {
 		return;
 	}
-	super(bcktype, loadgraphics);
+
+	const int preCallbackid = 1282;
+	if (CallbackState.test(preCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
+	super(item);
+
+	const int postCallbackid = 1284;
+	if (CallbackState.test(postCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
 }

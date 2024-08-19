@@ -191,6 +191,9 @@ nav:
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
+  - BossPool:
+    - BossPool: BossPool.md
+    - BossPoolManager: BossPoolManager.md
   - Camera: Camera.md
   - Capsule: Capsule.md
   - CcpContainer: 
@@ -225,12 +228,14 @@ nav:
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
+  - GenericPrompt: GenericPrompt.md
   - GridEntity:
     - GridEntity: GridEntity.md
     - GridEntityDecoration: GridEntityDecoration.md
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityFire: GridEntityFire.md
     - GridEntityGravity: GridEntityGravity.md
+    - GridEntityLock: GridEntityLock.md
     - GridEntityPressurePlate: GridEntityPressurePlate.md
     - GridEntityRock: GridEntityRock.md
     - GridEntityStairs: GridEntityStairs.md
@@ -315,6 +320,7 @@ nav:
     - Vertex: renderer/Vertex.md
     - VertexBuffer: renderer/VertexBuffer.md
     - VertexDescriptor: renderer/VertexDescriptor.md
+  - REPENTOGON: Repentogon.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:

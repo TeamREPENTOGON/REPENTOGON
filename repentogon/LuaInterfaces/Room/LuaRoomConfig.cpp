@@ -29,8 +29,8 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	StageHandler& stageHandler = StageHandler::GetInstance();
 	int n = lua_gettop(L);
-	if (n != 4) {
-		return luaL_error(L, "Expected four parameters, got %d\n", n);
+	if (n < 3) {
+		return luaL_error(L, "Expected three parameters, got %d\n", n);
 	}
 
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
@@ -54,9 +54,9 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	}
 
 	int variant = (int)luaL_checkinteger(L, 3);
-	int difficulty = (int)luaL_checkinteger(L, 4);
-	if (difficulty < -2 || difficulty > 1) {
-		difficulty = -1;
+	int mode = (int)luaL_optinteger(L, 4, -1);
+	if (mode < -2 || mode > 1) {
+		mode = -1;
 	}
 
 	RoomConfig_Room* config;

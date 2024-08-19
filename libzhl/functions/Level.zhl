@@ -52,7 +52,18 @@ __thiscall void Level::InitializeDevilAngelRoom(bool ForceAngel, bool ForceDevil
 "558beca1????????83ec0c83b8????????2c":
 __thiscall unsigned int Level::GetLocalStageType(int idx);
 
+"558bec6aff68????????64a1????????5083ec24535657a1????????33c5508d45??64a3????????8bd9f30f7e05":
+__thiscall int Level::GetRandomRoomIndex(bool IAmErrorRoom, unsigned int Seed);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec48040000":
+__thiscall void Level::generate_dungeon(RNG * RNG);
+
+"558bec83e4f883ec0c568bf18b86":
+__thiscall void Level::StartMamaMega(Vector * Position);
+
 struct Level {
+	uint32_t _stage : 0x0;
+	uint32_t _stageType : 0x4;
 	uint32_t _levelStateFlag : 0x1822c;
 	uint32_t _greedwavesclearedwithoutredheartdamage : 0x18204;
 } : 0x18230;

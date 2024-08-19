@@ -17,6 +17,11 @@ ___
 
 ## Functions
 
+### ClearFlyingOverride () {: aria-label='Functions' }
+#### void ClearFlyingOverride ( ) {: .copyable aria-label='Functions' }
+Removes any value set by [SetFlyingOverride](EntityNPC.md#setflyingoverride)
+
+___
 ### FireBossProjectilesEx () {: aria-label='Functions' }
 #### [EntityProjectile](EntityProjectile.md)[] FireBossProjectilesEx ( int NumProjectiles, [Vector](Vector.md) TargetPos, float TrajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) Params ) {: .copyable aria-label='Functions' }
 Same as [FireBossProjectiles](EntityNPC.md#firebossprojectiles), but returns a table containing the list of spawned projectiles.
@@ -50,12 +55,22 @@ ___
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
 
 ___
+### GetFireplaceLoot () {: aria-label='Functions' }
+#### [LootList](LootList.md) GetFireplaceLoot ( ) {: .copyable aria-label='Functions' }
+Returns the unique [LootList](LootList.md) used by Fireplaces.
+
+___
 ### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetShieldStrength () {: aria-label='Functions' }
 #### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetShopkeeperLoot () {: aria-label='Functions' }
+#### [LootList](LootList.md) GetShopkeeperLoot ( ) {: .copyable aria-label='Functions' }
+Returns the unique [LootList](LootList.md) used by Shopkeepers.
 
 ___
 ### GetSirenPlayerEntity () {: aria-label='Functions' }
@@ -66,9 +81,19 @@ ___
 #### boolean IsBossColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### ReplaceSpritesheet () {: aria-label='Functions' }
+#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool LoadGraphics = false ) {: .copyable aria-label='Functions' }
+Similar to [Sprite.ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to `PngFilename` if possible.
+
+___
 ### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls (back to normal behaviour).
+
+___
+### SetFlyingOverride () {: aria-label='Functions' }
+#### void SetFlyingOverride ( boolean CanFly ) {: .copyable aria-label='Functions' }
+Sets an override to the return value of IsFlying, which is normally based on [EntityGridCollisionClass](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityGridCollisionClass.html). Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 
 ___
 ### SetShieldStrength () {: aria-label='Functions' }
@@ -76,7 +101,7 @@ ___
 
 ___
 ### ShootMaggotProjectile () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float Velocity = -24.0, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float FallingSpeed = -8.0, float YOffset = -24.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
@@ -92,7 +117,7 @@ ___
 
 ___
 ### ThrowMaggot () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float yOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float YOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
@@ -110,6 +135,11 @@ ___
 ### TryForceTarget () {: aria-label='Functions' }
 #### boolean TryForceTarget ( [Entity](Entity.md) Target, int Duration ) {: .copyable aria-label='Functions' }
 Used by Lost Fly to force this NPC to focus on a specific target.
+
+___
+### TrySplit () {: aria-label='Functions' }
+#### boolean TrySplit ( float DefaultDamage, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, boolean DoScreenEffects = true ) {: .copyable aria-label='Functions' }
+Will attempt to split the enemy in two like the Meat Cleaver collectible. Returns `false` if the enemy dies from the damage before they split, `true` otherwise.
 
 ___
 ### TryThrow () {: aria-label='Functions' }

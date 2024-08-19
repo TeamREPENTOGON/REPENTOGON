@@ -297,6 +297,16 @@ I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR, u8"快速房间清理")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"房间开门和生成掉落物的速度更快。头目房仍需等待头目死亡动画播放完毕。")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"阻止模组更新")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"游戏不再保持模组文件夹与创意工坊文件夹同步。用于在模组开发期间暂时清空mods文件夹。")
+//to-do
+/*I(OPT_REPENTOGON_MARSDOUBLETAP, u8"Mars Double Tap Window")
+I(OPT_REPENTOGON_MARSDOUBLETAP_MARK, u8"Sets the window of time to double-tap a movement input to dash with Mars.")
+
+I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
+I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
+
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Extra Debug FindInRadius")
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIU_MARK, u8"to-do")
+*/
 
 I(OPT_EXTRA_HUD_MODES_OFF, u8"关")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"普通")

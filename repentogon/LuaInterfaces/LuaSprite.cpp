@@ -467,14 +467,6 @@ LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
-{
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, layerState->_wrapTMode);
-
-	return 1;
-}
-
 LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
@@ -483,10 +475,50 @@ LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushinteger(L, layerState->_wrapTMode);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_wrapTMode = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetFlipX)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushboolean(L, layerState->_flipX);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetFlipX)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_flipX = lua::luaL_checkboolean(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetFlipY)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushboolean(L, layerState->_flipY);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetFlipY)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_flipY = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }
@@ -542,6 +574,10 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetWrapSMode", Lua_LayerStateSetWrapSMode},
 		{ "GetWrapTMode", Lua_LayerStateGetWrapTMode},
 		{ "SetWrapTMode", Lua_LayerStateSetWrapTMode},
+		{ "GetFlipX", Lua_LayerStateGetFlipX},
+		{ "SetFlipX", Lua_LayerStateSetFlipX},
+		{ "GetFlipY", Lua_LayerStateGetFlipY},
+		{ "SetFlipY", Lua_LayerStateSetFlipY},
 		{ "SetCustomShader", Lua_LayerStateSetCustomShader},
 		{ "ClearCustomShader", Lua_LayerStateClearCustomShader},
 		{ "HasCustomShader", Lua_LayerStateHasCustomShader},

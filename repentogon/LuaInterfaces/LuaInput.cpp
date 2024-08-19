@@ -15,6 +15,17 @@ LUA_FUNCTION(Lua_InputGetDeviceNameByIdx)
 	return 1;
 }
 
+extern float WINMouseWheelMove_Vert;
+extern float WINMouseWheelMove_Hori;
+
+LUA_FUNCTION(Lua_InputGetMouseWheel)
+{
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector vec = Vector(WINMouseWheelMove_Hori, WINMouseWheelMove_Vert);
+	memcpy(toLua, &vec, sizeof(Vector));
+	return 1;
+}
+
 
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -22,4 +33,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetDeviceNameByIdx", Lua_InputGetDeviceNameByIdx);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetMouseWheel", Lua_InputGetMouseWheel);
 }

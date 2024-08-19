@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 #include "../Patches/XMLData.h"
 
-XMLDataHolder* GetItemXML(const ItemConfig_Item* config) {
+XMLItem* GetItemXML(const ItemConfig_Item* config) {
 	if (config->type == 0) {
 		return XMLStuff.NullItemData;
 	}
@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
 
 	lua_newtable(L);
 
-	XMLDataHolder* xml = GetItemXML(config);
+	XMLItem* xml = GetItemXML(config);
 	if (xml->customtags.find(config->id) != xml->customtags.end()) {
 		int i = 0;
 		for (const std::string& tag : xml->customtags[config->id]) {
@@ -39,10 +39,38 @@ LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+
+	lua_newtable(L);
+
+	XMLItem* xml = GetItemXML(config);
+	if (xml->customcache.find(config->id) != xml->customcache.end()) {
+		int i = 0;
+		for (const std::string& tag : xml->customcache[config->id]) {
+			lua_pushinteger(L, ++i);
+			lua_pushstring(L, tag.c_str());
+			lua_settable(L, -3);
+		}
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_HasCustomCacheTag)
+{
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushboolean(L, GetItemXML(config)->HasCustomCache(config->id, tag));
+	return 1;
+}
+
 void RegisterItemFunctions(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetCustomTags", Lua_ItemConfigItem_GetCustomTags },
 		{ "HasCustomTag", Lua_ItemConfigItem_HasCustomTag },
+		{ "GetCustomCacheTags", Lua_ItemConfigItem_GetCustomCacheTags },
+		{ "HasCustomCacheTag", Lua_ItemConfigItem_HasCustomCacheTag },
 		{ NULL, NULL }
 	};
 
@@ -53,6 +81,12 @@ void RegisterItemFunctions(lua_State* L) {
 LUA_FUNCTION(Lua_ItemConfigPill_EffectClass_propget) {
 	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectClass);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCard_ModdedCardFront_propget) {
+	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	lua::luabridge::UserdataPtr::push(L, config->moddedCardFront, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
@@ -99,6 +133,7 @@ static void FixItemConfigPillEffects(lua_State* L) {
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
 }
 
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -113,6 +148,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 
+	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "ModdedCardFront",Lua_ItemConfigCard_ModdedCardFront_propget);
 	FixItemConfigPillEffects(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);

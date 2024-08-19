@@ -203,9 +203,9 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 			return super(param_1, param_2);
 		};
 		new (param_1) std::string("");
-		int out_str_size=WideCharToMultiByte(CP_ACP,0,REPENTOGONFileMap::outputholder.data(),REPENTOGONFileMap::outputholder.size(),param_1->data(),0,0,0);
+		int out_str_size=WideCharToMultiByte(CP_UTF8,0,REPENTOGONFileMap::outputholder.data(),REPENTOGONFileMap::outputholder.size(),param_1->data(),0,0,0);
 		param_1->resize(out_str_size);
-		WideCharToMultiByte(CP_ACP, 0, REPENTOGONFileMap::outputholder.data(), REPENTOGONFileMap::outputholder.size(), param_1->data(), out_str_size, 0, 0);
+		WideCharToMultiByte(CP_UTF8, 0, REPENTOGONFileMap::outputholder.data(), REPENTOGONFileMap::outputholder.size(), param_1->data(), out_str_size, 0, 0);
 		return;
 	}
 	else {

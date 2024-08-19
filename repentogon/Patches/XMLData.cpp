@@ -643,11 +643,11 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 
 // Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
 // Ex: "tag1 tag2 tag3"
-// For the 'customtags' attribute.
+// For tag-like attributes like 'customtags' and 'customcache'.
 void ParseTagsString(const string& str, set<string>& out) {
-	const string customtagsstr = stringlower(str.c_str());
-	if (!customtagsstr.empty()) {
-		stringstream tagstream(customtagsstr);
+	const string tagsstr = stringlower(str.c_str());
+	if (!tagsstr.empty()) {
+		stringstream tagstream(tagsstr);
 		string tag;
 		while (getline(tagstream, tag, ' ')) {
 			if (!tag.empty()) {
@@ -987,6 +987,13 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
 						CheckCustomRevive(id, XMLStuff.ItemData);
 					}
+					if (item.find("customcache") != item.end()) {
+						ParseTagsString(item["customcache"], XMLStuff.ItemData->customcache[id]);
+						ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
+					}
+					if (id == 247 || id == 248) {
+						XMLStuff.ItemData->customcache[id].insert("familiarmultiplier");
+					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
 					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
@@ -1054,6 +1061,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
 						CheckCustomRevive(id, XMLStuff.TrinketData);
 					}
+					if (trinket.find("customcache") != trinket.end()) {
+						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->customcache[id]);
+						ParseTagsString(trinket["customcache"], XMLStuff.AllCustomCaches);
+					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
 					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
@@ -1096,6 +1107,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (item.find("customtags") != item.end()) {
 					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
 					CheckCustomRevive(id, XMLStuff.NullItemData);
+				}
+				if (item.find("customcache") != item.end()) {
+					ParseTagsString(item["customcache"], XMLStuff.NullItemData->customcache[id]);
+					ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
@@ -1906,18 +1921,23 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			{
 				itempool[stringlower(attr->name())] = string(attr->value());
 			}
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent){
+
+			bool isNewPool = XMLStuff.PoolData->byname.find(itempool["name"]) == XMLStuff.PoolData->byname.end();
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->maxid = XMLStuff.PoolData->maxid + 1;
 				id = XMLStuff.PoolData->maxid;
 			}
-			else {
+			else
+			{
 				id = XMLStuff.PoolData->byname[itempool["name"]];
 			}
 
 			itempool["sourceid"] = lastmodid;
 			XMLStuff.PoolData->ProcessChilds(auxnode, id);
 			
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
 				XMLStuff.PoolData->bymod[lastmodid].push_back(id);
 				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
@@ -2454,7 +2474,7 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 	tuple idx = { etype,evar };
 		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
 			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-			if ((esub > 0) && (vecnodes.size() > (esub-1))) {
+			if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
 				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
 				return 1;
 			}

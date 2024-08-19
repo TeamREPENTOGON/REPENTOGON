@@ -164,6 +164,7 @@ namespace lua {
         extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* BestiaryMenuMT;
         extern LIBZHL_API const char* BlendModeMT;
+        extern LIBZHL_API const char* BossPoolMT;
         extern LIBZHL_API const char* CameraMT;
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* ChallengeMenuMT;
@@ -175,6 +176,7 @@ namespace lua {
         extern LIBZHL_API const char* ColorModifierMT;
         extern LIBZHL_API const char* CustomChallengeMenuMT;
         extern LIBZHL_API const char* CutscenesMenuMT;
+        extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* DailyChallengeMenuMT;

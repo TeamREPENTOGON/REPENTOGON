@@ -3,8 +3,11 @@
 #include "HookSystem.h"
 
 #include "../LuaWeapon.h"
+#include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/ExtraLives.h"
+#include "../../Patches/EntityPlus.h"
+#include "../../Patches/XmlData.h"
 
 
 /*
@@ -368,7 +371,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 		pickup = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	}
 
-	player->DropCollectibleByHistoryIndex(idx, pickup);
+	player->DropCollectibleByHistoryIndex(idx, pickup, false);
 	if (!pickup) {
 		lua_pushnil(L);
 	}
@@ -559,6 +562,14 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	*player->GetBagOfCraftingOutput() = (int)luaL_checkinteger(L, 2);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetMovingBoxContents)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = (player->GetMovingBoxContents());
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerGetSpeedModifier)
@@ -1023,7 +1034,9 @@ LUA_FUNCTION(Lua_PlayerGetPlayerIndex)
 LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*plr->GetImmaculateConceptionState() = (int)luaL_checkinteger(L, 2);
+	// Clamp the value to 0~14, as the game will crash on pregnancy update if it is set otherwise.
+	// The value also needs to be no higher than 14 to trigger a birth on the next heart pickup.
+	*plr->GetImmaculateConceptionState() = std::clamp((int)luaL_checkinteger(L, 2), 0, 14);
 	return 0;
 }
 
@@ -1055,6 +1068,20 @@ LUA_FUNCTION(Lua_PlayerGetCambionPregnancyLevel)
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, plr->GetCambionPregnancyLevel());
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetConceptionFamiliarFlags)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, plr->_conceptionFamiliarFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetConceptionFamiliarFlags)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_conceptionFamiliarFlags = (int)luaL_checkinteger(L, 2);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetBladderCharge)
@@ -2129,7 +2156,7 @@ LUA_FUNCTION(Lua_PlayerAddColEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetCollectibleEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerAddNullEffect) {
@@ -2151,7 +2178,7 @@ LUA_FUNCTION(Lua_PlayerAddNullEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetNullEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
@@ -2173,7 +2200,7 @@ LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetTrinketEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 /*
@@ -2314,6 +2341,99 @@ LUA_FUNCTION(Lua_PlayerHasChanceRevive) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int blackHeart = (const int)luaL_checkinteger(L, 2);
+
+	if ((blackHeart <= player->_soulHearts) && (blackHeart > -1)) {
+		player->_blackHearts |= 1 << (blackHeart >> 1 & 0x1f);
+		player->update_golden_hearts();
+		player->update_bone_hearts();
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerAddNullCostumeOverride) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	int size = g_Manager->_itemConfig.GetNullItems()->size() - 1;
+	if (id < 0 || id > size) {
+		std::string error = "Invalid null item id " + std::to_string(id) + ", valid range is 0 to " + std::to_string(size);
+		return luaL_argerror(L, 2, error.c_str());
+	}
+	player->AddNullCostume(id);
+	return 0;
+}
+
+// not only does this crash the game, the ONLY thing it does is return 0
+// because it was stubbed in repentance but not removed from the api (even the game still uses it a couple times!)
+LUA_FUNCTION(Lua_PlayerGetBombVariant) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	BitSet128* flags = lua::GetUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	bool forceSmall = lua::luaL_checkboolean(L, 3);
+
+	lua_pushinteger(L, 0);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddCustomCacheTag) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+
+	const int type = lua_type(L, 2);
+
+	if (type == LUA_TTABLE) {
+		std::set<std::string> customcaches;
+
+		auto tableLength = lua_rawlen(L, 2);
+		for (auto i = 1; i <= tableLength; ++i) {
+			lua_pushinteger(L, i);
+			lua_gettable(L, 2);
+			if (lua_type(L, -1) == LUA_TNIL)
+				break;
+			playerPlus->customCacheTags.insert(stringlower(luaL_checkstring(L, -1)));
+			lua_pop(L, 1);
+		}
+	}
+	else {
+		playerPlus->customCacheTags.insert(stringlower(luaL_checkstring(L, 2)));
+	}
+
+	const bool evalItems = lua::luaL_optboolean(L, 3, false);
+
+	if (evalItems) {
+		player->EvaluateItems();
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	const std::string tag = luaL_checkstring(L, 2);
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+
+	if (playerPlus && playerPlus->customCacheResults.find(tag) != playerPlus->customCacheResults.end()) {
+		lua_pushnumber(L, playerPlus->customCacheResults[tag]);
+	}
+	else {
+		lua_pushnumber(L, 0);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_tearDisplacement);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2352,6 +2472,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot },
 		{ "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput },
 		{ "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput },
+		{ "GetMovingBoxContents", Lua_PlayerGetMovingBoxContents },
 		{ "GetSpeedModifier", Lua_PlayerGetSpeedModifier },
 		{ "SetSpeedModifier", Lua_PlayerSetSpeedModifier },
 		{ "GetFireDelayModifier", Lua_PlayerGetFireDelayModifier },
@@ -2410,6 +2531,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetCambionConceptionState", Lua_PlayerSetCambionConceptionState },
 		{ "UpdateIsaacPregnancy", Lua_PlayerUpdateIsaacPregnancy },
 		{ "GetCambionPregnancyLevel", Lua_PlayerGetCambionPregnancyLevel },
+		{ "GetConceptionFamiliarFlags", Lua_PlayerGetConceptionFamiliarFlags },
+		{ "SetConceptionFamiliarFlags", Lua_PlayerSetConceptionFamiliarFlags },
 		{ "GetBladderCharge", Lua_PlayerGetBladderCharge },
 		{ "SetBladderCharge", Lua_PlayerSetBladderCharge },
 		{ "GetMaxBladderCharge", Lua_PlayerGetMaxBladderCharge },
@@ -2511,7 +2634,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
 		{ "SetHeadDirection", Lua_PlayerSetHeadDirection },
 		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
-		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
 		{ "AddNullItemEffect", Lua_PlayerAddNullEffect },
 		{ "BlockCollectible", Lua_BlockCollectible },
 		{ "UnblockCollectible", Lua_UnblockCollectible },
@@ -2523,6 +2645,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
+		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
+		{ "AddNullCostume", Lua_PlayerAddNullCostumeOverride },
+		{ "GetBombVariant", Lua_PlayerGetBombVariant },
+		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
+		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
+		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

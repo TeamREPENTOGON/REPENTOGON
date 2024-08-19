@@ -5,7 +5,7 @@ __thiscall void EntityList::RenderShadows(Vector *offset);
 __thiscall EntityList_EL* EntityList::QueryType(EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
 
 "558bec83e4f883ec14535657f3":
-void EntityList::QueryRadius(EntityList_EL* result, Vector* Position, float Radius<xmm3>, unsigned int Partitions);
+__thiscall EntityList_EL EntityList::QueryRadius(Vector* Position, float Radius<xmm3>, unsigned int Partitions);
 
 "558bec83e4f883ec4056578bf1":
 __thiscall EntityList_EL* EntityList::QueryCapsule(EntityList_EL* result, Capsule* Capsule, unsigned int Partitions);

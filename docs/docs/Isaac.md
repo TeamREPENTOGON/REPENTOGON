@@ -111,9 +111,17 @@ ___
 #### [Entity](Entity.md)[] FindInCapsule ( [Capsule](Capsule.md) Capsule, [EntityPartitions](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = -1 ) {: .copyable aria-label='Functions' }
 Return entities inside of given capsule, filtered by partitions mask.
 ___
+### FindTargetPit () {: aria-label='Functions' }
+#### int FindTargetPit ( [Vector](Vector.md) Position, [Vector](Vector.md) TargetPosition, int PitIndex = -1 ) {: .copyable aria-label='Functions' }
+
+___
 ### GetAchievementIdByName () {: aria-label='Functions' }
-#### table GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
+#### int GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
+___
+### GetAxisAlignedUnitVectorFromDir () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetAxisAlignedUnitVectorFromDir ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = -1 ) {: .copyable aria-label='Functions' }
+
 ___
 ### GetBackdropIdByName () {: aria-label='Functions' }
 #### int GetBackdropIdByName ( ) {: .copyable aria-label='Functions' }
@@ -142,7 +150,7 @@ Returns a table containing all the marks for the character.
 
 ???- info "Table structure & usage"
 	- The table has the following fields: 
-		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) asociated to the marks
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) associated to the marks
 		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
@@ -221,6 +229,11 @@ ___
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPoolIdByName () {: aria-label='Functions' }
+#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( ) {: .copyable aria-label='Functions' }
+Returns the ID of a given custom pool. Returns `-1` if the pool is not found.
+
+___
 ### GetRenderPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) Position, boolean Scale = true ) {: .copyable aria-label='Functions' }       
 
@@ -256,8 +269,9 @@ Sets the challenge as not done.
 
 ___
 ### PlayCutscene () {: aria-label='Functions' }
-#### int PlayCutscene ( int ID ) {: .copyable aria-label='Functions' }
+#### int PlayCutscene ( int ID, boolean ClearGameState = false ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
+
 ___
 ### SetClipboard () {: aria-label='Functions' }
 #### boolean SetClipboard ( string ClipboardData ) {: .copyable aria-label='Functions' }
@@ -317,13 +331,6 @@ ___
 #### void SetDwmWindowAttribute ( [DwmWindowAttribute](enums/DwmWindowAttribute.md) Attribute ) {: .copyable aria-label='Functions' }
 
 ___
-### ShowErrorDialog () {: aria-label='Functions' }
-#### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
-Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
-
-???- info "Note"
-	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
-___
 ### SetIcon () {: aria-label='Functions' }
 #### void SetIcon ( int IsaacIcon OR string IconPath, boolean BypassSize) {: .copyable aria-label='Functions' }
 Sets the 16x16 icon located on the game window. Does not update the icon elsewhere, such as the task bar.
@@ -335,14 +342,21 @@ Sets the 16x16 icon located on the game window. Does not update the icon elsewhe
 `BypassSize` bypasses the 16x16 resolution cap.
 
 ___
-### StartNewGame () {: aria-label='Functions' }
-#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](enums/Difficulty.md) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random()) {: .copyable aria-label='Functions' }
-Starts a new game using the specified arguments. Can be used from the main menu.
-
-___
 ### SetWindowTitle () {: aria-label='Functions' }
 #### void SetWindowTitle ( string Title ) {: .copyable aria-label='Functions' }
 Sets the appended text on the game's window title.
+
+___
+### ShowErrorDialog () {: aria-label='Functions' }
+#### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
+Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
+
+???- info "Note"
+	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
+___
+### StartNewGame () {: aria-label='Functions' }
+#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](enums/Difficulty.md) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random ) {: .copyable aria-label='Functions' }
+Starts a new game using the specified arguments. Can be used from the main menu.
 
 ___
 ### TriggerWindowResize () {: aria-label='Functions' }
