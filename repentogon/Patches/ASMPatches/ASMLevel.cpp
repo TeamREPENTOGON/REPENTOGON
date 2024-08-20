@@ -178,25 +178,25 @@ void PatchSpecialQuest() {
 
 static const int TRAPDOOR_DEAL_SUBTYPE = 666;
 // Change subtype of trapdoor Devil and Angel room, after they are loaded in RoomConfig
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void)
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool)
 {
-	super(Stage, Mode);
+	bool ret = super(Stage, Mode);
 
-	if (Stage != 0)
+	if (Stage == 0)
 	{
-		return;
-	}
-
-	//Change Trapdoor Subtype
-	for (int roomType = 14; roomType < 16; roomType++)
-	{
-		unsigned int doors = 0;
-		RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, roomType, 13, 100, 100, 0, 20, &doors, 0, Mode);
-		for (RoomConfig_Room* p : rooms)
+		//Change Trapdoor Subtype
+		for (int roomType = 14; roomType < 16; roomType++)
 		{
-			p->Subtype = TRAPDOOR_DEAL_SUBTYPE;
+			unsigned int doors = 0;
+			RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, roomType, 13, 100, 100, 0, 20, &doors, 0, Mode);
+			for (RoomConfig_Room* p : rooms)
+			{
+				p->Subtype = TRAPDOOR_DEAL_SUBTYPE;
+			}
 		}
 	}
+
+	return ret;
 }
 
 /* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.

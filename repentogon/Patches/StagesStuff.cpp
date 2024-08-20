@@ -226,15 +226,6 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
-// helper for asm patch
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
-	super(Stage, Mode);
-
-	if (Stage != 0 && Stage < 36) {
-		this->_stages[Stage]._suffix = suffixes[Stage-1];
-	}
-}
-
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected MusicId as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }

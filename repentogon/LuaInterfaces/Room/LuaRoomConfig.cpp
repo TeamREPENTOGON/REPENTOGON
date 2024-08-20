@@ -66,7 +66,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 		roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0] = *set;
 
 		// get room
-		config = roomConfig->GetRoomByStageTypeAndVariant(stageHandler.BUFFER_STAGEID, type, variant, difficulty);
+		config = roomConfig->GetRoomByStageTypeAndVariant(stageHandler.BUFFER_STAGEID, type, variant, mode);
 
 		// swap out
 		*set = roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0];
@@ -74,7 +74,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	}
 	else
 	{
-		config = roomConfig->GetRoomByStageTypeAndVariant(stage, type, variant, difficulty);
+		config = roomConfig->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
 	}
 
 	if (config == NULL) {
