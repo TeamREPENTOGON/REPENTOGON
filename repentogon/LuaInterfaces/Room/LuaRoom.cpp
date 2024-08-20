@@ -2,9 +2,11 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "Room.h"
+#include "Log.h"
 
 #include "../../Patches/XMLData.h"
 #include "../../Patches/CustomItemPools.h"
+#include "../../Patches/Stages/StageHandler.h"
 
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
@@ -467,10 +469,24 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	roomASM.WaterDisabled = false;
 	roomASM.ItemPool = POOL_NULL;
 	super(param_1, desc);
-	//printf("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
-	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
-		this->_waterAmount = 1.0f;
-		//printf("setting water\n");
+	//ZHL::Log("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
+	if (!roomASM.WaterDisabled) {
+		unsigned int stbType = this->_descriptor->Data->StageId;
+		if (g_Game->_stage == 12 && (stbType == 27 || stbType == 28)) {
+			this->_waterAmount = 1.0f;
+			//ZHL::Log("setting water\n");
+		}
+		else {
+			StageHandler* stageHandler = &StageHandler::GetInstance();
+			stbType = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, g_Game->IsGreedMode());
+			if (stageHandler->stageState[stbType].overriden) {
+				XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageHandler->stageState[stbType].id);
+				if (tobool(xmlData["haswater"])) {
+					this->_waterAmount = 1.0f;
+					//ZHL::Log("setting water\n");
+				}
+			}
+		}
 	}
 }
 

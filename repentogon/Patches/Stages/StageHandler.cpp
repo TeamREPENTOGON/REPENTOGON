@@ -10,10 +10,6 @@
 #include <unordered_map>
 #include <sstream>
 
-extern int toint(const string& str);
-extern float tofloat(const string& str);
-extern bool tobool(const string& str);
-
 RoomSet* StageHandler::LoadBinary(std::string* path) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	ZHL::Logger logger(true);

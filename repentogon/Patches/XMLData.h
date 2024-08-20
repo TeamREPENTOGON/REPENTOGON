@@ -14,6 +14,10 @@
 #include "rapidxml.hpp"
 using namespace std;
 
+extern int toint(const string& str);
+extern float tofloat(const string& str);
+extern bool tobool(const string& str);
+
 /* Modifiers for character stats, allow to override the computation of Eden's stats, 
  * which we use in order to define stats for modded characters.
  */
