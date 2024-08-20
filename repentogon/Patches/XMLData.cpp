@@ -30,6 +30,7 @@
 using namespace rapidxml;
 using namespace std;
 
+ANM2* pathCheckanm2 = new ANM2;
 char* bosspoolsxml; //caching this ffs
 char* fxlayerssxml; //caching this ffs
 bool itempoolerror = false;
@@ -497,6 +498,198 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
 
 //Cutscene XML Hijack
 
+//dirty AI things
+bool endsWithPNG(const std::string& str) {
+	if (str.length() >= 4) {
+		return str.substr(str.length() - 4) == ".png";
+	}
+	return false;
+}
+
+bool endsWithANM(const std::string& str) {
+	if (str.length() >= 5) {
+		return str.substr(str.length() - 5) == ".anm2";
+	}
+	return false;
+}
+
+bool toboolnode(const std::string& str) {
+	if (str.length() >= 4) {
+		return str == "true";
+	}
+	return false;
+}
+
+std::bitset<61> changedbackdrops;
+uint32_t hookedbackdroptype;
+extern std::bitset<500> CallbackState;
+
+HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
+	const int callbackId = 1141;
+	const int callbackId2 = 1142;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(bcktype)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
+				bcktype = backdropid;
+				//super(backdropid, loadgraphics);
+				//return;
+			}
+		}
+	}
+
+	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && (bcktype > 60 || changedbackdrops.test(bcktype))) { // && (bcktype > 0)
+		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
+
+		uint32_t refbackdrop = toint(node["reftype"]);
+		if (refbackdrop > 60) {
+			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
+			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
+			return;
+		}
+		if (bcktype > 60 && refbackdrop < 1) {
+			if (toboolnode(node["reversewatergfx"])) refbackdrop = 3;
+			else refbackdrop = 1;
+		}
+		else if (bcktype < 61) refbackdrop = bcktype;
+
+		if (refbackdrop == bcktype) changedbackdrops.reset(refbackdrop);
+		else changedbackdrops.set(refbackdrop);
+
+		bool isAnm2Gfx = false;
+		if (refbackdrop == 18 || refbackdrop == 26 || refbackdrop == 35
+			|| refbackdrop == 52 || refbackdrop == 53 || refbackdrop == 54)
+			isAnm2Gfx = true;
+
+		string gfxpath = node["gfxroot"] + node["gfx"];
+		bool correctPath = false;
+		if (isAnm2Gfx && (endsWithANM(gfxpath))) {  //file path check // added safe-check for anm2 otherwise it would spriteload a png and have a stroke if the param is wrong
+			if (!pathCheckanm2->_loaded) {
+				ANM2* s = &this->floorANM2;
+				pathCheckanm2->construct_from_copy(s);
+			}
+			pathCheckanm2->Load(gfxpath, true);
+			pathCheckanm2->LoadGraphics(true);
+			if (pathCheckanm2->_animDefaultName.length() > 0) {
+				correctPath = true;
+			}
+			else {
+				g_Game->GetConsole()->PrintError("[Backdrop:" + to_string(bcktype) + "] file at path '" + gfxpath + "' does not exist \n");
+				return;
+			}
+			pathCheckanm2->Reset();
+		}
+
+		if (!isAnm2Gfx || correctPath) this->configurations[refbackdrop].gfx = gfxpath;
+
+		this->configurations[refbackdrop].walls = toint(node["walls"]);
+		this->configurations[refbackdrop].wallVariants = toint(node["wallvariants"]);
+
+		this->configurations[refbackdrop].floors = toint(node["floors"]);
+		this->configurations[refbackdrop].floorVariants = toint(node["floorvariants"]);
+
+		if (endsWithPNG(node["lfloorgfx"])) {
+			string lFloorGfxpath = node["gfxroot"] + node["lfloorgfx"];
+			this->configurations[refbackdrop].lFloorGfx = lFloorGfxpath;
+		}
+		else {
+			this->configurations[refbackdrop].lFloorGfx = "";
+		}
+
+		if (endsWithPNG(node["nfloorgfx"])) {
+			this->configurations[refbackdrop].nFloorGfx = node["gfxroot"] + node["nfloorgfx"];
+		}
+		else {
+			this->configurations[refbackdrop].nFloorGfx = "";
+		}
+
+		if (endsWithPNG(node["watergfx"])) {
+			this->configurations[refbackdrop].waterGfx = node["gfxroot"] + node["watergfx"];
+		}
+		else {
+			this->configurations[refbackdrop].waterGfx = "";
+		}
+
+		/*
+			this->configurations[refbackdrop].reversewatergfx = toboolnode(node["reversewatergfx"]);
+		*/
+
+		if (endsWithANM(node["props"])) {
+			this->configurations[refbackdrop].props = node["gridgfxroot"] + node["props"];
+		}
+		else {
+			this->configurations[refbackdrop].props = "";
+		}
+
+		if (endsWithPNG(node["rocks"])) {
+			this->configurations[refbackdrop].rocks = node["gridgfxroot"] + node["rocks"];
+		}
+		else {
+			this->configurations[refbackdrop].rocks = "gfx/grid/rocks_basement.png";
+		}
+
+		if (endsWithPNG(node["pit"])) {
+			this->configurations[refbackdrop].pit = node["gridgfxroot"] + node["pit"];
+		}
+		else {
+			this->configurations[refbackdrop].pit = "gfx/grid/grid_pit.png";
+		}
+
+		if (endsWithPNG(node["waterpit"])) {
+			this->configurations[refbackdrop].waterPit = node["gridgfxroot"] + node["waterpit"];
+		}
+		else {
+			this->configurations[refbackdrop].waterPit = "gfx/grid/grid_pit_water.png";
+		}
+
+		if (endsWithPNG(node["bridge"])) {
+			this->configurations[refbackdrop].bridge = node["gridgfxroot"] + node["bridge"];
+		}
+		else {
+			this->configurations[refbackdrop].bridge = "gfx/grid/grid_bridge.png";
+		}
+
+		if (endsWithPNG(node["door"])) {
+			this->configurations[refbackdrop].door = node["gridgfxroot"] + node["door"];
+		}
+		else {
+			this->configurations[refbackdrop].door = "gfx/grid/door_01_normaldoor.png";
+		}
+
+		if (endsWithPNG(node["holeinwall"])) {
+			this->configurations[refbackdrop].holeInWall = node["gridgfxroot"] + node["holeinwall"];
+		}
+		else {
+			this->configurations[refbackdrop].holeInWall = "gfx/grid/door_08_holeinwall.png";
+		}
+
+		hookedbackdroptype = bcktype;
+		super((uint32_t)refbackdrop, loadgraphics);
+
+		if (CallbackState.test(callbackId2 - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackId2)
+				.push(bcktype)
+				.push(bcktype)
+				.call(1);
+		}
+		return;
+	}
+	hookedbackdroptype = bcktype;
+	super(bcktype, loadgraphics);
+}
 
 /*
 string ogstagespath;
