@@ -1,6 +1,12 @@
-v1.x.x -
-Bug fixes:
-	Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
+v1.0.11c -
+Additions:
+* CharacterMenu:
+	- [Get/Set]ActiveStatus()
+	- CharacterMenuStatus enum
+/newline/
+Fixes:
+	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
+	- Fixed SetRail index checks
 /newline/
 v1.0.11b -
 Bug fixes:

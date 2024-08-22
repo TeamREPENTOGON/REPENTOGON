@@ -116,7 +116,7 @@ ___
 
 ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
-#### table GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
+#### int GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
 ___
 ### GetAxisAlignedUnitVectorFromDir () {: aria-label='Functions' }

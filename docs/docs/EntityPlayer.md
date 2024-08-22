@@ -620,7 +620,7 @@ ___
 
 ___
 ### GetTearDisplacement () {: aria-label='Functions' }
-#### int GetTearDisplacement ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+#### int GetTearDisplacement ( ) {: .copyable aria-label='Functions' }
 Returns the player's TearDisplacement value, used to check what eye the player is shooting from.
 
 ???+ info "Return info"

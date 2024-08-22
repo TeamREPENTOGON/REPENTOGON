@@ -10,9 +10,31 @@ tags:
 	* [Game:GetGenericPrompt()](Game.md#getgenericprompt)
 
 	???+ example "Example Code"
+		This code creates a generic popup that opens when pressing the "Minus"-button. It prints the selected option to the console and displays some dummy text. 
 		```lua
-		local newPrompt = GenericPrompt()
-		local currentPrompt = Game():GetGenericPrompt()
+		local myPrompt = GenericPrompt()
+		myPrompt:Initialize()
+		myPrompt:SetText("Some test text")
+
+		local wasPromptDisplayed = false
+
+		function mod:myRenderFunction(_)
+			myPrompt:Render()
+		end 
+		mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.myRenderFunction)
+
+		function mod:myUpdateFunction(_) 
+			myPrompt:Update(true) -- true = Process user inputs
+			if wasPromptDisplayed and not myPrompt:IsActive() then -- prompt was closed by user 
+				print("User selected option: "..myPrompt:GetSubmittedSelection()) 
+				wasPromptDisplayed = false 
+			end
+			if Input.IsButtonTriggered(Keyboard.KEY_MINUS, 0)  then -- on Pressing minus button will open prompt 
+				myPrompt:Show() 
+				wasPromptDisplayed = true 
+			end 
+		end 
+		mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.myUpdateFunction)
 		```
 
 ## Constructors

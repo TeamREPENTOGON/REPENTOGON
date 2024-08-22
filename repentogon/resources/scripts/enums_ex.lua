@@ -2730,6 +2730,15 @@ ConceptionFamiliarFlag = { -- bitwise
 	TWISTED_PAIR = 1 << 12,
 }
 
+CharacterMenuStatus = {
+	DEFAULT = 0,
+	SEED = 1,
+	RANDOM_SELECTION = 2,
+	RANDOM_CHARACTER_SELECTION = 2,
+	FADEOUT = 3,
+	CHARACTER_PAPER_SWAP = 4,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
