@@ -11,6 +11,19 @@ enum eCardPool
     NUM_CARDPOOLS
 };
 
+struct CardChance {
+private:
+    bool isFloat = false;
+    union {int intChance; float floatChance;} chance;
+
+public:
+    CardChance(int chance);
+    CardChance(float chance);
+    bool Check(RNG& rng);
+    inline bool IsZero() {return this->chance.intChance == 0;} //Float an int representation of 0 is the same
+    bool IsGuaranteed();
+};
+
 struct ItemConfig_Card_EX
 {
     bool hidden = false;
@@ -33,14 +46,19 @@ struct PoolCard
 
 struct CardPool
 {
+    std::vector<int> candidateCards;
     std::vector<PoolCard> cardList;
     float totalWeight = 0.0f;
     bool invalidateVanillaMethod = false; // Use the old method for picking cards if all weights are "vanilla"
 
-    void Reset();
+    void ClearPool();
+    void AddCandidate(int cardId);
     void AddCard(ItemConfig_Card* cardConfig);
     void AddCard(int cardId, float weight);
     int PickCard(RNG& rng);
+
+    void BuildPool();
+    void BuildSpecialPool(bool allowNonCards);
 };
 
 extern std::vector<ItemConfig_Card_EX> cardList_EX;
