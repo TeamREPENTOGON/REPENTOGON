@@ -3,6 +3,15 @@ Additions:
 * CharacterMenu:
 	- [Get/Set]ActiveStatus()
 	- CharacterMenuStatus enum
+* ItemConfigCard:
+	- Added weight and hidden parameter to cards, both can be specified in pocketitems.xml
+	- Added the ability to specify a custom "availability condition" to evaluate when the game checks if a card is available.
+	- Hidden
+	- InitialWeight
+	- Weight - can be modified
+	- GetAvailabilityCondition()
+	- SetAvailabilityCondition(function)
+	- ClearAvailabilityCondition()
 /newline/
 Fixes:
 	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
