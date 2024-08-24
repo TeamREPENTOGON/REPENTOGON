@@ -11,6 +11,7 @@
 #include "ExtraLives.h"
 #include "EntityPlus.h"
 #include "CustomItemPools.h"
+#include "CardsExtras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -155,6 +156,7 @@ void PerformASMPatches() {
 	ASMPatchesForCustomCache();
 	ASMPatchesForCustomItemPools();
 	ExtraASMPatchesForCustomItemPools();
+	ASMPatchesForCardsExtras();
 	HookImGui();
 
 	// Sprite

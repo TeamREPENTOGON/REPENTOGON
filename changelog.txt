@@ -25,6 +25,16 @@ Additions:
 	- GetDimension() - int
 	- GetNeighboringRooms()
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
+* ItemConfigCard:
+	- Added weight and hidden parameter to cards, both can be specified in pocketitems.xml
+	- Added the ability to specify a custom "availability condition" to evaluate when the game checks if a card is available.
+	- Hidden
+	- InitialWeight
+	- Weight - can be modified
+	- GetAvailabilityCondition()
+	- SetAvailabilityCondition(function)
+	- ClearAvailabilityCondition()
+
 /newline/
 Fixes:
 	- 
