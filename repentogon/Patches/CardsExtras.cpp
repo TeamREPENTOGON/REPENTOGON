@@ -92,15 +92,17 @@ inline bool IsCardAvailableEX(ItemConfig_Card* card)
             std::stringstream err;
             err << "Error whilst checking availability of card \"" << GetTranslatedPocketItemName(card->name) << "\": " << lua_tostring(L, -1);
             PrintLuaError(err.str());
+            lua_pop(L, 1);
+        }
+        else
+        {
+            bool isAvailable = lua_isboolean(L, -1) && lua_toboolean(L, -1);
+            lua_pop(L, 1);
 
-            return false;
+            if (!isAvailable)
+                return false;
         }
 
-        bool isAvailable = lua_isboolean(L, -1) && lua_toboolean(L, -1);
-        lua_pop(L, 1);
-
-        if (!isAvailable)
-            return false;
     }
 
     return true;
