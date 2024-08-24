@@ -90,6 +90,9 @@ __thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
 "558bec8b55??56578b02":
 __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
+"558bec83e4f883ec0c538bc1":
+__thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
+
 "558bec83e4f85153568bf18b0d":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 

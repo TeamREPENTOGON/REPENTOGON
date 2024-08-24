@@ -3,32 +3,32 @@ __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 
 struct RoomDescriptor depends (RoomConfig_Room)
 {
-    int32_t GridIndex : 0x0; // 0x0
-    int32_t SafeGridIndex : 0x4; // 0x4
-    int32_t ListIndex : 0x8; // 0x8
-    int32_t unk0 : 0xc; // 0xC
-    RoomConfig_Room* Data : 0x10; // 0x10
-    RoomConfig_Room* OverrideData : 0x14; // 0x14
-    int32_t AllowedDoors : 0x18; // 0x18
-    int32_t Doors[8] : 0x1c; // 0x1C
-    int32_t DisplayFlags : 0x3c; // 0x3C
-    int32_t VisitedCount : 0x40; // 0x40
-    int32_t Flags : 0x44; // 0x44
-    int16_t unk9 : 0x48; // 0x48
-    int16_t ClearCount : 0x4a; // 0x4A
-    int32_t unk10 : 0x4c; // 0x4C
-    int32_t PoopCount : 0x50; // 0x50
-    int32_t PitsCount : 0x54; // 0x54
-    int32_t DecorationSeed : 0x58; // 0x58
-    int32_t SpawnSeed : 0x5c; // 0x5C
-    int32_t AwardSeed : 0x60; // 0x60
-	uint32_t BossDeathSeed: 0x64; // 0x64
-	vector_GridEntityDesc SavedGridEntities : 0x68; // 0x68
-    vector_EntitySaveState SavedEntities : 0x74; // 0x74
-	std_set_int RestrictedGridIndexes : 0x80; // 0x80;
-	vector_EntitySaveState SavedEntities2 : 0x88; // 0x88
-    int16_t ShopItemIdx: 0xac; // 0xAC
-    int16_t ShopItemDiscountIdx : 0xae; // 0xAE
-    int32_t DeliriumDistance : 0xb0; // 0xB0
-    int32_t unk29 : 0xb4; // 0xB4
-} : 0xb8; // 0xB8 (Checked in assembly)
+    int32_t GridIndex : 0x0;
+    int32_t SafeGridIndex : 0x4;
+    int32_t ListIndex : 0x8;
+    int32_t Dimension : 0xc;
+    RoomConfig_Room* Data : 0x10;
+    RoomConfig_Room* OverrideData : 0x14;
+    int32_t AllowedDoors : 0x18;
+    int32_t Doors[8] : 0x1c;
+    int32_t DisplayFlags : 0x3c;
+    int32_t VisitedCount : 0x40;
+    int32_t Flags : 0x44;
+    int16_t unk9 : 0x48;
+    int16_t ClearCount : 0x4a;
+    int32_t unk10 : 0x4c;
+    int32_t PoopCount : 0x50;
+    int32_t PitsCount : 0x54;
+    int32_t DecorationSeed : 0x58;
+    int32_t SpawnSeed : 0x5c;
+    int32_t AwardSeed : 0x60;
+	uint32_t BossDeathSeed: 0x64;
+	vector_GridEntityDesc SavedGridEntities : 0x68;
+    vector_EntitySaveState SavedEntities : 0x74;
+	std_set_int RestrictedGridIndexes : 0x80;
+	vector_EntitySaveState SavedEntities2 : 0x88;
+    int16_t ShopItemIdx: 0xac;
+    int16_t ShopItemDiscountIdx : 0xae;
+    int32_t DeliriumDistance : 0xb0;
+    int32_t unk29 : 0xb4;
+} : 0xb8;
