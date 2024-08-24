@@ -32,6 +32,7 @@ struct ItemConfig_Card_EX
     float weight = 1.0f;
     int availabilityFuncRef = LUA_NOREF;
 
+    ~ItemConfig_Card_EX();
     void ClearAvailabilityCondition(lua_State* L);
     void SetAvailabilityCondition(lua_State* L, int idx);
 };

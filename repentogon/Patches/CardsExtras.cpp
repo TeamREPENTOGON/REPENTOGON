@@ -106,6 +106,14 @@ inline bool IsCardAvailableEX(ItemConfig_Card* card)
     return true;
 }
 
+ItemConfig_Card_EX::~ItemConfig_Card_EX()
+{
+    if (g_LuaEngine)
+    {
+        this->ClearAvailabilityCondition(g_LuaEngine->_state);
+    }
+}
+
 void ItemConfig_Card_EX::ClearAvailabilityCondition(lua_State* L)
 {
     if (this->availabilityFuncRef == LUA_NOREF)
