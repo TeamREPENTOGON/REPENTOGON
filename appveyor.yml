@@ -14,7 +14,7 @@ build_script:
         (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
         (gc updater/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII updater/Updater.cpp
 
-    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release
+    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
 
 
     cmake --build build --config Release

@@ -32,6 +32,14 @@ ___
 #### string GetDefaultSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetFlipX () {: aria-label='Functions' }
+#### boolean GetFlipX ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetFlipY () {: aria-label='Functions' }
+#### boolean GetFlipY ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetLayerID () {: aria-label='Functions' }
 #### int GetLayerID ( ) {: .copyable aria-label='Functions' }
 
@@ -114,6 +122,14 @@ Specify a custom shader file for this layer to use instead of the default `color
 This custom shader will not be used by the game if the entity is a champion, or if it has the gold/dogma shader applied.
 
 Note that the custom shader must take the exact same inputs as the default `coloroffset` shader the game uses. The gold and dogma shaders also use the same inputs, and can be a good reference.
+
+___
+### SetFlipX () {: aria-label='Functions' }
+#### void SetFlipX ( boolean Value ) {: .copyable aria-label='Functions' }
+
+___
+### SetFlipY () {: aria-label='Functions' }
+#### void SetFlipY ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPos () {: aria-label='Functions' }

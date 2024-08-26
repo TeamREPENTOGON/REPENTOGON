@@ -1,5 +1,39 @@
-v1.xx -
+v1.x.x -
 Additions:
+* Level:
+	- CanPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
+		Returns true if the room would be able to fit at this location.
+	- TryPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, int Seed = 0, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
+		Will only place the room if it can fit and all doors can be successfully connected to neighboring rooms.
+		If successful, returns the new RoomDescriptor, returns nil otherwise.
+		If a seed of nil or 0 is provided, a seed will be auto-generated based on the location, room shape, and level seed.
+		Boolean params are additional safeties that can be enabled or disabled:
+			AllowMultipleDoors - Set to false to only allow successful placement if the room would only have one door (for placing special rooms).
+			AllowSpecialNeighbors - Set to true to allow connections to existing special rooms (note secret rooms are always allowed, but boss rooms are never allowed).
+			AllowNoNeighbors - Set to true to allow placing the room out in the void with no neighbors.
+	- CanPlaceRoomAtDoor(RoomConfigRoom, RoomDescriptor, DoorSlot, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Returns true if the room could be successfully placed connected to the specified DoorSlot of an existing room.
+	- TryPlaceRoomAtDoor(RoomConfigRoom, RoomDescriptor, DoorSlot, int Seed = 0, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Attempts to place the room connected to an existing room via the specified DoorSlot.
+	- FindValidRoomPlacementLocations(RoomConfigRoom, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Returns a table of level GridIndexes that would be valid locations to place the given room.
+	- GetNeighboringRooms(int GridIndex, RoomShape, int Dimension = -1)
+		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
+		Can be used to determine the neighbors of a room before even placing it.
+		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
+* RoomDescriptor
+	- GetDimension() - int
+	- GetNeighboringRooms()
+		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
+* ItemConfigCard:
+	- Added weight and hidden parameter to cards, both can be specified in pocketitems.xml
+	- Added the ability to specify a custom "availability condition" to evaluate when the game checks if a card is available.
+	- Hidden
+	- InitialWeight
+	- Weight - can be modified
+	- GetAvailabilityCondition()
+	- SetAvailabilityCondition(function)
+	- ClearAvailabilityCondition()
 * Point:
 	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
 	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
@@ -9,6 +43,8 @@ Modified:
 	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
 	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
 	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
+Fixes:
+	- 
 /newline/
 v1.0.11c -
 Additions:

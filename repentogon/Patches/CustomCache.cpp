@@ -54,7 +54,7 @@ float RunEvaluateFamiliarMultiplierCallback(Entity_Familiar* familiar, const flo
 			.call(1);
 
 		if (!result && lua_isnumber(L, -1)) {
-			const float newMult = lua_tonumber(L, -1);
+			const float newMult = (float)lua_tonumber(L, -1);
 			if (newMult > 0) {
 				return newMult;
 			}

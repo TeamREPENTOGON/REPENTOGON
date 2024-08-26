@@ -57,7 +57,7 @@ static inline ItemConfig_Item* GetCollectibleItemConfig(const int itemID)
             return nullptr;
         }
 
-        int proceduralItemID = ~itemID;
+        uint32_t proceduralItemID = ~itemID;
         std::vector<ProceduralItem*>* proceduralItems = g_Game->GetProceduralItemManager()->GetProceduralItems();
 
         if (proceduralItemID >= proceduralItems->size())
@@ -70,7 +70,7 @@ static inline ItemConfig_Item* GetCollectibleItemConfig(const int itemID)
 
     std::vector<ItemConfig_Item*>* collectiblesConfig = g_Manager->GetItemConfig()->GetCollectibles();
 
-    if (itemID >= collectiblesConfig->size())
+    if (itemID >= (int)collectiblesConfig->size())
     {
         return nullptr;
     }
@@ -141,7 +141,7 @@ namespace CustomItemPool
         try {
             *itemPoolType = this->oldIDsConversionMap.at(*itemPoolType - NUM_ITEMPOOLS);
         }
-        catch (const std::out_of_range& e) {
+        catch (const std::out_of_range&) {
             *itemPoolType = POOL_TREASURE;
         }
     }
@@ -320,9 +320,9 @@ namespace CustomItemPool
     CustomItemPool::GameState gameStates[2];
     SaveData saveData;
 
-    std::unordered_map<std::string, int> InitReservedNames()
+    std::unordered_map<std::string, int>& InitReservedNames()
     {
-        std::unordered_map<std::string, int> reservedNames;
+        static std::unordered_map<std::string, int> reservedNames;
 
         reservedNames["treasure"] = POOL_TREASURE;
         reservedNames["shop"] = POOL_SHOP;
@@ -415,7 +415,7 @@ namespace CustomItemPool
             return -1;
         }
 
-        if (itemPoolType >= poolConfigs.size() + NUM_ITEMPOOLS)
+        if (itemPoolType >= (int)poolConfigs.size() + NUM_ITEMPOOLS)
         {
             return -1;
         }
@@ -432,9 +432,9 @@ namespace CustomItemPool
             std::string itemID_string = itemNode.at("id");
             try {
                 item.itemID = std::stoi(itemID_string);
-            } catch (const std::invalid_argument& e) {
+            } catch (const std::invalid_argument&) {
                 ZHL::Log("%s: Invalid argument for <id> (%s is not a valid integer)", xmlParseErrorPrefix, itemID_string);
-            } catch (const std::out_of_range& e) {
+            } catch (const std::out_of_range&) {
                 ZHL::Log("%s: Invalid argument for <id> (%s is out of range)", xmlParseErrorPrefix, itemID_string);
             }
         }
@@ -456,9 +456,9 @@ namespace CustomItemPool
             std::string weight_string = itemNode.at("weight");
             try {
                 item.weight = std::stof(weight_string);
-            } catch (const std::invalid_argument& e) {
+            } catch (const std::invalid_argument&) {
                 ZHL::Log("%s: Invalid argument for <weight> (%s is not a valid float)", xmlParseErrorPrefix, weight_string);
-            } catch (const std::out_of_range& e) {
+            } catch (const std::out_of_range&) {
                 ZHL::Log("%s: Invalid argument for <weight> (%s is out of range)", xmlParseErrorPrefix, weight_string);
             }
         }
@@ -468,9 +468,9 @@ namespace CustomItemPool
             std::string decreaseBy_string = itemNode.at("decreaseby");
             try {
                 item.decreaseBy = std::stof(decreaseBy_string);
-            } catch (const std::invalid_argument& e) {
+            } catch (const std::invalid_argument&) {
                 ZHL::Log("%s: Invalid argument for <decreaseby> (%s is not a valid float)", xmlParseErrorPrefix, decreaseBy_string);
-            } catch (const std::out_of_range& e) {
+            } catch (const std::out_of_range&) {
                 ZHL::Log("%s: Invalid argument for <decreaseby> (%s is out of range)", xmlParseErrorPrefix, decreaseBy_string);
             }
         }
@@ -480,9 +480,9 @@ namespace CustomItemPool
             std::string removeOn_string = itemNode.at("removeon");
             try {
                 item.removeOn = std::stof(removeOn_string);
-            } catch (const std::invalid_argument& e) {
+            } catch (const std::invalid_argument&) {
                 ZHL::Log("%s: Invalid argument for <removeon> (%s is not a valid float)", xmlParseErrorPrefix, removeOn_string);
-            } catch (const std::out_of_range& e) {
+            } catch (const std::out_of_range&) {
                 ZHL::Log("%s: Invalid argument for <removeon> (%s is out of range)", xmlParseErrorPrefix, removeOn_string);
             }
         }
@@ -658,12 +658,15 @@ namespace CustomItemPool
 
     inline void ShufflePool(const int customPoolID, MTRNG& mtRNG)
     {
-        if (itemPools.size() <= customPoolID )
+        if ((int)itemPools.size() <= customPoolID )
         {
             return;
         }
 
         std::vector<PoolItem>& poolItems = itemPools[customPoolID]._poolList;
+        if (poolItems.empty())
+            return;
+
         for (size_t lastIndex = poolItems.size() - 1; lastIndex > 0; lastIndex--)
         {
             uint32_t randomIndex = mtRNG.Next() % (lastIndex + 1);
@@ -779,7 +782,7 @@ HOOK_METHOD(PlayerManager, RestoreGameState, (GameState* state) -> void)
 // Hooking into GetCollectible so that if the ID is invalid the default treasure pool is used
 HOOK_METHOD(ItemPool, GetCollectible, (int itemPoolType, uint32_t seed, uint32_t flags, int defaultItem) -> int)
 {
-    if (itemPoolType < POOL_NULL || itemPoolType >= CustomItemPool::itemPools.size() + NUM_ITEMPOOLS)
+    if (itemPoolType < POOL_NULL || itemPoolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS)
     {
         itemPoolType = POOL_TREASURE;
     }
@@ -802,7 +805,7 @@ HOOK_METHOD(ItemPool, get_chaos_pool, (RNG * rng) -> int)
 		}
 
 		ItemPool_Item& pool = this->_pools[poolType];
-		WeightedOutcomePicker_Outcome outcome{poolType, (uint32_t)(pool._totalWeight * scaleFactor)};
+		WeightedOutcomePicker_Outcome outcome{ (uint32_t)poolType, (uint32_t)(pool._totalWeight * scaleFactor) };
 		picker.AddOutcomeWeight(outcome, false);
 	}
 
@@ -828,7 +831,7 @@ HOOK_METHOD(ItemPool, get_chaos_pool, (RNG * rng) -> int)
 
 HOOK_METHOD(ItemPool, AddBibleUpgrade, (int add, int poolType) -> void)
 {
-    size_t numItemPools = CustomItemPool::GetNumItemPools();
+    int numItemPools = (int)CustomItemPool::GetNumItemPools();
 
     if (poolType <= POOL_NULL || poolType > numItemPools)
     {
@@ -837,7 +840,7 @@ HOOK_METHOD(ItemPool, AddBibleUpgrade, (int add, int poolType) -> void)
 
     if (poolType == numItemPools)
     {
-        for (size_t i = 0; i < numItemPools; i++)
+        for (int i = 0; i < numItemPools; i++)
         {
             GetItemPoolItem(i)->_bibleUpgrade += add;
         }
@@ -875,7 +878,7 @@ ItemPool_Item* __stdcall GetItemPool_Item(uint32_t itemPoolOffset)
         return g_Game->_itemPool.GetPool(itemPoolType);
     }
 
-    if (itemPoolType >= CustomItemPool::itemPools.size() + NUM_ITEMPOOLS)
+    if (itemPoolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS)
     {
         return g_Game->_itemPool.GetPool(POOL_TREASURE);
     }
@@ -1024,22 +1027,24 @@ void ASMPatchDecreaseRemainingGenesisItems()
 
 void ASMPatchPoolNotFoundLogINFO()
 {
-    SigScan scanner("5068????????6a??e8????????c645");
+    SigScan scanner("e8????????c645fc0383c40c");
     scanner.Scan();
     void* poolNotFoundSig = scanner.GetAddress();
 
-    printf("[REPENTOGON] Patching ItemPool::load_pools at %p for CustomItemPools\n", poolNotFoundSig);
+    ZHL::Log("[REPENTOGON] Patching ItemPool::load_pools at %p for CustomItemPools\n", poolNotFoundSig);
 
     ASMPatch patch;
-    patch.AddRelativeJump((char*)poolNotFoundSig + 0xD); // Skip KAGE::LogMessage
-    sASMPatcher.PatchAt(poolNotFoundSig, &patch);
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 5);
+    patch.AddBytes(buffer);
+    sASMPatcher.FlatPatch(poolNotFoundSig, &patch, true);
 }
 
 const char* emptyString = "";
 
 const char* __stdcall Debug12GetItemPoolName(int itemPoolType)
 {
-    if (itemPoolType < 0 || itemPoolType >= CustomItemPool::poolConfigs.size() + NUM_ITEMPOOLS)
+    if (itemPoolType < 0 || itemPoolType >= (int)CustomItemPool::poolConfigs.size() + NUM_ITEMPOOLS)
     {
         return emptyString;
     }

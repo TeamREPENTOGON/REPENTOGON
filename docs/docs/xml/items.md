@@ -8,12 +8,12 @@ tags:
 
 **Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new items.
 
-## Items n Trinkets
+## Items & Trinkets
 With REPENTOGON, the following xml attributes have changed functionality for regular items and trinkets:
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
-|achievement|int|Ties the item/trinket to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already). |
+|achievement|int|Ties the item/trinket to be unlocked by an achievement. For modded ones, use the provided achievement name xml attribute (define one if it doesnt have one already). |
 
 ## "Null" Items
 
@@ -116,6 +116,57 @@ mod:AddCallback(ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES, functio
 	end
 end)
 ```
+
+## CustomCache
+
+Repentogon also adds a `customcache` attribute. It is similar to `customtags`, in that it is a space-separated list of strings, but it has special behaviour to emulate the basegame's `cache` attribute.
+
+Whenever an item with one of these tags (or their associated TemporaryEffect) is added or removed, the callback MC_EVALUATE_CUSTOM_CACHE will run, allowing for a value associated with the `customcache` tag to be recalculated.
+
+The resultant value of this callback can be obtained using `player:GetCustomCacheValue("mycustomcache")`. Note that the value is 0 by default.
+
+MC_EVALUATE_CUSTOM_CACHE will also run for every `customcache` that has been specified on at least one item in `items.xml` whenever a cache evaluation for `CacheFlag.CACHE_ALL` is run (such as the start of a run). Evaluations can also be triggered manually, even for tags not present in `items.xml`.
+
+Supported for all item types (collectibles, trinkets, and null items).
+
+Capitalization does not matter and is ignored in most cases, but prefer to keep things all lowercase.
+
+Example XML:
+```xml
+customcache="mycustomcache familiarmultiplier"
+```
+
+Example Code:
+```lua
+-- Returns a table containing all customtags specified for this entity.
+-- Tags are provided in all lowercase.
+local customTags = item:GetCustomCacheTags()
+
+-- Triggers evaluation for the customcache immediately.
+player:AddCustomCacheTag("mycustomcache", true)
+
+-- Queue multiple customcaches for evaluation, but does not trigger evaluation immediately.
+-- The evaluation will happen whenever a standard cache evaluation is triggered, such as via `player:EvaluateItems()`.
+player:AddCustomCacheTag({"mycustomcache", "myothercustomcache"}, false)
+
+-- Get the current cached value.
+local cacheValue = player:GetCustomCacheValue("mycustomcache")
+
+-- The tags listed in the `customcache` attribute can be checked via the ItemConfig.
+local item = Isaac.GetItemConfig():GetCollectible(id)
+
+-- Returns true if the entity has the tag string specified.
+-- Capitalization does not matter.
+if item:HasCustomCacheTag("mycustomcache") then
+  -- ...
+end
+```
+
+Repentogon itself adds some tags that can be used to apply certain features to items with minimal lua code:
+
+| customtag | Effects |
+|:--|:--|
+| familiarmultiplier | Does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggers MC_EVALUATE_FAMILIAR_MULTIPLIER for each of the player's familiars the next time any code checks their multiplier. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/items.html). 

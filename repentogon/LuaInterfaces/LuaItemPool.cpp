@@ -5,7 +5,7 @@
 #include "../Patches/CustomItemPools.h"
 
 inline bool IsValidPool(int poolType) {
-	return (poolType >= POOL_TREASURE && poolType < CustomItemPool::itemPools.size() + NUM_ITEMPOOLS);
+	return (poolType >= POOL_TREASURE && poolType < (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS);
 }
 
 inline ItemPool_Item* GetItemPoolItem(int poolType) {
@@ -73,7 +73,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 inline int GetChaosPoolEx(ItemPool* itemPool, RNG* rng, std::unordered_map<int, bool> filter, bool isWhitelist) {
 	WeightedOutcomePicker picker;
 
-	for (int poolType = POOL_TREASURE; poolType < CustomItemPool::itemPools.size() + NUM_ITEMPOOLS; poolType++) {
+	for (int poolType = POOL_TREASURE; poolType < (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS; poolType++) {
 		if (isWhitelist != (filter.find(poolType) != filter.end())) {
 			continue;
 		}
@@ -81,7 +81,7 @@ inline int GetChaosPoolEx(ItemPool* itemPool, RNG* rng, std::unordered_map<int, 
 		ItemPool_Item* pool = GetItemPoolItem(poolType);
 
 		const uint32_t scaleFactor = 100;
-		WeightedOutcomePicker_Outcome outcome{poolType, (uint32_t)(pool->_totalWeight * scaleFactor)};
+		WeightedOutcomePicker_Outcome outcome{ (uint32_t)poolType, (uint32_t)(pool->_totalWeight * scaleFactor) };
 		picker.AddOutcomeWeight(outcome, false);
 	}
 	
@@ -257,13 +257,13 @@ LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
 		return 1;
 	}
 
-	lua_pushboolean(L, rng->RandomInt(pool->_totalWeight) < pool->_bibleUpgrade);
+	lua_pushboolean(L, rng->RandomInt((uint32_t)pool->_totalWeight) < pool->_bibleUpgrade);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	uint32_t seed = (uint32_t)luaL_optinteger(L, 2, Isaac::genrand_int32());
 	if (seed == 0)
 	{
 		seed = 1;
@@ -290,7 +290,7 @@ LUA_FUNCTION(Lua_ItemPoolTryRosaryMorph) {
 		return 1;
 	}
 
-	lua_pushboolean(L, rng->RandomInt(pool->_totalWeight) < trinketMultiplier);
+	lua_pushboolean(L, rng->RandomInt((uint32_t)pool->_totalWeight) < trinketMultiplier);
 	return 1;
 }
 
@@ -531,7 +531,7 @@ LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int collectible = (int)luaL_checkinteger(L, 2);
 
-	if (collectible < COLLECTIBLE_NULL || collectible >= g_Manager->GetItemConfig()->GetCollectibles()->size()) {
+	if (collectible < COLLECTIBLE_NULL || collectible >= (int)g_Manager->GetItemConfig()->GetCollectibles()->size()) {
 		return luaL_argerror(L, 2, "Invalid Collectible");
 	}
 

@@ -1,3 +1,6 @@
+"568bf18b0d????????85c9":
+__thiscall bool ItemConfig_Card::IsAvailable();
+
 struct ItemConfig_Card depends (ANM2, ModEntry)
 {
     int id : 0x00;

@@ -2682,8 +2682,8 @@ BlendType = {
 
 MinimapState = {
 	NORMAL = 0,
-	EXPANDED_OPAQUE = 1,
-	EXPANDED = 2
+	EXPANDED = 1,
+	EXPANDED_OPAQUE = 2
 }
 
 DwmWindowAttributes={
@@ -2728,6 +2728,15 @@ ConceptionFamiliarFlag = { -- bitwise
 	SERAPHIM = 1 << 10,
 	LIL_ABADDON = 1 << 11,
 	TWISTED_PAIR = 1 << 12,
+}
+
+CharacterMenuStatus = {
+	DEFAULT = 0,
+	SEED = 1,
+	RANDOM_SELECTION = 2,
+	RANDOM_CHARACTER_SELECTION = 2,
+	FADEOUT = 3,
+	CHARACTER_PAPER_SWAP = 4,
 }
 
 --deprecated enums

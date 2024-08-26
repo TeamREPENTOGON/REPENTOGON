@@ -7,9 +7,9 @@
 struct XMLPoolItem // The default values are what's used by the game if a specific node is not found when parsing itempools.xml
 {
     int itemID = COLLECTIBLE_NULL;
-    float weight = 1.0;
-    float decreaseBy = 0.5;
-    float removeOn = 0.1;
+    float weight = 1.0f;
+    float decreaseBy = 0.5f;
+    float removeOn = 0.1f;
 };
 
 namespace CustomItemPool

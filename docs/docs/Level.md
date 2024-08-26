@@ -26,6 +26,11 @@ ___
 #### int GetGreedWavesClearedWithoutRedHeartDamage ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetMyosotisPickups () {: aria-label='Functions' }
+#### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetMyosotisPickups ( ) {: .copyable aria-label='Functions' }
+Returns the pickups that will be transferred to the next floor by the Myosotis trinket effect.
+
+___
 ### HasAbandonedMineshaft () {: aria-label='Functions' }
 #### boolean HasAbandonedMineshaft ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the floor has the mineshaft room used for the second Knife Piece puzzle.

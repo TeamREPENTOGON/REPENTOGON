@@ -136,16 +136,16 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
      * |xxx                                                     xxx|
      * |xxx                                                     xxx|
      * |xxx                                                     xxx|
-     * |xxx                                                 218 xxx|
+     * |xxx                                                 223 xxx|
      * |xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx|
      * |-----------------------------------------------------------|
      */
 	case ROOMSHAPE_1x2:
 		if (includeWalls) {
-		  return index >= 0 && index <= 234;
+		  return index >= 0 && index <= 239;
 		} else {
 		  return index % 15 != 0 && index % 15 != 14 &&
-			index <= 16 && index <= 218;
+			index >= 16 && index <= 223;
 		}
 
     /* |-----------------------------------------------------------|
@@ -277,7 +277,7 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 			}
 		}
 		else {
-			if (index >= 196) {
+			if (index >= 224) {
 				return index >= 225 && index <= 418 &&
 					index % 28 != 0 && index % 28 != 27;
 			}
@@ -324,7 +324,8 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 		}
 		else {
 			if (index >= 225) {
-				return index <= 418;
+				return index <= 418 && 
+					index % 28 != 0 && index % 28 != 27;
 			}
 			else if (index >= 0) {
 				return index >= 29 && index <= 209 &&
@@ -411,11 +412,11 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 			}
 		}
 		else {
-			if (index >= 253) {
+			if (index >= 225) {
 				return index <= 405 && 
 					index % 28 != 0 && index % 28 <= 13;
 			}
-			else if (index >= 0) {
+			else if (index >= 29) {
 				return index <= 222 &&
 					index % 28 != 0 && index % 28 != 27;
 			}

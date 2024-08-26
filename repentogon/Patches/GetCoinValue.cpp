@@ -32,7 +32,7 @@ int __stdcall GetCoinValueReimplementation(Entity_Pickup* pickup, const bool run
 			.call(1);
 
 		if (!result && lua_isinteger(L, -1)) {
-			return lua_tointeger(L, -1);
+			return (int)lua_tointeger(L, -1);
 		}
 	}
 

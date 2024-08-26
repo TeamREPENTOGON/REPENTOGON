@@ -50,17 +50,21 @@ __thiscall void Game::Update();
 "568bf180be????????008d8e":
 __thiscall bool Game::AchievementUnlocksDisallowed();
 
+// Last parameter is NOT the dimension.
 "558bec83ec1c53568b75??578bf9":
-__thiscall bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig_Room *data, unsigned int Seed, int dimension);
+__thiscall bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig_Room *data, unsigned int Seed, int unk);
 
 "558bec83e4f8515356578bf96aff":
 __thiscall void Game::UpdateVisibility();
 
 "558bec8b45??85c079":
-__thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(uint32_t dimension);
+__thiscall int* Game::GetRoomDescriptorsOffsetsArrayForDimension(int dimension);
 
 "558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf164a1":
-__thiscall RoomDescriptor* Game::GetRoomByIdx(uint32_t idx, int32_t dimension);
+__thiscall RoomDescriptor* Game::GetRoomByIdx(int32_t idx, int32_t dimension);
+
+"ffb1????????ffb1????????e8????????c3????????????????????????????ffb1":
+__thiscall RoomDescriptor* Game::GetCurrentRoomDesc();
 
 "558bec83ec1cf30f1005":
 __thiscall float Game::GetPlanetariumChance();
@@ -124,6 +128,15 @@ __thiscall void Game::SetBloom(int Time, float Strength<xmm2>);
 
 "a1????????568bf183b8????????2c":
 __thiscall unsigned int Game::GetStageID(bool unused);
+
+"558bec568b75??33d25733ff":
+__thiscall bool Game::GetGameStateFlag(uint32_t GameStateFlag);
+
+"558bec8b55??b801000000568bf18bca83e11fc1ea05d3e08584??????????5e0f95c05dc20400??????????????????8b81":
+__thiscall bool Game::GetLevelStateFlag(uint32_t LevelStateFlag);
+
+"568bf18b0d????????8b81????????83f80274??83f80374??8b168d42??83f80577??8b89????????33c081e1000001000bc175??8b46??83f80474??83f80574":
+__thiscall bool Game::LevelHasPhotoDoor();
 
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
@@ -210,11 +223,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x283b84); }
 	inline ColorModState* GetTargetColorModifier() { return (ColorModState*)((char*)this + 0x283b9c); }
 	inline ColorModState* GetLerpColorModifier() { return (ColorModState*)((char*)this + 0x283bb4); }
-	
-    RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
-    { 
-        return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
-    }
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
@@ -237,6 +245,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _lastBossRoomListIdx : 0x181a4;
 	uint32_t _leaveDoor : 0x181a8;
 	uint32_t _enterDoor : 0x181ac;
+	uint32_t _dungeonPlacementSeed : 0x181bc;
 	uint32_t _greedModeWave : 0x181c4;
 	unsigned int _stateFlags : 0x1822c;
 	vector_EntitySaveState _myosotisPickups : 0x18234;

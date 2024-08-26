@@ -1,0 +1,15 @@
+struct XY { {{
+	XY() : x(0), y(0) {}
+	XY(int _x, int _y) : x(_x), y(_y) {}
+
+	XY operator+(const XY& other) const {
+		return XY(x + other.x, y + other.y);
+	}
+	
+	XY operator-(const XY& other) const {		
+		return XY(x - other.x, y - other.y);
+	}
+}}
+	int x : 0x0;
+	int y : 0x4;
+} : 0x8;

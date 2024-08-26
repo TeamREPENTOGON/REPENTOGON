@@ -180,7 +180,10 @@ LUA_FUNCTION(lua_RoomSetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	int index = (int)luaL_checkinteger(L, 2);
 
-	if (!room->IsValidGridIndex(index, false)) {
+	/* if (!room->IsValidGridIndex(index, false)) {
+		return luaL_error(L, "Invalid grid index %d\n", index);
+	} */
+	if (index < 0 || (index >= (room->_gridHeight * room->_gridWidth))) {
 		return luaL_error(L, "Invalid grid index %d\n", index);
 	}
 
@@ -189,7 +192,7 @@ LUA_FUNCTION(lua_RoomSetRail) {
 		return luaL_error(L, "Invalid rail type %d\n", rail);
 	}
 
-	room->SetRailType((uint8_t)index, (RailType)rail);
+	room->SetRailType(index, (RailType)rail);
 
 	return 0;
 }
@@ -388,7 +391,7 @@ LUA_FUNCTION(Lua_RoomSetItemPool) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	const int poolType = (int)luaL_checkinteger(L, 2);
 
-	if (poolType < POOL_NULL || poolType >= CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+	if (poolType < POOL_NULL || poolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
 		return luaL_argerror(L, 2, "Invalid ItemPoolType");
 	}
 

@@ -441,7 +441,7 @@ int FunctionHook_private::Install()
 	for (int i = 0; i < argc; ++i) {
 		if (!args[i].IsRegister()) {
 			uint8_t orig = stackPos;
-			stackPos += 4 * args[i]._size;
+			stackPos += 4 * (uint8_t)args[i]._size;
 
 			if (stackPos <= orig) {
 				std::ostringstream str;
@@ -553,7 +553,7 @@ int FunctionHook_private::Install()
 			stackPos += 4;
 		}
 		else {
-			stackPos += 4 * args[i]._size;
+			stackPos += 4 * (uint8_t)args[i]._size;
 		}
 	}
 

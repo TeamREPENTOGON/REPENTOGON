@@ -75,6 +75,13 @@ ___
 #### int GetGridIndexByTile ( int GridRow, int GridColumn ) {: .copyable aria-label='Functions' }
 
 ___
+### GetItemPool () {: aria-label='Functions' }
+#### [ItemPoolType](ItemPoolType.md) PoolType GetItemPool ( int Seed, boolean Raw ) {: .copyable aria-label='Functions' }
+Retrieves the [ItemPoolType](ItemPoolType.md) the game would use to generate random collectibles in the current room. Unlike [ItemPool.GetPoolForRoom()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getpoolforroom), this takes into account the pool set using [SetItemPool()](Room.md#setitempool), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
+
+If `Raw` is set to `true` and the pool is set to `POOL_NULL` then `POOL_NULL` will be returned, instead of running the game's pool selection code.
+
+___
 ### GetLightningIntensity () {: aria-label='Functions' }
 #### float GetLightningIntensity ( ) {: .copyable aria-label='Functions' }
 Gets the intensity of the lightning effect used in Downpour. This variable will affect the visibility of Wraiths.
@@ -153,6 +160,11 @@ The backdrop variant chosen is seeded based on the room, and does not persist wh
 ___
 ### SetGreedWaveTimer () {: aria-label='Functions' }
 #### void SetGreedWaveTimer ( int Time ) {: .copyable aria-label='Functions' }
+
+___
+### SetItemPool () {: aria-label='Functions' }
+#### void SetItemPool ( [ItemPoolType](ItemPoolType.md) PoolType ) {: .copyable aria-label='Functions' }
+Sets the pool to use when the game needs to generate random collectibles in the current room. This takes priority over the game's regular pool selection code. Can be set to `ItemPoolType.POOL_NULL` to let the game handle pool selection. This is reset every room transition.
 
 ___
 ### SetLavaIntensity () {: aria-label='Functions' }

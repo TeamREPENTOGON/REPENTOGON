@@ -371,13 +371,30 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	const float defaultDamage = luaL_checknumber(L, 2);
+	const float defaultDamage = (float)luaL_checknumber(L, 2);
 	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
 	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
 
 	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const int layerId = (int)luaL_checkinteger(L, 2);
+	std::string newSpriteSheet = luaL_checkstring(L, 3);
+	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
+
+	std::string input;
+
+	npc->translate_gfx_path(input, newSpriteSheet);
+	npc->_sprite.ReplaceSpritesheet(layerId, input);
+
+	if (loadGraphics) {
+		npc->_sprite.LoadGraphics(false);
+	}
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -411,6 +428,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		{ "TrySplit", Lua_EntityNPC_TrySplit },
+		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

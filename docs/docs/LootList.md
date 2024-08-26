@@ -11,7 +11,7 @@ tags:
 ## Functions
 
 ### GetEntries () {: aria-label='Functions' }
-#### [LootListEntry](LootListEntry.md) GetEntries ( ) {: .copyable aria-label='Functions' }
+#### [LootListEntry](LootListEntry.md)[] GetEntries ( ) {: .copyable aria-label='Functions' }
 Returns a table of LootListEntries contained in the `LootList`.
 
 ___
