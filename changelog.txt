@@ -34,8 +34,15 @@ Additions:
 	- GetAvailabilityCondition()
 	- SetAvailabilityCondition(function)
 	- ClearAvailabilityCondition()
-
+* Point:
+	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
+	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
 /newline/
+Modified:
+* Beam:
+	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
+	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
+	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
 Fixes:
 	- 
 /newline/
