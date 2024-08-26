@@ -45,8 +45,8 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 
 	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamMT, layerID, useOverlay, unk);
 	toLua->_anm2.construct_from_copy(sprite);
-	//toLua->_anm2.GetLayer(layerID)->_wrapSMode = 0;
-	//toLua->_anm2.GetLayer(layerID)->_wrapTMode = 1;
+	toLua->_anm2.GetLayer(layerID)->_wrapSMode = 0;
+	toLua->_anm2.GetLayer(layerID)->_wrapTMode = 1;
 
 	luaL_setmetatable(L, lua::metatables::BeamMT);
 	return 1;
@@ -203,8 +203,8 @@ LUA_FUNCTION(Lua_BeamSetLayer)
 		}
 	}
 	beam->_layer = layerID;
-	//beam->GetANM2()->GetLayer(layerID)->_wrapSMode = 0;
-	//beam->GetANM2()->GetLayer(layerID)->_wrapTMode = 1;
+	beam->GetANM2()->GetLayer(layerID)->_wrapSMode = 0;
+	beam->GetANM2()->GetLayer(layerID)->_wrapTMode = 1;
 	return 0;
 }
 
