@@ -244,6 +244,47 @@ LUA_FUNCTION(Lua_BeamRenderer__gc) {
 }
 
 // Point
+LUA_FUNCTION(Lua_BeamGetPoints) {
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	lua_newtable(L);
+	for (size_t i = 0; i < beam->_points.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		Point* ud = (Point*)lua_newuserdata(L, sizeof(Point));
+		*ud = beam->_points[i];
+		luaL_setmetatable(L, lua::metatables::PointMT);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BeamSetPoints) {
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	if (!lua_istable(L, 2))
+	{
+		return luaL_argerror(L, 2, "Expected a table as second argument");
+	}
+
+	size_t length = (size_t)lua_rawlen(L, 2);
+	if (length < 2)
+	{
+		return luaL_argerror(L, 2, "Must have at least two points");
+	}
+	else
+	{
+		deque_Point list;
+		for (size_t i = 0; i < length; i++)
+		{
+			lua_rawgeti(L, 2, i + 1);
+			list.push_back(*lua::GetUserdata<Point*>(L, -1, lua::metatables::PointMT));
+			lua_pop(L, 1);
+		}
+		beam->_points = list;
+	}
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_CreatePointDummy) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float spritesheetCoord = (float)luaL_checknumber(L, 2);
@@ -355,6 +396,8 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "SetUseOverlay", Lua_BeamSetUseOverlay},
 		{ "GetUnkBool", Lua_BeamGetUnkBool},
 		{ "SetUnkBool", Lua_BeamSetUnkBool},
+		{ "GetPoints", Lua_BeamGetPoints},
+		{ "SetPoints", Lua_BeamSetPoints},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, beamFunctions, Lua_BeamRenderer__gc);
