@@ -9,6 +9,8 @@
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
 
+#include <algorithm>
+
 
 /*
 
