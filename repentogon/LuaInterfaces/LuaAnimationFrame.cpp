@@ -72,6 +72,20 @@ LUA_FUNCTION(Lua_AnimationFrameGetColor)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_AnimationFrameGetStartFrame)
+{
+	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	lua_pushinteger(L, animationFrame->startFrame);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AnimationFrameGetEndFrame)
+{
+	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	lua_pushinteger(L, animationFrame->endFrame);
+	return 1;
+}
+
 static void RegisterAnimationFrame(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetCrop", Lua_AnimationFrameGetCrop },
@@ -84,6 +98,8 @@ static void RegisterAnimationFrame(lua_State* L) {
 		{ "GetRotation", Lua_AnimationFrameGetRotation },
 		{ "IsInterpolated", Lua_AnimationFrameIsInterpolated },
 		{ "GetColor", Lua_AnimationFrameGetColor },
+		{ "GetStartFrame", Lua_AnimationFrameGetStartFrame },
+		{ "GetEndFrame", Lua_AnimationFrameGetEndFrame },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::AnimationFrameMT, lua::metatables::AnimationFrameMT, functions);

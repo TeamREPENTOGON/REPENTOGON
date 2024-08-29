@@ -34,6 +34,13 @@ Additions:
 	- GetAvailabilityCondition()
 	- SetAvailabilityCondition(function)
 	- ClearAvailabilityCondition()
+* Sprite:
+	- SetOverlayLayerFrame(int Layer, int Frame) - SetLayerFrame for overlays
+	- GetLayerFrameData(int Layer) - Returns the current AnimationFrame for the given layer.
+	- GetOverlayLayerFrameData(int Layer) - Same as above for the overlay animation.
+* AnimationFrame:
+	- GetStartFrame()
+	- GetEndFrame()
 * Point:
 	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
 	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
