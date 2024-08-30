@@ -86,9 +86,9 @@ LUA_FUNCTION(Lua_RoomDescriptorDoorsSet) {
 	}
 
 	int value = (int)luaL_checkinteger(L, 3);
-	if (value < -1 || value > 255) {
-		return luaL_error(L, "Invalid door mask %d\n", value);
-	}
+	//if (value < -1 || value > 255) {		// the game seems to handle invalid indexes by itself, don't see a point in this check
+	//	return luaL_error(L, "Invalid door mask %d\n", value);
+	//}
 
 	descriptor->Doors[slot] = value;
 	return 0;
