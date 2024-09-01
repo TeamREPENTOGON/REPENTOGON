@@ -6,6 +6,7 @@
 #include "LuaCore.h"
 #include "UnifontSupport.h"
 #include "Lang.h"
+#include "../REPENTOGONOptions.h"
 
 #include <sstream>
 #include <cctype>
@@ -1212,7 +1213,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             [](unsigned char c) { return std::tolower(c); });
 
                         if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
-                            if (autocompleteBuffer.size() > 10) {       //autocomplete result cap is defined here
+                            if (autocompleteBuffer.size() > repentogonOptions.consoleAutofillLimit) {       //autocomplete result cap is defined here
                                 break;
                             };
                             autocompleteBuffer.push_back(entry);
