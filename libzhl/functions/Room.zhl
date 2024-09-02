@@ -102,6 +102,12 @@ __thiscall uint32_t Room::GetBrokenWatchState();
 "558bec83e4f883ec14538bd956578b43??8148??00400000":
 __thiscall void Room::MamaMegaExplosion(Vector * Position);
 
+"558bec83e4f883ec1c5356578bf98b47":
+__thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
+
+"558bec8b41??8b55":
+__thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

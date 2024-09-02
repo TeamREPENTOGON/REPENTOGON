@@ -21,6 +21,15 @@ Additions:
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
 		Can be used to determine the neighbors of a room before even placing it.
 		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
+* Room:
+	- GetLRoom[Area/Tile]Desc() now return a usable class
+* LRoomAreaDesc:
+	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in worldspace
+	- Get[High/Low][TopLeft/BottomRight]()
+* LRoomTileDesc:
+	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates
+	- Get[High/Low][TopLeft/BottomRight][X/Y]()
+	- Can use Room:GetGridIndexByTile() to retrieve grid idx at these coordinates
 * RoomDescriptor
 	- GetDimension() - int
 	- GetNeighboringRooms()
