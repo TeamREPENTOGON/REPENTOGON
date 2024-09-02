@@ -53,6 +53,9 @@ Additions:
 * Point:
 	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
 	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
+* ModCallbacks:
+	- MC_PRE_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
+	Called before the Glowing Hourglass state is saved/loaded
 /newline/
 Modified:
 * Beam:
