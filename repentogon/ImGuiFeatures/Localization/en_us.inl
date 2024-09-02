@@ -312,6 +312,8 @@ I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevent mod updates")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"The game will skip syncing workshop mods. Useful for preventing changes to the mod folder during mod development.")
 I(OPT_REPENTOGON_MARSDOUBLETAP, u8"Mars Double Tap Window")
 I(OPT_REPENTOGON_MARSDOUBLETAP_MARK, u8"Sets the window of time to double-tap a movement input to dash with Mars.")
+I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT, u8"Command Autofill Limit")
+I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK, u8"Sets the limit of how many items are displayed in the Debug Console when typing a command. Increasing this to a large number can cause performance to degrade while typing in the console.")
 
 I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
 I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")

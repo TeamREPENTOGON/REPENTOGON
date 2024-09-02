@@ -1,5 +1,6 @@
 v1.x.x -
 Additions:
+* Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
 * Level:
 	- CanPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
 		Returns true if the room would be able to fit at this location.

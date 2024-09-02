@@ -323,12 +323,19 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_MARSDOUBLETAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.marsDoubleTapWindow, 10);
+
+                        AddNewTableRow();
+                        ImGui::SliderInt(LANG.OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT, &repentogonOptions.consoleAutofillLimit, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.consoleAutofillLimit, 10);
+
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_FILE_MAP, &repentogonOptions.fileMap);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
-   
+
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);
                         ImGui::SameLine();
