@@ -270,6 +270,8 @@ nav:
   - LootList:
     - LootList: LootList.md
     - LootListEntry: LootListEntry.md
+  - LRoomAreaDesc: LRoomAreaDesc.md
+  - LRoomTileDesc: LRoomTileDesc.md
   - Menus:
     - MenuManager: menus/MenuManager.md
     - BestiaryMenu: menus/BestiaryMenu.md
