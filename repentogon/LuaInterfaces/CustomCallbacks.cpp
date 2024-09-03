@@ -4501,3 +4501,52 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		}
 	}
 }
+
+//MC_POST_PICKUP_SELECTION_REWORK(37)
+int requestedPickupVariant = 0;
+int requestedPickupSubType = 0;
+uint32_t pickupInitSeed = 0;
+
+HOOK_METHOD(Entity_Pickup, Init, (uint32_t type, int variant, int subType, uint32_t seed) -> void)
+{
+	requestedPickupVariant = variant;
+	requestedPickupSubType = subType;
+	pickupInitSeed = seed;
+
+	super(type, variant, subType, seed);
+}
+
+HOOK_STATIC(LuaEngine, PostPickupSelection, (Entity_Pickup* pickup, int* variant, int* subType) -> void, __stdcall)
+{
+	const int callbackId = 37;
+	lua_State* L = g_LuaEngine->_state;
+
+	if (VanillaCallbackState.test(callbackId)) {
+		RNG rng = RNG();
+		rng.SetSeed(pickupInitSeed, 3); // not using 35 as it's what's used by the selection RNG
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults failure = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.push(*variant)
+			.push(*subType)
+			.push(requestedPickupVariant)
+			.push(requestedPickupSubType)
+			.push(&rng, lua::Metatables::RNG)
+			.call(1);
+
+		if (failure || !lua_istable(L, -1))
+		{
+			return;
+		}
+
+		lua_rawgeti(L, -1, 1);
+		*variant = (int)luaL_optinteger(L, -1, *variant);
+		lua_pop(L, 1);
+
+		lua_rawgeti(L, -1, 2);
+		*subType = (int)luaL_optinteger(L, -1, *subType);
+		lua_pop(L, 1);
+	}
+}
