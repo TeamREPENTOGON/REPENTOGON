@@ -999,42 +999,61 @@ local function GetCallbackIterator(callbackID, param)
 	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
 		-- If the callback is executed with -1 as the param, run ALL callbacks.
 		-- This is sometimes used by the game for callbacks not intended to support optional params.
-		local allCallbacks = callbackData.ALL
-		local i = 0
+		local allCallback = callbackData.ALL[1]
 		return function()
-			i = i + 1
-			return allCallbacks[i]
+			local nextCallback
+
+			-- Skip over removed callbacks if needed.
+			repeat
+				nextCallback = allCallback
+				if allCallback then
+					allCallback = allCallback.NextAll
+				end
+			until not nextCallback or not nextCallback.Removed
+
+			return nextCallback
 		end
 	end
 
-	local commonCallbacksList = callbackData.COMMON
-	local paramCallbacksList = param and callbackData.PARAM[param]
+	local commonCallback = callbackData.COMMON[1]
+	local paramCallback = param and callbackData.PARAM[param] and callbackData.PARAM[param][1]
 
-	if not paramCallbacksList or #paramCallbacksList == 0 then
-		-- No parameterized callbacks to run. Return a simple iterator over the common callbacks.
-		local i = 0
+	if not paramCallback then
+		-- No parameterized callbacks to run, so just iterate over the common callbacks.
 		return function()
-			i = i + 1
-			return commonCallbacksList[i]
+			local nextCallback
+
+			-- Skip over removed callbacks if needed.
+			repeat
+				nextCallback = commonCallback
+				if commonCallback then
+					commonCallback = commonCallback.NextParam
+				end
+			until not nextCallback or not nextCallback.Removed
+
+			return nextCallback
 		end
 	end
 
 	-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
 	-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
-	local commonIndex = 1
-	local paramIndex = 1
-
 	return function()
-		local nextCommonCallback = commonCallbacksList[commonIndex]
-		local nextParamCallback = paramCallbacksList[paramIndex]
+		local nextCallback
 
-		if CallbackComparator(nextCommonCallback, nextParamCallback) then
-			commonIndex = commonIndex + 1
-			return nextCommonCallback
-		else
-			paramIndex = paramIndex + 1
-			return nextParamCallback
-		end
+		-- Skip over removed callbacks if needed.
+		repeat
+			if CallbackComparator(commonCallback, paramCallback) then
+				nextCallback = commonCallback
+				commonCallback = commonCallback.NextParam
+			elseif paramCallback then
+				nextCallback = paramCallback
+				paramCallback = paramCallback.NextParam
+			else
+				nextCallback = nil
+			end
+		until not nextCallback or not nextCallback.Removed
+
+		return nextCallback
 	end
 end
 
@@ -1086,8 +1105,34 @@ local function FindCallbackInsertPos(callbackList, newCallback)
 	end
 end
 
-local function AddToCallbackList(callbackList, newCallback)
-	table.insert(callbackList, FindCallbackInsertPos(callbackList, newCallback), newCallback)
+local function AddToCallbackList(callbackList, newCallback, isAllList)
+	local idx = FindCallbackInsertPos(callbackList, newCallback)
+	table.insert(callbackList, idx, newCallback)
+
+	local prevCallback = callbackList[idx-1]
+	local nextCallback = callbackList[idx+1]
+
+	-- Establish links to the previous/next callbacks in the list.
+	-- This is done to make removing callbacks while the callback is running a little safer.
+	if isAllList then
+		if prevCallback then
+			prevCallback.NextAll = newCallback
+		end
+		newCallback.PrevAll = prevCallback
+		newCallback.NextAll = nextCallback
+		if nextCallback then
+			nextCallback.PrevAll = newCallback
+		end
+	else
+		if prevCallback then
+			prevCallback.NextParam = newCallback
+		end
+		newCallback.PrevParam = prevCallback
+		newCallback.NextParam = nextCallback
+		if nextCallback then
+			nextCallback.PrevParam = newCallback
+		end
+	end
 end
 
 rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, param)
@@ -1103,7 +1148,7 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	callbackData.NUM_ADDED = numAdded
 	local newCallback = {Mod = mod, Function = fn, Priority = priority, AddOrder = numAdded, Param = param}
 
-	AddToCallbackList(callbackData.ALL, newCallback)
+	AddToCallbackList(callbackData.ALL, newCallback, true)
 
 	-- Callbacks with -1 as their param behave the same as those with no param.
 	-- This aligns with the behaviour of the old implementation.
@@ -1111,9 +1156,9 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 		if not callbackData.PARAM[param] then
 			callbackData.PARAM[param] = {}
 		end
-		AddToCallbackList(callbackData.PARAM[param], newCallback)
+		AddToCallbackList(callbackData.PARAM[param], newCallback, false)
 	else
-		AddToCallbackList(callbackData.COMMON, newCallback)
+		AddToCallbackList(callbackData.COMMON, newCallback, false)
 	end
 
 	if wasEmpty then
@@ -1130,10 +1175,27 @@ rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
 	Isaac.AddPriorityCallback(mod, callbackID, CallbackPriority.DEFAULT, fn, param)
 end)
 
-local function RemoveCallbacksIf(callbackList, removeConditionFunc)
+local function RemoveCallbacksIf(callbackList, removeConditionFunc, fixLinks)
 	local removed = false
 	for i=#callbackList,1,-1 do
-		if removeConditionFunc(callbackList[i]) then
+		local callback = callbackList[i]
+		if removeConditionFunc(callback) then
+			if fixLinks then
+				-- Fix the links to the previous/next callbacks for this callback's neighbors.
+				if callback.PrevAll then
+					callback.PrevAll.NextAll = callback.NextAll
+				end
+				if callback.NextAll then
+					callback.NextAll.PrevAll = callback.PrevAll
+				end
+				if callback.PrevParam then
+					callback.PrevParam.NextParam = callback.NextParam
+				end
+				if callback.NextParam then
+					callback.NextParam.PrevParam = callback.PrevParam
+				end
+			end
+			callback.Removed = true
 			table.remove(callbackList, i)
 			removed = true
 		end
@@ -1144,10 +1206,10 @@ end
 local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
 	local callbackData = Callbacks[callbackID]
 
-	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc) then
-		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc)
+	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc, true) then
+		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc, false)
 		for param, paramCallbacks in pairs(callbackData.PARAM) do
-			RemoveCallbacksIf(paramCallbacks, removeConditionFunc)
+			RemoveCallbacksIf(paramCallbacks, removeConditionFunc, false)
 		end
 		if #callbackData.ALL == 0 and type(callbackID) == "number" then
 			-- No more functions left, disable this callback
