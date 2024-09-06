@@ -13,9 +13,13 @@ thread_local FireProjectilesStorage projectilesStorage;
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
 float hushPanicLevel = 0.005f;
+
+static bool IsHushPanicStateFixEnabled() {
+	return repentogonOptions.hushPanicStateFix && g_Game->GetDailyChallenge()._id == 0;
+}
 void __stdcall SetHushPanicLevel() {
 	// This goes out to the masochists that want to deliberately play bugged Hush (hereby dubbed VINH MODE)
-	hushPanicLevel = repentogonOptions.hushPanicStateFix ? 0.005f : 0.5f;
+	hushPanicLevel = IsHushPanicStateFixEnabled() ? 0.005f : 0.5f;
 }
 
 void PerformHushPanicPatch(void* addr) {
@@ -33,7 +37,7 @@ void PerformHushPanicPatch(void* addr) {
 
 bool __stdcall IsRoomSlow() {
 	Room* room = g_Game->_room;
-	return repentogonOptions.hushPanicStateFix && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
+	return IsHushPanicStateFixEnabled() && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
 }
 
 const float hushLaserAdjust = 0.513f * 0.75; // a base value i got empirically a while back + a slight extra bit of wiggle room
