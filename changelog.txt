@@ -60,6 +60,7 @@ Modified:
 	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
 	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
 	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
+* "Hush AI Fixes" patch will no longer be applied during daily runs.
 /newline/
 Fixes:
 	- 

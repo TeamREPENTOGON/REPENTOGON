@@ -13,9 +13,13 @@ thread_local FireProjectilesStorage projectilesStorage;
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
 float hushPanicLevel = 0.005f;
+
+static bool IsHushPanicStateFixEnabled() {
+	return repentogonOptions.hushPanicStateFix && g_Game->GetDailyChallenge()._id == 0;
+}
 void __stdcall SetHushPanicLevel() {
 	// This goes out to the masochists that want to deliberately play bugged Hush (hereby dubbed VINH MODE)
-	hushPanicLevel = repentogonOptions.hushPanicStateFix ? 0.005f : 0.5f;
+	hushPanicLevel = IsHushPanicStateFixEnabled() ? 0.005f : 0.5f;
 }
 
 void PerformHushPanicPatch(void* addr) {
@@ -34,7 +38,6 @@ void PerformHushPanicPatch(void* addr) {
 bool __stdcall IsRoomSlow() {
 	Room* room = g_Game->_room;
 	return IsHushPanicStateFixEnabled() && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
-	return repentogonOptions.hushPanicStateFix && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
 }
 
 const float hushLaserAdjust = 0.513f * 0.75; // a base value i got empirically a while back + a slight extra bit of wiggle room
@@ -47,8 +50,10 @@ void PatchHushLaserSpeed() {
 
 	const float* floatPtr = &hushLaserAdjust;
 	ASMPatch patch;
-	patch.AddBytes("\xF3\x0F\x10\x81\xAC\x14").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+14AC]
+	patch.Push(ASMPatch::Registers::ECX); // preserve player
 	patch.AddInternalCall(IsRoomSlow);
+	patch.Pop(ASMPatch::Registers::ECX); // restore player
+	patch.AddBytes("\xF3\x0F\x10\x81\xAC\x14").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+14AC]
 	patch.AddBytes("\x84\xC0"); // test al, al
 	patch.AddBytes("\x74\x08"); // je, eip+0x8
 	patch.AddBytes("\xF3\x0F\x59\x05").AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4)); // mulss xmm0, dword ptr [0xXXXXXXXX]
