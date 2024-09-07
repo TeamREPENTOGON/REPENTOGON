@@ -1118,20 +1118,12 @@ local function AddToCallbackList(callbackList, newCallback, isAllList)
 		if prevCallback then
 			prevCallback.NextAll = newCallback
 		end
-		newCallback.PrevAll = prevCallback
 		newCallback.NextAll = nextCallback
-		if nextCallback then
-			nextCallback.PrevAll = newCallback
-		end
 	else
 		if prevCallback then
 			prevCallback.NextParam = newCallback
 		end
-		newCallback.PrevParam = prevCallback
 		newCallback.NextParam = nextCallback
-		if nextCallback then
-			nextCallback.PrevParam = newCallback
-		end
 	end
 end
 
@@ -1175,26 +1167,20 @@ rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
 	Isaac.AddPriorityCallback(mod, callbackID, CallbackPriority.DEFAULT, fn, param)
 end)
 
-local function RemoveCallbacksIf(callbackList, removeConditionFunc, fixLinks)
+local function RemoveCallbacksIf(callbackList, removeConditionFunc, isAllList)
 	local removed = false
 	for i=#callbackList,1,-1 do
 		local callback = callbackList[i]
 		if removeConditionFunc(callback) then
-			if fixLinks then
-				-- Fix the links to the previous/next callbacks for this callback's neighbors.
-				if callback.PrevAll then
-					callback.PrevAll.NextAll = callback.NextAll
-				end
-				if callback.NextAll then
-					callback.NextAll.PrevAll = callback.PrevAll
-				end
-				if callback.PrevParam then
-					callback.PrevParam.NextParam = callback.NextParam
-				end
-				if callback.NextParam then
-					callback.NextParam.PrevParam = callback.PrevParam
+			-- Fix the iteration link of the previous callback.
+			if callbackList[i-1] then
+				if isAllList then
+					callbackList[i-1].NextAll = callback.NextAll
+				else
+					callbackList[i-1].NextParam = callback.NextParam
 				end
 			end
+
 			callback.Removed = true
 			table.remove(callbackList, i)
 			removed = true
