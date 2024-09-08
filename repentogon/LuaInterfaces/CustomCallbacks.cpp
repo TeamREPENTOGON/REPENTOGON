@@ -2002,11 +2002,11 @@ HOOK_METHOD(Entity_Player, ControlActiveItem, (int slot) -> void) {
 	cachedMaxCharge.clear();
 }
 
-HOOK_METHOD(Entity_Player, AddActiveCharge, (unsigned int charge, int slot, bool unk, bool overcharge, bool force) -> int) {
+HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD, bool overcharge, bool force) -> int) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	const int result = super(charge, slot, unk, overcharge, force);
+	const int result = super(charge, slot, flashHUD, overcharge, force);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();

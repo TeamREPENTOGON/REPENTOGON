@@ -139,6 +139,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
+	ASMPatchAddActiveCharge();
 
 	// Render
 	LuaRender::PatchglDrawElements();

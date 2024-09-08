@@ -250,3 +250,19 @@ void ASMPatchMarsDoubleTapWindow() {
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+// When AddActiveCharge is called with a negative value for the ActiveSlot, it iterates over each valid ActiveSlot and recursively calls AddActiveCharge for that slot.
+// For some reason, when it does this, it passes the function's boolean params in the wrong order. From the user's perspective, this would cause the function to
+// allow overcharge despite the bool for allowing overcharge being to false. This patch puts the params in the correct order.
+//
+// It is worth noting that there does not appear to be any place in the game's code where -1 is passed as the ActiveSlot while any of the booleans are also set to TRUE,
+// so this mistake does not cause any vanilla bugs, and likewise fixing it should not have any effects to the basegame.
+void ASMPatchAddActiveCharge() {
+	SigScan scanner("ff75??8bcfff75??ff75??56");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	sASMPatcher.FlatPatch((char*)addr + 0x2, "\x18", 1);
+	sASMPatcher.FlatPatch((char*)addr + 0x7, "\x14", 1);
+	sASMPatcher.FlatPatch((char*)addr + 0xA, "\x10", 1);
+}

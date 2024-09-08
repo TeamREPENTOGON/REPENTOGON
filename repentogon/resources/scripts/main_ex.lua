@@ -1564,15 +1564,44 @@ function FontMT.__call(_,FontPath)
 	return out,isloaded
 end
 
---Get rid of the GetCollectible compatibility wrapper
-local ItemPoolMT = getmetatable(ItemPool).__class
-local OldIndex = ItemPoolMT.__index
-local NewIndex = {}
+-- Gets rid of the old `scripts/main.lua` wrappers for some re-implemented function hooks.
+-- This can allow us to circumvent how the old wrappers handled certain inputs, as well as make
+-- errors report the actual call site instead of the line in `scripts/main.lua`.
+-- Make sure you understand what the old wrapper was doing, and that the new hook maintains any features like optional args.
+local LuaWrappersToRemove = {
+	{ ItemPool, {"GetCollectible"} },
+	{
+		EntityPlayer, {
+			"AddCollectible",
+			"FullCharge",
+			"GetMultiShotParams",
+			"GetActiveItem",
+			"GetActiveCharge",
+			"GetActiveSubCharge",
+			"GetBatteryCharge",
+			"NeedsCharge",
+			"SetActiveCharge",
+			"DischargeActiveItem",
+			"SetPocketActiveItem",
+		}
+	},
+}
+for _, tab in ipairs(LuaWrappersToRemove) do
+	local class = tab[1]
 
-NewIndex.GetCollectible = ItemPoolMT.GetCollectible
-rawset(ItemPoolMT, "__index", function(self, k)
-	return NewIndex[k] or OldIndex(self, k)
-end)
+	local mt = getmetatable(class).__class
+	local oldIndex = mt.__index
+	local newIndex = {}
+
+	for _, funcName in ipairs(tab[2]) do
+		newIndex[funcName] = mt[funcName]
+	end
+
+	rawset(mt, "__index", function(self, k)
+		return newIndex[k] or oldIndex(self, k)
+	end)
+end
+LuaWrappersToRemove = nil
 
 --res load error stuff end
 
