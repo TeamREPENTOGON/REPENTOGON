@@ -270,6 +270,23 @@ void PatchDealRoomVariant() {
 	// patch.RestoreRegisters(registers);
 
 	sASMPatcher.PatchAt(patchAddr, &patch);
+
+	// lazy, but i'm reasonably sure effective,
+	// and i don't care that much if a red room deal gets a trapdoor
+	const char* signature2 = "c745??6300000083fe0e";
+	SigScan scanner2(signature2);
+	if (!scanner2.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch red room variants\n");
+		return;
+	}
+
+	void* patchAddr2 = scanner2.GetAddress();
+
+	printf("[REPENTOGON] Patching MakeRedRoomDoor at %p\n", patchAddr2);
+	ASMPatch patch2;
+	patch2.AddBytes("\xFF\xFF\xFF\xFF");
+
+	sASMPatcher.FlatPatch((char*)patchAddr2+3, &patch2);
 }
 
 // eliminates the checks that replaces the current OverrideData if it's not a miniboss RoomConfig_Room
