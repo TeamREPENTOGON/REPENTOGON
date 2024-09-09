@@ -149,3 +149,29 @@ void ASMPatchAddWeakness() {
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+void __stdcall ProcessApplyFrozenEnemyDeathEffects(Entity_NPC* npc) {
+	printf("[REPENTOGON] Entity: %p type %d\n", npc, npc->_type);
+
+	g_Game->_scoreSheet.AddKilledEnemy(npc);
+	for (int i = 0; i < g_Game->GetNumPlayers(); i++) {
+		g_Game->GetPlayer(i)->TriggerEnemyDeath(npc);
+	}
+}
+
+void ASMPatchApplyFrozenEnemyDeathEffects() {
+	SigScan scanner("8d85????????508d8f????????e8????????8d85????????508d8f????????e8????????50");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching Frozen Enemy Death Effects at %p\n", addr);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EDI)
+		.AddInternalCall(ProcessApplyFrozenEnemyDeathEffects)
+		.RestoreRegisters(reg)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}

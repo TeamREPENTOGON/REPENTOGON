@@ -109,6 +109,7 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	ASMPatchAddWeakness();
+	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
 	PatchGridCallbackShit();

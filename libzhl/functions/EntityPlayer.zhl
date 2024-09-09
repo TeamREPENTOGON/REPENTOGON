@@ -530,6 +530,9 @@ __thiscall void Entity_Player::TriggerEffectRemoved(ItemConfig_Item* item, int u
 "558bec515356576a00":
 __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 
+"558bec83e4f883ec4c538b5d??33c0":
+__thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
+
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
