@@ -185,7 +185,7 @@ LUALIB_API int LuaCheckActiveSlot(lua_State* L, int arg, bool allowNegative) {
 	if ((!allowNegative && slot < 0) || slot > 3) {
 		std::string error("Invalid ActiveSlot ");
 		error.append(std::to_string(slot));
-		luaL_argerror(L, arg, error.c_str());
+		return luaL_argerror(L, arg, error.c_str());
 	}
 	return (int)slot;
 }
