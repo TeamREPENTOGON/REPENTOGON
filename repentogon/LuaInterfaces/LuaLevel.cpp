@@ -151,7 +151,7 @@ HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t sta
 LUALIB_API int LuaCheckDimension(lua_State* L, int arg) {
 	lua_Integer dimension = luaL_optinteger(L, arg, -1);
 	if (dimension < -1 || dimension > 2) {
-		luaL_argerror(L, arg, "Invalid Dimension");
+		return luaL_argerror(L, arg, "Invalid Dimension");
 	}
 	return (int)dimension;
 }
