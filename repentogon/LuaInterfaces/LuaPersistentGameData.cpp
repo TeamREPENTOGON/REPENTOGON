@@ -128,6 +128,16 @@ LUA_FUNCTION(Lua_PGDGetBestiaryEncounterCount)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PGDAddBestiaryKill)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	const int entType = (int)luaL_checkinteger(L, 2);
+	const int entVariant = (int)luaL_optinteger(L, 3, 0);
+	lua_pushboolean(L, pgd->AddBestiaryKill(entType, entVariant));
+
+	return 1;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetPersistentGameData", Lua_GetPersistentGameData);
@@ -142,6 +152,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "GetBestiaryKillCount", Lua_PGDGetBestiaryKillCount},
 		{ "GetBestiaryDeathCount", Lua_PGDGetBestiaryDeathCount},
 		{ "GetBestiaryEncounterCount", Lua_PGDGetBestiaryEncounterCount},
+		{ "AddBestiaryKill", Lua_PGDAddBestiaryKill},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PersistentGameDataMT, lua::metatables::PersistentGameDataMT, functions);

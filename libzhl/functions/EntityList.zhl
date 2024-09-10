@@ -38,6 +38,10 @@ struct EntityList depends (Entity, EntityList_EL) {
 		
 		return wispCount;
 	}
+	
+	
 }} 
+
+	EntityList_EL _wispEL : 0x90;
 
 } : 0x580;

@@ -54,6 +54,8 @@ Additions:
 * Point:
 	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
 	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
+* PersistentGameData:
+	- AddBestiaryKill(EntityType, Variant = 0)
 /newline/
 Modified:
 * Beam:
