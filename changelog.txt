@@ -57,6 +57,7 @@ Additions:
 * PersistentGameData:
 	- AddBestiaryKill(EntityType, Variant = 0)
 	- AddBossKilled(BossType)
+	- IsBossKilled(BossType)
 /newline/
 Modified:
 * Beam:

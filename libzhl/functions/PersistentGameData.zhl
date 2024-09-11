@@ -49,5 +49,6 @@ struct PersistentGameData { {{
 	}
 }}
 	bool achievements[638] : 0x38;
+	bool bosses[104] : 0xd97;
 	bool challenges[45] : 0xdff;
 } : 0xf20;
