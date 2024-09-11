@@ -34,6 +34,9 @@ __thiscall void PersistentGameData::Save();
 "558bec8079??000f85":
 __thiscall void PersistentGameData::AddChallenge(int challengeID);
 
+"558bec568bf1807e??000f85":
+__thiscall void PersistentGameData::AddBoss(int bossID);
+
 struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {

@@ -138,6 +138,18 @@ LUA_FUNCTION(Lua_PGDAddBestiaryKill)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PGDAddBoss)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	const int bossID = (int)luaL_checkinteger(L, 2);
+	if (bossID > 103 || bossID < 1)
+		luaL_error(L, "bad argument #2 to 'AddBoss' (expected BossType between 1 and 103 inclusive, got %d)", bossID);
+
+	pgd->AddBoss(bossID);
+
+	return 0;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetPersistentGameData", Lua_GetPersistentGameData);
@@ -153,6 +165,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "GetBestiaryDeathCount", Lua_PGDGetBestiaryDeathCount},
 		{ "GetBestiaryEncounterCount", Lua_PGDGetBestiaryEncounterCount},
 		{ "AddBestiaryKill", Lua_PGDAddBestiaryKill},
+		{ "AddBoss", Lua_PGDAddBoss},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PersistentGameDataMT, lua::metatables::PersistentGameDataMT, functions);
