@@ -165,7 +165,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "GetBestiaryDeathCount", Lua_PGDGetBestiaryDeathCount},
 		{ "GetBestiaryEncounterCount", Lua_PGDGetBestiaryEncounterCount},
 		{ "AddBestiaryKill", Lua_PGDAddBestiaryKill},
-		{ "AddBoss", Lua_PGDAddBoss},
+		{ "AddBossKilled", Lua_PGDAddBoss},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PersistentGameDataMT, lua::metatables::PersistentGameDataMT, functions);
