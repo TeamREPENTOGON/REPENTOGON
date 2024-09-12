@@ -534,7 +534,7 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, PocketItem) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -684,6 +684,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	uint32_t _trinketsID[2] : 0x15e8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	vector_RNG _collectiblesRNG : 0x1698, _trinketsRNG : 0x16a4, _pillsRNG : 0x16b0, _cardsRNG : 0x16bc;
+	PocketItem _pocketItem[4] : 0x16c8;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
 	KColor _footprintColor2 : 0x1794;

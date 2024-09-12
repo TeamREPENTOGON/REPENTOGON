@@ -2538,10 +2538,10 @@ LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 LUA_FUNCTION(Lua_PlayerGetCollectibleRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
-	if (id < 0 || id >= player->_collectiblesRNG.size())
-		lua_pushnil(L);
+	if (id < 0 || id >= (int)player->_collectiblesRNG.size())
+		return luaL_argerror(L, 2, "CollectibleType out of bounds!");
 	else
-		lua::luabridge::UserdataPtr::push(L, player->_collectiblesRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+		lua::luabridge::UserdataPtr::push(L, &player->_collectiblesRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
 	return 1;
 }
@@ -2549,10 +2549,10 @@ LUA_FUNCTION(Lua_PlayerGetCollectibleRNG_BoundFix) {
 LUA_FUNCTION(Lua_PlayerGetTrinketRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
-	if (id < 0 || id >= player->_trinketsRNG.size())
-		lua_pushnil(L);
+	if (id < 0 || id >= (int)player->_trinketsRNG.size())
+		return luaL_argerror(L, 2, "TrinketType out of bounds!");
 	else
-		lua::luabridge::UserdataPtr::push(L, player->_trinketsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+		lua::luabridge::UserdataPtr::push(L, &player->_trinketsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
 	return 1;
 }
@@ -2560,10 +2560,10 @@ LUA_FUNCTION(Lua_PlayerGetTrinketRNG_BoundFix) {
 LUA_FUNCTION(Lua_PlayerGetPillRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
-	if (id < 0 || id >= player->_pillsRNG.size())
-		lua_pushnil(L);
+	if (id < 0 || id >= (int)player->_pillsRNG.size())
+		return luaL_argerror(L, 2, "PillEffect out of bounds!");
 	else
-		lua::luabridge::UserdataPtr::push(L, player->_pillsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+		lua::luabridge::UserdataPtr::push(L, &player->_pillsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
 	return 1;
 }
@@ -2571,10 +2571,42 @@ LUA_FUNCTION(Lua_PlayerGetPillRNG_BoundFix) {
 LUA_FUNCTION(Lua_PlayerGetCardRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
-	if (id < 0 || id >= player->_cardsRNG.size())
-		lua_pushnil(L);
+	if (id < 0 || id >= (int)player->_cardsRNG.size())
+		return luaL_argerror(L, 2, "Card out of bounds!");
 	else
-		lua::luabridge::UserdataPtr::push(L, player->_cardsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+		lua::luabridge::UserdataPtr::push(L, &player->_cardsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCard_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id > 3)
+		return luaL_argerror(L, 2, "SlotId out of bounds!");
+	else
+	{
+		if (player->_pocketItem[id]._type == 1)
+			lua_pushinteger(L, player->_pocketItem[id]._id);
+		else
+			lua_pushinteger(L, 0);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetPill_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id > 3)
+		return luaL_argerror(L, 2, "SlotId out of bounds!");
+	else
+	{
+		if (player->_pocketItem[id]._type == 0)
+			lua_pushinteger(L, player->_pocketItem[id]._id);
+		else
+			lua_pushinteger(L, 0);
+	}
 
 	return 1;
 }
@@ -2811,6 +2843,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTrinketRNG", Lua_PlayerGetTrinketRNG_BoundFix },
 		{ "GetPillRNG", Lua_PlayerGetPillRNG_BoundFix },
 		{ "GetCardRNG", Lua_PlayerGetCardRNG_BoundFix },
+		{ "GetPill", Lua_PlayerGetPill_BoundFix },
+		{ "GetCard", Lua_PlayerGetCard_BoundFix },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

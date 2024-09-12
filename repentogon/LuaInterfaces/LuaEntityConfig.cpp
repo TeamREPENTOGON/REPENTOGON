@@ -782,7 +782,7 @@ LUA_FUNCTION(Lua_EntityList_Get_BoundFix)
 	int idx = (int)luaL_checkinteger(L, 2);
 	int size = list->_size;
 	if (idx < 0 || idx >= size)
-		lua_pushnil(L);
+		return luaL_argerror(L, 2, "Entity index is out of bounds");
 	else
 		lua::luabridge::UserdataPtr::push(L, list->_data[idx], lua::GetMetatableKey(lua::Metatables::ENTITY));
 	return 1;
