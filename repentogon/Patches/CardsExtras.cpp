@@ -286,15 +286,6 @@ namespace Cards_EX
         const auto itemConfig = g_Manager->GetItemConfig();
         const auto cardList = itemConfig->GetCards();
 
-        CardPool& runePool = cardPools[CARDPOOL_RUNE];
-        if ((runePool.cardList.size() != 0 || onlyRunes))
-        {
-            while (runePool.cardList.size() < 6)
-            {
-                runePool.AddCard(CARD_NULL, 1.0f);
-            }
-        }
-
         RNG rng = RNG();
         rng.SetSeed(seed, 21);
 
@@ -456,7 +447,9 @@ HOOK_METHOD(ItemConfig_Card, IsAvailable, () -> bool)
 
 HOOK_STATIC(ItemPool, GetCardEx, (int seed, int specialChance, int runeChance, int suitChance, bool allowNonCards) -> int, __stdcall)
 {
-    return Cards_EX::GetCard(seed, specialChance, runeChance, suitChance, runeChance == -1, allowNonCards);
+    bool onlyRunes = runeChance == -1;
+    runeChance = runeChance == -1 ? 1 : runeChance;
+    return Cards_EX::GetCard(seed, specialChance, runeChance, suitChance, onlyRunes, allowNonCards);
 }
 
 // Edit the vanilla function so that when OnlyRunes is set to true the RuneChance is set to -1 instead of 1
