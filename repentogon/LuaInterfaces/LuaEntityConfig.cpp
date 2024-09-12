@@ -776,6 +776,18 @@ LUA_FUNCTION(Lua_EntityConfigBabyGetAchievementID)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityList_Get_BoundFix)
+{
+	EntityList_EL* list = lua::GetUserdata<EntityList_EL*>(L, 1, lua::Metatables::ENTITY_LIST, "EntityList");
+	int idx = (int)luaL_checkinteger(L, 2);
+	int size = list->_size;
+	if (idx < 0 || idx >= size)
+		lua_pushnil(L);
+	else
+		lua::luabridge::UserdataPtr::push(L, list->_data[idx], lua::GetMetatableKey(lua::Metatables::ENTITY));
+	return 1;
+}
+
 /*
 * Registration Stuff
 */
@@ -891,6 +903,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterFunction(_state, lua::Metatables::ENTITY, "GetEntityConfigEntity", Lua_EntityGetEntityConfigEntity);
 	lua::RegisterFunction(_state, lua::Metatables::ENTITY_PLAYER, "GetEntityConfigPlayer", Lua_PlayerGetEntityConfigPlayer);
+	lua::RegisterFunction(_state, lua::Metatables::ENTITY_LIST, "Get", Lua_EntityList_Get_BoundFix);
 
 	RegisterEntityConfig(_state);
 	RegisterEntityConfigEntity(_state);
