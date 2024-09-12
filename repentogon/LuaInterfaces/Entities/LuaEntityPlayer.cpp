@@ -2532,6 +2532,53 @@ LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 	return 1;
 }
 
+/*	//////////////
+	Bound checking
+*/	//////////////
+LUA_FUNCTION(Lua_PlayerGetCollectibleRNG_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id >= player->_collectiblesRNG.size())
+		lua_pushnil(L);
+	else
+		lua::luabridge::UserdataPtr::push(L, player->_collectiblesRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTrinketRNG_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id >= player->_trinketsRNG.size())
+		lua_pushnil(L);
+	else
+		lua::luabridge::UserdataPtr::push(L, player->_trinketsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetPillRNG_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id >= player->_pillsRNG.size())
+		lua_pushnil(L);
+	else
+		lua::luabridge::UserdataPtr::push(L, player->_pillsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCardRNG_BoundFix) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id >= player->_cardsRNG.size())
+		lua_pushnil(L);
+	else
+		lua::luabridge::UserdataPtr::push(L, player->_cardsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2759,6 +2806,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
 		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
 		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
+
+		{ "GetCollectibleRNG", Lua_PlayerGetCollectibleRNG_BoundFix },
+		{ "GetTrinketRNG", Lua_PlayerGetTrinketRNG_BoundFix },
+		{ "GetPillRNG", Lua_PlayerGetPillRNG_BoundFix },
+		{ "GetCardRNG", Lua_PlayerGetCardRNG_BoundFix },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

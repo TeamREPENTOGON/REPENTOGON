@@ -683,6 +683,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _headDirection: 0x155c;
 	uint32_t _trinketsID[2] : 0x15e8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
+	vector_RNG _collectiblesRNG : 0x1698, _trinketsRNG : 0x16a4, _pillsRNG : 0x16b0, _cardsRNG : 0x16bc;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
 	KColor _footprintColor2 : 0x1794;
