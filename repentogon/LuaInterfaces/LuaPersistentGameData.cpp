@@ -157,7 +157,7 @@ LUA_FUNCTION(Lua_PGDIsBossKilled)
 	if (bossID > 103 || bossID < 1)
 		luaL_error(L, "bad argument #2 to 'IsBossKilled' (expected BossType between 1 and 103 inclusive, got %d)", bossID);
 
-	lua_pushboolean(pgd->bosses[bossID]);
+	lua_pushboolean(L, pgd->bosses[bossID]);
 
 	return 1;
 }
