@@ -548,6 +548,27 @@ LUA_FUNCTION(Lua_ItemPoolGetNumItemPools) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolGetPoolForRoom_BoundFix) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	int roomType = (int)luaL_checkinteger(L, 2);
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 3);
+	if (roomType < 0 || roomType > 29)
+		return luaL_error(L, "bad argument #2 to 'GetPoolForRoom' (Invalid RoomType %d)", roomType);
+	lua_pushinteger(L, itemPool->GetPoolForRoom(roomType, seed));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemPoolAddRoomBlacklist_BoundFix) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id >= (int)g_Manager->_itemConfig.GetCollectibles()->size())
+		return luaL_error(L, "bad argument #2 to 'AddRoomBlacklist' (Invalid CollectibleType %d)", id);
+	itemPool->AddRoomBlacklist(id);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -577,6 +598,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
 		{ "ResetCollectible", Lua_ItemPoolResetCollectible },
 		{ "GetNumItemPools", Lua_ItemPoolGetNumItemPools },
+
+		{ "GetPoolForRoom", Lua_ItemPoolGetPoolForRoom_BoundFix },
+		{ "AddRoomBlacklist", Lua_ItemPoolAddRoomBlacklist_BoundFix },
 
 		{ NULL, NULL }
 	};

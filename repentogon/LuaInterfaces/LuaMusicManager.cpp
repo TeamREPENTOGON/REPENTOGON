@@ -78,6 +78,25 @@ LUA_FUNCTION(Lua_MusicManager_SetCurrentPitch) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_MusicManager_DisableLayer) {
+	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id > 5)
+		return luaL_error(L, "bad argument #2 to 'DisableLayer' (Invalid layer id %d)", id);
+	music->DisableLayer(id);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_MusicManager_EnableLayer) {
+	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	int id = (int)luaL_checkinteger(L, 2);
+	bool instant = lua::luaL_optboolean(L, 3, false);
+	if (id < 0 || id > 5)
+		return luaL_error(L, "bad argument #2 to 'EnableLayer' (Invalid layer id %d)", id);
+	music->EnableLayer(id, instant);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua::LuaStackProtector protector(_state);

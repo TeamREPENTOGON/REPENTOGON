@@ -10,13 +10,14 @@ __thiscall void Seeds::set_start_seed(unsigned int seed);
 "558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf18975??f30f7e05":
 __thiscall void Seeds::construct_from_copy(Seeds* right);
 
-// sorry for the mess, this is a direct ghidra export :(
-struct Seeds depends (RNG,ANM2){
+"558bec83e4f883ec148b45??f30f7e05":
+__thiscall void Seeds::ForgetStageSeed(int Stage);
+
+struct Seeds depends (RNG) {
     bool _isCustomRun : 0x0;
     unsigned int _gameStartSeed : 0x4;
     RNG _rng : 0x8;
-    int _stageSeeds[14] : 0x18;
+    unsigned int _stageSeeds[14] : 0x18;
     unsigned int _playerInitSeed : 0x50;
-	unsigned int _unkseed : 0x54;
     int _seedEffectsCount : 0x58;
 } : 0x5c;

@@ -1,7 +1,24 @@
-struct KColor
-{
-    float _red : 0x0;
-    float _green : 0x4;
-    float _blue : 0x8;
-    float _alpha : 0xC;
+struct KColor {
+    float _red: 0x0, _green : 0x4, _blue : 0x8, _alpha : 0xC;
+
+    {{
+    KColor() {
+        _red = _green = _blue = _alpha = 0;
+    }
+
+    KColor(KColor const& other) {
+        _red = other._red;
+        _green = other._green;
+        _blue = other._blue;
+        _alpha = other._alpha;
+    }
+
+    KColor& operator=(KColor const& other) {
+        _red = other._red;
+        _green = other._green;
+        _blue = other._blue;
+        _alpha = other._alpha;
+        return *this;
+    }
+    }}
 } : 0x10;

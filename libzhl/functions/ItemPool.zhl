@@ -46,6 +46,9 @@ __thiscall int ItemPool::GetPoolForRoom(uint32_t RoomType, uint32_t Seed);
 "558bec51568bf1b801000000":
 __thiscall int ItemPool::ForceAddPillEffect(int32_t ID);
 
+"558bec8b81????????56":
+__thiscall void ItemPool::AddRoomBlacklist(int Item);
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }

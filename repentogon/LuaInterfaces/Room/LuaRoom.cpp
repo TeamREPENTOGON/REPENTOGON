@@ -462,6 +462,15 @@ LUA_FUNCTION(Lua_RoomGetItemPool) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomGetGridCollision_BoundFix) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int idx = (int)luaL_checkinteger(L, 2);
+	if (idx < 0 || idx > 447)
+		return luaL_error(L, "bad argument #2 to 'GetGridCollision' (Invalid grid index %d)", idx);
+	lua_pushinteger(L, room->GetGridCollision(idx));
+	return 1;
+}
+
 HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	roomASM.WaterDisabled = false;
 	roomASM.ItemPool = POOL_NULL;
@@ -528,6 +537,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
 		{ "SetItemPool", Lua_RoomSetItemPool },
 		{ "GetItemPool", Lua_RoomGetItemPool },
+
+		{ "GetGridCollision", Lua_RoomGetGridCollision_BoundFix },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
