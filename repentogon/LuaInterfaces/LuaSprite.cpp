@@ -295,7 +295,8 @@ LUA_FUNCTION(Lua_SpriteGetTexel_BoundFix)
 	float alphaThreshold = (float)luaL_checknumber(L, 4);
 	KColor buffer;
 	anm2->GetTexel(&buffer, *samplePos, *renderPos, alphaThreshold, layer);
-	lua::luabridge::UserdataPtr::push(L, &buffer, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = buffer;
 
 	return 1;
 }
