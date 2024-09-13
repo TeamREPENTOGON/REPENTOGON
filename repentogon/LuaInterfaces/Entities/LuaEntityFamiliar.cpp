@@ -241,9 +241,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "InvalidateCachedMultiplier", Lua_FamiliarInvalidateCachedMultiplier },
 		{ "GetMultiplier", Lua_FamiliarGetMultiplier },
 
-		{ "GetOrbitDistance", Lua_FamiliarGetOrbitDistance_BoundFix },
-		{ "AddToOrbit", Lua_FamiliarAddToOrbit_BoundFix },
-		{ "RecalculateOrbitOffset", Lua_FamiliarRecalculateOrbitOffset_BoundFix },
+		//{ "GetOrbitDistance", Lua_FamiliarGetOrbitDistance_BoundFix },
+		//{ "AddToOrbit", Lua_FamiliarAddToOrbit_BoundFix },
+		//{ "RecalculateOrbitOffset", Lua_FamiliarRecalculateOrbitOffset_BoundFix },
 		{ NULL, NULL }
 	};
 
