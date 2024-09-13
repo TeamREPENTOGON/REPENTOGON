@@ -287,11 +287,11 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 LUA_FUNCTION(Lua_SpriteGetTexel_BoundFix)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	int layer = (int)luaL_checkinteger(L, 5);
+	int layer = (int)luaL_optinteger(L, 5, 0);
 	if (layer < 0 || layer > (int)anm2->_layerCount)
-		return luaL_error(L, "bad argument #5 to 'GetTexel' (No layer with Id %d)", layer);
-	Vector* samplePos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::SPRITE, "Sprite");
-	Vector* renderPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::SPRITE, "Sprite");
+		return luaL_error(L, "bad argument #4 to 'GetTexel' (No layer with Id %d)", layer);
+	Vector* samplePos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* renderPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	float alphaThreshold = (float)luaL_checknumber(L, 4);
 	KColor buffer;
 	anm2->GetTexel(&buffer, *samplePos, *renderPos, alphaThreshold, layer);
@@ -306,7 +306,7 @@ LUA_FUNCTION(Lua_SpriteSetLayerFrame_BoundFix)
 	int layer = (int)luaL_checkinteger(L, 2);
 	int frame = (int)luaL_checkinteger(L, 3);
 	if (layer < 0 || layer > (int)anm2->_layerCount)
-		return luaL_error(L, "bad argument #2 to 'SetLayerFrame' (No layer with Id %d)", layer);
+		return luaL_error(L, "bad argument #1 to 'SetLayerFrame' (No layer with Id %d)", layer);
 	anm2->SetLayerFrame(layer, frame);
 
 	return 0;

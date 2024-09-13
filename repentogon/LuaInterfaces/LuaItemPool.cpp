@@ -58,7 +58,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	}
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'GetCollectible' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	flags = flags << 1;
@@ -138,7 +138,7 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 5, 0);
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'PickCollectible' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	ItemPool_Item* pool = GetItemPoolItem(poolType);
@@ -239,7 +239,7 @@ LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'TryBibleMorph' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	ItemPool_Item* pool = GetItemPoolItem(poolType);
@@ -279,7 +279,7 @@ LUA_FUNCTION(Lua_ItemPoolTryRosaryMorph) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'TryRosaryMorph' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	ItemPool_Item* pool = GetItemPoolItem(poolType);
@@ -363,7 +363,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 	int itemPoolType = (int)luaL_checkinteger(L, 2);
 
 	if (!IsValidPool(itemPoolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'GetCollectiblesFromPool' (Invalid ItemPoolType %d)", itemPoolType);
 	}
 
 	std::vector<PoolItem>& poolItem = GetItemPoolItem(itemPoolType)->_poolList;
@@ -412,7 +412,7 @@ LUA_FUNCTION(Lua_ItemPoolSetLastPool) {
 	int poolType = (int)luaL_checkinteger(L, 2);
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'SetLastPool' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	itemPool->_lastPool = poolType;
@@ -445,7 +445,7 @@ LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 
 	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
 	if (item == nullptr) {
-		return luaL_argerror(L, 2, "Invalid collectible ID");
+		return luaL_error(L, "bad argument #1 to 'CanSpawnCollectible' (Invalid CollectibleType %d)", id);
 	}
 
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
@@ -506,7 +506,7 @@ LUA_FUNCTION(Lua_ItemPoolAddBibleUpgrade) {
 	}
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 3, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #2 to 'AddBibleUpgrade' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	GetItemPoolItem(poolType)->_bibleUpgrade += add;
@@ -519,7 +519,7 @@ LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 	const int poolType = (int)luaL_checkinteger(L, 2);
 
 	if (!IsValidPool(poolType)) {
-		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+		return luaL_error(L, "bad argument #1 to 'GetBibleUpgrades' (Invalid ItemPoolType %d)", poolType);
 	}
 
 	lua_pushinteger(L, GetItemPoolItem(poolType)->_bibleUpgrade);
@@ -532,7 +532,7 @@ LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
 	const int collectible = (int)luaL_checkinteger(L, 2);
 
 	if (collectible < COLLECTIBLE_NULL || collectible >= (int)g_Manager->GetItemConfig()->GetCollectibles()->size()) {
-		return luaL_argerror(L, 2, "Invalid Collectible");
+		return luaL_error(L, "bad argument #1 to 'ResetCollectible' (Invalid CollectibleType %d)", collectible);
 	}
 
 	itemPool->ResetCollectible(collectible);
@@ -553,7 +553,7 @@ LUA_FUNCTION(Lua_ItemPoolGetPoolForRoom_BoundFix) {
 	int roomType = (int)luaL_checkinteger(L, 2);
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 3);
 	if (roomType < 0 || roomType > 29)
-		return luaL_error(L, "bad argument #2 to 'GetPoolForRoom' (Invalid RoomType %d)", roomType);
+		return luaL_error(L, "bad argument #1 to 'GetPoolForRoom' (Invalid RoomType %d)", roomType);
 	lua_pushinteger(L, itemPool->GetPoolForRoom(roomType, seed));
 
 	return 1;
@@ -563,7 +563,7 @@ LUA_FUNCTION(Lua_ItemPoolAddRoomBlacklist_BoundFix) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id >= (int)g_Manager->_itemConfig.GetCollectibles()->size())
-		return luaL_error(L, "bad argument #2 to 'AddRoomBlacklist' (Invalid CollectibleType %d)", id);
+		return luaL_error(L, "bad argument #1 to 'AddRoomBlacklist' (Invalid CollectibleType %d)", id);
 	itemPool->AddRoomBlacklist(id);
 
 	return 0;

@@ -512,9 +512,6 @@ __thiscall void Entity_Player::UseRedKey();
 "558bec568bf133c08d96":
 __thiscall bool Entity_Player::VoidHasCollectible(int id);
 
-"558bec568b75??578bf985f679":
-__thiscall RNG* Entity_Player::GetCollectibleRNG(int id);
-
 "558bec83e4f851538bd98b8b????????568b75":
 __thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);
 

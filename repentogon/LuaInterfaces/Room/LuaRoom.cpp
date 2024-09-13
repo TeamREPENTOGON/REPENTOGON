@@ -466,7 +466,7 @@ LUA_FUNCTION(Lua_RoomGetGridCollision_BoundFix) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	int idx = (int)luaL_checkinteger(L, 2);
 	if (idx < 0 || idx > 447)
-		return luaL_error(L, "bad argument #2 to 'GetGridCollision' (Invalid grid index %d)", idx);
+		return luaL_error(L, "bad argument #1 to 'GetGridCollision' (Invalid grid index %d)", idx);
 	lua_pushinteger(L, room->GetGridCollision(idx));
 	return 1;
 }

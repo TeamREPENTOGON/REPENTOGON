@@ -2539,7 +2539,7 @@ LUA_FUNCTION(Lua_PlayerGetCollectibleRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id >= (int)player->_collectiblesRNG.size())
-		return luaL_error(L, "bad argument #2 to 'GetCollectibleRNG' (Invalid CollectibleType %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetCollectibleRNG' (Invalid CollectibleType %d)", id);
 	else
 		lua::luabridge::UserdataPtr::push(L, &player->_collectiblesRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
@@ -2550,7 +2550,7 @@ LUA_FUNCTION(Lua_PlayerGetTrinketRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id >= (int)player->_trinketsRNG.size())
-		return luaL_error(L, "bad argument #2 to 'GetTrinketRNG' (Invalid TrinketType %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetTrinketRNG' (Invalid TrinketType %d)", id);
 	else
 		lua::luabridge::UserdataPtr::push(L, &player->_trinketsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
@@ -2561,7 +2561,7 @@ LUA_FUNCTION(Lua_PlayerGetPillRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id >= (int)player->_pillsRNG.size())
-		return luaL_error(L, "bad argument #2 to 'GetPillRNG' (Invalid PillEffect %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetPillRNG' (Invalid PillEffect %d)", id);
 	else
 		lua::luabridge::UserdataPtr::push(L, &player->_pillsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
@@ -2572,7 +2572,7 @@ LUA_FUNCTION(Lua_PlayerGetCardRNG_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id >= (int)player->_cardsRNG.size())
-		return luaL_error(L, "bad argument #2 to 'GetCardRNG' (Invalid Card %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetCardRNG' (Invalid Card %d)", id);
 	else
 		lua::luabridge::UserdataPtr::push(L, &player->_cardsRNG[id], lua::GetMetatableKey(lua::Metatables::RNG));
 
@@ -2583,7 +2583,7 @@ LUA_FUNCTION(Lua_PlayerGetCard_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id > 3)
-		return luaL_error(L, "bad argument #2 to 'GetCard' (Invalid slot id %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetCard' (Invalid slot id %d)", id);
 	else
 	{
 		if (player->_pocketItem[id]._type == 1)
@@ -2599,7 +2599,7 @@ LUA_FUNCTION(Lua_PlayerGetPill_BoundFix) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id > 3)
-		return luaL_error(L, "bad argument #2 to 'GetPill' (Invalid slot id %d)", id);
+		return luaL_error(L, "bad argument #1 to 'GetPill' (Invalid slot id %d)", id);
 	else
 	{
 		if (player->_pocketItem[id]._type == 0)

@@ -185,7 +185,7 @@ LUA_FUNCTION(Lua_FamiliarGetOrbitDistance_BoundFix) {
 	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	int layer = (int)luaL_checkinteger(L, 2);
 	if (layer < -1 || layer > 4)
-		return luaL_error(L, "bad argument #2 to 'GetOrbitDistance' (Invalid layer id %d)", layer);
+		return luaL_error(L, "bad argument #1 to 'GetOrbitDistance' (Invalid layer id %d)", layer);
 	Vector buffer;
 	fam->GetOrbitDistance(&buffer, layer);
 	lua::luabridge::UserdataPtr::push(L, &buffer, lua::GetMetatableKey(lua::Metatables::VECTOR));
@@ -197,7 +197,7 @@ LUA_FUNCTION(Lua_FamiliarAddToOrbit_BoundFix) {
 	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	int layer = (int)luaL_checkinteger(L, 2);
 	if (layer < 0 || layer > 4)
-		return luaL_error(L, "bad argument #2 to 'AddToOrbit' (Invalid layer id %d)", layer);
+		return luaL_error(L, "bad argument #1 to 'AddToOrbit' (Invalid layer id %d)", layer);
 
 	fam->AddToOrbit(layer);
 
@@ -209,7 +209,7 @@ LUA_FUNCTION(Lua_FamiliarRecalculateOrbitOffset_BoundFix) {
 	int layer = (int)luaL_checkinteger(L, 2);
 	bool add = lua::luaL_checkboolean(L, 3);
 	if (layer < 0 || layer > 4)
-		return luaL_error(L, "bad argument #2 to 'RecalculateOrbitOffset' (Invalid layer id %d)", layer);
+		return luaL_error(L, "bad argument #1 to 'RecalculateOrbitOffset' (Invalid layer id %d)", layer);
 
 	lua_pushinteger(L, fam->RecalculateOrbitOffset(layer, add));
 

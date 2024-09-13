@@ -78,21 +78,21 @@ LUA_FUNCTION(Lua_MusicManager_SetCurrentPitch) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_MusicManager_DisableLayer) {
+LUA_FUNCTION(Lua_MusicManager_DisableLayer_BoundFix) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (id < 0 || id > 5)
-		return luaL_error(L, "bad argument #2 to 'DisableLayer' (Invalid layer id %d)", id);
+		return luaL_error(L, "bad argument #1 to 'DisableLayer' (Invalid layer id %d)", id);
 	music->DisableLayer(id);
 	return 0;
 }
 
-LUA_FUNCTION(Lua_MusicManager_EnableLayer) {
+LUA_FUNCTION(Lua_MusicManager_EnableLayer_BoundFix) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int id = (int)luaL_checkinteger(L, 2);
 	bool instant = lua::luaL_optboolean(L, 3, false);
 	if (id < 0 || id > 5)
-		return luaL_error(L, "bad argument #2 to 'EnableLayer' (Invalid layer id %d)", id);
+		return luaL_error(L, "bad argument #1 to 'EnableLayer' (Invalid layer id %d)", id);
 	music->EnableLayer(id, instant);
 	return 0;
 }
@@ -105,6 +105,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Play", Lua_MusicManager_Play);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Crossfade", Lua_MusicManager_Crossfade);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Fadein", Lua_MusicManager_Fadein);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "DisableLayer", Lua_MusicManager_DisableLayer_BoundFix);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "EnableLayer", Lua_MusicManager_EnableLayer_BoundFix);
 
 	// New Functions
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
