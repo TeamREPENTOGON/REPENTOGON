@@ -142,6 +142,7 @@ __thiscall bool Game::LevelHasPhotoDoor();
 reference Game *g_Game;
 
 struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory) { {{
 	Game()
 	{
 		this->constructor();
@@ -268,6 +269,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	unsigned int _challenge : 0x1c319c;
 	DailyChallenge _dailyChallenge: 0x1c3204;
 	int _shopVisits : 0x1c3194;
+	EntityFactory* _entityFactory : 0x1c3198;
 	ScoreSheet _scoreSheet : 0x1c32b8;
 	uint32_t _difficulty : 0x243624;
 	bool _isStoringGlowingHourglassState : 0x243646;

@@ -68,7 +68,7 @@ Modified:
 * Deal rooms with variants above 99 will now also generate in Red Rooms
 /newline/
 Fixes:
-	- 
+	- Fixed a vanilla bug that caused wisps from destroyed Mystery Gift/Eden's Soul wisps to spawn even after a run restart.
 /newline/
 v1.0.11c -
 Additions:
