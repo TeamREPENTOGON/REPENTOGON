@@ -101,31 +101,11 @@ target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
-FILE(GLOB LAUNCHER_CORE_SRC ${CMAKE_SOURCE_DIR}/launcher_core/*.cpp)
-add_library(launcher_core STATIC ${LAUNCHER_CORE_SRC})
-target_compile_options(launcher_core PUBLIC "/MD")
-
-# Injected DLL
-set(UPDATER_BASE_BUILD_DIR "${CMAKE_SOURCE_DIR}/updater_rsrc")
-configure_file(${CMAKE_SOURCE_DIR}/updater/updater.rc.in ${CMAKE_SOURCE_DIR}/updater/updater.rc)
-FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/dsound/*.cpp ${CMAKE_SOURCE_DIR}/updater/updater.rc)
-add_library(dsound SHARED ${LAUNCHER_SRC})
-target_include_directories(dsound PRIVATE ${CMAKE_SOURCE_DIR}/include)
-# target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
-# target_link_libraries(dsound libcurl cryptopp)
-target_compile_options(dsound PUBLIC "/MD" "/wd4996")
-target_link_libraries(dsound Imagehlp launcher_core)
-
-# Embedded Updater
-
-add_executable(UpdaterBase ${CMAKE_SOURCE_DIR}/updater/Updater.cpp)
-target_include_directories(UpdaterBase PRIVATE ${CURL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(UpdaterBase PRIVATE libcurl cryptopp launcher_core)
-# wd4003 ignore warning C4003: not enough arguments for function-like macro invocation
-target_compile_options(UpdaterBase PUBLIC "/MD" "/wd4003")
-add_custom_command (TARGET UpdaterBase POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:UpdaterBase> "${CMAKE_SOURCE_DIR}/updater_rsrc")
-
-add_dependencies(dsound UpdaterBase)
+# ZHL Loader
+FILE(GLOB ZHL_LOADER_SRC ${CMAKE_SOURCE_DIR}/loader/*.cpp)
+add_library (zhlLoader SHARED ${ZHL_LOADER_SRC})
+target_link_libraries(zhlLoader Imagehlp)
+target_compile_options(zhlLoader PUBLIC "/MD" "/wd4996")
 
 # ImGUI
 enable_language(RC)
@@ -219,8 +199,8 @@ add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E c
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
-    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
-    add_custom_command(TARGET dsound POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/dsound.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlLoader>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET zhlLoader POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlLoader>/zhlLoader.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:freetype>/freetype.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlREPENTOGON>/zhlREPENTOGON.dll" "${ISAAC_DIRECTORY}")
@@ -246,5 +226,5 @@ target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp Imagehlp)
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
-set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
-set_target_properties(dsound zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
+set_target_properties(zhlLoader libzhl zhlparser PROPERTIES FOLDER "libzhl")
+set_target_properties(zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
