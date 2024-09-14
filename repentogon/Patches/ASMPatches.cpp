@@ -128,6 +128,7 @@ void PerformASMPatches() {
 
 	// Room
 	ASMPatchAmbushWaveCount();
+	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();

@@ -3,9 +3,7 @@
 #include "../../LuaInterfaces/Room/Room.h"
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
-*  Boss rooms can't be changed in this manner as they have more setup, and will crash if forced above 2.
-*  The game already sets up a check to see if we're in a boss ambush room in the EAX register at the point we hook.
-*  We compare against the pre-set check. If we're a boss room, move 2 to the EBX register, otherwise, move our pointer to the EBX register.
+*  An extra patch to spawn_wave is neccessary to make this work for boss challenge rooms because no difficulty 15 wave exists by default.
 */
 void ASMPatchAmbushWaveCount() {
 	SigScan scanner("33db83f801");
@@ -13,22 +11,65 @@ void ASMPatchAmbushWaveCount() {
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
-
-	char ptrMov[] = {
-		(char)0x8B, 0X1D, 0, 0, 0, 0, 0
-	};
-
 	void* ptr = &ambushWaves;
-	memcpy(ptrMov + 2, &ptr, sizeof(ptr));
 
 	ASMPatch patch;
-	patch.AddBytes("\x83\xF8\x01") // cmp eax, 1
-		.AddBytes("\x75\x07") // jne (current addr + 0x7)
-		.AddBytes("\xBB\x02").AddZeroes(3) // mov ebx, 2
-		.AddBytes("\xEB\x06") // jmp (current addr + 0x6);
-		.AddBytes(ByteBuffer().AddAny(ptrMov, 6)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+	patch.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+/* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.
+ * InitDevilAngelRoom is thiscall. stdcall will mirror the stack cleaning
+ * convention, and, as we don't need to preserve ecx under thiscall, nothing
+ * more is required.
+ */
+static RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
+
+RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode) {
+
+	if (roomSubtype == 11 && maxDifficulty == 15)
+	{
+		RoomConfig_Room* room = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+		if (room == nullptr) {
+			room = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+				10, 10, requiredDoors, roomSubtype, mode);
+		}
+		return room;
+	}
+	return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+}
+
+void PatchBossWaveDifficulty() {
+	const char* signature = "e8????????8bf08975??85f60f85"; // call GetRandomRoom
+	SigScan scanner(signature);
+	if (!scanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch boss wave difficulty\n");
+		return;
+	}
+
+	void* patchAddr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching spawn_wave at %p\n", patchAddr);
+	ASMPatch patch;
+	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	// patch.PreserveRegisters(registers);
+	/* Registers need not be saved, as we are performing the equivalent of a
+	 * function call. Push ecx so the override function can access the current
+	 * RoomConfig object.
+	 */
+	patch.Push(ASMPatch::Registers::ECX);
+	patch.AddInternalCall(&OverrideGetRandomRoom);
+	patch.AddRelativeJump((char*)patchAddr + 5);
+	// patch.RestoreRegisters(registers);
+
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 /* Mega Satan has a seeded 50% chance to end the game forcefully.
