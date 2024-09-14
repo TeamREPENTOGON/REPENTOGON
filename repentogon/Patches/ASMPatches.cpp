@@ -118,7 +118,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
-	PatchDealRoomVariant();
+	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();
 	PatchLevelGeneratorTryResizeEndroom();
 

@@ -19,8 +19,8 @@ void ASMPatchAmbushWaveCount() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-/* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.
- * InitDevilAngelRoom is thiscall. stdcall will mirror the stack cleaning
+/* This function overrides the call to GetRandomRoom in spawn_wave.
+ * spawn_wave is thiscall. stdcall will mirror the stack cleaning
  * convention, and, as we don't need to preserve ecx under thiscall, nothing
  * more is required.
  */
