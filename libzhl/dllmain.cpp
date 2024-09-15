@@ -22,21 +22,25 @@ void (*loaderFinish)() = NULL;
  * anything, so we need to ASM patch instead.
  */
 void HookMain() {
-	SigScan scan("0f57c0f20f1185ccfbffff33f6");
+	SigScan scan("32d2b9????????e84cd51000");
 	if (!scan.Scan() || !loaderFinish)
 		return;
 
 	void* addr = scan.GetAddress();
-	printf("Found IsaacStartup hook address %p\n", addr);
+	char* movOffsetAddr = (char*)addr + 0x3;
+	void* movOffsetValue;
+	memcpy(&movOffsetValue, movOffsetAddr, 0x4);
+	printf("Found KAGE::EngineStartup hook address %p\n", addr);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	patch.PreserveRegisters(registers);
 	patch.AddInternalCall(loaderFinish);
-	ByteBuffer buffer;
-	buffer.AddString("\x0f\x57\xc0\xf2\x0f\x11\x85\xcc\xfb\xff\xff");
-	patch.AddBytes(buffer);
 	patch.RestoreRegisters(registers);
-	patch.AddRelativeJump((char*)addr + 0xB);
+	ByteBuffer buffer;
+	buffer.AddString("\x32\xd2\xb9");
+	buffer.AddPointer(movOffsetValue);
+	patch.AddBytes(buffer);
+	patch.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

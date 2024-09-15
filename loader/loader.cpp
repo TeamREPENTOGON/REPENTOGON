@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ConsoleWindow.h"
+#include "HookSystem.h"
 
 static void Log(FILE* f, const char* kind, const char* fmt, ...);
 
@@ -155,6 +156,8 @@ void LoadMods() {
 	}
 
 	fclose(f);
+
+	ZHL::Init();
 }
 
 extern "C" {
