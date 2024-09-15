@@ -10,15 +10,39 @@
 #include "HookSystem_private.h"
 #include "IsaacRepentance.h"
 #include "Log.h"
+#include "SigScan.h"
 
 #include <fstream>
 #include <filesystem>
 #include <sstream>
 
-extern "C" {
-	__declspec(dllexport) int InitZHL() {
-		InitializeSymbolHandler();
+void (*loaderFinish)() = NULL;
 
+/* Because ZHL is not initialized when we enter InitZHL, we cannot hook
+ * anything, so we need to ASM patch instead.
+ */
+void HookMain() {
+	SigScan scan("0f57c0f20f1185ccfbffff33f6");
+	if (!scan.Scan() || !loaderFinish)
+		return;
+
+	void* addr = scan.GetAddress();
+	printf("Found IsaacStartup hook address %p\n", addr);
+	ASMPatch patch;
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	patch.PreserveRegisters(registers);
+	patch.AddInternalCall(loaderFinish);
+	ByteBuffer buffer;
+	buffer.AddString("\x0f\x57\xc0\xf2\x0f\x11\x85\xcc\xfb\xff\xff");
+	patch.AddBytes(buffer);
+	patch.RestoreRegisters(registers);
+	patch.AddRelativeJump((char*)addr + 0xB);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+extern "C" {
+	__declspec(dllexport) int InitZHL(void (*loaderFinishPtr)())
+	{
 #ifdef ZHL_LOG_FILE
 		std::ofstream f(ZHL_LOG_FILE, std::ios_base::app);
 		f.close();
@@ -31,6 +55,7 @@ extern "C" {
 			ExitProcess(1);
 		}
 #endif
+		InitializeSymbolHandler();
 		bool clearLog = true;
 		if (!FunctionDefinition::Init()) {
 			auto const& missing = Definition::GetMissing();
@@ -78,6 +103,10 @@ extern "C" {
 		FunctionDefinition::UpdateHooksStateFromJSON("hooks.json");
 		ASMPatch::_Init();
 		ASMPatch::SavedRegisters::_Init();
+
+		loaderFinish = loaderFinishPtr;
+
+		HookMain();
 
 		return 0;
 	}
