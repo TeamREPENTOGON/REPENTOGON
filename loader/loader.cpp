@@ -119,6 +119,44 @@ DWORD RedirectLua(FILE* f, HMODULE* outLua) {
 
 static HMODULE luaHandle = NULL;
 
+void LoadMods() {
+	FILE* f = fopen("zhlLoader.log", "a");
+	Log(f, "INFO", "Loading mods...\n");
+
+	WIN32_FIND_DATAA data;
+	memset(&data, 0, sizeof(data));
+	HANDLE files = FindFirstFileA("zhl*.dll", &data);
+	BOOL ok = (files != INVALID_HANDLE_VALUE);
+	while (ok) {
+		if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || !strcmp(data.cFileName, "zhlLoader.dll")) {
+			HMODULE mod = LoadLibraryA(data.cFileName);
+			if (!mod) {
+				Log(f, "WARN", "Unable to load mod %s\n", data.cFileName);
+			}
+			else {
+				FARPROC init = GetProcAddress(mod, "ModInit");
+				if (!init) {
+					Log(f, "WARN", "No ModInit found in mod %s\n", data.cFileName);
+					FreeLibrary(mod);
+				}
+				else {
+					if (init()) {
+						Log(f, "WARN", "Errors encountered while initializing mod %s\n", data.cFileName);
+						FreeLibrary(mod);
+					}
+					else {
+						Log(f, "INFO", "Successfully loaded and initialized mod %s at %p\n", data.cFileName, mod);
+						/* env->mods.push_back(mod); */
+					}
+				}
+			}
+		}
+		ok = FindNextFileA(files, &data);
+	}
+
+	fclose(f);
+}
+
 extern "C" {
 	__declspec(dllexport) int Launch(bool initConsole) {
 		FILE* f = fopen("zhlLoader.log", "w");
@@ -127,7 +165,7 @@ extern "C" {
 		}
 
 		Log(f, "INFO", "Redirect calls to Lua 5.3.3 to Lua 5.4\n");
-		DWORD redirectResult = RedirectLua(f, &luaHandle);
+		/* DWORD redirectResult = RedirectLua(f, &luaHandle);
 		if (redirectResult != 0) {
 			Log(f, "ERROR", "Unable to redirect Lua (no redirections were made)\n");
 
@@ -135,7 +173,7 @@ extern "C" {
 				FreeLibrary(luaHandle);
 				luaHandle = NULL;
 			}
-		}
+		} */
 
 		if (initConsole) {
 			ConsoleWindow::Init();
@@ -151,7 +189,7 @@ extern "C" {
 		Log(f, "INFO", "Loaded ZHL at %p\n", zhl);
 		Log(f, "INFO", "Search InitZHL in ZHL\n");
 
-		FARPROC initZhl = GetProcAddress(zhl, "InitZHL");
+		int (*initZhl)(void (*)()) = (int(*)(void(*)()))GetProcAddress(zhl, "InitZHL");
 		if (!initZhl) {
 			FreeLibrary(zhl);
 			Log(f, "ERROR", "InitZHL not found\n");
@@ -161,46 +199,13 @@ extern "C" {
 		Log(f, "INFO", "Found InitZHL at %p\n", initZhl);
 		Log(f, "INFO", "Initializing ZHL\n");
 
-		if (initZhl()) {
+		if (initZhl(&LoadMods)) {
 			Log(f, "ERROR", "Errors encountered while initializing ZHL, check zhl.log for infos\n");
 			FreeLibrary(zhl);
 			return -1;
 		}
 
 		Log(f, "INFO", "Successfully initialized ZHL\n");
-		Log(f, "INFO", "Loading mods...\n");
-
-		WIN32_FIND_DATAA data;
-		memset(&data, 0, sizeof(data));
-		HANDLE files = FindFirstFileA("zhl*.dll", &data);
-		BOOL ok = (files != INVALID_HANDLE_VALUE);
-		while (ok) {
-			if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || !strcmp(data.cFileName, "zhlLoader.dll")) {
-				HMODULE mod = LoadLibraryA(data.cFileName);
-				if (!mod) {
-					Log(f, "WARN", "Unable to load mod %s\n", data.cFileName);
-				}
-				else {
-					FARPROC init = GetProcAddress(mod, "ModInit");
-					if (!init) {
-						Log(f, "WARN", "No ModInit found in mod %s\n", data.cFileName);
-						FreeLibrary(mod);
-					}
-					else {
-						if (init()) {
-							Log(f, "WARN", "Errors encountered while initializing mod %s\n", data.cFileName);
-							FreeLibrary(mod);
-						}
-						else {
-							Log(f, "INFO", "Successfully loaded and initialized mod %s at %p\n", data.cFileName, mod);
-							/* env->mods.push_back(mod); */
-						}
-					}
-				}
-			}
-			ok = FindNextFileA(files, &data);
-		}
-
 		fclose(f);
 
 		return 0;
