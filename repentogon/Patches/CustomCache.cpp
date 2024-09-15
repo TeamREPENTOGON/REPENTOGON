@@ -71,7 +71,12 @@ void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMax
 		hudStr[3] = '0' + numDigits;;
 	}
 
-	if (player && *current > *max) {
+	// Previously, if you lost Deep Pockets, you could keep your excess coins until the next time 
+	// AddCoins gets called (the game only truncated to the limit after adding/removing coins).
+	// Feels like a bug/oversight, and is unintuitive for the "maxcoins" customcache.
+	// However, maintain it for dailies.
+	// Esau Jr also still currently has this quirk but I don't think he's worth messing around with.
+	if (g_Game->GetDailyChallenge()._id == 0 && player && *current > *max) {
 		*current = *max;
 		player->ConsumableCountChanged(consumableCache);
 	}
