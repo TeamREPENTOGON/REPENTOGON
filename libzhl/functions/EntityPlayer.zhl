@@ -497,6 +497,9 @@ __thiscall unsigned int Entity_Player::SpawnSaturnusTears();
 "558bec83e4f851538b5d??568b75":
 __thiscall void Entity_Player::SyncConsumableCounts(Entity_Player* player, int bitflags);
 
+"558bec83e4f851538bd9565783bb????????000f8c":
+__thiscall void Entity_Player::ConsumableCountChanged(int bitflags);
+
 "558bec83e4f883ec74a1????????33c4894424??53568b75":
 __thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);
 
@@ -534,7 +537,7 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -656,6 +659,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _blinkTime : 0x1288;
 	int _headDirectionTime : 0x128c;
 	int _maxHearts : 0x1290, _redHearts : 0x1294,  _eternalHearts : 0x1298, _soulHearts : 0x129C, _blackHearts : 0x12A0;
+	int _numKeys : 0x12ac;
+	bool _hasGoldenKey : 0x12b0;
+	bool _hasGoldenBomb : 0x12b1;
+	int _numBombs : 0x12b4;
+	int _numCoins : 0x12b8;
 	int _gnawedLeafTimer : 0x12c4;
 	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x12d8;
@@ -700,6 +708,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _eveSumptoriumCharge : 0x1e78;
 	std_map_int_int _itemWispsList : 0x1e7c;
 	int _keepersSackBonus : 0x1eb4;
+	ConsumableData _consumablesBackup : 0x1f20;
 	bool _isCoopGhost : 0x1f88;
 	bool _canShoot : 0x1745;
 	bool _canFly : 0x14b4;

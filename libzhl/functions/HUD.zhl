@@ -40,7 +40,9 @@ struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
 	ANM2 _oldHUDStatsSprite : 0xc3d80;
 	float _bossHPBarFill : 0xc3ea4;
 	bool _isVisible : 0xc3eb6;
-	ANM2 _coopMenuSprite : 0xc3ec0;
+	int _hudRefreshType : 0xc3eb8;
+	int _hudRefreshCountdown : 0xc3ec0;
+	ANM2 _coopMenuSprite : 0xc3ec4;
 	ANM2 _inventorySprite : 0xc3fd8;
 	ANM2 _craftingTableSprite : 0x0c40ec;
 	ANM2 _poopSpellsSprite : 0xc4200;

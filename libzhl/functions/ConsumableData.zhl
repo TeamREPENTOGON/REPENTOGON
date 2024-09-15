@@ -1,0 +1,11 @@
+struct ConsumableData {
+	int coins : 0x0;
+	int keys : 0x4;
+	int bombs : 0x8;
+	bool goldkey : 0xc;
+	bool goldbomb : 0xd;
+	int soulcharges : 0x10;
+	int gigabombs : 0x14;
+	int poopmana : 0x18;
+	int bloodcharges : 0x1c;
+} : 0x20;

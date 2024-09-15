@@ -58,6 +58,10 @@ Additions:
 	- AddBestiaryKill(EntityType, Variant = 0)
 	- AddBossKilled(BossType)
 	- IsBossKilled(BossType)
+* New "customcache" tags (for items.xml and MC_EVALUATE_CUSTOM_CACHE):
+	- "maxcoins"
+	- "maxkeys"
+	- "maxbombs"
 /newline/
 Modified:
 * Beam:
@@ -69,6 +73,8 @@ Modified:
 /newline/
 Fixes:
 	- Fixed a vanilla bug that caused wisps from destroyed Mystery Gift/Eden's Soul wisps to spawn even after a run restart.
+	- Fixed HUD:GetCoopMenuSprite() returning invalid data
+	- Fixed EntityPlayer:AddActiveCharge() incorrectly allowing overcharge when adding charge to all slots at the same time (with -1 given as the slot)
 /newline/
 v1.0.11c -
 Additions:
