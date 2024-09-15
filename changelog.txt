@@ -58,6 +58,10 @@ Additions:
 	- AddBestiaryKill(EntityType, Variant = 0)
 	- AddBossKilled(BossType)
 	- IsBossKilled(BossType)
+* EntityPlayer
+	- GetMaxCoins() - int
+	- GetMaxKeys() - int
+	- GetMaxBombs() - int
 * New "customcache" tags (for items.xml and MC_EVALUATE_CUSTOM_CACHE):
 	- "maxcoins"
 	- "maxkeys"

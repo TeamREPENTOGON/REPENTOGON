@@ -13,11 +13,23 @@
 int MAX_COINS = 99;
 char HUD_COINS_STR_FORMAT[] = "%002d";
 
+int __stdcall GetMaxCoins() {
+	return MAX_COINS;
+}
+
 int MAX_KEYS = 99;
 char HUD_KEYS_STR_FORMAT[] = "%002d";
 
+int __stdcall GetMaxKeys() {
+	return MAX_KEYS;
+}
+
 int MAX_BOMBS = 99;
 char HUD_BOMBS_STR_FORMAT[] = "%002d";
+
+int __stdcall GetMaxBombs() {
+	return MAX_BOMBS;
+}
 
 
 void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMaxCoins) {
@@ -361,9 +373,6 @@ void PatchFamiliarGetMultiplierCallback() {
 
 
 // MAX COINS
-int __stdcall GetCurrentMaxCoins() {
-	return MAX_COINS;
-}
 const char* __stdcall GetHudCoinsStringFormat() {
 	return HUD_COINS_STR_FORMAT;
 }
@@ -398,31 +407,14 @@ void PatchAddCoins() {
 		.Pop(ASMPatch::Registers::EAX)
 		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x7, 0xF))  // Restore a things
 		.PreserveRegisters(savedRegisters)
-		.AddInternalCall(GetCurrentMaxCoins)
+		.AddInternalCall(GetMaxCoins)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x1E);
 	sASMPatcher.PatchAt(addr, &patch);
 }
-/*void PatchRemoveCurseMistEffectCoins() {
-	SigScan scanner("6a015168a0010000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
-	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr + 0xD, 0x6))  // Restore a thing
-		.PreserveRegisters(savedRegisters)
-		.AddInternalCall(GetCurrentMaxCoins)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x1F);
-	sASMPatcher.PatchAt(addr, &patch);
-}*/
 
 
 // MAX KEYS
-int __stdcall GetCurrentMaxKeys() {
-	return MAX_KEYS;
-}
 const char* __stdcall GetHudKeysStringFormat() {
 	return HUD_KEYS_STR_FORMAT;
 }
@@ -437,7 +429,7 @@ void PatchAddKeys() {
 		.AddBytes("\x8D\x75\xFC")  // lea esi, [ebp - 0x4]
 		.Push(ASMPatch::Registers::ESI)
 		.PreserveRegisters(savedRegisters)
-		.AddInternalCall(GetCurrentMaxKeys)
+		.AddInternalCall(GetMaxKeys)
 		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\x39\xF0")  // cmp eax,esi
@@ -465,9 +457,6 @@ void PatchHudRenderKeys() {
 
 
 // MAX BOMBS
-int __stdcall GetCurrentMaxBombs() {
-	return MAX_BOMBS;
-}
 const char* __stdcall GetHudBombsStringFormat() {
 	return HUD_BOMBS_STR_FORMAT;
 }
@@ -479,7 +468,7 @@ void PatchAddBombs() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
-		.AddInternalCall(GetCurrentMaxBombs)
+		.AddInternalCall(GetMaxBombs)
 		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\x89\x54\x24\x08")  // mov dword ptr [esp + 0x8], edx
