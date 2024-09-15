@@ -109,7 +109,7 @@ add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${
 # ZHL Loader
 FILE(GLOB ZHL_LOADER_SRC ${CMAKE_SOURCE_DIR}/loader/*.cpp)
 add_library (zhlLoader SHARED ${ZHL_LOADER_SRC})
-target_link_libraries(zhlLoader Imagehlp)
+target_link_libraries(zhlLoader Imagehlp libzhl)
 target_compile_options(zhlLoader PUBLIC "/MD" "/wd4996")
 
 # ImGUI
@@ -210,7 +210,7 @@ target_link_libraries(offline_scanner injector)
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
-    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlLoader>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:Lua5.4>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlLoader POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlLoader>/zhlLoader.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:freetype>/freetype.dll" "${ISAAC_DIRECTORY}")
