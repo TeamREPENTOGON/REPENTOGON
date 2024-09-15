@@ -191,10 +191,6 @@ MOD_EXPORT int ModInit(int argc, char** argv)
 	FixLuaDump();	//moved to before hooks are added, allows hooking onto exception handler
 	logger.Log("REPENTOGON: Fixed LuaDump for Lua 5.4\n");
 
-	logger.Log("REPENTOGON: Installing ZHL hooks\n");
-	ZHL::Init();
-	logger.Log("REPENTOGON: Installed ZHL hooks\n");
-
 	printf(":REPENTOGON:\n");
 
 	REPENTOGON::UpdateProgressDisplay("ModInit done");
