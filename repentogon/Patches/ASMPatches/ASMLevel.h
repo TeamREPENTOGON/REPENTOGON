@@ -4,6 +4,7 @@ void ASMPatchBlueWombCurse();
 void ASMPatchVoidGeneration();
 void PatchSpecialQuest();
 void PatchDealRoomVariant();
+void ASMPatchFXLayersInit();
 void PatchOverrideDataHandling();
 void PatchLevelGeneratorTryResizeEndroom();
 
