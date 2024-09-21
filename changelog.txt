@@ -22,6 +22,9 @@ Additions:
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
 		Can be used to determine the neighbors of a room before even placing it.
 		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
+* StatsMenu
+	- SetSelectedElement(int element)
+	- GetSelectedElement() - int
 * Room:
 	- GetLRoom[Area/Tile]Desc() now return a usable class
 * LRoomAreaDesc:
@@ -172,7 +175,7 @@ Additions:
 	- MC_EVALUATE_CUSTOM_CACHE will evaluate a number value (starts at 0 by default) which can be retrieved afterwards with player:GetCustomCacheValue(tag)
 	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
 	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
-/newline/	
+/newline/
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
@@ -222,7 +225,7 @@ Additions:
 		Called before a fortune paper is displayed.
 	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
-	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed) 
+	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed)
 		Return integer to overwrite target room index.
 	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
 		Called after the Glowing Hourglass state is saved/loaded
@@ -408,7 +411,7 @@ Additions:
 	* Acts like other ArrayProxy classes, but for RoomConfigRoom
 	* __len and Get method, Size const variable
 * Level
-	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here!
 * Cutscenes
 	* Support for custom music for the music attribute on cutscenes.xml
 * NightmareScene
@@ -468,20 +471,20 @@ Fixes:
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
-v1.0.8c - 
+v1.0.8c -
 Fixes:
 * Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
 * Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
 /newline/
-v1.0.8b - 
+v1.0.8b -
 Fixes:
 * Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
 /newline/
-v1.0.8a - 
+v1.0.8a -
 Fixes:
 * Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
 /newline/
-v1.0.8 - 
+v1.0.8 -
 Additions:
 * New general callback improvements to address some performance issues on some scenarios
 * Deal rooms can now generate variants above 100
@@ -510,13 +513,13 @@ Fixes:
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
 * Fix the console crashing when running a command from history in some cases
 /newline/
-v1.0.7c - 
+v1.0.7c -
 Additions:
 * Options.StatHUDPlanetarum
 Fixes:
 * Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
 /newline/
-v1.0.7b - 
+v1.0.7b -
 Additions:
 * Add an option to show Planetarium spawn chance in the stat HUD
 * BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
@@ -526,7 +529,7 @@ Fixes:
 * Fixed console wonkies involving input text edge detection and scaling
 * Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
 /newline/
-v1.0.7a - 
+v1.0.7a -
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
 /newline/
@@ -780,7 +783,7 @@ Fixes:
 * Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
 /newline/
 /newline/
-v1.0.4 - 
+v1.0.4 -
 Additions:
 * The error dialog now automatically gets dismissed the next time ImGui is opened
 * Imgui.IsVisible()
@@ -801,7 +804,7 @@ Fixes:
 * Enabled mods/debug console disable access to enter daily run as before
 /newline/
 /newline/
-v1.0.3 - 
+v1.0.3 -
 Additions:
 * ColorParams
 	- Used to store the color and parameters passed by Entity:SetColor (Priority, Duration, Fadeout, Shared)
@@ -838,7 +841,7 @@ Fixes:
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 /newline/
 /newline/
-v1.0.2 - 
+v1.0.2 -
 Additions:
 * Added Pickup:GetAlternatePedestal()
 * REPENTOGON'S logfile (repentogon.log) now shows timestamps
@@ -849,5 +852,5 @@ Fixes:
 * Fixed achievements not firing in Steam
 /newline/
 /newline/
-v1.0.1 - 
+v1.0.1 -
 Fixed the updater erroneously asking to update, sorry :(
