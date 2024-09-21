@@ -22,7 +22,7 @@ Additions:
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
 		Can be used to determine the neighbors of a room before even placing it.
 		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
-* StatsMenu
+* StatsMenu:
 	- SetSelectedElement(int element)
 	- GetSelectedElement() - int
 * Room:
@@ -34,7 +34,7 @@ Additions:
 	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates
 	- Get[High/Low][TopLeft/BottomRight][X/Y]()
 	- Can use Room:GetGridIndexByTile() to retrieve grid idx at these coordinates
-* RoomDescriptor
+* RoomDescriptor:
 	- GetDimension() - int
 	- GetNeighboringRooms()
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
@@ -61,10 +61,12 @@ Additions:
 	- AddBestiaryKill(EntityType, Variant = 0)
 	- AddBossKilled(BossType)
 	- IsBossKilled(BossType)
-* EntityPlayer
+* EntityPlayer:
 	- GetMaxCoins() - int
 	- GetMaxKeys() - int
 	- GetMaxBombs() - int
+* EntitySlot:
+	- GetPrizeCollectible() - int
 * New "customcache" tags (for items.xml and MC_EVALUATE_CUSTOM_CACHE):
 	- "maxcoins"
 	- "maxkeys"
