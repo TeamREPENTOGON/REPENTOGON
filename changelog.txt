@@ -22,6 +22,9 @@ Additions:
 		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
 		Can be used to determine the neighbors of a room before even placing it.
 		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
+* StatsMenu
+	- SetSelectedElement(int element)
+	- GetSelectedElement() - int
 * RoomDescriptor
 	- GetDimension() - int
 	- GetNeighboringRooms()
