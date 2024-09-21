@@ -109,6 +109,7 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	ASMPatchAddWeakness();
+	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
 	PatchGridCallbackShit();
@@ -139,6 +140,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
+	ASMPatchAddActiveCharge();
 
 	// Render
 	LuaRender::PatchglDrawElements();

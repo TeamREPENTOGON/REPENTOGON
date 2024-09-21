@@ -175,44 +175,7 @@ void PatchRoomClearDelay() {
 	ASMPatchDeepGaperClearCheck(addrs[2]);
 }
 
-/*
-// idk what's causing this one to crash on launch
-void ASMPatchRoomClearDelay() {
-	SigScan scanner1("c787????????0a00000075??8b469");
-	SigScan scanner2("b8140000000f44c8898f");
-	scanner1.Scan();
-	scanner2.Scan();
-	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
-
-	printf("[REPENTOGON] Patching Room Clear delay at %p, %p, %p\n", addrs[0], addrs[1], ((char*)addrs[1] + 0x2));
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch1, patch2, patch3;
-
-	patch1.Push(ASMPatch::Registers::EAX) // preserve unmodified eax
-		.AddBytes("\x9f") // store status flags
-		.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EDI) // push Room
-		.AddInternalCall(SetRoomClearDelay) // call SetRoomClearDelay()
-		.RestoreRegisters(reg)
-		.AddBytes("\x9e") // restore status flags
-		.Pop(ASMPatch::Registers::EAX) // restore unmodified eax
-		.AddRelativeJump((char*)addrs[0] + 0xa); // jmp isaac-ng.XXXXXXXX
-
-	patch2.AddBytes("\x75\x0c"); // jne 0xc
-
-	patch3.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EDI) // push Room
-		.AddInternalCall(SetRoomClearDelay) // call SetRoomClearDelay()
-		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addrs[1] + 0xd); // jmp isaac-ng.XXXXXXXX
-
-	sASMPatcher.PatchAt(addrs[0], &patch1);
-	sASMPatcher.FlatPatch(addrs[1], &patch2);
-	sASMPatcher.PatchAt(((char*)addrs[1] + 0x2), &patch3);
-}
-*/
-
+// this changes the function to check Game's time counter instead of frame counter, in parity with TrySpawnBossRushDoor
 void ASMPatchTrySpawnBlueWombDoor() {
 	SigScan scanner("83f8087c??8b83");
 	scanner.Scan();
