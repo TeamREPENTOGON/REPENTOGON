@@ -21,6 +21,13 @@ LUA_FUNCTION(Lua_CreateDropsFromExplosion) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetPrizeCollectible) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetPrizeCollectible());
+	return 1;
+}
+
 LUA_FUNCTION(Lua_SetPrizeCollectible) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
@@ -191,6 +198,7 @@ void RegisterSlotMetatable(lua_State* L) {
 
 	luaL_Reg funcs[] = {
 		{ "CreateDropsFromExplosion", Lua_CreateDropsFromExplosion },
+		{ "GetPrizeCollectible", Lua_GetPrizeCollectible },
 		{ "SetPrizeCollectible", Lua_SetPrizeCollectible },
 		{ "RandomCoinJamAnim", Lua_RandomCoinJamAnim },
 		//{ "GetSlotRNG", Lua_GetSlotRNG },
