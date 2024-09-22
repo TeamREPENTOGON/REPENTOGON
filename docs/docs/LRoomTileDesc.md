@@ -16,43 +16,28 @@ tags:
         
 ## Functions
 
-### GetHighTopLeftX () {: aria-label='Functions' }
-#### int GetHighTopLeftX ( ) {: .copyable aria-label='Functions' }
-Returns the X coordinate of the high half's top left corner.
+### GetHighTopLeft () {: aria-label='Functions' }
+#### int[2] GetHighTopLeft ( ) {: .copyable aria-label='Functions' }
+Returns the grid coordinates of the high half's top left corner.
 
 ___
-### GetHighTopLeftY () {: aria-label='Functions' }
-#### int GetHighTopLeftY ( ) {: .copyable aria-label='Functions' }
-Returns the Y coordinate of the high half's top left corner.
+### GetHighBottomRight () {: aria-label='Functions' }
+#### int[2] GetHighBottomRight ( ) {: .copyable aria-label='Functions' }
+Returns the grid coordinates of the high half's bottom right corner.
 
 ___
-### GetHighBottomRightX () {: aria-label='Functions' }
-#### int GetHighBottomRightX ( ) {: .copyable aria-label='Functions' }
-Returns the X coordinate of the high half's bottom right corner.
+### GetLowTopLeft () {: aria-label='Functions' }
+#### int[2] GetLowTopLeft ( ) {: .copyable aria-label='Functions' }
+Returns the grid coordinates of the low half's top left corner.
 
 ___
-### GetHighBottomRightY () {: aria-label='Functions' }
-#### int GetHighBottomRightY ( ) {: .copyable aria-label='Functions' }
-Returns the Y coordinate of the high half's bottom right corner.
+### GetLowBottomRight () {: aria-label='Functions' }
+#### int[2] GetLowBottomRight ( ) {: .copyable aria-label='Functions' }
+Returns the grid coordinates of the low half's bottom right corner.
 
 ___
-### GetLowTopLeftX () {: aria-label='Functions' }
-#### int GetLowTopLeftX ( ) {: .copyable aria-label='Functions' }
-Returns the X coordinate of the low half's top left corner.
-
-___
-### GetLowTopLeftY () {: aria-label='Functions' }
-#### int GetLowTopLeftY ( ) {: .copyable aria-label='Functions' }
-Returns the Y coordinate of the low half's top left corner.
-
-___
-### GetLowBottomRightX () {: aria-label='Functions' }
-#### int GetLowBottomRightX ( ) {: .copyable aria-label='Functions' }
-Returns the X coordinate of the low half's bottom right corner.
-
-___
-### GetLowBottomRightY () {: aria-label='Functions' }
-#### int GetLowBottomRightY ( ) {: .copyable aria-label='Functions' }
-Returns the Y coordinate of the low half's bottom right corner.
+### GetRandomTile () {: aria-label='Functions' }
+#### int[2] GetHighTopLeft ( ) {: .copyable aria-label='Functions' }
+Returns the grid coordinates of a random tile in this L-room.
 
 ___
