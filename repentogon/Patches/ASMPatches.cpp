@@ -118,7 +118,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
-	PatchDealRoomVariant();
+	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();
 	PatchLevelGeneratorTryResizeEndroom();
 
@@ -128,6 +128,7 @@ void PerformASMPatches() {
 
 	// Room
 	ASMPatchAmbushWaveCount();
+	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();

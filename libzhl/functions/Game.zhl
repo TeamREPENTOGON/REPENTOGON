@@ -96,6 +96,9 @@ static void Game::ProcessInput();
 "558bec6aff68????????64a1????????5081eca4000000a1":
 __thiscall void Game::Start(int playertype,int challenge,Seeds seeds,unsigned int difficulty);
 
+"558bec6aff68????????64a1????????5083ec48a1????????33c58945??535657508d45??64a3????????8b1d":
+__thiscall void Game::StartDailyChallenge(DailyChallenge * daily);
+
 "558bec51807d??000f28fb":
 __thiscall void Game::SetColorModifier(ColorModState* color, bool lerp, float rate<xmm3>);
 
@@ -141,7 +144,7 @@ __thiscall bool Game::LevelHasPhotoDoor();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory) { {{
 	Game()
 	{
 		this->constructor();
@@ -268,6 +271,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	unsigned int _challenge : 0x1c319c;
 	DailyChallenge _dailyChallenge: 0x1c3204;
 	int _shopVisits : 0x1c3194;
+	EntityFactory* _entityFactory : 0x1c3198;
 	ScoreSheet _scoreSheet : 0x1c32b8;
 	uint32_t _difficulty : 0x243624;
 	bool _isStoringGlowingHourglassState : 0x243646;

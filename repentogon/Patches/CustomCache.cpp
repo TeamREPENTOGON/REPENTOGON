@@ -8,6 +8,86 @@
 #include "SigScan.h"
 #include "ASMPatcher.hpp"
 
+
+// Max coins/keys/bombs is a global thing so no need to store it on any player.
+int MAX_COINS = 99;
+char HUD_COINS_STR_FORMAT[] = "%002d";
+
+int __stdcall GetMaxCoins() {
+	return MAX_COINS;
+}
+
+int MAX_KEYS = 99;
+char HUD_KEYS_STR_FORMAT[] = "%002d";
+
+int __stdcall GetMaxKeys() {
+	return MAX_KEYS;
+}
+
+int MAX_BOMBS = 99;
+char HUD_BOMBS_STR_FORMAT[] = "%002d";
+
+int __stdcall GetMaxBombs() {
+	return MAX_BOMBS;
+}
+
+
+void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMaxCoins) {
+	Entity_Player* player = g_Game->_playerManager.GetPlayer(0);
+
+	int* current = nullptr;
+	int* max = nullptr;
+	char* hudStr = nullptr;
+	int consumableCache = -1;
+
+	if (customcache == "maxcoins") {
+		current = player ? &player->_numCoins : nullptr;
+		max = &MAX_COINS;
+		hudStr = HUD_COINS_STR_FORMAT;
+		consumableCache = 1;
+	} else if (customcache == "maxkeys") {
+		current = player ? &player->_numKeys : nullptr;
+		max = &MAX_KEYS;
+		hudStr = HUD_KEYS_STR_FORMAT;
+		consumableCache = 2;
+	} else if (customcache == "maxbombs") {
+		current = player ? &player->_numBombs : nullptr;
+		max = &MAX_BOMBS;
+		hudStr = HUD_BOMBS_STR_FORMAT;
+		consumableCache = 4;
+	} else {
+		return;
+	}
+
+	*max = (int)std::clamp(newMaxCoins, 0.0, (double)INT_MAX);;
+
+	const int numDigits = *max < 1 ? 1 : ((int)std::floor(std::log10(*max)) + 1);
+	if (numDigits > 9) {
+		hudStr[2] = '1';
+		hudStr[3] = '0';
+	}
+	else {
+		hudStr[2] = '0';
+		hudStr[3] = '0' + numDigits;;
+	}
+
+	// Previously, if you lost Deep Pockets, you could keep your excess coins until the next time 
+	// AddCoins gets called (the game only truncated to the limit after adding/removing coins).
+	// Feels like a bug/oversight, and is unintuitive for the "maxcoins" customcache.
+	// However, maintain it for dailies.
+	// Esau Jr also still currently has this quirk but I don't think he's worth messing around with.
+	if (g_Game->GetDailyChallenge()._id == 0 && player && *current > *max) {
+		*current = *max;
+		player->ConsumableCountChanged(consumableCache);
+	}
+
+	// Refresh the HUD
+	if (g_Game->GetHUD()->_hudRefreshType != 2) {
+		g_Game->GetHUD()->_hudRefreshType = 1;
+		g_Game->GetHUD()->_hudRefreshCountdown = 2;
+	}
+}
+
 std::vector<Entity_Familiar*> InvalidateCachedFamiliarMultipliers(Entity_Player* player) {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* entityList = room->GetEntityList();
@@ -63,8 +143,34 @@ float RunEvaluateFamiliarMultiplierCallback(Entity_Familiar* familiar, const flo
 	return baseMult;
 }
 
-void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string& customcache) {
-	if (customcache == "familiarmultiplier") {
+// Take the customcache string as a copy to be extra safe that it can't get destroyed while this is running.
+void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string customcache) {
+	const bool maxCoinsKeysBombs = customcache == "maxcoins" || customcache == "maxkeys" || customcache == "maxbombs";
+	
+	float initialValue = 0.0;
+
+	if (maxCoinsKeysBombs) {
+		// Only run evaluations as player 1 for global stats like this.
+		player = g_Game->_playerManager.GetPlayer(0);
+		if (!player) return;  // ???
+
+		// Remove the customcache from the other players to avoid any unnecessary evaluations.
+		for (Entity_Player* otherPlayer : g_Game->_playerManager._playerList) {
+			if (otherPlayer && otherPlayer->_exists) {
+				EntityPlayerPlus* otherPlayerPlus = GetEntityPlayerPlus(otherPlayer);
+				if (otherPlayerPlus) {
+					otherPlayerPlus->customCacheTags.erase(customcache);
+				}
+			}
+		}
+
+		if (customcache == "maxcoins" && g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_DEEP_POCKETS, nullptr, true)) {
+			initialValue = 999;
+		}
+		else {
+			initialValue = 99;
+		}
+	} else if (customcache == "familiarmultiplier") {
 		// Familiar multiplier has special treatment, and does not go through the usual callback.
 		// Still otherwise implemented as a customcache because it is "triggered" in the same ways.
 		// When this cache is triggered on the player, wipe the cached multipliers from all their
@@ -72,7 +178,7 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string& cu
 		InvalidateCachedFamiliarMultipliers(player);
 		return;
 	}
-
+	
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
 	if (!playerPlus) {
 		// Aaah!
@@ -87,24 +193,30 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string& cu
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		float initialvalue = 0.0;
-
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(customcache.c_str())
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(customcache.c_str())
-			.push(initialvalue)
+			.push(initialValue)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				playerPlus->customCacheResults[customcache] = lua_isinteger(L, -1);
-				return;
-			} else if (lua_isnumber(L, -1)) {
-				playerPlus->customCacheResults[customcache] = lua_tonumber(L, -1);
-				return;
+		if (!result && lua_isnumber(L, -1)) {
+			const double resultValue = lua_tonumber(L, -1);
+
+			playerPlus->customCacheResults[customcache] = resultValue;
+
+			if (maxCoinsKeysBombs) {
+				UpdateMaxCoinsKeysBombs(customcache, resultValue);
 			}
+
+			return;
 		}
+	}
+
+	// Callback did not run, or did not return a valid value.
+
+	if (maxCoinsKeysBombs) {
+		UpdateMaxCoinsKeysBombs(customcache, initialValue);
 	}
 
 	playerPlus->customCacheResults.erase(customcache);
@@ -114,6 +226,7 @@ void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& cust
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
 	if (immediate) {
 		for (const std::string& customcache : customcaches) {
+			playerPlus->customCacheTags.erase(customcache);
 			RunEvaluateCustomCacheCallback(player, customcache);
 		}
 	} else if (playerPlus) {
@@ -163,11 +276,14 @@ HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
 			}
 		}
 		if (!playerPlus->customCacheTags.empty()) {
-			for (const std::string& customcache : playerPlus->customCacheTags) {
+			// Make a copy of the customCacheTags and clear before iterating,
+			// to avoid any funny business with inserts/removals from the set.
+			const std::set<std::string> customcaches = playerPlus->customCacheTags;
+			playerPlus->customCacheTags.clear();
+			for (const std::string& customcache : customcaches) {
 				RunEvaluateCustomCacheCallback(this, customcache);
 			}
 		}
-		playerPlus->customCacheTags.clear();
 	}
 }
 
@@ -217,6 +333,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, TriggerEffectRemoved, -1, (ItemConfig_Item* 
 	}
 }
 
+
 // Familiar Multiplier!
 // Patched into the end of Entity_Familiar::GetMultiplier(). Multiplier is in XMM0.
 void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar) {
@@ -259,6 +376,155 @@ void PatchFamiliarGetMultiplierCallback() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+
+// MAX COINS
+const char* __stdcall GetHudCoinsStringFormat() {
+	return HUD_COINS_STR_FORMAT;
+}
+void PatchHudRenderCoins() {
+	SigScan scanner("e8????????8bb5????????85c0ba");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~(ASMPatch::SavedRegisters::Registers::EAX | ASMPatch::SavedRegisters::Registers::ECX), true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)  // Pop inputs to overridden FirstCollectibleOwner
+		.Pop(ASMPatch::Registers::EAX)
+		.Pop(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 0x6))  // Restore a thing
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetHudCoinsStringFormat)
+		.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
+		.MoveImmediate(ASMPatch::Registers::EAX, 0)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x1A);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchAddCoins() {
+	SigScan scanner("e8????????f7d8c745??00000000");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)  // Pop inputs to overridden FirstCollectibleOwner
+		.Pop(ASMPatch::Registers::EAX)
+		.Pop(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x7, 0xF))  // Restore a things
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetMaxCoins)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x1E);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+// MAX KEYS
+const char* __stdcall GetHudKeysStringFormat() {
+	return HUD_KEYS_STR_FORMAT;
+}
+void PatchAddKeys() {
+	SigScan scanner("83f8638945??56");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::ESI)
+		.AddBytes("\x8D\x75\xFC")  // lea esi, [ebp - 0x4]
+		.Push(ASMPatch::Registers::ESI)
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetMaxKeys)
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x39\xF0")  // cmp eax,esi
+		.AddBytes("\x89\x45\x08")  // mov dword ptr [ebp + 0x8], eax
+		.AddBytes("\x89\x75\xFC")  // mov dword ptr [ebp - 0x4], esi
+		.Pop(ASMPatch::Registers::ESI)
+		.AddRelativeJump((char*)addr + 0x11);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchHudRenderKeys() {
+	// wow
+	SigScan scanner("68????????6a10f30f1145??f30f1085????????f30f5885????????68????????f30f1145??e8????????83c4106a006a0083ec108bcc6affe8????????f30f1045??83ec10f30f5805????????8b8d????????c74424??0000803fc74424??0000803ff30f114424??f30f1045??f30f5805????????f30f11042468????????e8????????807d??00");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetHudKeysStringFormat)
+		.RestoreRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+// MAX BOMBS
+const char* __stdcall GetHudBombsStringFormat() {
+	return HUD_BOMBS_STR_FORMAT;
+}
+void PatchAddBombs() {
+	SigScan scanner("c74424??6300000083f863");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetMaxBombs)
+		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x89\x54\x24\x08")  // mov dword ptr [esp + 0x8], edx
+		.AddBytes("\x39\xD0")  // cmp eax,edx
+		.AddRelativeJump((char*)addr + 0xB);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchHudRenderBombs() {
+	// wow
+	SigScan scanner("68????????6a10f30f1145??f30f1085????????f30f5885????????68????????f30f1145??e8????????83c4106a006a0083ec108bcc6affe8????????f30f1045??83ec10f30f5805????????8b8d????????c74424??0000803fc74424??0000803ff30f114424??f30f1045??f30f5805????????f30f11042468????????e8????????f30f1045??f30f5c85????????f30f1185");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetHudBombsStringFormat)
+		.RestoreRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+// Prevent RemoveCurseMistEffect from enforcing the coin/key/bomb limits when restoring consumables.
+// If, SOMEHOW, a higher amount than should normally be allowed is restored, we'll fix it on customcache evaluation anyway.
+void PatchRemoveCurseMistEffect() {
+	SigScan coinScanner("8903be63000000");
+	coinScanner.Scan();
+	void* coinAddr = coinScanner.GetAddress();
+	sASMPatcher.FlatPatch((char*)coinAddr, "\x90\x90", 2);
+
+	SigScan keyScanner("8987????????8b87????????0387????????3bc6");
+	keyScanner.Scan();
+	void* keyAddr = keyScanner.GetAddress();
+	sASMPatcher.FlatPatch((char*)keyAddr, "\x90\x90\x90\x90\x90\x90", 6);
+
+	SigScan bombScanner("8997????????75??80bf????????00");
+	bombScanner.Scan();
+	void* bombAddr = bombScanner.GetAddress();
+	sASMPatcher.FlatPatch((char*)bombAddr, "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+
 void ASMPatchesForCustomCache() {
 	PatchFamiliarGetMultiplierCallback();
+	PatchAddCoins();
+	PatchAddKeys();
+	PatchAddBombs();
+	PatchHudRenderCoins();
+	PatchHudRenderKeys();
+	PatchHudRenderBombs();
+	PatchRemoveCurseMistEffect();
 }

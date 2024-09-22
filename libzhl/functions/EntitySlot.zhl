@@ -14,6 +14,7 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 	inline short* GetTimeout() { return &this->_timeout; }
 	inline int* GetDonationValue() { return &this->_donationValue; }
 	inline unsigned short* GetTouch() { return &this->_touch; }
+	inline int* GetPrizeCollectible() { return &this->_prizeCollectible; }
 }}
     __vtable {
 		skip; // Free
