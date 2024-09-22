@@ -29,10 +29,10 @@ Additions:
 	- GetLRoom[Area/Tile]Desc() now return a usable class
 * LRoomAreaDesc:
 	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in worldspace
-	- Get[High/Low][TopLeft/BottomRight]()
+	- Get[High/Low][TopLeft/BottomRight]() (returns Vector)
 * LRoomTileDesc:
 	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates
-	- Get[High/Low][TopLeft/BottomRight][X/Y]()
+	- Get[High/Low][TopLeft/BottomRight]() (returns int[2])
 	- Can use Room:GetGridIndexByTile() to retrieve grid idx at these coordinates
 * RoomDescriptor:
 	- GetDimension() - int
