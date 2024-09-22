@@ -335,8 +335,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, TriggerEffectRemoved, -1, (ItemConfig_Item* 
 
 
 // Familiar Multiplier!
-// Patched into the end of Entity_Familiar::GetMultiplier(). Multiplier is in XMM0.
-void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar) {
+// Patched into the end of Entity_Familiar::GetMultiplier().
+void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar, float baseMult) {
 	EntityFamiliarPlus* familiarPlus = GetEntityFamiliarPlus(familiar);
 
 	if (!familiarPlus) {
@@ -344,17 +344,12 @@ void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar) {
 		return;
 	}
 
-	float mult = 1.0;
-	__asm {
-		movd mult, xmm0
-	}
-
 	if (!familiarPlus->cachedMultiplier.has_value() || familiarPlus->cachedMultiplierPlayer != (uintptr_t)familiar->_player) {
-		familiarPlus->cachedMultiplier = RunEvaluateFamiliarMultiplierCallback(familiar, mult);
+		familiarPlus->cachedMultiplier = RunEvaluateFamiliarMultiplierCallback(familiar, baseMult);
 		familiarPlus->cachedMultiplierPlayer = (uintptr_t)familiar->_player;
 	}
 
-	mult = *familiarPlus->cachedMultiplier;
+	float mult = *familiarPlus->cachedMultiplier;
 
 	__asm {
 		movd xmm0, mult
@@ -368,6 +363,8 @@ void PatchFamiliarGetMultiplierCallback() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
+		.AddBytes("\x66\x0F\x7E\xC0")  // movd eax, xmm0
+		.Push(ASMPatch::Registers::EAX) // float baseMult
 		.Push(ASMPatch::Registers::ESI) // Entity_Familiar*
 		.AddInternalCall(FamiliarGetMultiplierTrampoline)
 		.RestoreRegisters(savedRegisters)
