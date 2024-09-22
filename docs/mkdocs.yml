@@ -260,6 +260,7 @@ nav:
     - ItemConfig: ItemConfig.md
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
+    - ItemConfig - Card: ItemConfig_Card.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md

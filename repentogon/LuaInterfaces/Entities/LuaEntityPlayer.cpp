@@ -5,6 +5,7 @@
 #include "../LuaWeapon.h"
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
+#include "../../Patches/CustomCache.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
@@ -2525,6 +2526,20 @@ LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
 	return 1;
 }
 
+// Max coins/keys/bombs is shared for all players.
+LUA_FUNCTION(Lua_PlayerGetMaxCoins) {
+	lua_pushinteger(L, GetMaxCoins());
+	return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetMaxKeys) {
+	lua_pushinteger(L, GetMaxKeys());
+	return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetMaxBombs) {
+	lua_pushinteger(L, GetMaxBombs());
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_tearDisplacement);
@@ -2758,6 +2773,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
 		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
+		{ "GetMaxCoins", Lua_PlayerGetMaxCoins },
+		{ "GetMaxKeys", Lua_PlayerGetMaxKeys },
+		{ "GetMaxBombs", Lua_PlayerGetMaxBombs },
 		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
 		{ NULL, NULL }
 	};

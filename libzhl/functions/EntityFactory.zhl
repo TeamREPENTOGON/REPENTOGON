@@ -1,6 +1,6 @@
 "558bec518b45??535657":
 __thiscall Entity* EntityFactory::Create(unsigned int type, bool force);
 
-struct EntityFactory depends(Entity){
-
+struct EntityFactory depends(Entity, Entity_Familiar){
+	Entity_Familiar _familiar[64] : 0xf8008;
 } : 0x5f5260 ;

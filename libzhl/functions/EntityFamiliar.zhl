@@ -76,10 +76,15 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 	int _state : 0xcd4;
 	ItemConfig_Item* _item : 0xe20;
 	ColorMod _dirtColor : 0xe28;
+	int _wispCollectibleType : 0xe54;
 	
     __vtable {
 		skip; // Free
-		skip; // Init
+
+		override
+		"558bec6aff68????????64a1????????5081ec28030000":
+		void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+		
 		skip; // PreUpdate
 		
         override

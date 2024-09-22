@@ -646,10 +646,13 @@ void HookImGui() {
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
 	void* imguiAddr = &RunImGui;
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+	patch.PreserveRegisters(registers)
 		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
 		.AddInternalCall(imguiAddr)
+		.RestoreRegisters(registers)
+		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
 		.AddRelativeJump((char*)addr + 0x5);
 
 	sASMPatcher.PatchAt(addr, &patch);
