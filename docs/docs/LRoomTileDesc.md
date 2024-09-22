@@ -36,8 +36,8 @@ ___
 Returns the grid coordinates of the low half's bottom right corner.
 
 ___
-### GetRandomTile () {: aria-label='Functions' }
-#### int[2] GetHighTopLeft ( ) {: .copyable aria-label='Functions' }
+### GetRandomTile ( int Seed ) {: aria-label='Functions' }
+#### int[2] GetRandomTile ( Seed ) {: .copyable aria-label='Functions' }
 Returns the grid coordinates of a random tile in this L-room.
 
 ___

@@ -83,6 +83,7 @@ ___
 ___
 ### GetGridIndexByTile () {: aria-label='Functions' }
 #### int GetGridIndexByTile ( int GridRow, int GridColumn ) {: .copyable aria-label='Functions' }
+#### int GetGridIndexByTile ( int[2] Tile ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetLightningIntensity () {: aria-label='Functions' }
