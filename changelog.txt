@@ -1,5 +1,15 @@
 v1.x.x -
 Additions:
+* ModCallbacks:
+	- PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+		Fires when Entity:SetColor is called
+		Takes an EntityType as its optional argument. 
+		Return a color to override the color. The overridden color is passed into MC_POST_ENTITY_SET_COLOR.
+		Return false to cancel the color change. Prevents MC_POST_ENTITY_SET_COLOR from firing.
+		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
+	- POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+		Fires after an entity's color is changed via Entity:SetColor
+		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
 * Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
 * Level:
 	- CanPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
