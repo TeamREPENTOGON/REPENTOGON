@@ -4313,21 +4313,21 @@ HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
 	};
 
 //POST_FORCE_PILL_EFFECT (1129)
-	callbackid = 1129;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+callbackid = 1129;
+if (CallbackState.test(callbackid - 1000)) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(ID)
-			.push(ret)
-			.call(1);
-	};
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.pushnil()
+		.push(ID)
+		.push(ret)
+		.call(1);
+};
 
-	return ret;
+return ret;
 };
 
 inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
@@ -4390,6 +4390,58 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 			.call(1);
 	}
 	return;
+}
+
+//PRE/POST_ENTITY_SET_COLOR (1485/1486)
+HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool fadeOut, bool share) -> void) {
+	const int preCallbackId = 1485;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(color, lua::Metatables::COLOR)
+			.push(duration)
+			.push(priority)
+			.push(fadeOut)
+			.push(share)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+			else if (lua_isuserdata(L, -1)) {
+				color = lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+			}
+		}
+	}
+
+	super(color, duration, priority, fadeOut, share);
+
+	const int postCallbackId = 1486;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(color)
+			.push(duration)
+			.push(priority)
+			.push(fadeOut)
+			.push(share)
+			.call(1);
+	}
 }
 
 inline bool IsCoopBaby(Entity_Player* player) {
