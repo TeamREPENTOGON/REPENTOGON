@@ -1,3 +1,6 @@
+"558bec83ec2ca1????????53568945":
+__thiscall XY * LRoomTileDesc::GetRandomTile(XY * ret, unsigned int seed);
+
 struct LRoomTileDesc depends (XY) {
 	XY _high[2] : 0x0;
 	XY _low[2] : 0x10;

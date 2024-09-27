@@ -2002,11 +2002,11 @@ HOOK_METHOD(Entity_Player, ControlActiveItem, (int slot) -> void) {
 	cachedMaxCharge.clear();
 }
 
-HOOK_METHOD(Entity_Player, AddActiveCharge, (unsigned int charge, int slot, bool unk, bool overcharge, bool force) -> int) {
+HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD, bool overcharge, bool force) -> int) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	const int result = super(charge, slot, unk, overcharge, force);
+	const int result = super(charge, slot, flashHUD, overcharge, force);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();
@@ -4342,9 +4342,22 @@ inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlo
 	return -1;
 }
 
-//POST_GLOWING_HOURGLASS_SAVE (1300)
+//PRE/POST_GLOWING_HOURGLASS_SAVE (1300 - 1302)
 HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	const int preCallbackId = 1302;
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
 
 	super(gameState);
 
@@ -4352,14 +4365,14 @@ HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 		return;
 	}
 
-	const int callbackid = 1300;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int postCallbackId = 1300;
+	if (CallbackState.test(postCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.pushnil()
 			.push(currentSlot)
 			.call(1);
@@ -4367,9 +4380,25 @@ HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 	return;
 }
 
-//POST_GLOWING_HOURGLASS_LOAD (1301)
+//PRE/POST_GLOWING_HOURGLASS_LOAD (1301 - 1303)
 HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
 	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	if (currentSlot != -1)
+	{
+		const int preCallbackId = 1303;
+		if (CallbackState.test(preCallbackId - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+				.pushnil()
+				.push(currentSlot)
+				.call(1);
+		}
+	}
 
 	super(gameState, startGame);
 
@@ -4377,14 +4406,14 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 		return;
 	}
 
-	const int callbackid = 1301;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int postCallbackId = 1301;
+	if (CallbackState.test(postCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.pushnil()
 			.push(currentSlot)
 			.call(1);

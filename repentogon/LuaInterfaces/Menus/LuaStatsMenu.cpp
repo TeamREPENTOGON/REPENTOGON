@@ -141,6 +141,24 @@ LUA_FUNCTION(Lua_StatsMenu_IsSecretsMenuVisible)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_StatsMenu_GetSelectedElement)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
+	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
+	lua_pushinteger(L, menuStats->_statsMenuCurrentSelection);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_StatsMenu_SetSelectedElement)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
+	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
+	menuStats->_statsMenuCurrentSelection= (int)luaL_checkinteger(L, 1);
+
+	return 0;
+}
+
 static void RegisterStatsMenuGame(lua_State* L)
 {
 	lua_newtable(L);
@@ -158,6 +176,8 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSecretsMenuCursorLeftSprite", Lua_StatsMenu_GetSecretsMenuCursorLeftSprite);
 	lua::TableAssoc(L, "GetSecretsMenuCursorRightSprite", Lua_StatsMenu_GetSecretsMenuCursorRightSprite);
 	lua::TableAssoc(L, "IsSecretsMenuVisible", Lua_StatsMenu_IsSecretsMenuVisible);
+	lua::TableAssoc(L, "GetSelectedElement", Lua_StatsMenu_GetSelectedElement);
+	lua::TableAssoc(L, "SetSelectedElement", Lua_StatsMenu_SetSelectedElement);
 	lua_setglobal(L, lua::metatables::StatsMenuMT);
 }
 

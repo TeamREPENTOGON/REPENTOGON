@@ -11,8 +11,8 @@ void PatchModMenu_Font(const char* sig) {
 	printf("[REPENTOGON] Patching Menu_Mods::Render() to skip font rendering at %p \n", addr);
 
 	ASMPatch patch;
-	patch.AddRelativeJump((char*)addr + 5);
-	sASMPatcher.FlatPatch(addr, &patch);
+	patch.AddBytes("\x83\xc4\x2c"); // add esp, 0x2C
+	sASMPatcher.FlatPatch(addr, &patch, true);
 }
 
 void ASMPatchModsMenu() {

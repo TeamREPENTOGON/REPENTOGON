@@ -20,3 +20,4 @@ void ASMPatchHushBug();
 void ASMPatchFireProjectiles();
 void ASMPatchFireBossProjectiles();
 void ASMPatchAddWeakness();
+void ASMPatchApplyFrozenEnemyDeathEffects();

@@ -212,51 +212,62 @@ RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned in
 	 * Variant bounds are both set to 100 only when the game draws these specific variants.
 	 * In this case, change the requested subtype.
 	 */
-	if (minVariant == maxVariant && maxVariant == 100) {
-		ZHL::Log("[DEBUG] Game naturally selected trapdoor variant when generating "
-			"deal, let it proceed\n");
-		return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
-			minDifficulty, maxDifficulty, requiredDoors, TRAPDOOR_DEAL_SUBTYPE, mode);
-	}
+	if (roomType == 14 || roomType == 15) {
+		if (minVariant == maxVariant && maxVariant == 100) {
+			ZHL::Log("[DEBUG] Game naturally selected trapdoor variant when generating "
+				"deal, let it proceed\n");
+			return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+				minDifficulty, maxDifficulty, requiredDoors, TRAPDOOR_DEAL_SUBTYPE, mode);
+		}
 
-	/* Attempt to draw a random room up to 6 times, ignoring all bounds on variants. As soon as a room that
-	 * is not a trapdoor variant appears, return it.
-	 * If we cannot draw a non trapdoor room in that many attempts, let the game proceed as it would normally,
-	 * mimicking vanilla behavior.
-	 */
-	RoomConfig_Room* result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
+		/* Attempt to draw a random room up to 6 times, ignoring all bounds on variants. As soon as a room that
+		 * is not a trapdoor variant appears, return it.
+		 * If we cannot draw a non trapdoor room in that many attempts, let the game proceed as it would normally,
+		 * mimicking vanilla behavior.
+		 */
+		RoomConfig_Room* result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+		if (result != nullptr)
+		{
+			for (int i = 0; result->Variant == 100 && i < 5; ++i)
+			{
+				ZHL::Log("[DEBUG] We drew a trapdoor variant when performing unbounded variant "
+					"lookup. Try again (%d/5)\n", i + 1);
+				result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
+					minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+			}
+
+			if (result->Variant == 100)
+			{
+				ZHL::Log("[WARN] Could not draw a non trapdoor variant, deferring to default parameters\n");
+			}
+			else {
+				ZHL::Log("[DEBUG] Drew variant %u\n", result->Variant);
+				if (reduceWeight)
+					result->Weight = std::max(1e-7f, result->Weight * .1f);
+				return result;
+			}
+		}
+		else
+		{
+			ZHL::Log("[WARN] Drew nothing! (probably from MakeRedRoomDoor, returning to default behavior)\n");
+			return result;
+		}
+	}
+	return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
 		minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
-	for (int i = 0; result->Variant == 100 && i < 5; ++i) {
-		ZHL::Log("[DEBUG] We drew a trapdoor variant when performing unbounded variant "
-			"lookup. Try again (%d/5)\n", i + 1);
-		result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
-			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
-	}
-
-	if (result->Variant == 100) {
-		ZHL::Log("[WARN] Could not draw a non trapdoor variant, deferring to default parameters\n");
-		return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
-			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
-	}
-	else {
-		ZHL::Log("[DEBUG] Drew variant %u\n", result->Variant);
-		if (reduceWeight)
-			result->Weight = std::max(1e-7f, result->Weight * .1f);
-		return result;
-	}
 }
 
-void PatchDealRoomVariant() {
-	const char* signature = "E825040D008BCF894310E82BFCFFFF"; // call GetRandomRoom
+void PatchDealRoomVariant(char * signature, char* message) {
 	SigScan scanner(signature);
 	if (!scanner.Scan()) {
-		ZHL::Log("[ERROR] Unable to find signature to patch deal room variants\n");
+		ZHL::Log("[ERROR] Unable to find signature to patch %s deal variants\n", message);
 		return;
 	}
 
 	void* patchAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching InitializeDevilAngelRoom at %p\n", patchAddr);
+	printf("[REPENTOGON] Patching %s at %p\n", message, patchAddr);
 	ASMPatch patch;
 	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	// patch.PreserveRegisters(registers);
@@ -270,6 +281,14 @@ void PatchDealRoomVariant() {
 	// patch.RestoreRegisters(registers);
 
 	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+void ASMPatchDealRoomVariants()
+{
+	PatchDealRoomVariant("E825040D008BCF894310E82BFCFFFF", "InitializeDevilAngelRoom");
+	PatchDealRoomVariant("e8????????85c075??68????????6a00", "MakeRedRoomDoor call #1");
+	PatchDealRoomVariant("e8????????85c00f85????????83fe01", "MakeRedRoomDoor call #2");
+	PatchDealRoomVariant("e8????????85c00f85????????6aff", "MakeRedRoomDoor call #3");
 }
 
 // eliminates the checks that replaces the current OverrideData if it's not a miniboss RoomConfig_Room

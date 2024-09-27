@@ -3,7 +3,7 @@
 void ASMPatchBlueWombCurse();
 void ASMPatchVoidGeneration();
 void PatchSpecialQuest();
-void PatchDealRoomVariant();
+void ASMPatchDealRoomVariants();
 void PatchOverrideDataHandling();
 void PatchLevelGeneratorTryResizeEndroom();
 
