@@ -174,6 +174,13 @@ LUA_FUNCTION(Lua_GetEntitiesSaveState) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetDecoSaveState) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = &(descriptor->SavedEntities2);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GetRestrictedGridIndexes) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	std::set<int>& gridIndexes = descriptor->RestrictedGridIndexes;
@@ -243,6 +250,7 @@ LUA_FUNCTION(Lua_GetNeighboringRooms) {
 static void RegisterRoomDescriptorMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
+		{ "GetDecoSaveState", Lua_GetDecoSaveState },
 		{ "GetRestrictedGridIndexes", Lua_GetRestrictedGridIndexes },
 		{ "AddRestrictedGridIndex", Lua_AddRestrictedGridIndex },
 		{ "GetGridEntitiesSaveState", Lua_GetGridEntitiesSaveState },

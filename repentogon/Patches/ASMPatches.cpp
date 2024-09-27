@@ -109,6 +109,7 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	ASMPatchAddWeakness();
+	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
 	PatchGridCallbackShit();
@@ -117,7 +118,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
-	PatchDealRoomVariant();
+	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();
 	PatchLevelGeneratorTryResizeEndroom();
 
@@ -127,6 +128,7 @@ void PerformASMPatches() {
 
 	// Room
 	ASMPatchAmbushWaveCount();
+	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
@@ -139,6 +141,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
+	ASMPatchAddActiveCharge();
 
 	// Render
 	LuaRender::PatchglDrawElements();

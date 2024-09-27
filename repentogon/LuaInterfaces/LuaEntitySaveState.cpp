@@ -455,6 +455,10 @@ struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 
 	LUA_FUNCTION(Lua_Clear) {
 		Lua_EntitiesSaveStateVectorAPI* ud = GetData(L, 1);
+		//for (size_t i = 0; i < ud->data->capacity(); ++i) {
+		//	EntitySaveState& st = (*ud->data)[i];			//not 100% sure whether all that's needed, if issues arise, uncomment this block
+		//	st.Clear();
+		//};
 		ud->data->clear();
 
 		return 0;
@@ -515,13 +519,16 @@ struct Lua_GridEntitiesSaveStateVectorAPI : Lua_GridEntitiesSaveStateVector {
 		return 1;
 	}
 
-	/*LUA_FUNCTION(Lua_Clear) {
+	LUA_FUNCTION(Lua_Clear) {
 		Lua_GridEntitiesSaveStateVectorAPI* ud = GetData(L, 1);
-		ud->data->clear();
+//		ud->data->clear();
+		for (size_t i = 0; i < ud->data->size(); ++i) {
+			GridEntityDesc& st = (*ud->data)[i];
+			st._type = 0;
+		};
 
 		return 0;
 	}
-	*/
 
 	LUA_FUNCTION(Lua_MetaLen) {
 		Lua_GridEntitiesSaveStateVectorAPI* ud = GetData(L, 1);
@@ -536,7 +543,7 @@ luaL_Reg Lua_GridEntitiesSaveStateVectorAPI::methods[] = {
 
 	{ "Get", Lua_GridEntitiesSaveStateVectorAPI::Lua_Get },
 	{ "GetByType", Lua_GridEntitiesSaveStateVectorAPI::Lua_GetByType },
-	//{ "Clear", Lua_GridEntitiesSaveStateVectorAPI::Lua_Clear },
+	{ "Clear", Lua_GridEntitiesSaveStateVectorAPI::Lua_Clear },
 	{ "__len", Lua_GridEntitiesSaveStateVectorAPI::Lua_MetaLen },
 	{ NULL, NULL }
 };

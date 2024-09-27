@@ -161,7 +161,7 @@ ___
 
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
-#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### boolean CanOverrideActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanUsePill () {: aria-label='Functions' }

@@ -1159,8 +1159,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(item["customcache"], XMLStuff.ItemData->customcache[id]);
 						ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 					}
-					if (id == 247 || id == 248) {
+					if (id == COLLECTIBLE_BFFS || id == COLLECTIBLE_HIVE_MIND) {
 						XMLStuff.ItemData->customcache[id].insert("familiarmultiplier");
+					} else if (id == COLLECTIBLE_DEEP_POCKETS) {
+						XMLStuff.ItemData->customcache[id].insert("maxcoins");
 					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;

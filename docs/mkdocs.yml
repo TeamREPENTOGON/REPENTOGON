@@ -260,6 +260,7 @@ nav:
     - ItemConfig: ItemConfig.md
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
+    - ItemConfig - Card: ItemConfig_Card.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md
@@ -363,6 +364,7 @@ nav:
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
+  - itempools.xml: xml/itempools.md
   - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md

@@ -564,6 +564,7 @@ void ASMPatchPostNightmareSceneCallback() {
 	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
+	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // NightmareScene

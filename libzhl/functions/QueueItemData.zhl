@@ -1,0 +1,6 @@
+struct QueueItemData depends (ItemConfig_Item) {
+	ItemConfig_Item* _item : 0x0;
+	int _charge : 0x4;
+	unsigned int _flags : 0x8;
+	int _vardata : 0xc;
+} : 0x10;
