@@ -82,6 +82,10 @@ Modified:
 	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
 	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
 	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
+* ModCallbacks:
+	- MC_POST_PICKUP_SELECTION
+		Additionally passes "RequestedVariant", "RequestedSubType" and "RNG".
+		A third bool argument can be included in the return table to specify wether or not you want to let the callback continue execution after the update to Variant and SubType.
 * "Hush AI Fixes" patch will no longer be applied during daily runs.
 * Deal rooms with variants above 99 will now also generate in Red Rooms
 /newline/

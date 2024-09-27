@@ -447,7 +447,7 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableSizeFunction(4)
 	},
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
-		["table"] = checkTableSizeFunction(2)
+		["table"] = checkTableTypeFunction({ "integer", "integer", "boolean"})
 	},
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
 		["table"] = checkTableSizeFunctionUpTo(5),  --{ "integer", "integer", "boolean", "integer", "integer" }),
@@ -1383,6 +1383,30 @@ function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
 	return true
 end
 
+-- Custom handling for MC_POST_PICKUP_SELECTION.
+-- Terminate early if the table's 3rd argument is nil or false
+function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ...)
+	local recentRet = nil;
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, ...)
+		if type(ret) == "table" then
+			if not ret[3] then
+				return ret
+			end
+
+			if (math.type(ret[1]) == "integer" and math.type(ret[2]) == "integer") then
+				recentRet = {ret[1], ret[2]}
+				variant = ret[1]
+				subType = ret[2]
+			end
+
+		end
+	end
+
+	return recentRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1395,6 +1419,7 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_MOD_UNLOAD] = PreModUnloadCallbackLogic,
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
