@@ -1,3 +1,6 @@
+v1.x.x -
+* The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
+/versionseparator/
 v1.0.12 -
 Additions:
 * Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
@@ -95,6 +98,7 @@ Fixes:
 	- Fixed HUD:GetCoopMenuSprite() returning invalid data
 	- Fixed EntityPlayer:AddActiveCharge() incorrectly allowing overcharge when adding charge to all slots at the same time (with -1 given as the slot)
 /newline/
+/versionseparator/
 v1.0.11c -
 Additions:
 * CharacterMenu:
@@ -105,14 +109,17 @@ Fixes:
 	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
 	- Fixed SetRail index checks
 /newline/
+/versionseparator/
 v1.0.11b -
 Bug fixes:
 	- Fixed a crash that could occur randomly when using custom item pools
 /newline/
+/versionseparator/
 v1.0.11a -
 Bug fixes:
 	- Fixed a division by zero that occured when shuffling an empty item pool
 /newline/
+/versionseparator/
 v1.0.11 -
 Additions:
 * Itempools:
@@ -188,6 +195,7 @@ Additions:
 	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
 	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
 /newline/
+/versionseparator/
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
@@ -197,6 +205,7 @@ Fixes:
 	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
 	- Fix Isaac's Heart being immune to lasers
 /newline/
+/versionseparator/
 v1.0.10c -
 Additions:
 * RoomDescriptor:
@@ -218,6 +227,7 @@ Modified:
 	- GetRoomByStageTypeAndVariant(StbType, Type, Variant, Mode = -1)
 * Re-enabled "Extra debug render for FindInRadius" option.
 /newline/
+/versionseparator/
 v1.0.10b -
 Modified:
 * MusicManager:
@@ -226,6 +236,7 @@ Modified:
 	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
 * Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
 /newline/
+/versionseparator/
 v1.0.10a -
 Additions:
 * EntityPlayer:
@@ -299,14 +310,17 @@ Fixes:
 * Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
 * Fixed binders for EntityNPC: ThrowMaggot, ShootMaggotProjectile functions.
 /newline/
+/versionseparator/
 v1.0.9d -
 Fixes:
 * Fixed a bug with the autoupdater
 /newline/
+/versionseparator/
 v1.0.9c -
 Fixes:
 * Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
 /newline/
+/versionseparator/
 v1.0.9b -
 Additions:
 * Camera:
@@ -324,6 +338,7 @@ Additions:
 * Fixed a regression that resulted in a severe slowdown for certain commands' autocomplete prompts. This fix has also made file map noticeably faster :D
 * Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
 /newline/
+/versionseparator/
 v1.0.9a -
 Additions:
 * Game:
@@ -343,6 +358,7 @@ Additions:
 	- Fix "goto [s/x]." command autocomplete
 	- Fixed incorrect type set for Slot->_timeout (int -> short)
 /newline/
+/versionseparator/
 v1.0.9 -
 Modified:
 * Callbacks:
@@ -483,19 +499,23 @@ Fixes:
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
+/versionseparator/
 v1.0.8c -
 Fixes:
 * Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
 * Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
 /newline/
+/versionseparator/
 v1.0.8b -
 Fixes:
 * Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
 /newline/
+/versionseparator/
 v1.0.8a -
 Fixes:
 * Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
 /newline/
+/versionseparator/
 v1.0.8 -
 Additions:
 * New general callback improvements to address some performance issues on some scenarios
@@ -525,12 +545,14 @@ Fixes:
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
 * Fix the console crashing when running a command from history in some cases
 /newline/
+/versionseparator/
 v1.0.7c -
 Additions:
 * Options.StatHUDPlanetarum
 Fixes:
 * Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
 /newline/
+/versionseparator/
 v1.0.7b -
 Additions:
 * Add an option to show Planetarium spawn chance in the stat HUD
@@ -541,10 +563,12 @@ Fixes:
 * Fixed console wonkies involving input text edge detection and scaling
 * Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
 /newline/
+/versionseparator/
 v1.0.7a -
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
 /newline/
+/versionseparator/
 v1.0.7 -
 Additions:
 * Backdrops:
@@ -621,13 +645,13 @@ Fixes:
 	* Removed ImGui's automatic window resizing as it caused more issues than it solved
 	* Set a larger padding for ImGui to instruct it to always keep at least (100, 100) pixels of debug windows visible
 /newline/
-/newline/
+/versionseparator/
 v1.0.6b -
 Fixes:
 * Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
 * Fixed an issue that made search and undo mods not work if you didnt restart your machine for 24 days (blame microsoft)
 /newline/
-/newline/
+/versionseparator/
 v1.0.6a -
 Additions:
 * Minimap :
@@ -641,7 +665,7 @@ Additions:
 Fixes:
 * Fixed an issue that made it so custom completion marks and achievements are not properly loaded locked or unlocked on a session(big oof, I know).
 /newline/
-/newline/
+/versionseparator/
 v1.0.6 -
 Additions:
 * Weapon :
@@ -737,12 +761,12 @@ Fixes:
 * Fixed PRE/POST_ENTITY_THROW EntityPlayer argument being pushed as optional parameter
 * Fixed crash when calling Game():MoveToRandomRoom() with seed 0
 /newline/
-/newline/
+/versionseparator/
 v1.0.5a -
 Fixes:
 * Hot-Fixed a crash that happened when no mods were enabled in 1.0.5
 /newline/
-/newline/
+/versionseparator/
 v1.0.5 -
 Additions:
 * Added Challenge completion tracking to the mod challenges menu
@@ -794,7 +818,7 @@ Fixes:
 * Fix Weapon:SetFireDelay() not working
 * Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
 /newline/
-/newline/
+/versionseparator/
 v1.0.4 -
 Additions:
 * The error dialog now automatically gets dismissed the next time ImGui is opened
@@ -815,7 +839,7 @@ Fixes:
 * Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
 * Enabled mods/debug console disable access to enter daily run as before
 /newline/
-/newline/
+/versionseparator/
 v1.0.3 -
 Additions:
 * ColorParams
@@ -852,7 +876,7 @@ Fixes:
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 /newline/
-/newline/
+/versionseparator/
 v1.0.2 -
 Additions:
 * Added Pickup:GetAlternatePedestal()
@@ -863,6 +887,7 @@ Fixes:
 * Fixed Dingle always spawning a red poop
 * Fixed achievements not firing in Steam
 /newline/
-/newline/
+/versionseparator/
 v1.0.1 -
 Fixed the updater erroneously asking to update, sorry :(
+/versionseparator/
