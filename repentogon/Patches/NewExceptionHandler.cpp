@@ -50,7 +50,7 @@ void ___todo_exception_handler(int x){	//placeholder
 
 		char dump_name_fmt[] = "rgon-v%s-%04d%02d%02d-%02d%02d%02d-%ld-%ld.dmp";
 		char dump_name[1024]="";
-		snprintf(dump_name,1023,dump_name_fmt,VERSION,time_holder.wYear,time_holder.wMonth,time_holder.wDay,time_holder.wHour,time_holder.wMinute,time_holder.wSecond,cur_pid,cur_thread);
+		snprintf(dump_name,1023,dump_name_fmt,CMAKE_REPENTOGON_VERSION,time_holder.wYear,time_holder.wMonth,time_holder.wDay,time_holder.wHour,time_holder.wMinute,time_holder.wSecond,cur_pid,cur_thread);
 
 		std::string dump_path;
 		dump_path = REPENTOGON::GetRepentogonDataPath();
