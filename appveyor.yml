@@ -4,21 +4,14 @@ only_commits:
 image: Visual Studio 2022
 build_script:
 - ps: >-
-    git submodule init
-
-    git submodule update
-
-    echo "#pragma once" | Out-File -encoding ASCII repentogon/Version.h
-        $version = Get-Content version.txt -Raw
-        echo "#define VERSION `"$version`"" | Add-Content repentogon/Version.h
-        (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
-        (gc updater/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII updater/Updater.cpp
+    git submodule update --init --recursive
+- ps: >-
+    $version = Get-Content version.txt -Raw
+    (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
 
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
 
-
     cmake --build build --config Release
-
 
     cd build/Release
         mkdir artifact
@@ -35,11 +28,19 @@ build_script:
 
     cd artifact
 
-
-    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
-
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o".." "REPENTOGON.zip" "." -aoa
 
     Push-AppveyorArtifact REPENTOGON.zip
+- ps: >-
+    cd Launcher
+    $version = Get-Content version.txt -Raw
+    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_LAUNCHER_VERSION="$version"
+    cd build/Release
+    mkdir artifact
+    mv *.dll REPENTOGONLauncher.exe artifact
+    cd artifact
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o".." "REPENTOGONLauncher.zip" "." -aoa
+    Push-AppveyorArtifact REPENTOGONLauncher.zip
     
 deploy:
 - provider: Webhook
