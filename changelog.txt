@@ -1,4 +1,4 @@
-v1.x.x -
+v1.0.12 -
 Additions:
 * Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
 * Level:
