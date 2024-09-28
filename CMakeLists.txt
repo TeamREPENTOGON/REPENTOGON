@@ -106,6 +106,7 @@ FILE(GLOB ZHL_LOADER_SRC ${CMAKE_SOURCE_DIR}/loader/*.cpp)
 add_library (zhlLoader SHARED ${ZHL_LOADER_SRC})
 target_link_libraries(zhlLoader Imagehlp libzhl)
 target_compile_options(zhlLoader PUBLIC "/MD" "/wd4996")
+target_compile_definitions(zhlLoader PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 
 # ImGUI
 enable_language(RC)
