@@ -2716,6 +2716,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getmaxbosschallengewaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetMaxBossChallengeWaves ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getmaxbossrushwaves" class="md-nav__link">
     <span class="md-ellipsis">
       GetMaxBossrushWaves ()
@@ -2746,6 +2755,15 @@
   <a href="#getnextwaves" class="md-nav__link">
     <span class="md-ellipsis">
       GetNextWaves ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setmaxbosschallengewaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetMaxBossChallengeWaves ()
     </span>
   </a>
   
@@ -7194,6 +7212,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getmaxbosschallengewaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetMaxBossChallengeWaves ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getmaxbossrushwaves" class="md-nav__link">
     <span class="md-ellipsis">
       GetMaxBossrushWaves ()
@@ -7224,6 +7251,15 @@
   <a href="#getnextwaves" class="md-nav__link">
     <span class="md-ellipsis">
       GetNextWaves ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setmaxbosschallengewaves" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetMaxBossChallengeWaves ()
     </span>
   </a>
   
@@ -7330,6 +7366,11 @@
 <h4 aria-label="Functions" class="copyable" id="int-getcurrentwave">int GetCurrentWave ( )<a class="headerlink" href="#int-getcurrentwave" title="Permanent link">⚓︎</a></h4>
 <p>Returns the current wave number of the current challenge room or boss rush room.</p>
 <hr />
+<h3 aria-label="Functions" id="getmaxbosschallengewaves">GetMaxBossChallengeWaves ()<a class="headerlink" href="#getmaxbosschallengewaves" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="int-getmaxbosschallengewaves">int GetMaxBossChallengeWaves ( )<a class="headerlink" href="#int-getmaxbosschallengewaves" title="Permanent link">⚓︎</a></h4>
+<p>Returns the maximum amount of boss challenge room waves. </p>
+<p>By default, the maximum amount of challenge room waves are <code>2</code>. It's important to note that mods can modify the maximum amount of challenge room waves.</p>
+<hr />
 <h3 aria-label="Functions" id="getmaxbossrushwaves">GetMaxBossrushWaves ()<a class="headerlink" href="#getmaxbossrushwaves" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getmaxbossrushwaves">int GetMaxBossrushWaves ( )<a class="headerlink" href="#int-getmaxbossrushwaves" title="Permanent link">⚓︎</a></h4>
 <p>Returns the maximum amount of boss rush waves. </p>
@@ -7347,6 +7388,14 @@
 <h3 aria-label="Functions" id="getnextwaves">GetNextWaves ()<a class="headerlink" href="#getnextwaves" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="roomconfigroom-getnextwaves"><a href="RoomConfigRoom.html">RoomConfigRoom</a>[] GetNextWaves ( )<a class="headerlink" href="#roomconfigroom-getnextwaves" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table containing the <a href="RoomConfigRoom.html">RoomConfigRoom</a> of the next challenge room waves.</p>
+<hr />
+<h3 aria-label="Functions" id="setmaxbosschallengewaves">SetMaxBossChallengeWaves ()<a class="headerlink" href="#setmaxbosschallengewaves" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setmaxbosschallengewaves-int-waves">void SetMaxBossChallengeWaves ( int Waves )<a class="headerlink" href="#void-setmaxbosschallengewaves-int-waves" title="Permanent link">⚓︎</a></h4>
+<p>Sets the maximum amount of boss challenge room waves.</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>Currently this value is not reset on game restart. This will be fixed as soon as we figure out how to cleanly run code on init on the C++ side!</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setmaxbossrushwaves">SetMaxBossrushWaves ()<a class="headerlink" href="#setmaxbossrushwaves" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmaxbossrushwaves-int-waves">void SetMaxBossrushWaves ( int Waves )<a class="headerlink" href="#void-setmaxbossrushwaves-int-waves" title="Permanent link">⚓︎</a></h4>
