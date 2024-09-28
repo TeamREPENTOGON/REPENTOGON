@@ -2,6 +2,7 @@
 local _ModCallbacks = ModCallbacks
 local _MainMenuType = MainMenuType
 local _ButtonAction = ButtonAction
+local _Keyboard = Keyboard
 local _SoundEffect = SoundEffect
 
 local ChangeLog = {
@@ -19,6 +20,7 @@ local ChangeLog = {
 
     ["ScrollMargin"] = 5,
     ["ScrollSpeed"] = 1,
+    ["ScrollSpeedFast"] = 2.5,
     ["ScrollItertia"] = 0.8,
 
     ["CurrentSheet"] = 1,
@@ -135,6 +137,15 @@ local function IsActionPressedAll(action)
     return false
 end
 
+local function IsKeyboardPressedAll(input)
+    for i = 0, MaxPollCIdx do
+        if Input.IsButtonPressed(input, i) then
+            return true
+        end
+    end
+    return false
+end
+
 function ChangeLog.MenuRender()
     if not Cl.AssetsLoaded then
         return
@@ -223,11 +234,15 @@ function ChangeLog.MenuRender()
                 end
             end
 
+            -- Scroll faster when holding SHIFT or DROP
+            local speed = (IsActionPressedAll(_ButtonAction.ACTION_DROP) or IsKeyboardPressedAll(_Keyboard.KEY_LEFT_SHIFT))
+                and Cl.ScrollSpeedFast or Cl.ScrollSpeed
+
             if IsActionPressedAll(_ButtonAction.ACTION_MENUUP) then
-                ScrollVelocity = ScrollVelocity + Cl.ScrollSpeed
+                ScrollVelocity = ScrollVelocity + speed
             end
             if IsActionPressedAll(_ButtonAction.ACTION_MENUDOWN) then
-                ScrollVelocity = ScrollVelocity - Cl.ScrollSpeed
+                ScrollVelocity = ScrollVelocity - speed
             end
             if Cl.ChangelogSprite:IsFinished("SwapOut") then
                 ShouldBeRendered = false

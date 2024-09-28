@@ -88,6 +88,7 @@ Modified:
 		A third bool argument can be included in the return table to specify wether or not you want to let the callback continue execution after the update to Variant and SubType.
 * "Hush AI Fixes" patch will no longer be applied during daily runs.
 * Deal rooms with variants above 99 will now also generate in Red Rooms
+* Hold SHIFT of the DROP key to scroll faster through the main menu changelog
 /newline/
 Fixes:
 	- Fixed a vanilla bug that caused wisps from destroyed Mystery Gift/Eden's Soul wisps to spawn even after a run restart.
