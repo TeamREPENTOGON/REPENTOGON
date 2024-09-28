@@ -40,4 +40,4 @@
 	url = https://github.com/TeamREPENTOGON/imgui
 [submodule "Launcher"]
 	path = Launcher
-	url = git@github.com:TeamREPENTOGON/Launcher.git
+	url = https://github.com/TeamREPENTOGON/Launcher.git
