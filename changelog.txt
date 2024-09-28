@@ -1,5 +1,11 @@
-v1.x.x -
+v1.0.12.a -
 * The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
+Additions:
+* Ambush:
+	- [Get/Set]MaxBossChallengeWaves()
+	- Allows changing the number of waves in a boss challenge room
+Fixes:
+* Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
 /versionseparator/
 v1.0.12 -
 Additions:
