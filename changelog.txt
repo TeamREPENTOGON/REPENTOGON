@@ -1,3 +1,10 @@
+v1.0.12.a -
+Additions:
+* Ambush:
+	- [Get/Set]MaxBossChallengeWaves()
+	- Allows changing the number of waves in a boss challenge room
+Fixes:
+* Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
 v1.0.12 -
 Additions:
 * Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
