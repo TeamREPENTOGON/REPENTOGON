@@ -38,3 +38,6 @@
 [submodule "libs/imgui"]
 	path = libs/imgui
 	url = https://github.com/TeamREPENTOGON/imgui
+[submodule "Launcher"]
+	path = Launcher
+	url = https://github.com/TeamREPENTOGON/Launcher.git

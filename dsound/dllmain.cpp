@@ -1,12 +1,12 @@
 #include <Windows.h>
 #include <ImageHlp.h>
 #include "ConsoleWindow.h"
-#include "launcher/utils.h"
+#include "dsound/utils.h"
 #include <stdio.h>
 #include <vector>
 #include <time.h>
 #include "version.h"
-#include "launcher/Logger.h"
+#include "dsound/Logger.h"
 #include "updater/updater.h"
 #include "updater/updater_resources.h"
 

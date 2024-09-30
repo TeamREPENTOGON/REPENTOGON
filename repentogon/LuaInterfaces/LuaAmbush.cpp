@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 
 int ambushWaves = 3;
+int bossAmbushWaves = 2;
 
 /*LUA_FUNCTION(Lua_GetAmbush) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -65,6 +66,23 @@ LUA_FUNCTION(Lua_SetMaxChallengeWaves)
 	int amount = (int)luaL_checkinteger(L, 1);
 
 	ambushWaves = amount;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetMaxBossChallengeWaves)
+{
+	Ambush* ambush = g_Game->GetAmbush();
+	lua_pushinteger(L, bossAmbushWaves);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetMaxBossChallengeWaves)
+{
+	Ambush* ambush = g_Game->GetAmbush();
+	int amount = (int)luaL_checkinteger(L, 1);
+
+	bossAmbushWaves = amount;
 
 	return 0;
 }
@@ -235,6 +253,8 @@ static void RegisterAmbush(lua_State* L) {
 		lua::TableAssoc(L, "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves );
 		lua::TableAssoc(L, "GetMaxChallengeWaves", Lua_GetMaxChallengeWaves );
 		lua::TableAssoc(L, "SetMaxChallengeWaves", Lua_SetMaxChallengeWaves );
+		lua::TableAssoc(L, "GetMaxBossChallengeWaves", Lua_GetMaxBossChallengeWaves);
+		lua::TableAssoc(L, "SetMaxBossChallengeWaves", Lua_SetMaxBossChallengeWaves);
 		lua::TableAssoc(L, "GetCurrentWave", Lua_GetCurrentWave );
 		// { "IsActive", Lua_Ambush_IsActive );
 			lua::TableAssoc(L, "GetNextWave", Lua_Ambush_GetNextWave );

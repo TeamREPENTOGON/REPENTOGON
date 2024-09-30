@@ -22,6 +22,13 @@ tags:
 Returns the current wave number of the current challenge room or boss rush room.
 
 ___
+### GetMaxBossChallengeWaves () {: aria-label='Functions' }
+#### int GetMaxBossChallengeWaves ( ) {: .copyable aria-label='Functions' }
+Returns the maximum amount of boss challenge room waves. 
+
+By default, the maximum amount of challenge room waves are `2`. It's important to note that mods can modify the maximum amount of challenge room waves.
+
+___
 ### GetMaxBossrushWaves () {: aria-label='Functions' }
 #### int GetMaxBossrushWaves ( ) {: .copyable aria-label='Functions' }
 Returns the maximum amount of boss rush waves. 
@@ -45,6 +52,14 @@ ___
 #### [RoomConfigRoom](RoomConfigRoom.md)[] GetNextWaves ( ) {: .copyable aria-label='Functions' }
 Returns a table containing the [RoomConfigRoom](RoomConfigRoom.md) of the next challenge room waves.
 
+___
+### SetMaxBossChallengeWaves () {: aria-label='Functions' }
+#### void SetMaxBossChallengeWaves ( int Waves ) {: .copyable aria-label='Functions' }
+Sets the maximum amount of boss challenge room waves.
+
+???+ bug "Bug"
+	Currently this value is not reset on game restart. This will be fixed as soon as we figure out how to cleanly run code on init on the C++ side!
+	
 ___
 ### SetMaxBossrushWaves () {: aria-label='Functions' }
 #### void SetMaxBossrushWaves ( int Waves ) {: .copyable aria-label='Functions' }

@@ -101,9 +101,6 @@ target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
-# ZHL Launcher
-add_library (zhlLauncher SHARED ${CMAKE_SOURCE_DIR}/launcher/launcher.cpp)
-
 FILE(GLOB LAUNCHER_CORE_SRC ${CMAKE_SOURCE_DIR}/launcher_core/*.cpp)
 add_library(launcher_core STATIC ${LAUNCHER_CORE_SRC})
 target_compile_options(launcher_core PUBLIC "/MD")
@@ -111,7 +108,7 @@ target_compile_options(launcher_core PUBLIC "/MD")
 # Injected DLL
 set(UPDATER_BASE_BUILD_DIR "${CMAKE_SOURCE_DIR}/updater_rsrc")
 configure_file(${CMAKE_SOURCE_DIR}/updater/updater.rc.in ${CMAKE_SOURCE_DIR}/updater/updater.rc)
-FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp ${CMAKE_SOURCE_DIR}/updater/updater.rc)
+FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/dsound/*.cpp ${CMAKE_SOURCE_DIR}/updater/updater.rc)
 add_library(dsound SHARED ${LAUNCHER_SRC})
 target_include_directories(dsound PRIVATE ${CMAKE_SOURCE_DIR}/include)
 # target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})

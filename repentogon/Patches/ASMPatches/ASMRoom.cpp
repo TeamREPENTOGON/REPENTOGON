@@ -4,6 +4,7 @@
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
 *  An extra patch to spawn_wave is neccessary to make this work for boss challenge rooms because no difficulty 15 wave exists by default.
+*  The game already sets up a check to see if we're in a boss ambush room in the EAX register at the point we hook.
 */
 void ASMPatchAmbushWaveCount() {
 	SigScan scanner("33db83f801");
@@ -11,10 +12,16 @@ void ASMPatchAmbushWaveCount() {
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
-	void* ptr = &ambushWaves;
+	void* ambushPtr = &ambushWaves;
+	void* bossAmbushPtr = &bossAmbushWaves;
 
 	ASMPatch patch;
-	patch.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+	patch.AddBytes("\x83\xF8\x01") // cmp eax, 1 (is this a boss challenge?)
+		.AddBytes("\x75\x0B") // jne (current addr + 0xB)
+		.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&bossAmbushPtr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+		.AddRelativeJump((char*)addr + 0xB)
+		// JNE DESTINATION
+		.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&ambushPtr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
 }
