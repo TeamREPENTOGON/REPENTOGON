@@ -45,8 +45,34 @@ ___
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetDimension () {: aria-label='Functions' }
+#### [Dimension](https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html) GetDimension ( ) {: .copyable aria-label='Functions' }
+Returns the [Dimension](enums/Dimension.md) that this room exists in.
+
+___
 ### GetGridEntitiesSaveState () {: aria-label='Functions' }
 #### [GridEntitiesSaveStateVector](GridEntitiesSaveStateVector.md) GetGridEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetNeighboringRooms () {: aria-label='Functions' }
+#### table GetNeighboringRooms ( ) {: .copyable aria-label='Functions' }
+Returns a table that maps [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) to [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html) for all of the current neighbors of this room.
+
+Don't use `ipairs` to iterate over this, use `pairs`!
+
+???- example "Example Code"
+	```lua
+	-- Returns true if the room has a neighboring secret room.
+	local function HasSecretRoomNeighbor(roomDesc)
+		for doorSlot, neighborDesc in pairs(roomDesc:GetNeighboringRooms()) do
+			local roomType = neighborDesc.Data.Type
+			if roomType == RoomType.ROOM_SECRET or roomType == RoomType.ROOM_SUPERSECRET or roomType == RoomType.ROOM_ULTRASECRET then
+				return true
+			end
+		end
+		return false
+	end
+	```
 
 ___
 ### GetRestrictedGridIndexes () {: aria-label='Functions' }
