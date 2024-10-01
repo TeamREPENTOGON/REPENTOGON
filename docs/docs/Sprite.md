@@ -75,6 +75,11 @@ ___
 Returns the layer data from the provided layer id.
 
 ___
+### GetLayerFrameData () {: aria-label='Functions' }
+#### [AnimationFrame](AnimationFrame.md) GetLayerFrameData ( int Layer ) {: .copyable aria-label='Functions' }
+Returns the [AnimationFrame](AnimationFrame.md) currently being displayed on the specified layer.
+
+___
 ### GetNullFrame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
 Returns the [NullFrame](NullFrame.md) from the provided layer name.
@@ -83,6 +88,11 @@ ___
 ### GetOverlayAnimationData () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetOverlayAnimationData ( ) {: .copyable aria-label='Functions' }
 Returns the [AnimationData](AnimationData.md) of the currently playing overlay.
+
+___
+### GetOverlayLayerFrameData () {: aria-label='Functions' }
+#### [AnimationFrame](AnimationFrame.md) GetOverlayLayerFrameData ( int Layer ) {: .copyable aria-label='Functions' }
+Returns the [AnimationFrame](AnimationFrame.md) currently being displayed on the specified layer of the overlay animation.
 
 ___
 ### GetOverlayNullFrame () {: aria-label='Functions' }
@@ -133,6 +143,10 @@ You can also set a per-layer shader via [LayerState](LayerState.md).
 ___
 ### SetRenderFlags () {: aria-label='Functions' }
 #### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
+
+___
+### SetOverlayLayerFrame () {: aria-label='Functions' }
+#### void SetOverlayLayerFrame ( int Layer, int Frame ) {: .copyable aria-label='Functions' }
 
 ___
 ### StopOverlay () {: aria-label='Functions' }
