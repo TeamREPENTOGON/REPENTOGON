@@ -63,6 +63,10 @@ ___
 #### [Sprite](../Sprite.md) GetSecretsMenuMiniSprite9 ( ) {: .copyable aria-label='Functions' }
 Used for right scroll transition animation.
 ___
+### GetSelectedElement () {: aria-label='Functions' }
+#### int GetSelectedElement ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetStatsMenuSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetStatsMenuSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -71,4 +75,7 @@ ___
 #### boolean IsSecretsMenuVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
+### SetSelectedElement () {: aria-label='Functions' }
+#### void SetSelectedElement ( int Element ) {: .copyable aria-label='Functions' }
 
+___
