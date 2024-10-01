@@ -18,6 +18,10 @@ tags:
     
 ## Functions
 
+### AddBestiaryKill () {: aria-label='Functions' }
+#### void AddBestiaryKill ( int Type, int Variant = 0 ) {: .copyable aria-label='Functions' }
+
+___
 ### AddBossKilled () {: aria-label='Functions' }
 #### void AddBossKilled ( [BossType](enums/BossType.md) Boss) {: .copyable aria-label='Functions' }
 Marks this boss as killed and unlocks its relevant alternate floor if conditions are met.

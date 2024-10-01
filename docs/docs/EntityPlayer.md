@@ -529,6 +529,21 @@ ___
 Returns the maximum charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetMaxBombs () {: aria-label='Functions' }
+#### int GetMaxBombs ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of bombs the player can currently hold.
+
+___
+### GetMaxCoins () {: aria-label='Functions' }
+#### int GetMaxCoins ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of coins the player can currently hold.
+
+___
+### GetMaxKeys () {: aria-label='Functions' }
+#### int GetMaxKeys ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of keys the player can currently hold.
+
+___
 ### GetMaxPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetMaxPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 Returns the maximum attack duration of the Kidney Stone item.
