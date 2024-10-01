@@ -6087,9 +6087,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#doors" class="md-nav__link">
+  <a href="#getdimension" class="md-nav__link">
     <span class="md-ellipsis">
-      Doors
+      GetDimension ()
     </span>
   </a>
   
@@ -6099,15 +6099,6 @@
   <a href="#getentitiessavestate" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntitiesSaveState ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getdimension" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetDimension ()
     </span>
   </a>
   
@@ -6168,6 +6159,15 @@
   <a href="#bossdeathseed" class="md-nav__link">
     <span class="md-ellipsis">
       BossDeathSeed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Doors
     </span>
   </a>
   
@@ -7292,9 +7292,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#doors" class="md-nav__link">
+  <a href="#getdimension" class="md-nav__link">
     <span class="md-ellipsis">
-      Doors
+      GetDimension ()
     </span>
   </a>
   
@@ -7304,15 +7304,6 @@
   <a href="#getentitiessavestate" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntitiesSaveState ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getdimension" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetDimension ()
     </span>
   </a>
   
@@ -7378,6 +7369,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Doors
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7414,7 +7414,6 @@
 
 <h1 id="class-roomdescriptor">Class "RoomDescriptor"<a class="headerlink" href="#class-roomdescriptor" title="Permanent link">⚓︎</a></h1>
 <h2 id="modified-variables">Modified Variables<a class="headerlink" href="#modified-variables" title="Permanent link">⚓︎</a></h2>
-<hr />
 <h3 aria-label="Modified Variables" id="alloweddoors">AllowedDoors<a class="headerlink" href="#alloweddoors" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Variables" class="copyable" id="doorset-alloweddoors">DoorSet AllowedDoors<a class="headerlink" href="#doorset-alloweddoors" title="Permanent link">⚓︎</a></h4>
 <p>Now properly returns a value.</p>
@@ -7435,19 +7434,12 @@
 <h3 aria-label="Functions" id="addrestrictedgridindex">AddRestrictedGridIndex ()<a class="headerlink" href="#addrestrictedgridindex" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-addrestrictedgridindex-int-gridindex">void AddRestrictedGridIndex ( int GridIndex )<a class="headerlink" href="#void-addrestrictedgridindex-int-gridindex" title="Permanent link">⚓︎</a></h4>
 <hr />
-<h3 aria-label="Variables" id="doors">Doors<a class="headerlink" href="#doors" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="int-doors">int[] Doors<a class="headerlink" href="#int-doors" title="Permanent link">⚓︎</a></h4>
-<p>Allows you to check which level grid index each <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html">DoorSlot</a> in the room connects to.</p>
-<p>For example, <code>roomdesc.Doors[DoorSlot.UP0]</code> provides the level grid index that the upwards door would connect to.</p>
-<p>The value will be <code>-1</code> if the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html">RoomShape</a> does not allow a door in that slot.</p>
-<p>Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.</p>
-<hr />
-<h3 aria-label="Functions" id="getentitiessavestate">GetEntitiesSaveState ()<a class="headerlink" href="#getentitiessavestate" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="entitiessavestatevector-getentitiessavestate"><a href="EntitiesSaveStateVector.html">EntitiesSaveStateVector</a> GetEntitiesSaveState ( )<a class="headerlink" href="#entitiessavestatevector-getentitiessavestate" title="Permanent link">⚓︎</a></h4>
-<hr />
 <h3 aria-label="Functions" id="getdimension">GetDimension ()<a class="headerlink" href="#getdimension" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="dimension-getdimension"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html">Dimension</a> GetDimension ( )<a class="headerlink" href="#dimension-getdimension" title="Permanent link">⚓︎</a></h4>
 <p>Returns the <a href="enums/Dimension.html">Dimension</a> that this room exists in.</p>
+<hr />
+<h3 aria-label="Functions" id="getentitiessavestate">GetEntitiesSaveState ()<a class="headerlink" href="#getentitiessavestate" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="entitiessavestatevector-getentitiessavestate"><a href="EntitiesSaveStateVector.html">EntitiesSaveStateVector</a> GetEntitiesSaveState ( )<a class="headerlink" href="#entitiessavestatevector-getentitiessavestate" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getgridentitiessavestate">GetGridEntitiesSaveState ()<a class="headerlink" href="#getgridentitiessavestate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="gridentitiessavestatevector-getgridentitiessavestate"><a href="GridEntitiesSaveStateVector.html">GridEntitiesSaveStateVector</a> GetGridEntitiesSaveState ( )<a class="headerlink" href="#gridentitiessavestatevector-getgridentitiessavestate" title="Permanent link">⚓︎</a></h4>
@@ -7489,6 +7481,13 @@
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Variables" id="bossdeathseed">BossDeathSeed<a class="headerlink" href="#bossdeathseed" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="int-bossdeathseed">int BossDeathSeed<a class="headerlink" href="#int-bossdeathseed" title="Permanent link">⚓︎</a></h4>
+<hr />
+<h3 aria-label="Variables" id="doors">Doors<a class="headerlink" href="#doors" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="int-doors">int[] Doors<a class="headerlink" href="#int-doors" title="Permanent link">⚓︎</a></h4>
+<p>Allows you to check which level grid index each <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html">DoorSlot</a> in the room connects to.</p>
+<p>For example, <code>roomdesc.Doors[DoorSlot.UP0]</code> provides the level grid index that the upwards door would connect to.</p>
+<p>The value will be <code>-1</code> if the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html">RoomShape</a> does not allow a door in that slot.</p>
+<p>Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.</p>
 <hr />
 
 
