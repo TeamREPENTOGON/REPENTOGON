@@ -141,12 +141,12 @@ Note that the custom shader must take the exact same inputs as the default `colo
 You can also set a per-layer shader via [LayerState](LayerState.md).
 
 ___
-### SetRenderFlags () {: aria-label='Functions' }
-#### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
-
-___
 ### SetOverlayLayerFrame () {: aria-label='Functions' }
 #### void SetOverlayLayerFrame ( int Layer, int Frame ) {: .copyable aria-label='Functions' }
+
+___
+### SetRenderFlags () {: aria-label='Functions' }
+#### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
 
 ___
 ### StopOverlay () {: aria-label='Functions' }

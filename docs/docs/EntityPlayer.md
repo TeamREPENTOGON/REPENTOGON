@@ -274,13 +274,6 @@ ___
 Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
-### GetCustomCacheValue () {: aria-label='Functions' }
-#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
-Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
-
-See [items.xml](xml/items.md) for more information on custom caches.
-
-___
 ### GetCollectiblesList () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
 Returns a table with the amount of each collectible the player has, without counting innate items.
@@ -342,6 +335,13 @@ ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
 #### [CostumeSpriteDesc](CostumeSpriteDesc.md)[] GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
+
+___
+### GetCustomCacheValue () {: aria-label='Functions' }
+#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
+Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
+
+See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetD8DamageModifier () {: aria-label='Functions' }

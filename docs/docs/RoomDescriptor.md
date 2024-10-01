@@ -5,7 +5,7 @@ tags:
 # Class "RoomDescriptor"
 
 ## Modified Variables
-___
+
 ### AllowedDoors {: aria-label='Modified Variables' }
 #### DoorSet AllowedDoors {: .copyable aria-label='Modified Variables' }
 Now properly returns a value.
@@ -30,24 +30,13 @@ ___
 #### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
-### Doors {: aria-label='Variables' }
-#### int[] Doors {: .copyable aria-label='Variables' }
-Allows you to check which level grid index each [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) in the room connects to.
-
-For example, `roomdesc.Doors[DoorSlot.UP0]` provides the level grid index that the upwards door would connect to.
-
-The value will be `-1` if the [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) does not allow a door in that slot.
-
-Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.
+### GetDimension () {: aria-label='Functions' }
+#### [Dimension](https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html) GetDimension ( ) {: .copyable aria-label='Functions' }
+Returns the [Dimension](enums/Dimension.md) that this room exists in.
 
 ___
 ### GetEntitiesSaveState () {: aria-label='Functions' }
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
-
-___
-### GetDimension () {: aria-label='Functions' }
-#### [Dimension](https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html) GetDimension ( ) {: .copyable aria-label='Functions' }
-Returns the [Dimension](enums/Dimension.md) that this room exists in.
 
 ___
 ### GetGridEntitiesSaveState () {: aria-label='Functions' }
@@ -85,9 +74,19 @@ ___
 ___
 
 ## Variables
+
 ### BossDeathSeed {: aria-label='Variables' }
 #### int BossDeathSeed {: .copyable aria-label='Variables' }
 
 ___
+### Doors {: aria-label='Variables' }
+#### int[] Doors {: .copyable aria-label='Variables' }
+Allows you to check which level grid index each [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) in the room connects to.
 
+For example, `roomdesc.Doors[DoorSlot.UP0]` provides the level grid index that the upwards door would connect to.
 
+The value will be `-1` if the [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) does not allow a door in that slot.
+
+Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.
+
+___
