@@ -7454,7 +7454,7 @@
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">customtag</th>
+<th style="text-align: left;">customcache</th>
 <th style="text-align: left;">Effects</th>
 </tr>
 </thead>
@@ -7462,6 +7462,18 @@
 <tr>
 <td style="text-align: left;">familiarmultiplier</td>
 <td style="text-align: left;">Does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggers MC_EVALUATE_FAMILIAR_MULTIPLIER for each of the player's familiars the next time any code checks their multiplier.</td>
+</tr>
+<tr>
+<td style="text-align: left;">maxcoins</td>
+<td style="text-align: left;">Triggers re-evaluation of the max coins for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max coins, the callback only runs for player 1.</td>
+</tr>
+<tr>
+<td style="text-align: left;">maxkeys</td>
+<td style="text-align: left;">Triggers re-evaluation of the max keys for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max keys, the callback only runs for player 1.</td>
+</tr>
+<tr>
+<td style="text-align: left;">maxbombs</td>
+<td style="text-align: left;">Triggers re-evaluation of the max bombs for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max bombs, the callback only runs for player 1.</td>
 </tr>
 </tbody>
 </table>
