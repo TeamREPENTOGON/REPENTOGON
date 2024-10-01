@@ -8,16 +8,16 @@ tags:
 
 ### CanPlaceRoom () {: aria-label='Functions' }
 #### boolean CanPlaceRoom ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfigToPlace, int GridIndex, [Dimension](enums/Dimension.md) Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false ) {: .copyable aria-label='Functions' }
-Returns true if the provided room could be successfully placed at this location using [TryPlaceRoom](Isaac.md#tryplaceroom).
+Returns true if the provided room could be successfully placed at this location using [TryPlaceRoom](Level.md#tryplaceroom).
 
-See documentation for [TryPlaceRoom](Isaac.md#tryplaceroom) for more information.
+See documentation for [TryPlaceRoom](Level.md#tryplaceroom) for more information.
 
 ___
 ### CanPlaceRoomAtDoor () {: aria-label='Functions' }
 #### boolean CanPlaceRoomAtDoor ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfigToPlace, [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html) NeighborRoomDescriptor, [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) DoorSlot, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
-Returns true if the provided room (the [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html)) could be successfully placed as a neighbor of an existing room (the [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html)) at the specified [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html), using [TryPlaceRoomAtDoor](Isaac.md#tryplaceroomatdoor).
+Returns true if the provided room (the [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html)) could be successfully placed as a neighbor of an existing room (the [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html)) at the specified [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html), using [TryPlaceRoomAtDoor](Level.md#tryplaceroomatdoor).
 
-See documentation for [TryPlaceRoomAtDoor](Isaac.md#tryplaceroomatdoor) and [TryPlaceRoom](Isaac.md#tryplaceroom) for more information.
+See documentation for [TryPlaceRoomAtDoor](Level.md#tryplaceroomatdoor) and [TryPlaceRoom](Level.md#tryplaceroom) for more information.
 
 ___
 ### CanSpawnDoorOutline () {: aria-label='Functions' }
@@ -26,9 +26,9 @@ ___
 ___
 ### FindValidRoomPlacementLocations () {: aria-label='Functions' }
 #### int[] FindValidRoomPlacementLocations ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfig, [Dimension](enums/Dimension.md) Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
-Returns a table of room grid indices that would be valid locations to place the specified room using [TryPlaceRoom](Isaac.md#tryplaceroom).
+Returns a table of room grid indices that would be valid locations to place the specified room using [TryPlaceRoom](Level.md#tryplaceroom).
 
-See [TryPlaceRoom](Isaac.md#tryplaceroom) for more information on room placement and example code.
+See [TryPlaceRoom](Level.md#tryplaceroom) for more information on room placement and example code.
 
 ___
 ### GetDimension () {: aria-label='Functions' }
@@ -60,7 +60,7 @@ Don't use `ipairs` to iterate over this, use `pairs`!
 
 Note that this does not give you any information on if a room would actually fit here, or if the neighbors would even allow the connection.
 
-If you want to get the neighbors of an existing room, you can simply use [RoomDescriptor:GetNeighboringRooms()](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html#getneighboringrooms) instead.
+If you want to get the neighbors of an existing room, you can simply use [RoomDescriptor:GetNeighboringRooms()](RoomDescriptor.md#getneighboringrooms) instead.
 
 ???- example "Example Code"
 	```lua
@@ -103,7 +103,7 @@ Places a room into the game. Returns `true` if successful.
 
 Note that this function does not really check if a room placement would be considered valid, nor does it create the doors necessary to connect the new room to its neighbors.
 
-See [TryPlaceRoom](Isaac.md#tryplaceroom) and related functions if you want to properly add new rooms to the floor after level generation, similarly to what Red Key does.
+See [TryPlaceRoom](Level.md#tryplaceroom) and related functions if you want to properly add new rooms to the floor after level generation, similarly to what Red Key does.
 
 ___
 ### SetForceSpecialQuest () {: aria-label='Functions' }
@@ -127,7 +127,7 @@ Attempts to place the provided room at the specified location.
 
 If successful, returns the newly initialized [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html). Otherwise, returns nil.
 
-This function will ONLY place rooms if it fits (does not overlap any other existing rooms, and can mutually connect to any neighboring room with doors.
+This function will ONLY place the room if it fits (does not overlap any other existing rooms, and can mutually connect to all neighboring room with doors).
 
 If a seed of 0 or nil is provided, a deterministic seed with be auto-generated based on the location, room shape, and level seed.
 
@@ -187,9 +187,9 @@ The boolean parameters enable or disable additional restrictions/safeties for ro
 ___
 ### TryPlaceRoomAtDoor () {: aria-label='Functions' }
 #### [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html) TryPlaceRoomAtDoor ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfigToPlace, [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html) NeighborRoomDescriptor, [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) DoorSlot, int Seed = 0, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
-Similar to [TryPlaceRoom](Isaac.md#tryplaceroom), but attempts to place the provided room (the [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html)) as a neighbor of an existing room (the [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html)) at the specified [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html).
+Similar to [TryPlaceRoom](Level.md#tryplaceroom), but attempts to place the provided room (the [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html)) as a neighbor of an existing room (the [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html)) at the specified [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html).
 
-Otherwise, the details are the same as for [TryPlaceRoom](Isaac.md#tryplaceroom).
+Otherwise, the details are the same as for [TryPlaceRoom](Level.md#tryplaceroom).
 
 ???- example "Example Code"
 	```lua
