@@ -6105,9 +6105,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDimension ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getgridentitiessavestate" class="md-nav__link">
     <span class="md-ellipsis">
       GetGridEntitiesSaveState ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getneighboringrooms" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetNeighboringRooms ()
     </span>
   </a>
   
@@ -7292,9 +7310,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDimension ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getgridentitiessavestate" class="md-nav__link">
     <span class="md-ellipsis">
       GetGridEntitiesSaveState ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getneighboringrooms" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetNeighboringRooms ()
     </span>
   </a>
   
@@ -7409,8 +7445,40 @@
 <h3 aria-label="Functions" id="getentitiessavestate">GetEntitiesSaveState ()<a class="headerlink" href="#getentitiessavestate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entitiessavestatevector-getentitiessavestate"><a href="EntitiesSaveStateVector.html">EntitiesSaveStateVector</a> GetEntitiesSaveState ( )<a class="headerlink" href="#entitiessavestatevector-getentitiessavestate" title="Permanent link">⚓︎</a></h4>
 <hr />
+<h3 aria-label="Functions" id="getdimension">GetDimension ()<a class="headerlink" href="#getdimension" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="dimension-getdimension"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html">Dimension</a> GetDimension ( )<a class="headerlink" href="#dimension-getdimension" title="Permanent link">⚓︎</a></h4>
+<p>Returns the <a href="enums/Dimension.html">Dimension</a> that this room exists in.</p>
+<hr />
 <h3 aria-label="Functions" id="getgridentitiessavestate">GetGridEntitiesSaveState ()<a class="headerlink" href="#getgridentitiessavestate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="gridentitiessavestatevector-getgridentitiessavestate"><a href="GridEntitiesSaveStateVector.html">GridEntitiesSaveStateVector</a> GetGridEntitiesSaveState ( )<a class="headerlink" href="#gridentitiessavestatevector-getgridentitiessavestate" title="Permanent link">⚓︎</a></h4>
+<hr />
+<h3 aria-label="Functions" id="getneighboringrooms">GetNeighboringRooms ()<a class="headerlink" href="#getneighboringrooms" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="table-getneighboringrooms">table GetNeighboringRooms ( )<a class="headerlink" href="#table-getneighboringrooms" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table that maps <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html">DoorSlot</a> to <a href="https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html">RoomDescriptor</a> for all of the current neighbors of this room.</p>
+<p>Don't use <code>ipairs</code> to iterate over this, use <code>pairs</code>!</p>
+<details class="- example">
+<summary>Example Code</summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Returns true if the room has a neighboring secret room.</span>
+<span class="kd">local</span> <span class="kr">function</span> <span class="nf">HasSecretRoomNeighbor</span><span class="p">(</span><span class="n">roomDesc</span><span class="p">)</span>
+    <span class="kr">for</span> <span class="n">doorSlot</span><span class="p">,</span> <span class="n">neighborDesc</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">roomDesc</span><span class="p">:</span><span class="n">GetNeighboringRooms</span><span class="p">())</span> <span class="kr">do</span>
+        <span class="kd">local</span> <span class="n">roomType</span> <span class="o">=</span> <span class="n">neighborDesc</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">Type</span>
+        <span class="kr">if</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SUPERSECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_ULTRASECRET</span> <span class="kr">then</span>
+            <span class="kr">return</span> <span class="kc">true</span>
+        <span class="kr">end</span>
+    <span class="kr">end</span>
+    <span class="kr">return</span> <span class="kc">false</span>
+<span class="kr">end</span>
+</code></pre></div></td></tr></table></div>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getrestrictedgridindexes">GetRestrictedGridIndexes ()<a class="headerlink" href="#getrestrictedgridindexes" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getrestrictedgridindexes">int[] GetRestrictedGridIndexes ( )<a class="headerlink" href="#int-getrestrictedgridindexes" title="Permanent link">⚓︎</a></h4>
