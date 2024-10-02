@@ -10,6 +10,8 @@ Additions:
 Modified:
 * EntityPlayer:
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+* ImGui:
+	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 /newline/
 /versionseparator/
 v1.0.12.a -
