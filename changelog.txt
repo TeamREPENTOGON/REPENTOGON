@@ -1,3 +1,17 @@
+v1.0.x -
+Additions:
+* EntityPlayer:
+	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]ForgottenSwapFormCooldown
+* ModCallbacks:
+	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
+		Return true to cancel pocket item swap.
+/newline/
+Modified:
+* EntityPlayer:
+	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+/newline/
+/versionseparator/
 v1.0.12.a -
 * The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
 Additions:

@@ -1087,3 +1087,48 @@ void ASMPatchPrePlayerGiveBirth() {
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
 }
+
+//MC_PRE_PLAYER_POCKET_ITEM_SWAP(1287)
+bool __stdcall RunPrePlayerPocketItemSwapCallback(Entity_Player* player) {
+	const int callbackid = 1287;
+	
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return false;
+}
+
+void ASMPatchPrePlayerPocketItemSwap() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+
+	SigScan scanner_transition("8dbb????????833f00");
+	scanner_transition.Scan();
+	void* addr = scanner_transition.GetAddress();
+	printf("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBX) // Player
+		.AddInternalCall(RunPrePlayerPocketItemSwapCallback)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xB3) // Skipping pocket item swap
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 6))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 6);
+	sASMPatcher.PatchAt(addr, &patch);
+}

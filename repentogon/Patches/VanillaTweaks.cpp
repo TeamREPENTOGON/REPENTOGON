@@ -59,12 +59,12 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 }
 */
 
-HOOK_METHOD(Console, SubmitInput, (bool unk) -> void) {
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
 	Game* game = g_Game;
 	if (game->GetDailyChallenge()._id != 0 && !game->GetDailyChallenge()._isPractice) {
 		return;
 	}
-	super(unk);
+	super(in, out, player);
 }
 
 // Instruct the stat HUD to recalculate planetarium chance after every new level. Avoids running planetarium chance calculation and associated callbacks every frame
