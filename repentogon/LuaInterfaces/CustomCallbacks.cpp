@@ -4578,6 +4578,7 @@ HOOK_STATIC(LuaEngine, PostPickupSelection, (Entity_Pickup* pickup, int* variant
 		*subType = (int)luaL_optinteger(L, -1, *subType);
 		lua_pop(L, 1);
 	}
+}
 
 // GET_STATUS_EFFECT_TARGET (1485)
 HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
