@@ -66,88 +66,17 @@ Entity* __stdcall GetStatusEffectTargetTrampoline(Entity* target) {
 */ /////////////////////
 
 void ASMPatchInlinedGetStatusEffectTarget(void* addr, ASMPatch::Registers entityReg, ASMPatch::Registers targetReg, ASMPatch::SavedRegisters::Registers savedReg, unsigned int jumpOffset) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS + ASMPatch::SavedRegisters::XMM1 - savedReg, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS | ASMPatch::SavedRegisters::XMM1 & ~savedReg, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(entityReg)
 		.AddInternalCall(GetStatusEffectTargetTrampoline)
-		// poor man's mov reg,reg
-		.Push(ASMPatch::Registers::EAX)
-		.Pop(targetReg)
+		.CopyRegister(targetReg, ASMPatch::Registers::EAX)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-/* /////////////////////
-// Thank you, God bless you, and God bless the United States of America.
-*/ /////////////////////
-
-bool avoidIceCrash = false;
-void __stdcall AvoidIceCrashHack() {
-	avoidIceCrash = true;
-}
-
-void ASMPatchIcedKnockbackPreNPC() {
-	SigScan scanner("6a0168c80000008d85");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch patch;
-	patch.AddInternalCall(AvoidIceCrashHack)
-		.AddBytes("\x6a\x01\x68\xc8").AddZeroes(3)
-		.AddRelativeJump((char*)addr + 7);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void ASMPatchIcedKnockbackPrePlayer() {
-	SigScan scanner("68c8000000508d4424");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch patch;
-	patch.AddInternalCall(AvoidIceCrashHack)
-		.AddBytes("\x68\xc8").AddZeroes(3)
-		.AddRelativeJump((char*)addr + 5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-HOOK_METHOD(Entity, AddKnockback, (EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
-	if (!avoidIceCrash)
-		super(ref, pushDirection, duration, takeImpactDamage);
-	else
-	{
-		Entity* entity = this;
-		if (!IgnoreEffectFromFriendly(&ref)) {
-			if (GetStatusEffectTarget()) {
-				Entity* parent = this->_parent;
-				Entity* otherEnt = parent;
-				while (otherEnt = parent, otherEnt != nullptr) {
-					entity = otherEnt;
-					parent = otherEnt->_parent;
-				}
-			}
-			if (duration != 0 && ((entity->_flags & 1) == 0 || (entity->_flags & 0x2000000000000) != 0)) {
-				entity->_knockbackCountdown = duration;
-				entity->_knockbackDirection = pushDirection;
-				if (10.0f < entity->_mass && ((this->_flags & 0x2000000000000) == 0)) {
-					float logMass = 1.0f / std::log10(entity->_mass);
-					entity->_knockbackDirection *= logMass;
-					int countdown = (int)(entity->_knockbackCountdown * logMass);
-					if (countdown < 1)
-						countdown = 1;
-					entity->_knockbackCountdown = countdown;
-				}
-				entity->_flags |= 0x800000000000;
-				if (takeImpactDamage)
-					entity->_flags |= 0x1800000000000;
-				entity->CopyStatusEffects();
-			}
-		}
-
-		avoidIceCrash = false;
-	}
-}
 
 /* /////////////////////
 // Run patches
@@ -156,7 +85,7 @@ HOOK_METHOD(Entity, AddKnockback, (EntityRef& ref, const Vector& pushDirection, 
 void PatchInlinedGetStatusEffectTarget()
 {
 	ZHL::Logger logger;
-	for (StatusEffectPatchInfo i : patches) {
+	for (const StatusEffectPatchInfo& i : patches) {
 		SigScan scanner(i.signature);
 		scanner.Scan();
 		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
@@ -164,6 +93,4 @@ void PatchInlinedGetStatusEffectTarget()
 		logger.Log("Patching inlined GetStatusEffectTarget in %s at %p\n", i.funcName, addr);
 		ASMPatchInlinedGetStatusEffectTarget(addr, i.entityReg, i.targetReg, i.saveReg, i.jumpOffset);
 	};
-	ASMPatchIcedKnockbackPreNPC();
-	ASMPatchIcedKnockbackPrePlayer();
 }

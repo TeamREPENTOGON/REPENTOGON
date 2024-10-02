@@ -12,12 +12,6 @@ static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, f
 "558bec83e4f8515356578bd9e8????????84c0":
 __thiscall void Entity::CopyStatusEffects();
 
-"558bec5156ff75":
-__thiscall void Entity::AddIce(const EntityRef& ref, int duration);
-
-"558bec83e4f85156ff75??8bf1e8":
-__thiscall void Entity::AddKnockback(EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
-
 "558bec518379??01":
 __thiscall unsigned int Entity::ComputeStatusEffectDuration(int initial, EntityRef* source);
 
@@ -85,6 +79,12 @@ __thiscall void Entity::AddFear(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57":
 __thiscall void Entity::AddFreeze(const EntityRef& ref, int duration);
+
+"558bec83e4f85156ff75??8bf1e8":
+__thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
+
+"558bec5156ff75":
+__thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec38a1????????33c4894424??56578b7d??8bf1":
 __thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);

@@ -4582,6 +4582,7 @@ HOOK_STATIC(LuaEngine, PostPickupSelection, (Entity_Pickup* pickup, int* variant
 // GET_STATUS_EFFECT_TARGET (1485)
 HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 	const int callbackid = 1485;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -4589,7 +4590,7 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
-			.push(*this->GetType())
+			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
 			.call(1);
 
