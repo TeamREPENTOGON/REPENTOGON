@@ -374,6 +374,7 @@ nav:
 - Example Mods:
   - Capsules: examples/Capsules.md
   - Deal Chance: examples/DealChance.md
+  - ImGui Menu: examples/ImGuiMenu.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
   - Beams: examples/Beams.md
   - Color Modifiers: examples/ColorModifiers.md
