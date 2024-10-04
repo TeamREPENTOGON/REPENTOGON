@@ -390,7 +390,6 @@ struct CustomImGui {
         }
         if (element->type == IMGUI_ELEMENT::Menu) { g_Game->GetConsole()->PrintError("Cant Remove a Menu, Use RemoveMenu to Remove menus! (" + std::string(elementId) + ") \n"); return false; }
         if (element->type == IMGUI_ELEMENT::Window) { g_Game->GetConsole()->PrintError("Cant Remove a Window, Use RemoveWindow to Remove windows! (" + std::string(elementId) + ") \n"); return false; }
-        if (element->type == IMGUI_ELEMENT::ColorEdit) { g_Game->GetConsole()->PrintError("Cant Remove a Color, Use RemoveColor to Remove colors! (" + std::string(elementId) + ") \n"); return false; }
 
         if (element->parent != NULL) {
             Element* daddy = element->parent;
