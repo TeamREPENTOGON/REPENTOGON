@@ -6,6 +6,12 @@ Additions:
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
 		Return true to cancel pocket item swap.
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+		(add description later)
+	- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+		(add description later)
+	- MC_PRE_BED_SLEEP(Player, Bed)
+		(add description later)
 /newline/
 Modified:
 * EntityPlayer:

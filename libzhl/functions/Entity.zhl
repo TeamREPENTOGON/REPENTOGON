@@ -209,6 +209,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	float _shrinkStatus2 : 0x310;
 	Entity * _parent : 0x314;
 	Entity * _child : 0x318;
+	Entity * _target : 0x31c;
 	Entity * _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
 

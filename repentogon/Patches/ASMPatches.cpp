@@ -5,6 +5,7 @@
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
 #include "FamiliarTags.h"
+#include "PlayerTags.h"
 #include "GetCoinValue.h"
 #include "PocketItems.h"
 #include "Anm2Extras.h"
@@ -100,6 +101,7 @@ void PerformASMPatches() {
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
+	ASMPatchesBedCallbacks();
 	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
@@ -139,8 +141,7 @@ void PerformASMPatches() {
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
-	ASMPatchPlayerNoShake();
-	ASMPatchPlayerItemNoMetronome();
+	ASMPatchesForPlayerCustomTags();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
 	ASMPatchAddActiveCharge();
