@@ -6,7 +6,7 @@
 
 // Contains the code for some tag strings that can be added to the new "customtags" XML attribute in players.xml.
 constexpr char ITEM_NO_METRONOME[] = "nometronome";  // Prevent items from being picked by Metronome.
-constexpr char ITEM_NO_EXPANSION_PACK[] = "noexpansionpack";  // Prevent items from being picked by Expansion Pack.
+constexpr char ITEM_NO_EXPANSION_PACK[] = "noexpansionpack";  // Prevent active items from being picked by Expansion Pack.
 
 bool __stdcall PlayerTypeNoShake(int playerType) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
@@ -92,7 +92,36 @@ void ASMPatchPlayerItemNoMetronome() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+bool __stdcall PlayerItemNoExpansionPack(int itemID) {
+	if (XMLStuff.ItemData->HasCustomTag(itemID, ITEM_NO_EXPANSION_PACK)) {
+		return false;
+	}
+
+	return itemID != 489 && itemID != 488 && itemID != 422 && itemID != 703;
+}
+
+void ASMPatchPlayerItemNoExpansionPack() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("81f9e9010000");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+	printf("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // itemId
+		.AddInternalCall(PlayerItemNoExpansionPack)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x20) // jump for true
+		.AddRelativeJump((char*)addr + 0x7b);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForPlayerCustomTags() {
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
+	ASMPatchPlayerItemNoExpansionPack();
 }
