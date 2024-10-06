@@ -164,9 +164,12 @@ end
 
 Repentogon itself adds some tags that can be used to apply certain features to items with minimal lua code:
 
-| customtag | Effects |
+| customcache | Effects |
 |:--|:--|
 | familiarmultiplier | Does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggers MC_EVALUATE_FAMILIAR_MULTIPLIER for each of the player's familiars the next time any code checks their multiplier. |
+| maxcoins | Triggers re-evaluation of the max coins for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max coins, the callback only runs for player 1. |
+| maxkeys | Triggers re-evaluation of the max keys for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max keys, the callback only runs for player 1. |
+| maxbombs | Triggers re-evaluation of the max bombs for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max bombs, the callback only runs for player 1. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/items.html). 

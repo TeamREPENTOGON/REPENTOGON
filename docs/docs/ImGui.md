@@ -4,6 +4,8 @@ tags:
 ---
 # Class "ImGui"
 
+An example mod using the ImGui class can be found [here.](./examples/ImGuiMenu.md)
+
 ???+ info
     You can get this class by using the global table "ImGui"
 

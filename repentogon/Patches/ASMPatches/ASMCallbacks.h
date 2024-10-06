@@ -21,3 +21,5 @@ void ASMPatchPickupUpdatePickupGhosts();
 void ASMPatchProjectileDeath();
 void ASMPatchTearDeath();
 void ASMPatchPrePlayerGiveBirth();
+void ASMPatchesBedCallbacks();
+void ASMPatchPrePlayerPocketItemSwap();

@@ -1,3 +1,37 @@
+v1.0.x -
+Additions:
+* EntityPlayer:
+	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]ForgottenSwapFormCooldown
+* EntityFamiliar:
+	- IsLilDelirium
+	- SetLilDelirium
+* ModCallbacks:
+	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
+		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
+		Return true to cancel pocket item swap.
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+		Triggers if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+		Return true to cancel vanilla behavior.
+	- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+	- MC_PRE_BED_SLEEP(Player, Bed)
+		Triggers on bed collision and before playing sleep sequence.
+		Return true to cancel vanilla behavior.
+* Added the following customtag for items.xml:
+	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
+* Sprite:
+	- GetLayerFrame(string or int)
+/newline/
+Modified:
+* EntityPlayer:
+	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+* ImGui:
+	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
+Fixes:
+* ImGui:
+	- Fixed RemoveElement not working on elements created with AddInputColor.
+/newline/
+/versionseparator/
 v1.0.12.a -
 * The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
 Additions:

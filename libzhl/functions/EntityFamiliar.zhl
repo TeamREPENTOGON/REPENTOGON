@@ -61,6 +61,9 @@ __thiscall void Entity_Familiar::WispInit();
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd0000000a1????????33c58945??5657508d45??64a3????????8bf9897d":
 __thiscall bool Entity_Familiar::wisp_kill();
 
+"558bec6aff68????????64a1????????5083ec74a1????????33c58945??5657508d45??64a3????????8bf9897d??f30f7e05":
+__thiscall void Entity_Familiar::delirium_morph();
+
 
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 {{
@@ -74,6 +77,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 	bool _isFollower : 0xcc4;
 	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;
+	bool _isLilDelirium : 0xd00;
 	ItemConfig_Item* _item : 0xe20;
 	ColorMod _dirtColor : 0xe28;
 	int _wispCollectibleType : 0xe54;

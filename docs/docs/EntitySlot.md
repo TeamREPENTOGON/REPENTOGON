@@ -23,6 +23,10 @@ Returns how many coins have been given to a beggar. The number returned varies b
     - Demon Beggar: How many hearts have been donated.
     - Battery Bum, Rotten Beggar: Increases with each payment by random amounts, up to 3, and resets back to 0 upon reward or payout.
     - All other slots: Remains at 0.
+___
+### GetPrizeCollectible () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetPrizeCollectible ( ) {: .copyable aria-label='Functions' }
+Seems to only be used by Crane Game and Hell Game. Gets the collectible that will be awarded as the prize when winning.
 
 ___
 ### GetPrizeType () {: aria-label='Functions' }

@@ -18,6 +18,15 @@ tags:
     
 ## Functions
 
+### AddBestiaryKill () {: aria-label='Functions' }
+#### void AddBestiaryKill ( int Type, int Variant = 0 ) {: .copyable aria-label='Functions' }
+
+___
+### AddBossKilled () {: aria-label='Functions' }
+#### void AddBossKilled ( [BossType](enums/BossType.md) Boss) {: .copyable aria-label='Functions' }
+Marks this boss as killed and unlocks its relevant alternate floor if conditions are met.
+
+___
 ### GetBestiaryDeathCount () {: aria-label='Functions' }
 #### int GetBestiaryDeathCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
@@ -36,6 +45,11 @@ ___
 ___
 ### IncreaseEventCounter () {: aria-label='Functions' }
 #### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Count ) {: .copyable aria-label='Functions' }
+
+___
+### IsBossKilled () {: aria-label='Functions' }
+#### boolean IsBossKilled ( [BossType](enums/BossType.md) Boss) {: .copyable aria-label='Functions' }
+Returns whether this boss was marked as killed (for purposes of unlock tracking).
 
 ___
 ### IsChallengeCompleted () {: aria-label='Functions' }
