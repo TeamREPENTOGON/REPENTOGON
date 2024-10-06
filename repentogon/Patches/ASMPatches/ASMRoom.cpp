@@ -3,9 +3,8 @@
 #include "../../LuaInterfaces/Room/Room.h"
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
-*  Boss rooms can't be changed in this manner as they have more setup, and will crash if forced above 2.
+*  An extra patch to spawn_wave is neccessary to make this work for boss challenge rooms because no difficulty 15 wave exists by default.
 *  The game already sets up a check to see if we're in a boss ambush room in the EAX register at the point we hook.
-*  We compare against the pre-set check. If we're a boss room, move 2 to the EBX register, otherwise, move our pointer to the EBX register.
 */
 void ASMPatchAmbushWaveCount() {
 	SigScan scanner("33db83f801");
@@ -13,22 +12,71 @@ void ASMPatchAmbushWaveCount() {
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
-
-	char ptrMov[] = {
-		(char)0x8B, 0X1D, 0, 0, 0, 0, 0
-	};
-
-	void* ptr = &ambushWaves;
-	memcpy(ptrMov + 2, &ptr, sizeof(ptr));
+	void* ambushPtr = &ambushWaves;
+	void* bossAmbushPtr = &bossAmbushWaves;
 
 	ASMPatch patch;
-	patch.AddBytes("\x83\xF8\x01") // cmp eax, 1
-		.AddBytes("\x75\x07") // jne (current addr + 0x7)
-		.AddBytes("\xBB\x02").AddZeroes(3) // mov ebx, 2
-		.AddBytes("\xEB\x06") // jmp (current addr + 0x6);
-		.AddBytes(ByteBuffer().AddAny(ptrMov, 6)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+	patch.AddBytes("\x83\xF8\x01") // cmp eax, 1 (is this a boss challenge?)
+		.AddBytes("\x75\x0B") // jne (current addr + 0xB)
+		.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&bossAmbushPtr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+		.AddRelativeJump((char*)addr + 0xB)
+		// JNE DESTINATION
+		.AddBytes("\x8B\x1D").AddBytes(ByteBuffer().AddAny((char*)&ambushPtr, 4)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+/* This function overrides the call to GetRandomRoom in spawn_wave.
+ * spawn_wave is thiscall. stdcall will mirror the stack cleaning
+ * convention, and, as we don't need to preserve ecx under thiscall, nothing
+ * more is required.
+ */
+static RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
+
+RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode) {
+
+	if (roomSubtype == 11 && maxDifficulty == 15)
+	{
+		RoomConfig_Room* room = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+		if (room == nullptr) {
+			room = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+				10, 10, requiredDoors, roomSubtype, mode);
+		}
+		return room;
+	}
+	return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+}
+
+void PatchBossWaveDifficulty() {
+	const char* signature = "e8????????8bf08975??85f60f85"; // call GetRandomRoom
+	SigScan scanner(signature);
+	if (!scanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch boss wave difficulty\n");
+		return;
+	}
+
+	void* patchAddr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching spawn_wave at %p\n", patchAddr);
+	ASMPatch patch;
+	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	// patch.PreserveRegisters(registers);
+	/* Registers need not be saved, as we are performing the equivalent of a
+	 * function call. Push ecx so the override function can access the current
+	 * RoomConfig object.
+	 */
+	patch.Push(ASMPatch::Registers::ECX);
+	patch.AddInternalCall(&OverrideGetRandomRoom);
+	patch.AddRelativeJump((char*)patchAddr + 5);
+	// patch.RestoreRegisters(registers);
+
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 /* Mega Satan has a seeded 50% chance to end the game forcefully.
@@ -175,44 +223,7 @@ void PatchRoomClearDelay() {
 	ASMPatchDeepGaperClearCheck(addrs[2]);
 }
 
-/*
-// idk what's causing this one to crash on launch
-void ASMPatchRoomClearDelay() {
-	SigScan scanner1("c787????????0a00000075??8b469");
-	SigScan scanner2("b8140000000f44c8898f");
-	scanner1.Scan();
-	scanner2.Scan();
-	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
-
-	printf("[REPENTOGON] Patching Room Clear delay at %p, %p, %p\n", addrs[0], addrs[1], ((char*)addrs[1] + 0x2));
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch1, patch2, patch3;
-
-	patch1.Push(ASMPatch::Registers::EAX) // preserve unmodified eax
-		.AddBytes("\x9f") // store status flags
-		.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EDI) // push Room
-		.AddInternalCall(SetRoomClearDelay) // call SetRoomClearDelay()
-		.RestoreRegisters(reg)
-		.AddBytes("\x9e") // restore status flags
-		.Pop(ASMPatch::Registers::EAX) // restore unmodified eax
-		.AddRelativeJump((char*)addrs[0] + 0xa); // jmp isaac-ng.XXXXXXXX
-
-	patch2.AddBytes("\x75\x0c"); // jne 0xc
-
-	patch3.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EDI) // push Room
-		.AddInternalCall(SetRoomClearDelay) // call SetRoomClearDelay()
-		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addrs[1] + 0xd); // jmp isaac-ng.XXXXXXXX
-
-	sASMPatcher.PatchAt(addrs[0], &patch1);
-	sASMPatcher.FlatPatch(addrs[1], &patch2);
-	sASMPatcher.PatchAt(((char*)addrs[1] + 0x2), &patch3);
-}
-*/
-
+// this changes the function to check Game's time counter instead of frame counter, in parity with TrySpawnBossRushDoor
 void ASMPatchTrySpawnBlueWombDoor() {
 	SigScan scanner("83f8087c??8b83");
 	scanner.Scan();

@@ -771,10 +771,12 @@ namespace lua {
 		const char* ImGuiMT = "ImGui";
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* KeyConfigMenuMT = "KeyConfigMenu";
+		const char* LayerStateMT = "LayerState";
 		const char* LevelGeneratorMT = "LevelGenerator";
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
-		const char* LayerStateMT = "LayerState";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
+		const char* LRoomAreaDescMT = "LRoomAreaDesc";
+		const char* LRoomTileDescMT = "LRoomTileDesc";
 		const char* MainMenuMT = "MainMenu";
 		const char* MenuManagerMT = "MenuManager";
 		const char* MinimapMT = "Minimap";

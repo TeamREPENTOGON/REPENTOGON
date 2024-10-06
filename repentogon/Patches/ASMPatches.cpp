@@ -5,12 +5,14 @@
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
 #include "FamiliarTags.h"
+#include "PlayerTags.h"
 #include "GetCoinValue.h"
 #include "PocketItems.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 #include "EntityPlus.h"
 #include "CustomItemPools.h"
+#include "CardsExtras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -22,6 +24,7 @@
 #include "ASMPatches/ASMPlayerManager.h"
 #include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
+#include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 
 #include "ASMPatcher.hpp"
@@ -115,6 +118,8 @@ void PerformASMPatches() {
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
+	ASMPatchesBedCallbacks();
+	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -125,6 +130,7 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	ASMPatchAddWeakness();
+	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
 	PatchGridCallbackShit();
@@ -133,9 +139,8 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
-	PatchDealRoomVariant();
 	ASMPatchFXLayersInit();
-	
+	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();
 	PatchLevelGeneratorTryResizeEndroom();
 
@@ -145,6 +150,7 @@ void PerformASMPatches() {
 
 	// Room
 	ASMPatchAmbushWaveCount();
+	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
@@ -153,10 +159,13 @@ void PerformASMPatches() {
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
-	ASMPatchPlayerNoShake();
-	ASMPatchPlayerItemNoMetronome();
+	ASMPatchesForPlayerCustomTags();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
+	ASMPatchAddActiveCharge();
+
+	// Status Effects
+	PatchInlinedGetStatusEffectTarget();
 
 	// Render
 	LuaRender::PatchglDrawElements();
@@ -174,6 +183,7 @@ void PerformASMPatches() {
 	ASMPatchesForCustomCache();
 	ASMPatchesForCustomItemPools();
 	ExtraASMPatchesForCustomItemPools();
+	ASMPatchesForCardsExtras();
 	HookImGui();
 
 	// Sprite

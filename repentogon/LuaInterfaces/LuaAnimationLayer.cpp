@@ -4,10 +4,9 @@
 
 // Given that some AnimationFrames have a duration >1, need to crawl through them to
 // find which AnimationFrame is used for the Nth frame of the whole animation.
-// I'm sure there is something in the game that could allow me to find this faster,
-// but I haven't found that yet. Could replace this with a binary search later...
+// The game basically does this as well.
 static AnimationFrame* FindAnimationFrame(AnimationLayer* animationLayer, const int frame) {
-	for (int i = 0; i < animationLayer->GetFrameCount(); ++i) {
+	for (int i = 0; i < animationLayer->GetFrameCount(); i++) {
 		AnimationFrame* animationFrame = animationLayer->GetFrame(i);
 		if (animationFrame == nullptr) {
 			// Uh oh! This should never happen! I think!

@@ -19,3 +19,4 @@ void ASMPatchPlayerStats();
 void ASMPatchPlayerNoShake();
 void ASMPatchPlayerItemNoMetronome();
 void ASMPatchMarsDoubleTapWindow();
+void ASMPatchAddActiveCharge();

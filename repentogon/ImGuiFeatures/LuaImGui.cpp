@@ -25,7 +25,7 @@ static int EvalIDAndParent(lua_State* L, const char* id, const char* parentId)
 	if (!customImGui.ElementExists(parentId))
 		return luaL_error(L, "Parent Element with id '%s'doesnt exist.", parentId);
 	if (customImGui.ElementExists(id))
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveElement(id);
 	return 0;
 }
 
@@ -84,7 +84,7 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 	const char* text = luaL_checkstring(L, 2);
 
 	if (customImGui.ElementExists(id)) {
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveMenu(id);
 	}
 
 	bool success = customImGui.CreateMenuElement(id, text);
@@ -110,7 +110,7 @@ LUA_FUNCTION(Lua_ImGui_CreateWindow)
 	const char* title = luaL_checkstring(L, 2);
 
 	if (customImGui.ElementExists(id)) {
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveWindow(id);
 	}
 
 	bool success = customImGui.CreateWindowElement(id, title);

@@ -161,7 +161,7 @@ ___
 
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
-#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### boolean CanOverrideActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanUsePill () {: aria-label='Functions' }
@@ -274,13 +274,6 @@ ___
 Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
-### GetCustomCacheValue () {: aria-label='Functions' }
-#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
-Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
-
-See [items.xml](xml/items.md) for more information on custom caches.
-
-___
 ### GetCollectiblesList () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
 Returns a table with the amount of each collectible the player has, without counting innate items.
@@ -342,6 +335,13 @@ ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
 #### [CostumeSpriteDesc](CostumeSpriteDesc.md)[] GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
+
+___
+### GetCustomCacheValue () {: aria-label='Functions' }
+#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
+Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
+
+See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetD8DamageModifier () {: aria-label='Functions' }
@@ -527,6 +527,21 @@ ___
 ### GetMaxBladderCharge () {: aria-label='Functions' }
 #### int GetMaxBladderCharge ( ) {: .copyable aria-label='Functions' }
 Returns the maximum charge for when the player stops shooting and charges the Kidney Stone item.
+
+___
+### GetMaxBombs () {: aria-label='Functions' }
+#### int GetMaxBombs ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of bombs the player can currently hold.
+
+___
+### GetMaxCoins () {: aria-label='Functions' }
+#### int GetMaxCoins ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of coins the player can currently hold.
+
+___
+### GetMaxKeys () {: aria-label='Functions' }
+#### int GetMaxKeys ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of keys the player can currently hold.
 
 ___
 ### GetMaxPeeBurstCooldown () {: aria-label='Functions' }

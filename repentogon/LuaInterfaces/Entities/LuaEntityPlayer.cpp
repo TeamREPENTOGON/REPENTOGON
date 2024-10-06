@@ -5,9 +5,12 @@
 #include "../LuaWeapon.h"
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
+#include "../../Patches/CustomCache.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
+
+#include <algorithm>
 
 
 /*
@@ -178,6 +181,27 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	return 1;
 }
 
+LUALIB_API int LuaCheckActiveSlot(lua_State* L, int arg, bool allowNegative) {
+	lua_Integer slot = luaL_optinteger(L, arg, 0);
+	if ((!allowNegative && slot < 0) || slot > 3) {
+		std::string error("Invalid ActiveSlot ");
+		error.append(std::to_string(slot));
+		return luaL_argerror(L, arg, error.c_str());
+	}
+	return (int)slot;
+}
+
+LUA_FUNCTION(Lua_AddCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	const int itemID = (int)luaL_checkinteger(L, 2);
+	const int charge = (int)luaL_optinteger(L, 3, 0);
+	const bool firstTimePickingUp = (bool)lua::luaL_optboolean(L, 4, true);  // aka "addConsumables"
+	const int activeSlot = LuaCheckActiveSlot(L, 5, false);
+	const int varData = (int)luaL_optinteger(L, 6, 0);
+	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_BlockCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
@@ -297,7 +321,7 @@ LUA_FUNCTION(Lua_PlayerGetHealthType)
 
 LUA_FUNCTION(Lua_PlayerGetTotalActiveCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = (int)luaL_checkinteger(L, 2);
+	int slot = LuaCheckActiveSlot(L, 2, false);
 
 	lua_pushinteger(L, player->GetTotalActiveCharge(slot));
 	return 1;
@@ -305,7 +329,7 @@ LUA_FUNCTION(Lua_PlayerGetTotalActiveCharge) {
 
 LUA_FUNCTION(Lua_PlayerGetActiveMaxCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = (int)luaL_checkinteger(L, 2);
+	int slot = LuaCheckActiveSlot(L, 2, false);
 
 	lua_pushinteger(L, player->GetActiveMaxCharge(slot));
 	return 1;
@@ -313,7 +337,7 @@ LUA_FUNCTION(Lua_PlayerGetActiveMaxCharge) {
 
 LUA_FUNCTION(Lua_PlayerGetActiveMinUsableCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = (int)luaL_checkinteger(L, 2);
+	int slot = LuaCheckActiveSlot(L, 2, false);
 
 	lua_pushinteger(L, player->GetActiveMinUsableCharge(slot));
 	return 1;
@@ -322,16 +346,68 @@ LUA_FUNCTION(Lua_PlayerGetActiveMinUsableCharge) {
 LUA_FUNCTION(Lua_PlayerSetActiveVarData) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int vardata = (int)luaL_checkinteger(L, 2);
-	int slot = (int)luaL_checkinteger(L, 3);
+	int slot = LuaCheckActiveSlot(L, 3, false);
 
 	player->SetActiveVarData(vardata, slot);
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetActiveItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = LuaCheckActiveSlot(L, 2, false);
+
+	lua_pushinteger(L, player->GetActiveItem(slot));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetActiveCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = LuaCheckActiveSlot(L, 2, false);
+
+	lua_pushinteger(L, player->GetActiveCharge(slot));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetActiveSubCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = LuaCheckActiveSlot(L, 2, false);
+
+	lua_pushinteger(L, player->GetActiveSubCharge(slot));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBatteryCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = LuaCheckActiveSlot(L, 2, false);
+
+	lua_pushinteger(L, player->GetBatteryCharge(slot));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerNeedsCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	// Negative values are ok - the game interprets that as asking if ANY slot needs charge.
+	int slot = LuaCheckActiveSlot(L, 2, true);
+
+	lua_pushboolean(L, player->NeedsCharge(slot));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetActiveCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int charge = (int)luaL_checkinteger(L, 2);
+	// Negative values are ok - the game interprets that as setting the charge to ALL slots.
+	int slot = LuaCheckActiveSlot(L, 3, true);
+
+	player->SetActiveCharge(charge, slot);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerAddActiveCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int charge = (unsigned int)luaL_checkinteger(L, 2);
-	int slot = (int)luaL_checkinteger(L, 3);
+	int charge = (int)luaL_checkinteger(L, 2);
+	// Negative values are okay, the game interprets that as "add the charge to all slots".
+	int slot = LuaCheckActiveSlot(L, 3, true);
 	bool flashHUD = lua::luaL_optboolean(L, 4, true);
 	bool overcharge = lua::luaL_optboolean(L, 5, false);
 	bool force = lua::luaL_optboolean(L, 6, false);
@@ -340,6 +416,37 @@ LUA_FUNCTION(Lua_PlayerAddActiveCharge) {
 	lua_pushinteger(L, ret);
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerFullCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	// Negative values are okay, the game interprets that as "fully charge all slots".
+	int slot = LuaCheckActiveSlot(L, 2, true);
+	bool force = lua::luaL_optboolean(L, 3, true);
+
+	lua_pushboolean(L, player->FullCharge(slot, force));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerDischargeActiveItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = LuaCheckActiveSlot(L, 2, false);
+
+	player->DischargeActiveItem(slot, false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerSetPocketActiveItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int item = (int)luaL_checkinteger(L, 2);
+	int slot = (int)luaL_optinteger(L, 3, 2);
+	if (slot != 2 && slot != 3) {
+		return luaL_argerror(L, 3, "Invalid ActiveSlot - SetPocketActiveItem can only be used for ActiveSlot.SLOT_POCKET or ActiveSlot.SLOT_POCKET2");
+	}
+	bool keepInPools = lua::luaL_optboolean(L, 4, false);
+
+	player->SetPocketActiveItem(item, slot, keepInPools);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerDropCollectible) {
@@ -448,11 +555,8 @@ LUA_FUNCTION(Lua_PlayerSetMegaBlastDuration)
 LUA_FUNCTION(Lua_PlayerGetActiveItemDesc)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int index = (int)luaL_optinteger(L, 2, 0);
-	if (index > 3) {
-		return luaL_argerror(L, 2, "ActiveSlot cannot be higher than 3");
-	}
-	ActiveItemDesc* desc = player->GetActiveItemDesc(index);
+	int slot = LuaCheckActiveSlot(L, 2, false);
+	ActiveItemDesc* desc = player->GetActiveItemDesc(slot);
 	if (!desc) {
 		lua_pushnil(L);
 	}
@@ -1248,8 +1352,8 @@ LUA_FUNCTION(Lua_SwapForgottenForm) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	bool IgnoreHealth = lua::luaL_optboolean(L, 2, false);
 	bool NoEffects = lua::luaL_optboolean(L, 3, false);
-	player->SwapForgottenForm(IgnoreHealth, NoEffects);
-	return 0;
+	lua_pushboolean(L, player->SwapForgottenForm(IgnoreHealth, NoEffects));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_SpawnAquariusCreep) {
@@ -1653,13 +1757,8 @@ LUA_FUNCTION(Lua_PlayerCanAddCollectibleToInventory) {
 
 LUA_FUNCTION(Lua_PlayerCanOverrideActiveItem) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int id = (int)luaL_checkinteger(L, 2);
-	if (id < 0 || id > 3) {
-		std::string error("Invalid slot ID ");
-		error.append(std::to_string(id));
-		return luaL_argerror(L, 2, error.c_str());
-	}
-	lua_pushboolean(L, player->CanOverrideActiveItem(id));
+	int slot = LuaCheckActiveSlot(L, 2, false);
+	lua_pushboolean(L, player->CanOverrideActiveItem(slot));
 
 	return 1;
 }
@@ -2427,11 +2526,53 @@ LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
 	return 1;
 }
 
+// Max coins/keys/bombs is shared for all players.
+LUA_FUNCTION(Lua_PlayerGetMaxCoins) {
+	lua_pushinteger(L, GetMaxCoins());
+	return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetMaxKeys) {
+	lua_pushinteger(L, GetMaxKeys());
+	return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetMaxBombs) {
+	lua_pushinteger(L, GetMaxBombs());
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_tearDisplacement);
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetActionHoldDrop) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_actionHoldDrop);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetActionHoldDrop) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_actionHoldDrop = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetForgottenSwapFormCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_forgottenSwapFormCooldown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetForgottenSwapFormCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_forgottenSwapFormCooldown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -2442,6 +2583,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "HasCollectible",Lua_HasCollectible },
 		{ "GetCollectibleNum",Lua_GetCollectibleNum },
+		{ "AddCollectible", Lua_AddCollectible },
 		{ "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity },
 		{ "InitTwin", Lua_InitTwin },
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },
@@ -2452,7 +2594,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetActiveMaxCharge", Lua_PlayerGetActiveMaxCharge },
 		{ "GetActiveMinUsableCharge", Lua_PlayerGetActiveMinUsableCharge },
 		{ "SetActiveVarData", Lua_PlayerSetActiveVarData },
+		{ "GetActiveItem", Lua_PlayerGetActiveItem },
+		{ "GetActiveCharge", Lua_PlayerGetActiveCharge },
+		{ "GetActiveSubCharge", Lua_PlayerGetActiveSubCharge },
+		{ "GetBatteryCharge", Lua_PlayerGetBatteryCharge },
+		{ "NeedsCharge", Lua_PlayerNeedsCharge },
+		{ "SetActiveCharge", Lua_PlayerSetActiveCharge },
 		{ "AddActiveCharge", Lua_PlayerAddActiveCharge },
+		{ "FullCharge", Lua_PlayerFullCharge },
+		{ "DischargeActiveItem", Lua_PlayerDischargeActiveItem },
+		{ "SetPocketActiveItem", Lua_PlayerSetPocketActiveItem },
 		{ "DropCollectible", Lua_PlayerDropCollectible },
 		{ "DropCollectibleByHistoryIndex", Lua_PlayerDropCollectibleByHistoryIndex },
 		{ "IncrementPlayerFormCounter", Lua_PlayerIncrementPlayerFormCounter },
@@ -2650,7 +2801,14 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
 		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
+		{ "GetMaxCoins", Lua_PlayerGetMaxCoins },
+		{ "GetMaxKeys", Lua_PlayerGetMaxKeys },
+		{ "GetMaxBombs", Lua_PlayerGetMaxBombs },
 		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
+		{ "GetActionHoldDrop", Lua_PlayerGetActionHoldDrop },
+		{ "SetActionHoldDrop", Lua_PlayerSetActionHoldDrop },
+		{ "GetForgottenSwapFormCooldown", Lua_PlayerGetForgottenSwapFormCooldown },
+		{ "SetForgottenSwapFormCooldown", Lua_PlayerSetForgottenSwapFormCooldown },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

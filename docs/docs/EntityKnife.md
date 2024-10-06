@@ -34,6 +34,10 @@ ___
 #### void SetIsSpinAttack ( boolean isSpinAttack ) {: .copyable aria-label='Functions' }
 
 ___
+### SetIsSwinging () {: aria-label='Functions' }
+#### void SetIsSwinging ( boolean isSwinging ) {: .copyable aria-label='Functions' }
+
+___
 ### SetMultidimensionalTouched () {: aria-label='Functions' }
 #### void SetMultiDimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
 Sets if the knife was created through the Angelic Prism effect.
@@ -42,9 +46,5 @@ ___
 ### SetPrismTouched () {: aria-label='Functions' }
 #### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
 Sets if the knife was created through the Angelic Prism effect.
-
-___
-### SetIsSwinging () {: aria-label='Functions' }
-#### void SetIsSwinging ( boolean isSwinging ) {: .copyable aria-label='Functions' }
 
 ___

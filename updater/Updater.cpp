@@ -1,8 +1,8 @@
 #include <Windows.h>
 
-#include "launcher/Logger.h"
+#include "dsound/Logger.h"
 #include "document.h"
-#include "launcher/utils.h"
+#include "dsound/utils.h"
 #include "updater/updater.h"
 
 #include <curl/curl.h>

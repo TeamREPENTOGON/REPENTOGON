@@ -4,6 +4,7 @@
 #include <sstream>
 #include <tuple>
 #include <vector>
+#include <algorithm>
 
 #include "HookSystem.h"
 #include "IsaacRepentance.h"

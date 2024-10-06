@@ -14,16 +14,22 @@ __thiscall bool AnimationState::WasEventTriggered(const char* eventName);
 __thiscall int AnimationState::NextEventTrigger(const char* eventName);
 
 "558bec83ec0c568bf15783ec08":
-__thiscall void AnimationState::AdvancePosition(int amount);
+__thiscall void AnimationState::AdvancePosition(int targetFrame);
 
 "558bec51568b75??0f28ca578bf9f30f114d??8b57??85d274??85f678??3b72??7c??68????????6a03e8????????8b57??83c408f30f104d??8b47??8b0c??8d3c??c1e6040372??85c978??6bd16c":
-__thiscall void AnimationState::AdvanceLayerPosition(int layerID, float frame<xmm2>);
+__thiscall void AnimationState::AdvanceLayerPosition(int layerID, float targetFrame<xmm2>);
+
+"558bec51568b75??0f28ca578bf9f30f114d??8b57??85d274??85f678??3b72??7c??68????????6a03e8????????8b57??83c408f30f104d??8b47??8b0c??8d3c??c1e6040372??85c978??6bd154":
+__thiscall void AnimationState::AdvanceNullLayerPosition(int nullLayerID, float targetFrame<xmm2>);
 
 "568bf1c746??00000000c746??00000000":
 __thiscall void AnimationState::Rewind();
 
 "558bec8b45??568bf1578946":
 __thiscall void AnimationState::Reset(AnimationState* right);
+
+"558bec568b75??578bf985f678??8b07":
+__thiscall void AnimationState::SetLayerFrame(int layerID, int frame);
 
 struct AnimationState depends (AnimationData, ANM2) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
@@ -43,17 +49,17 @@ struct AnimationState depends (AnimationData, ANM2) { {{
     "558bec83e4f8515356578bf98b570485d2743433f639721c":
     void Render(const Vector& position, const Vector& topLeftClamp, const Vector& bottomRightClamp);
 
-    ANM2* _animation : 0x0;  // 0x00
-    AnimationData* _animData : 0x4;  // 0x04
+    ANM2* _animation : 0x0;
+    AnimationData* _animData : 0x4;
     // Array that identifies which index in the internal AnimationFrame array a given layer is currently on.
     // Note that this is different than the current frame of animation that the layer is on from the
     // user perspective, since a frame with a duration >1 still only has one AnimationFrame index.
-    // Sprite:SetLayerFrame() probably calculates the correct frame index to set.
-    int* _layerFrames : 0x8;  // 0x08
+    // Sprite:SetLayerFrame() advances the layer to the desired frame, rather than set this value directly.
+    int* _layerFrames : 0x8;
     // Same as above for null layers.
-    int* _nullLayerFrames : 0xC;  // 0x0c
-    float _animFrame : 0x10;  // 0x10
-    bool _isPlaying : 0x14;  // 0x14
-    int _currentlyTriggeredEvents : 0x18;  // 0x18
-    int _previouslyTriggeredEvents : 0x1C;  // 0x1c
+    int* _nullLayerFrames : 0xC;
+    float _animFrame : 0x10;
+    bool _isPlaying : 0x14;
+    int _currentlyTriggeredEvents : 0x18;
+    int _previouslyTriggeredEvents : 0x1C;
 } : 0x20;

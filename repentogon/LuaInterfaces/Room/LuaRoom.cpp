@@ -221,8 +221,25 @@ LUA_FUNCTION(Lua_RoomPickupGridEntity)
 LUA_FUNCTION(Lua_RoomGetGridIndexByTile)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	int gridRow = (int)luaL_checkinteger(L, 2);
-	int gridColumn = (int)luaL_checkinteger(L, 3);
+	int gridRow, gridColumn;
+	if (lua_type(L, 2) == LUA_TTABLE) {
+		size_t length = (size_t)lua_rawlen(L, 2);
+		if (length != 2)
+			return luaL_argerror(L, 2, "expected table length of 2!");
+
+		lua_rawgeti(L, 2, 1);
+		gridRow = (int)luaL_checkinteger(L, -1);
+		lua_pop(L, 1);
+		lua_rawgeti(L, 2, 2);
+		gridColumn = (int)luaL_checkinteger(L, -1);
+		lua_pop(L, 1);
+	}
+	else
+	{
+		gridRow = (int)luaL_checkinteger(L, 2);
+		gridColumn = (int)luaL_checkinteger(L, 3);
+	}
+
 	lua_pushinteger(L, room->GetGridIndexByTile(gridRow, gridColumn));
 
 	return 1;

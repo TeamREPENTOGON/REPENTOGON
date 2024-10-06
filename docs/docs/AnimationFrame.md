@@ -22,6 +22,13 @@ ___
 #### [const Vector](Vector.md) GetCrop ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetEndFrame () {: aria-label='Functions' }
+#### int GetEndFrame ( ) {: .copyable aria-label='Functions' }
+Note that the "end frame" is the start frame of the NEXT AnimationFrame.
+
+That is, THIS AnimationFrame is no longer shown on this frame.
+
+___
 ### GetHeight () {: aria-label='Functions' }
 #### float GetHeight ( ) {: .copyable aria-label='Functions' }
 
@@ -40,6 +47,10 @@ ___
 ___
 ### GetScale () {: aria-label='Functions' }
 #### [const Vector](Vector.md) GetScale ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetStartFrame () {: aria-label='Functions' }
+#### int GetStartFrame ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetWidth () {: aria-label='Functions' }

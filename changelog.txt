@@ -1,3 +1,144 @@
+v1.0.x -
+Additions:
+* EntityPlayer:
+	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]ForgottenSwapFormCooldown
+* EntityFamiliar:
+	- IsLilDelirium
+	- SetLilDelirium
+* ModCallbacks:
+	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
+		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
+		Return true to cancel pocket item swap.
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+		Triggers if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+		Return true to cancel vanilla behavior.
+	- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+	- MC_PRE_BED_SLEEP(Player, Bed)
+		Triggers on bed collision and before playing sleep sequence.
+		Return true to cancel vanilla behavior.
+* Added the following customtag for items.xml:
+	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
+* Sprite:
+	- GetLayerFrame(string or int)
+/newline/
+Modified:
+* EntityPlayer:
+	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+* ImGui:
+	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
+Fixes:
+* ImGui:
+	- Fixed RemoveElement not working on elements created with AddInputColor.
+/newline/
+/versionseparator/
+v1.0.12.a -
+* The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
+Additions:
+* Ambush:
+	- [Get/Set]MaxBossChallengeWaves()
+	- Allows changing the number of waves in a boss challenge room
+Fixes:
+* Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
+/versionseparator/
+v1.0.12 -
+Additions:
+* Add new Vanilla Tweaks option "Console Autofill Limit", which determines the number of autocomplete items that are displayed in the debug console.
+* Level:
+	- CanPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
+		Returns true if the room would be able to fit at this location.
+	- TryPlaceRoom(RoomConfigRoom, int GridIndex, int Dimension = -1, int Seed = 0, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false, bool AllowNoNeighbors = false)
+		Will only place the room if it can fit and all doors can be successfully connected to neighboring rooms.
+		If successful, returns the new RoomDescriptor, returns nil otherwise.
+		If a seed of nil or 0 is provided, a seed will be auto-generated based on the location, room shape, and level seed.
+		Boolean params are additional safeties that can be enabled or disabled:
+			AllowMultipleDoors - Set to false to only allow successful placement if the room would only have one door (for placing special rooms).
+			AllowSpecialNeighbors - Set to true to allow connections to existing special rooms (note secret rooms are always allowed, but boss rooms are never allowed).
+			AllowNoNeighbors - Set to true to allow placing the room out in the void with no neighbors.
+	- CanPlaceRoomAtDoor(RoomConfigRoom, RoomDescriptor, DoorSlot, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Returns true if the room could be successfully placed connected to the specified DoorSlot of an existing room.
+	- TryPlaceRoomAtDoor(RoomConfigRoom, RoomDescriptor, DoorSlot, int Seed = 0, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Attempts to place the room connected to an existing room via the specified DoorSlot.
+	- FindValidRoomPlacementLocations(RoomConfigRoom, int Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+		Returns a table of level GridIndexes that would be valid locations to place the given room.
+	- GetNeighboringRooms(int GridIndex, RoomShape, int Dimension = -1)
+		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
+		Can be used to determine the neighbors of a room before even placing it.
+		Note that this does not give you any signal of if a room would actually fit, or if the neighbors would even allow a connection.
+* StatsMenu:
+	- SetSelectedElement(int element)
+	- GetSelectedElement() - int
+* Room:
+	- GetLRoom[Area/Tile]Desc() now return a usable class
+	- GetGridIndexByTile() now accepts a table of int[2]
+* LRoomAreaDesc:
+	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in worldspace
+	- Vector Get[High/Low][TopLeft/BottomRight]()
+* LRoomTileDesc:
+	- Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates
+	- int[2] Get[High/Low][TopLeft/BottomRight]()
+	- int[2] GetRandomTile(Seed)
+	- Can use Room:GetGridIndexByTile() to retrieve grid idx at these coordinates
+* RoomDescriptor:
+	- GetDimension() - int
+	- GetNeighboringRooms()
+		Returns a table map of DoorSlot->RoomDescriptor. Don't use ipairs!
+* ItemConfigCard:
+	- Added weight and hidden parameter to cards, both can be specified in pocketitems.xml
+	- Added the ability to specify a custom "availability condition" to evaluate when the game checks if a card is available.
+	- Hidden
+	- InitialWeight
+	- Weight - can be modified
+	- GetAvailabilityCondition()
+	- SetAvailabilityCondition(function)
+	- ClearAvailabilityCondition()
+* Sprite:
+	- SetOverlayLayerFrame(int Layer, int Frame) - SetLayerFrame for overlays
+	- GetLayerFrameData(int Layer) - Returns the current AnimationFrame for the given layer.
+	- GetOverlayLayerFrameData(int Layer) - Same as above for the overlay animation.
+* AnimationFrame:
+	- GetStartFrame()
+	- GetEndFrame()
+* Point:
+	- [Get/Set]Color() - Allows setting a color per-Point; colors are lerped between points
+	- [Get/Set]IsWorldSpace() - Automatically converts this Point's position from worldspace to screenspace when rendering
+* ModCallbacks:
+	- MC_PRE_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
+	Called before the Glowing Hourglass state is saved/loaded
+* PersistentGameData:
+	- AddBestiaryKill(EntityType, Variant = 0)
+	- AddBossKilled(BossType)
+	- IsBossKilled(BossType)
+* EntityPlayer:
+	- GetMaxCoins() - int
+	- GetMaxKeys() - int
+	- GetMaxBombs() - int
+* EntitySlot:
+	- GetPrizeCollectible() - int
+* New "customcache" tags (for items.xml and MC_EVALUATE_CUSTOM_CACHE):
+	- "maxcoins"
+	- "maxkeys"
+	- "maxbombs"
+/newline/
+Modified:
+* Beam:
+	- Beams now have an inherent Sprite object, no longer prone to losing its Sprite reference
+	- Changes made to the Sprite provided in the constructor will not be reflected in the Beam, and vis-versa
+	- Wrap[S/T]Mode are automatically set to proper values for the spritesheet to loop vertically
+* ModCallbacks:
+	- MC_POST_PICKUP_SELECTION
+		Additionally passes "RequestedVariant", "RequestedSubType" and "RNG".
+		A third bool argument can be included in the return table to specify wether or not you want to let the callback continue execution after the update to Variant and SubType.
+* "Hush AI Fixes" patch will no longer be applied during daily runs.
+* Deal rooms with variants above 99 will now also generate in Red Rooms
+* Hold SHIFT of the DROP key to scroll faster through the main menu changelog
+/newline/
+Fixes:
+	- Fixed a vanilla bug that caused wisps from destroyed Mystery Gift/Eden's Soul wisps to spawn even after a run restart.
+	- Fixed HUD:GetCoopMenuSprite() returning invalid data
+	- Fixed EntityPlayer:AddActiveCharge() incorrectly allowing overcharge when adding charge to all slots at the same time (with -1 given as the slot)
+/newline/
+/versionseparator/
 v1.0.11c -
 Additions:
 * CharacterMenu:
@@ -8,14 +149,17 @@ Fixes:
 	- Fixed vanilla game crash caused by Hornfel trying to enter new door after losing minecart.
 	- Fixed SetRail index checks
 /newline/
+/versionseparator/
 v1.0.11b -
 Bug fixes:
 	- Fixed a crash that could occur randomly when using custom item pools
 /newline/
+/versionseparator/
 v1.0.11a -
 Bug fixes:
 	- Fixed a division by zero that occured when shuffling an empty item pool
 /newline/
+/versionseparator/
 v1.0.11 -
 Additions:
 * Itempools:
@@ -90,7 +234,8 @@ Additions:
 	- MC_EVALUATE_CUSTOM_CACHE will evaluate a number value (starts at 0 by default) which can be retrieved afterwards with player:GetCustomCacheValue(tag)
 	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
 	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
-/newline/	
+/newline/
+/versionseparator/
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
@@ -100,6 +245,7 @@ Fixes:
 	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
 	- Fix Isaac's Heart being immune to lasers
 /newline/
+/versionseparator/
 v1.0.10c -
 Additions:
 * RoomDescriptor:
@@ -121,6 +267,7 @@ Modified:
 	- GetRoomByStageTypeAndVariant(StbType, Type, Variant, Mode = -1)
 * Re-enabled "Extra debug render for FindInRadius" option.
 /newline/
+/versionseparator/
 v1.0.10b -
 Modified:
 * MusicManager:
@@ -129,6 +276,7 @@ Modified:
 	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
 * Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
 /newline/
+/versionseparator/
 v1.0.10a -
 Additions:
 * EntityPlayer:
@@ -140,7 +288,7 @@ Additions:
 		Called before a fortune paper is displayed.
 	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
-	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed) 
+	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed)
 		Return integer to overwrite target room index.
 	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
 		Called after the Glowing Hourglass state is saved/loaded
@@ -202,14 +350,17 @@ Fixes:
 * Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
 * Fixed binders for EntityNPC: ThrowMaggot, ShootMaggotProjectile functions.
 /newline/
+/versionseparator/
 v1.0.9d -
 Fixes:
 * Fixed a bug with the autoupdater
 /newline/
+/versionseparator/
 v1.0.9c -
 Fixes:
 * Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
 /newline/
+/versionseparator/
 v1.0.9b -
 Additions:
 * Camera:
@@ -227,6 +378,7 @@ Additions:
 * Fixed a regression that resulted in a severe slowdown for certain commands' autocomplete prompts. This fix has also made file map noticeably faster :D
 * Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
 /newline/
+/versionseparator/
 v1.0.9a -
 Additions:
 * Game:
@@ -246,6 +398,7 @@ Additions:
 	- Fix "goto [s/x]." command autocomplete
 	- Fixed incorrect type set for Slot->_timeout (int -> short)
 /newline/
+/versionseparator/
 v1.0.9 -
 Modified:
 * Callbacks:
@@ -326,7 +479,7 @@ Additions:
 	* Acts like other ArrayProxy classes, but for RoomConfigRoom
 	* __len and Get method, Size const variable
 * Level
-	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here!
 * Cutscenes
 	* Support for custom music for the music attribute on cutscenes.xml
 * NightmareScene
@@ -386,20 +539,24 @@ Fixes:
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
-v1.0.8c - 
+/versionseparator/
+v1.0.8c -
 Fixes:
 * Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
 * Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
 /newline/
-v1.0.8b - 
+/versionseparator/
+v1.0.8b -
 Fixes:
 * Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
 /newline/
-v1.0.8a - 
+/versionseparator/
+v1.0.8a -
 Fixes:
 * Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
 /newline/
-v1.0.8 - 
+/versionseparator/
+v1.0.8 -
 Additions:
 * New general callback improvements to address some performance issues on some scenarios
 * Deal rooms can now generate variants above 100
@@ -428,13 +585,15 @@ Fixes:
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
 * Fix the console crashing when running a command from history in some cases
 /newline/
-v1.0.7c - 
+/versionseparator/
+v1.0.7c -
 Additions:
 * Options.StatHUDPlanetarum
 Fixes:
 * Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
 /newline/
-v1.0.7b - 
+/versionseparator/
+v1.0.7b -
 Additions:
 * Add an option to show Planetarium spawn chance in the stat HUD
 * BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
@@ -444,10 +603,12 @@ Fixes:
 * Fixed console wonkies involving input text edge detection and scaling
 * Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
 /newline/
-v1.0.7a - 
+/versionseparator/
+v1.0.7a -
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
 /newline/
+/versionseparator/
 v1.0.7 -
 Additions:
 * Backdrops:
@@ -524,13 +685,13 @@ Fixes:
 	* Removed ImGui's automatic window resizing as it caused more issues than it solved
 	* Set a larger padding for ImGui to instruct it to always keep at least (100, 100) pixels of debug windows visible
 /newline/
-/newline/
+/versionseparator/
 v1.0.6b -
 Fixes:
 * Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
 * Fixed an issue that made search and undo mods not work if you didnt restart your machine for 24 days (blame microsoft)
 /newline/
-/newline/
+/versionseparator/
 v1.0.6a -
 Additions:
 * Minimap :
@@ -544,7 +705,7 @@ Additions:
 Fixes:
 * Fixed an issue that made it so custom completion marks and achievements are not properly loaded locked or unlocked on a session(big oof, I know).
 /newline/
-/newline/
+/versionseparator/
 v1.0.6 -
 Additions:
 * Weapon :
@@ -640,12 +801,12 @@ Fixes:
 * Fixed PRE/POST_ENTITY_THROW EntityPlayer argument being pushed as optional parameter
 * Fixed crash when calling Game():MoveToRandomRoom() with seed 0
 /newline/
-/newline/
+/versionseparator/
 v1.0.5a -
 Fixes:
 * Hot-Fixed a crash that happened when no mods were enabled in 1.0.5
 /newline/
-/newline/
+/versionseparator/
 v1.0.5 -
 Additions:
 * Added Challenge completion tracking to the mod challenges menu
@@ -697,8 +858,8 @@ Fixes:
 * Fix Weapon:SetFireDelay() not working
 * Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
 /newline/
-/newline/
-v1.0.4 - 
+/versionseparator/
+v1.0.4 -
 Additions:
 * The error dialog now automatically gets dismissed the next time ImGui is opened
 * Imgui.IsVisible()
@@ -718,8 +879,8 @@ Fixes:
 * Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
 * Enabled mods/debug console disable access to enter daily run as before
 /newline/
-/newline/
-v1.0.3 - 
+/versionseparator/
+v1.0.3 -
 Additions:
 * ColorParams
 	- Used to store the color and parameters passed by Entity:SetColor (Priority, Duration, Fadeout, Shared)
@@ -755,8 +916,8 @@ Fixes:
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 /newline/
-/newline/
-v1.0.2 - 
+/versionseparator/
+v1.0.2 -
 Additions:
 * Added Pickup:GetAlternatePedestal()
 * REPENTOGON'S logfile (repentogon.log) now shows timestamps
@@ -766,6 +927,7 @@ Fixes:
 * Fixed Dingle always spawning a red poop
 * Fixed achievements not firing in Steam
 /newline/
-/newline/
-v1.0.1 - 
+/versionseparator/
+v1.0.1 -
 Fixed the updater erroneously asking to update, sorry :(
+/versionseparator/

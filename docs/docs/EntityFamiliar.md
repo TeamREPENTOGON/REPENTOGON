@@ -37,7 +37,7 @@ ___
 
 ___
 ### GetItemConfig () {: aria-label='Functions' }
-#### [ItemConfigItem](ItemConfigItem.md) GetItemConfig ( ) {: .copyable aria-label='Functions' }
+#### [ItemConfigItem](ItemConfig_Item.md) GetItemConfig ( ) {: .copyable aria-label='Functions' }
 Returns the ItemConfigItem corresponding to the item that granted this familiar.
 
 Returns nil if the familiar was not spawned by an item.

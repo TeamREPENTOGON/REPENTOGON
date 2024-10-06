@@ -447,7 +447,7 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableSizeFunction(4)
 	},
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
-		["table"] = checkTableSizeFunction(2)
+		["table"] = checkTableTypeFunction({ "integer", "integer", "boolean"})
 	},
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
 		["table"] = checkTableSizeFunctionUpTo(5),  --{ "integer", "integer", "boolean", "integer", "integer" }),
@@ -999,42 +999,61 @@ local function GetCallbackIterator(callbackID, param)
 	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
 		-- If the callback is executed with -1 as the param, run ALL callbacks.
 		-- This is sometimes used by the game for callbacks not intended to support optional params.
-		local allCallbacks = callbackData.ALL
-		local i = 0
+		local allCallback = callbackData.ALL[1]
 		return function()
-			i = i + 1
-			return allCallbacks[i]
+			local nextCallback
+
+			-- Skip over removed callbacks if needed.
+			repeat
+				nextCallback = allCallback
+				if allCallback then
+					allCallback = allCallback.NextAll
+				end
+			until not nextCallback or not nextCallback.Removed
+
+			return nextCallback
 		end
 	end
 
-	local commonCallbacksList = callbackData.COMMON
-	local paramCallbacksList = param and callbackData.PARAM[param]
+	local commonCallback = callbackData.COMMON[1]
+	local paramCallback = param and callbackData.PARAM[param] and callbackData.PARAM[param][1]
 
-	if not paramCallbacksList or #paramCallbacksList == 0 then
-		-- No parameterized callbacks to run. Return a simple iterator over the common callbacks.
-		local i = 0
+	if not paramCallback then
+		-- No parameterized callbacks to run, so just iterate over the common callbacks.
 		return function()
-			i = i + 1
-			return commonCallbacksList[i]
+			local nextCallback
+
+			-- Skip over removed callbacks if needed.
+			repeat
+				nextCallback = commonCallback
+				if commonCallback then
+					commonCallback = commonCallback.NextParam
+				end
+			until not nextCallback or not nextCallback.Removed
+
+			return nextCallback
 		end
 	end
 
 	-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
 	-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
-	local commonIndex = 1
-	local paramIndex = 1
-
 	return function()
-		local nextCommonCallback = commonCallbacksList[commonIndex]
-		local nextParamCallback = paramCallbacksList[paramIndex]
+		local nextCallback
 
-		if CallbackComparator(nextCommonCallback, nextParamCallback) then
-			commonIndex = commonIndex + 1
-			return nextCommonCallback
-		else
-			paramIndex = paramIndex + 1
-			return nextParamCallback
-		end
+		-- Skip over removed callbacks if needed.
+		repeat
+			if CallbackComparator(commonCallback, paramCallback) then
+				nextCallback = commonCallback
+				commonCallback = commonCallback.NextParam
+			elseif paramCallback then
+				nextCallback = paramCallback
+				paramCallback = paramCallback.NextParam
+			else
+				nextCallback = nil
+			end
+		until not nextCallback or not nextCallback.Removed
+
+		return nextCallback
 	end
 end
 
@@ -1086,8 +1105,26 @@ local function FindCallbackInsertPos(callbackList, newCallback)
 	end
 end
 
-local function AddToCallbackList(callbackList, newCallback)
-	table.insert(callbackList, FindCallbackInsertPos(callbackList, newCallback), newCallback)
+local function AddToCallbackList(callbackList, newCallback, isAllList)
+	local idx = FindCallbackInsertPos(callbackList, newCallback)
+	table.insert(callbackList, idx, newCallback)
+
+	local prevCallback = callbackList[idx-1]
+	local nextCallback = callbackList[idx+1]
+
+	-- Establish links to the previous/next callbacks in the list.
+	-- This is done to make removing callbacks while the callback is running a little safer.
+	if isAllList then
+		if prevCallback then
+			prevCallback.NextAll = newCallback
+		end
+		newCallback.NextAll = nextCallback
+	else
+		if prevCallback then
+			prevCallback.NextParam = newCallback
+		end
+		newCallback.NextParam = nextCallback
+	end
 end
 
 rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, param)
@@ -1103,7 +1140,7 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	callbackData.NUM_ADDED = numAdded
 	local newCallback = {Mod = mod, Function = fn, Priority = priority, AddOrder = numAdded, Param = param}
 
-	AddToCallbackList(callbackData.ALL, newCallback)
+	AddToCallbackList(callbackData.ALL, newCallback, true)
 
 	-- Callbacks with -1 as their param behave the same as those with no param.
 	-- This aligns with the behaviour of the old implementation.
@@ -1111,9 +1148,9 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 		if not callbackData.PARAM[param] then
 			callbackData.PARAM[param] = {}
 		end
-		AddToCallbackList(callbackData.PARAM[param], newCallback)
+		AddToCallbackList(callbackData.PARAM[param], newCallback, false)
 	else
-		AddToCallbackList(callbackData.COMMON, newCallback)
+		AddToCallbackList(callbackData.COMMON, newCallback, false)
 	end
 
 	if wasEmpty then
@@ -1130,10 +1167,21 @@ rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
 	Isaac.AddPriorityCallback(mod, callbackID, CallbackPriority.DEFAULT, fn, param)
 end)
 
-local function RemoveCallbacksIf(callbackList, removeConditionFunc)
+local function RemoveCallbacksIf(callbackList, removeConditionFunc, isAllList)
 	local removed = false
 	for i=#callbackList,1,-1 do
-		if removeConditionFunc(callbackList[i]) then
+		local callback = callbackList[i]
+		if removeConditionFunc(callback) then
+			-- Fix the iteration link of the previous callback.
+			if callbackList[i-1] then
+				if isAllList then
+					callbackList[i-1].NextAll = callback.NextAll
+				else
+					callbackList[i-1].NextParam = callback.NextParam
+				end
+			end
+
+			callback.Removed = true
 			table.remove(callbackList, i)
 			removed = true
 		end
@@ -1144,10 +1192,10 @@ end
 local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
 	local callbackData = Callbacks[callbackID]
 
-	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc) then
-		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc)
+	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc, true) then
+		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc, false)
 		for param, paramCallbacks in pairs(callbackData.PARAM) do
-			RemoveCallbacksIf(paramCallbacks, removeConditionFunc)
+			RemoveCallbacksIf(paramCallbacks, removeConditionFunc, false)
 		end
 		if #callbackData.ALL == 0 and type(callbackID) == "number" then
 			-- No more functions left, disable this callback
@@ -1335,6 +1383,30 @@ function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
 	return true
 end
 
+-- Custom handling for MC_POST_PICKUP_SELECTION.
+-- Terminate early if the table's 3rd argument is nil or false
+function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ...)
+	local recentRet = nil;
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, ...)
+		if type(ret) == "table" then
+			if not ret[3] then
+				return ret
+			end
+
+			if (math.type(ret[1]) == "integer" and math.type(ret[2]) == "integer") then
+				recentRet = {ret[1], ret[2]}
+				variant = ret[1]
+				subType = ret[2]
+			end
+
+		end
+	end
+
+	return recentRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1347,6 +1419,7 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_MOD_UNLOAD] = PreModUnloadCallbackLogic,
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
@@ -1356,7 +1429,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
-	[ModCallbacks.MC_EVALUATE_CUSTOM_CACHE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_CUSTOM_CACHE] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
@@ -1516,15 +1589,44 @@ function FontMT.__call(_,FontPath)
 	return out,isloaded
 end
 
---Get rid of the GetCollectible compatibility wrapper
-local ItemPoolMT = getmetatable(ItemPool).__class
-local OldIndex = ItemPoolMT.__index
-local NewIndex = {}
+-- Gets rid of the old `scripts/main.lua` wrappers for some re-implemented function hooks.
+-- This can allow us to circumvent how the old wrappers handled certain inputs, as well as make
+-- errors report the actual call site instead of the line in `scripts/main.lua`.
+-- Make sure you understand what the old wrapper was doing, and that the new hook maintains any features like optional args.
+local LuaWrappersToRemove = {
+	{ ItemPool, {"GetCollectible"} },
+	{
+		EntityPlayer, {
+			"AddCollectible",
+			"FullCharge",
+			"GetMultiShotParams",
+			"GetActiveItem",
+			"GetActiveCharge",
+			"GetActiveSubCharge",
+			"GetBatteryCharge",
+			"NeedsCharge",
+			"SetActiveCharge",
+			"DischargeActiveItem",
+			"SetPocketActiveItem",
+		}
+	},
+}
+for _, tab in ipairs(LuaWrappersToRemove) do
+	local class = tab[1]
 
-NewIndex.GetCollectible = ItemPoolMT.GetCollectible
-rawset(ItemPoolMT, "__index", function(self, k)
-	return NewIndex[k] or OldIndex(self, k)
-end)
+	local mt = getmetatable(class).__class
+	local oldIndex = mt.__index
+	local newIndex = {}
+
+	for _, funcName in ipairs(tab[2]) do
+		newIndex[funcName] = mt[funcName]
+	end
+
+	rawset(mt, "__index", function(self, k)
+		return newIndex[k] or oldIndex(self, k)
+	end)
+end
+LuaWrappersToRemove = nil
 
 --res load error stuff end
 

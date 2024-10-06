@@ -44,23 +44,37 @@ Returns a GenericPrompt object. Allows for rendering a popup paper with the opti
 
 ## Functions
 
-### Initialize () {: aria-label='Functions' }
-#### void Initialize ( boolean SmallPrompt = false ) {: .copyable aria-label='Functions' }
+### GetCurrentSelection () {: aria-label='Functions' }
+#### int GetCurrentSelection ( ) {: .copyable aria-label='Functions' }
+Returns what selection the player is currently hovering over.
+
+???+ info "Return info"
+	- `0` - No
+	- `1` - Yes
 
 ___
-### Show () {: aria-label='Functions' }
-#### void Show ( ) {: .copyable aria-label='Functions' }
-Starts showing the prompt on-screen.
+### GetSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
+Returns the paper sprite of the prompt.
+
+___
+### GetSubmittedSelection () {: aria-label='Functions' }
+#### int GetSubmittedSelection ( ) {: .copyable aria-label='Functions' }
+Returns the chosen selection. 
+
+???+ info "Return info"
+	- `0` - None (Returns if the player dismisses the prompt).
+	- `1` - Yes
+	- `2` - No
+
+___
+### Initialize () {: aria-label='Functions' }
+#### void Initialize ( boolean SmallPrompt = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsActive () {: aria-label='Functions' }
 #### boolean IsActive ( ) {: .copyable aria-label='Functions' }
 Returns whether the prompt is active or not.
-
-___
-### Update () {: aria-label='Functions' }
-#### void Update ( boolean ProcessInput ) {: .copyable aria-label='Functions' }
-Updates the animation of the prompt paper. Set `ProcessInput` to `true` to track the player's input for selecting yes/no, `false` otherwise.
 
 ___
 ### Render () {: aria-label='Functions' }
@@ -75,27 +89,13 @@ Set text that will appear on the paper.
 Text strings are associated with their position on the prompt from top to bottom. The first two strings should used as header text, being bolded and at a higher font size, while the rest as description text.
 
 ___
-### GetSprite () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
-Returns the paper sprite of the prompt.
+### Show () {: aria-label='Functions' }
+#### void Show ( ) {: .copyable aria-label='Functions' }
+Starts showing the prompt on-screen.
 
 ___
-### GetCurrentSelection () {: aria-label='Functions' }
-#### int GetCurrentSelection ( ) {: .copyable aria-label='Functions' }
-Returns what selection the player is currently hovering over.
-
-???+ info "Return info"
-	- `0` - No
-	- `1` - Yes
-
-___
-### GetSubmittedSelection () {: aria-label='Functions' }
-#### int GetSubmittedSelection ( ) {: .copyable aria-label='Functions' }
-Returns the chosen selection. 
-
-???+ info "Return info"
-	- `0` - None (Returns if the player dismisses the prompt).
-	- `1` - Yes
-	- `2` - No
+### Update () {: aria-label='Functions' }
+#### void Update ( boolean ProcessInput ) {: .copyable aria-label='Functions' }
+Updates the animation of the prompt paper. Set `ProcessInput` to `true` to track the player's input for selecting yes/no, `false` otherwise.
 
 ___
