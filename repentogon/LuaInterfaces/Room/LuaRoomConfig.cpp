@@ -2,10 +2,10 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-#include "../../Patches/Stages/StageHandler.h"
+#include "../../Patches/Stages/StageManager.h"
 
 LUA_FUNCTION(Lua_RoomConfig_GetStage) {
-	StageHandler& stageHandler = StageHandler::GetInstance();
+	StageManager& stageManager = StageManager::GetInstance();
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	int stage = (int)luaL_checkinteger(L, 1);
 
@@ -13,7 +13,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
 	}
 
-	if (stage == stageHandler.BUFFER_STAGEID) {
+	if (stage == stageManager.BUFFER_STAGEID) {
 		return luaL_error(L, "Invalid StageID %d\n", stage);
 	}
 
@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 }
 
 LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
-	StageHandler& stageHandler = StageHandler::GetInstance();
+	StageManager& stageManager = StageManager::GetInstance();
 	int n = lua_gettop(L);
 	if (n < 3) {
 		return luaL_error(L, "Expected three parameters, got %d\n", n);
@@ -62,15 +62,15 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	RoomConfig_Room* config;
 	if (stage == -1) {
 		// swap in
-		//RoomSet oldSet = roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0];
-		roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0] = *set;
+		//RoomSet oldSet = roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0];
+		roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0] = *set;
 
 		// get room
-		config = roomConfig->GetRoomByStageTypeAndVariant(stageHandler.BUFFER_STAGEID, type, variant, mode);
+		config = roomConfig->GetRoomByStageTypeAndVariant(stageManager.BUFFER_STAGEID, type, variant, mode);
 
 		// swap out
-		*set = roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0];
-		//roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0] = oldSet;
+		*set = roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0];
+		//roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0] = oldSet;
 	}
 	else
 	{
@@ -89,7 +89,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 }
 
 LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
-	StageHandler& stageHandler = StageHandler::GetInstance();
+	StageManager& stageManager = StageManager::GetInstance();
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	int seed = (int)luaL_checkinteger(L, 1);
 	bool reduceWeight = lua::luaL_checkboolean(L, 2);
@@ -157,14 +157,14 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	RoomConfig_Room* config;
 	if (stage == -1) {
 		// swap in
-		//RoomSet oldSet = roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0];
-		roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0] = *set;
+		//RoomSet oldSet = roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0];
+		roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0] = *set;
 
 		// get room
-		config = roomConfig->GetRandomRoom(seed, reduceWeight, stageHandler.BUFFER_STAGEID, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
+		config = roomConfig->GetRandomRoom(seed, reduceWeight, stageManager.BUFFER_STAGEID, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
 
 		// swap out
-		*set = roomConfig->_stages[stageHandler.BUFFER_STAGEID]._rooms[0];
+		*set = roomConfig->_stages[stageManager.BUFFER_STAGEID]._rooms[0];
 		//roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = oldSet;
 	}
 	else

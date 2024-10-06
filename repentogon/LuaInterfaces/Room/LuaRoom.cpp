@@ -6,7 +6,7 @@
 
 #include "../../Patches/XMLData.h"
 #include "../../Patches/CustomItemPools.h"
-#include "../../Patches/Stages/StageHandler.h"
+#include "../../Patches/Stages/StageManager.h"
 
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
@@ -477,10 +477,10 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 			//ZHL::Log("setting water\n");
 		}
 		else {
-			StageHandler* stageHandler = &StageHandler::GetInstance();
+			StageManager* stageManager = &StageManager::GetInstance();
 			stbType = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, g_Game->IsGreedMode());
-			if (stageHandler->stageState[stbType].overriden) {
-				XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageHandler->stageState[stbType].id);
+			if (stageManager->stageState[stbType].overriden) {
+				XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageManager->stageState[stbType].id);
 				if (tobool(xmlData["haswater"])) {
 					this->_waterAmount = 1.0f;
 					//ZHL::Log("setting water\n");

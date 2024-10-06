@@ -9,14 +9,14 @@ struct StageState {
 	std::string token;
 };
 
-class StageHandler
+class StageManager
 {
 private:
-	StageHandler() {}
+	StageManager() {}
 
 public:
-	static StageHandler& GetInstance() {
-		static StageHandler instance;
+	static StageManager& GetInstance() {
+		static StageManager instance;
 		return instance;
 	}
 

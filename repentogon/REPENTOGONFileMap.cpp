@@ -14,6 +14,8 @@ namespace REPENTOGONFileMap {
 	std::vector<std::wstring> _stringByFType = {
 		L"resources",
 		L"resources-dlc3",
+		L"content",
+		L"content-dlc3", // preemptively pushing bertran back into its grave 
 		L"",
 	};
 	std::wstring _modsPath = L"";
@@ -121,12 +123,12 @@ namespace REPENTOGONFileMap {
 		};
 	};
 	void GenerateMap() {
+		auto basepath = fs::current_path() / L"mods";
+		_modsPath = basepath.wstring();
 		if (map_init || !repentogonOptions.fileMap) {
 			return;
 		};
 		map_init = true;
-		auto basepath = fs::current_path() / L"mods";
-		_modsPath = basepath.wstring();
 		auto start_time = std::chrono::high_resolution_clock::now();
 		if (g_Manager && g_Manager->GetModManager()) {
 			ModManager* modmngr = g_Manager->GetModManager();
@@ -137,11 +139,13 @@ namespace REPENTOGONFileMap {
 				if (modentry && modentry->_loaded) {
 					basemodpath = basepath / (modentry->_directory);
 					if (fs::is_directory(basemodpath)) {
-						for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
+						for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::CONTENT; modfoldertype++) {
 							const std::wstring& subdirname = (_stringByFType[modfoldertype]);
 							moddir = basemodpath / subdirname;
 							if (fs::is_directory(moddir)) {
-								FindFiles(moddir, (FolderType)modfoldertype, i);
+								fs::path disableFile = moddir / "disable.it";
+								if (!fs::exists(disableFile)) {
+									FindFiles(moddir, (FolderType)modfoldertype, i);
 							};
 						};
 					};

@@ -8,6 +8,7 @@ namespace REPENTOGONFileMap {
     enum FolderType {
         RESOURCES,
         RESOURCES_DLC3,
+        CONTENT,
         LAST
     };
     struct FileMapEntry {
