@@ -4312,22 +4312,22 @@ HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
 		ret = super(ID);
 	};
 
-//POST_FORCE_PILL_EFFECT (1129)
-callbackid = 1129;
-if (CallbackState.test(callbackid - 1000)) {
-	lua_State* L = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(L);
+	//POST_FORCE_PILL_EFFECT (1129)
+	callbackid = 1129;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
-	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-		.pushnil()
-		.push(ID)
-		.push(ret)
-		.call(1);
-};
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ID)
+			.push(ret)
+			.call(1);
+	};
 
-return ret;
+	return ret;
 };
 
 inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
@@ -4424,6 +4424,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 //PRE/POST_ENTITY_SET_COLOR (1485/1486)
 HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool fadeOut, bool share) -> void) {
 	const int preCallbackId = 1485;
+	ColorMod colorCopy;
 
 	if (CallbackState.test(preCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4446,7 +4447,10 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 				return;
 			}
 			else if (lua_isuserdata(L, -1)) {
-				color = lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+				// We need to copy the returned color in case the Lua stack is cleaned up in order to avoid unexpected behavior.
+				ColorMod* returnedColor = lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+				colorCopy = *returnedColor;
+				color = &colorCopy;
 			}
 		}
 	}
