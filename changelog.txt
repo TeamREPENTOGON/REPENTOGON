@@ -19,6 +19,8 @@ Additions:
 		Return true to cancel vanilla behavior.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
+* Sprite:
+	- GetLayerFrame(string or int)
 /newline/
 Modified:
 * EntityPlayer:
