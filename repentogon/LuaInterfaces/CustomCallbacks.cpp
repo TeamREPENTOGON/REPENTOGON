@@ -4421,7 +4421,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 	return;
 }
 
-//PRE/POST_ENTITY_SET_COLOR (1485/1486)
+//PRE/POST_ENTITY_SET_COLOR (1486/1487)
 HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool fadeOut, bool share) -> void) {
 	const int preCallbackId = 1485;
 	ColorMod colorCopy;
