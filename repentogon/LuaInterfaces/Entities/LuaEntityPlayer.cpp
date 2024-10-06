@@ -1352,8 +1352,8 @@ LUA_FUNCTION(Lua_SwapForgottenForm) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	bool IgnoreHealth = lua::luaL_optboolean(L, 2, false);
 	bool NoEffects = lua::luaL_optboolean(L, 3, false);
-	player->SwapForgottenForm(IgnoreHealth, NoEffects);
-	return 0;
+	lua_pushboolean(L, player->SwapForgottenForm(IgnoreHealth, NoEffects));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_SpawnAquariusCreep) {
@@ -2547,6 +2547,34 @@ LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetActionHoldDrop) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_actionHoldDrop);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetActionHoldDrop) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_actionHoldDrop = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetForgottenSwapFormCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_forgottenSwapFormCooldown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetForgottenSwapFormCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_forgottenSwapFormCooldown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2777,6 +2805,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaxKeys", Lua_PlayerGetMaxKeys },
 		{ "GetMaxBombs", Lua_PlayerGetMaxBombs },
 		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
+		{ "GetActionHoldDrop", Lua_PlayerGetActionHoldDrop },
+		{ "SetActionHoldDrop", Lua_PlayerSetActionHoldDrop },
+		{ "GetForgottenSwapFormCooldown", Lua_PlayerGetForgottenSwapFormCooldown },
+		{ "SetForgottenSwapFormCooldown", Lua_PlayerSetForgottenSwapFormCooldown },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

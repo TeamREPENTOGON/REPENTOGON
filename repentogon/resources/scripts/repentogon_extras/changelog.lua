@@ -304,16 +304,16 @@ function ChangeLog.LoadAssets()
     end
 
     if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation()) > 0 then
-        Cl.AssetsLoaded = true
 
         -- Separate sheets by version
         -- Also, Lua doesn't have a way to separate strings by words. Only with patterns.
         -- This makes me very sad.
-        local entireChangelog = TextSplit(Isaac.RGON_GetChangelog(), "\n")
+        local rawChangelog = Isaac.RGON_GetChangelog()
+        local entireChangelog = TextSplit(rawChangelog, "\n")
         local chunk = ""
         for _, word in ipairs(entireChangelog) do
             if word == "/versionseparator/" then
-                table.insert(ChangeLog.Sheets, {
+                table.insert(Cl.Sheets, {
                     ["Text"] = chunk,
                     ["TextArray"] = {},
                 })
@@ -323,8 +323,19 @@ function ChangeLog.LoadAssets()
             end
         end
 
+        -- Just a failsafe if the log somehow doesn't have any version separators.
+        -- Mainly just for dev environments.
+        if #Cl.Sheets == 0 then
+            table.insert(Cl.Sheets, {
+                ["Text"] = rawChangelog,
+                ["TextArray"] = {}
+            })
+        end
+
         Cl.EvaluateText()
         Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+
+        Cl.AssetsLoaded = true
     end
 end
 

@@ -272,6 +272,8 @@ nav:
   - LootList:
     - LootList: LootList.md
     - LootListEntry: LootListEntry.md
+  - LRoomAreaDesc: LRoomAreaDesc.md
+  - LRoomTileDesc: LRoomTileDesc.md
   - Menus:
     - MenuManager: menus/MenuManager.md
     - BestiaryMenu: menus/BestiaryMenu.md
@@ -372,6 +374,7 @@ nav:
 - Example Mods:
   - Capsules: examples/Capsules.md
   - Deal Chance: examples/DealChance.md
+  - ImGui Menu: examples/ImGuiMenu.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
   - Beams: examples/Beams.md
   - Color Modifiers: examples/ColorModifiers.md

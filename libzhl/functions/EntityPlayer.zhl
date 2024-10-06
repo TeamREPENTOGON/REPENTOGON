@@ -304,7 +304,7 @@ __thiscall void Entity_Player::AddNullCostume(int costumeid);
 __thiscall void Entity_Player::ClearDeadEyeCharge();
 
 "558bec83e4c081ecb4000000a1????????33c4898424????????5356578bf9897c24":
-__thiscall void Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
+__thiscall bool Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 
 "558bec83e4f081ec480100008b55":
 __thiscall TearParams* Entity_Player::GetTearHitParams(TearParams * res, int WeaponType, float DamageScale, int TearDisplacement, Entity* Source);
@@ -685,12 +685,14 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int8_t _tearDisplacement : 0x14bc;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	int _bombPlaceDelay : 0x1544;
+	int _forgottenSwapFormCooldown : 0x1548;
 	int _controllerIndex : 0x154c;
 	int _playerIndex : 0x1550;
 	int _moveDirection : 0x1558;
 	int _headDirection: 0x155c;
 	uint32_t _trinketsID[2] : 0x15e8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
+	uint32_t _actionHoldDrop : 0x16e8;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
 	KColor _footprintColor2 : 0x1794;

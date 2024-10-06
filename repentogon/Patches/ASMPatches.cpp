@@ -5,6 +5,7 @@
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
 #include "FamiliarTags.h"
+#include "PlayerTags.h"
 #include "GetCoinValue.h"
 #include "PocketItems.h"
 #include "Anm2Extras.h"
@@ -23,6 +24,7 @@
 #include "ASMPatches/ASMPlayerManager.h"
 #include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
+#include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 
 #include "ASMPatcher.hpp"
@@ -99,6 +101,8 @@ void PerformASMPatches() {
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
+	ASMPatchesBedCallbacks();
+	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -137,11 +141,13 @@ void PerformASMPatches() {
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
-	ASMPatchPlayerNoShake();
-	ASMPatchPlayerItemNoMetronome();
+	ASMPatchesForPlayerCustomTags();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
 	ASMPatchAddActiveCharge();
+
+	// Status Effects
+	PatchInlinedGetStatusEffectTarget();
 
 	// Render
 	LuaRender::PatchglDrawElements();
