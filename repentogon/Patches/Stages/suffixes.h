@@ -7,7 +7,7 @@ const char* suffixes[36] = {
 	"_burningbasement",
 	"_caves",
 	"_catacombs",
-	"_floodedcaves",
+	"_downpour",
 	"_depths",
 	"_necropolis",
 	"_dankdepths",

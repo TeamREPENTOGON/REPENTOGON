@@ -307,6 +307,18 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SpriteReplace)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* right = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	ANM2 temp;
+	temp.construct_from_copy(anm2);
+	anm2->ChangeANM2(temp);
+	temp.destructor();
+
+	return 0;
+}
+
 
 // LayerState from here on out
 
@@ -620,6 +632,7 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "ClearCustomChampionShader", Lua_SpriteClearCustomChampionShader},
 		{ "HasCustomChampionShader", Lua_SpriteHasCustomChampionShader},
 		{ "GetLayerFrame", Lua_SpriteGetLayerFrame },
+		{ "Replace", Lua_SpriteReplace},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);

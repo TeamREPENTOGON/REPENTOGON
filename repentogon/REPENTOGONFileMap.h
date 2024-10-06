@@ -9,6 +9,7 @@ namespace REPENTOGONFileMap {
         RESOURCES,
         RESOURCES_DLC3,
         CONTENT,
+		CONTENT_DLC3,
         LAST
     };
     struct FileMapEntry {
