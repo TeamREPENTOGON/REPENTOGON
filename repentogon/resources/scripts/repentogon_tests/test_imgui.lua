@@ -65,6 +65,12 @@ ImGui.AddElement("catWindows", "tooltipButton", ImGuiElement.Button, "A button w
 ImGui.SetTooltip("tooltipButton", "My cool tooltip")
 ImGui.SetHelpmarker("tooltipButton", "My cool Helpmarker")
 
+-- open a window with window flags
+ImGui.AddInputInteger("catWindows", "inputWindowFlags", "window flags", function(val) ImGui.SetWindowFlags("testWindow4", val) end, 0, 1, 1)
+ImGui.AddElement("catWindows", "button_windowflags", ImGuiElement.Button, "open a window with window flags")
+ImGui.CreateWindow("testWindow4", "button Window Flags")
+ImGui.LinkWindowToElement("testWindow4", "button_windowflags")
+
 --------- CATEGORY INPUTS ---------
 ImGui.AddElement("testWindow2", "catInput", ImGuiElement.CollapsingHeader, "Input types")
 ImGui.AddButton("catInput", "testButton1","Button", function(clickCount) print("Button clicked "..clickCount.." times") end)
