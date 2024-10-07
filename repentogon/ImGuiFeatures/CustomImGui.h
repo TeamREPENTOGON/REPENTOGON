@@ -73,8 +73,7 @@ enum class IMGUI_DATA {
     Min,
     Max,
     HintText,
-    ColorValues,
-    WindowFlags
+    ColorValues
 };
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
