@@ -561,6 +561,7 @@ struct CustomImGui {
     {
         Element* element = GetElementById(elementId);
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            newFlags = newFlags & (int)strtol("0000000011111111111111111111111", NULL, 2); // filter internal/deprecated flags just incase
             element->data.windowFlags = newFlags;
             return true;
         }
