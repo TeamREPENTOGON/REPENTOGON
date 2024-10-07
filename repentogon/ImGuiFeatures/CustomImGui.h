@@ -73,7 +73,7 @@ enum class IMGUI_DATA {
     Min,
     Max,
     HintText,
-    ColorValues,
+    ColorValues
 };
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
@@ -133,6 +133,7 @@ struct Data {
     ImVec2 newPosition = ImVec2(0, 0);
     bool newSizeRequested = false;
     ImVec2 newSize = ImVec2(100, 100);
+    ImGuiWindowFlags windowFlags = 0;
 };
 
 struct ElementData : Data {
@@ -546,6 +547,26 @@ struct CustomImGui {
         return false;
     }
 
+    ImGuiWindowFlags GetWindowFlags(const char* elementId) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            return element->data.windowFlags;
+        }
+        return 0;
+    }
+
+    bool SetWindowFlags(const char* elementId, ImGuiWindowFlags newFlags) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            newFlags = newFlags & (int)strtol("0000000011111111111111111111111", NULL, 2); // filter internal/deprecated flags just incase
+            element->data.windowFlags = newFlags;
+            return true;
+        }
+        return false;
+    }
+
     bool SetWindowPosition(const char* elementId, float x, float y) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
@@ -948,7 +969,7 @@ struct CustomImGui {
             RunPreRenderCallbacks(&(*window));
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
-                if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
                         window->data.newPositionRequested = false;
