@@ -1,5 +1,7 @@
 v1.0.x -
 Additions:
+* Camera:
+	- Update(bool Interpolated = false)
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
@@ -20,7 +22,7 @@ Additions:
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 * Sprite:
-	- GetLayerFrame(string or int)
+	- GetLayerFrame(string or int Layer)
 /newline/
 Modified:
 * EntityPlayer:
