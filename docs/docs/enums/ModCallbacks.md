@@ -11,6 +11,32 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |10 |MC_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) Effect, [EntityPlayer](../EntityPlayer.md) Player, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html) Flags, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) Color) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | void |
 
+### MC_POST_PICKUP_SELECTION
+
+MC_POST_PICKUP_COLLISION now passes the **Requested Variant** and **Requested SubType**, as well as **RNG**.  
+**Requested Variant** and **Requested SubType** represents the variant and subtype set when spawning the entity.   
+
+A third optional `Continue` parameter has been added to the return table.  
+If set to `true` the callback will instead replace the `Variant` and `SubType` parameter with the specified values and continue running.
+
+These changes aim to make the callback a viable option for handling pickup pools.
+
+???+ info "Usage"
+    Internally the game always attempts to randomize the spawned pickup's variant and subtype, even when re-entering an already visited room, however there are checks in place to make sure that randomization only occurs if either of these values are initially set to 0.
+
+    Therefore, any callback should always check `if RequestedVariant == 0 or RequestedSubType == 0` before attempting any modification.
+
+    That is unless the desired effect is something akin to the APRIL FOOLS's "All nickels are sticky nickels" effect, which is applied regardless of the afore mentioned restriction.
+
+???+ info "Requested Variant == 0"
+    When **Requested Variant** is equal to 0 the game will randomize both the Variant and SubType of the pickup. In this case the value of **Requested SubType** is used as a variant blacklist.  
+
+    This blacklist are listed in the [NullPickupSubType](NullPickupSubType.md) enum.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|37 |MC_POST_PICKUP_SELECTION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>[PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) Variant, <br>int SubType, <br>[PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) RequestedVariant, <br>int RequestedSubType, <br>[RNG](../RNG.md) RNG ) | - | table |
+
 ### MC_PRE_PLAYER_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
 
@@ -2382,12 +2408,26 @@ Return an integer to override the target room index.
 |:--|:--|:--|:--|:--|
 |1290 |MC_PRE_FORTUNE_DISPLAY {: .copyable } | (int RoomIndex, bool IAmErrorRoom, int Seed) | - | int |
 
+### MC_PRE_GLOWING_HOURGLASS_SAVE {: .copyable }
+Called after the Glowing Hourglass state is saved.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1302 |MC_PRE_GLOWING_HOURGLASS_SAVE {: .copyable } | (int Slot) | - | void |
+
 ### MC_POST_GLOWING_HOURGLASS_SAVE {: .copyable }
 Called after the Glowing Hourglass state is saved.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1300 |MC_POST_GLOWING_HOURGLASS_SAVE {: .copyable } | (int Slot) | - | void |
+
+### MC_PRE_GLOWING_HOURGLASS_LOAD {: .copyable }
+Called after the Glowing Hourglass state is loaded.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1303 |MC_PRE_GLOWING_HOURGLASS_LOAD {: .copyable } | (int Slot) | - | void |
 
 ### MC_POST_GLOWING_HOURGLASS_LOAD {: .copyable }
 Called after the Glowing Hourglass state is loaded.

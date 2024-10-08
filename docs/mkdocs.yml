@@ -143,6 +143,7 @@ nav:
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
+    - GetCollectibleFlag: enums/GetCollectibleFlag.md
     - GLSLType: enums/GLSLType.md
     - Giantbook: enums/Giantbook.md
     - GibFlag: enums/GibFlag.md
