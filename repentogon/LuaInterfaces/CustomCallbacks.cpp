@@ -4607,7 +4607,6 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 //PRE/POST_BAITED_STATUS_APPLY (1362/1363)
 HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
 	const int preCallbackId = 1362;
-	printf("Test bait\n");
 
 	if (CallbackState.test(preCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4622,6 +4621,10 @@ HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
 		
 		if (!results) {
 			if (lua_istable(L, -1)) {
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 1) {
+					duration = lua::callbacks::ToInteger(L, 1);
+				}
 				int* result = new int[1];
 				for (int i = 1; i <= 1; i++) {
 					lua_pushinteger(L, i);
@@ -4659,7 +4662,6 @@ HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
 //PRE/POST_BLEEDING_STATUS_APPLY (1364/1365)
 HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
 	const int preCallbackId = 1364;
-	printf("Test bait\n");
 
 	if (CallbackState.test(preCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4674,14 +4676,10 @@ HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				int* result = new int[1];
-				for (int i = 1; i <= 1; i++) {
-					lua_pushinteger(L, i);
-					lua_gettable(L, -2);
-					result[i - 1] = (int)lua_tointeger(L, -1);
-					lua_pop(L, 1);
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 1) {
+					duration = lua::callbacks::ToInteger(L, 1);
 				}
-				duration = result[0];
 			}
 			else if (lua_isboolean(L, -1))
 			{
@@ -4709,9 +4707,8 @@ HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
 }
 
 //PRE/POST_BRIMSTONE_MARK_STATUS_APPLY (1366/1367)
-HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
+HOOK_METHOD(Entity, AddBrimstoneMark, (const EntityRef& ref, int duration) -> void) {
 	const int preCallbackId = 1366;
-	printf("Test bait\n");
 
 	if (CallbackState.test(preCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4726,14 +4723,10 @@ HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				int* result = new int[1];
-				for (int i = 1; i <= 1; i++) {
-					lua_pushinteger(L, i);
-					lua_gettable(L, -2);
-					result[i - 1] = (int)lua_tointeger(L, -1);
-					lua_pop(L, 1);
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 1) {
+					duration = lua::callbacks::ToInteger(L, 1);
 				}
-				duration = result[0];
 			}
 			else if (lua_isboolean(L, -1))
 			{
@@ -4746,6 +4739,150 @@ HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
 	super(ref, duration);
 
 	const int postCallbackId = 1367;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.call(1);
+	}
+}
+
+//PRE/POST_BURN_STATUS_APPLY (1368/1369)
+HOOK_METHOD(Entity, AddBurn, (const EntityRef& ref, int duration, float damage) -> void) {
+	const int preCallbackId = 1368;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.push(damage)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 2) {
+					duration = lua::callbacks::ToInteger(L, 1);
+					damage = lua::callbacks::ToNumber(L, 2);
+				}
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (!lua_toboolean(L, -1))
+					return;
+			}
+		}
+	}
+
+	super(ref, duration, damage);
+
+	const int postCallbackId = 1369;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.push(damage)
+			.call(1);
+	}
+}
+
+//PRE/POST_CHARMED_STATUS_APPLY (1370/1371)
+HOOK_METHOD(Entity, AddCharmed, (const EntityRef& ref, int duration) -> void) {
+	const int preCallbackId = 1370;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 1) {
+					duration = lua::callbacks::ToInteger(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (!lua_toboolean(L, -1))
+					return;
+			}
+		}
+	}
+
+	super(ref, duration);
+
+	const int postCallbackId = 1371;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.call(1);
+	}
+}
+
+//PRE/POST_CONFUSION_STATUS_APPLY (1373/1373)
+HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration) -> void) {
+	const int preCallbackId = 1372;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->_type)
+			.push(this, lua::Metatables::ENTITY)
+			.push(duration)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				int tablesize = (int)lua_rawlen(L, -1);
+				if (tablesize == 1) {
+					duration = lua::callbacks::ToInteger(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (!lua_toboolean(L, -1))
+					return;
+			}
+		}
+	}
+
+	super(ref, duration);
+
+	const int postCallbackId = 1373;
 
 	if (CallbackState.test(postCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
