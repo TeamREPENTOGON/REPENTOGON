@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://repentogon.com/enums/ImGuiCallback.html">
+        <link rel="canonical" href="https://repentogon.com/enums/GetCollectibleFlag.html">
       
       
-        <link rel="prev" href="HealthType.html">
+        <link rel="prev" href="FollowerPriority.html">
       
       
-        <link rel="next" href="ImGuiColor.html">
+        <link rel="next" href="GLSLType.html">
       
       
       <link rel="icon" href="../img/favicon.ico">
@@ -22,7 +22,7 @@
     
     
       
-        <title>ImGuiCallback - BoI: REPENTOGON</title>
+        <title>GetCollectibleFlag - BoI: REPENTOGON</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#enum-imguicallback" class="md-skip">
+        <a href="#enum-getcollectibleflag" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ImGuiCallback
+              GetCollectibleFlag
             
           </span>
         </div>
@@ -1676,10 +1676,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="GetCollectibleFlag.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="GetCollectibleFlag.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1688,6 +1697,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1802,19 +1812,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="ImGuiCallback.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="ImGuiCallback.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1823,7 +1824,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -7146,7 +7146,11 @@
   
 
 
-<h1 id="enum-imguicallback">Enum "ImGuiCallback"<a class="headerlink" href="#enum-imguicallback" title="Permanent link">⚓︎</a></h1>
+<h1 id="enum-getcollectibleflag">Enum "GetCollectibleFlag"<a class="headerlink" href="#enum-getcollectibleflag" title="Permanent link">⚓︎</a></h1>
+<details class="tip" open="open">
+<summary>Bitset Calculator</summary>
+<p><a class="bitsetCalculator" href="#"></a></p>
+</details>
 <table>
 <thead>
 <tr>
@@ -7157,59 +7161,19 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">0</td>
-<td class="copyable" style="text-align: left;">Clicked</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">1 &lt;&lt; 0</td>
+<td class="copyable" style="text-align: left;">BAN_ACTIVE</td>
+<td style="text-align: left;">Bans items with <a href="https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html?h=itemconfig#type">Type</a>: <code>ITEM_ACTIVE</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">1</td>
-<td class="copyable" style="text-align: left;">Hovered</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">1 &lt;&lt; 1</td>
+<td class="copyable" style="text-align: left;">IGNORE_MODIFIERS</td>
+<td style="text-align: left;">If set the game does not attempt to morph the collectible into either <code>Magic Skin</code> or <code>Rosary</code>. Does not prevent a morph into <code>Bible</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2</td>
-<td class="copyable" style="text-align: left;">Active</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">3</td>
-<td class="copyable" style="text-align: left;">Focused</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">4</td>
-<td class="copyable" style="text-align: left;">Visible</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">5</td>
-<td class="copyable" style="text-align: left;">Edited</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">6</td>
-<td class="copyable" style="text-align: left;">Activated</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">7</td>
-<td class="copyable" style="text-align: left;">Deactivated</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">8</td>
-<td class="copyable" style="text-align: left;">DeactivatedAfterEdit</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">9</td>
-<td class="copyable" style="text-align: left;">ToggledOpen</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: left;">10</td>
-<td class="copyable" style="text-align: left;">Render</td>
-<td style="text-align: left;">Gets executed before an object gets rendered</td>
+<td style="text-align: left;">1 &lt;&lt; 2</td>
+<td class="copyable" style="text-align: left;">BAN_PASSIVE</td>
+<td style="text-align: left;">Only allows items with <a href="https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html?h=itemconfig#type">Type</a>: <code>ITEM_ACTIVE</code>.</td>
 </tr>
 </tbody>
 </table>

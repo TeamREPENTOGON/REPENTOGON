@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
     
     
       
@@ -1066,6 +1066,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_post_pickup_selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PICKUP_SELECTION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_player_collision" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_PLAYER_COLLISION
@@ -3592,9 +3601,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_save" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_post_glowing_hourglass_save" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_load" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_LOAD
     </span>
   </a>
   
@@ -4413,6 +4440,27 @@
   
   
     <li class="md-nav__item">
+      <a href="GetCollectibleFlag.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GetCollectibleFlag
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="GLSLType.html" class="md-nav__link">
         
   
@@ -4829,6 +4877,15 @@
   <a href="#mc_use_pill" class="md-nav__link">
     <span class="md-ellipsis">
       MC_USE_PILL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_pickup_selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PICKUP_SELECTION
     </span>
   </a>
   
@@ -7361,9 +7418,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_save" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_post_glowing_hourglass_save" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_load" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_LOAD
     </span>
   </a>
   
@@ -12582,6 +12657,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_post_pickup_selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PICKUP_SELECTION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_player_collision" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_PLAYER_COLLISION
@@ -15108,9 +15192,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_save" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_post_glowing_hourglass_save" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_GLOWING_HOURGLASS_SAVE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_glowing_hourglass_load" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_GLOWING_HOURGLASS_LOAD
     </span>
   </a>
   
@@ -15297,6 +15399,43 @@ Accepts no return parameters.</p>
 <td style="text-align: left;">(<a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html">PillEffect</a> Effect, <a href="../EntityPlayer.html">EntityPlayer</a> Player, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html">UseFlags</a> Flags, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html">PillColor</a> Color)</td>
 <td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html">PillEffect</a></td>
 <td style="text-align: left;">void</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mc_post_pickup_selection">MC_POST_PICKUP_SELECTION<a class="headerlink" href="#mc_post_pickup_selection" title="Permanent link">⚓︎</a></h3>
+<p>MC_POST_PICKUP_COLLISION now passes the <strong>Requested Variant</strong> and <strong>Requested SubType</strong>, as well as <strong>RNG</strong>.<br />
+<strong>Requested Variant</strong> and <strong>Requested SubType</strong> represents the variant and subtype set when spawning the entity.   </p>
+<p>A third optional <code>Continue</code> parameter has been added to the return table.<br />
+If set to <code>true</code> the callback will instead replace the <code>Variant</code> and <code>SubType</code> parameter with the specified values and continue running.</p>
+<p>These changes aim to make the callback a viable option for handling pickup pools.</p>
+<details class="info" open="open">
+<summary>Usage</summary>
+<p>Internally the game always attempts to randomize the spawned pickup's variant and subtype, even when re-entering an already visited room, however there are checks in place to make sure that randomization only occurs if either of these values are initially set to 0.</p>
+<p>Therefore, any callback should always check <code>if RequestedVariant == 0 or RequestedSubType == 0</code> before attempting any modification.</p>
+<p>That is unless the desired effect is something akin to the APRIL FOOLS's "All nickels are sticky nickels" effect, which is applied regardless of the afore mentioned restriction.</p>
+</details>
+<details class="info" open="open">
+<summary>Requested Variant == 0</summary>
+<p>When <strong>Requested Variant</strong> is equal to 0 the game will randomize both the Variant and SubType of the pickup. In this case the value of <strong>Requested SubType</strong> is used as a variant blacklist.  </p>
+<p>This blacklist are listed in the <a href="NullPickupSubType.html">NullPickupSubType</a> enum.</p>
+</details>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">37</td>
+<td class="copyable" style="text-align: left;">MC_POST_PICKUP_SELECTION</td>
+<td style="text-align: left;">(<a href="../EntityPickup.html">EntityPickup</a> Pickup, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a> Variant, <br>int SubType, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a> RequestedVariant, <br>int RequestedSubType, <br><a href="../RNG.html">RNG</a> RNG )</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">table</td>
 </tr>
 </tbody>
 </table>
@@ -21804,6 +21943,28 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tr>
 </tbody>
 </table>
+<h3 class="copyable" id="mc_pre_glowing_hourglass_save">MC_PRE_GLOWING_HOURGLASS_SAVE<a class="headerlink" href="#mc_pre_glowing_hourglass_save" title="Permanent link">⚓︎</a></h3>
+<p>Called after the Glowing Hourglass state is saved.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1302</td>
+<td class="copyable" style="text-align: left;">MC_PRE_GLOWING_HOURGLASS_SAVE</td>
+<td style="text-align: left;">(int Slot)</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">void</td>
+</tr>
+</tbody>
+</table>
 <h3 class="copyable" id="mc_post_glowing_hourglass_save">MC_POST_GLOWING_HOURGLASS_SAVE<a class="headerlink" href="#mc_post_glowing_hourglass_save" title="Permanent link">⚓︎</a></h3>
 <p>Called after the Glowing Hourglass state is saved.</p>
 <table>
@@ -21820,6 +21981,28 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <tr>
 <td style="text-align: left;">1300</td>
 <td class="copyable" style="text-align: left;">MC_POST_GLOWING_HOURGLASS_SAVE</td>
+<td style="text-align: left;">(int Slot)</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">void</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_pre_glowing_hourglass_load">MC_PRE_GLOWING_HOURGLASS_LOAD<a class="headerlink" href="#mc_pre_glowing_hourglass_load" title="Permanent link">⚓︎</a></h3>
+<p>Called after the Glowing Hourglass state is loaded.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1303</td>
+<td class="copyable" style="text-align: left;">MC_PRE_GLOWING_HOURGLASS_LOAD</td>
 <td style="text-align: left;">(int Slot)</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">void</td>
