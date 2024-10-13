@@ -7,6 +7,7 @@
 #include "StageManager.h"
 #include "suffixes.h"
 
+#include <filesystem>
 #include <unordered_map>
 #include <sstream>
 
@@ -195,6 +196,44 @@ int StageManager::GetStageIdForToken(std::string token) {
 
 std::string* StageManager::GetTokenForStageId(int id) {
 	return &stageState[id].token;
+}
+
+namespace fs = std::filesystem;
+
+static std::unordered_map<std::string, size_t> GetFilesWithExtension(const fs::path& directory, const std::wstring& extension, size_t& idCounter) {
+	std::unordered_map<std::string, size_t> matchingFiles;
+
+	for (const auto& entry : fs::recursive_directory_iterator(directory)) {
+		if (entry.is_regular_file() && entry.path().extension() == extension) {
+			matchingFiles.insert({ fs::relative(entry.path(), directory.parent_path()).string(), idCounter++ });
+		}
+	}
+
+	return matchingFiles;
+}
+
+void StageManager::ParseModsDirectory() {
+	vector_ModEntryPointer mods = g_Manager->GetModManager()->_mods;
+	size_t idCounter = 0;
+
+	for (const auto& entry : mods) {
+		if (entry->_enabled) {
+			fs::path resourcesRoomsPath = (fs::path(entry->_resourcesDirectory) / "rooms");
+			if (fs::exists(resourcesRoomsPath) && fs::is_directory(resourcesRoomsPath)) {
+				std::unordered_map<std::string, size_t> files = GetFilesWithExtension(resourcesRoomsPath, L".stb", idCounter);
+				filenameMap.merge(files);
+			}
+		}
+	}
+}
+
+HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
+	super();
+	StageManager& stageManager = StageManager::GetInstance();
+	stageManager.ParseModsDirectory();
+	for (const auto& entry : stageManager.filenameMap) {
+		ZHL::Log("Found file %s with id %d\n", entry.first.c_str(), entry.second);
+	}
 }
 
 // Handle RoomSet cacheing

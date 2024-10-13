@@ -22,6 +22,7 @@ public:
 
 	const unsigned int BUFFER_STAGEID = 23;
 	std::unordered_map<std::string, RoomSet> binaryMap;
+	std::unordered_map<std::string, size_t> filenameMap;
 	StageState stageState[37];
 	RoomSet* LoadBinary(std::string* path);
 	RoomSet* GetBinary(std::string* path, bool loadIfUncached);
@@ -32,4 +33,5 @@ public:
 	void ResetAllRoomWeights();
 	int GetStageIdForToken(std::string token);
 	std::string* GetTokenForStageId(int stageId);
+	void ParseModsDirectory();
 };
