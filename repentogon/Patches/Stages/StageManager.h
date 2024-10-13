@@ -17,7 +17,7 @@ class StageManager
 {
 private:
 	StageManager() {}
-	std::unordered_map<std::string, size_t> GetFilesWithExtension(const fs::path&, const std::wstring&, size_t&);
+	std::unordered_map<std::string, size_t> GetStageBinaryFiles(const fs::path&, size_t&);
 	const std::array<const char*, 32> vanillaStbs = {
 		"00.special rooms.stb",
 		"01.basement.stb",
@@ -66,12 +66,12 @@ public:
 	StageState stageState[37];
 	RoomSet* LoadBinary(std::string* path);
 	RoomSet* GetBinary(std::string* path, bool loadIfUncached);
-	bool AppendBinary(RoomSet* roomSet, std::string* binary);
+	bool AppendBinary(RoomSet* roomSet, std::string& binary);
 	bool IsBinaryLoaded(std::string* path);
 	bool SwapStage(int stageId, const char* stageName, bool restoring);
 	void ResetRoomWeights(RoomSet* set);
 	void ResetAllRoomWeights();
-	int GetStageIdForToken(std::string token);
+	int GetStageIdForToken(std::string& token);
 	std::string* GetTokenForStageId(int stageId);
-	void ParseModsDirectory();
+	void BuildFilenameMap();
 };

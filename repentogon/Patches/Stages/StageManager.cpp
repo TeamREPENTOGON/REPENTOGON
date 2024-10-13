@@ -161,13 +161,13 @@ bool StageManager::SwapStage(int stageId, const char* stageName, bool restoring)
 };
 
 // TODO: mark this binary as appended to the input RoomSet so subsequent attempts can be cancelled
-bool StageManager::AppendBinary(RoomSet* roomSet, std::string* binary) {
+bool StageManager::AppendBinary(RoomSet* roomSet, std::string& binary) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	ModManager* modManager = g_Manager->GetModManager();
 	roomConfig->_stages[BUFFER_STAGEID]._id = BUFFER_STAGEID;
 	RoomSet* buffer = &roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
 	unsigned int roomCount = buffer->_count;
-	buffer->_filepath = *binary;
+	buffer->_filepath = binary;
 	modManager->UpdateRooms(BUFFER_STAGEID, 0);
 	buffer->_filepath = roomSet->_filepath;
 	*roomSet = *buffer;
@@ -186,7 +186,7 @@ void StageManager::ResetAllRoomWeights() {
 	}
 }
 
-int StageManager::GetStageIdForToken(std::string token) {
+int StageManager::GetStageIdForToken(std::string& token) {
 	for (unsigned int i = 0; i < 37; i++) {
 		if (stageState[i].token == token)
 			return i;
@@ -211,11 +211,11 @@ static bool CheckBlacklisted(const fs::path& name, const std::array<const char*,
 	return false;
 }
 
-std::unordered_map<std::string, size_t> StageManager::GetFilesWithExtension(const fs::path& directory, const std::wstring& extension, size_t& idCounter) {
+std::unordered_map<std::string, size_t> StageManager::GetStageBinaryFiles(const fs::path& directory, size_t& idCounter) {
 	std::unordered_map<std::string, size_t> matchingFiles;
 
 	for (const auto& entry : fs::recursive_directory_iterator(directory)) {
-		if (entry.is_regular_file() && entry.path().extension() == extension) {
+		if (entry.is_regular_file() && entry.path().extension() == ".stb") {
 			if (!CheckBlacklisted(entry.path().filename(), vanillaStbs))
 				matchingFiles.insert({ fs::relative(entry.path(), directory.parent_path()).string(), idCounter++ });
 		}
@@ -224,15 +224,17 @@ std::unordered_map<std::string, size_t> StageManager::GetFilesWithExtension(cons
 	return matchingFiles;
 }
 
-void StageManager::ParseModsDirectory() {
+void StageManager::BuildFilenameMap() {
 	vector_ModEntryPointer mods = g_Manager->GetModManager()->_mods;
 	size_t idCounter = 0;
+
+	filenameMap.clear();
 
 	for (const auto& entry : mods) {
 		if (entry->_enabled) {
 			fs::path resourcesRoomsPath = (fs::path(entry->_resourcesDirectory) / "rooms");
 			if (fs::exists(resourcesRoomsPath) && fs::is_directory(resourcesRoomsPath)) {
-				std::unordered_map<std::string, size_t> files = GetFilesWithExtension(resourcesRoomsPath, L".stb", idCounter);
+				std::unordered_map<std::string, size_t> files = GetStageBinaryFiles(resourcesRoomsPath, idCounter);
 				filenameMap.merge(files);
 			}
 		}
@@ -242,7 +244,7 @@ void StageManager::ParseModsDirectory() {
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	super();
 	StageManager& stageManager = StageManager::GetInstance();
-	stageManager.ParseModsDirectory();
+	stageManager.BuildFilenameMap();
 	for (const auto& entry : stageManager.filenameMap) {
 		ZHL::Log("Found file %s with id %d\n", entry.first.c_str(), entry.second);
 	}
@@ -251,24 +253,24 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 // Handle RoomSet cacheing
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int id, unsigned int mode) -> bool) {
 	RoomConfig_Stage* stage = &this->_stages[id];
-	RoomSet* set = &stage->_rooms[mode];
-	std::string* path = &set->_filepath;
+	RoomSet& set = stage->_rooms[mode];
+	std::string& path = set._filepath;
 	StageManager& stageManager = StageManager::GetInstance();
 
 	// if we already loaded this binary, use the cached version
-	std::unordered_map<std::string, RoomSet>::const_iterator itr = stageManager.binaryMap.find(*path);
+	std::unordered_map<std::string, RoomSet>::const_iterator itr = stageManager.binaryMap.find(path);
 	if (itr != stageManager.binaryMap.end()) {
 		stringstream message;
-		message << "[RoomConfig] stage " << id << ": " << stage->_displayName << " (mode " << mode << ") already loaded from binary \"" << set->_filepath << "\"\n";
+		message << "[RoomConfig] stage " << id << ": " << stage->_displayName << " (mode " << mode << ") already loaded from binary \"" << set._filepath << "\"\n";
 		KAGE::LogMessage(0, message.str().c_str());
-		*set = itr->second;
+		set = itr->second;
 		return true;
 	}
 	bool res = super(id, mode);
 
 	// cache the loaded binary
 	if (res) {
-		stageManager.binaryMap.insert({ *path, *set });
+		stageManager.binaryMap.insert({ path, set });
 		if (stage->_suffix.empty()) {
 			stage->_suffix = suffixes[id];
 		}
@@ -438,7 +440,7 @@ LUA_FUNCTION(Lua_StageManager_AppendBinary) {
 	}
 	std::string filepath = luaL_checkstring(L, 2);
 
-	lua_pushboolean(L, stageManager.AppendBinary(roomSet, &filepath));
+	lua_pushboolean(L, stageManager.AppendBinary(roomSet, filepath));
 
 	return 1;
 }
