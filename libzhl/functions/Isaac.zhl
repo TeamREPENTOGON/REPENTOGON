@@ -55,6 +55,9 @@ static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target)
 "56578bfa8bf183ffff":
 static __x86_64_output Vector Isaac::GetAxisAlignedUnitVectorFromDir(int eDir);
 
+"558bec0f1002":
+__fastcall void IsaacRepentance::SwapANM2(ANM2 * left, ANM2 * right);
+
 struct Isaac {
     {{
     LIBZHL_API static bool IsInGame();

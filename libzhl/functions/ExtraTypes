@@ -60,6 +60,11 @@ TypeInfo vector_MusicEntry {
     Align 4;
 }; 
 
+TypeInfo vector_FXLayers_FX {
+    Size 12;
+    Align 4;
+}; 
+
 TypeInfo vector_Curse {
     Size 12;
     Align 4;
