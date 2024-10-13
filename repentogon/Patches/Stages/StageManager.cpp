@@ -200,12 +200,24 @@ std::string* StageManager::GetTokenForStageId(int id) {
 
 namespace fs = std::filesystem;
 
-static std::unordered_map<std::string, size_t> GetFilesWithExtension(const fs::path& directory, const std::wstring& extension, size_t& idCounter) {
+static bool CheckBlacklisted(const fs::path& name, const std::array<const char*, 32>& blacklist)
+{
+	for (const auto& blacklisted : blacklist) {
+		ZHL::Log("Checking %s against %s\n", name.string().c_str(), blacklisted);
+		if (name.string() == blacklisted) {
+			return true;
+		}
+	}
+	return false;
+}
+
+std::unordered_map<std::string, size_t> StageManager::GetFilesWithExtension(const fs::path& directory, const std::wstring& extension, size_t& idCounter) {
 	std::unordered_map<std::string, size_t> matchingFiles;
 
 	for (const auto& entry : fs::recursive_directory_iterator(directory)) {
 		if (entry.is_regular_file() && entry.path().extension() == extension) {
-			matchingFiles.insert({ fs::relative(entry.path(), directory.parent_path()).string(), idCounter++ });
+			if (!CheckBlacklisted(entry.path().filename(), vanillaStbs))
+				matchingFiles.insert({ fs::relative(entry.path(), directory.parent_path()).string(), idCounter++ });
 		}
 	}
 
