@@ -108,7 +108,7 @@ __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
 __thiscall Entity * Entity::GetStatusEffectTarget();
 
 "8b41??3d8d030000":
-__thiscall bool Entity::get_status_effect_target();
+__thiscall bool Entity::DoesEntityShareStatus();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
