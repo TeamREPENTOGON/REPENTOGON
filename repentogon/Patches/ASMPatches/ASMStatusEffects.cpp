@@ -9,13 +9,13 @@ struct StatusEffectPatchInfo {
 	char* signature;
 	char* funcName;
 	int sigOffset;
-	ASMPatch::Registers entityReg;
-	ASMPatch::Registers targetReg;
-	ASMPatch::SavedRegisters::Registers saveReg;
+	ASMPatch::Registers entityReg; // pointer containing entity at the time of jmp
+	ASMPatch::Registers targetReg; // register where entity pointer is expected to be after the patch
+	ASMPatch::SavedRegisters::Registers saveReg; // its corresponding SavedRegisters::Register
 	unsigned int jumpOffset;
 };
 
-StatusEffectPatchInfo patches[16] = {
+const StatusEffectPatchInfo patches[16] = {
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85d20f84????????8b86????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b92c0100003bc10f4cc8eb??f7da3bca0f4cca898e????????8d4c24??0f2805????????6a010f114424??6a000f57c0",
 	"AddBaited", 0, ASMPatch::Registers::ESI, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
 	{"e8????????84c074??8b8e????????85c974??90",
@@ -113,8 +113,8 @@ HOOK_METHOD(Entity, AddCharmed, (const EntityRef& ref, int duration) -> void) {
 	super(ref, duration);
 }
 
-HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration) -> void) {
-	super(ref, duration);
+HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBoss) -> void) {
+	super(ref, duration, ignoreBoss);
 }
 
 HOOK_METHOD(Entity, AddFear, (const EntityRef& ref, int duration) -> void) {
