@@ -11,29 +11,6 @@ static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, f
 
 "558bec83e4f8515356578bd9e8????????84c0":
 __thiscall void Entity::CopyStatusEffects();
-"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
-__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
-
-"558bec83e4f883ec10568b75??5756":
-__thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
-
-"558bec83e4f883ec38a1????????33c4894424??56578b7d??8bf1":
-__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);
-
-"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
-__thiscall void Entity::AddBaited(const EntityRef& ref, int duration);
-
-"558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????57ff75":
-__thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
-
-"558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
-__thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
-
-"558bec5156ff75":
-__thiscall void Entity::AddIce(const EntityRef& ref, int duration);
-
-"558bec83e4f85156ff75??8bf1e8":
-__thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
 
 "558bec518379??01":
 __thiscall unsigned int Entity::ComputeStatusEffectDuration(int initial, EntityRef* source);
@@ -76,6 +53,62 @@ __thiscall void Entity::TeleportToRandomPosition(bool unused);
 
 "8b81????????85c074??83f80374??83f80174??83f80274??32c0":
 __thiscall bool Entity::IsFlying();
+
+// Status effects
+
+"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
+__thiscall void Entity::AddBaited(const EntityRef& ref, int duration);
+
+"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
+__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
+
+"558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????57ff75":
+__thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
+
+"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????837e??01":
+__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage);
+
+"558bec83e4f883ec3ca1????????33c4894424??5356578bf98b4d":
+__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec3ca1????????33c4894424??538b5d":
+__thiscall void Entity::AddFear(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57":
+__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration);
+
+"558bec83e4f85156ff75??8bf1e8":
+__thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
+
+"558bec5156ff75":
+__thiscall void Entity::AddIce(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec38a1????????33c4894424??56578b7d??8bf1":
+__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bf8":
+__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
+__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage);
+
+"558bec83e4f883ec10568b75??5756":
+__thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
+
+"558bec83e4f856578b7d??8bf1":
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color);
+
+"558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
+__thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
+
+"8bd1e8????????84c0":
+__thiscall Entity * Entity::GetStatusEffectTarget();
+
+"8b41??3d8d030000":
+__thiscall bool Entity::get_status_effect_target();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
@@ -169,12 +202,14 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	float _poisonDamage : 0x278;
 	float _burnDamage : 0x27c;
 	float _depthOffset : 0x2b0;
+	float _mass : 0x2d4;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
 	Entity * _parent : 0x314;
 	Entity * _child : 0x318;
+	Entity * _target : 0x31c;
 	Entity * _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
 
