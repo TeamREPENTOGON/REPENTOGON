@@ -99,7 +99,7 @@ __thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float dama
 __thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
 
 "558bec83e4f856578b7d??8bf1":
-__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, unsigned int unk, ColorMod* color);
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
 __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
