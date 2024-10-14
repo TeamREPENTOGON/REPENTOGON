@@ -72,7 +72,7 @@ __thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage
 __thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
-__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration);
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
 
 "558bec83e4f883ec3ca1????????33c4894424??538b5d":
 __thiscall void Entity::AddFear(const EntityRef& ref, int duration);
