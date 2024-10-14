@@ -1636,7 +1636,3 @@ pcall(require("repentogon_extras/stats_menu"))
 pcall(require("repentogon_extras/bestiary_menu"))
 -- pcall(require("repentogon_extras/onlinestub")) let's not load it
 pcall(require("repentogon_extras/mods_menu_tweaks"))
-
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_PRE_KNOCKBACK_STATUS_APPLY, function(_, ref, pushDirection, duration, takeImpactDamage)
-	return { Vector(0, 1), duration, takeImpactDamage }
-end)

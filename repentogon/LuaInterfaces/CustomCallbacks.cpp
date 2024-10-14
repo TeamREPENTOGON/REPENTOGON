@@ -4604,35 +4604,33 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 	return super();
 }
 
-//PRE/POST_BAITED_STATUS_APPLY (1362/1363)
-HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1362;
+/* ////////////////////////
+// Status Effect Callbacks
+*/ ////////////////////////
 
+struct TimedOnlyStatusEffectApplyInputs {
+	Entity* entity;
+	EntityRef source;
+	int duration;
+};
+
+void HandleTimedOnlyStatusApplyCallback(const int preCallbackId, const int postCallbackId, TimedOnlyStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int)> super)
+{
 	if (CallbackState.test(preCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
+			.push(inputs.entity->_type)
+			.push(inputs.entity, lua::Metatables::ENTITY)
+			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
+			.push(inputs.duration)
 			.call(1);
-		
+
 		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-				int* result = new int[1];
-				for (int i = 1; i <= 1; i++) {
-					lua_pushinteger(L, i);
-					lua_gettable(L, -2);
-					result[i - 1] = (int)lua_tointeger(L, -1);
-					lua_pop(L, 1);
-				}
-				duration = result[0];
+			if (lua_isinteger(L, -1)) {
+				inputs.duration = (int)lua_tointeger(L, -1);
 			}
 			else if (lua_isboolean(L, -1))
 			{
@@ -4642,9 +4640,7 @@ HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
 		}
 	}
 
-	super(ref, duration);
-
-	const int postCallbackId = 1363;
+	super(inputs.source, inputs.duration);
 
 	if (CallbackState.test(postCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4652,447 +4648,31 @@ HOOK_METHOD(Entity, AddBaited, (const EntityRef& ref, int duration) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
+			.push(inputs.entity->_type)
+			.push(inputs.entity, lua::Metatables::ENTITY)
+			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
+			.push(inputs.duration)
 			.call(1);
 	}
 }
 
-//PRE/POST_BLEEDING_STATUS_APPLY (1364/1365)
-HOOK_METHOD(Entity, AddBleeding, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1364;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1365;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
+#define _APPLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration) { return super(ref, duration); }
+#define HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(_method, _preCallback, _postCallback) \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration) -> void) { \
+	TimedOnlyStatusEffectApplyInputs inputs = {this, ref, duration}; \
+	HandleTimedOnlyStatusApplyCallback(_preCallback, _postCallback, inputs, _APPLY_STATUS_EFFECT_LAMBDA()); \
 }
 
-//PRE/POST_BRIMSTONE_MARK_STATUS_APPLY (1366/1367)
-HOOK_METHOD(Entity, AddBrimstoneMark, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1366;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1367;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_BURN_STATUS_APPLY (1368/1369)
-HOOK_METHOD(Entity, AddBurn, (const EntityRef& ref, int duration, float damage) -> void) {
-	const int preCallbackId = 1368;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(damage)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 2) {
-					duration = lua::callbacks::ToInteger(L, 1);
-					damage = lua::callbacks::ToNumber(L, 2);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration, damage);
-
-	const int postCallbackId = 1369;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(damage)
-			.call(1);
-	}
-}
-
-//PRE/POST_CHARMED_STATUS_APPLY (1370/1371)
-HOOK_METHOD(Entity, AddCharmed, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1370;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1371;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_CONFUSION_STATUS_APPLY (1372/1373)
-HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1372;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1373;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_FEAR_STATUS_APPLY (1374/1375)
-HOOK_METHOD(Entity, AddFear, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1374;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1375;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_FREEZE_STATUS_APPLY (1376/1377)
-HOOK_METHOD(Entity, AddFreeze, (const EntityRef& ref, int duration) -> void) {
-	const int preCallbackId = 1376;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1375;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_ICE_STATUS_APPLY (1378/1379)
-HOOK_METHOD(Entity, AddIce, (const EntityRef& ref, int duration) -> void) {
-	printf("ice ice\n");
-	const int preCallbackId = 1378;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 1) {
-					duration = lua::callbacks::ToInteger(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, duration);
-
-	const int postCallbackId = 1379;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.call(1);
-	}
-}
-
-//PRE/POST_KNOCKBACK_STATUS_APPLY (1380/1381)
-HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
-	const int preCallbackId = 1380;
-
-	Vector pushVector = pushDirection;
-	
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.pushUserdataValue(pushVector, lua::Metatables::VECTOR)
-			.push(duration)
-			.push(takeImpactDamage)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
-				if (tablesize == 3) {
-					lua_pushinteger(L, 1);
-					lua_gettable(L, -2);
-					pushVector = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-					lua_pop(L, 1);
-					duration = lua::callbacks::ToInteger(L, 2);
-					takeImpactDamage = lua::callbacks::ToBoolean(L, 3);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1))
-					return;
-			}
-		}
-	}
-
-	super(ref, pushVector, duration, takeImpactDamage);
-
-	const int postCallbackId = 1381;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(postCallbackId)
-			.push(this->_type)
-			.push(this, lua::Metatables::ENTITY_REF)
-			.pushUserdataValue(pushVector, lua::Metatables::VECTOR)
-			.push(duration)
-			.push(takeImpactDamage)
-			.call(1);
-	}
-}
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 1362, 1363);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1364, 1365);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 1366, 1367);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 1370, 1371);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddConfusion, 1372, 1373);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 1374, 1375);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 1376, 1377);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 1378, 1379);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 1382, 1383);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 1384, 1385);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 1388, 1389);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 1392, 1393);
+//burn, knockback, poison, slowing left
