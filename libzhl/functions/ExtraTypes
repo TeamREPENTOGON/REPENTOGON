@@ -224,3 +224,8 @@ TypeInfo vector_HomingLaserBezier {
 	Size 12;
 	Align 4;
 };
+
+TypeInfo StringTableMap {
+    Size 12;
+    Align 4;
+};

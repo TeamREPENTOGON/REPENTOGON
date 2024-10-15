@@ -717,6 +717,23 @@ LUA_FUNCTION(Lua_StartDailyGame) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Test) {
+	auto* manager = g_Manager;
+	auto& stringT = manager->_stringTable;
+
+	/*for (const auto& stringEntry : stringT.stringMap) {
+		std::cout << "Category: " << stringEntry.first << std::endl;
+		
+		std::cout << "Size: " << stringEntry.second.size() << std::endl;
+
+		for (const auto& targetStrings : stringEntry.second) {
+			printf("%s \n", targetStrings.first);
+		}
+	}*/
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -771,6 +788,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PrintLocal", Lua_Test);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

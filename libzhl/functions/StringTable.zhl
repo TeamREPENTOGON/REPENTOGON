@@ -3,4 +3,6 @@ __thiscall char* StringTable::GetString(const char* category, int language, cons
 
 struct StringTable {
     uint32_t language : 0x0;
+	std_map_int_int map : 0x4;
+	StringTableMap stringMap : 0xc;
 } : 0x18;

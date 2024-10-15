@@ -81,7 +81,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	inline int GetMaxRenderScale() { return *(int*)((char*)this + 0x29E58); }
 	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
-	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
+	inline StringTable* GetStringTable() { return &this->_stringTable; }
 	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
 	inline Cutscene* GetCutscene() { return (Cutscene*)((char*)this + 0x20A00); }
 	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
@@ -97,6 +97,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
     PersistentGameData _persistentGameData : 0x14;
 	GameState _gamestate : 0xf34;
     StringTable _stringTable : 0x4a234;
+    StringTable _stringTableUnused : 0x4a24c;
 	SoundEffects _sfxManager : 0x29de0;
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
