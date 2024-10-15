@@ -1636,3 +1636,67 @@ pcall(require("repentogon_extras/stats_menu"))
 pcall(require("repentogon_extras/bestiary_menu"))
 -- pcall(require("repentogon_extras/onlinestub")) let's not load it
 pcall(require("repentogon_extras/mods_menu_tweaks"))
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BAITED_STATUS_APPLY, function(_, entity, source, duration) 
+	print("BAIT "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BLEEDING_STATUS_APPLY, function(_, entity, source, duration) 
+	print("BLEEDI "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BRIMSTONE_MARK_STATUS_APPLY, function(_, entity, source, duration) 
+	print("BRIM MARK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BURN_STATUS_APPLY, function(_, entity, source, duration, damage) 
+	print("BURN "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_CHARMED_STATUS_APPLY, function(_, entity, source, duration) 
+	print("CHARM "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_CONFUSION_STATUS_APPLY, function(_, entity, source, duration) 
+	print("CONFUSE "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_FEAR_STATUS_APPLY, function(_, entity, source, duration) 
+	print("FEAR "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_FREEZE_STATUS_APPLY, function(_, entity, source, duration) 
+	print("PETRIFY "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_ICE_STATUS_APPLY, function(_, entity, source, duration) 
+	print("ICE "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_KNOCKBACK_STATUS_APPLY, function(_, entity, source, pushDirection, duration, takeImpactDamage) 
+	print("KNOCKBACK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_MAGNETIZED_STATUS_APPLY, function(_, entity, source, duration) 
+	print("MAGNETIZE "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_MIDAS_FREEZE_STATUS_APPLY, function(_, entity, source, duration) 
+	print("MIDAS FREEZE "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_POISON_STATUS_APPLY, function(_, entity, source, duration, damage) 
+	print("POISON "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SHRINK_STATUS_APPLY, function(_, entity, source, duration) 
+	print("SHRINK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SLOWING_STATUS_APPLY, function(_, entity, source, duration, slowValue, SlowColor) 
+	print("SLOW "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_WEAKNESS_STATUS_APPLY, function(_, entity, source, duration) 
+	print("WEAKEN "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+end)
