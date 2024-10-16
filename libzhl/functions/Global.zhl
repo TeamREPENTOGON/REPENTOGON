@@ -106,14 +106,15 @@ typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
 typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
 typedef std::deque<LootListEntry> deque_LootListEntry;
 
-struct StringCompare {
+/*struct StringCompare {
   bool operator()(const char* first, const char* second) {
     return strcmp(first, second) == -1;
   }
- //unknown type here 
+	int* _deezy;
 };
+*/
 
-typedef std::map<const char*, std::map<const char*, char**>> StringTableMap;
+typedef std::map<const char*, std::map<const char*, char**>*> StringTableMap;
 
 }}
 

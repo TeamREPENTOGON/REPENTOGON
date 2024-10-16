@@ -721,15 +721,15 @@ LUA_FUNCTION(Lua_Test) {
 	auto* manager = g_Manager;
 	auto& stringT = manager->_stringTable;
 
-	/*for (const auto& stringEntry : stringT.stringMap) {
+	for (const auto& stringEntry : stringT.stringMap) {
 		std::cout << "Category: " << stringEntry.first << std::endl;
 		
-		std::cout << "Size: " << stringEntry.second.size() << std::endl;
+		std::cout << "Size: " << (*stringEntry.second).size() << std::endl;
 
-		for (const auto& targetStrings : stringEntry.second) {
-			printf("%s \n", targetStrings.first);
+		for (const auto& targetStrings : (*stringEntry.second)) {
+			printf("%s \n", targetStrings.second[6]);
 		}
-	}*/
+	}
 
 	return 0;
 }
