@@ -4712,18 +4712,80 @@ void HandleTimedOnlyStatusApplyCallback(const int preCallbackId, const int postC
 	}
 }
 
-#define _APPLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration) { return super(ref, duration); }
+#define _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration) { return super(ref, duration); }
 #define HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(_method, _preCallback, _postCallback) \
 HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration) -> void) { \
 	TimedOnlyStatusEffectApplyInputs inputs = {this, ref, duration}; \
-	HandleTimedOnlyStatusApplyCallback(_preCallback, _postCallback, inputs, _APPLY_STATUS_EFFECT_LAMBDA()); \
+	HandleTimedOnlyStatusApplyCallback(_preCallback, _postCallback, inputs, _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA()); \
+}
+
+struct DamageStatusEffectApplyInputs {
+	Entity* entity;
+	EntityRef source;
+	int duration;
+	float damage;
+};
+
+void HandleDamageStatusApplyCallback(const int preCallbackId, const int postCallbackId, DamageStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, float)> super)
+{
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
+			.push(inputs.entity->_type)
+			.push(inputs.entity, lua::Metatables::ENTITY)
+			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
+			.push(inputs.duration)
+			.push(inputs.damage)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				inputs.duration = lua::callbacks::ToInteger(L, 1);
+				inputs.damage = (float)lua::callbacks::ToNumber(L, 2);
+			}
+			else if (lua_isinteger(L, -1)) {
+				inputs.duration = (int)lua_tointeger(L, -1);
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (!lua_toboolean(L, -1))
+					return;
+			}
+		}
+	}
+
+	super(inputs.source, inputs.duration, inputs.damage);
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postCallbackId)
+			.push(inputs.entity->_type)
+			.push(inputs.entity, lua::Metatables::ENTITY)
+			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
+			.push(inputs.duration)
+			.push(inputs.damage)
+			.call(1);
+	}
+}
+
+#define _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, float damage) { return super(ref, duration, damage); }
+#define HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(_method, _preCallback, _postCallback) \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) -> void) { \
+	DamageStatusEffectApplyInputs inputs = {this, ref, duration, damage}; \
+	HandleDamageStatusApplyCallback(_preCallback, _postCallback, inputs, _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA()); \
 }
 
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 1362, 1363);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1364, 1365);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 1366, 1367);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 1370, 1371);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddConfusion, 1372, 1373);
+HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddConfusion, 1372, 1373); // currently crashes the game
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 1374, 1375);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 1376, 1377);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 1378, 1379);
@@ -4731,4 +4793,7 @@ HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 1382, 1383);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 1384, 1385);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 1388, 1389);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 1392, 1393);
-//burn, knockback, poison, slowing left
+
+HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 1368, 1369);
+HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 1386, 1387);
+//knockback, slowing left

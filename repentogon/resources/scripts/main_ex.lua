@@ -1650,7 +1650,7 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BRIMSTONE_MARK_STATUS_APPLY, 
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_BURN_STATUS_APPLY, function(_, entity, source, duration, damage) 
-	print("BURN "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+	print("BURN "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration).." "..tostring(damage))
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_CHARMED_STATUS_APPLY, function(_, entity, source, duration) 
@@ -1686,7 +1686,7 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_MIDAS_FREEZE_STATUS_APPLY, fu
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_POISON_STATUS_APPLY, function(_, entity, source, duration, damage) 
-	print("POISON "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+	print("POISON "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration).." "..tostring(damage))
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SHRINK_STATUS_APPLY, function(_, entity, source, duration) 
