@@ -423,6 +423,74 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
 	},
+	[ModCallbacks.MC_PRE_BAITED_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_BLEEDING_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_BRIMSTONE_MARK_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_CHARMED_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_CONFUSION_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_FEAR_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_FREEZE_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_ICE_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_MAGNETIZED_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_MIDAS_FREEZE_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_SHRINK_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_WEAKNESS_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_BURN_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+		["table"] = checkTableTypeFunction({ "integer", "number" })
+	},
+	[ModCallbacks.MC_PRE_POISON_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+		["table"] = checkTableTypeFunction({ "integer", "number" })
+	},
+	[ModCallbacks.MC_PRE_KNOCKBACK_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+		["table"] = checkTableTypeFunction({ "integer", "Vector", "boolean" })
+	},
+	[ModCallbacks.MC_PRE_SLOWING_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+		["table"] = checkTableTypeFunction({ "integer", "number", "Color" })
+	},
 }
 
 local typecheckWarnFunctions = {

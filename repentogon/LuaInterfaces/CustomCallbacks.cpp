@@ -4703,7 +4703,7 @@ void HandleTimedOnlyStatusApplyCallback(const int preCallbackId, const int postC
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(postCallbackId)
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(inputs.entity->_type)
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
@@ -4764,7 +4764,7 @@ void HandleDamageStatusApplyCallback(const int preCallbackId, const int postCall
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(postCallbackId)
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(inputs.entity->_type)
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
@@ -4833,7 +4833,7 @@ HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool igno
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(postCallbackId)
+		lua::LuaResults result =  lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
@@ -4893,7 +4893,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(postCallbackId)
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
