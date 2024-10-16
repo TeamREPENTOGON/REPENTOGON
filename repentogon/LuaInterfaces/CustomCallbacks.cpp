@@ -4906,7 +4906,6 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 
 //PRE/POST_SLOWING_STATUS_APPLY (1390/1391)
 HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amount, ColorMod color) -> void) {
-	printf("test");
 	const int preCallbackId = 1390;
 
 	if (CallbackState.test(preCallbackId - 1000)) {
