@@ -4963,3 +4963,5 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.call(1);
 	}
 }
+
+/////////////////////////////////////////////////
