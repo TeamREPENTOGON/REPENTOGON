@@ -72,7 +72,7 @@ __thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage
 __thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
-__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration);
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
 
 "558bec83e4f883ec3ca1????????33c4894424??538b5d":
 __thiscall void Entity::AddFear(const EntityRef& ref, int duration);
@@ -99,7 +99,7 @@ __thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float dama
 __thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
 
 "558bec83e4f856578b7d??8bf1":
-__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, unsigned int unk, ColorMod* color);
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
 __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
@@ -108,7 +108,7 @@ __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
 __thiscall Entity * Entity::GetStatusEffectTarget();
 
 "8b41??3d8d030000":
-__thiscall bool Entity::get_status_effect_target();
+__thiscall bool Entity::DoesEntityShareStatus();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
