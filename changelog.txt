@@ -30,8 +30,6 @@ Additions:
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
-* Sprite:
-	- GetLayerFrame(string or int Layer)
 /newline/
 Modified:
 * EntityPlayer:

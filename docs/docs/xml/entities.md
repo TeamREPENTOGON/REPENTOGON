@@ -49,6 +49,7 @@ Repentogon itself adds some tags that can be used to apply certain behaviours to
 | familiarignorebffs | The BFFS item will no longer affect this familiar. |
 | familiarcantakedamage | Familiars with baseHP above 0 will be able to take damage and die, such as from enemy contact, lasers or explosions. Note that they will only take damage from projectiles if they also have the "familiarblockprojectiles" tag. |
 | familiarblockprojectiles | The familiar automatically destroys enemy projectiles on contact. |
+| nocharm | Makes the familiar not be charmed by Siren. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/entities2.html). 
