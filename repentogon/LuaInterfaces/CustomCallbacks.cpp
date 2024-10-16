@@ -4810,10 +4810,15 @@ HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool igno
 			.push(this, lua::Metatables::ENTITY)
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
 			.push(duration)
+			.push(ignoreBosses)
 			.call(1);
 
 		if (!results) {
-			if (lua_isinteger(L, -1)) {
+			if (lua_istable(L, -1)) {
+				duration = lua::callbacks::ToInteger(L, 1);
+				ignoreBosses = lua::callbacks::ToBoolean(L, 2);
+			}
+			else if (lua_isinteger(L, -1)) {
 				duration = (int)lua_tointeger(L, -1);
 			}
 			else if (lua_isboolean(L, -1))
@@ -4838,6 +4843,7 @@ HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool igno
 			.push(this, lua::Metatables::ENTITY)
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
 			.push(duration)
+			.push(ignoreBosses)
 			.call(1);
 	}
 }

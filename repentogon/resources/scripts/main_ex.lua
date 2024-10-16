@@ -439,10 +439,6 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["number"] = checkInteger,
 	},
-	[ModCallbacks.MC_PRE_CONFUSION_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
 	[ModCallbacks.MC_PRE_FEAR_STATUS_APPLY] = {
 		["boolean"] = true,
 		["number"] = checkInteger,
@@ -480,6 +476,11 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["number"] = checkInteger,
 		["table"] = checkTableTypeFunction({ "integer", "number" })
+	},
+	[ModCallbacks.MC_PRE_CONFUSION_STATUS_APPLY] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+		["table"] = checkTableTypeFunction({ "integer", "boolean" })
 	},
 	[ModCallbacks.MC_PRE_KNOCKBACK_STATUS_APPLY] = {
 		["boolean"] = true,
