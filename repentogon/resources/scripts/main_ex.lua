@@ -1673,8 +1673,12 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_ICE_STATUS_APPLY, function(_,
 	print("ICE "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
 end)
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_KNOCKBACK_STATUS_APPLY, function(_, entity, source, pushDirection, duration, takeImpactDamage) 
-	print("KNOCKBACK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_KNOCKBACK_STATUS_APPLY, function(_, entity, source, duration, pushDirection, takeImpactDamage) 
+	print("KNOCKBACK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration).." "..tostring(pushDirection).." "..tostring(takeImpactDamage))
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_PRE_KNOCKBACK_STATUS_APPLY, function(_, entity, source, duration, pushDirection, takeImpactDamage) 
+	return { duration, Vector(100, 0), takeImpactDamage }
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_MAGNETIZED_STATUS_APPLY, function(_, entity, source, duration) 
@@ -1693,8 +1697,12 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SHRINK_STATUS_APPLY, function
 	print("SHRINK "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
 end)
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SLOWING_STATUS_APPLY, function(_, entity, source, duration, slowValue, SlowColor) 
-	print("SLOW "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration))
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_PRE_SLOWING_STATUS_APPLY, function(_, entity, source, duration, slowValue, slowColor) 
+	return { duration, slowValue * 0.2, Color(1, 0, 0, 0.1) }
+end)
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_SLOWING_STATUS_APPLY, function(_, entity, source, duration, slowValue, slowColor) 
+	print("SLOW "..tostring(entity.Type).." "..tostring(source.Type).." "..tostring(duration).." "..tostring(slowValue).." "..tostring(slowColor))
 end)
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_POST_WEAKNESS_STATUS_APPLY, function(_, entity, source, duration) 
