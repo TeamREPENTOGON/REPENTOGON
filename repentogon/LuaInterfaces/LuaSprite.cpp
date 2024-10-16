@@ -138,29 +138,6 @@ LUA_FUNCTION(Lua_SpriteSetOverlayLayerFrame)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_SpriteGetLayerFrame)
-{
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	LayerState* layerState = nullptr;
-	if (lua_type(L, 2) == LUA_TSTRING) {
-		const char* layerName = luaL_checkstring(L, 2);
-		layerState = anm2->GetLayer(layerName);
-	}
-	else {
-		const int layerID = (const int)luaL_checkinteger(L, 2);
-		const unsigned int layerCount = anm2->GetLayerCount();
-		if (layerID >= 0 && (const unsigned int)layerID < layerCount) {
-			layerState = anm2->GetLayer(layerID);
-		}
-	}
-	if (layerState == nullptr) {
-		lua_pushnil(L);
-		return 1;
-	}	
-	lua_pushinteger(L, layerState->_animation->GetFrame());
-	return 1;
-}
-
 LUALIB_API void LuaGetLayerFrameDataInternal(lua_State* L, AnimationState* animState, const int layerID) {
 	AnimationData* animData = animState ? animState->GetAnimationData() : nullptr;
 	if (!animData) {
@@ -619,7 +596,6 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "SetCustomChampionShader", Lua_SpriteSetCustomChampionShader},
 		{ "ClearCustomChampionShader", Lua_SpriteClearCustomChampionShader},
 		{ "HasCustomChampionShader", Lua_SpriteHasCustomChampionShader},
-		{ "GetLayerFrame", Lua_SpriteGetLayerFrame },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);
