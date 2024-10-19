@@ -1,3 +1,7 @@
+v1.0.12.b -
+Fixes:
+* Fix various regressions involving status effects introduced by 1.0.12
+/newline/
 v1.0.12.a -
 Additions:
 * Ambush:
