@@ -121,9 +121,7 @@ LUA_FUNCTION(Lua_PathfinderSimulatePlayerMovement)
 	return 0;
 }
 
-
-
-
+/*
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -149,3 +147,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::PATHFINDER, functions);
 }
+*/
+
+
