@@ -41,6 +41,11 @@ Fixes:
 	- Fixed RemoveElement not working on elements created with AddInputColor.
 /newline/
 /versionseparator/
+v1.0.12.b -
+Fixes:
+* Fix various regressions involving status effects introduced by 1.0.12
+/newline/
+/versionseparator/
 v1.0.12.a -
 * The changelogs menu has been revamped. Use the left and right arrow keys to look between versions.
 Additions:
@@ -49,6 +54,7 @@ Additions:
 	- Allows changing the number of waves in a boss challenge room
 Fixes:
 * Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
+/newline/
 /versionseparator/
 v1.0.12 -
 Additions:
