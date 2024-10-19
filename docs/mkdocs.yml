@@ -298,6 +298,7 @@ nav:
   - MusicManager: MusicManager.md
   - NightmareScene: NightmareScene.md
   - Options: Options.md
+  - Pathfinder: Pathfinder.md
   - PersistentGameData: PersistentGameData.md
   - PlayerManager: PlayerManager.md
   - Procedural Items:
