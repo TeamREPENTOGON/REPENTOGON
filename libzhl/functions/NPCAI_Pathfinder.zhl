@@ -1,6 +1,49 @@
 "538bd956578dbb????????c743??ffffffff":
 __thiscall void NPCAI_Pathfinder::Reset();
 
-struct NPCAI_Pathfinder {
+"558bec6aff68????????64a1????????5081ec80000000a1????????33c58945??535657508d45??64a3????????8bd9895d":
+__thiscall void NPCAI_Pathfinder::FindGridPath(Vector * Pos, float Speed, int PathMarker, bool UseDirectPath);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec685657a1????????33c5508d45??64a3????????8bf18975??807b??00":
+__thiscall void NPCAI_Pathfinder::EvadeTarget(Vector * TargetPos, bool IgnoreStatusEffects);
+
+"558bec83e4f081ec98000000a1????????33c4898424????????5657":
+__thiscall void NPCAI_Pathfinder::MoveRandomlyAxisAligned(float Speed, bool IgnoreStatusEffects);
+
+"558bec83e4f883ec1056578bf98b37":
+__thiscall bool NPCAI_Pathfinder::MoveRandomly(bool IgnoreStatusEffects);
+
+"558bec83e4f883ec18568bf1578b3e":
+__thiscall void NPCAI_Pathfinder::MoveRandomlyBoss(bool IgnoreStatusEffects);
+
+"f30f1005????????f30f1141??f30f1005????????f30f1141??f30f1005????????f30f1141??f30f1005????????f30f1141??c3":
+__thiscall void NPCAI_Pathfinder::ResetMovementTarget();
+
+"f30f100d????????8bd156":
+__thiscall void NPCAI_Pathfinder::UpdateGridIndex();
+
+"558bec6aff68????????64a1????????5081ec4c070000":
+__thiscall bool NPCAI_Pathfinder::HasPathToPos(Vector * Position, bool IgnorePoop);
+
+"558bec83e4f883ec50568b75":
+__thiscall void NPCAI_Pathfinder::SimulatePlayerMovement(Vector * movementInput, float speed, bool unused);
+
+struct NPCAI_Pathfinder depends (Vector) {
+	Entity * _entity : 0x0;
+	Vector _targetRelated1 : 0x4;
+	Vector _targetRelated2 : 0xc;
+	int _directionMaybe : 0x14;
+	int _unkCounter : 0x18;
+	int _framecountMaybe : 0x1c;
+	int _gridIndex : 0x20;
+	float _interpFrameRelated : 0x24;
+	int _countdownMaybe : 0x28;
+	int _unk_pathmarkers[448] : 0x2c;
+	bool _hasDirectPath : 0x72c;
+	bool _unkBool : 0x72d;
+	Vector _posBackupMaybe : 0x730;
+	bool _canCrushRocks : 0x738;
+	int _evadeMovementCountdown : 0x73c;
+	float _unkFloat2 : 0x740;
+	float _unkFloat : 0x744;
 } : 0x750;
