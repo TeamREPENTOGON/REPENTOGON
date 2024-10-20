@@ -39,6 +39,11 @@ ___
 If called on an EntityPickup for the right-side of an open Mega Chest, returns the left-side collectible. Otherwise returns `nil`.
 
 ___
+### GetMegaChestOtherCollectible () {: aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md), boolean GetMegaChestRightCollectible ( ) {: .copyable aria-label='Functions' }
+If called on an EntityPickup belonging to an open Mega Chest, returns the other collectible and a boolean indicating if this collectible is on the right-side. Otherwise, returns `nil`.
+
+___
 ### GetMegaChestRightCollectible () {: aria-label='Functions' }
 #### [EntityPickup](EntityPickup.md) GetMegaChestRightCollectible ( ) {: .copyable aria-label='Functions' }
 If called on an EntityPickup for the left-side of an open Mega Chest, returns the right-side collectible. Otherwise returns `nil`.
