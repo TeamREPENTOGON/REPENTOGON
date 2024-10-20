@@ -2,6 +2,9 @@ v1.0.x -
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
+* EntityPickup:
+	- GetMegaChest[Left/Right]Collectible
+	- Returns the other EntityPickup for a Mega Chest
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown

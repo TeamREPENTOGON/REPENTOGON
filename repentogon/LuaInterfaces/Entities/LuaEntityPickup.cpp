@@ -214,6 +214,22 @@ LUA_FUNCTION(Lua_PickupTriggerTheresOptionsPickup) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PickupGetMegaChestLeftCollectible) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* collectible = pickup->_megaChestCollectible[0];
+	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupGetMegaChestRightCollectible) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* collectible = pickup->_megaChestCollectible[1];
+	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -244,6 +260,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPickupGhost", Lua_PickupGetPickupGhost },
 		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhosts },
 		{ "TriggerTheresOptionsPickup", Lua_PickupTriggerTheresOptionsPickup },
+		{ "GetMegaChestLeftCollectible", Lua_PickupGetMegaChestLeftCollectible },
+		{ "GetMegaChestRightCollectible", Lua_PickupGetMegaChestRightCollectible },
 		{ NULL, NULL }
 	};
 
