@@ -208,7 +208,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },
-		{ "GetPathFinder", Lua_FamiliarGetPathFinder },
+		{ "GetPathFinder", Lua_FamiliarGetPathFinder }, // depreciated
+		{ "GetPathfinder", Lua_FamiliarGetPathFinder },
 		{ "TryAimAtMarkedTarget", Lua_FamiliarTryAimAtMarkedTarget },
 		{ "TriggerRoomClear", Lua_FamiliarTriggerRoomClear },
 		{ "UpdateDirtColor", Lua_FamiliarUpdateDirtColor },

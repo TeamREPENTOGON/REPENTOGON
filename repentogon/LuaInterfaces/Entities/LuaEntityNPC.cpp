@@ -397,6 +397,15 @@ LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	NPCAI_Pathfinder* pathfinder = &npc->_pathfinder;
+	lua::luabridge::UserdataPtr::push(L, pathfinder, lua::GetMetatableKey(lua::Metatables::PATHFINDER));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -429,6 +438,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		{ "TrySplit", Lua_EntityNPC_TrySplit },
 		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
+		{ "GetPathfinder", Lua_EntityNPC_GetPathfinder },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
@@ -438,6 +448,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	/* Fix V1 and V2 not being pointers. */
 	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V1", Lua_EntityNPC_GetV1);
 	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V2", Lua_EntityNPC_GetV2);
+
+	/* Remade Pathfinder binder */
+	/* Disabled in favor of EntityNPC:GetPathfinder for compatibility with existing use of broken pathfinder */
+	//lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "Pathfinder", Lua_EntityNPC_GetPathfinder);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggot", Lua_EntityNPC_ThrowMaggot);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos);

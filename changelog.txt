@@ -2,6 +2,9 @@ v1.0.x -
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
+* EntityPickup:
+	- GetMegaChest[Left/Right]Collectible
+	- Returns the other EntityPickup for a Mega Chest
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
@@ -30,10 +33,10 @@ Additions:
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
-* Sprite:
-	- GetLayerFrame(string or int Layer)
 /newline/
 Modified:
+* EntityFamiliar:
+	- GetPathFinder -> GetPathfinder
 * EntityPlayer:
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
 * ImGui:
@@ -41,6 +44,15 @@ Modified:
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.
+* Pathfinder:
+	- Many methods that did not work properly have been fixed
+	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes
+	- (EntityNPC.Pathfinder has been left unaffected for existing mod compatibility)
+/newline/
+/versionseparator/
+v1.0.12.b -
+Fixes:
+* Fix various regressions involving status effects introduced by 1.0.12
 /newline/
 /versionseparator/
 v1.0.12.a -
@@ -51,6 +63,7 @@ Additions:
 	- Allows changing the number of waves in a boss challenge room
 Fixes:
 * Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
+/newline/
 /versionseparator/
 v1.0.12 -
 Additions:
