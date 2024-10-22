@@ -3717,6 +3717,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<bossc", 50)) {
 			super(BuildModdedXML(xmldata, "bosscolors.xml", false));
+		}
+		else if (charfind(xmldata, "<playerfo", 50)) {
+			//printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
+			super(BuildModdedXML(xmldata, "playerforms.xml", false));
 		}else if (charfind(xmldata, "<playe", 50)) {
 			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
 		}
@@ -3747,10 +3751,6 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<giantb", 50)) {
 			super(BuildModdedXML(xmldata, "giantbook.xml", false));
-		}
-		else if (charfind(xmldata, "<playerfo", 50)) {
-			//printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
-			super(BuildModdedXML(xmldata, "playerforms.xml", false));
 		}
 		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {
 			super(BuildModdedXML(xmldata, "ambush.xml", false));
