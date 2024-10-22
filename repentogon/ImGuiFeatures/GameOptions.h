@@ -187,9 +187,15 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_VIS_BORDERLESS_FULLSCREEN, &g_Manager->GetOptions()->_enableBorderlessFullscreen);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableBorderlessFullscreen, false);
                         AddNewTableRow();
-                        ImGui::SeparatorText(LANG.OPT_VIS_EFFECTS);
+//                        ImGui::SeparatorText(LANG.OPT_VIS_EFFECTS);
+                        ImGui::SeparatorTextEx(0, LANG.OPT_VIS_EFFECTS, ImGui::FindRenderedTextEnd(LANG.OPT_VIS_EFFECTS), 24.0f*ImGui::GetCurrentWindow()->FontWindowScale);
+                        //     ^ separatortextex is used to apply an offset for the help marker icon
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_VIS_EFFECTS_MARK);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_VIS_ANIM_INTERP, &g_Manager->GetOptions()->_enableInterpolation);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_VIS_ANIM_INTERP_MARK);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableInterpolation, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_VIS_COLOR_CORRECTION, &g_Manager->GetOptions()->_enableColorCorrection);
