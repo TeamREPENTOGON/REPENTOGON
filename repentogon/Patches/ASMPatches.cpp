@@ -155,6 +155,7 @@ void PerformASMPatches() {
 
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
+	ASMPatchCoopWheelRespectModdedAchievements();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
