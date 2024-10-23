@@ -11,6 +11,7 @@
 #include "updater/updater_resources.h"
 
 #include <string>
+#include "../launcher_core/utils.cpp"
 
 typedef int (*ModInitFunc)(int, char **);
 
@@ -128,7 +129,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		sLogger->SetOutputFile("dsound.log", "w", true);
 		sLogger->SetFlushOnLog(true);
 		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
-		if (HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
+
+		std::string version = GetExeVersion();
+		sLogger->Info("Isaac Version: %s\n", version.c_str());
+		if ((version != "1.7.9b.J835") || HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
+			sLogger->Info("Repentogon Disabled!\n");
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
