@@ -2567,6 +2567,12 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 	currpath = "";
 }
 
+HOOK_METHOD(StringTable, load_ascii_data, (char* xmlpath) -> void) {
+	super(xmlpath);
+
+	printf("ascii data: %s \n", xmlpath);
+}
+
 
 bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 {

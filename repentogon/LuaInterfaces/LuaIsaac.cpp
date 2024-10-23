@@ -731,6 +731,15 @@ LUA_FUNCTION(Lua_Test) {
 		}
 	}
 
+	auto& itemsCat = stringT.stringMap.find("items");
+	for (const auto& stringEntry : *itemsCat->second) {
+		std::cout << "Item: " << stringEntry.first << std::endl;
+
+		for (int i = 0; i < 8; i++) {
+			printf("%s \n", stringEntry.second[i]);
+		}
+	}
+
 	return 0;
 }
 

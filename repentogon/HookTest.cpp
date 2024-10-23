@@ -294,3 +294,36 @@ HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
 		}
 	}
 }
+
+HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename) -> void) {
+	super(seed, filename);
+
+	printf("ItemPool::Init: %d %s\n", seed, filename);
+
+	auto& myMap = g_Manager->_stringTable.stringMap;
+
+	// Create the array of char* for "test_schwag"
+	char** schwagArray = new char* [8];
+	for (int i = 0; i < 8; ++i) {
+		schwagArray[i] = new char[30]; // Allocate memory for the strings
+		if (i == 0) {
+			std::strcpy(schwagArray[i], "Lucky Saucer");
+		}
+		else if (i == 4) {
+			std::strcpy(schwagArray[i], "—частливое блюдце");
+		}
+		else {
+			std::strcpy(schwagArray[i], "not translated");
+		}
+	}
+
+	// Insert the new key "test_schwag" into the inner map
+	auto& itemcat = *myMap["items"];
+	itemcat["test_schwag"] = schwagArray;
+
+	// Clean up allocated memory
+	for (int i = 0; i < 8; ++i) {
+		delete[] schwagArray[i];
+	}
+	delete[] schwagArray;
+}

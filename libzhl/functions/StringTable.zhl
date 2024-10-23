@@ -1,3 +1,6 @@
+"558bec6aff68????????64a1????????50b86c000100":
+__thiscall void StringTable::load_ascii_data(char * param_1);
+
 "558bec83ec145356578bf133d28b4d086a006a01e857ce0200":
 __thiscall char* StringTable::GetString(const char* category, int language, const char* key, void* unk);
 
