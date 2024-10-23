@@ -1,8 +1,11 @@
 #include "dsound/utils.h"
 #include <cstdio>
 #include <cstdarg>
+#include <windows.h>
+#include <psapi.h> // For MODULEINFO
 
 #include <atomic>
+#include <string>
 
 int argc = 0;
 char** argv = NULL;
@@ -14,6 +17,31 @@ void InitCLI() {
         return;
 
     argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+}
+
+std::string GetExeVersion() {
+    HMODULE hModule = GetModuleHandle(NULL);
+    MODULEINFO modInfo;
+    if (!GetModuleInformation(GetCurrentProcess(), hModule, &modInfo, sizeof(MODULEINFO))) {
+        return "Fucked";
+    }
+    const char* baseAddress = (const char*)modInfo.lpBaseOfDll;
+    size_t moduleSize = modInfo.SizeOfImage;
+    const char* searchStr = "isaacv";
+
+    for (size_t i = 0; i < moduleSize - strlen(searchStr); ++i) {
+        const char* potentialMatch = baseAddress + i;
+        if (strncmp(potentialMatch, searchStr, strlen(searchStr)) == 0) {
+            const char* afterIsaacv = potentialMatch + strlen(searchStr);
+            const char* dashPos = strchr(afterIsaacv, '-');
+
+            if (dashPos) {
+                return std::string(afterIsaacv, dashPos);
+            }
+        }
+    }
+
+    return "Fucked";
 }
 
 PCHAR* CommandLineToArgvA(PCHAR CmdLine, int* _argc)
