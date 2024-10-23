@@ -3,6 +3,7 @@
 #include <cstdarg>
 
 #include <atomic>
+#include <string>
 
 int argc = 0;
 char** argv = NULL;
