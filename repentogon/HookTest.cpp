@@ -13,12 +13,12 @@
 
 extern LogViewer logViewer;
 
-/*
-HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
-	logViewer.AddLog("[REPENTOGON]", "Game::StageStageTransition: samestage %c, animation: %d\n", samestage, animation);
-	super(samestage, animation, player);
+
+HOOK_METHOD(StringTable, Load, (char* inlined) -> bool) {
+	ZHL::Log("yipee!!! %p\n", inlined);
+	return super(inlined);
 }
-*/
+
 
 /*
 HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {

@@ -743,6 +743,14 @@ LUA_FUNCTION(Lua_Test) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_ReloadStringTable) {
+	auto* manager = g_Manager;
+	auto& stringT = manager->_stringTable;
+	stringT.Load(nullptr);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -798,6 +806,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PrintLocal", Lua_Test);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReloadStringTable", Lua_ReloadStringTable);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

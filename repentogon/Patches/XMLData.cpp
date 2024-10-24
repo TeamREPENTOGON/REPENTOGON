@@ -2567,10 +2567,12 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 	currpath = "";
 }
 
-HOOK_METHOD(StringTable, load_ascii_data, (char* xmlpath) -> void) {
-	super(xmlpath);
+HOOK_METHOD(StringTable, load_ascii_data, (char* xmlpath) -> bool) {
+	bool res = super(xmlpath);
 
 	printf("ascii data: %s \n", xmlpath);
+
+	return res;
 }
 
 
@@ -3763,7 +3765,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
-		}else if (charfind(xmldata, "<reci",  50)) {
+		}
+		else if (charfind(xmldata, "<stringtab", 50)) {
+			super(BuildModdedXML(xmldata, "stringtable.sta", true));
+		}
+		else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
