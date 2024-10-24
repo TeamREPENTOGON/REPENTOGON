@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 		rng = lua::GetUserdata<RNG*>(L, 6, lua::Metatables::RNG, "RNG");
 	}
 
-	lootList->_lootentries.push_back({ type, variant, subType, seed, rng });
+	lootList->push_back({ type, variant, subType, seed, rng });
 
 	return 0;
 }
@@ -65,9 +65,8 @@ LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
 LUA_FUNCTION(Lua_LootListGetEntries)
 {
 	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
-	std::deque<LootListEntry>& entries = lootList->_lootentries;
+	auto& entries = *lootList; // Assuming lootList is a std::deque<LootListEntry>
 
-	
 	lua_newtable(L);
 	int idx = 1;
 	for (LootListEntry& item : entries) {
