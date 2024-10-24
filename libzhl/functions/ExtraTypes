@@ -210,7 +210,7 @@ TypeInfo vector_CostumeSpriteDesc {
     Align 4;
 };
 
-TypeInfo deque_LootListEntry {
+TypeInfo LootList {
 	Size 20;
 	Align 4;
 };
@@ -225,7 +225,12 @@ TypeInfo vector_HomingLaserBezier {
 	Align 4;
 };
 
+TypeInfo deque_ShopRestockDesc {
+	Size 20;
+	Align 4;
+};
+
 TypeInfo StringTableMap {
     Size 8;
-    Align 4;
+	Align 4;
 };

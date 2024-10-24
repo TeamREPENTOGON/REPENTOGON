@@ -104,8 +104,13 @@ struct SmeltedTrinketDesc {
 };
 typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
 typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
-typedef std::deque<LootListEntry> deque_LootListEntry;
+typedef std::deque<LootListEntry> LootList;
 
+struct ShopRestockDesc {
+	int _unk1;
+	int _unk2;
+};
+typedef std::deque<ShopRestockDesc> deque_ShopRestockDesc;
 
 struct StringCompare {
   bool operator()(const char* first, const char* second) const {
