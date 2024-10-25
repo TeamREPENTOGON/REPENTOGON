@@ -3207,6 +3207,8 @@ void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
 	}
 }
 
+
+
 char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch) {
 	if (no) {return xml;}
 	//resources
@@ -3277,30 +3279,54 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				xml_document<char>* resourcesdoc = new xml_document<char>();
 				if (GetContent(contentsdir, resourcesdoc)) {
 					xml_node<char>* resourcescroot = resourcesdoc->first_node();
-					if (strcmp(filename.c_str(), "bosspools.xml") == 0) {
-						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-							XMLAttributes node;
-							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-							{
-								node[stringlower(attr->name())] = string(attr->value());
-							}
-							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
-							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-								xml_attribute<char>* sourceid = new xml_attribute<char>();
-								sourceid->name("sourceid");
-								sourceid->value(lastmodid.c_str());
-								clonedNode->append_attribute(sourceid);
-								root->append_node(clonedNode);
-							}
-							else {
-								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
-									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-									tocopy->append_node(clonedNode);
+						if (strcmp(filename.c_str(), "bosspools.xml") == 0) {
+							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+								XMLAttributes node;
+								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+								{
+									node[stringlower(attr->name())] = string(attr->value());
+								}
+								xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+								if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+									xml_attribute<char>* sourceid = new xml_attribute<char>();
+									sourceid->name("sourceid");
+									sourceid->value(lastmodid.c_str());
+									clonedNode->append_attribute(sourceid);
+									root->append_node(clonedNode);
+								}
+								else {
+									for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+										xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+										xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+										tocopy->append_node(clonedNode);
+									}
 								}
 							}
-						}
+						} else if (strcmp(filename.c_str(), "stringtable.sta") == 0) {
+							for (xml_node<char>* auxnode = resourcescroot->first_node("category"); auxnode; auxnode = auxnode->next_sibling()) {
+								XMLAttributes node;
+								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+								{
+									node[stringlower(attr->name())] = string(attr->value());
+								}
+								xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+								if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+									xml_attribute<char>* sourceid = new xml_attribute<char>();
+									sourceid->name("sourceid");
+									sourceid->value(lastmodid.c_str());
+									clonedNode->append_attribute(sourceid);
+									root->append_node(clonedNode);
+								}
+								else {
+									for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+										xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+										xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+										tocopy->append_node(clonedNode);
+									}
+								}
+							}
 					}else if (strcmp(filename.c_str(), "bossportraits.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -3633,6 +3659,10 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		}
 		iscontent = iscontentax;
 		mclear(a);
+
+		//unsigned int lang = g_Manager->_stringTable.language;
+		g_Manager->_stringTable.load_ascii_data("stringtable.sta");
+		//g_Manager->_stringTable.language = lang;
 	}
 
 	super();
@@ -3719,7 +3749,6 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			super(BuildModdedXML(xmldata, "bosscolors.xml", false));
 		}
 		else if (charfind(xmldata, "<playerfo", 50)) {
-			//printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
 			super(BuildModdedXML(xmldata, "playerforms.xml", false));
 		}else if (charfind(xmldata, "<playe", 50)) {
 			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
@@ -3757,6 +3786,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
+		}
+		else if (charfind(xmldata, "<stringtab", 50)) {			
+			char * notxmldata = new char[strlen(xmldata) + 1];
+			strcpy(notxmldata, xmldata);
+			super(BuildModdedXML(notxmldata, "stringtable.sta", true));
 		}else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
