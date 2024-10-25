@@ -149,6 +149,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
 	uint32_t _bossId : 0x1d1c;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
+	deque_ShopRestockDesc _shopItemDeque : 0x6f64;
 	int _slowdownDuration : 0x7120;
 	int _greedWaveTimer : 0x7130;
 	float _waterAmount : 0x7134;
