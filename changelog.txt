@@ -1,8 +1,12 @@
-v1.0.12.b -
+v1.0.12c -
+Fixes:
+* Fix loss of items in Mom's chase when playing coop or 2 player chaarcters like J&E
+/newline/
+v1.0.12b -
 Fixes:
 * Fix various regressions involving status effects introduced by 1.0.12
 /newline/
-v1.0.12.a -
+v1.0.12a -
 Additions:
 * Ambush:
 	- [Get/Set]MaxBossChallengeWaves()
