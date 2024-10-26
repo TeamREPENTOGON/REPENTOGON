@@ -31,7 +31,7 @@ Additions:
 	- POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
 		Fires after an entity's color is changed via Entity:SetColor
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
-* Added content and resources support for stringtable.sta, allowing for custom translation strings and categories.
+* Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 /newline/
