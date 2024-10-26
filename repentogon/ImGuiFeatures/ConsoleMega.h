@@ -1112,9 +1112,9 @@ struct ConsoleMega : ImGuiWindowObject {
                             break;
                         }
                         case MODFOLDER: {
-                            for (auto& node : XMLStuff.ModData->nodes) {
-                                if (node.second["enabled"] == "true") {
-                                    entries.insert(AutocompleteEntry(node.second["realdirectory"], node.second["name"]));
+                            for (ModEntry* node : g_Manager->GetModManager()->_mods) {
+                                if (node->IsEnabled()) {
+                                    entries.insert(AutocompleteEntry(node->GetDir(), node->GetName()));
                                 }
                             }
                             break;

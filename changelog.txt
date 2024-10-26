@@ -34,6 +34,8 @@ Additions:
 * Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
+Fixes:
+* Fixed an issue with luamod autocomplete not displaying all the available options
 /newline/
 Modified:
 * EntityFamiliar:
