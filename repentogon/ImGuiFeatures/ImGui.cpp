@@ -23,6 +23,7 @@
 #include "imgui.h"
 #include "imgui_freetype.h"
 #include "imgui_impl_opengl2.h"
+#include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
@@ -30,6 +31,8 @@
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+
 
 HWND window;
 WNDPROC windowProc;
@@ -477,6 +480,20 @@ void RenderLuamodErrorPopup() {
 ImFont* imFontUnifont = NULL;
 HGLRC imguiRenderContext=NULL;
 
+typedef bool (*ImGui_impl_Init)(const char* glsl_version);	//function prototypes for pointers
+typedef void (*ImGui_impl_NewFrame)();
+typedef void (*ImGui_impl_RenderDrawData)(ImDrawData *imdrawdata);
+
+bool imgui_gl2_init_wrapper(const char* glsl_version) {
+	return ImGui_ImplOpenGL2_Init();
+};
+
+ImGui_impl_Init imgui_init = &imgui_gl2_init_wrapper;
+ImGui_impl_NewFrame imgui_newframe = &ImGui_ImplOpenGL2_NewFrame;
+ImGui_impl_RenderDrawData imgui_renderdrawdata = &ImGui_ImplOpenGL2_RenderDrawData;
+
+
+
 void __stdcall RunImGui(HDC hdc) {
 	HGLRC oldcontext;
 	static std::map<int, ImFont*> fonts;
@@ -489,10 +506,19 @@ void __stdcall RunImGui(HDC hdc) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
-		imguiRenderContext = wglCreateContext(hdc);
+		char* glVer = (char*)glGetString(GL_VERSION); // ver = "3.2.0"
+
+		int glMajorVer = glVer[0] - '0';
+		printf("Reported OpenGL: %s\nParsed major version is %d\n", glVer,glMajorVer);
+		if (glMajorVer > 2) {	//if opengl > 2 then it can use opengl 3.0 impl of imgui
+			imgui_init = &ImGui_ImplOpenGL3_Init;
+			imgui_newframe = &ImGui_ImplOpenGL3_NewFrame;
+			imgui_renderdrawdata = &ImGui_ImplOpenGL3_RenderDrawData;
+		};
+//		imguiRenderContext = wglCreateContext(hdc);
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(window);
-		ImGui_ImplOpenGL2_Init();
+		imgui_init(nullptr);
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -563,9 +589,8 @@ void __stdcall RunImGui(HDC hdc) {
 	}
 
 	oldcontext = wglGetCurrentContext();
-	wglMakeCurrent(hdc, imguiRenderContext);
-
-	ImGui_ImplOpenGL2_NewFrame();
+	//wglMakeCurrent(hdc, imguiRenderContext);
+	imgui_newframe();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
@@ -635,9 +660,8 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui::Render();
 
 	// Draw the overlay
-	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-
-	wglMakeCurrent(hdc, oldcontext);
+	imgui_renderdrawdata(ImGui::GetDrawData());
+//	wglMakeCurrent(hdc, oldcontext);
 }
 
 
