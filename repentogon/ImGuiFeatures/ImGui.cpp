@@ -22,7 +22,7 @@
 
 #include "imgui.h"
 #include "imgui_freetype.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
@@ -475,8 +475,10 @@ void RenderLuamodErrorPopup() {
 //luamod error popup end
 
 ImFont* imFontUnifont = NULL;
+HGLRC imguiRenderContext=NULL;
 
 void __stdcall RunImGui(HDC hdc) {
+	HGLRC oldcontext;
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
@@ -487,10 +489,10 @@ void __stdcall RunImGui(HDC hdc) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
-
+		imguiRenderContext = wglCreateContext(hdc);
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(window);
-		ImGui_ImplOpenGL3_Init();
+		ImGui_ImplOpenGL2_Init();
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -560,7 +562,10 @@ void __stdcall RunImGui(HDC hdc) {
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
 
-	ImGui_ImplOpenGL3_NewFrame();
+	oldcontext = wglGetCurrentContext();
+	wglMakeCurrent(hdc, imguiRenderContext);
+
+	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
@@ -630,7 +635,9 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui::Render();
 
 	// Draw the overlay
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+	wglMakeCurrent(hdc, oldcontext);
 }
 
 
