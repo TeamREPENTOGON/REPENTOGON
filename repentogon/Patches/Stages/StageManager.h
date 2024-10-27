@@ -7,15 +7,23 @@
 
 namespace fs = std::filesystem;
 
-struct StageState {
-	bool overriden = false;
-	unsigned short id = 0;
-	std::string token;
+struct StageDefinition {
+	std::string binary;
+	std::string greedBinary;
+	std::string gfxRoot;
+	std::string playerSpot;
+	std::string bossSpot;
+	std::string displayName;
+	std::string suffix;
+	std::string name;
+	int musicId;
+	int backdropId;
 };
 
 class StageManager
 {
 private:
+
 	StageManager() {}
 	std::unordered_map<std::string, size_t> GetStageBinaryFiles(const fs::path&, size_t&);
 	const std::array<const char*, 32> vanillaStbs = {
@@ -60,18 +68,32 @@ public:
 		return instance;
 	}
 
+	// New binaries are loaded into this unused RoomConfig_Stage id
 	const unsigned int BUFFER_STAGEID = 23;
+
+	//TODO: merge these two maps
+
+	// Associates a .stb filepath to its respective RoomSet
 	std::unordered_map<std::string, RoomSet> binaryMap;
+
+	// Associates a .stb filepath to an id for later restoration
 	std::unordered_map<std::string, size_t> filenameMap;
-	StageState stageState[37];
-	RoomSet* LoadBinary(std::string* path);
-	RoomSet* GetBinary(std::string* path, bool loadIfUncached);
-	bool AppendBinary(RoomSet* roomSet, std::string& binary);
-	bool IsBinaryLoaded(std::string* path);
-	bool SwapStage(int stageId, const char* stageName, bool restoring);
+
+	// Associates a stage id to a struct of definitions for its RoomConfig_Stage
+	std::unordered_map<size_t, StageDefinition> stageDefinitionMap;
+
+	// Associates the config id of a stage to its current stage id
+	int stageForConfigId[37];
+	inline bool IsStageOverriden(int id) const{
+		return stageForConfigId[id] != id;
+	}
+	RoomSet* LoadBinary(std::string& path);
+	RoomSet* GetBinary(std::string& path, bool loadIfUncached);
+	bool AppendContentBinary(RoomSet* roomSet, std::string& binary);
+	bool IsBinaryLoaded(std::string& path);
+	bool LoadStage(int configId, int newId);
 	void ResetRoomWeights(RoomSet* set);
 	void ResetAllRoomWeights();
-	int GetStageIdForToken(std::string& token);
-	std::string* GetTokenForStageId(int stageId);
+	StageDefinition& StageManager::GetStageDefinition(int stageId);
 	void BuildFilenameMap();
 };

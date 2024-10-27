@@ -334,8 +334,8 @@ void __stdcall AdjustLevelStageBackdrop(FXLayers* fxlayers) {
 
 	//printf("stage %d, overriden %d, id %d, token %s\n", stage, stageManager.stageState[stage].overriden, stageManager.stageState[stage].id, stageManager.stageState[stage].token.empty() ? "EMPTY" : stageManager.stageState[stage].token.c_str());
 
-	if (stageManager.stageState[stage].overriden) {
-		fxlayers->_levelStage = stageManager.stageState[stage].id + 4; // to counter dumb math later on in xml parsing
+	if (stageManager.IsStageOverriden(stage)) {
+		fxlayers->_levelStage = stageManager.stageForConfigId[stage] + 4; // to counter dumb math later on in xml parsing
 		fxlayers->_stageType = 1;
 	}
 	if (XMLStuff.BackdropData->backdropState.first == backdrop) {

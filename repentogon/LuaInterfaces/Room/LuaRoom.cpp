@@ -494,10 +494,10 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 			//ZHL::Log("setting water\n");
 		}
 		else {
-			StageManager* stageManager = &StageManager::GetInstance();
+			StageManager& stageManager = StageManager::GetInstance();
 			stbType = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, g_Game->IsGreedMode());
-			if (stageManager->stageState[stbType].overriden) {
-				XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageManager->stageState[stbType].id);
+			if (stageManager.IsStageOverriden(stbType)) {
+				XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageManager.stageForConfigId[stbType]);
 				if (tobool(xmlData["haswater"])) {
 					this->_waterAmount = 1.0f;
 					//ZHL::Log("setting water\n");
