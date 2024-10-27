@@ -105,6 +105,7 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 
 	ANM2 _priceANM2 : 0x360 ;
 	int _timeout : 0x48c;
+	Entity_Pickup * _megaChestCollectible[2]: 0x4e0;
 	unsigned int _cycleCollectibleList[8] : 0x4ec;
 	Entity_Effect* _pickupGhost : 0x4dc;
 	unsigned int _cycleCollectibleCount : 0x50c;

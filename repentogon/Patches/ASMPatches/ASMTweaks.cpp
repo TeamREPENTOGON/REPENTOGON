@@ -207,5 +207,36 @@ namespace ASMPatches {
 		sASMPatcher.FlatPatch(addr2, &patch2);
 
 		return true;
-	}
+	};
+
+	bool SkipArchiveChecksums() {
+		SigScan loopsig("8bf88d8d????????3d00020000");
+		SigScan ifchecksig("74??ffb5????????8bb5");
+		ASMPatch ifpatch;
+		ASMPatch patch;
+
+		if (!loopsig.Scan()) {
+			return false;
+		};
+		if (!ifchecksig.Scan()) {
+			return false;
+		};
+
+		void* startptr = loopsig.GetAddress();
+		void* endptr = (void*)((char*)startptr + 0x8f);
+		void* ifcheck = ifchecksig.GetAddress();
+
+		ifpatch.AddBytes("\xEB");	//swap to uncond jump
+		patch.AddRelativeJump(endptr);
+
+		for (int i = 1; i < __argc; i++) {
+			char* arg = __argv[i];
+			if (strcmp("-skipchecksum", arg) == 0) {
+				sASMPatcher.FlatPatch(startptr,&patch);
+				sASMPatcher.FlatPatch(ifcheck, &ifpatch);
+				break;
+			};
+		};
+		return true;
+	};
 }

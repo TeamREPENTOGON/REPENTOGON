@@ -93,9 +93,35 @@ void ASMPatchConsoleRunCommand() {
  */
 static void PatchRoomSetDestructor();
 
+const char* repentogonResources = "resources-repentogon";
+
+void ASMBuildResoucesRepentogon() {
+	SigScan scanner("8d4424??50e8????????50e8");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	SigScan addFilepath("558bec6aff68????????64a1????????5083ec70a1????????33c58945??5657508d45??64a3????????8bf9");
+	addFilepath.Scan();
+
+	void* addFilepathAddr = addFilepath.GetAddress();
+
+	void* stringPtr = &repentogonResources;
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.AddBytes("\x8B\x0D").AddBytes(ByteBuffer().AddAny((char*)&stringPtr, 4))
+		.AddInternalCall(addFilepathAddr)
+		.RestoreRegisters(reg)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
+	ASMBuildResoucesRepentogon();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();
@@ -173,6 +199,7 @@ void PerformASMPatches() {
 
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
+	ASMPatchCoopWheelRespectModdedAchievements();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
@@ -201,7 +228,12 @@ void PerformASMPatches() {
 	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
 		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
 	}
-	
+
+	if (!ASMPatches::SkipArchiveChecksums()) {
+		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
+	};
+
+
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 
 	//if (!ASMPatches::FixHushFXVeins()) {

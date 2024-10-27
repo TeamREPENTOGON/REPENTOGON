@@ -1,4 +1,4 @@
-"c7010000803f8bc1c741??0000803fc741??0000803fc741??00000000e":
+"c7010000803f8bc1c741??0000803fc741??0000803fc741??00000000":
 __thiscall FXParams* FXParams::Init();
 
 struct FXParams depends (KColor, ColorMod, ColorModState) { {{

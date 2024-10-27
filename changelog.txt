@@ -1,5 +1,10 @@
 v1.0.x -
 Additions:
+* Camera:
+	- Update(bool Interpolated = false)
+* EntityPickup:
+	- GetMegaChest[Left/Right]Collectible
+	- Returns the other EntityPickup for a Mega Chest
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
@@ -17,12 +22,24 @@ Additions:
 	- MC_PRE_BED_SLEEP(Player, Bed)
 		Triggers on bed collision and before playing sleep sequence.
 		Return true to cancel vanilla behavior.
+	- PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+		Fires when Entity:SetColor is called
+		Takes an EntityType as its optional argument. 
+		Return a color to override the color. The overridden color is passed into MC_POST_ENTITY_SET_COLOR.
+		Return false to cancel the color change. Prevents MC_POST_ENTITY_SET_COLOR from firing.
+		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
+	- POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+		Fires after an entity's color is changed via Entity:SetColor
+		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
+* Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
-* Sprite:
-	- GetLayerFrame(string or int)
+Fixes:
+* Fixed an issue with luamod autocomplete not displaying all the available options
 /newline/
 Modified:
+* EntityFamiliar:
+	- GetPathFinder -> GetPathfinder
 * EntityPlayer:
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
 * ImGui:
@@ -30,6 +47,17 @@ Modified:
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.
+* Pathfinder:
+	- Many methods that did not work properly have been fixed
+	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes
+	- (EntityNPC.Pathfinder has been left unaffected for existing mod compatibility)
+* Misc:
+	- Modded characters locked behind achievements no longer appear in the local co-op wheel.
+/newline/
+/versionseparator/
+v1.0.12.b -
+Fixes:
+* Fix various regressions involving status effects introduced by 1.0.12
 /newline/
 /versionseparator/
 v1.0.12.a -
@@ -40,6 +68,7 @@ Additions:
 	- Allows changing the number of waves in a boss challenge room
 Fixes:
 * Boss challenge rooms wave count no longer accidentally tied to normal challenge room wave count (ie, now two instead of three)
+/newline/
 /versionseparator/
 v1.0.12 -
 Additions:

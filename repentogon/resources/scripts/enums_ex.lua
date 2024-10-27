@@ -341,6 +341,8 @@ ModCallbacks.MC_POST_PLAYER_REVIVE = 1482
 ModCallbacks.MC_PRE_FORTUNE_DISPLAY = 1483
 ModCallbacks.MC_PRE_ITEM_TEXT_DISPLAY = 1484
 ModCallbacks.MC_GET_STATUS_EFFECT_TARGET = 1485
+ModCallbacks.MC_PRE_ENTITY_SET_COLOR = 1486
+ModCallbacks.MC_POST_ENTITY_SET_COLOR = 1487
 
 AddHealthType = {
 	NONE	=	0,
@@ -1076,7 +1078,7 @@ Achievement = {
 	POP = 374,
 	DOOR_STOP = 375,
 	DEATHS_LIST = 376,
-	HAEMOLACHRIA = 377,
+	HAEMOLACRIA = 377,
 	LACHRYPHAGY = 378,
 	SCHOOLBAG = 379,
 	TRISAGION = 380,
@@ -2464,6 +2466,33 @@ ImGuiColor = {
 	ModalWindowDimBg = 52,      -- Darken/colorize entire screen behind a modal window, when one is active
 }
 
+ImGuiWindowFlags = {
+	None = 0,
+	NoTitleBar = 1 << 0,   										-- Disable title-bar
+	NoResize = 1 << 1,   										-- Disable user resizing with the lower-right grip
+	NoMove = 1 << 2,   											-- Disable user moving the window
+	NoScrollbar = 1 << 3,   									-- Disable scrollbars (window can still scroll with mouse or programmatically)
+	NoScrollWithMouse = 1 << 4,   								-- Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set.
+	NoCollapse = 1 << 5,   										-- Disable user collapsing window by double-clicking on it. Also referred to as Window Menu Button (e.g. within a docking node).
+	AlwaysAutoResize = 1 << 6,   								-- Resize every window to its content every frame
+	NoBackground = 1 << 7,   									-- Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f).
+	NoSavedSettings = 1 << 8,   								-- Never load/save settings in .ini file
+	NoMouseInputs  = 1 << 9,   									-- Disable catching mouse, hovering test with pass through
+	MenuBar = 1 << 10,  										-- Has a menu-bar
+	HorizontalScrollbar = 1 << 11,								-- Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
+	NoFocusOnAppearing = 1 << 12,								-- Disable taking focus when transitioning from hidden to visible state
+	NoBringToFrontOnFocus = 1 << 13,							-- Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
+	AlwaysVerticalScrollbar = 1 << 14,  						-- Always show vertical scrollbar (even if ContentSize.y < Size.y)
+	AlwaysHorizontalScrollbar = 1 << 15,						-- Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+	NoNavInputs = 1 << 16,  									-- No gamepad/keyboard navigation within the window
+	NoNavFocus = 1 << 17,  										-- No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB)
+	UnsavedDocument = 1 << 18,									-- Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed
+
+	NoNav =	(1 << 16) | (1 << 17),								-- ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
+	NoDecoration = (1 << 0) | (1 << 1) | (1 << 3) | (1 << 5),	-- ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse
+	NoInputs = (1 << 9) | (1 << 16) | (1 << 17),				-- ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
+}
+
 PocketItemType = {
 	PILL = 0,
 	CARD = 1,
@@ -2751,3 +2780,4 @@ CharacterMenuStatus = {
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
 Achievement.RESERVED_HEIROPHANT = 529
+Achievement.HAEMOLACHRIA = Achievement.HAEMOLACRIA

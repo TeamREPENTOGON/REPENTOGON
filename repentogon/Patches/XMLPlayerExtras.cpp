@@ -105,8 +105,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 }
 
 
-bool characterUnlocked(int id) {
-	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(id);
+bool IsCharacterUnlockedRgon(const int playerType) {
+	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(playerType);
 	std::string const& achievement = att["achievement"];
 
 	if (!achievement.empty()) {
@@ -126,7 +126,7 @@ HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, Co
 	ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
 	if ((*portrait) != nullptr) {
 		(*portrait)->Play(playerXML["name"].c_str(), true);
-		(*portrait)->SetLayerFrame(0, !characterUnlocked(id) ? 1 : 0);
+		(*portrait)->SetLayerFrame(0, !IsCharacterUnlockedRgon(id) ? 1 : 0);
 		(*portrait)->_color = *color;
 		(*portrait)->_scale = *scale;
 		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
@@ -155,7 +155,7 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 	ANM2** background = g_Manager->GetPlayerConfig()->at(CharacterId).GetModdedMenuBackgroundANM2();
 
 	if (*background != nullptr) {
-		if (!characterUnlocked(CharacterId))
+		if (!IsCharacterUnlockedRgon(CharacterId))
 			disableState = false;
 		else
 			disableState = true;
@@ -183,7 +183,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
 
-	if (!characterUnlocked(CharacterId))
+	if (!IsCharacterUnlockedRgon(CharacterId))
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
 }
 
@@ -255,7 +255,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 
 			// This is a locked modded character, increment offset and skip
-			if (!characterUnlocked(player._id)) {
+			if (!IsCharacterUnlockedRgon(player._id)) {
 				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a locked modded character at offset %d\n", player._id, name.c_str(), offset);
 				offset++;
 				continue;
