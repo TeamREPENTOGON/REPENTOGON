@@ -1,0 +1,6 @@
+struct RedirectedPath depends (ModEntry) {
+	uint32_t _primaryHash : 0x0;
+	uint32_t _secondaryHash : 0x4;
+	ModEntry* _modEntry : 0x8;
+	std_string _filePath : 0xc;
+} : 0x24;
