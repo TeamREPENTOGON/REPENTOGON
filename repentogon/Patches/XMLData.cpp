@@ -1654,7 +1654,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				tuple<int, int> idx = { toint(stage["consoleid"]), toint(stage["stagealt"]) };
 				XMLStuff.StageData->bystagealt[idx] = id;
 			}
-			//XMLStuff.StageData->bybasestage[toint(stage["basestage"])] = id;
+			if (stage.find("basestage") == stage.end())
+				XMLStuff.StageData->bybasestage[toint(stage["basestage"])] = id;
 			XMLStuff.StageData->nodes[id] = stage;
 			XMLStuff.StageData->byorder[XMLStuff.StageData->nodes.size()] = id;
 			XMLStuff.ModData->stages[stage["sourceid"]] += 1;

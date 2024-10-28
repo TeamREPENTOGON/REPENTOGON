@@ -92,6 +92,7 @@ public:
 	bool AppendContentBinary(RoomSet* roomSet, std::string& binary);
 	bool IsBinaryLoaded(std::string& path);
 	bool LoadStage(int configId, int newId);
+	bool RestoreStage(int configId);
 	void ResetRoomWeights(RoomSet* set);
 	void ResetAllRoomWeights();
 	StageDefinition& StageManager::GetStageDefinition(int stageId);

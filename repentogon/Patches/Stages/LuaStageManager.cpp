@@ -23,7 +23,7 @@ LUA_FUNCTION(Lua_StageManager_RestoreStage) {
 		return luaL_error(L, "id must be between 0 and 36, both inclusive (got %d)", id);
 	}
 
-	lua_pushboolean(L, stageManager.LoadStage(id, id));
+	lua_pushboolean(L, stageManager.RestoreStage(id));
 	return 1;
 }
 

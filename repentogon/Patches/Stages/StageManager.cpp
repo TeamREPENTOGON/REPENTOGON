@@ -159,11 +159,16 @@ static void ReplaceStageDefinition(RoomConfig_Stage* stage, StageDefinition& new
  * @param configId The ID of the RoomConfig_Stage to be replaced.
  * @param newId The ID of the new stage to be loaded.
  *
- * @return True if the stage was successfully loaded, false otherwise.
+ * @return True if the stage was successfully loaded or already loaded, false if no binary was able to be loaded.
  */
 bool StageManager::LoadStage(int configId, int newId) {
 	ZHL::Logger logger(true);
 	logger.Log("[INFO] StageManager::LoadStage: Attempting to load stage id %d into config id %d\n", newId, configId);
+
+	if (stageForConfigId[configId] == newId) {
+		logger.Log("[INFO] StageManager::LoadStage: Stage id %d is already loaded into config id %d\n", newId, configId);
+		return true;
+	}
 
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 
@@ -233,6 +238,18 @@ bool StageManager::LoadStage(int configId, int newId) {
 
 	return false;
 };
+
+/**
+ * Restores the specified stage to its default state.
+ *
+ * @param configId The stage to restore.
+ *
+ * @return True if the stage was restored successfully, false otherwise.
+ */
+bool StageManager::RestoreStage(int configId) {
+	return LoadStage(configId, configId);
+}
+
 /**
  * Attempts to append the specified content binary to the specified RoomSet.
  *
