@@ -159,7 +159,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 		std::string version = GetExeVersion();
 		sLogger->Info("Isaac Version: %s\n", version.c_str());
-		if ((version != "1.7.9b.J835") || HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
+		if (HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
 			sLogger->Info("Repentogon Disabled!\n");
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
@@ -168,6 +168,16 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 				fclose(f);
 			}
+			return TRUE;
+		}
+		if (!HasCommandLineArgument("-skipupdates")) {
+			sLogger->Info("dsound: Checking for updates\n");
+			CheckForUpdates();
+			sLogger->Info("dsound: Update checking done\n");
+		}
+
+		if (version != "1.7.9b.J835") {
+			sLogger->Info("This Version of Isaac is not compatible!!\n");
 			return TRUE;
 		}
 
@@ -194,12 +204,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			sLogger->Info("dsound: Initializing console window\n");
 			ConsoleWindow::Init();
 			sLogger->Info("dsound: Initialized console window\n");
-		}
-		
-		if (!HasCommandLineArgument("-skipupdates")) {
-			sLogger->Info("dsound: Checking for updates\n");
-			CheckForUpdates();
-			sLogger->Info("dsound: Update checking done\n");
 		}
 
 		/*if(GetIsaacVersion() != ISAAC_REBIRTH)
