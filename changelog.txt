@@ -1,3 +1,7 @@
+v1.0.12d -
+Fixes:
+* Fix unsupported versions not running the repentogon update (which could make them be stuck and be forced to manually update int he future)
+/newline/
 v1.0.12c -
 Fixes:
 * Fix loss of items in Mom's chase when playing coop or 2 player chaarcters like J&E
