@@ -1,7 +1,6 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 
-#include "../repentogon/Patches/XMLData.h"
 #include "StageManager.h"
 #include "suffixes.h"
 
@@ -82,31 +81,6 @@ bool StageManager::IsBinaryLoaded(std::string& path) {
 };
 
 /**
- * Builds a StageDefinition object from the provided stageId.
- *
- * @param stageId The ID of the stage to build the definition for.
- *
- * @return A reference to the built StageDefinition object.
- */
-static StageDefinition BuildStageDefinition(int stageId) {
-	XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageId);
-	StageDefinition stageDefinition;
-
-	std::string gfxRoot = xmlData["bossgfxroot"];
-	stageDefinition.binary = xmlData["root"] + xmlData["path"];
-	stageDefinition.greedBinary = xmlData["greedroot"] + xmlData["path"];
-	stageDefinition.playerSpot = gfxRoot + xmlData["playerspot"];
-	stageDefinition.bossSpot = gfxRoot + xmlData["bossspot"];
-	stageDefinition.displayName = xmlData["displayname"].empty() ? xmlData["name"] : xmlData["displayname"];
-	stageDefinition.suffix = xmlData["suffix"];
-	stageDefinition.name = xmlData["name"];
-	stageDefinition.musicId = toint(xmlData["music"]);
-	stageDefinition.backdropId = toint(xmlData["backdrop"]);
-
-	return stageDefinition;
-}
-
-/**
  * Retrieves a StageDefinition from the cache, building it if it does not exist.
  *
  * @param stageId the ID of the stage to retrieve the definition for
@@ -126,7 +100,7 @@ StageDefinition& StageManager::GetStageDefinition(int stageId) {
 	}
 
 	logger.Log("[INFO] StageManager::GetStageDefinition: Definition is not in cache, building\n");
-	stageDefinitionMap.insert({ stageId, BuildStageDefinition(stageId) });
+	stageDefinitionMap.insert({ stageId, StageDefinition(stageId) });
 	return stageDefinitionMap.find(stageId)->second;
 }
 
@@ -145,6 +119,11 @@ static void ReplaceStageDefinition(RoomConfig_Stage* stage, StageDefinition& new
 	stage->_playerSpot = newDef.playerSpot;
 	stage->_bossSpot = newDef.bossSpot;
 	stage->_suffix = newDef.suffix;
+}
+
+// fuck youuuuuuu
+inline char* StringToChar(std::string& str) {
+	return str.empty() ? "" : str.c_str();
 }
 
 /**
@@ -173,11 +152,11 @@ bool StageManager::LoadStage(int configId, int newId) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 
 	// This also builds the StageDefinition of the existing and new stages
-	StageDefinition& oldDef = GetStageDefinition(configId);
-	StageDefinition& newDef = GetStageDefinition(newId);
+	StageDefinition oldDef = StageDefinition(configId);
+	StageDefinition newDef = StageDefinition(newId);
 
-	logger.Log("[INFO] StageManager::LoadStage: [CURRENT] name %s, path %s, greed path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", oldDef.name.c_str(), oldDef.binary.c_str(), oldDef.greedBinary.c_str(), oldDef.playerSpot.c_str(), oldDef.bossSpot.c_str(), oldDef.suffix.c_str(), oldDef.musicId, oldDef.backdropId);
-	logger.Log("[INFO] StageManager::LoadStage: [NEW] name %s, path %s, greed path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", newDef.name.c_str(), newDef.binary.c_str(), newDef.greedBinary.c_str(), newDef.playerSpot.c_str(), newDef.bossSpot.c_str(), newDef.suffix.c_str(), newDef.musicId, newDef.backdropId);
+	logger.Log("[INFO] StageManager::LoadStage: [CURRENT] name %s, path %s, greed path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", StringToChar(oldDef.name), StringToChar(oldDef.binary), StringToChar(oldDef.greedBinary), StringToChar(oldDef.playerSpot), StringToChar(oldDef.bossSpot), StringToChar(oldDef.suffix), oldDef.musicId, oldDef.backdropId);
+	logger.Log("[INFO] StageManager::LoadStage: [NEW] name %s, path %s, greed path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", StringToChar(newDef.name), StringToChar(newDef.binary), StringToChar(newDef.greedBinary), StringToChar(newDef.playerSpot), StringToChar(newDef.bossSpot), StringToChar(newDef.suffix), newDef.musicId, newDef.backdropId);
 
 	RoomConfig_Stage& stage = roomConfig->_stages[configId];
 	std::unordered_map<std::string, RoomSet>::const_iterator itr;

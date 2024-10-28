@@ -165,6 +165,8 @@ bool tobool(const std::string& str) {
 	return false;
 }
 
+extern tuple<int, int> GetSetStage(int stageid, bool secondfloor);
+
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
 	XMLAttributes mod;
 		for (xml_attribute<>* attr = node->first_attribute(); attr; attr = attr->next_attribute())
@@ -1650,12 +1652,26 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
 			//XMLStuff.StageData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.StageData->byname[stage["name"]] = id;
+			tuple<int, int> idx;
 			if (stage.find("consoleid") != stage.end()) {
-				tuple<int, int> idx = { toint(stage["consoleid"]), toint(stage["stagealt"]) };
+				// this is a custom stage
+				idx = { toint(stage["consoleid"]) , toint(stage["stagealt"])};
 				XMLStuff.StageData->bystagealt[idx] = id;
 			}
+			else
+			{
+				// this is a base stage
+				idx = GetSetStage(id, false);
+				XMLStuff.StageData->bystagealt[idx] = id;
+
+				// handle second floor
+				tuple<int, int> idx2 = GetSetStage(id, true);
+				if (idx2 != idx)
+					XMLStuff.StageData->bystagealt[idx2] = id;
+			}
+			
 			if (stage.find("basestage") == stage.end())
-				XMLStuff.StageData->bybasestage[toint(stage["basestage"])] = id;
+				stage["basestage"] = to_string(id);
 			XMLStuff.StageData->nodes[id] = stage;
 			XMLStuff.StageData->byorder[XMLStuff.StageData->nodes.size()] = id;
 			XMLStuff.ModData->stages[stage["sourceid"]] += 1;

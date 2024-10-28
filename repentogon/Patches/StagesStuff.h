@@ -22,6 +22,7 @@
 
 using namespace std;
 extern void SetCurrentFloorMusic(int etype);
+extern tuple<int, int> GetSetStage(int stageid, bool secondfloor);
 
 inline unordered_map<int, tuple<int, int> > stageidtotuple;
 inline void initstagetotuple() {

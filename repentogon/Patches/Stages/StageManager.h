@@ -5,9 +5,27 @@
 #include <tuple>
 #include <filesystem>
 
+#include "../repentogon/Patches/XMLData.h"
+
 namespace fs = std::filesystem;
 
-struct StageDefinition {
+class StageDefinition {
+public:
+	StageDefinition(int stageId) {
+		XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(stageId);
+
+		std::string gfxRoot = xmlData["bossgfxroot"];
+		binary = xmlData["root"] + xmlData["path"];
+		greedBinary = xmlData["greedroot"] + xmlData["path"];
+		playerSpot = gfxRoot + xmlData["playerspot"];
+		bossSpot = gfxRoot + xmlData["bossspot"];
+		displayName = xmlData["displayname"].empty() ? xmlData["name"] : xmlData["displayname"];
+		suffix = xmlData["suffix"];
+		name = xmlData["name"];
+		musicId = toint(xmlData["music"]);
+		backdropId = toint(xmlData["backdrop"]);
+	}
+
 	std::string binary;
 	std::string greedBinary;
 	std::string gfxRoot;

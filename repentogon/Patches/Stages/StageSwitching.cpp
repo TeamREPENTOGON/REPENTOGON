@@ -15,22 +15,7 @@ static bool IsOnSecondFloor() {
 }
 
 extern int toint(const string& str);
-
-static tuple<int, int> GetSetStage(int stageId, bool secondFloor) {
-	if (stageidtotuple.empty()) {
-		initstagetotuple();
-	}
-	if (stageidtotuple.count(stageId) > 0) {
-		tuple<int, int> ret = stageidtotuple[stageId];
-		if (secondFloor && (get<0>(ret) < 9)) {
-			ret = { get<0>(ret) + 1,get<1>(ret) };
-		}
-		return ret;
-	}
-	else {
-		return { stageId, 0 };
-	}
-}
+extern tuple<int, int> GetSetStage(int stageid, bool secondfloor);
 
 static tuple<int, int> ConsoleStageIdToTuple(const string& input) {
 	std::string numberPart;
@@ -78,6 +63,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		if (XMLStuff.StageData->bystagealt.count(id) > 0) {
 			overloadLevelStage = get<0>(id);
 			overloadStageType = get<1>(id);
+			in = "stage 1";
 		}
 	}
 	super(in, out, player);
@@ -95,13 +81,17 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 		stageType = overloadStageType;
 
 	tuple<int, int> idx = { levelStage, stageType };
-	int baseStb = GetStbTypeFromTuple(idx);
-	XMLAttributes& targetstage = baseStb != -1 ? XMLAttributes(XMLStuff.StageData->GetNodeById(baseStb)) : XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
+	XMLAttributes& targetstage = XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
 	if (XMLStuff.StageData->bystagealt.count(idx) > 0) {
 		int nodeId = toint((targetstage)["id"]);
 		int configId = toint((targetstage)["basestage"]);
 
-		logger.Log("SetStage: level %d, stage %d, node %d, config %d\n", levelStage, stageType, nodeId, configId);
+		std::string stage = to_string(levelStage);
+		std::string stage2 = to_string(stageType);
+		std::string stage3 = to_string(nodeId);
+		std::string stage4 = to_string(configId);
+
+		logger.Log("[INFO] SetStage: level %d, stage %d, node %d, config %d\n", stage.c_str(), stage2.c_str(), stage3.c_str(), stage4.c_str());
 
 		stageManager.LoadStage(configId, nodeId);
 
@@ -110,6 +100,10 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 		stageType = get<1>(superArgs);
 
 		logger.Log("done\n");
+	}
+	else
+	{
+		logger.Log("[ERROR] SetStage: found no node for level %d, stage %d\n", levelStage, stageType);
 	}
 
 	super(levelStage, stageType);
