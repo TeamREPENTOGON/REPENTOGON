@@ -47,8 +47,8 @@ inline void initstagetotuple() {
 	stageidtotuple[26] = { 12,0 };
 	//Vanilla
 	//Greed
-	stageidtotuple[24] = { 6,0 };
-	stageidtotuple[25] = { 7,0 };
+	//stageidtotuple[24] = { 6,0 };
+	//stageidtotuple[25] = { 7,0 };
 	//Greed
 	//Repentance
 	stageidtotuple[27] = { 1,4 };

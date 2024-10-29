@@ -7,8 +7,7 @@
 #include "StageManager.h"
 #include "../StagesStuff.h"
 
-static bool IsOnSecondFloor() {
-	int stageid = g_Game->_stage;
+static bool IsSecondFloor(int stageid) {
 	// God I wish there was an easier way to do this
 	return (stageid == 2) || (stageid == 4) || (stageid == 6) || (stageid == 8) 
 		|| (g_Game->_curses & (1 << 1)); //has curse XL
@@ -81,8 +80,9 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 		stageType = overloadStageType;
 
 	tuple<int, int> idx = { levelStage, stageType };
-	XMLAttributes& targetstage = XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
+	logger.Log("[INFO] node count for %d, %d : %d\n", levelStage, stageType, XMLStuff.StageData->bystagealt.count(idx));
 	if (XMLStuff.StageData->bystagealt.count(idx) > 0) {
+		XMLAttributes& targetstage = XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
 		int nodeId = toint((targetstage)["id"]);
 		int configId = toint((targetstage)["basestage"]);
 
@@ -91,23 +91,54 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 		std::string stage3 = to_string(nodeId);
 		std::string stage4 = to_string(configId);
 
-		logger.Log("[INFO] SetStage: level %d, stage %d, node %d, config %d\n", stage.c_str(), stage2.c_str(), stage3.c_str(), stage4.c_str());
+		logger.Log("[INFO] SetStage: level %d, stage %d, node %d, config %d\n", levelStage, stageType, nodeId, configId);
 
 		stageManager.LoadStage(configId, nodeId);
 
-		tuple<int, int> superArgs = GetSetStage(configId, IsOnSecondFloor());
+		tuple<int, int> superArgs = GetSetStage(configId, IsSecondFloor(levelStage));
 		levelStage = get<0>(superArgs);
 		stageType = get<1>(superArgs);
 
+		logger.Log("[INFO] SetStage: got set stage %d, %d, second floor %s\n", levelStage, stageType, IsSecondFloor(levelStage) ? "true" : "false");
+
 		logger.Log("done\n");
 	}
-	else
+	// dark home has special behavior, because of course it does...
+	else if (levelStage != 13 || stageType != 1)
 	{
-		logger.Log("[ERROR] SetStage: found no node for level %d, stage %d\n", levelStage, stageType);
+		logger.Log("[ERROR] SetStage: found no node for level %d, stage %d!\n", levelStage, stageType);
+		return;
 	}
+
+	// last ditch effort to avoid disaster
+	if (levelStage == 0) {
+		logger.Log("[ERROR] SetStage: attempted to set stage to 0! defaulting to basement\n");
+		levelStage = 1;
+		stageType = 0;
+		
+	}	
 
 	super(levelStage, stageType);
 	
 	overloadLevelStage = 0;
 	overloadStageType = 0;
+}
+
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int stage, unsigned int mode) -> bool) {
+	if (stage == 36) {
+		KAGE::LogMessage(1, "[RoomConfig] LoadStageBinary: force setting stage 36 to backwards\n");
+
+		std::string filepath = this->_stages[stage]._rooms[mode]._filepath;
+		std::string name = this->_stages[stage]._displayName;
+		this->_stages[stage]._displayName = "(backwards)";
+		this->_stages[stage]._rooms[mode]._filepath = "rooms/36.backwards.xml";
+
+		bool res = super(stage, mode);
+
+		this->_stages[stage]._displayName = name;
+		this->_stages[stage]._rooms[mode]._filepath = filepath;
+
+		return res;
+	}
+	return super(stage, mode);
 }
