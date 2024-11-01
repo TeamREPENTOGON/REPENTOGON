@@ -51,13 +51,14 @@ inline void initstagetotuple() {
 	//stageidtotuple[25] = { 7,0 };
 	//Greed
 	//Repentance
-	stageidtotuple[27] = { 1,4 };
-	stageidtotuple[28] = { 1,5 };
-	stageidtotuple[29] = { 3,4 };
-	stageidtotuple[30] = { 3,5 };
-	stageidtotuple[31] = { 5,4 };
-	stageidtotuple[32] = { 5,5 };
-	stageidtotuple[33] = { 7,4 };
+	stageidtotuple[27] = { 1,3 };
+	stageidtotuple[28] = { 1,4 };
+	stageidtotuple[29] = { 3,3 };
+	stageidtotuple[30] = { 3,4 };
+	stageidtotuple[31] = { 5,3 };
+	stageidtotuple[32] = { 5,4 };
+	stageidtotuple[33] = { 7,3 };
+	stageidtotuple[34] = { 7,4 };
 	stageidtotuple[35] = { 13,0 };
 	//Repentance
 }

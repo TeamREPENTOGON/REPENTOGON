@@ -99,6 +99,10 @@ HOOK_METHOD(Level, SetStage, (int levelStage, int stageType)-> void) {
 		levelStage = get<0>(superArgs);
 		stageType = get<1>(superArgs);
 
+		// for some reason, stageType 3 sets the stage to the next floor, ex 1c becomes cavesment. prevent this
+		if (stageType > 2)
+			stageType += 1;
+
 		logger.Log("[INFO] SetStage: got set stage %d, %d, second floor %s\n", levelStage, stageType, IsSecondFloor(levelStage) ? "true" : "false");
 
 		logger.Log("done\n");
