@@ -486,14 +486,15 @@ void __stdcall RunImGui(HDC hdc) {
 	WINMouseWheelMove_Vert = 0; // Windows doesn't call callbacks all the time, so this values is "sticking"
 	WINMouseWheelMove_Hori = 0;
 	deviceContext = hdc;
-
+	oldRenderContext = wglGetCurrentContext();
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
 		imguiRenderContext = wglCreateContext(hdc);
+		wglMakeCurrent(hdc, imguiRenderContext);
 		ImGui::CreateContext();
-		ImGui_ImplWin32_Init(window);
+		ImGui_ImplWin32_InitForOpenGL(window);
 		ImGui_ImplOpenGL2_Init();
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
@@ -557,16 +558,15 @@ void __stdcall RunImGui(HDC hdc) {
 		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
 		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
 		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
-	
+
 		imguiInitialized = true;
 		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
-
-	oldRenderContext = wglGetCurrentContext();
-	wglMakeCurrent(hdc, imguiRenderContext);
-
+	else {
+		wglMakeCurrent(hdc, imguiRenderContext);
+	};
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
