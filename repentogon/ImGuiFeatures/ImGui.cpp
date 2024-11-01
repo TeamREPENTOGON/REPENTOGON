@@ -475,15 +475,17 @@ void RenderLuamodErrorPopup() {
 //luamod error popup end
 
 ImFont* imFontUnifont = NULL;
-HGLRC imguiRenderContext=NULL;
+HGLRC imguiRenderContext = NULL;
+HGLRC oldRenderContext = NULL;
+HDC deviceContext = NULL;
 
 void __stdcall RunImGui(HDC hdc) {
-	HGLRC oldcontext;
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
 	WINMouseWheelMove_Vert = 0; // Windows doesn't call callbacks all the time, so this values is "sticking"
 	WINMouseWheelMove_Hori = 0;
+	deviceContext = hdc;
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
@@ -562,7 +564,7 @@ void __stdcall RunImGui(HDC hdc) {
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
 
-	oldcontext = wglGetCurrentContext();
+	oldRenderContext = wglGetCurrentContext();
 	wglMakeCurrent(hdc, imguiRenderContext);
 
 	ImGui_ImplOpenGL2_NewFrame();
@@ -637,7 +639,8 @@ void __stdcall RunImGui(HDC hdc) {
 	// Draw the overlay
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	wglMakeCurrent(hdc, oldcontext);
+	wglMakeCurrent(hdc, oldRenderContext);
+	oldRenderContext = 0;
 }
 
 
@@ -664,6 +667,11 @@ void HookImGui() {
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall) {
+	RunImGui(hdc);
+	return super(hdc);
+};
 
 HOOK_METHOD(Console, Render, ()->void)
 {

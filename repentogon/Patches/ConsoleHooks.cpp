@@ -5,6 +5,7 @@
 #include "LuaCore.h"
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
+#include "../ImGuiFeatures/CustomImGui.h"
 
 #include <filesystem>
 #include <iostream> 
@@ -87,6 +88,11 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
     // Normally, the console explicitly expects a player to run any command, and will actively try to find one (and will crash otherwise)
     // We ASM patched this out to let commands run on the menu, so now we reintroduce this ourselves.
     // If we're in-game, return the player; otherwise don't. Many functions obviously don't work out of the game! Throw errors for those.
+
+    if (oldRenderContext != 0) {
+        wglMakeCurrent(deviceContext, oldRenderContext);
+    };
+
     bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
     std::string res;
 
@@ -209,4 +215,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
     }
 
     super(in, out, player);
+    if (oldRenderContext != 0) {
+        wglMakeCurrent(deviceContext, imguiRenderContext);
+    };
 }

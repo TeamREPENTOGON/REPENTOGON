@@ -8,6 +8,10 @@
 
 #include "LuaCore.h"
 
+extern HGLRC imguiRenderContext;
+extern HGLRC oldRenderContext;
+extern HDC deviceContext;
+
 extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);

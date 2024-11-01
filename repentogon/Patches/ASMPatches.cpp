@@ -193,7 +193,7 @@ void PerformASMPatches() {
 	ASMPatchesForCustomItemPools();
 	ExtraASMPatchesForCustomItemPools();
 	ASMPatchesForCardsExtras();
-	HookImGui();
+//	HookImGui();		//switched to wglswapbuffers for now
 
 	// Sprite
 	ASMPatchesForANM2Extras();
