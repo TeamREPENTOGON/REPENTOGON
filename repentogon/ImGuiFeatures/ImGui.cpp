@@ -16,13 +16,14 @@
 #include "Lang.h"
 
 #include <Windows.h>
-#include <gl/GL.h>
+#include <gl/gl.h>
+#include "glext.h"
 #include <sstream>
 #include <algorithm>
 
 #include "imgui.h"
 #include "imgui_freetype.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
@@ -476,6 +477,8 @@ void RenderLuamodErrorPopup() {
 
 ImFont* imFontUnifont = NULL;
 
+PFNGLUSEPROGRAMPROC glUseProgram;
+
 void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
@@ -487,10 +490,10 @@ void __stdcall RunImGui(HDC hdc) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
-
+		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(window);
-		ImGui_ImplOpenGL3_Init();
+		ImGui_ImplOpenGL2_Init();
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -559,8 +562,7 @@ void __stdcall RunImGui(HDC hdc) {
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
-
-	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
@@ -629,8 +631,13 @@ void __stdcall RunImGui(HDC hdc) {
 
 	ImGui::Render();
 
+
+	GLint last_program;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+	glUseProgram(0);
 	// Draw the overlay
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	glUseProgram(last_program);
 }
 
 
