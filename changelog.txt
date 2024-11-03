@@ -1,6 +1,10 @@
+v1.0.12e -
+Fixes:
+* Macs and old systems should now be compatible with REPENTOGON (we no longer use OGL 3)
+/newline/
 v1.0.12d -
 Fixes:
-* Fix unsupported versions not running the repentogon update (which could make them be stuck and be forced to manually update int he future)
+* Fix unsupported versions not running the repentogon update (which could make them be stuck and be forced to manually update in the future)
 /newline/
 v1.0.12c -
 Fixes:
