@@ -1663,11 +1663,15 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				// this is a base stage
 				idx = GetSetStage(id, false);
 				XMLStuff.StageData->bystagealt[idx] = id;
+				ZHL::Log("added first stage  id %d to alt %d, %d\n", id, get<0>(idx), get<1>(idx));
 
 				// handle second floor
 				tuple<int, int> idx2 = GetSetStage(id, true);
-				if (idx2 != idx)
+				if (idx2 != idx) {
+					ZHL::Log("added second stage id %d to alt %d, %d\n", id, get<0>(idx2), get<1>(idx2));
 					XMLStuff.StageData->bystagealt[idx2] = id;
+				}
+
 			}
 			
 			if (stage.find("basestage") == stage.end())

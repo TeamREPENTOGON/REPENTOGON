@@ -26,7 +26,10 @@ static tuple<int, int> ConsoleStageIdToTuple(const string& input) {
 		else {
 			if (isalpha(c)) {
 				int x = toint(numberPart);
-				return { x ,c - 'a' + 1 };
+				int y = c - 'a' + 1;
+				if (y >= 3)
+					y += 1;
+				return { x , y };
 			}
 		}
 	}
