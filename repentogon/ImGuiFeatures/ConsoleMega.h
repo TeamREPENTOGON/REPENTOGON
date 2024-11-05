@@ -159,6 +159,10 @@ struct ConsoleMega : ImGuiWindowObject {
         macros.push_back(ConsoleMacro(macroName, &macroCommands));
     }
 
+    bool ShouldCloseImGuiOnPressEnter() const {
+      return enabled && focused && !inputBuf[0];
+    }
+
     ConsoleMega() : ImGuiWindowObject("Console")
     {
         enabled = true;
