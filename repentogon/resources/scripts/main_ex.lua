@@ -1480,8 +1480,8 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 --local ImGui = Isaac.GetImGui()
-ImGui.ImGuiToWorld = function (_, position) return Isaac.ScreenToWorld(position) end
-ImGui.WorldToImGui = function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
+ImGui.ImGuiToWorld = function (position) return Isaac.ScreenToWorld(position) end
+ImGui.WorldToImGui = function (position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
 
 if not _LUADEBUG then
 	debug = nil
