@@ -216,7 +216,7 @@ struct Element {
     std::string name;
     IMGUI_ELEMENT type;
     std::list<Element>* children;
-    Element* parent;
+    Element* parent = NULL;
 
     Element* triggerElement = NULL; // element that when clicked, activates this element (Window)
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
@@ -395,16 +395,19 @@ struct CustomImGui {
 
     bool RemoveElement(const char* elementId) IM_FMTARGS(2)
     {
-        Element* element = GetElementByList(elementId, menuElements);
-        if (element == NULL) {
-            element = GetElementByList(elementId, windows);
+        Element* element = GetElementById(elementId);
             if (element == NULL) {
-                g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+                g_Game->GetConsole()->PrintError("Couldn't find the element to remove! (" + std::string(elementId) + ") \n");
                 return false;
             }
+        if (element->type == IMGUI_ELEMENT::Menu) {
+            RemoveMenu(elementId);
+            return true;
         }
-        if (element->type == IMGUI_ELEMENT::Menu) { g_Game->GetConsole()->PrintError("Cant Remove a Menu, Use RemoveMenu to Remove menus! (" + std::string(elementId) + ") \n"); return false; }
-        if (element->type == IMGUI_ELEMENT::Window) { g_Game->GetConsole()->PrintError("Cant Remove a Window, Use RemoveWindow to Remove windows! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::Window && element->parent == NULL) {
+            RemoveWindow(elementId);
+            return true;
+        }
 
         if (element->parent != NULL) {
             Element* daddy = element->parent;

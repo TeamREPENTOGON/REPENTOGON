@@ -84,7 +84,7 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 	const char* text = luaL_checkstring(L, 2);
 
 	if (customImGui.ElementExists(id)) {
-		customImGui.RemoveMenu(id);
+		customImGui.RemoveElement(id);
 	}
 
 	bool success = customImGui.CreateMenuElement(id, text);
@@ -95,22 +95,13 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_RemoveMenu)
-{
-	const char* menuId = luaL_checkstring(L, 1);
-
-	customImGui.RemoveMenu(menuId);
-
-	return 0;
-}
-
 LUA_FUNCTION(Lua_ImGui_CreateWindow)
 {
 	const char* id = luaL_checkstring(L, 1);
 	const char* title = luaL_checkstring(L, 2);
 
 	if (customImGui.ElementExists(id)) {
-		customImGui.RemoveWindow(id);
+		customImGui.RemoveElement(id);
 	}
 
 	bool success = customImGui.CreateWindowElement(id, title);
@@ -119,15 +110,6 @@ LUA_FUNCTION(Lua_ImGui_CreateWindow)
 	}
 
 	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_RemoveWindow)
-{
-	const char* windowId = luaL_checkstring(L, 1);
-
-	customImGui.RemoveWindow(windowId);
-
-	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddCallback)
@@ -1024,9 +1006,9 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "AddElement", Lua_ImGui_AddElement );
 			lua::TableAssoc(L, "RemoveElement", Lua_ImGui_RemoveElement );
 			lua::TableAssoc(L, "CreateMenu", Lua_ImGui_CreateMenu );
-			lua::TableAssoc(L, "RemoveMenu", Lua_ImGui_RemoveMenu );
+			lua::TableAssoc(L, "RemoveMenu", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
 			lua::TableAssoc(L, "CreateWindow", Lua_ImGui_CreateWindow );
-			lua::TableAssoc(L, "RemoveWindow", Lua_ImGui_RemoveWindow );
+			lua::TableAssoc(L, "RemoveWindow", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
 			lua::TableAssoc(L, "LinkWindowToElement", Lua_ImGui_LinkWindowToElement );
 			lua::TableAssoc(L, "ElementExists", Lua_ImGui_ElementExists );
 			lua::TableAssoc(L, "UpdateText", Lua_ImGui_UpdateText );
