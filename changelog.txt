@@ -44,9 +44,13 @@ Modified:
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
 * ImGui:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
+	- If an error is caused by a callback, imgui will now properly throw an error
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.
+	- Fixed Render callbacks of window elements being executed even if the window is not visible
+	- Fixed ImGui closing unexpectedly when pressing enter and the console window is not enabled
+	- Fixed ImGui.ImGuiToWorld() and ImGui.WorldToImGui() calls not taking the position arguments as intended
 * Pathfinder:
 	- Many methods that did not work properly have been fixed
 	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes

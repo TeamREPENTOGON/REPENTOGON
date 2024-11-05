@@ -290,7 +290,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 
 		case VK_RETURN: {
-			if (menuShown && !console.inputBuf[0] && console.focused) {
+			if (menuShown && console.ShouldCloseImGuiOnPressEnter()) {
 				menuShown = false;
 				return true;
 			}
@@ -624,7 +624,7 @@ void __stdcall RunImGui(HDC hdc) {
 	// render console very late to make auto-focus work properly
 	console.Draw(menuShown);
 
-	RenderLuamodErrorPopup(); //above the konsol
+	RenderLuamodErrorPopup(); //above the console
 
 	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);

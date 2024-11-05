@@ -66,6 +66,20 @@ enum class IMGUI_CALLBACK {
     Render
 };
 
+static const char* IMGUI_CALLBACK_TO_STRING[11] = {
+    "Clicked",
+    "Hovered",
+    "Active",
+    "Focused",
+    "Visible",
+    "Edited",
+    "Activated",
+    "Deactivated",
+    "DeactivatedAfterEdit",
+    "ToggledOpen",
+    "Render"
+};
+
 enum class IMGUI_DATA {
     Label,
     Value,
@@ -623,7 +637,7 @@ struct CustomImGui {
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
             if (callback->first == IMGUI_CALLBACK::Render) {
-                RunCallback(element, callback->second);
+                RunCallback(element, callback->second, callback->first);
             }
         }
     }
@@ -639,54 +653,54 @@ struct CustomImGui {
                     if (element->triggerPopup != NULL) {
                         OpenPopup(element->triggerPopup->id.c_str());
                     }
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Hovered:
                 if (ImGui::IsItemHovered()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Active:
                 if (ImGui::IsItemActive()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Focused:
                 if (ImGui::IsItemFocused()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Visible:
                 if (ImGui::IsItemVisible()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Edited:
                 if (ImGui::IsItemEdited()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Activated:
                 if (ImGui::IsItemActivated()) {
                     element->isActive = true;
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Deactivated:
                 if (ImGui::IsItemDeactivated()) {
                     element->isActive = false;
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::DeactivatedAfterEdit:
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::ToggledOpen:
                 if (ImGui::IsItemToggledOpen()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             default:
@@ -695,7 +709,7 @@ struct CustomImGui {
         }
     }
 
-    void RunCallback(Element* element, int callbackID) IM_FMTARGS(2)
+    void RunCallback(Element* element, const int callbackID, const IMGUI_CALLBACK callbackType = IMGUI_CALLBACK::Clicked) IM_FMTARGS(2)
     {
         if (callbackID == 0) {
             return;
@@ -707,7 +721,15 @@ struct CustomImGui {
 
         lua::LuaCaller caller = lua::LuaCaller(L);
         element->PropagateCallbackData(&caller);
-        caller.call(1);
+        if (caller.call(1)) {
+            // Lua encountered an error while executing the callback function
+            // printing the error needs to happen in a seperate lua call, as to keep the lua-stack and imgui-stack protected and stable
+            const char* errorMsg = lua_tostring(L, lua_gettop(L));
+            int callbackTypeID = static_cast<int>(callbackType);
+            g_Game->GetConsole()->PrintError(
+                "ImGui encountered an error in the '" + std::string(IMGUI_CALLBACK_TO_STRING[callbackTypeID])
+                + "' callback of element '" + std::string(element->id) + "': " + std::string(errorMsg) + "\n");
+        }
     }
 
     bool UpdateElementValue(Element* element, lua_State* L)
@@ -966,9 +988,9 @@ struct CustomImGui {
             ImGui::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
             HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
-            RunPreRenderCallbacks(&(*window));
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
+                RunPreRenderCallbacks(&(*window));
                 if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
@@ -1216,7 +1238,7 @@ struct CustomImGui {
                     // workaround: manually trigger Edited events
                     for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
                         if (callback->first == IMGUI_CALLBACK::Edited) {
-                            RunCallback(&(*element), callback->second);
+                            RunCallback(&(*element), callback->second, callback->first);
                         }
                     }
                 }
