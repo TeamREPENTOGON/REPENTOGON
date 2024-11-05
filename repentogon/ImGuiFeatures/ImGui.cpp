@@ -624,7 +624,7 @@ void __stdcall RunImGui(HDC hdc) {
 	// render console very late to make auto-focus work properly
 	console.Draw(menuShown);
 
-	RenderLuamodErrorPopup(); //above the konsol
+	RenderLuamodErrorPopup(); //above the console
 
 	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);

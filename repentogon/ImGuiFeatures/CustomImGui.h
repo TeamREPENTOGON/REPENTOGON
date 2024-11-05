@@ -966,9 +966,9 @@ struct CustomImGui {
             ImGui::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
             HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
-            RunPreRenderCallbacks(&(*window));
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
+                RunPreRenderCallbacks(&(*window));
                 if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
