@@ -2493,6 +2493,18 @@ ImGuiWindowFlags = {
 	NoInputs = (1 << 9) | (1 << 16) | (1 << 17),				-- ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
 }
 
+ImGuiChildFlags = {
+    None                    = 0,
+    Border                  = 1 << 0,   -- Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
+    AlwaysUseWindowPadding  = 1 << 1,   -- Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
+    ResizeX                 = 1 << 2,   -- Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
+    ResizeY                 = 1 << 3,   -- Allow resize from bottom border (layout direction).
+    AutoResizeX             = 1 << 4,   -- Enable auto-resizing width. Read "IMPORTANT: Size measurement" details above.
+    AutoResizeY             = 1 << 5,   -- Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
+    AlwaysAutoResize        = 1 << 6,   -- Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
+    FrameStyle              = 1 << 7,   -- Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+}
+
 PocketItemType = {
 	PILL = 0,
 	CARD = 1,
@@ -2723,7 +2735,7 @@ MinimapState = {
 	EXPANDED_OPAQUE = 2
 }
 
-DwmWindowAttributes={
+DwmWindowAttribute = {
     DWMWA_NCRENDERING_ENABLED=1,
     DWMWA_NCRENDERING_POLICY=2,
     DWMWA_TRANSITIONS_FORCEDISABLED=3,

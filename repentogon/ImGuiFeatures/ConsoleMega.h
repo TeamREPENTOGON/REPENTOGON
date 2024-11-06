@@ -329,8 +329,6 @@ struct ConsoleMega : ImGuiWindowObject {
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
 
-            ImGui::SetWindowFontScale(1.0f);
-
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
             bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
             float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);

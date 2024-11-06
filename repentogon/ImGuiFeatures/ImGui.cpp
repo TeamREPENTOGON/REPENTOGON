@@ -424,7 +424,32 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
+// Manual handling of Window scaling via CTRL + Scroll, to only scale a window as a whole, and not every element seperately
+void HandleZoomWithMouseWheel() {
+	ImGuiContext& g = *GImGui;
+	if (g.HoveredWindow && g.IO.MouseWheel != 0.0f && !g.HoveredWindow->Collapsed)
+	{
+		// change scale operation to be executed on window root
+		ImGuiWindow* window = g.HoveredWindow;
+		while (window->ParentWindow != nullptr) {
+			window = window->ParentWindow;
+		}
 
+		if (g.IO.KeyCtrl)
+		{
+			// Zoom / Scale window. Based on imgui v1.45 implementation because new one calls a windows function to set the new window positions
+			// new imgui function impl in file: ..\REPENTOGON\libs\imgui\imgui.cpp - Line 9137 (Zoom / Scale window)
+			float new_font_scale = ImClamp(window->FontWindowScale + g.IO.MouseWheel * 0.10f, 0.50f, 2.50f);
+			float scale = new_font_scale / window->FontWindowScale;
+			const ImVec2 offset = ImVec2(window->Size.x * (1.0f - scale) * (g.IO.MousePos.x - window->Pos.x) / window->Size.x,
+				window->Size.y * (1.0f - scale) * (g.IO.MousePos.y - window->Pos.y) / window->Size.y);
+			window->Pos = ImVec2(window->Pos.x + offset.x, window->Pos.y + offset.y);
+			window->Size = ImVec2(window->Size.x * scale, window->Size.y * scale);
+			window->SizeFull = ImVec2(window->SizeFull.x * scale, window->SizeFull.y * scale);
+			window->FontWindowScale = new_font_scale;
+		}
+	}
+}
 
 
 //luamod error popup
@@ -509,6 +534,7 @@ void __stdcall RunImGui(HDC hdc) {
 		// mouse, keyboard and gamepad support
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
+		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::CaptureMouseFromApp();
 		ImGui::CaptureKeyboardFromApp();
 		ImFontConfig cfg;
@@ -558,7 +584,6 @@ void __stdcall RunImGui(HDC hdc) {
 		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
 	
 		imguiInitialized = true;
-		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
@@ -628,6 +653,8 @@ void __stdcall RunImGui(HDC hdc) {
 
 	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);
+
+	HandleZoomWithMouseWheel();
 
 	ImGui::Render();
 
