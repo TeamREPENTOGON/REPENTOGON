@@ -114,18 +114,18 @@ static void RegisterMetatables(lua_State* L) {
 	std::map<std::string, void*> metatables;
 
 	while (lua_next(L, LUA_REGISTRYINDEX)) {
-		if (lua_type(L, -2) == LUA_TLIGHTUSERDATA) {
-			if (lua_type(L, -1) == LUA_TTABLE) {
-				lua_pushstring(L, "__type");
-				int __type = lua_rawget(L, -2);
+		if (lua_type(L, -2) == LUA_TLIGHTUSERDATA) { // key value
+			if (lua_type(L, -1) == LUA_TTABLE) { // key value
+				lua_pushstring(L, "__type"); // key value (table) __type
+				int __type = lua_rawget(L, -2); // key table table["__type"]
 
 				if (__type == LUA_TSTRING) {
 					std::string type(lua_tostring(L, -1));
 					void* addr = lua_touserdata(L, -3);
 
 					if (type == "Room" || type == "const Room") {
-						lua_pushstring(L, "GetBossID");
-						int bossID = lua_rawget(L, -3);
+						lua_pushstring(L, "GetBossID"); // key table table["__type"] GetBossID
+						int bossID = lua_rawget(L, -3); // key table table["__type"] table["GetBossID"]
 
 						if (bossID == LUA_TNIL) {
 							if (type.find("const") != std::string::npos) {
@@ -136,7 +136,7 @@ static void RegisterMetatables(lua_State* L) {
 							}
 						}
 
-						lua_pop(L, 1);
+						lua_pop(L, 1); // key table table["__type"]
 					}
 					else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
 						lua_pushstring(L, "Get");
@@ -158,11 +158,11 @@ static void RegisterMetatables(lua_State* L) {
 					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
 				}
 
-				lua_pop(L, 1);
+				lua_pop(L, 1); // key table
 			}
 		}
 
-		lua_pop(L, 1);
+		lua_pop(L, 1); // key
 	}
 
 	logger.Log("Done dumping Lua registry\n");
