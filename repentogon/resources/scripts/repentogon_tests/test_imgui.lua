@@ -44,6 +44,11 @@ ImGui.AddElement("testWindow2", "catWindows", ImGuiElement.CollapsingHeader, "Wi
 ImGui.AddElement("catWindows", "button_window", ImGuiElement.Button, "open a window")
 ImGui.CreateWindow("testWindow3", "button Window")
 ImGui.LinkWindowToElement("testWindow3", "button_window")
+-- window as a child
+ImGui.CreateWindow("testWindowChild", "Embedded Window", "catWindows")
+ImGui.SetWindowChildFlags("testWindowChild", ImGuiChildFlags.FrameStyle | ImGuiChildFlags.ResizeX | ImGuiChildFlags.ResizeY)
+ImGui.AddText("testWindowChild", "This is a window as a child element.", true)
+ImGui.SetWindowSize("testWindowChild", 200, 100)
 --------- Render callback ---------
 ImGui.AddText("testWindow3", "", true, "mousePosText")
 ImGui.AddCallback("mousePosText", ImGuiCallback.Render, function(val)

@@ -146,8 +146,9 @@ struct Data {
     bool newPositionRequested = false;
     ImVec2 newPosition = ImVec2(0, 0);
     bool newSizeRequested = false;
-    ImVec2 newSize = ImVec2(100, 100);
+    ImVec2 newSize = ImVec2(0, 0); // 0,0 initializes windows with dynamic size
     ImGuiWindowFlags windowFlags = 0;
+    ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
 };
 
 struct ElementData : Data {
@@ -440,10 +441,20 @@ struct CustomImGui {
         }
     }
 
-    Element* CreateWindowElement(const char* id, const char* name) IM_FMTARGS(2)
+    bool CreateWindowElement(const char* id, const char* name, const char* parentId = nullptr) IM_FMTARGS(2)
     {
+        if (parentId != nullptr) {
+            Element* parent = GetElementById(parentId);
+            if (parent == NULL) {
+                return false;
+            }
+            else {
+              parent->AddChild(Element(id, name, static_cast<int>(IMGUI_ELEMENT::Window)));
+              return true;
+            }
+        }
         windows->push_back(Element(id, name, static_cast<int>(IMGUI_ELEMENT::Window)));
-        return &windows->back();
+        return true;
     }
 
     void RemoveWindow(const char* windowId) IM_FMTARGS(2)
@@ -451,6 +462,7 @@ struct CustomImGui {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             if (strcmp(window->id.c_str(), windowId) == 0) {
                 windows->erase(window);
+                return;
             }
         }
     }
@@ -564,15 +576,6 @@ struct CustomImGui {
         return false;
     }
 
-    ImGuiWindowFlags GetWindowFlags(const char* elementId) IM_FMTARGS(2)
-    {
-        Element* element = GetElementById(elementId);
-        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-            return element->data.windowFlags;
-        }
-        return 0;
-    }
-
     bool SetWindowFlags(const char* elementId, ImGuiWindowFlags newFlags) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
@@ -582,6 +585,16 @@ struct CustomImGui {
             return true;
         }
         return false;
+    } 
+
+    bool SetWindowChildFlags(const char* elementId, ImGuiChildFlags newFlags) IM_FMTARGS(2)
+    {
+      Element* element = GetElementById(elementId);
+      if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+        element->data.childFlags = newFlags;
+        return true;
+      }
+      return false;
     }
 
     bool SetWindowPosition(const char* elementId, float x, float y) IM_FMTARGS(2)
@@ -1111,6 +1124,14 @@ struct CustomImGui {
                     ImGui::EndTabItem();
                 }
                 break;
+            case IMGUI_ELEMENT::Window: {
+                if (ImGui::BeginChild(element->name.c_str(), element->data.newSize, element->data.childFlags, element->data.windowFlags)) {
+                    RunCallbacks(&(*element));
+                    DrawElements(element->children);
+                    ImGui::EndChild();
+                }
+                break;
+            }
             case IMGUI_ELEMENT::Text:
                 ImGui::Text(name);
                 RunCallbacks(&(*element));
