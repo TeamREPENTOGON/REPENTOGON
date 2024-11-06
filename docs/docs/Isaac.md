@@ -129,7 +129,6 @@ ___
 ___
 ### GetBossColorIdxByName () {: aria-label='Functions' }
 #### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
-#### int GetBossColorIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
 ### GetClipboard () {: aria-label='Functions' }
@@ -274,10 +273,6 @@ ___
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
 
 ___
-### RGON_GetChangelog () {: aria-label='Functions' }
-#### string RGON_GetChangelog ( ) {: .copyable aria-label='Functions' }
-
-___
 ### SetClipboard () {: aria-label='Functions' }
 #### boolean SetClipboard ( string ClipboardData ) {: .copyable aria-label='Functions' }
 Sets the contents of the clipboard to the provided string.
@@ -358,10 +353,6 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 
 ???- info "Note"
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
-___
-### StartDailyGame () {: aria-label='Functions' }
-#### void StartDailyGame ( ) {: .copyable aria-label='Functions' }
-
 ___
 ### StartNewGame () {: aria-label='Functions' }
 #### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](enums/Difficulty.md) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random ) {: .copyable aria-label='Functions' }

@@ -119,10 +119,6 @@ ___
 Returns `true` if the currently playing overlay animation just reached the event with the provided name.
 
 ___
-### LoadRGON () {: aria-label='Functions' }
-#### void LoadRGON ( string Path, boolean LoadGraphics ) {: .copyable aria-label='Functions' }
-
-___
 ### SetCustomChampionShader () {: aria-label='Functions' }
 #### void SetCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Specify a custom champion shader file for this Sprite to use instead of the usual `coloroffset_champion` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `sprite:SetCustomChampionShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
