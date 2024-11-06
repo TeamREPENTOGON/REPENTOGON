@@ -2735,7 +2735,7 @@ MinimapState = {
 	EXPANDED_OPAQUE = 2
 }
 
-DwmWindowAttributes={
+DwmWindowAttribute = {
     DWMWA_NCRENDERING_ENABLED=1,
     DWMWA_NCRENDERING_POLICY=2,
     DWMWA_TRANSITIONS_FORCEDISABLED=3,

@@ -7,7 +7,7 @@ tags:
 ## Modified Functions
 
 ### GetCollectible () {: aria-label='Modified Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html)PoolType, boolean Decrease = false, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_NULL, [GetCollectibleFlag](enums/GetCollectibleFlag.md) Flags = 0 ) {: .copyable aria-label='Modified Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, boolean Decrease = false, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_NULL, [GetCollectibleFlag](enums/GetCollectibleFlag.md) Flags = 0 ) {: .copyable aria-label='Modified Functions' }
 Now gives access to the Flags parameter.
 
 ???+ warning "Setting both Ban Flags"
@@ -43,38 +43,6 @@ ___
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
 
 ___
-### PickCollectible () {: aria-label='Functions' }
-#### table PickCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html)PoolType, boolean Decrease = false, [RNG](RNG.md) RNG = RNG(Random(), 4), [GetCollectibleFlag](enums/GetCollectibleFlag.md) Flags = 0 ) {: .copyable aria-label='Functions' }
-Returns the raw result of [GetCollectible()](ItemPool.md#getcollectible), without any of the filtering applied by the original function.
-If the pool has completely ran out of repicks then this function will return `nil`.
-
-The table contains the following fields:
-
-|Field|Type|Comment|
-|:--|:--|:--|
-| itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
-| initialWeight | float | |
-| weight | float | |
-| decreaseBy | float | |
-| removeOn | float | |
-| isUnlocked | boolean | |
-
-???+ info "Differences with GetCollectible"
-For reference GetCollectible() **Gives Up** after either this function has failed to pick an Unlocked collectible 20 times in a row or has failed to produce any result at all (nil).
-
-- Does not generate a [Glitched Item](ProceduralItem.md) when having the `CollectibleType.COLLECTIBLE_TMTRAINER` effect.
-
-- Does not randomize the pool when having the `CollectibleType.COLLECTIBLE_CHAOS` effect.
-
-- Does not attempt to get a collectible from `ItemPoolType.POOL_TREASURE` if **Giving up**.
-
-- Does not morph the collectible into `CollectibleType.COLLECTIBLE_BREAKFAST` if **Giving up**.
-
-- Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
-
-- Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
-
-___
 ### GetCollectiblesFromPool () {: aria-label='Functions' }
 #### table GetCollectiblesFromPool ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
 Returns a table of collectibles registered in the specified pool. The table contains the following fields
@@ -97,6 +65,13 @@ ___
 ### GetNumItemPools () {: aria-label='Functions' }
 #### int GetNumItemPools ( ) {: .copyable aria-label='Functions' }
 Retrieves the total number of item pools in the game, including custom item pools.
+
+___
+### GetPillColor () {: aria-label='Functions' }
+#### [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) GetPillColor ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
+Returns a PillColor matching the specificed PillEffect, returns -1 if the Effect is not in the rotation.
+
+Currently not applied by pill modifications, such as PHD/False PHD.
 
 ___
 ### GetRandomPool () {: aria-label='Functions' }
@@ -145,13 +120,6 @@ local randomPool = Game():GetItemPool():GetRandomPool(rng, true, CustomPools, fa
 ```
 
 ___
-### GetPillColor () {: aria-label='Functions' }
-#### [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) GetPillColor ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
-Returns a PillColor matching the specificed PillEffect, returns -1 if the Effect is not in the rotation.
-
-Currently not applied by pill modifications, such as PHD/False PHD.
-
-___
 ### GetRemovedCollectibles () {: aria-label='Functions' }
 #### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
@@ -185,11 +153,6 @@ Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums
 
 ___
 
-### SetLastPool () {: aria-label='Functions' }
-#### void SetLastPool ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) ) {: .copyable aria-label='Functions' }
-
-___
-
 ### HasCollectible () {: aria-label='Functions' }
 #### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns `true` if collectible is available in item pools, `false` otherwise.
@@ -201,9 +164,48 @@ Returns `true` if trinket is currently available in trinket pool, `false` otherw
 
 ___
 
+### PickCollectible () {: aria-label='Functions' }
+#### table PickCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, boolean Decrease = false, [RNG](RNG.md) RNG = RNG(), [GetCollectibleFlag](enums/GetCollectibleFlag.md) Flags = 0 ) {: .copyable aria-label='Functions' }
+Returns the raw result of [GetCollectible()](ItemPool.md#getcollectible), without any of the filtering applied by the original function.
+If the pool has completely ran out of repicks then this function will return `nil`.
+
+If RNG is not set, its initialized with `RNG(Random(), 4)`
+
+The table contains the following fields:
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
+| initialWeight | float | |
+| weight | float | |
+| decreaseBy | float | |
+| removeOn | float | |
+| isUnlocked | boolean | |
+
+???+ info "Differences with GetCollectible"
+For reference GetCollectible() **Gives Up** after either this function has failed to pick an Unlocked collectible 20 times in a row or has failed to produce any result at all (nil).
+
+- Does not generate a [Glitched Item](ProceduralItem.md) when having the `CollectibleType.COLLECTIBLE_TMTRAINER` effect.
+
+- Does not randomize the pool when having the `CollectibleType.COLLECTIBLE_CHAOS` effect.
+
+- Does not attempt to get a collectible from `ItemPoolType.POOL_TREASURE` if **Giving up**.
+
+- Does not morph the collectible into `CollectibleType.COLLECTIBLE_BREAKFAST` if **Giving up**.
+
+- Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
+
+- Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
+
+___
 ### ResetCollectible () {: aria-label='Functions' }
 #### void ResetCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Makes the available once again, allowing it to naturally spawned even if previously remove. Also restores all instances of the collectible to it's **initialWeight** in every item pool.
+
+___
+
+### SetLastPool () {: aria-label='Functions' }
+#### void SetLastPool ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) ) {: .copyable aria-label='Functions' }
 
 ___
 ### UnidentifyPill () {: aria-label='Functions' }

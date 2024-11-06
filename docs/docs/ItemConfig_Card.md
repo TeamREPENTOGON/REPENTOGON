@@ -53,14 +53,14 @@ Returns `nil` if no AvailabilityCondition is set or if it has been cleared.
 ___
 ## Variables
 
-### ModdedCardFront {: aria-label='Variables' }
-#### [Sprite](Sprite.md) ModdedCardFront {: .copyable aria-label='Variables' }
-___
 ### Hidden {: aria-label='Variables' }
 #### const boolean Hidden {: .copyable aria-label='Variables' }
 ___
 ### InitialWeight {: aria-label='Variables' }
 #### const float InitialWeight {: .copyable aria-label='Variables' }
+___
+### ModdedCardFront {: aria-label='Variables' }
+#### [Sprite](Sprite.md) ModdedCardFront {: .copyable aria-label='Variables' }
 ___
 ### Weight {: aria-label='Variables' }
 #### float Weight {: .copyable aria-label='Variables' }
