@@ -103,7 +103,7 @@ tags:
 |62 |EPIC_FETUS {: .copyable } |  |
 |63 |SMB_SUPER_FAN {: .copyable } |  |
 |64 |COUNTERFEIT_COIN {: .copyable } |  |
-|65 |COUNTERFEIT_PENNY {: .copyable } |  |
+|64 |COUNTERFEIT_PENNY {: .copyable } |  |
 |65 |GUPPYS_HAIRBALL {: .copyable } |  |
 |66 |A_FORGOTTEN_HORSEMAN {: .copyable } |  |
 |66 |CONQUEST {: .copyable } |  |
@@ -500,7 +500,7 @@ tags:
 |374 |POP {: .copyable } |  |
 |375 |DOOR_STOP {: .copyable } |  |
 |376 |DEATHS_LIST {: .copyable } |  |
-|377 |HAEMOLACHRIA {: .copyable } |  |
+|377 |HAEMOLACRIA {: .copyable } |  |
 |378 |LACHRYPHAGY {: .copyable } |  |
 |379 |SCHOOLBAG {: .copyable } |  |
 |380 |TRISAGION {: .copyable } |  |
