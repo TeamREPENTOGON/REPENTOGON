@@ -126,6 +126,7 @@ nav:
     - BossType: enums/BossType.md
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
     - CameraStyle: enums/CameraStyle.md
+    - CharacterMenuStatus: enums/CharacterMenuStatus.md
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
@@ -151,9 +152,11 @@ nav:
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
     - ImGuiColor: enums/ImGuiColor.md
+    - ImGuiChildFlags: enums/ImGuiChildFlags.md
     - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
     - ImGuiNotificationType: enums/ImGuiNotificationType.md
+    - ImGuiWindowFlags: enums/ImGuiWindowFlags.md
     - ItemAnim: enums/ItemAnim.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md

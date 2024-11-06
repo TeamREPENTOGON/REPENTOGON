@@ -37,3 +37,6 @@ tags:
 |29 |PLAYERFORM {: .copyable } |  |
 |30 |NULLITEM {: .copyable } |  |
 |31 |BOSSCOLOR {: .copyable } |  |
+|32 |FXLAYER {: .copyable } |  |
+|33 |FXPARAM {: .copyable } |  |
+|34 |FXRAY {: .copyable } |  |
