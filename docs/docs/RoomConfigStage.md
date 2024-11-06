@@ -31,6 +31,10 @@ ___
 Returns the name of the stage.
 
 ___
+### GetID () {: aria-label='Functions' }
+#### int GetID ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetMusic () {: aria-label='Functions' }
 #### [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html?h=music) GetMusic ( ) {: .copyable aria-label='Functions' }
 Returns the `Music` used in default rooms on the stage.
@@ -50,6 +54,14 @@ ___
 ### GetSuffix () {: aria-label='Functions' }
 #### string GetSuffix ( ) {: .copyable aria-label='Functions' }
 Returns the suffix used by the stage for stage-unique sprites, such as the boss/player spot and unique variants for enemies.
+
+___
+### GetXMLName () {: aria-label='Functions' }
+#### string GetXMLName ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsLoaded () {: aria-label='Functions' }
+#### boolean IsLoaded ( int mode = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBackdrop () {: aria-label='Functions' }
@@ -80,5 +92,13 @@ ___
 ### SetSuffix () {: aria-label='Functions' }
 #### void SetSuffix ( string Suffix ) {: .copyable aria-label='Functions' }
 Sets the suffix used by the stage for stage-unique sprites, such as the boss/player spot and unique variants for enemies.
+
+___
+### SetXMLName () {: aria-label='Functions' }
+#### void SetXMLName ( string name ) {: .copyable aria-label='Functions' }
+
+___
+### Unload () {: aria-label='Functions' }
+#### void Unload ( ) {: .copyable aria-label='Functions' }
 
 ___

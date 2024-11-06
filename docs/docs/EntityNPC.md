@@ -64,6 +64,10 @@ ___
 Returns the unique [LootList](LootList.md) used by Fireplaces.
 
 ___
+### GetFlyingOverride () {: aria-label='Functions' }
+#### boolean GetFlyingOverride ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
@@ -86,7 +90,7 @@ ___
 
 ___
 ### ReplaceSpritesheet () {: aria-label='Functions' }
-#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool LoadGraphics = false ) {: .copyable aria-label='Functions' }
+#### void ReplaceSpritesheet ( int LayerId, string PngFilename, boolean LoadGraphics = false ) {: .copyable aria-label='Functions' }
 Similar to [Sprite.ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to `PngFilename` if possible.
 
 ___

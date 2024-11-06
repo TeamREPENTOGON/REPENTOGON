@@ -42,3 +42,7 @@ This function must be called on every game update, otherwise the game will overr
 	This function seems to only work when Active Camera is off.
 
 ___
+### Update () {: aria-label='Functions' }
+#### void Update ( boolean flag = false ) {: .copyable aria-label='Functions' }
+
+___

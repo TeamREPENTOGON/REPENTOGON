@@ -7,9 +7,9 @@ tags:
 ## Modified Constructors
 
 ### Sprite () {: aria-label='Modified Constructors' }
-#### [Sprite](Sprite.md),bool Sprite ( string ANM2Path, bool LoadGraphics = true ) {: .copyable aria-label='Modified Constructors' }
+#### [Sprite](Sprite.md),boolean Sprite ( string ANM2Path, boolean LoadGraphics = true ) {: .copyable aria-label='Modified Constructors' }
 
-Added two optional arguments, the function now returns two values: [Sprite](Sprite.md) object and the bool signifying whether the sprite was loaded successfully or not.
+Added two optional arguments, the function now returns two values: [Sprite](Sprite.md) object and the boolean signifying whether the sprite was loaded successfully or not.
 ___
 ## Modified Functions
 
@@ -117,6 +117,10 @@ ___
 ### IsOverlayEventTriggered () {: aria-label='Functions' }
 #### boolean IsOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 Returns `true` if the currently playing overlay animation just reached the event with the provided name.
+
+___
+### LoadRGON () {: aria-label='Functions' }
+#### void LoadRGON ( string Path, boolean LoadGraphics ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCustomChampionShader () {: aria-label='Functions' }

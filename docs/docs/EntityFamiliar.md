@@ -53,8 +53,8 @@ ___
 Returns the "multiplier" for the familiar, from effects such as BFFs or Hive Mind. Typically used to multiply things such as familiar damage.
 
 ___
-### GetPathFinder () {: aria-label='Functions' }
-#### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
+### GetPathfinder () {: aria-label='Functions' }
+#### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathfinder ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetWeapon () {: aria-label='Functions' }
@@ -71,8 +71,16 @@ ___
 #### boolean IsCharmed ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsLilDelirium () {: aria-label='Functions' }
+#### boolean IsLilDelirium ( ) {: .copyable aria-label='Functions' }
+
+___
 ### RemoveFromPlayer () {: aria-label='Functions' }
 #### void RemoveFromPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetLilDelirium () {: aria-label='Functions' }
+#### void SetLilDelirium ( boolean isLilDelirium ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetMoveDelayNum () {: aria-label='Functions' }

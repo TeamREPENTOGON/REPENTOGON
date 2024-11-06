@@ -33,6 +33,10 @@ ___
 #### int GetSelectedElement ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetState () {: aria-label='Functions' }
+#### int GetState ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetTimeLeftHours () {: aria-label='Functions' }
 #### int GetTimeLeftHours ( ) {: .copyable aria-label='Functions' }
 
@@ -51,5 +55,9 @@ ___
 ___
 ### SetSelectedElement () {: aria-label='Functions' }
 #### void SetSelectedElement ( int ElementID ) {: .copyable aria-label='Functions' }
+
+___
+### SetState () {: aria-label='Functions' }
+#### void SetState ( ) {: .copyable aria-label='Functions' }
 
 ___

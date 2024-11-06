@@ -25,6 +25,18 @@ ___
 #### string GetName ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPool () {: aria-label='Functions' }
+#### [BossPool](BossPool.md) GetPool ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRemovedBosses () {: aria-label='Functions' }
+#### boolean GetRemovedBosses ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRemovedSpecialBosses () {: aria-label='Functions' }
+#### boolean GetRemovedSpecialBosses ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetRNG () {: aria-label='Functions' }
 #### [RNG](RNG.md) GetRNG ( ) {: .copyable aria-label='Functions' }
 

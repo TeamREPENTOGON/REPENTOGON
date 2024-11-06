@@ -51,7 +51,7 @@ Copies the tear and applies a black and white effect to it. This effect is the s
 
 ___
 ### SetMultidimensionalTouched () {: aria-label='Functions' }
-#### void SetMultiDimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+#### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
 Sets if the tear was created through the Angelic Prism effect.
 
 ___

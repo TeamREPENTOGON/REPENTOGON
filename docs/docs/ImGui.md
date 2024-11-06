@@ -170,6 +170,14 @@ ___
 #### boolean GetVisible ( string ElementId ) {: .copyable aria-label='Functions' }
 Get if a window element is visible or not.
 ___
+### GetWindowChildFlags () {: aria-label='Functions' }
+#### [ImGuiChildFlags](enums/ImGuiChildFlags.md) GetWindowChildFlags ( ) {: .copyable aria-label='Functions' }
+Get visual setting flags for the window, specific for its usecase as a child.
+___
+### GetWindowFlags () {: aria-label='Functions' }
+#### [ImGuiWindowFlags](enums/ImGuiWindowFlags.md) GetWindowFlags ( ) {: .copyable aria-label='Functions' }
+Get visual setting flags for the window.
+___
 ### GetWindowPinned () {: aria-label='Functions' }
 #### boolean GetWindowPinned ( string WindowId ) {: .copyable aria-label='Functions' }
 Get the pinned state of a window.
@@ -250,6 +258,14 @@ ___
 ### SetVisible () {: aria-label='Functions' }
 #### void SetVisible ( string ElementId, boolean Visible ) {: .copyable aria-label='Functions' }
 
+___
+### SetWindowChildFlags () {: aria-label='Functions' }
+#### void SetWindowChildFlags ( [ImGuiChildFlags](enums/ImGuiChildFlags.md) newFlags ) {: .copyable aria-label='Functions' }
+Set visual setting flags for the window, specific for its usecase as a child.
+___
+### SetWindowFlags () {: aria-label='Functions' }
+#### void SetWindowFlags ( [ImGuiWindowFlags](enums/ImGuiWindowFlags.md) newFlags ) {: .copyable aria-label='Functions' }
+Set visual setting flags for the window.
 ___
 ### SetWindowPinned () {: aria-label='Functions' }
 #### void SetWindowPinned ( string WindowId, boolean Pinned ) {: .copyable aria-label='Functions' }

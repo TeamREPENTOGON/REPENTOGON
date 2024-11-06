@@ -2406,7 +2406,7 @@ Return an integer to override the target room index.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1290 |MC_PRE_FORTUNE_DISPLAY {: .copyable } | (int RoomIndex, bool IAmErrorRoom, int Seed) | - | int |
+|1290 |MC_PRE_FORTUNE_DISPLAY {: .copyable } | (int RoomIndex, boolean IAmErrorRoom, int Seed) | - | int |
 
 ### MC_PRE_GLOWING_HOURGLASS_SAVE {: .copyable }
 Called after the Glowing Hourglass state is saved.

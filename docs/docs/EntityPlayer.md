@@ -16,12 +16,12 @@ Now accepts an optional `bool` to determine if [EntityPlayer](EntityPlayer.md):E
 
 ___
 ### AddCollectibleEffect, () {: aria-label='Modified Functions' }
-#### void AddCollectibleEffect ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ctype, bool applycostume, int cooldown = vanillacd, bool additive = true ) {: .copyable aria-label='Modified Functions' }
+#### void AddCollectibleEffect ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ctype, boolean applycostume, int cooldown = vanillacd, boolean additive = true ) {: .copyable aria-label='Modified Functions' }
 Shortcut of TemporaryEffects:AddCollectibleEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.
 
 ___
 ### AddNullItemEffect, () {: aria-label='Modified Functions' }
-#### void AddNullItemEffect ( int nullItemid, bool applycostume, int cooldown = vanillacd, bool additive = true ) {: .copyable aria-label='Modified Functions' }
+#### void AddNullItemEffect ( int nullItemid, boolean applycostume, int cooldown = vanillacd, boolean additive = true ) {: .copyable aria-label='Modified Functions' }
 Shortcut of TemporaryEffects:AddNullItemEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.
 
 ___
@@ -83,7 +83,7 @@ ___
 
 ___
 ### AddCustomCacheTag () {: aria-label='Functions' }
-#### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
+#### void AddCustomCacheTag ( string OR \{string, string, ...\}, boolean EvaluateItems = false ) {: .copyable aria-label='Functions' }
 Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
 
 See [items.xml](xml/items.md) for more information on custom caches.
@@ -125,6 +125,10 @@ ___
     - Holy Light
     - Jacob's Ladder
     - 120 Volt
+
+___
+### AddNullCostume () {: aria-label='Functions' }
+#### void AddNullCostume ( int id ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddSmeltedTrinket () {: aria-label='Functions' }
@@ -191,6 +195,10 @@ ___
 #### void ClearQueueItem ( ) {: .copyable aria-label='Functions' }
 
 ___
+### DischargeActiveItem () {: aria-label='Functions' }
+#### void DischargeActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
+
+___
 ### DropCollectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [EntityPickup](EntityPickup.md) ExistingPedestal = nil, boolean RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
 
@@ -214,6 +222,18 @@ ___
     If the player has Tech X, this function will fire an [EntityLaser](EntityLaser.md) as well. The laser will have the Brimstone ball effect as a parent, it's unclear if the effect also links back to the laser.
 
 ___
+### FullCharge () {: aria-label='Functions' }
+#### boolean FullCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot, boolean force = true ) {: .copyable aria-label='Functions' }
+
+___
+### GetActionHoldDrop () {: aria-label='Functions' }
+#### int GetActionHoldDrop ( ) {: .copyable aria-label='Functions' }
+How long the player holds the drop-button.
+___
+### GetActiveCharge () {: aria-label='Functions' }
+#### int GetActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
+
+___
 ### GetActiveItemDesc () {: aria-label='Functions' }
 #### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
 
@@ -228,6 +248,10 @@ ___
 ___
 ### GetActiveMinUsableCharge () {: aria-label='Functions' }
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+
+___
+### GetActiveSubCharge () {: aria-label='Functions' }
+#### int GetActiveSubCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetActiveWeaponNumFired () {: aria-label='Functions' }
@@ -246,6 +270,10 @@ ___
 #### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given `SlotID`.
 ___
+### GetBatteryCharge () {: aria-label='Functions' }
+#### int GetBatteryCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBladderCharge () {: aria-label='Functions' }
 #### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
 Returns the current charge for when the player stops shooting and charges the Kidney Stone item.
@@ -262,6 +290,10 @@ ___
 ### GetBombPlaceDelay () {: aria-label='Functions' }
 #### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
 Default bomb place delay is `30 frames`.
+
+___
+### GetBombVariant () {: aria-label='Functions' }
+#### int GetBombVariant ( [BitSet128](https://wofsauge.github.io/IsaacDocs/rep/BitSet128.html) flags, boolean forceSmall ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -447,6 +479,10 @@ If none of these exist, this returns `nil`.
 ___
 ### GetFootprintColor () {: aria-label='Functions' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
+
+___
+### GetForgottenSwapFormCooldown () {: aria-label='Functions' }
+#### int GetForgottenSwapFormCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetGlitchBabySubType () {: aria-label='Functions' }
@@ -807,6 +843,10 @@ ___
 Turns the player into a co-op ghost.
 
 ___
+### NeedsCharge () {: aria-label='Functions' }
+#### boolean NeedsCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
+
+___
 ### PlayCollectibleAnim () {: aria-label='Functions' }
 #### void PlayCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean CheckBodyLayers, string AnimationName, int Frame = -1 ) {: .copyable aria-label='Functions' }
 Plays an animation tied to the provided collectible.
@@ -853,6 +893,14 @@ Produces a random quantity of various pickups, similar to Tainted Cain's ability
 
 ???+ info "Info"
     The provided [EntityPickup](EntityPickup.md) will be removed by this function. Use the override to avoid this.
+
+___
+### SetActionHoldDrop () {: aria-label='Functions' }
+#### void SetActionHoldDrop ( int duration ) {: .copyable aria-label='Functions' }
+
+___
+### SetActiveCharge () {: aria-label='Functions' }
+#### void SetActiveCharge ( int charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetActiveVarData () {: aria-label='Functions' }
@@ -966,6 +1014,10 @@ ___
 Sets the player's footprint color.
 
 ___
+### SetForgottenSwapFormCooldown () {: aria-label='Functions' }
+#### void SetForgottenSwapFormCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
+
+___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
 
@@ -1035,6 +1087,10 @@ ___
 ### SetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### void SetNextUrethraBlockFrame ( int Frame ) {: .copyable aria-label='Functions' }
 Sets the frame at which the player stops shooting and starts charging the Kidney Stone item.
+
+___
+### SetPocketActiveItem () {: aria-label='Functions' }
+#### void SetPocketActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) item, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot = 2, boolean keepInPools = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPonyCharge () {: aria-label='Functions' }
