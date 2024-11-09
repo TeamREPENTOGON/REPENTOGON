@@ -178,25 +178,39 @@ LUALIB_API uint32_t LuaCheckRoomPlacementSeed(lua_State* L, int arg, const int r
 }
 
 LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
-	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	const int gridIndex = (int)luaL_checkinteger(L, 3);
+	int stackIdx = 2;
+
+	int roomShape = 0;
+	int doorMask = 0;
+
+	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
+		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		if (roomConfig) {
+			roomShape = roomConfig->Shape;
+			doorMask = roomConfig->Doors;
+		}
+	}
+	else {
+		roomShape = (int)luaL_checkinteger(L, stackIdx++);
+		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
+	}
+
+	const int gridIndex = (int)luaL_checkinteger(L, stackIdx++);
 	if (gridIndex < 0 || gridIndex > 168) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
 	const XY coords = RoomIndexToCoords(gridIndex);
-	const int dimension = LuaCheckDimension(L, 4);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, 5, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 6, false);
-	const bool allowNoNeighbors = lua::luaL_optboolean(L, 7, false);
-	const bool result = CanPlaceRoom(roomConfig, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
+	const int dimension = LuaCheckDimension(L, stackIdx++);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+	const bool allowNoNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+	const bool result = CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 	lua_pushboolean(L, result);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	const int gridIndex = (int)luaL_checkinteger(L, 3);
 	if (gridIndex < 0 || gridIndex > 168) {
@@ -220,19 +234,33 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
 }
 
 LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
-	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
-	const int doorSlot = (int)luaL_checkinteger(L, 4);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, 5, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 6, false);
-	const bool result = CanPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
+	int stackIdx = 2;
+
+	int roomShape = 0;
+	int doorMask = 0;
+
+	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
+		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		if (roomConfig) {
+			roomShape = roomConfig->Shape;
+			doorMask = roomConfig->Doors;
+		}
+	}
+	else {
+		roomShape = (int)luaL_checkinteger(L, stackIdx++);
+		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
+	}
+
+	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, stackIdx++, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	const int doorSlot = (int)luaL_checkinteger(L, stackIdx++);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+	const bool result = CanPlaceRoomAtDoor(roomShape, doorMask, roomDescToConnect, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
 	lua_pushboolean(L, result);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	if (!roomDescToConnect || !roomDescToConnect->Data) {
@@ -262,12 +290,26 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
 }
 
 LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
-	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	const int dimension = LuaCheckDimension(L, 3);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, 4, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 5, false);
-	const std::set<int> validLocations = FindValidRoomPlacementLocations(roomConfigToPlace, dimension, allowMultipleDoors, allowSpecialNeighbors);
+	int stackIdx = 2;
+
+	int roomShape = 0;
+	int doorMask = 0;
+
+	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
+		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		if (roomConfig) {
+			roomShape = roomConfig->Shape;
+			doorMask = roomConfig->Doors;
+		}
+	} else {
+		roomShape = (int)luaL_checkinteger(L, stackIdx++);
+		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
+	}
+
+	const int dimension = LuaCheckDimension(L, stackIdx++);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+	const std::set<int> validLocations = FindValidRoomPlacementLocations(roomShape, doorMask, dimension, allowMultipleDoors, allowSpecialNeighbors);
 	
 	lua_newtable(L);
 	int i = 0;
@@ -281,7 +323,6 @@ LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 }
 
 LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
-	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	const int gridIndex = (int)luaL_checkinteger(L, 2);
 	const int roomShape = (int)luaL_checkinteger(L, 3);
 	const int dimension = LuaCheckDimension(L, 4);

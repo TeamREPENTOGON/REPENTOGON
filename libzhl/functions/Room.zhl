@@ -1,3 +1,6 @@
+"80390075??83c8ffc3":
+__thiscall int Room::GetFrameCount();
+
 "558bec83ec08f30f1005????????56578bf9f30f1145??8b0d":
 __thiscall float Room::GetDevilRoomChance();
 
@@ -72,6 +75,12 @@ __thiscall int Room::TryGetShopDiscount(int shopItemIdx, int price);
 
 "558bec8b45??83f82a":
 bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
+
+"558bec8b45??8d50":
+__thiscall GridEntity_Door* Room::GetDoor(int slot);
+
+"558bec6aff68????????64a1????????5083ec20a1????????33c58945??535657508d45??64a3????????8bf98b5d":
+__thiscall void Room::MakeDoor(int slot);
 
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
@@ -159,6 +168,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
 	float _rainIntensity : 0x733c;
 	RailManager _railManager : 0x734c;
 	float _lavaIntensity : 0x7624;
+	Entity_Effect* _redDoorOutlines[8] : 0x7628;
 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
     bool save_entity(Entity* entity, EntitySaveState* data, bool unk);

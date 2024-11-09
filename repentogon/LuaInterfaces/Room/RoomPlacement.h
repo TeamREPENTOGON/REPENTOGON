@@ -67,13 +67,15 @@ std::map<int, RoomDescriptor*> GetNeighboringRooms(const int gridIndex, const in
 // allowNoNeighbors - If true, allows the room to be placed out in the void with no connections to other rooms.
 
 // Returns true if the room could be placed at the specified location.
-bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors);
+bool CanPlaceRoom(const int roomShape, const int doorMask, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors);
+bool CanPlaceRoom(RoomConfig_Room* roomConfig, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors);
 
 // Attempt to place a room at the specified location. The room must fit and be capable of connecting doors to all adjacent rooms.
 // Returns a pointer to the new RoomDescriptor if successful.
 RoomDescriptor* TryPlaceRoom(RoomConfig_Room* roomConfig, const int column, const int line, const int dimension, const uint32_t seed, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors);
 
 // Returns true if the room could be placed connected to the provided existing RoomDescriptor via the given door.
+bool CanPlaceRoomAtDoor(const int roomShape, const int doorMask, RoomDescriptor* existingRoom, const int doorSlot, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 bool CanPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 
 // Attempt to place a room connected to the provided existing RoomDescriptor via the given door.
@@ -81,4 +83,5 @@ bool CanPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoo
 RoomDescriptor* TryPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const uint32_t seed, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 
 // Returns a set of GridIndexes that would be valid locations to place this room.
+std::set<int> FindValidRoomPlacementLocations(const int roomShape, const int doorMask, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
