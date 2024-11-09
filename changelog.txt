@@ -8,6 +8,8 @@ Additions:
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
+* Enums:
+	- StatusEffect
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
