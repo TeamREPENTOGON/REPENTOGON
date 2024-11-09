@@ -25,7 +25,7 @@ static int EvalIDAndParent(lua_State* L, const char* id, const char* parentId)
 	if (!customImGui.ElementExists(parentId))
 		return luaL_error(L, "Parent Element with id '%s'doesnt exist.", parentId);
 	if (customImGui.ElementExists(id))
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveElement(id);
 	return 0;
 }
 
@@ -84,7 +84,7 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 	const char* text = luaL_checkstring(L, 2);
 
 	if (customImGui.ElementExists(id)) {
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveElement(id);
 	}
 
 	bool success = customImGui.CreateMenuElement(id, text);
@@ -95,39 +95,22 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_RemoveMenu)
-{
-	const char* menuId = luaL_checkstring(L, 1);
-
-	customImGui.RemoveMenu(menuId);
-
-	return 0;
-}
-
 LUA_FUNCTION(Lua_ImGui_CreateWindow)
 {
 	const char* id = luaL_checkstring(L, 1);
 	const char* title = luaL_checkstring(L, 2);
+	const char* parentId = luaL_optstring(L, 3, nullptr);
 
 	if (customImGui.ElementExists(id)) {
-		return luaL_error(L, "Element with id '%s' exists already.", id);
+		customImGui.RemoveElement(id);
 	}
 
-	bool success = customImGui.CreateWindowElement(id, title);
+	bool success = customImGui.CreateWindowElement(id, title, parentId);
 	if (!success) {
 		return luaL_error(L, "Error while adding new Window '%s'", id);
 	}
 
 	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_RemoveWindow)
-{
-	const char* windowId = luaL_checkstring(L, 1);
-
-	customImGui.RemoveWindow(windowId);
-
-	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddCallback)
@@ -718,7 +701,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 	data.hintText = luaL_optstring(L, 5, "");
 	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
 	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	data.defaultFloatVal = (float)luaL_optnumber(L, 8, 40.0f);
+	float height = (float)luaL_optnumber(L, 8, 40.0f);
 
 	EvalIDAndParent(L, id, parentId);
 
@@ -737,6 +720,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 
 	customImGui.AddElement(parentId, id, text, type);
 	Element* createdElement = customImGui.GetElementById(id);
+	createdElement->data.size.y = height;
 
 	createdElement->AddData(data);
 
@@ -755,7 +739,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 	data.hintText = luaL_optstring(L, 5, "");
 	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
 	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	data.defaultFloatVal = (float)luaL_optnumber(L, 8, 40.0f);
+	float height = (float)luaL_optnumber(L, 8, 40.0f);
 
 	EvalIDAndParent(L, id, parentId);
 
@@ -774,6 +758,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 
 	customImGui.AddElement(parentId, id, text, type);
 	Element* createdElement = customImGui.GetElementById(id);
+	createdElement->data.size.y = height;
 
 	createdElement->AddData(data);
 
@@ -948,6 +933,64 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPinned)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_ImGui_GetWindowFlags)
+{
+	const char* elementId = luaL_checkstring(L, 1);
+
+	Element* element = customImGui.GetElementById(elementId);
+	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+		lua_pushinteger(L, element->data.windowFlags);
+		return 1;
+	}
+	else {
+		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+	}
+}
+
+LUA_FUNCTION(Lua_ImGui_SetWindowFlags)
+{
+	const char* elementId = luaL_checkstring(L, 1);
+	ImGuiWindowFlags newFlags = (ImGuiWindowFlags)luaL_checkinteger(L, 2);
+
+
+	bool success = customImGui.SetWindowFlags(elementId, newFlags);
+
+	if (!success) {
+		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ImGui_GetWindowChildFlags)
+{
+	const char* elementId = luaL_checkstring(L, 1);
+
+	Element* element = customImGui.GetElementById(elementId);
+	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+		lua_pushinteger(L, element->data.childFlags);
+		return 1;
+	}
+	else {
+		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+	}
+}
+
+LUA_FUNCTION(Lua_ImGui_SetWindowChildFlags)
+{
+	const char* elementId = luaL_checkstring(L, 1);
+	ImGuiChildFlags newFlags = (ImGuiChildFlags)luaL_checkinteger(L, 2);
+
+
+	bool success = customImGui.SetWindowChildFlags(elementId, newFlags);
+
+	if (!success) {
+		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+	}
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 {
 	const char* elementId = luaL_checkstring(L, 1);
@@ -963,16 +1006,16 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_ImGui_SetWindowSize)
+LUA_FUNCTION(Lua_ImGui_SetSize)
 {
 	const char* elementId = luaL_checkstring(L, 1);
 	float sizeX = (float)luaL_checknumber(L, 2);
 	float sizeY = (float)luaL_checknumber(L, 3);
 
-	bool success = customImGui.SetWindowSize(elementId, sizeX, sizeY);
+	bool success = customImGui.SetElementSize(elementId, sizeX, sizeY);
 
 	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+		return luaL_error(L, "Element with id '%s' not found", elementId);
 	}
 
 	return 0;
@@ -995,9 +1038,9 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "AddElement", Lua_ImGui_AddElement );
 			lua::TableAssoc(L, "RemoveElement", Lua_ImGui_RemoveElement );
 			lua::TableAssoc(L, "CreateMenu", Lua_ImGui_CreateMenu );
-			lua::TableAssoc(L, "RemoveMenu", Lua_ImGui_RemoveMenu );
+			lua::TableAssoc(L, "RemoveMenu", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
 			lua::TableAssoc(L, "CreateWindow", Lua_ImGui_CreateWindow );
-			lua::TableAssoc(L, "RemoveWindow", Lua_ImGui_RemoveWindow );
+			lua::TableAssoc(L, "RemoveWindow", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
 			lua::TableAssoc(L, "LinkWindowToElement", Lua_ImGui_LinkWindowToElement );
 			lua::TableAssoc(L, "ElementExists", Lua_ImGui_ElementExists );
 			lua::TableAssoc(L, "UpdateText", Lua_ImGui_UpdateText );
@@ -1025,16 +1068,21 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "AddProgressBar", Lua_ImGui_AddProgressBar );
 			lua::TableAssoc(L, "SetHelpmarker", Lua_ImGui_SetHelpmarker );
 			lua::TableAssoc(L, "SetColor", Lua_ImGui_SetColor );
+			lua::TableAssoc(L, "SetSize", Lua_ImGui_SetSize );
 			lua::TableAssoc(L, "SetTextColor", Lua_ImGui_SetTextColor );
 			lua::TableAssoc(L, "SetVisible", Lua_ImGui_SetVisible );
 			lua::TableAssoc(L, "SetWindowPinned", Lua_ImGui_SetWindowPinned );
+			lua::TableAssoc(L, "SetWindowFlags", Lua_ImGui_SetWindowFlags);
+			lua::TableAssoc(L, "SetWindowChildFlags", Lua_ImGui_SetWindowChildFlags);
 			lua::TableAssoc(L, "SetWindowPosition", Lua_ImGui_SetWindowPosition );
-			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetWindowSize );
+			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetSize ); // deprecated. now its an alias of SetSize
 			lua::TableAssoc(L, "SetTooltip", Lua_ImGui_SetTooltip );
 			lua::TableAssoc(L, "RemoveColor", Lua_ImGui_RemoveColor );
 			lua::TableAssoc(L, "GetMousePosition", Lua_ImGui_GetMousePos );
 			lua::TableAssoc(L, "GetVisible", Lua_ImGui_GetVisible );
 			lua::TableAssoc(L, "GetWindowPinned", Lua_ImGui_GetWindowPinned );
+			lua::TableAssoc(L, "GetWindowFlags", Lua_ImGui_GetWindowFlags);
+			lua::TableAssoc(L, "GetWindowChildFlags", Lua_ImGui_GetWindowChildFlags);
 			lua::TableAssoc(L, "PushNotification", Lua_ImGui_PushNotification );
 			lua::TableAssoc(L, "Reset", Lua_ImGui_Reset );
 			lua::TableAssoc(L, "Show", Lua_ImGui_Show );

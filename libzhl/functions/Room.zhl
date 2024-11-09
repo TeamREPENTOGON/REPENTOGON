@@ -90,6 +90,24 @@ __thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
 "558bec8b55??56578b02":
 __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
+"558bec83e4f883ec0c538bc1":
+__thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
+
+"558bec83e4f85153568bf18b0d":
+__thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
+
+"a1????????83b8????????16b802000000":
+__thiscall uint32_t Room::GetBrokenWatchState();
+
+"558bec83e4f883ec14538bd956578b43??8148??00400000":
+__thiscall void Room::MamaMegaExplosion(Vector * Position);
+
+"558bec83e4f883ec1c5356578bf98b47":
+__thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
+
+"558bec8b41??8b55":
+__thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
@@ -110,8 +128,8 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
 	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
     inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
-    inline RailType GetRailType(uint8_t gridIndex) { return GetRails()[gridIndex]; }
-    inline void SetRailType(uint8_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
+    inline RailType GetRailType(uint16_t gridIndex) { return GetRails()[gridIndex]; }
+    inline void SetRailType(uint16_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
     static bool LIBZHL_API IsValidRailType(int rail);
     inline bool IsValidGridIndex(int index, bool includeWalls = true) const {
         return _descriptor->Data->IsValidGridIndex(index, includeWalls);
@@ -128,8 +146,11 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     uint32_t _doorGridPositions[8] : 0x744;
 	int _roomClearDelay : 0x11ec;
     Camera *_Camera : 0x11f8;
+	uint32_t _bossId : 0x1d1c;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
+	deque_ShopRestockDesc _shopItemDeque : 0x6f64;
+	int _slowdownDuration : 0x7120;
 	int _greedWaveTimer : 0x7130;
 	float _waterAmount : 0x7134;
 	bool _pacifist : 0x7185;

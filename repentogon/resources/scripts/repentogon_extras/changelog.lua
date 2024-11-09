@@ -2,6 +2,7 @@
 local _ModCallbacks = ModCallbacks
 local _MainMenuType = MainMenuType
 local _ButtonAction = ButtonAction
+local _Keyboard = Keyboard
 local _SoundEffect = SoundEffect
 
 local ChangeLog = {
@@ -19,17 +20,13 @@ local ChangeLog = {
 
     ["ScrollMargin"] = 5,
     ["ScrollSpeed"] = 1,
+    ["ScrollSpeedFast"] = 2.5,
     ["ScrollItertia"] = 0.8,
 
     ["CurrentSheet"] = 1,
 
     ["Sheets"] = --TODO: implement the ability to have multiple sheets with unique sprites and stuff
-    {
-        [1] = {
-            ["Text"] = Isaac.RGON_GetChangelog(),
-            ["TextArray"] = {},
-        },
-    },
+    {},
 }
 
 local Cl = ChangeLog
@@ -101,6 +98,7 @@ end
 
 local ShouldBeRendered = false --render of the changelog isn't attempted
 local ScrollVelocity = 0
+local CurrentPage = 1
 local ScrollOffset = Cl.ScrollMargin
 
 local MaxPollCIdx = 3
@@ -129,6 +127,15 @@ end
 local function IsActionPressedAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionPressed(action, i) then
+            return true
+        end
+    end
+    return false
+end
+
+local function IsKeyboardPressedAll(input)
+    for i = 0, MaxPollCIdx do
+        if Input.IsButtonPressed(input, i) then
             return true
         end
     end
@@ -169,24 +176,37 @@ function ChangeLog.MenuRender()
             SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
             Cl.ChangelogSprite:Play("SwapOut")
             MenuManager.SetActiveMenu(1)    --unblock inputs
+        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENURIGHT) and Cl.CurrentState then
+            CurrentPage = CurrentPage + 1
+            if CurrentPage < #ChangeLog.Sheets then
+                SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
+                ScrollOffset = 5
+            else
+                CurrentPage = #ChangeLog.Sheets
+            end
+        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENULEFT) and Cl.CurrentState then
+            CurrentPage = CurrentPage - 1
+            if CurrentPage > 0 then
+                SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
+                ScrollOffset = 5
+            else
+                CurrentPage = 1
+            end
         end
         if ShouldBeRendered then
             local LogRenderPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.PaperOffset)
             Cl.ChangelogSprite:RenderLayer(3, LogRenderPosition)
             local TextGuideNull = Cl.ChangelogSprite:GetNullFrame("UpdateText")
+            local Height = 0
+            local BoxSize = 200
             if TextGuideNull then
                 local NullPos = TextGuideNull:GetPos()
                 local NullScale = TextGuideNull:GetScale()
                 local YOffset = 0
-                local BoxSize = 200                                              --treat text as if it was drawn inside of a box
-                local MinOffset = LogRenderPosition.Y + NullPos.Y +
-                40 * NullScale.Y                                                 --40 is a static offset for the "Change Log" title
-                local MaxOffset = MinOffset +
-                170 *
-                NullScale
-                .Y                                                               --170 is a total height of the paper, should get it exposed in the table
-                local TextStretchFactor=0
-                for _, iterline in pairs(Cl.Sheets[1].TextArray) do
+                local MinOffset = LogRenderPosition.Y + NullPos.Y + 40 * NullScale.Y  --40 is a static offset for the "Change Log" title
+                local MaxOffset = MinOffset + 170 * NullScale.Y                       --170 is a total height of the paper, should get it exposed in the table
+                local TextStretchFactor = 0
+                for _, iterline in pairs(Cl.Sheets[CurrentPage].TextArray) do
                     if string.find(iterline, "/f/") then
                         UseFade = true
                     elseif iterline == " " then
@@ -194,8 +214,7 @@ function ChangeLog.MenuRender()
                     end
                     local line = string.gsub(iterline, "/f/", "")
                     local XOffset = (-BoxSize / 2) * NullScale.X
-                    local FullY = LogRenderPosition.Y + NullPos.Y + 40 * NullScale.Y + YOffset * NullScale.Y +
-                    ScrollOffset
+                    local FullY = LogRenderPosition.Y + NullPos.Y + 40 * NullScale.Y + YOffset * NullScale.Y + ScrollOffset
 --                    if FullY<500 then
 --                    print(line,"fully-minoffset",FullY - MinOffset,",minoffset:",(MinOffset + Cl.ScrollMargin * NullScale.Y),",maxoffset:",(MaxOffset - Cl.ScrollMargin * NullScale.Y)) end
 --                    print("checking",FullY-MinOffset)
@@ -220,15 +239,21 @@ function ChangeLog.MenuRender()
                         NullScale.Y, Cl.FontColor, 0, false)
                     ::skiptonextline::
                     YOffset = YOffset + Cl.LineHeight
+                    Height = YOffset
                 end
             end
 
+            -- Scroll faster when holding SHIFT or DROP
+            local speed = (IsActionPressedAll(_ButtonAction.ACTION_DROP) or IsKeyboardPressedAll(_Keyboard.KEY_LEFT_SHIFT))
+                and Cl.ScrollSpeedFast or Cl.ScrollSpeed
+
             if IsActionPressedAll(_ButtonAction.ACTION_MENUUP) then
-                ScrollVelocity = ScrollVelocity + Cl.ScrollSpeed
+                ScrollVelocity = ScrollVelocity + speed
             end
-            if IsActionPressedAll(_ButtonAction.ACTION_MENUDOWN) then
-                ScrollVelocity = ScrollVelocity - Cl.ScrollSpeed
+            if IsActionPressedAll(_ButtonAction.ACTION_MENUDOWN) and -ScrollOffset < Height - (BoxSize / 2) then
+                ScrollVelocity = ScrollVelocity - speed
             end
+
             if Cl.ChangelogSprite:IsFinished("SwapOut") then
                 ShouldBeRendered = false
                 ScrollOffset = 5
@@ -279,13 +304,40 @@ function ChangeLog.LoadAssets()
     end
 
     if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation()) > 0 then
-        Cl.AssetsLoaded = true
+
+        -- Separate sheets by version
+        -- Also, Lua doesn't have a way to separate strings by words. Only with patterns.
+        -- This makes me very sad.
+        local rawChangelog = Isaac.RGON_GetChangelog()
+        local entireChangelog = TextSplit(rawChangelog, "\n")
+        local chunk = ""
+        for _, word in ipairs(entireChangelog) do
+            if word == "/versionseparator/" then
+                table.insert(Cl.Sheets, {
+                    ["Text"] = chunk,
+                    ["TextArray"] = {},
+                })
+                chunk = ""
+            else
+                chunk = chunk .. word .. "\n"
+            end
+        end
+
+        -- Just a failsafe if the log somehow doesn't have any version separators.
+        -- Mainly just for dev environments.
+        if #Cl.Sheets == 0 then
+            table.insert(Cl.Sheets, {
+                ["Text"] = rawChangelog,
+                ["TextArray"] = {}
+            })
+        end
+
         Cl.EvaluateText()
         Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+
+        Cl.AssetsLoaded = true
     end
 end
 
 Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
-
-
 Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)

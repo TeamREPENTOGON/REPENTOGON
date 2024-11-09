@@ -187,9 +187,15 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_VIS_BORDERLESS_FULLSCREEN, &g_Manager->GetOptions()->_enableBorderlessFullscreen);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableBorderlessFullscreen, false);
                         AddNewTableRow();
-                        ImGui::SeparatorText(LANG.OPT_VIS_EFFECTS);
+//                        ImGui::SeparatorText(LANG.OPT_VIS_EFFECTS);
+                        ImGui::SeparatorTextEx(0, LANG.OPT_VIS_EFFECTS, ImGui::FindRenderedTextEnd(LANG.OPT_VIS_EFFECTS), 24.0f*ImGui::GetCurrentWindow()->FontWindowScale);
+                        //     ^ separatortextex is used to apply an offset for the help marker icon
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_VIS_EFFECTS_MARK);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_VIS_ANIM_INTERP, &g_Manager->GetOptions()->_enableInterpolation);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_VIS_ANIM_INTERP_MARK);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableInterpolation, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_VIS_COLOR_CORRECTION, &g_Manager->GetOptions()->_enableColorCorrection);
@@ -323,18 +329,25 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_MARSDOUBLETAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.marsDoubleTapWindow, 10);
+
+                        AddNewTableRow();
+                        ImGui::SliderInt(LANG.OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT, &repentogonOptions.consoleAutofillLimit, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.consoleAutofillLimit, 10);
+
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_FILE_MAP, &repentogonOptions.fileMap);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
-                        /*
+
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.renderDebugFindInRadius, false);
-                        */ //causes Evil Eye Funkies
+
 
                         ImGui::EndTable();
                     }

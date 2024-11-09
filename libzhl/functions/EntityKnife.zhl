@@ -10,8 +10,10 @@ __thiscall std_vector_uint * Entity_Knife::GetHitEntities();
 "558bec51568bf18975??e8????????c706????????8d8e":
 __thiscall void Entity_Knife::Constructor();
 
-struct Entity_Knife : public Entity {
-	bool _isSwinging : 0x3b5;
+struct Entity_Knife : public Entity { 
+	bool _isSwinging : 0x3b5;	
+	bool _prismApplied : 0x435;
+	bool _multidimensionalApplied : 0x436;
 	bool _isSpinAttack : 0x43a;
 
 	__vtable {

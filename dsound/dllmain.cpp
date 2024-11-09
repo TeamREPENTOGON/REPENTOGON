@@ -1,14 +1,16 @@
 #include <Windows.h>
 #include <ImageHlp.h>
 #include "ConsoleWindow.h"
-#include "launcher/utils.h"
+#include "dsound/utils.h"
 #include <stdio.h>
 #include <vector>
 #include <time.h>
 #include "version.h"
-#include "launcher/Logger.h"
+#include "dsound/Logger.h"
 #include "updater/updater.h"
 #include "updater/updater_resources.h"
+#include <windows.h>
+#include <psapi.h> // For MODULEINFO
 
 #include <string>
 
@@ -120,6 +122,32 @@ DWORD RedirectLua(HMODULE* outLua) {
 
 static HMODULE luaHandle = NULL;
 
+
+std::string GetExeVersion() {
+	HMODULE hModule = GetModuleHandle(NULL);
+	MODULEINFO modInfo;
+	if (!GetModuleInformation(GetCurrentProcess(), hModule, &modInfo, sizeof(MODULEINFO))) {
+		return "Fucked";
+	}
+	const char* baseAddress = (const char*)modInfo.lpBaseOfDll;
+	size_t moduleSize = modInfo.SizeOfImage;
+	const char* searchStr = "isaacv";
+
+	for (size_t i = 0; i < moduleSize - strlen(searchStr); ++i) {
+		const char* potentialMatch = baseAddress + i;
+		if (strncmp(potentialMatch, searchStr, strlen(searchStr)) == 0) {
+			const char* afterIsaacv = potentialMatch + strlen(searchStr);
+			const char* dashPos = strchr(afterIsaacv, '-');
+
+			if (dashPos) {
+				return std::string(afterIsaacv, dashPos);
+			}
+		}
+	}
+
+	return "Fucked";
+}
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
@@ -128,7 +156,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		sLogger->SetOutputFile("dsound.log", "w", true);
 		sLogger->SetFlushOnLog(true);
 		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
+
+		std::string version = GetExeVersion();
+		sLogger->Info("Isaac Version: %s\n", version.c_str());
 		if (HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
+			sLogger->Info("Repentogon Disabled!\n");
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -136,6 +168,16 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 				fclose(f);
 			}
+			return TRUE;
+		}
+		if (!HasCommandLineArgument("-skipupdates")) {
+			sLogger->Info("dsound: Checking for updates\n");
+			CheckForUpdates();
+			sLogger->Info("dsound: Update checking done\n");
+		}
+
+		if (version != "1.7.9b.J835") {
+			sLogger->Info("This Version of Isaac is not compatible!!\n");
 			return TRUE;
 		}
 
@@ -162,12 +204,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			sLogger->Info("dsound: Initializing console window\n");
 			ConsoleWindow::Init();
 			sLogger->Info("dsound: Initialized console window\n");
-		}
-		
-		if (!HasCommandLineArgument("-skipupdates")) {
-			sLogger->Info("dsound: Checking for updates\n");
-			CheckForUpdates();
-			sLogger->Info("dsound: Update checking done\n");
 		}
 
 		/*if(GetIsaacVersion() != ISAAC_REBIRTH)

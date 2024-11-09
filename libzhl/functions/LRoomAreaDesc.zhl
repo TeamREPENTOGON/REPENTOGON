@@ -1,0 +1,4 @@
+struct LRoomAreaDesc depends (Vector) {
+	Vector _high[2] : 0x0;
+	Vector _low[2] : 0x10;
+} : 0x20;

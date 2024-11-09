@@ -182,4 +182,61 @@ namespace ASMPatches {
 			return true;
 		}
 	}
+
+	bool FixHushFXVeins() {
+		// update_vein_tree
+		SigScan signature("76??8d70");
+		if (!signature.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		ASMPatch patch;
+		patch.AddBytes("\xEB"); // jmp
+		sASMPatcher.FlatPatch(addr, &patch);
+
+		// RenderVeins
+		SigScan signature2("83bf????????0074??8d87");
+		if (!signature2.Scan()) {
+			return false;
+		}
+
+		void* addr2 = signature2.GetAddress();
+		ASMPatch patch2;
+		patch2.AddBytes("\xEB\x07\x90\x90\x90\x90\x90"); // jmp
+		sASMPatcher.FlatPatch(addr2, &patch2);
+
+		return true;
+	};
+
+	bool SkipArchiveChecksums() {
+		SigScan loopsig("8bf88d8d????????3d00020000");
+		SigScan ifchecksig("74??ffb5????????8bb5");
+		ASMPatch ifpatch;
+		ASMPatch patch;
+
+		if (!loopsig.Scan()) {
+			return false;
+		};
+		if (!ifchecksig.Scan()) {
+			return false;
+		};
+
+		void* startptr = loopsig.GetAddress();
+		void* endptr = (void*)((char*)startptr + 0x8f);
+		void* ifcheck = ifchecksig.GetAddress();
+
+		ifpatch.AddBytes("\xEB");	//swap to uncond jump
+		patch.AddRelativeJump(endptr);
+
+		for (int i = 1; i < __argc; i++) {
+			char* arg = __argv[i];
+			if (strcmp("-skipchecksum", arg) == 0) {
+				sASMPatcher.FlatPatch(startptr,&patch);
+				sASMPatcher.FlatPatch(ifcheck, &ifpatch);
+				break;
+			};
+		};
+		return true;
+	};
 }

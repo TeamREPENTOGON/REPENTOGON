@@ -66,7 +66,10 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 
 	__vtable {
 		skip; // Free
-		skip; // Init
+
+		"558bec6aff68????????64a1????????5083ec74a1????????33c58945??5657508d45??64a3????????8bf9897d??8b45":
+		void Init(uint32_t Type, int Variant, int Subtype, uint32_t Seed);
+
 		skip; // PreUpdate
 		
 		override
@@ -102,6 +105,7 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 
 	ANM2 _priceANM2 : 0x360 ;
 	int _timeout : 0x48c;
+	Entity_Pickup * _megaChestCollectible[2]: 0x4e0;
 	unsigned int _cycleCollectibleList[8] : 0x4ec;
 	Entity_Effect* _pickupGhost : 0x4dc;
 	unsigned int _cycleCollectibleCount : 0x50c;

@@ -111,9 +111,17 @@ ___
 #### [Entity](Entity.md)[] FindInCapsule ( [Capsule](Capsule.md) Capsule, [EntityPartitions](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = -1 ) {: .copyable aria-label='Functions' }
 Return entities inside of given capsule, filtered by partitions mask.
 ___
+### FindTargetPit () {: aria-label='Functions' }
+#### int FindTargetPit ( [Vector](Vector.md) Position, [Vector](Vector.md) TargetPosition, int PitIndex = -1 ) {: .copyable aria-label='Functions' }
+
+___
 ### GetAchievementIdByName () {: aria-label='Functions' }
-#### table GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
+#### int GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
+___
+### GetAxisAlignedUnitVectorFromDir () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetAxisAlignedUnitVectorFromDir ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = -1 ) {: .copyable aria-label='Functions' }
+
 ___
 ### GetBackdropIdByName () {: aria-label='Functions' }
 #### int GetBackdropIdByName ( ) {: .copyable aria-label='Functions' }
@@ -142,7 +150,7 @@ Returns a table containing all the marks for the character.
 
 ???- info "Table structure & usage"
 	- The table has the following fields: 
-		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) asociated to the marks
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) associated to the marks
 		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
@@ -219,6 +227,11 @@ ___
 ___
 ### GetPersistentGameData () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetPoolIdByName () {: aria-label='Functions' }
+#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( ) {: .copyable aria-label='Functions' }
+Returns the ID of a given custom pool. Returns `-1` if the pool is not found.
 
 ___
 ### GetRenderPosition () {: aria-label='Functions' }

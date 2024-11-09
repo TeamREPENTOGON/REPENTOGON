@@ -37,6 +37,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["FastLasers"] = "0";
 			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
+			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -53,6 +54,7 @@ struct REPENTOGONOptions {
 		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
+		consoleAutofillLimit = defstoi(ini["VanillaTweaks"]["ConsoleAutofillLimit"], 10);
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
@@ -104,6 +106,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "FastLasers", fastLasers);
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
+		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -128,6 +131,7 @@ struct REPENTOGONOptions {
 	int marsDoubleTapWindow;
 	bool fileMap;
 	int imGuiScale;
+	int consoleAutofillLimit;
 	std::string optionsPath;
 	bool renderDebugFindInRadius;
 };

@@ -29,11 +29,14 @@ ImGui.SetColor("testbullet2", ImGuiColor.Text, 0, 0.5, 1, 1)
 ImGui.AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 3")
 ImGui.AddElement("cat1", "", ImGuiElement.Separator)
 ImGui.AddElement("cat1", "button1", ImGuiElement.Button, "A funky button")
-ImGui.AddCallback("button1", ImGuiCallback.Hovered, function(i) print("Hover") end)
+ImGui.AddCallback("button1", ImGuiCallback.Hovered, function(_) print("Hover") end)
 ImGui.AddElement("cat1", "", ImGuiElement.SameLine)
 ImGui.AddElement("cat1", "button2", ImGuiElement.Button, "A button in the same line")
 ImGui.SetTextColor("button2", 1, 0, 0, 0.75)
 ImGui.SetColor("button2", ImGuiColor.Button, 1, 1, 0, 1)
+ImGui.AddElement("cat1", "button3", ImGuiElement.Button, "A button causing an error")
+ImGui.AddCallback("button3", ImGuiCallback.Clicked, function(_) VARIABLE_DOESNT_EXIST:Test() end)
+ImGui.SetColor("button3", ImGuiColor.Button, 1, 0, 0, 1)
 
 --------- CATEGORY WINDOWS ---------
 ImGui.AddElement("testWindow2", "catWindows", ImGuiElement.CollapsingHeader, "Windows / Popups")
@@ -41,6 +44,11 @@ ImGui.AddElement("testWindow2", "catWindows", ImGuiElement.CollapsingHeader, "Wi
 ImGui.AddElement("catWindows", "button_window", ImGuiElement.Button, "open a window")
 ImGui.CreateWindow("testWindow3", "button Window")
 ImGui.LinkWindowToElement("testWindow3", "button_window")
+-- window as a child
+ImGui.CreateWindow("testWindowChild", "Embedded Window", "catWindows")
+ImGui.SetWindowChildFlags("testWindowChild", ImGuiChildFlags.FrameStyle | ImGuiChildFlags.ResizeX | ImGuiChildFlags.ResizeY)
+ImGui.AddText("testWindowChild", "This is a window as a child element.", true)
+ImGui.SetWindowSize("testWindowChild", 200, 100)
 --------- Render callback ---------
 ImGui.AddText("testWindow3", "", true, "mousePosText")
 ImGui.AddCallback("mousePosText", ImGuiCallback.Render, function(val)
@@ -65,9 +73,16 @@ ImGui.AddElement("catWindows", "tooltipButton", ImGuiElement.Button, "A button w
 ImGui.SetTooltip("tooltipButton", "My cool tooltip")
 ImGui.SetHelpmarker("tooltipButton", "My cool Helpmarker")
 
+-- open a window with window flags
+ImGui.AddInputInteger("catWindows", "inputWindowFlags", "window flags", function(val) ImGui.SetWindowFlags("testWindow4", val) end, 0, 1, 1)
+ImGui.AddElement("catWindows", "button_windowflags", ImGuiElement.Button, "open a window with window flags")
+ImGui.CreateWindow("testWindow4", "button Window Flags")
+ImGui.LinkWindowToElement("testWindow4", "button_windowflags")
+
 --------- CATEGORY INPUTS ---------
 ImGui.AddElement("testWindow2", "catInput", ImGuiElement.CollapsingHeader, "Input types")
-ImGui.AddButton("catInput", "testButton1","Button", function(clickCount) print("Button clicked "..clickCount.." times") end)
+ImGui.AddButton("catInput", "testButton1","Button with changed size and callback", function(clickCount) print("Button clicked "..clickCount.." times") end)
+ImGui.SetSize("testButton1", -10, 50)
 ImGui.AddInputInteger("catInput", "inputInt", "int input", function(val) print(val) end, 10, 5, 500)
 ImGui.AddInputFloat("catInput", "inputFloat", "float input", function(val) print(val) end, 2.5, 0.2, 5)
 ImGui.AddDragInteger("catInput", "DragInt", "int Drag", function(val) print(val) end, 5, 1, 0, 100)

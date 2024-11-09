@@ -12,6 +12,10 @@ tags:
         
 ## Functions
 
+### Circle () {: aria-label='Functions' }
+#### void Circle ( [Vector](../Vector.md) Position, float Size ) {: .copyable aria-label='Functions' }
+
+___
 ### GetTimeout () {: aria-label='Functions' }
 #### int GetTimeout ( ) {: .copyable aria-label='Functions' }
 

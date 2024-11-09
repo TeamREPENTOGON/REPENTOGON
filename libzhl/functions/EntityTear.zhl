@@ -52,4 +52,6 @@ struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
 	ANM2 _tearEffectANM2 : 0x510;
 	ANM2 _deadEyeANM2 : 0x624;
 	BitSet128 _tearFlags : 0x378;
+	bool _multidimensionalTouched : 0x3b8;
+	bool _prismTouched : 0x3b9;
 } : 0x778;

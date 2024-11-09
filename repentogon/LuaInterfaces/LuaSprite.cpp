@@ -129,6 +129,55 @@ LUA_FUNCTION(Lua_SpriteSetOverlayFrame)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SpriteSetOverlayLayerFrame)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const int layerID = (int)luaL_checkinteger(L, 2);
+	const int frame = (int)luaL_checkinteger(L, 3);
+	anm2->GetOverlayAnimationState()->SetLayerFrame(layerID, frame);
+	return 0;
+}
+
+LUALIB_API void LuaGetLayerFrameDataInternal(lua_State* L, AnimationState* animState, const int layerID) {
+	AnimationData* animData = animState ? animState->GetAnimationData() : nullptr;
+	if (!animData) {
+		lua_pushnil(L);
+		return;
+	}
+	const int layerIndex = animData->GetLayerOrder(layerID);
+	AnimationLayer* animLayer = animData->GetLayerById(layerID);
+	if (layerIndex < 0 || !animLayer) {
+		lua_pushnil(L);
+		return;
+	}
+	const int animFrameIndex = std::clamp(animState->_layerFrames[layerIndex], 0, animLayer->GetFrameCount() - 1);
+	AnimationFrame* animFrame = animLayer->GetFrame(animFrameIndex);
+	if (animFrame) {
+		AnimationFrame** toLua = (AnimationFrame**)lua_newuserdata(L, sizeof(AnimationFrame*));
+		*toLua = animFrame;
+		luaL_setmetatable(L, lua::metatables::AnimationFrameMT);
+	}
+	else {
+		lua_pushnil(L);
+	}
+}
+
+LUA_FUNCTION(Lua_SpriteGetLayerFrameData)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const int layerID = (int)luaL_checkinteger(L, 2);
+	LuaGetLayerFrameDataInternal(L, anm2->GetAnimationState(), layerID);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteGetOverlayLayerFrameData)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const int layerID = (int)luaL_checkinteger(L, 2);
+	LuaGetLayerFrameDataInternal(L, anm2->GetOverlayAnimationState(), layerID);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_SpriteStop)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
@@ -467,14 +516,6 @@ LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
-{
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, layerState->_wrapTMode);
-
-	return 1;
-}
-
 LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
@@ -483,10 +524,50 @@ LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushinteger(L, layerState->_wrapTMode);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_wrapTMode = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetFlipX)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushboolean(L, layerState->_flipX);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetFlipX)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_flipX = lua::luaL_checkboolean(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetFlipY)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushboolean(L, layerState->_flipY);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetFlipY)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_flipY = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }
@@ -499,6 +580,9 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered},
 		{ "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered},
 		{ "SetOverlayFrame", Lua_SpriteSetOverlayFrame},
+		{ "SetOverlayLayerFrame", Lua_SpriteSetOverlayLayerFrame},
+		{ "GetLayerFrameData", Lua_SpriteGetLayerFrameData},
+		{ "GetOverlayLayerFrameData", Lua_SpriteGetOverlayLayerFrameData},
 		{ "Stop", Lua_SpriteStop},
 		{ "StopOverlay", Lua_SpriteStopOverlay},
 		{ "Continue", Lua_SpriteContinue},
@@ -542,6 +626,10 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetWrapSMode", Lua_LayerStateSetWrapSMode},
 		{ "GetWrapTMode", Lua_LayerStateGetWrapTMode},
 		{ "SetWrapTMode", Lua_LayerStateSetWrapTMode},
+		{ "GetFlipX", Lua_LayerStateGetFlipX},
+		{ "SetFlipX", Lua_LayerStateSetFlipX},
+		{ "GetFlipY", Lua_LayerStateGetFlipY},
+		{ "SetFlipY", Lua_LayerStateSetFlipY},
 		{ "SetCustomShader", Lua_LayerStateSetCustomShader},
 		{ "ClearCustomShader", Lua_LayerStateClearCustomShader},
 		{ "HasCustomShader", Lua_LayerStateHasCustomShader},

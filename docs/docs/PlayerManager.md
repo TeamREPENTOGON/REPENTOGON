@@ -96,6 +96,10 @@ ___
 #### [EntityPlayer](EntityPlayer.md) SpawnCoPlayer2 ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
 ___
+### SpawnSelectedBaby () {: aria-label='Functions' }
+#### void SpawnSelectedBaby ( [BabySubType](https://wofsauge.github.io/IsaacDocs/rep/enums/BabySubType.html) BabyType, int ControllerIndex ) {: .copyable aria-label='Functions' }
+
+___
 ### TriggerRoomClear () {: aria-label='Functions' }
 #### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
 

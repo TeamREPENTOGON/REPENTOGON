@@ -641,6 +641,9 @@ uint32_t Struct::GetVirtualFunctionSlot(Function const* fn) const {
         if (std::get<Function>(fun) == *fn) {
             return result;
         }
+        else {
+            ++result;
+        }
     }
 
     throw std::runtime_error("Function not found");

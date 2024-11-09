@@ -33,6 +33,13 @@ LUA_FUNCTION(Lua_SnapToPosition)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_CameraUpdate) {
+	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
+	bool flag = lua::luaL_optboolean(L, 2, false);
+	camera->DoUpdate(flag);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_IsPosVisible) {
 	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
@@ -47,6 +54,7 @@ static void RegisterCamera(lua_State* L) {
 		{ "SetFocusPosition", Lua_CameraSetFocusPosition },
 		{ "SnapToPosition", Lua_SnapToPosition },
 		{ "IsPosVisible", Lua_IsPosVisible },
+		{ "Update", Lua_CameraUpdate },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::CameraMT, lua::metatables::CameraMT, functions);

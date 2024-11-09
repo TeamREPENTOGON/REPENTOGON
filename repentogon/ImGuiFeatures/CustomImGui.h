@@ -66,6 +66,20 @@ enum class IMGUI_CALLBACK {
     Render
 };
 
+static const char* IMGUI_CALLBACK_TO_STRING[11] = {
+    "Clicked",
+    "Hovered",
+    "Active",
+    "Focused",
+    "Visible",
+    "Edited",
+    "Activated",
+    "Deactivated",
+    "DeactivatedAfterEdit",
+    "ToggledOpen",
+    "Render"
+};
+
 enum class IMGUI_DATA {
     Label,
     Value,
@@ -73,7 +87,7 @@ enum class IMGUI_DATA {
     Min,
     Max,
     HintText,
-    ColorValues,
+    ColorValues
 };
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
@@ -132,7 +146,9 @@ struct Data {
     bool newPositionRequested = false;
     ImVec2 newPosition = ImVec2(0, 0);
     bool newSizeRequested = false;
-    ImVec2 newSize = ImVec2(100, 100);
+    ImVec2 size = ImVec2(0, 0); // 0,0 initializes elements with dynamic size
+    ImGuiWindowFlags windowFlags = 0;
+    ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
 };
 
 struct ElementData : Data {
@@ -147,7 +163,7 @@ struct ElementData : Data {
     float lineCount = 6;
     float minVal = FLT_MIN;
     float maxVal = FLT_MAX;
-    float defaultFloatVal = 0; // used to store default float input value, and Height of Plots
+    float defaultFloatVal = 0; // used to store default float input value
     float currentFloatVal = 0; // used by Float Inputs
     int defaultIntVal = 0;
     int currentIntVal = 0; // used by Int Inputs and Keyboard/controller inputs
@@ -201,7 +217,7 @@ struct Element {
     std::string name;
     IMGUI_ELEMENT type;
     std::list<Element>* children;
-    Element* parent;
+    Element* parent = NULL;
 
     Element* triggerElement = NULL; // element that when clicked, activates this element (Window)
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
@@ -380,17 +396,19 @@ struct CustomImGui {
 
     bool RemoveElement(const char* elementId) IM_FMTARGS(2)
     {
-        Element* element = GetElementByList(elementId, menuElements);
-        if (element == NULL) {
-            element = GetElementByList(elementId, windows);
+        Element* element = GetElementById(elementId);
             if (element == NULL) {
-                g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+                g_Game->GetConsole()->PrintError("Couldn't find the element to remove! (" + std::string(elementId) + ") \n");
                 return false;
             }
+        if (element->type == IMGUI_ELEMENT::Menu) {
+            RemoveMenu(elementId);
+            return true;
         }
-        if (element->type == IMGUI_ELEMENT::Menu) { g_Game->GetConsole()->PrintError("Cant Remove a Menu, Use RemoveMenu to Remove menus! (" + std::string(elementId) + ") \n"); return false; }
-        if (element->type == IMGUI_ELEMENT::Window) { g_Game->GetConsole()->PrintError("Cant Remove a Window, Use RemoveWindow to Remove windows! (" + std::string(elementId) + ") \n"); return false; }
-        if (element->type == IMGUI_ELEMENT::ColorEdit) { g_Game->GetConsole()->PrintError("Cant Remove a Color, Use RemoveColor to Remove colors! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::Window && element->parent == NULL) {
+            RemoveWindow(elementId);
+            return true;
+        }
 
         if (element->parent != NULL) {
             Element* daddy = element->parent;
@@ -423,10 +441,20 @@ struct CustomImGui {
         }
     }
 
-    Element* CreateWindowElement(const char* id, const char* name) IM_FMTARGS(2)
+    bool CreateWindowElement(const char* id, const char* name, const char* parentId = nullptr) IM_FMTARGS(2)
     {
+        if (parentId != nullptr) {
+            Element* parent = GetElementById(parentId);
+            if (parent == NULL) {
+                return false;
+            }
+            else {
+              parent->AddChild(Element(id, name, static_cast<int>(IMGUI_ELEMENT::Window)));
+              return true;
+            }
+        }
         windows->push_back(Element(id, name, static_cast<int>(IMGUI_ELEMENT::Window)));
-        return &windows->back();
+        return true;
     }
 
     void RemoveWindow(const char* windowId) IM_FMTARGS(2)
@@ -434,6 +462,7 @@ struct CustomImGui {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             if (strcmp(window->id.c_str(), windowId) == 0) {
                 windows->erase(window);
+                return;
             }
         }
     }
@@ -547,6 +576,27 @@ struct CustomImGui {
         return false;
     }
 
+    bool SetWindowFlags(const char* elementId, ImGuiWindowFlags newFlags) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            newFlags = newFlags & (int)strtol("0000000011111111111111111111111", NULL, 2); // filter internal/deprecated flags just incase
+            element->data.windowFlags = newFlags;
+            return true;
+        }
+        return false;
+    } 
+
+    bool SetWindowChildFlags(const char* elementId, ImGuiChildFlags newFlags) IM_FMTARGS(2)
+    {
+      Element* element = GetElementById(elementId);
+      if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+        element->data.childFlags = newFlags;
+        return true;
+      }
+      return false;
+    }
+
     bool SetWindowPosition(const char* elementId, float x, float y) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
@@ -558,11 +608,11 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetWindowSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
+    bool SetElementSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-            element->data.newSize = ImVec2(sizeX, sizeY);
+        if (element != NULL) {
+            element->data.size = ImVec2(sizeX, sizeY);
             element->data.newSizeRequested = true;
             return true;
         }
@@ -603,7 +653,7 @@ struct CustomImGui {
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
             if (callback->first == IMGUI_CALLBACK::Render) {
-                RunCallback(element, callback->second);
+                RunCallback(element, callback->second, callback->first);
             }
         }
     }
@@ -619,54 +669,54 @@ struct CustomImGui {
                     if (element->triggerPopup != NULL) {
                         OpenPopup(element->triggerPopup->id.c_str());
                     }
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Hovered:
                 if (ImGui::IsItemHovered()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Active:
                 if (ImGui::IsItemActive()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Focused:
                 if (ImGui::IsItemFocused()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Visible:
                 if (ImGui::IsItemVisible()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Edited:
                 if (ImGui::IsItemEdited()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Activated:
                 if (ImGui::IsItemActivated()) {
                     element->isActive = true;
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::Deactivated:
                 if (ImGui::IsItemDeactivated()) {
                     element->isActive = false;
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::DeactivatedAfterEdit:
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             case IMGUI_CALLBACK::ToggledOpen:
                 if (ImGui::IsItemToggledOpen()) {
-                    RunCallback(element, callback->second);
+                    RunCallback(element, callback->second, callback->first);
                 }
                 break;
             default:
@@ -675,7 +725,7 @@ struct CustomImGui {
         }
     }
 
-    void RunCallback(Element* element, int callbackID) IM_FMTARGS(2)
+    void RunCallback(Element* element, const int callbackID, const IMGUI_CALLBACK callbackType = IMGUI_CALLBACK::Clicked) IM_FMTARGS(2)
     {
         if (callbackID == 0) {
             return;
@@ -687,7 +737,15 @@ struct CustomImGui {
 
         lua::LuaCaller caller = lua::LuaCaller(L);
         element->PropagateCallbackData(&caller);
-        caller.call(1);
+        if (caller.call(1)) {
+            // Lua encountered an error while executing the callback function
+            // printing the error needs to happen in a seperate lua call, as to keep the lua-stack and imgui-stack protected and stable
+            const char* errorMsg = lua_tostring(L, lua_gettop(L));
+            int callbackTypeID = static_cast<int>(callbackType);
+            g_Game->GetConsole()->PrintError(
+                "ImGui encountered an error in the '" + std::string(IMGUI_CALLBACK_TO_STRING[callbackTypeID])
+                + "' callback of element '" + std::string(element->id) + "': " + std::string(errorMsg) + "\n");
+        }
     }
 
     bool UpdateElementValue(Element* element, lua_State* L)
@@ -946,16 +1004,16 @@ struct CustomImGui {
             ImGui::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
             HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
-            RunPreRenderCallbacks(&(*window));
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
-                if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                RunPreRenderCallbacks(&(*window));
+                if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
                         window->data.newPositionRequested = false;
                     }
                     if (window->data.newSizeRequested) {
-                        ImGui::SetWindowSize(window->data.newSize);
+                        ImGui::SetWindowSize(window->data.size);
                         window->data.newSizeRequested = false;
                     }
                     AddWindowContextMenu(&window->data.windowPinned);
@@ -989,6 +1047,25 @@ struct CustomImGui {
             ImGui::PopStyleColor(data->colors->size());
     }
 
+    void HandleElementSize(Element* element, bool isPush)
+    {
+        switch (element->type) {
+        // ignore elements with special size handling
+        case IMGUI_ELEMENT::Window:
+        case IMGUI_ELEMENT::Button:
+        case IMGUI_ELEMENT::PlotLines:
+        case IMGUI_ELEMENT::PlotHistogram:
+            return;
+        default:
+            if (isPush) {
+                ImGui::PushItemWidth(element->data.size.x);
+            } else {
+                ImGui::PopItemWidth();
+            }
+            return;
+        }
+    }
+
     void DrawMenuElements(std::list<Element>* elements)
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
@@ -996,6 +1073,7 @@ struct CustomImGui {
             RunPreRenderCallbacks(&(*element));
 
             ImGui::PushID(element->GetHash());
+            HandleElementSize(&(*element), true);
             HandleElementColors(element->GetElementData(), true);
             switch (element->type) {
             case IMGUI_ELEMENT::Menu:
@@ -1013,6 +1091,7 @@ struct CustomImGui {
                 break;
             }
             HandleElementColors(element->GetElementData(), false);
+            HandleElementSize(&(*element), false);
             ImGui::PopID();
         }
     }
@@ -1025,6 +1104,7 @@ struct CustomImGui {
 
             ImGui::PushID(element->GetHash());
             ElementData* data = element->GetElementData();
+            HandleElementSize(&(*element), true);
             HandleElementColors(data, true);
 
             switch (element->type) {
@@ -1066,6 +1146,14 @@ struct CustomImGui {
                     ImGui::EndTabItem();
                 }
                 break;
+            case IMGUI_ELEMENT::Window: {
+                if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
+                    RunCallbacks(&(*element));
+                    DrawElements(element->children);
+                    ImGui::EndChild();
+                }
+                break;
+            }
             case IMGUI_ELEMENT::Text:
                 ImGui::Text(name);
                 RunCallbacks(&(*element));
@@ -1091,7 +1179,7 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Button:
-                ImGui::Button(name);
+                ImGui::Button(name, element->data.size);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SmallButton:
@@ -1196,7 +1284,7 @@ struct CustomImGui {
                     // workaround: manually trigger Edited events
                     for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
                         if (callback->first == IMGUI_CALLBACK::Edited) {
-                            RunCallback(&(*element), callback->second);
+                            RunCallback(&(*element), callback->second, callback->first);
                         }
                     }
                 }
@@ -1205,18 +1293,18 @@ struct CustomImGui {
             } break;
             case IMGUI_ELEMENT::PlotLines: {
                 std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
-                ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, element->data.size);
                 RunCallbacks(&(*element));
             } break;
             case IMGUI_ELEMENT::PlotHistogram: {
                 std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
-                ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, element->data.size);
                 RunCallbacks(&(*element));
             } break;
             case IMGUI_ELEMENT::ProgressBar: {
                 const char* overlayText = data->hintText == "__DEFAULT__" ? NULL : data->hintText.c_str();
-                ImGui::ProgressBar(data->currentFloatVal, ImVec2(0.0f, 0.0f), overlayText);
+                ImGui::ProgressBar(data->currentFloatVal, element->data.size, overlayText);
                 if (!element->name.empty()) {
                     ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
                     ImGui::Text(name);
@@ -1229,6 +1317,7 @@ struct CustomImGui {
 
             HandleElementColors(data, false);
             HandleElementExtras(&(*element));
+            HandleElementSize(&(*element), false);
             ImGui::PopID();
         }
     }

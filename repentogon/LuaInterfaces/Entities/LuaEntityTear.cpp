@@ -46,6 +46,30 @@ LUA_FUNCTION(Lua_TearResetSpriteScale)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_IsMultidimensionalTouched) {
+	Entity_Tear* tear = lua::GetUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	lua_pushboolean(L, tear->_multidimensionalTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetMultidimensionalTouched) {
+	Entity_Tear* tear = lua::GetUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	tear->_multidimensionalTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_IsPrismTouched) {
+	Entity_Tear* tear = lua::GetUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	lua_pushboolean(L, tear->_prismTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetPrismTouched) {
+	Entity_Tear* tear = lua::GetUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	tear->_prismTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -58,6 +82,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTearEffectSprite", Lua_GetTearEffectSprite },
 		{ "GetDeadEyeSprite", Lua_GetDeadEyeSprite },
 		{ "ResetSpriteScale", Lua_TearResetSpriteScale },
+		{ "IsMultidimensionalTouched", Lua_IsMultidimensionalTouched },
+		{ "SetMultidimensionalTouched", Lua_SetMultidimensionalTouched },
+		{ "IsPrismTouched", Lua_IsPrismTouched },
+		{ "SetPrismTouched", Lua_SetPrismTouched },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);

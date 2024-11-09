@@ -3,6 +3,8 @@
 #include "HookSystem.h"
 
 #include "Level.h"
+#include "LuaEntitySaveState.h"
+#include "Room/RoomPlacement.h"
 
 LevelASM levelASM;
 
@@ -49,7 +51,7 @@ LUA_FUNCTION(lua_LevelSetName) {
 
 LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	level->_greedwavesclearedwithoutredheartdamage = (uint32_t)luaL_checkinteger(L, 2);
 	return 0;
 }
 LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
@@ -80,6 +82,13 @@ LUA_FUNCTION(Lua_GetForceSpecialQuest) {
 LUA_FUNCTION(Lua_SetForceSpecialQuest) {
 	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_GetMyosotisPickups) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = (&level->_myosotisPickups);
+	return 1;
 }
 
 LUA_FUNCTION(Lua_LevelIsAltPath) {
@@ -139,6 +148,155 @@ HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t sta
 	}
 }
 
+LUALIB_API int LuaCheckDimension(lua_State* L, int arg) {
+	lua_Integer dimension = luaL_optinteger(L, arg, -1);
+	if (dimension < -1 || dimension > 2) {
+		return luaL_argerror(L, arg, "Invalid Dimension");
+	}
+	return (int)dimension;
+}
+
+// Generates a determinstic seed for room placement based on the shape of the room and where we are trying to place it.
+// This is very similar to what is done when the game creates red rooms.
+uint32_t GetRoomPlacementSeed(const int roomShape, const int x, const int y) {
+	const uint32_t seed = (g_Game->_dungeonPlacementSeed + y * 929) * (x + roomShape);
+	RNG rng;
+	rng.SetSeed(seed, 35);
+	return std::max(rng.Next(), 1u);
+}
+
+// Validates room placement seed passed from lua. If 0 or nil is passed, generate a seed.
+LUALIB_API uint32_t LuaCheckRoomPlacementSeed(lua_State* L, int arg, const int roomShape, const int x, const int y) {
+	lua_Integer inputSeed = luaL_optinteger(L, arg, 0);
+	if (inputSeed < 0) {
+		luaL_argerror(L, arg, "Invalid Seed");
+	}
+	else if (inputSeed == 0) {
+		return GetRoomPlacementSeed(roomShape, x, y);
+	}
+	return (uint32_t)inputSeed;
+}
+
+LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	const int gridIndex = (int)luaL_checkinteger(L, 3);
+	if (gridIndex < 0 || gridIndex > 168) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	const XY coords = RoomIndexToCoords(gridIndex);
+	const int dimension = LuaCheckDimension(L, 4);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, 5, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 6, false);
+	const bool allowNoNeighbors = lua::luaL_optboolean(L, 7, false);
+	const bool result = CanPlaceRoom(roomConfig, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
+	lua_pushboolean(L, result);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	const int gridIndex = (int)luaL_checkinteger(L, 3);
+	if (gridIndex < 0 || gridIndex > 168) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	const XY coords = RoomIndexToCoords(gridIndex);
+	const int dimension = LuaCheckDimension(L, 4);
+	const uint32_t seed = LuaCheckRoomPlacementSeed(L, 5, roomConfig->Shape, coords.x, coords.y);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, 6, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 7, false);
+	const bool allowNoNeighbors = lua::luaL_optboolean(L, 8, false);
+	RoomDescriptor* newRoom = TryPlaceRoom(roomConfig, coords.x, coords.y, dimension, seed, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
+	if (newRoom) {
+		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	const int doorSlot = (int)luaL_checkinteger(L, 4);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, 5, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 6, false);
+	const bool result = CanPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
+	lua_pushboolean(L, result);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	if (!roomDescToConnect || !roomDescToConnect->Data) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	const int doorSlot = (int)luaL_checkinteger(L, 4);
+
+	// Find the target coordinates of this door, as we might use it to generate a seed.
+	const DoorSourceTarget doorsourceTarget = GetDoorSourceTarget(roomDescToConnect->GridIndex, roomDescToConnect->Data->Shape, doorSlot, false);
+	if (!doorsourceTarget.IsValid()) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+	const uint32_t seed = LuaCheckRoomPlacementSeed(L, 5, roomConfigToPlace->Shape, doorsourceTarget.target.x, doorsourceTarget.target.y);
+
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, 6, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 7, false);
+	RoomDescriptor* newRoom = TryPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors);
+	if (newRoom) {
+		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	const int dimension = LuaCheckDimension(L, 3);
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, 4, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 5, false);
+	const std::set<int> validLocations = FindValidRoomPlacementLocations(roomConfigToPlace, dimension, allowMultipleDoors, allowSpecialNeighbors);
+	
+	lua_newtable(L);
+	int i = 0;
+	for (const int gridIndex : validLocations) {
+		lua_pushinteger(L, gridIndex);
+		lua_rawseti(L, -2, i + 1);
+		i++;
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
+	//Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	const int gridIndex = (int)luaL_checkinteger(L, 2);
+	const int roomShape = (int)luaL_checkinteger(L, 3);
+	const int dimension = LuaCheckDimension(L, 4);
+	
+	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(gridIndex, roomShape, dimension);
+
+	lua_newtable(L);
+	for (const auto& [doorSlot, neighborDesc] : neighbors) {
+		lua::luabridge::UserdataPtr::push(L, neighborDesc, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+		lua_rawseti(L, -2, doorSlot);
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -154,9 +312,18 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDimension", Lua_GetDimension},
 		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
 		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+		{ "GetMyosotisPickups", Lua_GetMyosotisPickups },
 
 		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
 		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },
+
+		{ "CanPlaceRoom", Lua_LevelCanPlaceRoom },
+		{ "TryPlaceRoom", Lua_LevelTryPlaceRoom },
+		{ "CanPlaceRoomAtDoor", Lua_LevelCanPlaceRoomAtDoor },
+		{ "TryPlaceRoomAtDoor", Lua_LevelTryPlaceRoomAtDoor },
+		{ "FindValidRoomPlacementLocations", Lua_LevelFindValidRoomPlacementLocations },
+		{ "GetNeighboringRooms", Lua_LevelGetNeighboringRooms },
+
 		{ NULL, NULL }
 	};
 

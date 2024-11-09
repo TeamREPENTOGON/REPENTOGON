@@ -16,14 +16,14 @@
 #include "Lang.h"
 
 #include <Windows.h>
-#include <format>
-#include <gl/GL.h>
+#include <gl/gl.h>
+#include "glext.h"
 #include <sstream>
 #include <algorithm>
 
 #include "imgui.h"
 #include "imgui_freetype.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
@@ -290,7 +290,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 
 		case VK_RETURN: {
-			if (menuShown && !console.inputBuf[0] && console.focused) {
+			if (menuShown && console.ShouldCloseImGuiOnPressEnter()) {
 				menuShown = false;
 				return true;
 			}
@@ -424,7 +424,32 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
+// Manual handling of Window scaling via CTRL + Scroll, to only scale a window as a whole, and not every element seperately
+void HandleZoomWithMouseWheel() {
+	ImGuiContext& g = *GImGui;
+	if (g.HoveredWindow && g.IO.MouseWheel != 0.0f && !g.HoveredWindow->Collapsed)
+	{
+		// change scale operation to be executed on window root
+		ImGuiWindow* window = g.HoveredWindow;
+		while (window->ParentWindow != nullptr) {
+			window = window->ParentWindow;
+		}
 
+		if (g.IO.KeyCtrl)
+		{
+			// Zoom / Scale window. Based on imgui v1.45 implementation because new one calls a windows function to set the new window positions
+			// new imgui function impl in file: ..\REPENTOGON\libs\imgui\imgui.cpp - Line 9137 (Zoom / Scale window)
+			float new_font_scale = ImClamp(window->FontWindowScale + g.IO.MouseWheel * 0.10f, 0.50f, 2.50f);
+			float scale = new_font_scale / window->FontWindowScale;
+			const ImVec2 offset = ImVec2(window->Size.x * (1.0f - scale) * (g.IO.MousePos.x - window->Pos.x) / window->Size.x,
+				window->Size.y * (1.0f - scale) * (g.IO.MousePos.y - window->Pos.y) / window->Size.y);
+			window->Pos = ImVec2(window->Pos.x + offset.x, window->Pos.y + offset.y);
+			window->Size = ImVec2(window->Size.x * scale, window->Size.y * scale);
+			window->SizeFull = ImVec2(window->SizeFull.x * scale, window->SizeFull.y * scale);
+			window->FontWindowScale = new_font_scale;
+		}
+	}
+}
 
 
 //luamod error popup
@@ -477,6 +502,8 @@ void RenderLuamodErrorPopup() {
 
 ImFont* imFontUnifont = NULL;
 
+PFNGLUSEPROGRAMPROC glUseProgram;
+
 void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
@@ -488,10 +515,10 @@ void __stdcall RunImGui(HDC hdc) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
-
+		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
 		ImGui::CreateContext();
 		ImGui_ImplWin32_Init(window);
-		ImGui_ImplOpenGL3_Init();
+		ImGui_ImplOpenGL2_Init();
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -507,6 +534,7 @@ void __stdcall RunImGui(HDC hdc) {
 		// mouse, keyboard and gamepad support
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
+		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::CaptureMouseFromApp();
 		ImGui::CaptureKeyboardFromApp();
 		ImFontConfig cfg;
@@ -556,19 +584,17 @@ void __stdcall RunImGui(HDC hdc) {
 		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
 	
 		imguiInitialized = true;
-		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
-
-	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
 	float scale_to_set = g_PointScale;
 	if (repentogonOptions.imGuiScale != 0) {
-		scale_to_set = repentogonOptions.imGuiScale;
-	};
+		scale_to_set = (float)repentogonOptions.imGuiScale;
+	}
 	if (g_PointScale > 0) {
 		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
 		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;
@@ -623,15 +649,22 @@ void __stdcall RunImGui(HDC hdc) {
 	// render console very late to make auto-focus work properly
 	console.Draw(menuShown);
 
-	RenderLuamodErrorPopup(); //above the konsol
+	RenderLuamodErrorPopup(); //above the console
 
 	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);
 
+	HandleZoomWithMouseWheel();
+
 	ImGui::Render();
 
+
+	GLint last_program;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+	glUseProgram(0);
 	// Draw the overlay
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	glUseProgram(last_program);
 }
 
 
@@ -647,10 +680,13 @@ void HookImGui() {
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
 	void* imguiAddr = &RunImGui;
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+	patch.PreserveRegisters(registers)
 		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
 		.AddInternalCall(imguiAddr)
+		.RestoreRegisters(registers)
+		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
 		.AddRelativeJump((char*)addr + 0x5);
 
 	sASMPatcher.PatchAt(addr, &patch);

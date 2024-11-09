@@ -30,6 +30,8 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	BitSet128 _tearFlags : 0x378;
 	bool _sampleLaser : 0x3ad;
 	HomingLaser _homingLaser : 0x3b4;
+	bool _multidimensionalTouched: 0x450;
+	bool _prismTouched: 0x464;
 	float _damageMultiplier : 0x46c;
 
 	__vtable {

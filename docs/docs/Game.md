@@ -81,7 +81,15 @@ Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 ___
 ### GetDizzyAmount () {: aria-label='Functions' }
 #### float GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
-Returns the current dizzy amount akin to Wavy Cap
+Returns the current dizzy amount akin to Wavy Cap.
+
+___
+### GetGenericPrompt () {: aria-label='Functions' }
+#### [GenericPrompt](GenericPrompt.md) GetGenericPrompt ( ) {: .copyable aria-label='Functions' }
+Returns the currently active `GenericPrompt` object.
+
+???+ bug "Bug"
+	  Crashes the game if used during a run while no prompts are active.
 
 ___
 ### GetLerpColorModifier () {: aria-label='Functions' }

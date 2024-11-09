@@ -59,12 +59,12 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 }
 */
 
-HOOK_METHOD(Console, SubmitInput, (bool unk) -> void) {
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
 	Game* game = g_Game;
 	if (game->GetDailyChallenge()._id != 0 && !game->GetDailyChallenge()._isPractice) {
 		return;
 	}
-	super(unk);
+	super(in, out, player);
 }
 
 // Instruct the stat HUD to recalculate planetarium chance after every new level. Avoids running planetarium chance calculation and associated callbacks every frame
@@ -102,3 +102,34 @@ HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, un
 		return super(path, unk1, unk2);
 	};
 };
+
+//Hornfel rare crash with minecart
+
+HOOK_METHOD(Entity_NPC, Hornfel_UpdateAI, () -> void) {
+	switch (_state) {
+	case 6:
+	case 7:
+		if (!GetMinecart()) {
+			printf("Warning! Hornfel is about to blow this game! (I hate this red thing, I spit on you)\n");
+			//restoring summon state while Hornfel is out of the room
+			_state = 13, _entityGridCollisionClass = 5, _entityCollisionClass = 4, _visible = true;
+			break;
+		}
+	}
+	super();
+}
+
+HOOK_METHOD(Entity_NPC, Hornfel_UpdateFrame, () -> void) {
+	if (_state == 4 || _state == 13) {
+		//printf("Trying to switch states, mm?\n");
+		return;
+	}
+	super();
+}
+
+//resetting wispCollectibleType for Mystery Gift/Eden's Soul wisps bug
+HOOK_METHOD(Entity_Familiar, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
+	_wispCollectibleType = 0;
+
+	super(type, variant, subtype, initSeed);
+}

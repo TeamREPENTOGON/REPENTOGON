@@ -1,11 +1,13 @@
 "558bec83ec10568bf1f30f1046":
 __thiscall void Point::UpdateNormal(Vector* unk);
 
-struct Point depends (Vector) {
+struct Point depends (Vector, ColorMod) {
 	{{
-		Point() : _pos(Vector()), _spritesheetCoordinate(0.0f), _width(1.0f) {}
-		Point(Vector const& pos, float spritesheetCoordinate, float width) : _pos(pos), _spritesheetCoordinate(spritesheetCoordinate), _width(width) {}
+		Point() : _pos(Vector()), _spritesheetCoordinate(0.0f), _width(1.0f), _color(ColorMod()), _worldSpace(true) {}
+		Point(Vector const& pos, float spritesheetCoordinate, float width, ColorMod const& color, bool worldSpace) : _pos(pos), _spritesheetCoordinate(spritesheetCoordinate), _width(width), _color(color), _worldSpace(worldSpace) {}
 	}}
 	Vector _pos : 0x0;
 	float _width : 0x8, _spritesheetCoordinate : 0xc;
-} : 0x10;
+	ColorMod _color : 0x10;
+	bool _worldSpace : 0x3c;
+} : 0x3d;

@@ -32,6 +32,7 @@ ___
 ### GetLootList () {: aria-label='Functions' }
 #### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
+
 ___
 ### GetPickupGhost () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) GetPickupGhost ( ) {: .copyable aria-label='Functions' }
@@ -89,6 +90,11 @@ Returns the new pickup index.
 ___
 ### SetVarData () {: aria-label='Functions' }
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
+
+___
+### TriggerTheresOptionsPickup () {: aria-label='Functions' }
+#### void TriggerTheresOptionsPickup ( ) {: .copyable aria-label='Functions' }
+Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 
 ___
 ### TryFlip () {: aria-label='Functions' }

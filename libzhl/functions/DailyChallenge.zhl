@@ -8,5 +8,6 @@ struct DailyChallenge depends (ChallengeParam) {
 	unsigned int _id : 0x0; // 0x0
 	unsigned int _seed : 0x4; // 0x4
 	bool _isPractice : 0x8; // 0x8
+	unsigned int _specialDailyId : 0xc;
 	ChallengeParam _params : 0x10; 
 } : 0xb4;

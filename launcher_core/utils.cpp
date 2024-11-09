@@ -1,8 +1,9 @@
-#include "launcher/utils.h"
+#include "dsound/utils.h"
 #include <cstdio>
 #include <cstdarg>
 
 #include <atomic>
+#include <string>
 
 int argc = 0;
 char** argv = NULL;

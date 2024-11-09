@@ -13,6 +13,9 @@ __thiscall void PersistentGameData::AddToCollection(int collectibleID);
 "558bec6aff68????????64a1????????5083ec38a1????????33c58945??535657508d45??64a3????????8bf1":
 __thiscall void PersistentGameData::Load(char const *filepath);
 
+"558bec83ec145356578bf9807f??00":
+__thiscall bool PersistentGameData::AddBestiaryKill(int EntityType, int EntityVariant);
+
 "558bec83ec0c57ff750c8bf98b0d????????ff75088d89889f0200e8????????85c074??80b8e80000000074??568b308d8f0c0f0000":
 __thiscall int PersistentGameData::GetBestiaryDeathCount(int EntityType, int EntityVariant);
 
@@ -31,6 +34,9 @@ __thiscall void PersistentGameData::Save();
 "558bec8079??000f85":
 __thiscall void PersistentGameData::AddChallenge(int challengeID);
 
+"558bec568bf1807e??000f85":
+__thiscall void PersistentGameData::AddBoss(int bossID);
+
 struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
@@ -43,5 +49,6 @@ struct PersistentGameData { {{
 	}
 }}
 	bool achievements[638] : 0x38;
+	bool bosses[104] : 0xd97;
 	bool challenges[45] : 0xdff;
 } : 0xf20;

@@ -4,7 +4,7 @@ tags:
 ---
 
 ???+ info
-These are the enums used by [glBlendFuncSeparate](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml).
+    These are the enums used by [glBlendFuncSeparate](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml).
 
 # Enum "BlendFactor"
 |Value|Enumerator|Comment|

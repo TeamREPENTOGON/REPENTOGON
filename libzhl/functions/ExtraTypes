@@ -105,6 +105,11 @@ TypeInfo std_vector_int {
     Align 4;
 };
 
+TypeInfo std_vector_float {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_vector_vector2 {
     Size 12;
     Align 4;
@@ -205,7 +210,7 @@ TypeInfo vector_CostumeSpriteDesc {
     Align 4;
 };
 
-TypeInfo deque_LootListEntry {
+TypeInfo LootList {
 	Size 20;
 	Align 4;
 };
@@ -218,4 +223,9 @@ TypeInfo vector_BossPoolEntry {
 TypeInfo vector_HomingLaserBezier {
 	Size 12;
 	Align 4;
+};
+
+TypeInfo deque_ShopRestockDesc {
+	Size 20;
+    Align 4;
 };

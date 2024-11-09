@@ -176,6 +176,7 @@ namespace lua {
         extern LIBZHL_API const char* ColorModifierMT;
         extern LIBZHL_API const char* CustomChallengeMenuMT;
         extern LIBZHL_API const char* CutscenesMenuMT;
+        extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* DailyChallengeMenuMT;
@@ -209,6 +210,8 @@ namespace lua {
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
+        extern LIBZHL_API const char* LRoomAreaDescMT;
+        extern LIBZHL_API const char* LRoomTileDescMT;
         extern LIBZHL_API const char* MainMenuMT;
         extern LIBZHL_API const char* MenuManagerMT;
         extern LIBZHL_API const char* MinimapMT;

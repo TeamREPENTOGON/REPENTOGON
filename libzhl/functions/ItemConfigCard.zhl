@@ -1,4 +1,7 @@
-struct ItemConfig_Card
+"568bf18b0d????????85c9":
+__thiscall bool ItemConfig_Card::IsAvailable();
+
+struct ItemConfig_Card depends (ANM2, ModEntry)
 {
     int id : 0x00;
     int achievementId : 0x04;
@@ -11,4 +14,6 @@ struct ItemConfig_Card
     unsigned int announcerVoice : 0x5C;
     unsigned int announcerDelay : 0x60;
     unsigned int mimicCharge : 0x64;
-} : 0x68;
+	ModEntry* modEntry : 0x68;
+	ANM2* moddedCardFront : 0x6c;
+} : 0x70;

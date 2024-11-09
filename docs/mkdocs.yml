@@ -143,6 +143,7 @@ nav:
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
+    - GetCollectibleFlag: enums/GetCollectibleFlag.md
     - GLSLType: enums/GLSLType.md
     - Giantbook: enums/Giantbook.md
     - GibFlag: enums/GibFlag.md
@@ -191,8 +192,9 @@ nav:
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
-  - BossPool: BossPool.md
-  - BossPoolManager: BossPoolManager.md
+  - BossPool:
+    - BossPool: BossPool.md
+    - BossPoolManager: BossPoolManager.md
   - Camera: Camera.md
   - Capsule: Capsule.md
   - CcpContainer: 
@@ -227,6 +229,7 @@ nav:
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
+  - GenericPrompt: GenericPrompt.md
   - GridEntity:
     - GridEntity: GridEntity.md
     - GridEntityDecoration: GridEntityDecoration.md
@@ -258,6 +261,7 @@ nav:
     - ItemConfig: ItemConfig.md
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
+    - ItemConfig - Card: ItemConfig_Card.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md
@@ -269,6 +273,8 @@ nav:
   - LootList:
     - LootList: LootList.md
     - LootListEntry: LootListEntry.md
+  - LRoomAreaDesc: LRoomAreaDesc.md
+  - LRoomTileDesc: LRoomTileDesc.md
   - Menus:
     - MenuManager: menus/MenuManager.md
     - BestiaryMenu: menus/BestiaryMenu.md
@@ -361,6 +367,7 @@ nav:
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
+  - itempools.xml: xml/itempools.md
   - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
@@ -368,6 +375,7 @@ nav:
 - Example Mods:
   - Capsules: examples/Capsules.md
   - Deal Chance: examples/DealChance.md
+  - ImGui Menu: examples/ImGuiMenu.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
   - Beams: examples/Beams.md
   - Color Modifiers: examples/ColorModifiers.md

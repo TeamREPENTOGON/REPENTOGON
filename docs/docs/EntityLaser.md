@@ -41,7 +41,22 @@ ___
 
 ___
 ### GetTimeout () {: aria-label='Functions' }
-#### boolean GetTimeout ( ) {: .copyable aria-label='Functions' }
+#### int GetTimeout ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsMultidimensionalTouched () {: aria-label='Functions' }
+#### boolean IsMultidimensionalTouched ( ) {: .copyable aria-label='Functions' }
+Returns if the laser was created through the Multi Dimensional Baby effect.
+
+___
+### IsPrismTouched () {: aria-label='Functions' }
+#### boolean IsPrismTouched ( ) {: .copyable aria-label='Functions' }
+Returns if the laser was created through the Angelic Prism effect.
+
+___
+### RecalculateSamplesNextUpdate () {: aria-label='Functions' }
+#### void RecalculateSamplesNextUpdate ( ) {: .copyable aria-label='Functions' }
+Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
 
 ___
 ### ResetSpriteScale () {: aria-label='Functions' }
@@ -60,6 +75,11 @@ ___
 #### void SetDisableFollowParent ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___
+### SetPrismTouched () {: aria-label='Functions' }
+#### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the laser was created through the Angelic Prism effect.
+
+___
 ### SetScale () {: aria-label='Functions' }
 #### void SetScale ( float Value ) {: .copyable aria-label='Functions' }
 
@@ -69,6 +89,6 @@ ___
 
 ___
 ### SetTimeout () {: aria-label='Functions' }
-#### void SetTimeout ( boolean Value ) {: .copyable aria-label='Functions' }
+#### void SetTimeout ( int Value ) {: .copyable aria-label='Functions' }
 
 ___

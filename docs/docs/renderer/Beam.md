@@ -15,7 +15,7 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 #### [Beam](Beam.md) Beam ( [Sprite](../Sprite.md) Sprite, string LayerName, boolean UseOverlay, boolean UnkBool ) {: .copyable aria-label='Constructors' }
 
 ???+ warning "Warning"
-	The `Sprite` used in the Beam must be in the same "scope" as the Beam. For example, a global `Sprite` and `local Beam` works, but `local Sprite` and global `Beam` won't. They can also both be global/local or in the same table.
+	The `Sprite` used in the constructor is copied to Beam as a separate object. To acccess the new copy and make changes to it, use `Beam:GetSprite`.
 
 ???- example "Example Code"
 	Here is an example of how you would use this class:
@@ -28,8 +28,6 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 	sprite:Play("Idle", false)
 	
 	local layer = sprite:GetLayer("chain")
-	layer:SetWrapSMode(1)
-	layer:SetWrapTMode(0)
 	
 	local chain = Beam(sprite, "chain", false, false)
 
@@ -51,7 +49,7 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 Adds a point to the beam. Points are stored in order of adding.
 
 ???+ info "Info"
-    `SpritesheetCoordinate` is, to our current understanding, the `Y` position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of `0` and `64` SpritesheetCoordinate will render the spritesheet starting from `y 0` to `y 64`, while an additional third point of `0` will draw it in reverse from `y 64` to `y 0`.
+    `SpritesheetCoordinate` is the `Y` position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of `0` and `64` SpritesheetCoordinate will render the spritesheet starting from `y 0` to `y 64`, while an additional third point of `0` will draw it in reverse from `y 64` to `y 0`.
 	`Width` acts as a multiplier for how wide the beam should be. A non-zero value will scale the spritesheet width accordingly. This is interpolated between points.
 
 ___

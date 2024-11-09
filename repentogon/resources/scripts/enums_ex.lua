@@ -111,6 +111,8 @@ ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE = 1125
 ModCallbacks.MC_POST_SLOT_SET_PRIZE_COLLECTIBLE = 1126
 ModCallbacks.MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS = 1127
 
+ModCallbacks.MC_POST_FORCE_ADD_PILL_EFFECT = 1129
+
 ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS = 1130
 ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY = 1131
 ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS = 1132
@@ -224,11 +226,20 @@ ModCallbacks.MC_POST_ROOM_TRANSITION_RENDER = 1272
 ModCallbacks.MC_PRE_BOSS_SELECT = 1280
 ModCallbacks.MC_PRE_PLAYER_ADD_COSTUME = 1281
 ModCallbacks.MC_PRE_PLAYER_REMOVE_COSTUME = 1282
+ModCallbacks.MC_POST_PLAYER_ADD_COSTUME = 1283
+ModCallbacks.MC_POST_PLAYER_REMOVE_COSTUME = 1284
+
+ModCallbacks.MC_PRE_TRIGGER_BED_SLEEP_EFFECT = 1285
+ModCallbacks.MC_POST_TRIGGER_BED_SLEEP_EFFECT = 1286
+ModCallbacks.MC_PRE_PLAYER_POCKET_ITEMS_SWAP = 1287
+ModCallbacks.MC_PRE_BED_SLEEP = 1288
 
 ModCallbacks.MC_PRE_GET_RANDOM_ROOM_INDEX = 1290
 
 ModCallbacks.MC_POST_GLOWING_HOURGLASS_SAVE = 1300
 ModCallbacks.MC_POST_GLOWING_HOURGLASS_LOAD = 1301
+ModCallbacks.MC_PRE_GLOWING_HOURGLASS_SAVE = 1302
+ModCallbacks.MC_PRE_GLOWING_HOURGLASS_LOAD = 1303
 
 ModCallbacks.MC_PRE_RENDER_CUSTOM_CHARACTER_MENU = 1333
 ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST = 1334
@@ -329,6 +340,9 @@ ModCallbacks.MC_PRE_PLAYER_REVIVE = 1481
 ModCallbacks.MC_POST_PLAYER_REVIVE = 1482
 ModCallbacks.MC_PRE_FORTUNE_DISPLAY = 1483
 ModCallbacks.MC_PRE_ITEM_TEXT_DISPLAY = 1484
+ModCallbacks.MC_GET_STATUS_EFFECT_TARGET = 1485
+ModCallbacks.MC_PRE_ENTITY_SET_COLOR = 1486
+ModCallbacks.MC_POST_ENTITY_SET_COLOR = 1487
 
 AddHealthType = {
 	NONE	=	0,
@@ -751,7 +765,7 @@ Achievement = {
 	LUCKY_TOE = 61,
 	EPIC_FETUS = 62,
 	SMB_SUPER_FAN = 63,
-	COUNTERFEIT_COIN = 64, COUNTERFEIT_PENNY = 65,
+	COUNTERFEIT_COIN = 64, COUNTERFEIT_PENNY = 64,
 	GUPPYS_HAIRBALL = 65,
 	A_FORGOTTEN_HORSEMAN = 66, CONQUEST = 66,
 	SAMSON = 67,
@@ -1064,7 +1078,7 @@ Achievement = {
 	POP = 374,
 	DOOR_STOP = 375,
 	DEATHS_LIST = 376,
-	HAEMOLACHRIA = 377,
+	HAEMOLACRIA = 377,
 	LACHRYPHAGY = 378,
 	SCHOOLBAG = 379,
 	TRISAGION = 380,
@@ -2452,6 +2466,45 @@ ImGuiColor = {
 	ModalWindowDimBg = 52,      -- Darken/colorize entire screen behind a modal window, when one is active
 }
 
+ImGuiWindowFlags = {
+	None = 0,
+	NoTitleBar = 1 << 0,   										-- Disable title-bar
+	NoResize = 1 << 1,   										-- Disable user resizing with the lower-right grip
+	NoMove = 1 << 2,   											-- Disable user moving the window
+	NoScrollbar = 1 << 3,   									-- Disable scrollbars (window can still scroll with mouse or programmatically)
+	NoScrollWithMouse = 1 << 4,   								-- Disable user vertically scrolling with mouse wheel. On child window, mouse wheel will be forwarded to the parent unless NoScrollbar is also set.
+	NoCollapse = 1 << 5,   										-- Disable user collapsing window by double-clicking on it. Also referred to as Window Menu Button (e.g. within a docking node).
+	AlwaysAutoResize = 1 << 6,   								-- Resize every window to its content every frame
+	NoBackground = 1 << 7,   									-- Disable drawing background color (WindowBg, etc.) and outside border. Similar as using SetNextWindowBgAlpha(0.0f).
+	NoSavedSettings = 1 << 8,   								-- Never load/save settings in .ini file
+	NoMouseInputs  = 1 << 9,   									-- Disable catching mouse, hovering test with pass through
+	MenuBar = 1 << 10,  										-- Has a menu-bar
+	HorizontalScrollbar = 1 << 11,								-- Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
+	NoFocusOnAppearing = 1 << 12,								-- Disable taking focus when transitioning from hidden to visible state
+	NoBringToFrontOnFocus = 1 << 13,							-- Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
+	AlwaysVerticalScrollbar = 1 << 14,  						-- Always show vertical scrollbar (even if ContentSize.y < Size.y)
+	AlwaysHorizontalScrollbar = 1 << 15,						-- Always show horizontal scrollbar (even if ContentSize.x < Size.x)
+	NoNavInputs = 1 << 16,  									-- No gamepad/keyboard navigation within the window
+	NoNavFocus = 1 << 17,  										-- No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB)
+	UnsavedDocument = 1 << 18,									-- Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed
+
+	NoNav =	(1 << 16) | (1 << 17),								-- ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
+	NoDecoration = (1 << 0) | (1 << 1) | (1 << 3) | (1 << 5),	-- ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse
+	NoInputs = (1 << 9) | (1 << 16) | (1 << 17),				-- ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
+}
+
+ImGuiChildFlags = {
+    None                    = 0,
+    Border                  = 1 << 0,   -- Show an outer border and enable WindowPadding. (IMPORTANT: this is always == 1 == true for legacy reason)
+    AlwaysUseWindowPadding  = 1 << 1,   -- Pad with style.WindowPadding even if no border are drawn (no padding by default for non-bordered child windows because it makes more sense)
+    ResizeX                 = 1 << 2,   -- Allow resize from right border (layout direction). Enable .ini saving (unless ImGuiWindowFlags_NoSavedSettings passed to window flags)
+    ResizeY                 = 1 << 3,   -- Allow resize from bottom border (layout direction).
+    AutoResizeX             = 1 << 4,   -- Enable auto-resizing width. Read "IMPORTANT: Size measurement" details above.
+    AutoResizeY             = 1 << 5,   -- Enable auto-resizing height. Read "IMPORTANT: Size measurement" details above.
+    AlwaysAutoResize        = 1 << 6,   -- Combined with AutoResizeX/AutoResizeY. Always measure size even when child is hidden, always return true, always disable clipping optimization! NOT RECOMMENDED.
+    FrameStyle              = 1 << 7,   -- Style the child window like a framed item: use FrameBg, FrameRounding, FrameBorderSize, FramePadding instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+}
+
 PocketItemType = {
 	PILL = 0,
 	CARD = 1,
@@ -2678,11 +2731,11 @@ BlendType = {
 
 MinimapState = {
 	NORMAL = 0,
-	EXPANDED_OPAQUE = 1,
-	EXPANDED = 2
+	EXPANDED = 1,
+	EXPANDED_OPAQUE = 2
 }
 
-DwmWindowAttributes={
+DwmWindowAttribute = {
     DWMWA_NCRENDERING_ENABLED=1,
     DWMWA_NCRENDERING_POLICY=2,
     DWMWA_TRANSITIONS_FORCEDISABLED=3,
@@ -2726,7 +2779,17 @@ ConceptionFamiliarFlag = { -- bitwise
 	TWISTED_PAIR = 1 << 12,
 }
 
+CharacterMenuStatus = {
+	DEFAULT = 0,
+	SEED = 1,
+	RANDOM_SELECTION = 2,
+	RANDOM_CHARACTER_SELECTION = 2,
+	FADEOUT = 3,
+	CHARACTER_PAPER_SWAP = 4,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
 Achievement.RESERVED_HEIROPHANT = 529
+Achievement.HAEMOLACHRIA = Achievement.HAEMOLACRIA

@@ -7,6 +7,15 @@ static __stdcall int ItemPool::GetCardEx(int Seed, int SpecialChance, int RuneCh
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b8e4000100":
 __thiscall void ItemPool::load_pools(char *xmlpath, bool ismod);
 
+"558bec83e4f881ece0090000":
+__thiscall void ItemPool::shuffle_pools();
+
+"558bec83e4f883ec1c538bd9c74424??1f000000":
+__thiscall void ItemPool::StoreGameState(GameStateItemPool* itemPoolState);
+
+"558bec83e4f883ec148b45??535657":
+__thiscall void ItemPool::RestoreGameState(GameStateItemPool* itemPoolState);
+
 "558bec81eca8000000a1????????33c58945??8b45":
 __thiscall int ItemPool::GetCollectible(int itemPoolType, uint32_t seed, uint32_t flags, int defaultItem);
 
@@ -22,20 +31,34 @@ __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int le
 "558bec83e4f883ec1c53568bf18b0d":
 static __stdcall bool ItemPool::TryReplaceWithMagicSkin(uint32_t seed<ecx>);
 
+"558bec8b45??83f81f":
+__thiscall void ItemPool::AddBibleUpgrade(int Add, int PoolType);
+
+"558bec83e4f8515356578b7d??8bd9":
+__thiscall void ItemPool::ResetCollectible(int Collectible);
+
 "558bec6b45??34":
 __thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
 
-struct ItemPool depends (ItemPool_Item) {
+"558bec83e4f883ec1453568b75??57":
+__thiscall int ItemPool::GetPoolForRoom(uint32_t RoomType, uint32_t Seed);
+
+"558bec51568bf1b801000000":
+__thiscall int ItemPool::ForceAddPillEffect(int32_t ID);
+
+struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }
 		inline std::vector<bool>* GetRoomBlacklistedCollectibles() { return &this->_roomBlacklistedCollectibles; }
 	}}
 	ItemPool_Item _pools[31] : 0x4;
 	int _lastPool : 0x650;
+	RNG _itemPoolRNG : 0x654;
 	vector_bool _removedCollectibles : 0x67c;  // Something goofy seemed to be happening with std::vector<bool> in zhl
 	vector_bool _roomBlacklistedCollectibles : 0x68c;  // doing this as a precaution too
 	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
 	int _numAvailableTrinkets : 0x798;
 	int _pillEffects[15] : 0x79c;
 	bool _idendifiedPillEffects[15] : 0x7d8;
+	uint16_t _remainingGenesisItems[31] : 0x7e8;
 } : 0x828;

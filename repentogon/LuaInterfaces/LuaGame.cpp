@@ -332,6 +332,14 @@ LUA_FUNCTION(Lua_RecordPlayerCompletion) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetGenericPrompt) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	auto* toLua = (GenericPrompt*)lua_newuserdata(L, sizeof(GenericPrompt));
+	*toLua = *game->GetGenericPrompt(); //
+	luaL_setmetatable(L, lua::metatables::GenericPromptMT);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -371,6 +379,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDizzyAmount", Lua_GetDizzyAmount},
 		{ "SetDizzyAmount", Lua_SetDizzyAmount},
 		{ "RecordPlayerCompletion", Lua_RecordPlayerCompletion},
+		{ "GetGenericPrompt", Lua_GetGenericPrompt},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

@@ -82,6 +82,13 @@ ___
 #### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
+### AddCustomCacheTag () {: aria-label='Functions' }
+#### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
+Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
+
+See [items.xml](xml/items.md) for more information on custom caches.
+
+___
 ### AddInnateCollectible () {: aria-label='Functions' }
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1 ) {: .copyable aria-label='Functions' }
 
@@ -98,6 +105,26 @@ ___
 ___
 ### AddLocust () {: aria-label='Functions' }
 #### void AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+
+???- info "Supported Items"
+    There are a few items which spawn unique locusts.
+    
+    - Breakfast (default)
+    - The Inner Eye
+    - Spoon Bender
+    - Cricket's Head
+    - Number One
+    - Blood of the Martyr
+    - Halo of Flies
+    - The Common Cold
+    - Brimstone
+    - Ipecac
+    - Mutant Spider
+    - Fire Mind
+    - Scorpio
+    - Holy Light
+    - Jacob's Ladder
+    - 120 Volt
 
 ___
 ### AddSmeltedTrinket () {: aria-label='Functions' }
@@ -123,9 +150,18 @@ ___
 ### CanCrushRocks () {: aria-label='Functions' }
 #### boolean CanCrushRocks ( ) {: .copyable aria-label='Functions' }
 
+???- info "Info"
+    Returns `true` if the player has one of the following items / effects / transformations.
+    
+    - The Nail
+    - Leo
+    - Thunder Thighs
+    - Mega Mush
+    - Stompy
+
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
-#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### boolean CanOverrideActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanUsePill () {: aria-label='Functions' }
@@ -215,6 +251,10 @@ ___
 Returns the current charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetBloodLustCounter () {: aria-label='Functions' }
+#### int GetBloodLustCounter ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBodyMoveDirection () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
 
@@ -295,6 +335,13 @@ ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
 #### [CostumeSpriteDesc](CostumeSpriteDesc.md)[] GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
+
+___
+### GetCustomCacheValue () {: aria-label='Functions' }
+#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
+Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
+
+See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetD8DamageModifier () {: aria-label='Functions' }
@@ -482,6 +529,21 @@ ___
 Returns the maximum charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetMaxBombs () {: aria-label='Functions' }
+#### int GetMaxBombs ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of bombs the player can currently hold.
+
+___
+### GetMaxCoins () {: aria-label='Functions' }
+#### int GetMaxCoins ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of coins the player can currently hold.
+
+___
+### GetMaxKeys () {: aria-label='Functions' }
+#### int GetMaxKeys ( ) {: .copyable aria-label='Functions' }
+Returns the maximum number of keys the player can currently hold.
+
+___
 ### GetMaxPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetMaxPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 Returns the maximum attack duration of the Kidney Stone item.
@@ -499,6 +561,11 @@ ___
 #### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetMovingBoxContents () {: aria-label='Functions' }
+#### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetMovingBoxContents ( ) {: .copyable aria-label='Functions' }
+Returns the pickups that are stored on the player through the use of the Moving Box collectible.
+
+___
 ### GetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### int GetNextUrethraBlockFrame ( ) {: .copyable aria-label='Functions' }
 Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
@@ -512,6 +579,10 @@ ___
 ### GetPlayerFormCounter () {: aria-label='Functions' }
 #### int GetPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html) PlayerFormID ) {: .copyable aria-label='Functions' } 
 Returns the amount of collectibles the player has tied to the specified transformation.
+
+___
+### GetPlayerIndex () {: aria-label='Functions' }
+#### int GetPlayerIndex ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPonyCharge () {: aria-label='Functions' }
@@ -551,6 +622,25 @@ ___
 ### GetSpeedModifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
 For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rolled.
+
+___
+### GetSpoofedCollectiblesList () {: aria-label='Functions' }
+#### table[] GetSpoofedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| CollectibleID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
+| AppendedCount | int | |
+| IsBlocked | boolean | |
+
+___
+### GetTearDisplacement () {: aria-label='Functions' }
+#### int GetTearDisplacement ( ) {: .copyable aria-label='Functions' }
+Returns the player's TearDisplacement value, used to check what eye the player is shooting from.
+
+???+ info "Return info"
+    - `1` Right eye
+    - `-1` Left eye
 
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
@@ -685,6 +775,7 @@ Returns `true` if the player is the non-active form of Tainted Lazarus with Birt
 ___
 ### IsInvisible () {: aria-label='Functions' }
 #### boolean IsInvisible ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the player has the Faded Polaroid / Camo Undies effect active.
 
 ___
 ### IsItemCostumeVisible () {: aria-label='Functions' }
@@ -793,6 +884,10 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
 
 ???+ bug "Bug"
     The player's head turns pitch black when this function is used without Kidney Stone.
+
+___
+### SetBloodLustCounter () {: aria-label='Functions' }
+#### void SetBloodLustCounter ( int Counter ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBombPlaceDelay () {: aria-label='Functions' }

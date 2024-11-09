@@ -26,6 +26,15 @@ __thiscall bool LevelGenerator::is_placement_valid(uint32_t* position, uint32_t 
 "558bec515356578bf9b8398ee33833db8b8f680300008bd18bb764030000":
 __thiscall void LevelGenerator::mark_dead_ends();
 
+"64a1????????56578bf9":
+static __fastcall int** LevelGenerator::get_room_placement_offsets(int shape);
+
+"558bec5156578bfa":
+static cleanup XY* LevelGenerator::get_door_source_position(XY* ret<ecx>, XY* position<edx>, int shape, int doorSlot);
+
+"558bec83e4f881ec54010000a1????????33c4898424????????8b45":
+static cleanup XY* LevelGenerator::get_door_target_position(XY* ret<ecx>, XY* position<edx>, int shape, int doorSlot, bool unk);
+
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{
     inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
