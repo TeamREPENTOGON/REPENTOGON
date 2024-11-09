@@ -28,6 +28,16 @@ Additions:
 	- POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
 		Fires after an entity's color is changed via Entity:SetColor
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
+	- MC_PRE_STATUS_EFFECT_APPLY(StatusEffect, Entity Entity, EntityRef Source, int Duration, nil or float or boolean or Vector ExtraParam1, nil or boolean or Color ExtraParam2)
+		Fires before a status efffect is applied to an entity.
+		Return an int to change duration.
+		Return false to cancel application. Prevents MC_POST_STATUS_EFFECT_APPLY from firing.
+		Return a table to change duration and extra parameters.
+		Extra parameters will be different depending on status effect.
+		This only fires for `Entity:AddX` methods.
+	- MC_POST_STATUS_EFFECT_APPLY(StatusEffect, Entity Entity, EntityRef Source, int Duration, nil or float or boolean or Vector ExtraParam1, nil or boolean or Color ExtraParam2)
+		Fires after a status efffect is applied to an entity.
+		This only fires for `Entity:AddX` methods.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 * Sprite:

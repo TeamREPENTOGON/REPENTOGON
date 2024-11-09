@@ -2549,3 +2549,45 @@ Note that if you cancel this, the game will not attempt to spawn another familia
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1475 |MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md)) | [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md) | boolean |
+
+### MC_PRE_STATUS_EFFECT_APPLY {: .copyable }
+Called before a status effect is applied to an enemy.
+
+Return `false` to prevent the status effect from being applied, an `integer` to change the duration, or a table `{ duration, extraParam1, extraParam2 }` to change the duration and extra parameters. Modified values are passed onto the next callback, unless `false` is returned.
+
+???+ info "Argument info"
+    `ExtraParam1` and `ExtraParam2` will have different types depending on what `StatusEffect` is being applied, corresponding to the parameters for the `Entity.AddX` methods.
+    
+    - BAITED, BLEEDING, BRIMSTONE_MARK, CHARMED, FEAR, FREEZE, ICE, MAGNETIZED, MIDAS_FREEZE, SHRINK, WEAKNESS: nil, nil
+    - BURN, POISON: float, nil
+    - CONFUSION: boolean, nil
+    - KNOCKBACK: [Vector](../Vector.md), boolean
+    - SLOWING: float, [Color](../Color.md)
+
+???- warning "Warning"
+	The Hourglass will not fire this callback.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1465 |MC_PRE_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md), [Entity](../Entity.md) Entity, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration, nil OR float OR boolean OR [Vector](../Vector.md) ExtraParam1, nil OR boolean OR [Color](../Color.md) ExtraParam2)  | [StatusEffect](StatusEffect.md) | boolean, int or table |
+
+### MC_POST_STATUS_EFFECT_APPLY {: .copyable }
+Called after a status effect is applied to an enemy.
+
+Accepts no return parameters.
+
+???+ info "Argument info"
+    `ExtraParam1` and `ExtraParam2` will have different types depending on what `StatusEffect` is being applied, corresponding to the parameters for the `Entity.AddX` methods.
+    
+    - BAITED, BLEEDING, BRIMSTONE_MARK, CHARMED, FEAR, FREEZE, ICE, MAGNETIZED, MIDAS_FREEZE, SHRINK, WEAKNESS: nil, nil
+    - BURN, POISON: float, nil
+    - CONFUSION: boolean, nil
+    - KNOCKBACK: [Vector](../Vector.md), boolean
+    - SLOWING: float, [Color](../Color.md)
+
+???- warning "Warning"
+	The Hourglass will not fire this callback.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1466 |MC_POST_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md), [Entity](../Entity.md) Entity, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration, nil OR float OR boolean OR [Vector](../Vector.md) ExtraParam1, nil OR boolean OR [Color](../Color.md) ExtraParam2)  | [StatusEffect](StatusEffect.md) | void |

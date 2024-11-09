@@ -237,6 +237,7 @@ local function checkTableTypeFunction(typestrings)
 	end
 end
 
+
 local function backEnum(enum, id)
 	for k, v in pairs(enum) do
 		if v == id then
@@ -423,74 +424,10 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
 	},
-	[ModCallbacks.MC_PRE_BAITED_STATUS_APPLY] = {
-		["boolean"] = true,
+	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = {
 		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_BLEEDING_STATUS_APPLY] = {
 		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_BRIMSTONE_MARK_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_CHARMED_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_FEAR_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_FREEZE_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_ICE_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_MAGNETIZED_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_MIDAS_FREEZE_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_SHRINK_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_WEAKNESS_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-	},
-	[ModCallbacks.MC_PRE_BURN_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-		["table"] = checkTableTypeFunction({ "integer", "number" })
-	},
-	[ModCallbacks.MC_PRE_POISON_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-		["table"] = checkTableTypeFunction({ "integer", "number" })
-	},
-	[ModCallbacks.MC_PRE_CONFUSION_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-		["table"] = checkTableTypeFunction({ "integer", "boolean" })
-	},
-	[ModCallbacks.MC_PRE_KNOCKBACK_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-		["table"] = checkTableTypeFunction({ "integer", "Vector", "boolean" })
-	},
-	[ModCallbacks.MC_PRE_SLOWING_STATUS_APPLY] = {
-		["boolean"] = true,
-		["number"] = checkInteger,
-		["table"] = checkTableTypeFunction({ "integer", "number", "Color" })
+		["table"] = checkTableSizeFunctionUpTo(3), -- per-status type checking done manually
 	},
 }
 
@@ -695,7 +632,6 @@ rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 		setExpectedTypes(tbl)
 	end
 end)
-
 
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
@@ -1476,6 +1412,109 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
+-- Custom handling for MC_PRE_STATUS_EFFECT_APPLY
+-- Handle type checking here since the callback is called for several status effects with different types,
+-- terminate early if false is returned,
+-- and use additive callback logic instead of the default one.
+local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity, entityRef, duration, extraParam1, extraParam2)
+	local recentRet = nil
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2)
+
+		if type(ret) == "boolean" then
+			if ret == false then return false end
+			recentRet = ret
+		elseif type(ret) == "table" then
+			if status == StatusEffect.CONFUSION then
+				local type1 = type(ret[1])
+				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
+				local type2 = type(ret[2])
+				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
+
+				if type1 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
+				elseif math.type(ret[1]) ~= "integer" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
+				elseif type2 ~= "boolean" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (boolean expected, got "..type2..")")
+				else
+					recentRet = ret
+					duration = ret[1]
+					extraParam1 = ret[2]
+				end
+			elseif status == StatusEffect.KNOCKBACK then
+				local type1 = type(ret[1])
+				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
+				local type2 = type(ret[2])
+				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
+				local type3 = type(ret[3])
+				if type3 == "userdata" then type3 = GetMetatableType(ret[3]) end
+
+				if type1 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
+				elseif math.type(ret[1]) ~= "integer" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
+				elseif type2 ~= "Vector" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (Vector expected, got "..type2..")")
+				elseif type3 ~= "boolean" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `3` (boolean expected, got "..type3..")")
+				else
+					recentRet = ret
+					duration = ret[1]
+					extraParam1 = ret[2]
+					extraParam2 = ret[3]
+				end
+			elseif status == StatusEffect.SLOWING then
+				local type1 = type(ret[1])
+				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
+				local type2 = type(ret[2])
+				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
+				local type3 = type(ret[3])
+				if type3 == "userdata" then type3 = GetMetatableType(ret[3]) end
+
+				if type1 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
+				elseif math.type(ret[1]) ~= "integer" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
+				elseif type2 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (number expected, got "..type2..")")
+				elseif type3 ~= "Color" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `3` (Color expected, got "..type3..")")
+				else
+					recentRet = ret
+					duration = ret[1]
+					extraParam1 = ret[2]
+					extraParam2 = ret[3]
+				end
+			elseif status == StatusEffect.BURN or status == StatusEffect.POISON then
+				local type1 = type(ret[1])
+				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
+				local type2 = type(ret[2])
+				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
+
+				if type1 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
+				elseif math.type(ret[1]) ~= "integer" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
+				elseif type2 ~= "number" then
+					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (number expected, got "..type2..")")
+				else
+					recentRet = ret
+					duration = ret[1]
+					extraParam1 = ret[2]
+				end
+			else
+				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
+			end
+		elseif type(ret) == "number" then
+			recentRet = ret
+		end
+	end
+
+	return recentRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1504,6 +1543,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
+	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = RunPreStatusEffectApplyCallback,
 }
 
 for _, callback in ipairs({
