@@ -3,6 +3,8 @@
 #include "HookSystem.h"
 #include "Log.h"
 
+// Lua_SoundActor currently disabled
+/*
 LUA_FUNCTION(Lua_SoundStreamGetActor)
 {
 	SoundStream* stream = *lua::GetUserdata<SoundStream**>(L, 1, lua::metatables::SoundStreamMT);
@@ -16,6 +18,7 @@ LUA_FUNCTION(Lua_SoundStreamGetActor)
 	luaL_setmetatable(L, lua::metatables::SoundActorMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_SoundStreamGetVolume)
 {
@@ -62,7 +65,7 @@ LUA_FUNCTION(Lua_SoundStreamGetFrameCount)
 static void RegisterSoundStream(lua_State* L)
 {
 	luaL_Reg functions[] = {
-		{ "GetActor", Lua_SoundStreamGetActor},
+		//{ "GetActor", Lua_SoundStreamGetActor},
 		{ "GetVolume", Lua_SoundStreamGetVolume},
 		{ "GetTargetVolume", Lua_SoundStreamGetTargetVolume},
 		{ "GetVolumeModifier", Lua_SoundStreamGetVolumeModifier},

@@ -1,3 +1,9 @@
+/*
+// This currently goes unused because I can't figure out
+// why these virtual function calls either don't work or crash outright.
+*/
+
+/*
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -174,3 +180,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 	RegisterSoundActor(_state);
 }
+*/
