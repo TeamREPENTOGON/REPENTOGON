@@ -2527,3 +2527,25 @@ Called after a player drops a pill onto the ground from their inventory.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1361 |MC_POST_PLAYER_DROP_PILL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityPickup](../EntityPickup.md) Pickup, [PillCardSlot](PillCardSlot.md) Slot) | [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) | void |
+
+### MC_PRE_PLAYER_GIVE_BIRTH_CAMBION {: .copyable }
+Called before Cambion Conception spawns a familiar after the player takes damage.
+
+Return `false` to prevent the familiar from being added.
+
+Note that if you cancel this, the game will not attempt to spawn another familiar until the next requisite amount of damage, and canceling the spawning here still counts towards Cambion Conception's usual limit of 4 familiar spawns.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1474 |MC_PRE_PLAYER_GIVE_BIRTH_CAMBION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md)) | [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md) | boolean |
+
+### MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE {: .copyable }
+Called before Immaculate Conception spawns a familiar after the player takes damage.
+
+Return `false` to prevent the familiar from being added.
+
+Note that if you cancel this, the game will not attempt to spawn another familiar until another 15 hearts are collected. Unlike Cambion Conception, Immaculate Conception will not stop attempting to spawn familiars until all available vanilla familiars have been granted.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1475 |MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md)) | [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md) | boolean |
