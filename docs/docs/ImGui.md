@@ -247,6 +247,15 @@ ___
 #### void SetHelpmarker ( string ElementId, string Text ) {: .copyable aria-label='Functions' }
 Adds a helpmarker to a given element. A Helpmarker is a `(?)` element rendered on the right of an element, which when hovered displays a tooltip.
 ___
+### SetSize () {: aria-label='Functions' }
+#### void SetSize ( string elementID, float width, float Height ) {: .copyable aria-label='Functions' }
+Sets the width and height of an element in pixels. Most regular form-elements only allow for width changes. Windows, Buttons and Plots do allow for width and height changes.
+
+If the width is equal 0, the element will try to fill all available space in the window (Default behavior). 
+
+If the value is negative, the element will fill the full width of the window, minus the number of pixels defined.
+Example: The window is 500px wide. A width of -75 will make the element 425px wide.
+___
 ### SetTextColor () {: aria-label='Functions' }
 #### void SetTextColor ( string ElementId, float r, float g, float b, float a = 1.0 ) {: .copyable aria-label='Functions' }
 Shortcut function to add a color modifier to text of a given element.
@@ -277,7 +286,7 @@ Set the position of a window in screen coordinates.
 ___
 ### SetWindowSize () {: aria-label='Functions' }
 #### void SetWindowSize ( string WindowId, float width, float Height ) {: .copyable aria-label='Functions' }
-Set the width and height of a window, in pixels.
+Deprecated. Now does the same as [SetSize()](#setsize).
 ___
 ### Show () {: aria-label='Functions' }
 #### void Show ( ) {: .copyable aria-label='Functions' }
