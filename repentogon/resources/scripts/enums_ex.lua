@@ -2788,6 +2788,17 @@ CharacterMenuStatus = {
 	CHARACTER_PAPER_SWAP = 4,
 }
 
+DoorMask = {
+	LEFT0 = 1 << DoorSlot.LEFT0,
+	UP0 = 1 << DoorSlot.UP0,
+	RIGHT0 = 1 << DoorSlot.RIGHT0,
+	DOWN0 = 1 << DoorSlot.DOWN0,
+	LEFT1 = 1 << DoorSlot.LEFT1,
+	UP1 = 1 << DoorSlot.UP1,
+	RIGHT1 = 1 << DoorSlot.RIGHT1,
+	DOWN1 = 1 << DoorSlot.DOWN1,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

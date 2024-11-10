@@ -81,7 +81,8 @@ ImGui.LinkWindowToElement("testWindow4", "button_windowflags")
 
 --------- CATEGORY INPUTS ---------
 ImGui.AddElement("testWindow2", "catInput", ImGuiElement.CollapsingHeader, "Input types")
-ImGui.AddButton("catInput", "testButton1","Button", function(clickCount) print("Button clicked "..clickCount.." times") end)
+ImGui.AddButton("catInput", "testButton1","Button with changed size and callback", function(clickCount) print("Button clicked "..clickCount.." times") end)
+ImGui.SetSize("testButton1", -10, 50)
 ImGui.AddInputInteger("catInput", "inputInt", "int input", function(val) print(val) end, 10, 5, 500)
 ImGui.AddInputFloat("catInput", "inputFloat", "float input", function(val) print(val) end, 2.5, 0.2, 5)
 ImGui.AddDragInteger("catInput", "DragInt", "int Drag", function(val) print(val) end, 5, 1, 0, 100)

@@ -1,9 +1,13 @@
 "558bec6aff68????????64a1????????5083ec4c535657a1????????33c5508d45??64a3????????8bf9897d??80bf????????000f84????????a1":
 __thiscall void GridEntity_Door::play_animation();
 
+"558bec83ec0c53568bf18b0d":
+__thiscall void GridEntity_Door::SetRoomTypes(int CurrentRoomType, int TargetRoomType);
+
 struct GridEntity_Door depends (ANM2) : public GridEntity {
     ANM2 _extraSprite : 0x164;
 	bool _unkbool : 0x27a;
+	int _targetRoomIdx : 0x27c;
 	uint32_t _previousState : 0x280;
 	uint32_t _previousVariant: 0x284;
 	uint32_t _unkBitFlags : 0x288;

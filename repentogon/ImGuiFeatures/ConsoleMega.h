@@ -985,14 +985,17 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             // If no result, let's calculate ourselves to give a preview of what curses this command will activate
                             if (autocompleteBuffer.empty() && cmdlets.size() == 2) {
-                                long mask;
+                                int mask;
                                 std::string calcCurses;
 
                                 try {
                                     mask = std::stoi(cmdlets[1]);
                                 }
-                                #pragma warning(suppress: 4101)
-                                catch (std::invalid_argument& err) {
+                                catch (std::invalid_argument&) {
+                                    return 0;
+                                }
+                                catch (std::out_of_range&) {
+                                    // number provided in the console is bigger than the max int value.
                                     return 0;
                                 }
                                 for (auto& node : curses) {
@@ -1215,7 +1218,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             [](unsigned char c) { return std::tolower(c); });
 
                         if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
-                            if (autocompleteBuffer.size() > repentogonOptions.consoleAutofillLimit) {       //autocomplete result cap is defined here
+                            if ((int)autocompleteBuffer.size() > repentogonOptions.consoleAutofillLimit) {       //autocomplete result cap is defined here
                                 break;
                             };
                             autocompleteBuffer.push_back(entry);

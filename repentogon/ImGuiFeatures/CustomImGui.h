@@ -146,7 +146,7 @@ struct Data {
     bool newPositionRequested = false;
     ImVec2 newPosition = ImVec2(0, 0);
     bool newSizeRequested = false;
-    ImVec2 newSize = ImVec2(0, 0); // 0,0 initializes windows with dynamic size
+    ImVec2 size = ImVec2(0, 0); // 0,0 initializes elements with dynamic size
     ImGuiWindowFlags windowFlags = 0;
     ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
 };
@@ -163,7 +163,7 @@ struct ElementData : Data {
     float lineCount = 6;
     float minVal = FLT_MIN;
     float maxVal = FLT_MAX;
-    float defaultFloatVal = 0; // used to store default float input value, and Height of Plots
+    float defaultFloatVal = 0; // used to store default float input value
     float currentFloatVal = 0; // used by Float Inputs
     int defaultIntVal = 0;
     int currentIntVal = 0; // used by Int Inputs and Keyboard/controller inputs
@@ -608,11 +608,11 @@ struct CustomImGui {
         return false;
     }
 
-    bool SetWindowSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
+    bool SetElementSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-            element->data.newSize = ImVec2(sizeX, sizeY);
+        if (element != NULL) {
+            element->data.size = ImVec2(sizeX, sizeY);
             element->data.newSizeRequested = true;
             return true;
         }
@@ -1013,7 +1013,7 @@ struct CustomImGui {
                         window->data.newPositionRequested = false;
                     }
                     if (window->data.newSizeRequested) {
-                        ImGui::SetWindowSize(window->data.newSize);
+                        ImGui::SetWindowSize(window->data.size);
                         window->data.newSizeRequested = false;
                     }
                     AddWindowContextMenu(&window->data.windowPinned);
@@ -1047,6 +1047,25 @@ struct CustomImGui {
             ImGui::PopStyleColor(data->colors->size());
     }
 
+    void HandleElementSize(Element* element, bool isPush)
+    {
+        switch (element->type) {
+        // ignore elements with special size handling
+        case IMGUI_ELEMENT::Window:
+        case IMGUI_ELEMENT::Button:
+        case IMGUI_ELEMENT::PlotLines:
+        case IMGUI_ELEMENT::PlotHistogram:
+            return;
+        default:
+            if (isPush) {
+                ImGui::PushItemWidth(element->data.size.x);
+            } else {
+                ImGui::PopItemWidth();
+            }
+            return;
+        }
+    }
+
     void DrawMenuElements(std::list<Element>* elements)
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
@@ -1054,6 +1073,7 @@ struct CustomImGui {
             RunPreRenderCallbacks(&(*element));
 
             ImGui::PushID(element->GetHash());
+            HandleElementSize(&(*element), true);
             HandleElementColors(element->GetElementData(), true);
             switch (element->type) {
             case IMGUI_ELEMENT::Menu:
@@ -1071,6 +1091,7 @@ struct CustomImGui {
                 break;
             }
             HandleElementColors(element->GetElementData(), false);
+            HandleElementSize(&(*element), false);
             ImGui::PopID();
         }
     }
@@ -1083,6 +1104,7 @@ struct CustomImGui {
 
             ImGui::PushID(element->GetHash());
             ElementData* data = element->GetElementData();
+            HandleElementSize(&(*element), true);
             HandleElementColors(data, true);
 
             switch (element->type) {
@@ -1125,7 +1147,7 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::Window: {
-                if (ImGui::BeginChild(element->name.c_str(), element->data.newSize, element->data.childFlags, element->data.windowFlags)) {
+                if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children);
                     ImGui::EndChild();
@@ -1157,7 +1179,7 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Button:
-                ImGui::Button(name);
+                ImGui::Button(name, element->data.size);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SmallButton:
@@ -1271,18 +1293,18 @@ struct CustomImGui {
             } break;
             case IMGUI_ELEMENT::PlotLines: {
                 std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
-                ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, element->data.size);
                 RunCallbacks(&(*element));
             } break;
             case IMGUI_ELEMENT::PlotHistogram: {
                 std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
-                ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, element->data.size);
                 RunCallbacks(&(*element));
             } break;
             case IMGUI_ELEMENT::ProgressBar: {
                 const char* overlayText = data->hintText == "__DEFAULT__" ? NULL : data->hintText.c_str();
-                ImGui::ProgressBar(data->currentFloatVal, ImVec2(0.0f, 0.0f), overlayText);
+                ImGui::ProgressBar(data->currentFloatVal, element->data.size, overlayText);
                 if (!element->name.empty()) {
                     ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
                     ImGui::Text(name);
@@ -1295,6 +1317,7 @@ struct CustomImGui {
 
             HandleElementColors(data, false);
             HandleElementExtras(&(*element));
+            HandleElementSize(&(*element), false);
             ImGui::PopID();
         }
     }

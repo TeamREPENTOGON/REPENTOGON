@@ -28,6 +28,8 @@ ___
 #### int[] FindValidRoomPlacementLocations ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfig, [Dimension](enums/Dimension.md) Dimension = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
 Returns a table of room grid indices that would be valid locations to place the specified room using [TryPlaceRoom](Level.md#tryplaceroom).
 
+Note that if you set `AllowSpecialNeighbors` to `true`, you can get weird placements next to the ultra secret room. You can use [GetNeighboringRooms](Level.md#getneighboringrooms) to confirm that potential neighbors are desired before placing your room.
+
 See [TryPlaceRoom](Level.md#tryplaceroom) for more information on room placement and example code.
 
 ___
@@ -133,7 +135,7 @@ If a seed of 0 or nil is provided, a deterministic seed with be auto-generated b
 
 The boolean parameters enable or disable additional restrictions/safeties for room placement:
 
-- AllowMultipleDoors: Set to `false` to only allow placement if the room would only have one door (useful for placing special rooms).
+- AllowMultipleDoors: Set to `false` to only allow placement if the room would only have one door (useful for placing special rooms). Secret rooms don't count as a door.
 - AllowSpecialNeighbors: Set to `true` to allow connections to existing special rooms (note that secret rooms are always permitted, but boss rooms never are).
 - AllowNoNeighbors: Set to `true` to permit room placements out in the void with no neighbors at all.
 
@@ -209,7 +211,7 @@ Otherwise, the details are the same as for [TryPlaceRoom](Level.md#tryplaceroom)
 				local requiredDoors = 15  -- Bitmask value that requires the new 1x1 room to have all 4 doorslots available, just so we're sure it fits.
 				local roomConfig = RoomConfigHolder.GetRandomRoom(seed, true, Isaac.GetCurrentStageConfigId(), RoomType.ROOM_DEFAULT, RoomShape.ROOMSHAPE_1x1, nil, nil, nil, nil, requiredDoors)
 				if roomConfig then
-					local newRoom = level:TryPlaceRoomAtDoor(roomConfig, roomDesc, nearestDoorSlot, seed, true, false)
+					local newRoom = level:TryPlaceRoomAtDoor(roomConfig, roomDesc, doorSlot, seed, true, false)
 					if newRoom then
 						success = true
 					end

@@ -701,7 +701,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 	data.hintText = luaL_optstring(L, 5, "");
 	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
 	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	data.defaultFloatVal = (float)luaL_optnumber(L, 8, 40.0f);
+	float height = (float)luaL_optnumber(L, 8, 40.0f);
 
 	EvalIDAndParent(L, id, parentId);
 
@@ -720,6 +720,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 
 	customImGui.AddElement(parentId, id, text, type);
 	Element* createdElement = customImGui.GetElementById(id);
+	createdElement->data.size.y = height;
 
 	createdElement->AddData(data);
 
@@ -738,7 +739,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 	data.hintText = luaL_optstring(L, 5, "");
 	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
 	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	data.defaultFloatVal = (float)luaL_optnumber(L, 8, 40.0f);
+	float height = (float)luaL_optnumber(L, 8, 40.0f);
 
 	EvalIDAndParent(L, id, parentId);
 
@@ -757,6 +758,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 
 	customImGui.AddElement(parentId, id, text, type);
 	Element* createdElement = customImGui.GetElementById(id);
+	createdElement->data.size.y = height;
 
 	createdElement->AddData(data);
 
@@ -1004,16 +1006,16 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_ImGui_SetWindowSize)
+LUA_FUNCTION(Lua_ImGui_SetSize)
 {
 	const char* elementId = luaL_checkstring(L, 1);
 	float sizeX = (float)luaL_checknumber(L, 2);
 	float sizeY = (float)luaL_checknumber(L, 3);
 
-	bool success = customImGui.SetWindowSize(elementId, sizeX, sizeY);
+	bool success = customImGui.SetElementSize(elementId, sizeX, sizeY);
 
 	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
+		return luaL_error(L, "Element with id '%s' not found", elementId);
 	}
 
 	return 0;
@@ -1066,13 +1068,14 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "AddProgressBar", Lua_ImGui_AddProgressBar );
 			lua::TableAssoc(L, "SetHelpmarker", Lua_ImGui_SetHelpmarker );
 			lua::TableAssoc(L, "SetColor", Lua_ImGui_SetColor );
+			lua::TableAssoc(L, "SetSize", Lua_ImGui_SetSize );
 			lua::TableAssoc(L, "SetTextColor", Lua_ImGui_SetTextColor );
 			lua::TableAssoc(L, "SetVisible", Lua_ImGui_SetVisible );
 			lua::TableAssoc(L, "SetWindowPinned", Lua_ImGui_SetWindowPinned );
 			lua::TableAssoc(L, "SetWindowFlags", Lua_ImGui_SetWindowFlags);
 			lua::TableAssoc(L, "SetWindowChildFlags", Lua_ImGui_SetWindowChildFlags);
 			lua::TableAssoc(L, "SetWindowPosition", Lua_ImGui_SetWindowPosition );
-			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetWindowSize );
+			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetSize ); // deprecated. now its an alias of SetSize
 			lua::TableAssoc(L, "SetTooltip", Lua_ImGui_SetTooltip );
 			lua::TableAssoc(L, "RemoveColor", Lua_ImGui_RemoveColor );
 			lua::TableAssoc(L, "GetMousePosition", Lua_ImGui_GetMousePos );

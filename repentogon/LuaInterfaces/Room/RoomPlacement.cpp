@@ -52,12 +52,12 @@ std::map<int, RoomDescriptor*> GetNeighboringRooms(const int gridIndex, const in
 	return neighbors;
 }
 
-bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors) {
-	if (column < 0 || column > 12 || line < 0 || line > 12) return false;
+bool CanPlaceRoom(const int roomShape, int doorMask, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors) {
+	if (column < 0 || column > 12 || line < 0 || line > 12 || roomShape < 1 || roomShape > 12) return false;
 
 	// This function provides a pointer to a raw array of integer pairs that represent the level grid offsets
 	// that the room shape occupies. For example, for a 1x2 room, it would be (0,0) and (0,1). The list ends with (-1, -1).
-	int* offsetsArray = *LevelGenerator::get_room_placement_offsets(room->Shape);
+	int* offsetsArray = *LevelGenerator::get_room_placement_offsets(roomShape);
 
 	for (int i = 0; i < 4; i++) {
 		const int x = offsetsArray[i * 2];
@@ -84,17 +84,29 @@ bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const
 	}
 
 	const int gridIndex = RoomCoordsToIndex(column, line);
-	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(gridIndex, room->Shape, dimension);
+	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(gridIndex, roomShape, dimension);
 
 	if (!allowNoNeighbors && neighbors.empty()) {
 		RoomPlacementDebug("Placement with no neighbors not allowed!");
 		return false;
 	}
 
+	if (doorMask < 0) {
+		// Assume all DoorSlots for this RoomShape are available.
+		doorMask = 0;
+		for (int doorSlot = 0; doorSlot < 8; doorSlot++) {
+			if (LevelGenerator::has_shape_slot(roomShape, doorSlot, false)) {
+				doorMask = doorMask | DoorSlotToMask(doorSlot);
+			}
+		}
+	}
+
 	int doors = 0;
+	bool hasSecretNeighbor = false;
+	bool hasNonSecretNeighbor = false;
 
 	for (const auto& [doorSlot, neighborDesc] : neighbors) {
-		if ((room->Doors & DoorSlotToMask(doorSlot)) == 0) {
+		if ((doorMask & DoorSlotToMask(doorSlot)) == 0) {
 			RoomPlacementDebug("Cannot connect to neighbor: Missing DoorSlot!");
 			return false;
 		}
@@ -109,7 +121,7 @@ bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const
 			return false;
 		}
 
-		const DoorSourceTarget doorSourceTarget = GetDoorSourceTarget(gridIndex, room->Shape, doorSlot, true);
+		const DoorSourceTarget doorSourceTarget = GetDoorSourceTarget(gridIndex, roomShape, doorSlot, true);
 		bool canConnect = false;
 
 		for (const int returnDoorSlot : GetPossibleReturnDoorSlots(doorSlot)) {
@@ -131,8 +143,11 @@ bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const
 			return false;
 		}
 
-		if (neighborDesc->Data->Type != 7) {
+		if (neighborDesc->Data->Type == 7 || neighborDesc->Data->Type == 8) {
 			// Don't count secret rooms as a door.
+			hasSecretNeighbor = true;
+		} else {
+			hasNonSecretNeighbor = true;
 			doors++;
 		}
 	}
@@ -142,7 +157,16 @@ bool CanPlaceRoom(RoomConfig_Room* room, const int column, const int line, const
 		return false;
 	}
 
+	if (hasSecretNeighbor && !hasNonSecretNeighbor && !allowSpecialNeighbors) {
+		RoomPlacementDebug("Placement with a secret room as the only neighbor is not allowed if allowSpecialNeighbors=false!");
+		return false;
+	}
+
 	return true;
+}
+
+bool CanPlaceRoom(RoomConfig_Room* roomConfig, const int column, const int line, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors) {
+	return roomConfig && CanPlaceRoom(roomConfig->Shape, roomConfig->Doors, column, line, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 }
 
 RoomDescriptor* TryPlaceRoom(RoomConfig_Room* roomConfig, const int column, const int line, const int dimension, const uint32_t seed, const bool allowMultipleDoors, const bool allowSpecialNeighbors, const bool allowNoNeighbors) {
@@ -176,8 +200,12 @@ RoomDescriptor* TryPlaceRoom(RoomConfig_Room* roomConfig, const int column, cons
 		return nullptr;
 	}
 
+	// We'll populate this with only the doors that are actually present.
+	roomDesc->AllowedDoors = 0;
+
+	Room* currentRoom = g_Game->GetCurrentRoom();
+
 	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(roomDesc->GridIndex, roomDesc->Data->Shape, dimension);
-	int triggerRedRoomCreatedDoorSlot = -1;
 
 	for (const auto& [doorSlot, neighborDesc] : neighbors) {
 		const int doorSlotFlag = DoorSlotToMask(doorSlot);
@@ -198,16 +226,28 @@ RoomDescriptor* TryPlaceRoom(RoomConfig_Room* roomConfig, const int column, cons
 				neighborDesc->Doors[returnDoorSlot] = returnSourceTarget.GetTargetIdx();
 				neighborDesc->AllowedDoors = neighborDesc->AllowedDoors | DoorSlotToMask(returnDoorSlot);
 
-				if (neighborDesc == g_Game->GetCurrentRoomDesc() && triggerRedRoomCreatedDoorSlot == -1) {
-					triggerRedRoomCreatedDoorSlot = returnDoorSlot;
+				if (neighborDesc == g_Game->GetCurrentRoomDesc() && !currentRoom->GetDoor(returnDoorSlot)) {
+					// The room is adjacent to the player's current room, so we need to spawn the door.
+					currentRoom->MakeDoor(returnDoorSlot);
+					GridEntity_Door* door = currentRoom->GetDoor(returnDoorSlot);
+					if (door) {
+						door->_targetRoomIdx = roomDesc->SafeGridIndex;
+						door->SetRoomTypes(neighborDesc->Data->Type, roomDesc->Data->Type);
+						if (currentRoom->GetFrameCount() > 0) {
+							door->play_animation();
+						}
+						// Remove red key outlines if any are present.
+						Entity_Effect* outline = currentRoom->_redDoorOutlines[returnDoorSlot];
+						if (outline) {
+							outline->Remove();
+							currentRoom->_redDoorOutlines[returnDoorSlot] = nullptr;
+						}
+					} else {
+						RoomPlacementDebug("Failed to spawn connecting door in player's current room. Weird!!");
+					}
 				}
 			}
 		}
-	}
-
-	if (triggerRedRoomCreatedDoorSlot > -1) {
-		// If the new room was placed into an adjacent room, calling TriggerRedRoomCreated is an easy way to spawn the door, among other things.
-		g_Game->GetCurrentRoom()->TriggerRedRoomCreated(triggerRedRoomCreatedDoorSlot, roomDesc);
 	}
 
 	// Update the visibility of the new room appropriately.
@@ -233,13 +273,13 @@ RoomDescriptor* TryPlaceRoom(RoomConfig_Room* roomConfig, const int column, cons
 	return roomDesc;
 }
 
-std::vector<XY> FindPlacementsForRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot) {
+std::vector<XY> FindPlacementsForRoomAtDoor(const int roomShape, RoomDescriptor* existingRoom, const int doorSlot) {
 	std::vector<XY> out;
-	if (roomConfig && existingRoom && existingRoom->Data && (existingRoom->Data->Doors & DoorSlotToMask(doorSlot)) != 0) {
+	if (existingRoom && existingRoom->Data && (existingRoom->Data->Doors & DoorSlotToMask(doorSlot)) != 0) {
 		const DoorSourceTarget doorSourceTarget = GetDoorSourceTarget(existingRoom->GridIndex, existingRoom->Data->Shape, doorSlot, false);
 		if (doorSourceTarget.IsValid()) {
 			for (const int returnDoorSlot : GetPossibleReturnDoorSlots(doorSlot)) {
-				const DoorSourceTarget returnSourceTarget = GetDoorSourceTarget(doorSourceTarget.GetTargetIdx(), roomConfig->Shape, returnDoorSlot, false);
+				const DoorSourceTarget returnSourceTarget = GetDoorSourceTarget(doorSourceTarget.GetTargetIdx(), roomShape, returnDoorSlot, false);
 				if (returnSourceTarget.IsValid()) {
 					const XY offset = doorSourceTarget.target - returnSourceTarget.source;
 					const XY placementPos = doorSourceTarget.target + offset;
@@ -251,18 +291,24 @@ std::vector<XY> FindPlacementsForRoomAtDoor(RoomConfig_Room* roomConfig, RoomDes
 	return out;
 }
 
-bool CanPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
-	const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomConfig, existingRoom, doorSlot);
+bool CanPlaceRoomAtDoor(const int roomShape, const int doorMask, RoomDescriptor* existingRoom, const int doorSlot, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomShape, existingRoom, doorSlot);
 	for (const XY& coords : possiblePlacements) {
-		if (CanPlaceRoom(roomConfig, coords.x, coords.y, existingRoom->Dimension, allowMultipleDoors, allowSpecialNeighbors, /*allowNoNeighbors=*/false)) {
+		if (CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, existingRoom->Dimension, allowMultipleDoors, allowSpecialNeighbors, /*allowNoNeighbors=*/false)) {
 			return true;
 		}
 	}
 	return false;
 }
 
+bool CanPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	return roomConfig && CanPlaceRoomAtDoor(roomConfig->Shape, roomConfig->Doors, existingRoom, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
+}
+
 RoomDescriptor* TryPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const uint32_t seed, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
-	std::vector<XY> placements = FindPlacementsForRoomAtDoor(roomConfig, existingRoom, doorSlot);
+	if (!roomConfig) return nullptr;
+
+	std::vector<XY> placements = FindPlacementsForRoomAtDoor(roomConfig->Shape, existingRoom, doorSlot);
 	if (seed % 2 == 0 && placements.size() > 1) {
 		std::swap(placements[0], placements[1]);
 	}
@@ -272,10 +318,11 @@ RoomDescriptor* TryPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* 
 			return newRoom;
 		}
 	}
+
 	return nullptr;
 }
 
-std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+std::set<int> FindValidRoomPlacementLocations(const int roomShape, const int doorMask, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
 	const int trueDimension = dimension > -1 ? dimension : g_Game->GetDimension();
 
 	std::set<int> out;
@@ -284,9 +331,9 @@ std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const
 		RoomDescriptor* roomDesc = &g_Game->_gridRooms[i];
 		if (roomDesc && roomDesc->Data && roomDesc->Dimension == trueDimension) {
 			for (int doorSlot = 0; doorSlot < 8; doorSlot++) {
-				const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomConfig, roomDesc, doorSlot);
+				const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomShape, roomDesc, doorSlot);
 				for (const XY& coords : possiblePlacements) {
-					if (CanPlaceRoom(roomConfig, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, false)) {
+					if (CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, false)) {
 						out.insert(RoomCoordsToIndex(coords.x, coords.y));
 					}
 				}
@@ -295,4 +342,11 @@ std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const
 	}
 
 	return out;
+}
+
+std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	if (!roomConfig) {
+		return std::set<int>();
+	}
+	return FindValidRoomPlacementLocations(roomConfig->Shape, roomConfig->Doors, dimension, allowMultipleDoors, allowSpecialNeighbors);
 }

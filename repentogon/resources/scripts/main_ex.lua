@@ -1519,6 +1519,7 @@ RoomConfigHolder = RoomConfig  -- Backwards compatability
 -- Reset Imgui Data after reload of all mods
 ImGui.Reset()
 
+
 --resource load error, used in changelog but it's not strictly a changelog thing so i'm putting it here
 local res_error_font=Font()
 local loaded_reserror_font=""
@@ -1545,7 +1546,6 @@ local reserror_fonts={
 	["zh"]={"font/cjk/lanapixel.fnt",-15,0},
 }
 
-
 local function NoRepentogonFolderErrRender()
 --	if MenuManager:GetActiveMenu()==MainMenuType.TITLE then
 		curlocale=Options.Language
@@ -1558,6 +1558,27 @@ local function NoRepentogonFolderErrRender()
 --	end
 end
 REPENTOGON.Extras.Misc.NoRPTGNFldrErr=NoRepentogonFolderErrRender
+--res load error stuff end
+
+
+local RoomShapeToDoorMask = {
+	[RoomShape.ROOMSHAPE_1x1] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0,
+	[RoomShape.ROOMSHAPE_IH] = DoorMask.LEFT0 | DoorMask.RIGHT0,
+	[RoomShape.ROOMSHAPE_IV] = DoorMask.UP0 | DoorMask.DOWN0,
+	[RoomShape.ROOMSHAPE_1x2] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.RIGHT1,
+	[RoomShape.ROOMSHAPE_IIV] = DoorMask.UP0 | DoorMask.DOWN0,
+	[RoomShape.ROOMSHAPE_2x1] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.UP1 | DoorMask.DOWN1,
+	[RoomShape.ROOMSHAPE_IIH] = DoorMask.LEFT0 | DoorMask.RIGHT0,
+	[RoomShape.ROOMSHAPE_2x2] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.UP1 | DoorMask.RIGHT1 | DoorMask.DOWN1,
+	[RoomShape.ROOMSHAPE_LTL] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.UP1 | DoorMask.RIGHT1 | DoorMask.DOWN1,
+	[RoomShape.ROOMSHAPE_LTR] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.UP1 | DoorMask.RIGHT1 | DoorMask.DOWN1,
+	[RoomShape.ROOMSHAPE_LBL] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.UP1 | DoorMask.RIGHT1 | DoorMask.DOWN1,
+	[RoomShape.ROOMSHAPE_LBR] = DoorMask.LEFT0 | DoorMask.UP0 | DoorMask.RIGHT0 | DoorMask.DOWN0 | DoorMask.LEFT1 | DoorMask.UP1 | DoorMask.RIGHT1 | DoorMask.DOWN1,
+}
+rawset(Isaac, "GetAllowedDoorsMaskForRoomShape", function(roomShape)
+	return roomShape and RoomShapeToDoorMask[roomShape] or 0
+end)
+
 
 local SpriteMT=getmetatable(Sprite)
 local OldSprConstructor=SpriteMT.__call
@@ -1588,6 +1609,7 @@ function FontMT.__call(_,FontPath)
 
 	return out,isloaded
 end
+
 
 -- Gets rid of the old `scripts/main.lua` wrappers for some re-implemented function hooks.
 -- This can allow us to circumvent how the old wrappers handled certain inputs, as well as make
@@ -1628,7 +1650,6 @@ for _, tab in ipairs(LuaWrappersToRemove) do
 end
 LuaWrappersToRemove = nil
 
---res load error stuff end
 
 pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
