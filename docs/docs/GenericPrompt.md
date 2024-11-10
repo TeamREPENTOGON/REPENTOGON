@@ -82,6 +82,10 @@ ___
 Renders the prompt on-screen. Place this in any of the non-entity-specific RENDER callbacks.
 
 ___
+### SetImageToVictoryRun () {: aria-label='Functions' }
+#### void SetImageToVictoryRun ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SetText () {: aria-label='Functions' }
 #### void SetText ( string Text1 = "", string Text2 = "", string Text3 = "", string Text4 = "", string Text5 = "", ) {: .copyable aria-label='Functions' }
 Set text that will appear on the paper.

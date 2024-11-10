@@ -10,7 +10,7 @@ tags:
 ## Modified Functions
 
 ### GetPathfinder () {: aria-label='Modified Functions' }
-#### [Pathfinder](Pathfinder.md) GetPathfinder () {: .copyable aria-label='Modified Functions' }
+#### [Pathfinder](Pathfinder.md) GetPathfinder ( ) {: .copyable aria-label='Modified Functions' }
 Returns a [Pathfinder](Pathfinder.md) class with fixed versions of its functions. This supersedes [EntityNPC.Pathfinder](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#pathfinder), which has been left as-is for compatibility with existing mods.
 
 ### PlaySound () {: aria-label='Modified Functions' }
@@ -64,6 +64,10 @@ ___
 Returns the unique [LootList](LootList.md) used by Fireplaces.
 
 ___
+### GetFlyingOverride () {: aria-label='Functions' }
+#### boolean GetFlyingOverride ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
@@ -86,7 +90,7 @@ ___
 
 ___
 ### ReplaceSpritesheet () {: aria-label='Functions' }
-#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool LoadGraphics = false ) {: .copyable aria-label='Functions' }
+#### void ReplaceSpritesheet ( int LayerId, string PngFilename, boolean LoadGraphics = false ) {: .copyable aria-label='Functions' }
 Similar to [Sprite.ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to `PngFilename` if possible.
 
 ___

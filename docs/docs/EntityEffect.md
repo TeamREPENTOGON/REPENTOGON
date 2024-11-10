@@ -14,3 +14,7 @@ tags:
     This is a static function and must be called via `EntityEffect.CreateLight`.
 
 ___
+### CreateLootPreview () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) CreateLootPreview ( [Vector](Vector.md) Position, [EntityPickup](EntityPickup.md) Owner, [EntityEffect](EntityEffect.md) Effect ) {: .copyable aria-label='Functions' }
+
+___
