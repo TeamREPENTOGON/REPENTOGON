@@ -1,0 +1,15 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b87c020100e8????????a1????????33c58945??5657508d45??64a3????????8965??8bf1":
+__thiscall void FXLayers::Init(char * fileName, int levelStage, int stageType);
+
+"558bec53568bf18bda":
+static cleanup bool FXLayers::check_fxlayer_match(int stage<ecx>, int altStages<edx>, int compLevelStage, int compStageType);
+
+struct FXLayers depends (Vector, FXParams) {
+	Vector _averagePlayerPos : 0x0;
+	bool _loaded : 0x8;
+	int _levelStage : 0x0c;
+	int _stageType : 0x10;
+	int _backdropType : 0x14;
+	vector_FXLayers_FX _fx : 0x18;
+	FXParams _fxParams : 0x4f8;
+} : 0x584;

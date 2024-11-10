@@ -5,6 +5,9 @@
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
+#include "../Stages/StageManager.h"
+
+#include "../XMLData.h"
 
 std::bitset<36> generateLevels;
 
@@ -175,25 +178,25 @@ void PatchSpecialQuest() {
 
 static const int TRAPDOOR_DEAL_SUBTYPE = 666;
 // Change subtype of trapdoor Devil and Angel room, after they are loaded in RoomConfig
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void)
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool)
 {
-	super(Stage, Mode);
+	bool ret = super(Stage, Mode);
 
-	if (Stage != 0)
+	if (Stage == 0)
 	{
-		return;
-	}
-
-	//Change Trapdoor Subtype
-	for (int roomType = 14; roomType < 16; roomType++)
-	{
-		unsigned int doors = 0;
-		RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, roomType, 13, 100, 100, 0, 20, &doors, 0, Mode);
-		for (RoomConfig_Room* p : rooms)
+		//Change Trapdoor Subtype
+		for (int roomType = 14; roomType < 16; roomType++)
 		{
-			p->Subtype = TRAPDOOR_DEAL_SUBTYPE;
+			unsigned int doors = 0;
+			RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, roomType, 13, 100, 100, 0, 20, &doors, 0, Mode);
+			for (RoomConfig_Room* p : rooms)
+			{
+				p->Subtype = TRAPDOOR_DEAL_SUBTYPE;
+			}
 		}
 	}
+
+	return ret;
 }
 
 /* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.
@@ -322,6 +325,39 @@ void PatchOverrideDataHandling() {
 	patch2.AddBytes("\x0F\x45\xC1") // cmovnz eax, ecx
 		.AddRelativeJump((char*)patchAddr + 0xe);
 	sASMPatcher.FlatPatch(patchAddr, &patch2);
+}
+
+void __stdcall AdjustLevelStageBackdrop(FXLayers* fxlayers) {
+	StageManager& stageManager = StageManager::GetInstance();
+	int stage = g_Game->GetStageID(false);
+	int backdrop = fxlayers->_backdropType;
+
+	//printf("stage %d, overriden %d, id %d, token %s\n", stage, stageManager.stageState[stage].overriden, stageManager.stageState[stage].id, stageManager.stageState[stage].token.empty() ? "EMPTY" : stageManager.stageState[stage].token.c_str());
+
+	if (stageManager.IsStageOverriden(stage)) {
+		fxlayers->_levelStage = stageManager.stageForConfigId[stage] + 4; // to counter dumb math later on in xml parsing
+		fxlayers->_stageType = 1;
+	}
+	if (XMLStuff.BackdropData->backdropState.first == backdrop) {
+		fxlayers->_backdropType = XMLStuff.BackdropData->backdropState.second;
+	}
+
+	fxlayers->_averagePlayerPos = Vector(0, 0);
+}
+
+void ASMPatchFXLayersInit() {
+	SigScan scanner("f30f1106f30f1005????????f30f1146??e8"); // this->_averagePlayerPos = g_VectorZero
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching FXLayers::Init at %p\n", addr);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // FXLayers
+		.AddInternalCall(AdjustLevelStageBackdrop)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xc);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/

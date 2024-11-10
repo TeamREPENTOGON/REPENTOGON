@@ -141,6 +141,9 @@ __thiscall bool Game::GetLevelStateFlag(uint32_t LevelStateFlag);
 "568bf18b0d????????8b81????????83f80274??83f80374??8b168d42??83f80577??8b89????????33c081e1000001000bc175??8b46??83f80474??83f80574":
 __thiscall bool Game::LevelHasPhotoDoor();
 
+"8b0148":
+__thiscall bool Game::IsAscent();
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
@@ -283,6 +286,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
 	unsigned int _gameStateFlags : 0x1c316c;
+	unsigned int _gameStateFlagsH : 0x1c3170;
 	int _donationModGreed : 0x1c318c;
 	int _donationModAngel : 0x1c3190;
 	float _lightningIntensity : 0x283c00;

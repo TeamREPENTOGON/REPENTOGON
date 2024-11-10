@@ -4,6 +4,7 @@ struct KAGE_Graphics_ImageBase_VertexAttributeDescriptor {
 } : 0x8;
 
 struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphics_Color) {
+	char* _filepath : 0x3c;
     __vtable {
 		skip; // IsLoaded
 		skip; // IsProcedural
@@ -49,7 +50,7 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphi
 		skip; // apply_image
 		skip; // SetTexelData
     };
-} : 0;
+} : 0x78;
 
 struct KAGE_Graphics_ImagePNG : public KAGE_Graphics_ImageBase {
 

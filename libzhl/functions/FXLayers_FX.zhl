@@ -1,0 +1,15 @@
+struct FXLayers_FX depends (Vector) {
+	unsigned int _id : 0x0;
+	KAGE_Graphics_ImagePNG* _image : 0x4;
+	// smartpointer 0x8
+	Vector _min : 0x1c;
+	Vector _max : 0x24;
+	unsigned int _layerType : 0x2c;
+	int _stage : 0x30;
+	int _altStages : 0x34;
+	bool _onlyDefaultBackdrop : 0x38;
+	float _parallax : 0x3c;
+	int _backdrop : 0x40;
+	int _blendMode : 0x44;
+	bool _useBackgroundShader : 0x48;
+} : 0x4c;

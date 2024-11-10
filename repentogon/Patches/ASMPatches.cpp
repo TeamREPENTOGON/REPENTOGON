@@ -29,6 +29,8 @@
 
 #include "ASMPatcher.hpp"
 
+#include "IsaacRepentance.h"
+
 /* This patch hooks KAGE_LogMessage by hand. LibZHL can't properly hook functions with varargs, and we need varargs to properly get log messages.
 *  So, we'll just do it manually, not a big deal.
 *  We manually call a trampoline function that takes a const char* as an input, and prints it to our ImGui log.
@@ -75,6 +77,21 @@ void ASMPatchConsoleRunCommand() {
 	patch.AddBytes("\xEB");
 	sASMPatcher.FlatPatch(addr, &patch);
 }
+
+/* Override our destructor of RoomSet.
+ *
+ * We need this destructor defined on our side in order to free RoomSets that 
+ * are instanciated on the stack. However, defining it on our side causes its
+ * contents to be destroyed as well, which leads to corruptions when the
+ * destructor defined in the game is called.
+ * 
+ * As a solution, patch our own destructor to immediately jump into the 
+ * destructor defined by the game. This cannot be done through inline assembly
+ * because the compiler may preserve things on the stack, and not cleaning it
+ * up would trigger errors down the way. This effectively turns our destructor
+ * into an immediate trampoline towards the destructor defined in the game.
+ */
+static void PatchRoomSetDestructor();
 
 const char* repentogonResources = "resources-repentogon";
 
@@ -148,6 +165,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
+	ASMPatchFXLayersInit();
 	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();
 	PatchLevelGeneratorTryResizeEndroom();
@@ -215,10 +233,23 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
 
+
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 
 	//if (!ASMPatches::FixHushFXVeins()) {
 	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
 	//}
-	
+
+	// Nightmare stuff.
+	PatchRoomSetDestructor();
+}
+
+void PatchRoomSetDestructor() {
+	HMODULE lib = GetModuleHandleA("libzhl.dll");
+	FARPROC ourDestructor = GetProcAddress(lib, "??1RoomSet@@QAE@XZ");
+	FARPROC gameDestructor = GetProcAddress(lib, "?destructor@RoomSet@@QAEXXZ");
+
+	ASMPatch patch;
+	patch.AddRelativeJump(gameDestructor);
+	sASMPatcher.FlatPatch(ourDestructor, &patch, true);
 }

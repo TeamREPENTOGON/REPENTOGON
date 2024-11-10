@@ -284,7 +284,6 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 	return 1;
 }
 
-
 // LayerState from here on out
 
 LUA_FUNCTION(Lua_LayerStateSetCustomShader)

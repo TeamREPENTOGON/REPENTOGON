@@ -2,13 +2,13 @@
 __thiscall void RoomConfig::LoadCurses(char* xmlpath,bool ismod);
 
 "558bec8b45??83f8ff75??a1":
-static cleanup unsigned int RoomConfig::GetStageID(unsigned int LevelStage<ecx>, unsigned int StageType<edx>, unsigned int Mode);
+static cleanup unsigned int RoomConfig::GetStageID(unsigned int LevelStage<ecx>, unsigned int StageType<edx>, int Mode);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b894010100":
 __thiscall void RoomConfig::LoadStages(char *xmlpath);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6c":
-__thiscall void RoomConfig::LoadStageBinary(unsigned int Stage, unsigned int Mode);
+__thiscall bool RoomConfig::LoadStageBinary(unsigned int Stage, unsigned int Mode);
 
 // RoomConfigHolder
 
