@@ -1,3 +1,6 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec0cf30f1005":
+__thiscall void SoundStream::Update(bool checkIfPlaying);
+
 struct SoundStream depends (SoundActor) {
 	SoundActor _actor : 0x0;
 	float _volumeMod : 0x18;
@@ -5,6 +8,7 @@ struct SoundStream depends (SoundActor) {
 	float _targetVolume : 0x20;
 	float _fadeRate : 0x24;
 	bool _playing : 0x28;
+	uint8_t _unused : 0x2b;
 	unsigned int _frameCount : 0x2c;
 	SoundStreamSet* _setRef : 0x30;
 } : 0x34;
