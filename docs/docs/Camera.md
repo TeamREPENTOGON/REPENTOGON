@@ -42,3 +42,7 @@ This function must be called inside a render callback such as `ModCallbacks.MC_P
 	This function seems to only work when Active Camera is off.
 
 ___
+### Update () {: aria-label='Functions' }
+#### void Update ( boolean flag = false ) {: .copyable aria-label='Functions' }
+
+___
