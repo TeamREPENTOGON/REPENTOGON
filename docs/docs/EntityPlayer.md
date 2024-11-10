@@ -191,10 +191,6 @@ ___
 #### void ClearQueueItem ( ) {: .copyable aria-label='Functions' }
 
 ___
-### DischargeActiveItem () {: aria-label='Functions' }
-#### void DischargeActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
-
-___
 ### DropCollectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [EntityPickup](EntityPickup.md) ExistingPedestal = nil, boolean RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
 
@@ -216,10 +212,6 @@ ___
 
 ???+ info "Info"
     If the player has Tech X, this function will fire an [EntityLaser](EntityLaser.md) as well. The laser will have the Brimstone ball effect as a parent, it's unclear if the effect also links back to the laser.
-
-___
-### FullCharge () {: aria-label='Functions' }
-#### boolean FullCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot, boolean force = true ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetActionHoldDrop () {: aria-label='Functions' }

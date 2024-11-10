@@ -10,7 +10,7 @@ tags:
 ## Modified Functions
 
 ### GetPathfinder () {: aria-label='Modified Functions' }
-#### [Pathfinder](Pathfinder.md) GetPathfinder () {: .copyable aria-label='Modified Functions' }
+#### [Pathfinder](Pathfinder.md) GetPathfinder ( ) {: .copyable aria-label='Modified Functions' }
 Returns a [Pathfinder](Pathfinder.md) class with fixed versions of its functions. This supersedes [EntityNPC.Pathfinder](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#pathfinder), which has been left as-is for compatibility with existing mods.
 
 ### PlaySound () {: aria-label='Modified Functions' }
