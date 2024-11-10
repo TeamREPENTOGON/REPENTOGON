@@ -1412,6 +1412,14 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
+local preStatusApplyTypes = {
+	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.KNOCKBACK] = checkTableTypeFunction({ "integer", "Vector", "boolean" }),
+	[StatusEffect.SLOWING] =checkTableTypeFunction({ "integer", "number", "Color" }),
+	[StatusEffect.POISON] = checkTableTypeFunction({ "integer", "number" }),
+	[StatusEffect.BURN] = checkTableTypeFunction({ "integer", "number" }),
+}
+
 -- Custom handling for MC_PRE_STATUS_EFFECT_APPLY
 -- Handle type checking here since the callback is called for several status effects with different types,
 -- terminate early if false is returned,
@@ -1424,91 +1432,31 @@ local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity
 
 		if type(ret) == "boolean" then
 			if ret == false then return false end
-			recentRet = ret
+			if recentRet == nil or type(recentRet) == "boolean" then 
+				recentRet = ret
+			end
 		elseif type(ret) == "table" then
-			if status == StatusEffect.CONFUSION then
-				local type1 = type(ret[1])
-				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
-				local type2 = type(ret[2])
-				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
+			if preStatusApplyTypes[status] then
+				local err = preStatusApplyTypes[status](ret)
 
-				if type1 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
-				elseif math.type(ret[1]) ~= "integer" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
-				elseif type2 ~= "boolean" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (boolean expected, got "..type2..")")
+				if err then
+					logError(callbackID, callback.Mod.Name, err)
 				else
 					recentRet = ret
 					duration = ret[1]
 					extraParam1 = ret[2]
-				end
-			elseif status == StatusEffect.KNOCKBACK then
-				local type1 = type(ret[1])
-				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
-				local type2 = type(ret[2])
-				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
-				local type3 = type(ret[3])
-				if type3 == "userdata" then type3 = GetMetatableType(ret[3]) end
-
-				if type1 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
-				elseif math.type(ret[1]) ~= "integer" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
-				elseif type2 ~= "Vector" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (Vector expected, got "..type2..")")
-				elseif type3 ~= "boolean" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `3` (boolean expected, got "..type3..")")
-				else
-					recentRet = ret
-					duration = ret[1]
-					extraParam1 = ret[2]
-					extraParam2 = ret[3]
-				end
-			elseif status == StatusEffect.SLOWING then
-				local type1 = type(ret[1])
-				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
-				local type2 = type(ret[2])
-				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
-				local type3 = type(ret[3])
-				if type3 == "userdata" then type3 = GetMetatableType(ret[3]) end
-
-				if type1 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
-				elseif math.type(ret[1]) ~= "integer" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
-				elseif type2 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (number expected, got "..type2..")")
-				elseif type3 ~= "Color" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `3` (Color expected, got "..type3..")")
-				else
-					recentRet = ret
-					duration = ret[1]
-					extraParam1 = ret[2]
-					extraParam2 = ret[3]
-				end
-			elseif status == StatusEffect.BURN or status == StatusEffect.POISON then
-				local type1 = type(ret[1])
-				if type1 == "userdata" then type1 = GetMetatableType(ret[1]) end
-				local type2 = type(ret[2])
-				if type2 == "userdata" then type2 = GetMetatableType(ret[2]) end
-
-				if type1 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number expected, got "..type1..")")
-				elseif math.type(ret[1]) ~= "integer" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `1` (number has no integer representation)")
-				elseif type2 ~= "number" then
-					logError(callbackID, callback.Mod.Name, "bad return type for table value with key `2` (number expected, got "..type2..")")
-				else
-					recentRet = ret
-					duration = ret[1]
-					extraParam1 = ret[2]
+					extraParam3 = ret[3]
 				end
 			else
 				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
 			end
 		elseif type(ret) == "number" then
-			recentRet = ret
+			if type(recentRet) == "table" then
+				recentRet[1] = ret
+			else
+				recentRet = ret
+			end
+			duration = ret
 		end
 	end
 
