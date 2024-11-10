@@ -19,7 +19,7 @@ You may return the following values:
     
 |Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|
-|TRANSFORMATION {: .copyable } | ([EntityDelirium](../EntityDelirium.md) Delirium, int Type, int Variant, bool Force) | - | boolean or table |
+|TRANSFORMATION {: .copyable } | ([EntityDelirium](../EntityDelirium.md) Delirium, int Type, int Variant, boolean Force) | - | boolean or table |
 
 ### POST_TRANSFORMATION
 

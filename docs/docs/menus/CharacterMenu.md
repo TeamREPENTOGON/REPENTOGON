@@ -17,6 +17,10 @@ tags:
 
 ## Functions
 
+### GetActiveStatus () {: aria-label='Functions' }
+#### int GetActiveStatus ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBigCharPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetBigCharPageSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -49,8 +53,8 @@ ___
 #### [Sprite](../Sprite.md) GetDifficultyOverlaySprite ( ) {: .copyable aria-label='Functions' }
 The blood stain when selecting Hard mode / Greedier
 ___
-### GetEastereggPageSprite () {: aria-label='Functions' }
-#### [Sprite](../Sprite.md) GetEastereggPageSprite ( ) {: .copyable aria-label='Functions' }
+### GetEasterEggPageSprite () {: aria-label='Functions' }
+#### [Sprite](../Sprite.md) GetEasterEggPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetIsCharacterUnlocked () {: aria-label='Functions' }
@@ -99,6 +103,10 @@ ___
 ___
 ### GetWinStreakPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetWinStreakPageSprite ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetActiveStatus () {: aria-label='Functions' }
+#### void SetActiveStatus ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharacterWheelDepth () {: aria-label='Functions' }
