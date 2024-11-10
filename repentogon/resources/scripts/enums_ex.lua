@@ -2769,15 +2769,6 @@ ConceptionFamiliarFlag = { -- bitwise
 	TWISTED_PAIR = 1 << 12,
 }
 
-CharacterMenuStatus = {
-	DEFAULT = 0,
-	SEED = 1,
-	RANDOM_SELECTION = 2,
-	RANDOM_CHARACTER_SELECTION = 2,
-	FADEOUT = 3,
-	CHARACTER_PAPER_SWAP = 4,
-}
-
 StatusEffect = {
 	BAITED = 0,
 	BLEEDING = 1,
@@ -2795,6 +2786,15 @@ StatusEffect = {
 	SHRINK = 13,
 	SLOWING = 14,
 	WEAKNESS = 15,
+}
+
+CharacterMenuStatus = {
+	DEFAULT = 0,
+	SEED = 1,
+	RANDOM_SELECTION = 2,
+	RANDOM_CHARACTER_SELECTION = 2,
+	FADEOUT = 3,
+	CHARACTER_PAPER_SWAP = 4,
 }
 
 --deprecated enums
