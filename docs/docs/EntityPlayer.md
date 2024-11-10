@@ -88,7 +88,7 @@ ___
 
 ___
 ### AddCustomCacheTag () {: aria-label='Functions' }
-#### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
+#### void AddCustomCacheTag ( string OR \{string, string, ...\}, boolean EvaluateItems = false ) {: .copyable aria-label='Functions' }
 Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
 
 See [items.xml](xml/items.md) for more information on custom caches.
@@ -210,6 +210,10 @@ ___
 ???+ info "Info"
     If the player has Tech X, this function will fire an [EntityLaser](EntityLaser.md) as well. The laser will have the Brimstone ball effect as a parent, it's unclear if the effect also links back to the laser.
 
+___
+### GetActionHoldDrop () {: aria-label='Functions' }
+#### int GetActionHoldDrop ( ) {: .copyable aria-label='Functions' }
+How long the player holds the drop-button.
 ___
 ### GetActiveItemDesc () {: aria-label='Functions' }
 #### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
@@ -452,6 +456,10 @@ If none of these exist, this returns `nil`.
 ___
 ### GetFootprintColor () {: aria-label='Functions' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
+
+___
+### GetForgottenSwapFormCooldown () {: aria-label='Functions' }
+#### int GetForgottenSwapFormCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetGlitchBabySubType () {: aria-label='Functions' }
@@ -881,6 +889,10 @@ Produces a random quantity of various pickups, similar to Tainted Cain's ability
     The provided [EntityPickup](EntityPickup.md) will be removed by this function. Use the override to avoid this.
 
 ___
+### SetActionHoldDrop () {: aria-label='Functions' }
+#### void SetActionHoldDrop ( int duration ) {: .copyable aria-label='Functions' }
+
+___
 ### SetActiveVarData () {: aria-label='Functions' }
 #### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
@@ -1001,6 +1013,10 @@ Sets the player's footprint color.
 
 ???+ bug "Bug"
 	  This function currently crashes the game - will be fixed in a future update.
+
+___
+### SetForgottenSwapFormCooldown () {: aria-label='Functions' }
+#### void SetForgottenSwapFormCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
