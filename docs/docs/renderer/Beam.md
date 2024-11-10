@@ -92,8 +92,8 @@ Sets the [Points](Point.md) used by this.
 ___
 ### SetSprite () {: aria-label='Functions' }
 #### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }
-#### void SetSprite ( [Sprite](../Sprite.md) Sprite, string LayerName, bool UseOverlay ) {: .copyable aria-label='Functions' }
-#### void SetSprite ( [Sprite](../Sprite.md) Sprite, int LayerID, bool UseOverlay ) {: .copyable aria-label='Functions' } 
+#### void SetSprite ( [Sprite](../Sprite.md) Sprite, string LayerName, boolean UseOverlay ) {: .copyable aria-label='Functions' }
+#### void SetSprite ( [Sprite](../Sprite.md) Sprite, int LayerID, boolean UseOverlay ) {: .copyable aria-label='Functions' } 
 
 ___
 ### SetUnkBool () {: aria-label='Functions' }

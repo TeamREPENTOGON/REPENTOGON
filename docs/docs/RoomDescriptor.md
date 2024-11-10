@@ -30,6 +30,10 @@ ___
 #### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
+### GetDecoSaveState () {: aria-label='Functions' }
+#### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetDecoSaveState ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDimension () {: aria-label='Functions' }
 #### [Dimension](https://wofsauge.github.io/IsaacDocs/rep/enums/Dimension.html) GetDimension ( ) {: .copyable aria-label='Functions' }
 Returns the [Dimension](enums/Dimension.md) that this room exists in.

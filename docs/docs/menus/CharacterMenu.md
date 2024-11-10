@@ -53,8 +53,8 @@ ___
 #### [Sprite](../Sprite.md) GetDifficultyOverlaySprite ( ) {: .copyable aria-label='Functions' }
 The blood stain when selecting Hard mode / Greedier
 ___
-### GetEastereggPageSprite () {: aria-label='Functions' }
-#### [Sprite](../Sprite.md) GetEastereggPageSprite ( ) {: .copyable aria-label='Functions' }
+### GetEasterEggPageSprite () {: aria-label='Functions' }
+#### [Sprite](../Sprite.md) GetEasterEggPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetIsCharacterUnlocked () {: aria-label='Functions' }
