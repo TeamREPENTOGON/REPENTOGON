@@ -2,24 +2,36 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-float musicVolumes[7] = { 1, 1, 1, 1, 1, 1, 1 };
+float musicVolumes[2][7] = { { 1, 1, 1, 1, 1, 1, 1 }, { 1, 1, 1, 1, 1, 1, 1 } };
 
 HOOK_METHOD(SoundStreamSet, game_constructor, () -> SoundStreamSet*) {
 	SoundStreamSet* set = super();
 
 	for (size_t i = 0; i < 7; i++) {
-		set->_streams[i]._unused = (uint8_t)i;
+		set->_streams[i]._HIJACK_id = (uint8_t)i;
 	}
 
+	set->_HIJACK_id = this == &g_Manager->_musicmanager._streamSets[1] ? 1 : 0;
+
 	return set;
+}
+
+HOOK_METHOD(SoundStreamSet, Play, () -> void) {
+	// get opposite stream id
+	int target = g_Manager->_musicmanager._currentStream ^ 1;
+	for (int i = 0; i < 7; i++) {
+		musicVolumes[target][i] = 1.f;
+	}
+
+	super();
 }
 
 HOOK_METHOD(SoundStream, Update, (bool checkIfPlaying) -> void) {
 	// exclude jingle stream
 	if (this->_setRef) {
 		// main stream target volume isn't constantly recalculated like layers are
-		float target = this->_unused == 0 ? g_Manager->GetOptions()->_musicVolume : this->_targetVolume;
-		this->_targetVolume = target * musicVolumes[this->_unused];
+		float target = this->_HIJACK_id == 0 ? 1 : this->_targetVolume;
+		this->_targetVolume = target * musicVolumes[this->_setRef->_HIJACK_id][this->_HIJACK_id];
 	}
 
 	super(checkIfPlaying);
@@ -125,7 +137,7 @@ LUA_FUNCTION(Lua_SoundStreamSetGetTargetVolumeMultiplier)
 	if (streamId < 0 || streamId > 6) {
 		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = 6", streamId);
 	}
-	lua_pushnumber(L, musicVolumes[streamId]);
+	lua_pushnumber(L, musicVolumes[g_Manager->_musicmanager._currentStream][streamId]);
 
 	return 1;
 }
@@ -140,7 +152,7 @@ LUA_FUNCTION(Lua_SoundStreamSetSetTargetVolumeMultiplier)
 		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = 6", streamId);
 	}
 	
-	musicVolumes[streamId] = luaL_checknumber(L, 3);
+	musicVolumes[g_Manager->_musicmanager._currentStream][streamId] = (float)luaL_checknumber(L, 3);
 
 	return 0;
 }

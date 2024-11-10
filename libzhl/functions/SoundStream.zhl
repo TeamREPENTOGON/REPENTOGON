@@ -8,7 +8,7 @@ struct SoundStream depends (SoundActor) {
 	float _targetVolume : 0x20;
 	float _fadeRate : 0x24;
 	bool _playing : 0x28;
-	uint8_t _unused : 0x2b;
+	uint8_t _HIJACK_id : 0x2b;
 	unsigned int _frameCount : 0x2c;
 	SoundStreamSet* _setRef : 0x30;
 } : 0x34;
