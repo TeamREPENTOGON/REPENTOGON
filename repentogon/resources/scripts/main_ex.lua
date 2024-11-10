@@ -209,6 +209,19 @@ local function checkTableSizeFunctionUpTo(size)
 	end
 end
 
+local function checkTableSizeFunctionMinimum(size)
+	return function(val)
+		local tablesize = 0
+		for i, tabletype in pairs(val) do
+			tablesize = tablesize + 1
+		end
+
+		if tablesize < size then
+			return "bad return table length (minimum " .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
+		end
+	end
+end
+
 local function checkTableTypeFunction(typestrings)
 	return function(tbl)
 		local tablesize = 0
@@ -1420,6 +1433,14 @@ local preStatusApplyTypes = {
 	[StatusEffect.BURN] = checkTableTypeFunction({ "integer", "number" }),
 }
 
+local preStatusApplySizes = {
+	[StatusEffect.CONFUSION] = checkTableSizeFunctionMinimum(2),
+	[StatusEffect.KNOCKBACK] = checkTableSizeFunctionMinimum(3),
+	[StatusEffect.SLOWING] = checkTableSizeFunctionMinimum(3),
+	[StatusEffect.POISON] = checkTableSizeFunctionMinimum(2),
+	[StatusEffect.BURN] = checkTableSizeFunctionMinimum(2),
+}
+
 -- Custom handling for MC_PRE_STATUS_EFFECT_APPLY
 -- Handle type checking here since the callback is called for several status effects with different types,
 -- terminate early if false is returned,
@@ -1432,20 +1453,19 @@ local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity
 
 		if type(ret) == "boolean" then
 			if ret == false then return false end
-			if recentRet == nil or type(recentRet) == "boolean" then 
-				recentRet = ret
-			end
 		elseif type(ret) == "table" then
 			if preStatusApplyTypes[status] then
 				local err = preStatusApplyTypes[status](ret)
+				if not err then err = preStatusApplySizes[status](ret) end
 
 				if err then
 					logError(callbackID, callback.Mod.Name, err)
 				else
+					
 					recentRet = ret
 					duration = ret[1]
 					extraParam1 = ret[2]
-					extraParam3 = ret[3]
+					extraParam2 = ret[3]
 				end
 			else
 				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
@@ -1693,3 +1713,4 @@ pcall(require("repentogon_extras/stats_menu"))
 pcall(require("repentogon_extras/bestiary_menu"))
 -- pcall(require("repentogon_extras/onlinestub")) let's not load it
 pcall(require("repentogon_extras/mods_menu_tweaks"))
+
