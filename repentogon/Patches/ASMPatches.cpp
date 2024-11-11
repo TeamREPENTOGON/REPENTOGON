@@ -26,6 +26,7 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMXMLItem.h"
 #include "ASMPatches/ASMLocalization.h"
 
 #include "ASMPatcher.hpp"
@@ -194,7 +195,10 @@ void PerformASMPatches() {
 	ASMPatchesForCustomItemPools();
 	ExtraASMPatchesForCustomItemPools();
 	ASMPatchesForCardsExtras();
+	ASMPatchesForXMLItem();
+	
 	ASMPatchRedirectToLocalizationFolders();
+	
 	HookImGui();
 
 	// Sprite

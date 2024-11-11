@@ -209,6 +209,19 @@ local function checkTableSizeFunctionUpTo(size)
 	end
 end
 
+local function checkTableSizeFunctionMinimum(size)
+	return function(val)
+		local tablesize = 0
+		for i, tabletype in pairs(val) do
+			tablesize = tablesize + 1
+		end
+
+		if tablesize < size then
+			return "bad return table length (minimum " .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
+		end
+	end
+end
+
 local function checkTableTypeFunction(typestrings)
 	return function(tbl)
 		local tablesize = 0
@@ -236,6 +249,7 @@ local function checkTableTypeFunction(typestrings)
 		end
 	end
 end
+
 
 local function backEnum(enum, id)
 	for k, v in pairs(enum) do
@@ -422,6 +436,11 @@ local typecheckFunctions = {
 	},
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = {
+		["number"] = checkInteger,
+		["boolean"] = true,
+		["table"] = checkTableSizeFunctionUpTo(3), -- per-status type checking done manually
 	},
 }
 
@@ -626,7 +645,6 @@ rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 		setExpectedTypes(tbl)
 	end
 end)
-
 
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
@@ -1407,6 +1425,64 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
+local preStatusApplyTypes = {
+	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.KNOCKBACK] = checkTableTypeFunction({ "integer", "Vector", "boolean" }),
+	[StatusEffect.SLOWING] =checkTableTypeFunction({ "integer", "number", "Color" }),
+	[StatusEffect.POISON] = checkTableTypeFunction({ "integer", "number" }),
+	[StatusEffect.BURN] = checkTableTypeFunction({ "integer", "number" }),
+}
+
+local preStatusApplySizes = {
+	[StatusEffect.CONFUSION] = checkTableSizeFunctionMinimum(2),
+	[StatusEffect.KNOCKBACK] = checkTableSizeFunctionMinimum(3),
+	[StatusEffect.SLOWING] = checkTableSizeFunctionMinimum(3),
+	[StatusEffect.POISON] = checkTableSizeFunctionMinimum(2),
+	[StatusEffect.BURN] = checkTableSizeFunctionMinimum(2),
+}
+
+-- Custom handling for MC_PRE_STATUS_EFFECT_APPLY
+-- Handle type checking here since the callback is called for several status effects with different types,
+-- terminate early if false is returned,
+-- and use additive callback logic instead of the default one.
+local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity, entityRef, duration, extraParam1, extraParam2)
+	local recentRet = nil
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2)
+
+		if type(ret) == "boolean" then
+			if ret == false then return false end
+		elseif type(ret) == "table" then
+			if preStatusApplyTypes[status] then
+				local err = preStatusApplyTypes[status](ret)
+				if not err then err = preStatusApplySizes[status](ret) end
+
+				if err then
+					logError(callbackID, callback.Mod.Name, err)
+				else
+					
+					recentRet = ret
+					duration = ret[1]
+					extraParam1 = ret[2]
+					extraParam2 = ret[3]
+				end
+			else
+				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
+			end
+		elseif type(ret) == "number" then
+			if type(recentRet) == "table" then
+				recentRet[1] = ret
+			else
+				recentRet = ret
+			end
+			duration = ret
+		end
+	end
+
+	return recentRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1435,6 +1511,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
+	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = RunPreStatusEffectApplyCallback,
 }
 
 for _, callback in ipairs({

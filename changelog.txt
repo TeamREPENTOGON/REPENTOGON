@@ -36,6 +36,7 @@ Additions:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
+* Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
 /newline/
 Modified:
 * EntityFamiliar:
