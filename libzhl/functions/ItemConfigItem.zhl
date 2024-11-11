@@ -30,4 +30,6 @@ struct ItemConfig_Item depends (ItemConfig_Costume)
     bool persistentEffect : 0xB4;
     bool clearEffectsOnRemove : 0xB5;
     uint64_t tags : 0xB8;
-} : 0xCC;
+    int quality : 0xC0;
+    int craftingQuality : 0xC4;
+} : 0xE0;
