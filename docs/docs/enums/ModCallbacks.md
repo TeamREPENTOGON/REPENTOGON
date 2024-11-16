@@ -1669,6 +1669,12 @@ Accepts `false` to cancel trigger effects.
 |:--|:--|:--|:--|:--|
 |1069 |MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
+### MC_POST_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1138 |MC_POST_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | void |
+
 ### MC_PRE_PLAYER_USE_BOMB {: .copyable }
 Return `false` to stop the player from using a bomb.
 
