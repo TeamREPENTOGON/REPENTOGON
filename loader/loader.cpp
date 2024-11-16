@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <ImageHlp.h>
+#include <TlHelp32.h>
 
 #include <cstdarg>
 #include <cstdio>
@@ -160,12 +161,75 @@ void __stdcall LoadMods() {
 	ZHL::Init();
 }
 
+class ScopedHandle {
+public:
+	ScopedHandle(HANDLE h) : _h(h) { }
+	~ScopedHandle() { if (_h) CloseHandle(_h); }
+
+private:
+	HANDLE _h = NULL;
+};
+
+void DumpThreadsContext(FILE* logFile) {
+	HMODULE baseModule = GetModuleHandleA(NULL);
+	if (baseModule) {
+		Log(logFile, "INFO", "Found base address of isaac-ng.exe at %p\n", baseModule);
+	} else {
+		Log(logFile, "WARN", "Unable to get base address of isaac-ng.exe\n");
+	}
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, GetCurrentProcessId());
+	if (snapshot == INVALID_HANDLE_VALUE) {
+		Log(logFile, "ERROR", "Unable to create toolhelp32 snapshot: %d\n", GetLastError());
+		return;
+	}
+
+	ScopedHandle scopedHandle(snapshot);
+	THREADENTRY32 threadEntry;
+	threadEntry.dwSize = sizeof(threadEntry);
+
+	if (!Thread32First(snapshot, &threadEntry)) {
+		Log(logFile, "ERROR", "Unable to acquire first thread in the list of threads: %d\n", GetLastError());
+		return;
+	}
+
+	DWORD pid = GetCurrentProcessId();
+	do {
+		if (threadEntry.th32OwnerProcessID != pid) {
+			continue;
+		}
+
+		Log(logFile, "INFO", "Processing thread %d\n", threadEntry.th32ThreadID);
+		
+		HANDLE thread = OpenThread(THREAD_GET_CONTEXT, false, threadEntry.th32ThreadID);
+		if (!thread) {
+			Log(logFile, "ERROR", "Unable to open handle to thread %d (%d)\n", threadEntry.th32ThreadID, GetLastError());
+			continue;
+		}
+
+		ScopedHandle scopedThread(thread);
+
+		CONTEXT ctx;
+		memset(&ctx, 0, sizeof(ctx));
+		ctx.ContextFlags = CONTEXT_INTEGER | CONTEXT_CONTROL;
+
+		if (!GetThreadContext(thread, &ctx)) {
+			Log(logFile, "ERROR", "Unable to get context of thread %d (%d)\n", threadEntry.th32ThreadID, GetLastError());
+			continue;
+		}
+
+		Log(logFile, "INFO", "Thread %d was snapshot at ESP = %x (EIP = %x)\n", threadEntry.th32ThreadID, ctx.Esp, ctx.Eip);
+	} while (Thread32Next(snapshot, &threadEntry));
+}
+
 extern "C" {
 	__declspec(dllexport) int Launch(bool initConsole) {
 		FILE* f = fopen("zhlLoader.log", "w");
 		if (!f) {
 			return -1;
 		}
+
+		DumpThreadsContext(f);
 
 		Log(f, "INFO", "Redirect calls to Lua 5.3.3 to Lua 5.4\n");
 		DWORD redirectResult = RedirectLua(f, &luaHandle);
@@ -223,7 +287,7 @@ void Log(FILE* f, const char* type, const char* fmt, ...) {
 	char timeBuffer[4096];
 	strftime(timeBuffer, 4095, "[%Y-%m-%d %H:%M:%S] ", nowTm);
 
-	fprintf(f, "[%s] ", type);
+	fprintf(f, "[%s] %s ", type, timeBuffer);
 	vfprintf(f, fmt, va);
 	fflush(f);
 }
