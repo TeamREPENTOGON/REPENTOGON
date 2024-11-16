@@ -51,6 +51,7 @@ Modified:
 * EntityFamiliar:
 	- GetPathFinder -> GetPathfinder
 * EntityPlayer:
+	- DropCollectible now returns the spawned pedestal if one was spawned, as intended 
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
 * Level:
 	- TryPlaceRoom(AtDoor) no longer plays the key unlock sound if a room is created that connects to the player's current room.
