@@ -802,7 +802,7 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender =
 /*
 HOOK_METHOD(Game,StartDebug, (int levelStage, int stageType, int difficulty, std_string* unk)->void) {
 	//callsaveslot when instantstart is ran
-	printf("[REPENTOGON] It's instant launch mode! %d %d %d %s \n", levelStage, stageType, difficulty, unk->c_str());
+	ZHL::Log("[REPENTOGON] It's instant launch mode! %d %d %d %s \n", levelStage, stageType, difficulty, unk->c_str());
 	g_Manager->SetSaveSlot(0); //normally the game does this as soon as it enters the main menu but since it never does here, it never does
 	super(levelStage, stageType, difficulty, unk);
 }

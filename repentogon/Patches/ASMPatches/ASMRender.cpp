@@ -17,7 +17,7 @@ void PatchStatHudPlanetariumChanceIcon() {
 	void* addr = signature.GetAddress();
 	void* jmpAddr = jmpSig.GetAddress();
 	void* statHUDPlanetariumAddr = &renderStatHUDPlanetarium;
-	printf("[REPENTOGON] Patching planetarium chance icon visibility at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching planetarium chance icon visibility at %p\n", addr);
 	ASMPatch patch;
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -44,7 +44,7 @@ void PatchStatHudPlanetariumChanceText() {
 	void* jmpAddr = jmpSig.GetAddress();
 	void* statHUDPlanetariumAddr = &renderStatHUDPlanetarium;
 
-	printf("[REPENTOGON] Patching planetarium chance text visibility at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching planetarium chance text visibility at %p\n", addr);
 	ASMPatch patch;
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -69,7 +69,7 @@ void PatchStatHudPlanetariumChanceIf(const char* sig, const char* jmpSig) {
 	void* addr = signature.GetAddress();
 	void* jmpAddr = jmpSignature.GetAddress();
 
-	printf("[REPENTOGON] Patching if statement for planetarium chance visibility at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching if statement for planetarium chance visibility at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\x83\xFE\x07") // cmp index, 0x7
@@ -93,7 +93,7 @@ void PatchStatHudPlanetariumChanceCalc() {
 	void* addr = signature.GetAddress();
 	void* planetariumStat = &statHudPlanetariumChance;
 
-	printf("[REPENTOGON] Patching planetarium chance calculation at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching planetarium chance calculation at %p\n", addr);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	patch.AddBytes("\x8D\x8E\xB8\x01").AddZeroes(2) // lea this, [esi + 0x1b8]

@@ -21,7 +21,7 @@ void PatchHushLaserSpeed() {
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching Hush laser attack speed bug at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Hush laser attack speed bug at %p\n", addr);
 
 	const float* floatPtr = &hushLaserAdjust;
 	ASMPatch patch;
@@ -104,7 +104,7 @@ void ASMPatchFireBossProjectiles() {
 }
 
 void __stdcall ProcessApplyFrozenEnemyDeathEffects(Entity_NPC* npc) {
-	printf("[REPENTOGON] Entity: %p type %d\n", npc, npc->_type);
+	ZHL::Log("[REPENTOGON] Entity: %p type %d\n", npc, npc->_type);
 
 	g_Game->_scoreSheet.AddKilledEnemy(npc);
 	for (int i = 0; i < g_Game->GetNumPlayers(); i++) {
@@ -116,7 +116,7 @@ void ASMPatchApplyFrozenEnemyDeathEffects() {
 	SigScan scanner("8d85????????508d8f????????e8????????8d85????????508d8f????????e8????????508d8d????????e8????????84c074??8d8d");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching Frozen Enemy Death Effects at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Frozen Enemy Death Effects at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

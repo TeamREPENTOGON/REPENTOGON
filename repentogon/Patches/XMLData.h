@@ -788,7 +788,7 @@ inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldat
 	else {
 		parsedlist += lastItem;
 	}
-	//printf("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
+	//ZHL::Log("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
 	return parsedlist;
 }
 

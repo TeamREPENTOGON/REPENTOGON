@@ -2157,9 +2157,9 @@ LUA_FUNCTION(Lua_PlayerReviveCoopGhost) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	bool res = false;
 	
-	//printf("IsPlayerGhost: %s\n", player->_isCoopGhost ? "TRUE" : "FALSE");
+	//ZHL::Log("IsPlayerGhost: %s\n", player->_isCoopGhost ? "TRUE" : "FALSE");
 	if (player->_isCoopGhost) {
-		//printf("attempting revive");
+		//ZHL::Log("attempting revive");
 		player->RevivePlayerGhost();
 		res = true;
 	}
