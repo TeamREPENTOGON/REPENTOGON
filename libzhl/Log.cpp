@@ -34,6 +34,30 @@ void ZHL::Log(const char* fmt, ...) {
 
 	va_end(va);
 }
+
+void ZHL::DumpMemory(void* start, int len, bool prefix, bool suffix) {
+	FILE* f = fopen(ZHL_LOG_FILE, "a");
+	if (!f) {
+		return;
+	}
+
+	char buffer[4096];
+	if (prefix && FormatTime(buffer, 4095)) {
+		fprintf(f, "%s", buffer);
+	}
+
+	unsigned char* base = (unsigned char*)start;
+	for (int i = 0; i < len; ++i) {
+		fprintf(f, "%hhx", base[i]);
+	}
+
+	if (suffix) {
+		fprintf(f, "\n");
+	}
+
+	fclose(f);
+}
+
 void ZHL::ClearLogFile() {
 	fclose(fopen(ZHL_LOG_FILE, "w"));
 }
