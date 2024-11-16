@@ -11,9 +11,9 @@ namespace SkipIntro {
 bool cutsceneskipped = false; //it will only play once and be the first thing that plays anyway
 
 HOOK_METHOD(Cutscene, Show, (int cutsceneid) -> void) {
-	//	printf("%d %d\n", cutsceneid, repentogonOptions.skipIntroCutscene);
+	//	ZHL::Log("%d %d\n", cutsceneid, repentogonOptions.skipIntroCutscene);
 	//
-	//	printf("%d\n", *(int*)((char*)g_Manager + 0x1ea834));
+	//	ZHL::Log("%d\n", *(int*)((char*)g_Manager + 0x1ea834));
 	//
 	if (!repentogonOptions.skipIntro) {
 		return super(cutsceneid);
