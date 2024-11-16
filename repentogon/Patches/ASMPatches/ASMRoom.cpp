@@ -11,7 +11,7 @@ void ASMPatchAmbushWaveCount() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
 	void* ambushPtr = &ambushWaves;
 	void* bossAmbushPtr = &bossAmbushWaves;
 
@@ -63,7 +63,7 @@ void PatchBossWaveDifficulty() {
 
 	void* patchAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching spawn_wave at %p\n", patchAddr);
+	ZHL::Log("[REPENTOGON] Patching spawn_wave at %p\n", patchAddr);
 	ASMPatch patch;
 	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	// patch.PreserveRegisters(registers);
@@ -117,7 +117,11 @@ void ASMPatchMegaSatanEnding() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching MC_PRE_MEGA_SATAN_ENDING into Room:SpawnClearAward at %p\n", addr);
+	SigScan randomIntScanner("558bec568bf18b16");
+	randomIntScanner.Scan();
+	void* randomIntAddr = randomIntScanner.GetAddress();
+
+	ZHL::Log("[REPENTOGON] Patching MC_PRE_MEGA_SATAN_ENDING into Room::SpawnClearAward at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -138,7 +142,7 @@ void ASMPatchWaterDisabler() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* boolPtr = &roomASM.WaterDisabled;
-	printf("[REPENTOGON] Patching Room::Init water disabler bool at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Room::Init water disabler bool at %p\n", addr);
 	ASMPatch patch;
 	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))
 		.AddBytes("\xc6\x05").AddBytes(ByteBuffer().AddAny((char*)&boolPtr, 4)).AddBytes("\x01")
@@ -213,7 +217,7 @@ void PatchRoomClearDelay() {
 	scanner2.Scan();
 	scanner3.Scan();
 	void* addrs[3] = { scanner1.GetAddress(), scanner2.GetAddress(), scanner3.GetAddress() };
-	printf("[REPENTOGON] Patching Room clear delay setters/checks at %p, %p, %p\n", addrs[0], addrs[1], addrs[2]);
+	ZHL::Log("[REPENTOGON] Patching Room clear delay setters/checks at %p, %p, %p\n", addrs[0], addrs[1], addrs[2]);
 	ASMPatchRoomUpdate(addrs[0]);
 	ASMPatchRoomSaveState(addrs[1]);
 	ASMPatchDeepGaperClearCheck(addrs[2]);
@@ -224,7 +228,7 @@ void ASMPatchTrySpawnBlueWombDoor() {
 	SigScan scanner("83f8087c??8b87");
 	scanner.Scan();
 	void* addr = (char*)scanner.GetAddress() + 7;
-	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
 	ASMPatch patch;
 	patch.AddBytes("\x28"); // 025b24 - > 025b28
 	sASMPatcher.FlatPatch(addr, &patch);

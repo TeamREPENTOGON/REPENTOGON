@@ -160,7 +160,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	offset = Vector(menu_ref.x - 1440, menu_ref.y + 216);
 	initialpos = Vector(70 + offset.x, offset.y + 35);
 	undopos = Vector(310 + offset.x, offset.y + 63);
-	//printf("%f %f (%f %f)\n", (frame_widgettext->_pos.x) , frame_widgettext->_pos.y,undopos->x,undopos->y);
+	//ZHL::Log("%f %f (%f %f)\n", (frame_widgettext->_pos.x) , frame_widgettext->_pos.y,undopos->x,undopos->y);
 	tabbtnpos = Vector(307 + offset.x, offset.y + 18);
 	pos = Vector(70 + offset.x, offset.y + 35);
 	barpos = Vector(pos.x + 90, (g_HEIGHT- 30));

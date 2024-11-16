@@ -78,7 +78,7 @@ HOOK_METHOD(Game,Render,(void)->void){
 	_lastMillis = millis;
 	_lastFrameTime = frametime;
 	_lastLagMetric = _lagMetric;
-//	printf("current lag metric is %u ms\n",_lagMetric);
+//	ZHL::Log("current lag metric is %u ms\n",_lagMetric);
 };
 
 

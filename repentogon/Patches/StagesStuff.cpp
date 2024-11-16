@@ -118,7 +118,7 @@ int lastrequest = 0;
 /*
 HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int StageType, unsigned int Mode)-> unsigned int, __cdecl) {
 	unsigned int stageid = super(LevelStage,StageType, Mode);
-	//printf("getstage: %d \n", stageid);
+	//ZHL::Log("getstage: %d \n", stageid);
 	return stageid;
 }
 */
@@ -147,10 +147,10 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 			}
 			g_Game->GetRoomConfig()->LoadStages(xml);
 		//}
-		printf("setstageX: %d %d  \n", stageid, alt);
+		ZHL::Log("setstageX: %d %d  \n", stageid, alt);
 		tuple<int, int> setstg = GetSetStage(parentstage, IsOnSecondFloor());
 		super(get<0>(setstg), get<1>(setstg));
-		printf("done");
+		ZHL::Log("done");
 		lastparentstage = get<0>(setstg);
 		setstg;
 	}
@@ -176,7 +176,7 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	if (ogstagespath.length() == 0) {
 		ogstagespath = xmlpath;
 	}
-	printf("stagexml: %s \n", xmlpath);
+	ZHL::Log("stagexml: %s \n", xmlpath);
 	super(xmlpath);
 }
 */

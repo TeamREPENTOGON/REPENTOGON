@@ -1,4 +1,5 @@
 #include "IsaacRepentance.h"
+#include "Log.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
@@ -101,7 +102,7 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);
-		printf("__propget is not a table\n");
+		ZHL::Log("__propget is not a table\n");
 		return;
 	}
 
@@ -121,7 +122,7 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);
-		printf("__propget is not a table\n");
+		ZHL::Log("__propget is not a table\n");
 		return;
 	}
 
@@ -141,7 +142,7 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);
-		printf("__propset is not a table\n");
+		ZHL::Log("__propset is not a table\n");
 		return;
 	}
 
