@@ -20,7 +20,7 @@
 #include "libzhl.h"
 
 extern "C" {
-	__declspec(dllexport) int InitZHL(void (*ptr)());
+	__declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
 }
 
 class LIBZHL_API ASMPatcher
@@ -72,7 +72,7 @@ public:
 	void* AttemptPatchFunction(const char* beginSig, const char* endSig, const char* patchSig, const char* with);
 	void* PatchFromSig(const char* sig, const char* with);
 	void* PatchAt(void* at, const char* with, size_t len = 0);
-	void* PatchAt(void* at, ASMPatch* with);
+	void* PatchAt(void* at, ASMPatch* with, size_t* len = NULL);
 	void* Patch(void* at, void* page, const char* with, size_t len);
 
 	void FlatPatch(void* at, ASMPatch* with, bool nopRest = false);
@@ -222,7 +222,7 @@ public:
 
 	private:
 		friend ASMPatch;
-		friend __declspec(dllexport) int InitZHL(void (*ptr)());
+		friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
 
 		void Restore();
 		uint32_t GetMask() const;
@@ -467,7 +467,7 @@ private:
 		void* _target;
 	};
 
-	friend __declspec(dllexport) int InitZHL(void (*ptr)());
+	friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
 	static void _Init();
 
 	uint8_t RegisterTox86(Registers reg);

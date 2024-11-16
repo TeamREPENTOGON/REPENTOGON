@@ -166,7 +166,6 @@ char REPENTOGON::moddedtitle[256] = "";
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char** argv)
 {
-	ZHL::ClearLogFile();
 	ZHL::Logger logger(true);
 	logger.Log("REPENTOGON: ModInit\n");
 

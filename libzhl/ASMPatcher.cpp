@@ -52,10 +52,14 @@ void* ASMPatcher::PatchFromSig(const char* sig, const char* with) {
 	return PatchAt(scan.GetAddress(), with);
 }
 
-void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
+void* ASMPatcher::PatchAt(void* at, ASMPatch* with, size_t* len) {
 	void* targetPage = GetAllocPage(with->Length(), true);
 	std::unique_ptr<char[]> text = with->ToASM(targetPage);
-	return Patch(at, targetPage, text.get(), with->Length());
+	size_t patchLen = with->Length();
+	if (len) {
+		*len = patchLen;
+	}
+	return Patch(at, targetPage, text.get(), patchLen);
 }
 
 void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
