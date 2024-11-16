@@ -73,10 +73,14 @@ void* ASMPatcher::PatchAt(const char* signature, const char* name, const char* w
 	return PatchAt(addr, with, len);
 }
 
-void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
+void* ASMPatcher::PatchAt(void* at, ASMPatch* with, size_t* len) {
 	void* targetPage = GetAllocPage(with->Length(), true);
 	std::unique_ptr<char[]> text = with->ToASM(targetPage);
-	return Patch(at, targetPage, text.get(), with->Length());
+	size_t patchLen = with->Length();
+	if (len) {
+		*len = patchLen;
+	}
+	return Patch(at, targetPage, text.get(), patchLen);
 }
 
 void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
