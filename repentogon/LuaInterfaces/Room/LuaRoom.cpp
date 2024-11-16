@@ -497,6 +497,12 @@ HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int)
 	return super(seed, noDecrease);
 }
 
+LUA_FUNCTION(Lua_RoomGetWallColor) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua::luabridge::UserdataPtr::push(L, &room->_wallColor, lua::Metatables::COLOR);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -510,6 +516,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetWaterAmount", Lua_RoomGetWaterAmount},
 		{ "SetWaterAmount", Lua_RoomSetWaterAmount},
 		{ "GetFloorColor", Lua_RoomGetFloorColor},
+		{ "GetWallColor", Lua_RoomGetWallColor},
 		{ "GetWaterColor", Lua_RoomGetWaterColor},
 		{ "SetWaterColor", Lua_RoomSetWaterColor},
 		{ "SetWaterCurrent", Lua_RoomSetWaterCurrent},
