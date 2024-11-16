@@ -15,7 +15,11 @@
 #include <filesystem>
 #include <sstream>
 
-void (*loaderFinish)() = NULL;
+void (__stdcall*loaderFinish)() = NULL;
+
+void __stdcall SanityCheckInitZHL() {
+	ZHL::Log("SanityCheckInitZHL: patch should be okay\n");
+}
 
 /* Because ZHL is not initialized when we enter InitZHL, we cannot hook 
  * anything, so we need to ASM patch instead.
@@ -29,10 +33,13 @@ void HookMain() {
 	char* movOffsetAddr = (char*)addr + 0x3;
 	void* movOffsetValue;
 	memcpy(&movOffsetValue, movOffsetAddr, 0x4);
-	printf("Found KAGE::EngineStartup hook address %p\n", addr);
+	ZHL::Log("Found KAGE::EngineStartup call address %p\n", addr);
+	ZHL::Log("Dumping ASM: ");
+	ZHL::DumpMemory(addr, 0x20, false, true);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	patch.PreserveRegisters(registers);
+	patch.AddInternalCall(SanityCheckInitZHL);
 	patch.AddInternalCall(loaderFinish);
 	patch.RestoreRegisters(registers);
 	ByteBuffer buffer;
@@ -40,11 +47,17 @@ void HookMain() {
 	buffer.AddPointer(movOffsetValue);
 	patch.AddBytes(buffer);
 	patch.AddRelativeJump((char*)addr + 0x7);
-	sASMPatcher.PatchAt(addr, &patch);
+	size_t patchLen = 0;
+	void* patchedAddr = sASMPatcher.PatchAt(addr, &patch, &patchLen);
+
+	ZHL::Log("Dumping ASM of the call to KAGE::Engine post patch: ");
+	ZHL::DumpMemory(addr, 0x20, false, true);
+	ZHL::Log("Dumping ASM of the patch: ");
+	ZHL::DumpMemory(patchedAddr, patchLen, false, true);
 }
 
 extern "C" {
-	__declspec(dllexport) int InitZHL(void (*loaderFinishPtr)())
+	__declspec(dllexport) int InitZHL(void (__stdcall*loaderFinishPtr)())
 	{
 #ifdef ZHL_LOG_FILE
 		std::ofstream f(ZHL_LOG_FILE, std::ios_base::app);
@@ -58,6 +71,7 @@ extern "C" {
 			ExitProcess(1);
 		}
 #endif
+		ZHL::ClearLogFile();
 		if (!FunctionDefinition::Init())
 		{
 			auto const& missing = Definition::GetMissing();
