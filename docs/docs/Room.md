@@ -130,6 +130,10 @@ ___
 Returns the price of the item.
 
 ___
+### GetWallColor () {: aria-label='Functions' }
+#### [Color](Color.md) GetWallColor ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetWaterAmount () {: aria-label='Functions' }
 #### float GetWaterAmount ( ) {: .copyable aria-label='Functions' }
 Returns the "amount" of water currently in the room. Generally this will be `0` for no water and `1` for water, but values in between `0` and `1` (and technically above `1` in modded scenarios) are possible.
