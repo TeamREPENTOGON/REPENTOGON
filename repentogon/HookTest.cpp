@@ -29,31 +29,31 @@ HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
 
 /*HOOK_METHOD(Game, MakeShockwave, (const Vector &pos, float amp, float speed, int dur) -> void) {
 	super(pos, amp, speed, dur);
-	printf("%g %g %g %g %d\n", pos.x,pos.y, amp, speed, dur);
+	ZHL::Log("%g %g %g %g %d\n", pos.x,pos.y, amp, speed, dur);
 }
 */
 
 /*
 HOOK_METHOD(Game, Update, () -> void) {
 	super();
-	printf("I'm a buff baby that can dance like a man,\n");
-	printf("I can shake-ah my fanny, I can shake-ah my can!\n");
-	printf("I'm a tough tootin' baby, I can punch-ah yo buns!\n");
-	printf("Punch-ah yo buns, I can punch-ah yo buns!\n");
+	ZHL::Log("I'm a buff baby that can dance like a man,\n");
+	ZHL::Log("I can shake-ah my fanny, I can shake-ah my can!\n");
+	ZHL::Log("I'm a tough tootin' baby, I can punch-ah yo buns!\n");
+	ZHL::Log("Punch-ah yo buns, I can punch-ah yo buns!\n");
 	
 }
 */
 
 /*HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 	super();
-	printf("GridRock unk: %d type %d variant %d\n", _unk, _type, _variant);
+	ZHL::Log("GridRock unk: %d type %d variant %d\n", _unk, _type, _variant);
 }
 */
 
 
 /*HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 	super(type, variant, subtype, initSeed);
-	printf("Entity_Player::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
+	ZHL::Log("Entity_Player::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
 };
 */
 
@@ -61,7 +61,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 	Weapon* wep = this->GetWeapon();
 	int mem = wep->GetFireDelay();
 	if (wep != nullptr) {
-		printf("wep delay %d\n", mem);
+		ZHL::Log("wep delay %d\n", mem);
 	}
 	super();
 }
@@ -69,20 +69,20 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 /*HOOK_STATIC(Isaac, CreateWeapon, (WeaponType wepType, Entity* ent) -> Weapon*) {
 	Weapon* ret = super(wepType, ent);
-	printf("createweapon %d %d\n", wepType, ret->GetWeaponType());
+	ZHL::Log("createweapon %d %d\n", wepType, ret->GetWeaponType());
 	return ret;
 }
 */
 
 /*HOOK_METHOD(Weapon_MonstrosLung, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
-	printf("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetCharge());
-	printf("Weapon::DirVector: %f %f\n", this->GetDirection()->x, this->GetDirection()->y);
+	ZHL::Log("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetCharge());
+	ZHL::Log("Weapon::DirVector: %f %f\n", this->GetDirection()->x, this->GetDirection()->y);
 	super(pos, unk1, unk2);
 }
 */
 
 /*HOOK_METHOD(PlayerManager, SpawnCoPlayer2, (int unk) -> Entity_Player*) {
-	printf("PlayerManager::SpawnCoPlayer2 %d\n", unk);
+	ZHL::Log("PlayerManager::SpawnCoPlayer2 %d\n", unk);
 	Entity_Player* ret = super(unk);
 
 	return ret;
@@ -91,7 +91,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 /*HOOK_GLOBAL(CreateGridEntity, (GridEntityType type, unsigned int seed) -> GridEntity*) {
 	GridEntity* ret = super(type, seed);
-	printf("CreateGridEntity type: %d, seed %d\n", type, seed);
+	ZHL::Log("CreateGridEntity type: %d, seed %d\n", type, seed);
 
 	return ret;
 }
@@ -99,7 +99,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 /*HOOK_METHOD(Game, Spawn, (unsigned int type, unsigned int variant, const Vector &pos, const Vector &vel, Entity* spawner, unsigned int sub, unsigned int seed, unsigned int unk) -> Entity*) {
 	Entity* ret = super(type,variant,pos,vel,spawner,sub,seed, unk);
-	printf("Game::Spawn %d, %d, %f, %f, %f, %f,%d,%d,%d\n", type, variant, pos.x,pos.y, vel.x, vel.y, sub, seed, unk);
+	ZHL::Log("Game::Spawn %d, %d, %f, %f, %f, %f,%d,%d,%d\n", type, variant, pos.x,pos.y, vel.x, vel.y, sub, seed, unk);
 
 	return ret;
 }
@@ -108,14 +108,14 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 /*HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 	super(type, variant, subtype, initSeed);
-	printf("Entity::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
+	ZHL::Log("Entity::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
 }
 */
 
 /*
 HOOK_METHOD(Entity, Update, () -> void) {
 	super();
-	//printf("hellp");
+	//ZHL::Log("hellp");
 }
 */
 
@@ -123,7 +123,7 @@ HOOK_METHOD(Entity, Update, () -> void) {
 	float ret = super();
 
 	ret = 0.134f;
-	printf("GetDevilRoomChance: %f\n", ret);
+	ZHL::Log("GetDevilRoomChance: %f\n", ret);
 	return ret;
 }
 */
@@ -133,46 +133,46 @@ HOOK_METHOD(Entity, Update, () -> void) {
 
 	
 	Weapon_MultiShotParams params =  g_Game->GetPlayer(0)->GetMultiShotParams(WEAPON_TEARS);
-	printf("%d\n", params.numTears);
+	ZHL::Log("%d\n", params.numTears);
 	PosVel shotPosVel = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(0, WEAPON_TEARS, Vector(10, 0), 1.0f, params);
-	printf("(%f, %f) (%f, %f)", shotPosVel.pos.x, shotPosVel.pos.y, shotPosVel.vel.x, shotPosVel.vel.y);
+	ZHL::Log("(%f, %f) (%f, %f)", shotPosVel.pos.x, shotPosVel.pos.y, shotPosVel.vel.x, shotPosVel.vel.y);
 
 }*/
 
 
 /*HOOK_METHOD(Entity_Player, AddCoins, (int amount) -> void) {
-    //printf("EntityPlayer::AddCoins call %d\n", amount);
+    //ZHL::Log("EntityPlayer::AddCoins call %d\n", amount);
 }
 
 HOOK_METHOD(Entity_Player, AddBombs, (int amount) -> void) {
-    //printf("EntityPlayer::AddBombs call %d\n", amount);
+    //ZHL::Log("EntityPlayer::AddBombs call %d\n", amount);
 	super(amount);
 }
 
 HOOK_METHOD(Entity_Player, AddKeys, (int amount) -> void) {
-    //printf("EntityPlayer::AddKeys call %d\n", amount); // please
+    //ZHL::Log("EntityPlayer::AddKeys call %d\n", amount); // please
 	super(amount);
 }*/
 
 /*
 HOOK_METHOD(Entity_Player, AddJarFlies, (int amount) -> void) {
-    printf("EntityPlayer::AddJarFlies call %d\n", amount); // func for lua?
+    ZHL::Log("EntityPlayer::AddJarFlies call %d\n", amount); // func for lua?
 }
 
 HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
-    printf("EntityPlayer::AddPrettyFly call \n"); // func for lua?
+    ZHL::Log("EntityPlayer::AddPrettyFly call \n"); // func for lua?
 }
 */
 
 /*HOOK_STATIC(Entity_Player, GetMultiShotPositionVelocity, (int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams) -> PosVel) {
-	printf("GetMultiShotPositionVelocity hook!\n");
-	printf("loopIndex %d weaponType %d ShotDirection (%f,%f) shotSpeed %f)", loopIndex, weaponType, shotDirection.x, shotDirection.y, shotSpeed);
+	ZHL::Log("GetMultiShotPositionVelocity hook!\n");
+	ZHL::Log("loopIndex %d weaponType %d ShotDirection (%f,%f) shotSpeed %f)", loopIndex, weaponType, shotDirection.x, shotDirection.y, shotSpeed);
 	return super(loopIndex, weaponType, shotDirection, shotSpeed, multiShotParams);
 }*/
 
 
 /*HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int num) -> void) {
-	printf("IncreaseEventCounter %d %d\n", eEvent, num);
+	ZHL::Log("IncreaseEventCounter %d %d\n", eEvent, num);
 	super(eEvent, num);
 }
 */
@@ -192,11 +192,11 @@ int Lua_TEST(lua_State* L)
 		int* y = (int *)(g_Manager + menuid);
 		float* z = (float *)(g_Manager + menuid);
 		long* zz = (long *)(g_Manager + menuid);
-		printf("tests: %s \n", x);
-		printf("testd: %d \n", *y);
-		printf("testf: %f \n", *z);
-		printf("testl: %l \n", *zz);
-		printf("--------------------- \n");
+		ZHL::Log("tests: %s \n", x);
+		ZHL::Log("testd: %d \n", *y);
+		ZHL::Log("testf: %f \n", *z);
+		ZHL::Log("testl: %l \n", *zz);
+		ZHL::Log("--------------------- \n");
 		return 0;
 }
 
@@ -217,13 +217,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 */
 
 /*HOOK_METHOD(ShapeRenderer, RenderLine, (Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, const float& thickness) -> int) { // why the FUCK is this float a POINTER
-	printf("ShapeRenderer::RenderLine hook!\n");
-	printf("pos1 (%f, %f) pos2 (%f, %f) unk %f\n", pos1->x, pos1->y, pos2->x, pos2->y, thickness);
+	ZHL::Log("ShapeRenderer::RenderLine hook!\n");
+	ZHL::Log("pos1 (%f, %f) pos2 (%f, %f) unk %f\n", pos1->x, pos1->y, pos2->x, pos2->y, thickness);
 	return super(pos1, pos2, col1, col2, thickness);
 }*/
 
 /*HOOK_METHOD(PlayerHUDActiveItem, RenderGfx, (SourceQuad* source, DestinationQuad* dest, const ColorMod& color) -> void) {
-	printf("RenderGfx: %f, %f %f %f %f, %f %f %f\n", source->_topLeft.x, source->_topLeft.y, source->_topRight.x, source->_topRight.y, source->_bottomLeft.x, source->_bottomLeft.y, source->_bottomRight.x, source->_bottomRight.y);
+	ZHL::Log("RenderGfx: %f, %f %f %f %f, %f %f %f\n", source->_topLeft.x, source->_topLeft.y, source->_topRight.x, source->_topRight.y, source->_bottomLeft.x, source->_bottomLeft.y, source->_bottomRight.x, source->_bottomRight.y);
 	source->_topLeft.x = source->_topLeft.x + 16.0f;
 	source->_topRight.x = source->_topRight.x + 16.0f;
 	source->_bottomLeft.x = source->_bottomLeft.x + 16.0f;
@@ -234,7 +234,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 */
 
 /*HOOK_STATIC(GridEntity_Rock, SpawnDrops, (const Vector& pos, int GridEntityType, int GridEntityVariant, unsigned int Seed, bool Unk, int BackdropType) -> void) {
-	printf("GridEntity::SpawnDrops %f %f, %d %d %d %d %d \n", pos.x, pos.y, GridEntityType, GridEntityVariant, Seed, Unk, BackdropType );
+	ZHL::Log("GridEntity::SpawnDrops %f %f, %d %d %d %d %d \n", pos.x, pos.y, GridEntityType, GridEntityVariant, Seed, Unk, BackdropType );
 	super(pos, GridEntityType, GridEntityVariant, Seed, Unk, BackdropType);
 }
 */
@@ -243,9 +243,9 @@ extern void LuaReset();
 bool netStartInitialized = false; // temp
 /*HOOK_METHOD(Manager, ExecuteStartGame, () -> void) {
 	if (this->GetNetStart() && !netStartInitialized) {
-		printf("Resetting Lua- please be patient...\n");
+		ZHL::Log("Resetting Lua- please be patient...\n");
 		//LuaReset();
-		printf("Done.\n");
+		ZHL::Log("Done.\n");
 		netStartInitialized = true;
 	}
 	super();
@@ -254,9 +254,9 @@ bool netStartInitialized = false; // temp
 // Too crashy... let's try earlier.
 /*HOOK_METHOD(Game, NetStart, (void* unk, int challenge, Seeds seed, unsigned int difficulty, GameState* state) -> void) {
 	if (!netStartInitialized) {
-		printf("Resetting Lua- please be patient...\n");
+		ZHL::Log("Resetting Lua- please be patient...\n");
 		LuaReset();
-		printf("Done.\n"); 
+		ZHL::Log("Done.\n"); 
 
 		netStartInitialized = true;
 	}
@@ -278,7 +278,7 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 
 /*HOOK_METHOD(Entity, GetCollisionCapsule, (Capsule* capsule, const Vector& vec)-> Capsule*) {
 	Capsule* ret = super(capsule, vec);
-	printf("GetCollisionCapsule: %f %f %f %f\n", ret->GetVec1()->x, ret->GetVec1()->y, ret->GetVec2()->x, ret->GetVec2()->y);
+	ZHL::Log("GetCollisionCapsule: %f %f %f %f\n", ret->GetVec1()->x, ret->GetVec1()->y, ret->GetVec2()->x, ret->GetVec2()->y);
 	return ret;
 }
 */
