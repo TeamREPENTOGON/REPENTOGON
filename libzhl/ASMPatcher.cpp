@@ -118,7 +118,10 @@ void ASMPatcher::FlatPatch(void* at, const char* with, size_t len, bool nopRest)
 		throw std::runtime_error("Parallel patching is not allowed");
 	}
 
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	BOOL flushOk = FlushInstructionCache(GetCurrentProcess(), NULL, 0);
+	if (!flushOk) {
+		logger.Log("[CRITICAL] ASMPatcher::FlatPatch: FlushInstructionCache failed (%d)\n", GetLastError());
+	}
 }
 
 void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len) {
@@ -197,7 +200,10 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 	}
 
 	logger.Log("ASMPatcher::Patch: flushing instruction pipeline\n");
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	BOOL flushOk = FlushInstructionCache(GetCurrentProcess(), NULL, 0);
+	if (!flushOk) {
+		logger.Log("[CRITICAL] ASMPatcher::Patch: FlushInstructionCache failed (%d)\n", GetLastError());
+	}
 
 	return targetPage;
 }

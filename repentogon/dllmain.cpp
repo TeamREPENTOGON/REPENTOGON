@@ -159,7 +159,7 @@ static void FixLuaDump()
 		fprintf(stderr, "VirtualProtect error %d\n", GetLastError());
 	}
 
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 }
 char REPENTOGON::stocktitle[256]="";
 char REPENTOGON::moddedtitle[256] = "";
