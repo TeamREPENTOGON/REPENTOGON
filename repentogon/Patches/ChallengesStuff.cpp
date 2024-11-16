@@ -183,7 +183,7 @@ void skiplocked(Menu_CustomChallenge* m) {
 				}
 			}
 			boundselchal(m);
-			//printf("%d %d\n", this->SelectedElement,p);
+			//ZHL::Log("%d %d\n", this->SelectedElement,p);
 		} while ((p != m->SelectedElement));
 	}
 }
@@ -305,5 +305,5 @@ HOOK_METHOD(PersistentGameData, AddChallenge, (int challengeid) -> void) {
 		g_Manager->GetPersistentGameData()->TryUnlock(tointc(modachiev["unlockachievement"]));
 	}
 	SaveChallengesToJson();
-	printf("[Callenge] %s completed (total: %d)", modachiev["name"].c_str(), Challenges[chalid]);
+	ZHL::Log("[Callenge] %s completed (total: %d)", modachiev["name"].c_str(), Challenges[chalid]);
 }

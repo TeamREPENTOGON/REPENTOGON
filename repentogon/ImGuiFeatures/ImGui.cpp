@@ -591,7 +591,7 @@ void __stdcall RunImGui(HDC hdc) {
 	
 		imguiInitialized = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
-		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
+		ZHL::Log("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -684,7 +684,7 @@ void HookImGui() {
 	SigScan scanner("ffb0????????ffd75f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
 	void* imguiAddr = &RunImGui;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

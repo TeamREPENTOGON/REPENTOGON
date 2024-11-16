@@ -43,7 +43,7 @@ void ASMPatchFireDelay() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* fireDelayPtr = &PlayerStats::modCharacterFireDelay;
-	printf("[REPENTOGON] Patching EvaluateCache FireDelay at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache FireDelay at %p\n", addr);
 	ASMPatch patch;
 
 	// Override Eden's calculation.
@@ -61,7 +61,7 @@ void ASMPatchSpeed() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* speedPtr = &PlayerStats::modCharacterSpeed;
-	printf("[REPENTOGON] Patching EvaluateCache Speed at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache Speed at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x05").AddBytes(ByteBuffer().AddAny((char*)&speedPtr, 4)) // addss xmm0, dword ptr ds:[0xXXXXXXXX]
@@ -75,7 +75,7 @@ void ASMPatchDamage() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* damagePtr = &PlayerStats::modCharacterDamage;
-	printf("[REPENTOGON] Patching EvaluateCache Damage at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache Damage at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&damagePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
@@ -94,7 +94,8 @@ void ASMPatchRange() {
 	SigScan scanner("83f80974??83f81e74");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching EvaluateCache Range at %p\n", addr);
+	void* rangePtr = &PlayerStats::modCharacterRange;
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache Range at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
@@ -113,7 +114,7 @@ void ASMPatchShotSpeed() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* shotSpeedPtr = &PlayerStats::modCharacterShotSpeed;
-	printf("[REPENTOGON] Patching EvaluateCache Shot Speed at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache Shot Speed at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&shotSpeedPtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
@@ -130,7 +131,7 @@ void ASMPatchLuck() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* luckPtr = &PlayerStats::modCharacterLuck;
-	printf("[REPENTOGON] Patching EvaluateCache Luck at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching EvaluateCache Luck at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x15").AddBytes(ByteBuffer().AddAny((char*)&luckPtr, 4)) // addss xmm2, dword ptr ds:[0xXXXXXXXX]

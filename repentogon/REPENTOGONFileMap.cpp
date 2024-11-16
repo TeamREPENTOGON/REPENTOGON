@@ -156,7 +156,7 @@ namespace REPENTOGONFileMap {
 
 //HOOK_METHOD(KAGE_Filesys_FileManager, GetExpandedPath, (char* path)->char*) {
 //	char* out = super(path);
-//	//	printf("[FileMan::GetExpandedPath] Input is %s\nOut is   %s\n",path,out);
+//	//	ZHL::Log("[FileMan::GetExpandedPath] Input is %s\nOut is   %s\n",path,out);
 //	return out;
 //};
 //HOOK_METHOD(ModManager, LoadConfigs, (void)->void) {
