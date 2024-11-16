@@ -120,7 +120,7 @@ DWORD RedirectLua(FILE* f, HMODULE* outLua) {
 
 static HMODULE luaHandle = NULL;
 
-void LoadMods() {
+void __stdcall LoadMods() {
 	FILE* f = fopen("zhlLoader.log", "a");
 	Log(f, "INFO", "Loading mods...\n");
 
@@ -192,7 +192,7 @@ extern "C" {
 		Log(f, "INFO", "Loaded ZHL at %p\n", zhl);
 		Log(f, "INFO", "Search InitZHL in ZHL\n");
 
-		int (*initZhl)(void (*)()) = (int(*)(void(*)()))GetProcAddress(zhl, "InitZHL");
+		int (*initZhl)(void (__stdcall*)()) = (int(*)(void(__stdcall*)()))GetProcAddress(zhl, "InitZHL");
 		if (!initZhl) {
 			FreeLibrary(zhl);
 			Log(f, "ERROR", "InitZHL not found\n");
