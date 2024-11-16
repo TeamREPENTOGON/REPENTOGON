@@ -25,7 +25,7 @@ struct REPENTOGONOptions {
 		mINI::INIFile iniFile(optionsPath);
 
 		if (!std::filesystem::exists(optionsPath)) {
-			printf("INI doesn't exist, creating\n");
+			ZHL::Log("INI doesn't exist, creating\n");
 			
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
 			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
@@ -67,7 +67,7 @@ struct REPENTOGONOptions {
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
-		printf("Loaded REPENTOGON INI\n");
+		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
 	bool GetBool(char* category, char* field) {

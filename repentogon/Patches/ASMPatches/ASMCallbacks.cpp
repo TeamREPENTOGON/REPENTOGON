@@ -435,7 +435,7 @@ void ASMPatchPreMMorphActiveCallback() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::TriggerActiveItemUsed at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerActiveItemUsed at %p\n", addr);
 
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::ESI, true);
 	ASMPatch patch;
@@ -496,7 +496,7 @@ void ASMPatchTrySplit() {
 	SigScan scanner("f30f100d????????0f2f8b");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
 	void* ptr = &resSplit;
 	const int numOverriddenBytes = 8;
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS + ASMPatch::SavedRegisters::Registers::XMM0 + ASMPatch::SavedRegisters::Registers::XMM1, true);
@@ -564,7 +564,7 @@ void ASMPatchPostNightmareSceneCallback() {
 	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
-	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // NightmareScene
@@ -610,7 +610,7 @@ void ASMPatchPrePickupVoided() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // push the pickup
@@ -655,7 +655,7 @@ void ASMPatchPrePickupVoidedBlackRune() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseCard at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseCard at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
@@ -700,7 +700,7 @@ void ASMPatchPrePickupVoidedAbyss() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
@@ -746,7 +746,7 @@ void ASMPatchPrePickupComposted() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
@@ -879,7 +879,7 @@ void ASMPatchTrinketRender() {
 
 	void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::EAX | ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
 	patch
@@ -943,7 +943,7 @@ void ASMPatchPickupUpdatePickupGhosts() {
 
     void* addr = signature.GetAddress();
 
-    printf("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
+    ZHL::Log("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
 
     patch.Pop(ASMPatch::Registers::EAX)
         .Pop(ASMPatch::Registers::EAX)
@@ -983,7 +983,7 @@ void ASMPatchProjectileDeath() {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Projectile::Update at %p for MC_POST_PROJECTILE_DEATH\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Projectile::Update at %p for MC_POST_PROJECTILE_DEATH\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -1021,7 +1021,7 @@ void ASMPatchTearDeath() {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Tear::Update at %p for MC_POST_TEAR_DEATH\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Tear::Update at %p for MC_POST_TEAR_DEATH\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -1078,13 +1078,13 @@ void ASMPatchPrePlayerGiveBirth() {
 	SigScan cambionSig("818f????????000200000bc2");
 	cambionSig.Scan();
 	void* cambionAddr = cambionSig.GetAddress();
-	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
 	PreBirthPatch(cambionAddr, true);  // Cambion
 
 	SigScan immaculateSig("818f????????000200000bc6");
 	immaculateSig.Scan();
 	void* immaculateAddr = immaculateSig.GetAddress();
-	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
 }
 
@@ -1121,7 +1121,7 @@ void ASMPatchPreTriggerBedSleepEffect() {
 	SigScan scanner_transition("8bb0????????85f674??837e??0174");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
-	printf("[REPENTOGON] Patching ItemOverlay::Update at %p for PreTriggerBedSleepEffect callback\n", addr);
+	ZHL::Log("[REPENTOGON] Patching ItemOverlay::Update at %p for PreTriggerBedSleepEffect callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // Bed
@@ -1158,7 +1158,7 @@ void ASMPatchPostTriggerBedSleepEffect() {
 	SigScan scanner_transition("81c61c0300008b0e");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
-	printf("[REPENTOGON] Patching ItemOverlay::Update at %p for PostBedSleep callback\n", addr);
+	ZHL::Log("[REPENTOGON] Patching ItemOverlay::Update at %p for PostBedSleep callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI) // Bed
@@ -1204,7 +1204,7 @@ void ASMPatchPreBedSleep() {
 	SigScan scanner_transition("8bcfe8????????85c07e??8bcfe8????????84c0");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
-	printf("[REPENTOGON] Patching Entity_Pickup::handle_collision at %p for PreBedSleep callback\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::handle_collision at %p for PreBedSleep callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI) // Bed
@@ -1257,7 +1257,7 @@ void ASMPatchPrePlayerPocketItemSwap() {
 	SigScan scanner_transition("8dbb????????833f00");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
-	printf("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EBX) // Player

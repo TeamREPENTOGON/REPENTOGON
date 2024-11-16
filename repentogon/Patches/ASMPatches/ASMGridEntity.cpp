@@ -63,7 +63,7 @@ void ASMPatchRoomSpawnEntity() {
 	scanner_spawn_entity.Scan();
 	void* addr = scanner_spawn_entity.GetAddress();
 
-	printf("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::ECX, true);
 	ASMPatch patch;
@@ -123,7 +123,7 @@ void PatchPostSpawnGridEntity()
 	scanner2.Scan();
 	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
 
-	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_ENTITY_SPAWN at %p, %p\n", addrs[0], addrs[1]);
+	ZHL::Log("[REPENTOGON] Patching SpawnGridEntity POST_GRID_ENTITY_SPAWN at %p, %p\n", addrs[0], addrs[1]);
 	ASMPatchSpawnGridEntityPost(addrs[0]);
 	ASMPatchSpawnGridEntityPost(addrs[1]);
 }
@@ -268,7 +268,7 @@ void PatchInlinedSpawnGridEntity()
 		scanner_pressure_plate_reward1.GetAddress(),
 		scanner_pressure_plate_reward2.GetAddress()
 	};
-	printf("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
+	ZHL::Log("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[0], ASMPatch::Registers::ESI, 0xf0, GRID_POOP, 1); // ai_mega_fatty
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[1], ASMPatch::Registers::ESI, 0xf6, GRID_POOP, 0); // ai_larryjr
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[2], ASMPatch::Registers::ESI, 0x109, GRID_POOP, 1); // ai_chub

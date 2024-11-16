@@ -15,7 +15,7 @@ void ASMPatchBlueWombCurse() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Level::Init() Curse evaluation for Blue Womb at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Level::Init() Curse evaluation for Blue Womb at %p\n", addr);
 
 	ASMPatch patch;
 	patch.AddBytes("\x83\x67\x0C\xFA");
@@ -54,7 +54,7 @@ void ASMPatchVoidGeneration() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching void generation at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching void generation at %p\n", addr);
 
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::XMM0 | ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -133,7 +133,7 @@ void ASMPatchTrySpawnSpecialQuestDoor() {
 	SigScan scanner("83f90474??83f9050f85????????83fb02");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching TrySpawnSpecialQuestDoor at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching TrySpawnSpecialQuestDoor at %p\n", addr);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -267,7 +267,7 @@ void PatchDealRoomVariant(char * signature, char* message) {
 
 	void* patchAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching %s at %p\n", message, patchAddr);
+	ZHL::Log("[REPENTOGON] Patching %s at %p\n", message, patchAddr);
 	ASMPatch patch;
 	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	// patch.PreserveRegisters(registers);
@@ -302,7 +302,7 @@ void PatchOverrideDataHandling() {
 
 	void* patchAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Level::load_room at %p\n", patchAddr);
+	ZHL::Log("[REPENTOGON] Patching Level::load_room at %p\n", patchAddr);
 	ASMPatch patch1;
 	patch1.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)patchAddr + 0x135)
 		.AddRelativeJump((char*)patchAddr + 0x11);
@@ -317,7 +317,7 @@ void PatchOverrideDataHandling() {
 
 	patchAddr = (char*)scanner2.GetAddress() + 5;
 
-	printf("[REPENTOGON] Patching Room::RespawnEnemies at %p\n", patchAddr);
+	ZHL::Log("[REPENTOGON] Patching Room::RespawnEnemies at %p\n", patchAddr);
 	ASMPatch patch2;
 	patch2.AddBytes("\x0F\x45\xC1") // cmovnz eax, ecx
 		.AddRelativeJump((char*)patchAddr + 0xe);
@@ -330,7 +330,7 @@ void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
 
 	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
 	for (int i = 0; i < 10; i++) {
@@ -345,7 +345,7 @@ void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
 
 	// If we attempt to read from index 13 in the DoorSlot array (which seems to be reading outside the bounds of the array) read from index 12 instead.
 	ASMPatch patch;

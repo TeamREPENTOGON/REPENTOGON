@@ -26,7 +26,7 @@ void ASMPatchCoopWheelRespectModdedAchievements() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching PlayerManager::init_special_baby_selection (to respect modded achievements) at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching PlayerManager::init_special_baby_selection (to respect modded achievements) at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

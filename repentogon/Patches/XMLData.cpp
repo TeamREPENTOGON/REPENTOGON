@@ -207,7 +207,7 @@ void LoadGenericXMLData(XMLDataHolder* data,xml_node<char>* daddy) {
 			attributes["sourceid"] = lastmodid;
 		}
 		data->ProcessChilds(auxnode, id);
-		//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+		//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 		if (attributes.find("relativeid") != attributes.end()) { data->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 		data->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
 		data->bymod[attributes["sourceid"]].push_back(id);
@@ -218,7 +218,7 @@ void LoadGenericXMLData(XMLDataHolder* data,xml_node<char>* daddy) {
 		data->nodes[id] = attributes;
 		data->byorder[data->nodes.size()] = id;
 		//XMLStuff.ModData->sounds[lastmodid] += 1;
-		//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 	}
 }
 
@@ -249,7 +249,7 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 		lastmodid = new char[path.length() + 1]; //this is the sort of stuff I dont like about C++
 		strcpy(lastmodid, path.c_str());
 	}
-	//printf("path: %s (mod:%s iscontent:%d) \n", xmlpath,lastmodid,iscontent);
+	//ZHL::Log("path: %s (mod:%s iscontent:%d) \n", xmlpath,lastmodid,iscontent);
 	logViewer.AddLog("[REPENTOGON]", "Mod ID: %s \n", lastmodid);
 	
 }
@@ -674,7 +674,7 @@ int lastrequest = 0;
 
 HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int StageType, unsigned int Mode)-> unsigned int, __cdecl) {
 	unsigned int stageid = super(LevelStage, StageType, Mode);
-	//printf("getstage: %d \n", stageid);
+	//ZHL::Log("getstage: %d \n", stageid);
 	return stageid;
 }
 
@@ -682,7 +682,7 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	if (ogstagespath.length() == 0) {
 		ogstagespath = xmlpath;
 	}
-	printf("stagexml: %s \n", xmlpath);
+	ZHL::Log("stagexml: %s \n", xmlpath);
 	super(xmlpath);
 }
 
@@ -781,10 +781,10 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 		}
 		g_Game->GetRoomConfig()->LoadStages(xml);
 		//}
-		printf("setstageX: %d %d  \n", stageid, alt);
+		ZHL::Log("setstageX: %d %d  \n", stageid, alt);
 		tuple<int, int> setstg = GetSetStage(parentstage, IsOnSecondFloor());
 		super(get<0>(setstg), get<1>(setstg));
-		printf("done");
+		ZHL::Log("done");
 		lastparentstage = get<0>(setstg);
 		setstg;
 	}
@@ -846,7 +846,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	if (!force && (!node || no || xmlsloaded)) { return; }
 	if (queuedhackyxmlvalue > 0) { return; }
 	//clock_t tStart = clock();
-	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
+	//if (currpath.length() > 0) { ZHL::Log("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
 	uint32_t unk;
@@ -893,7 +893,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLAttributes  lastmod = XMLStuff.ModData->GetNodeById(XMLStuff.ModData->byid[lastmodid]);
 				//g_Game->GetConsole()->PrintError(toIsaacString("[XML] The entity:" + entity["name"] + "(From: " + lastmodid + ") collides with " + collider["name"] + "from (" + collidermod["name"] + ")"));
 				if (false) {
-					printf("[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
+					ZHL::Log("[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
 				}
 				//Conflict resolve emulation begin
 				if ((type < 10) || (type >= 1000)) {
@@ -991,7 +991,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 			player["sourceid"] = lastmodid;
 			if (player.find("relativeid") != player.end()) { XMLStuff.PlayerData->byrelativeid[lastmodid + player["relativeid"]] = id;}
-			//printf("playa: %d (%s) \n", id, player["name"].c_str());
+			//ZHL::Log("playa: %d (%s) \n", id, player["name"].c_str());
 			XMLStuff.PlayerData->ProcessChilds(auxnode, id);
 			XMLStuff.PlayerData->nodes[id] = player;
 			XMLStuff.PlayerData->byorder[XMLStuff.PlayerData->nodes.size()] = id;
@@ -1138,7 +1138,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 					item["sourceid"] = lastmodid;
 					item["type"] = auxnodename;
-					//printf("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
+					//ZHL::Log("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
 					if (item["name"].find("#") != string::npos) {
 						item["untranslatedname"] = item["name"];
 						item["name"] = string(stringTable->GetString("Items", 0, item["name"].substr(1, item["name"].length()).c_str(), &unk));
@@ -1214,7 +1214,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 					trinket["sourceid"] = lastmodid;
 					trinket["type"] = auxnode->name();
-					//printf("tname: %s // %s (%s) \n", trinket["name"].c_str(), trinket["description"].c_str(), trinket["id"].c_str());
+					//ZHL::Log("tname: %s // %s (%s) \n", trinket["name"].c_str(), trinket["description"].c_str(), trinket["id"].c_str());
 					if (trinket["name"].find("#") != string::npos) {
 						trinket["untranslatedname"] = trinket["name"];
 						trinket["name"] = string(stringTable->GetString("Items", 0, trinket["name"].substr(1, trinket["name"].length()).c_str(), &unk));
@@ -1330,7 +1330,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.BombCostumeData->nodes[id] = bombcostume;
 			XMLStuff.BombCostumeData->byorder[XMLStuff.BombCostumeData->nodes.size()] = id;
 			XMLStuff.ModData->bombcostumes[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	break;
 	case 6: //music
@@ -1368,7 +1368,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.MusicData->nodes[id] = music;
 			XMLStuff.MusicData->byorder[XMLStuff.MusicData->nodes.size()] = id;
 			XMLStuff.ModData->musictracks[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	break;
 	case 7: //sounds
@@ -1401,7 +1401,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if ((sound.find("name") == sound.end()) && (XMLStuff.SoundData->childs[id]["sample"].size() > 0) && (XMLStuff.SoundData->childs[id]["sample"][0].count("path") != 0)) {
 				sound["name"] = getFileName(XMLStuff.SoundData->childs[id]["sample"][0]["path"]);
 			}
-			//printf("sound: %s (%d) \n",sound["name"].c_str(),id);
+			//ZHL::Log("sound: %s (%d) \n",sound["name"].c_str(),id);
 			if (sound.find("relativeid") != sound.end()) { XMLStuff.SoundData->byrelativeid[lastmodid + sound["relativeid"]] = id; }
 			XMLStuff.SoundData->bynamemod[sound["name"] + lastmodid] = id;
 			XMLStuff.SoundData->bymod[lastmodid].push_back(id);
@@ -1410,7 +1410,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.SoundData->nodes[id] = sound;
 			XMLStuff.SoundData->byorder[XMLStuff.SoundData->nodes.size()] = id;
 			XMLStuff.ModData->sounds[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 8: //achievements
@@ -1448,7 +1448,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (achievement["name"].length() == 0) {
 				achievement["name"] = achievement["steam_name"];
 			}
-			//printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);			
+			//ZHL::Log("achievement: %s (%d) \n", achievement["name"].c_str(),id);			
 				if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[achievement["sourceid"] + achievement["relativeid"]] = id; }
 				XMLStuff.AchievementData->bynamemod[achievement["name"] + achievement["sourceid"]] = id;
 				XMLStuff.AchievementData->bymod[achievement["sourceid"]].push_back(id);
@@ -1461,7 +1461,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.ModData->achievlistpermod[achievement["sourceid"]].push_back(achievement);
 				}
 			
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	break;
 	case 9: //challenges
@@ -1531,7 +1531,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if ((pos < 4) && (pos > 0)) {
 					backdrop["name"] = backdrop["name"].substr(pos+1, backdrop["name"].length());
 				}
-				//printf("%s \n", backdrop["name"].c_str());
+				//ZHL::Log("%s \n", backdrop["name"].c_str());
 			}
 
 			backdrop["sourceid"] = lastmodid;
@@ -1619,7 +1619,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				stage["name"] = string(stringTable->GetString("Stages", 0, stage["name"].substr(1, stage["name"].length()).c_str(), &unk));
 				if (stage["name"].compare("StringTable::InvalidKey") == 0) { stage["name"] = stage["untranslatedname"]; }
 			}
-			//printf("stage: %s (%d)", stage["name"].c_str(), id);
+			//ZHL::Log("stage: %s (%d)", stage["name"].c_str(), id);
 			XMLStuff.StageData->ProcessChilds(auxnode, id);
 			XMLStuff.StageData->bynamemod[stage["name"] + stage["sourceid"]] = id;
 			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
@@ -1754,7 +1754,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						id = XMLStuff.WispData->maxid + 2000;
 						wisp["id"] = to_string(id);
 					}
-					//printf("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
+					//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
 					XMLStuff.WispData->ProcessChilds(auxnode, id);
 					XMLStuff.WispData->bynamemod[wisp["name"] + lastmodid] = id;
 					XMLStuff.WispData->bymod[lastmodid].push_back(id);
@@ -1847,7 +1847,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					id = XMLStuff.LocustData->maxid + 2000;
 					locust["id"] = to_string(id);
 				}
-				//printf("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
+				//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
 				XMLStuff.LocustData->ProcessChilds(auxnode, id);
 				XMLStuff.LocustData->bynamemod[locust["name"] + lastmodid] = id;
 				XMLStuff.LocustData->bymod[lastmodid].push_back(id);
@@ -1936,7 +1936,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			curse["sourcepath"] = currpath;
 			curse["sourceid"] = lastmodid;
 			if (curse.count("relativeid") > 0) { XMLStuff.CurseData->byrelativeid[lastmodid + curse["relativeid"]] = id; }
-			//printf("curse: %d - %s \n", id, curse["name"].c_str());
+			//ZHL::Log("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.CurseData->ProcessChilds(auxnode, id);
 			XMLStuff.CurseData->bynamemod[curse["name"] + lastmodid] = id;
 			XMLStuff.CurseData->bymod[lastmodid].push_back(id);
@@ -1971,7 +1971,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 			boss["sourcepath"] = currpath;
 			if (boss.count("sourceid") <= 0) { boss["sourceid"] = "BaseGame"; }
-			//printf("curse: %d - %s \n", id, curse["name"].c_str());
+			//ZHL::Log("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.BossPortraitData->ProcessChilds(auxnode, id);
 			XMLStuff.BossPortraitData->bynamemod[boss["name"] + lastmodid] = id;
 			XMLStuff.BossPortraitData->bymod[lastmodid].push_back(id);
@@ -2026,7 +2026,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					costume["name"] = getFileName(costume["anm2path"]);
 				}
 				costume["sourceid"] = lastmodid;
-				//printf("costume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
+				//ZHL::Log("costume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
 				if (costume.count("relativeid") > 0) { XMLStuff.CostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
 				XMLStuff.CostumeData->ProcessChilds(auxnode, id);
 				XMLStuff.CostumeData->bynamemod[costume["name"] + lastmodid] = id;
@@ -2068,7 +2068,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				}
 				costume["sourceid"] = lastmodid;
 				if (costume.count("relativeid") > 0) { XMLStuff.NullCostumeData->byrelativeid[lastmodid + costume["relativeid"]] = idnull; }
-				//printf("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
+				//ZHL::Log("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
 				XMLStuff.NullCostumeData->ProcessChilds(auxnode, idnull);
 				XMLStuff.NullCostumeData->bynamemod[costume["name"] + lastmodid] = idnull;
 				XMLStuff.NullCostumeData->bymod[lastmodid].push_back(idnull);
@@ -2116,7 +2116,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.PoolData->byorder[XMLStuff.PoolData->nodes.size()] = id;
 			}
 			XMLStuff.ModData->itempools[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 21://bosspools
@@ -2153,7 +2153,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.BossPoolData->byorder[XMLStuff.BossPoolData->nodes.size()] = id;
 			}
 			//XMLStuff.ModData->bosspools[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 	break;
@@ -2190,7 +2190,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if ((attributes.find("name") == attributes.end()) && (attributes.find("gfx") != attributes.end())) {
 				attributes["name"] = getFileName(attributes["gfx"]);
 			}
-			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.GiantBookData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.GiantBookData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
 			XMLStuff.GiantBookData->bymod[attributes["sourceid"]].push_back(id);
@@ -2199,7 +2199,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.GiantBookData->nodes[id] = attributes;
 			XMLStuff.GiantBookData->byorder[XMLStuff.GiantBookData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 23: //bossrush
@@ -2222,7 +2222,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				attributes["sourceid"] = lastmodid;
 			}
 			XMLStuff.BossRushData->ProcessChilds(auxnode, id);
-			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.BossRushData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.BossRushData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
 			XMLStuff.BossRushData->bymod[attributes["sourceid"]].push_back(id);
@@ -2232,7 +2232,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.BossRushData->byorder[XMLStuff.BossRushData->nodes.size()] = id;
 			id++;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 24: //playerforms
@@ -2275,7 +2275,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (attributes["name"].compare("StringTable::InvalidKey") == 0) { attributes["name"] = attributes["untranslatedname"]; }
 			}
 
-			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.PlayerFormData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.PlayerFormData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
 			XMLStuff.PlayerFormData->bymod[attributes["sourceid"]].push_back(id);
@@ -2284,7 +2284,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.PlayerFormData->nodes[id] = attributes;
 			XMLStuff.PlayerFormData->byorder[XMLStuff.PlayerFormData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 25: //bosscolors
@@ -2325,7 +2325,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.BossColorData->bytypevar[idx] = id;
 			id++;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
-			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
 	case 99: //name for mod metadata
@@ -2377,7 +2377,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		UpdateRelEntTracker(XMLStuff.FxRayData, &XMLStuff.BackdropData->relfxrays, "backdrop");
 		break;
 	}
-	//printf("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
+	//ZHL::Log("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
 }
 
 HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)->xml_node<char>*) {
@@ -2389,7 +2389,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 			string error = "[XMLError] " + xmlerrors[toint(err->value())] + " in " + currpath;
 			g_Game->GetConsole()->PrintError(error);
 			KAGE::LogMessage(3,(error + "\n").c_str());
-			//printf("%s \n", error.c_str());
+			//ZHL::Log("%s \n", error.c_str());
 		}
 		ProcessXmlNode(node);
 	}
@@ -2409,7 +2409,7 @@ char * rootnodename(char* a) {
 	}
 	size_t length = end - start;
 	string str = input.substr(start, length);
-	//printf(" %d %d %d %s", end, length, start, str.c_str());
+	//ZHL::Log(" %d %d %d %s", end, length, start, str.c_str());
 	char* mutableCharPtr = new char[str.length() + 1];
 	strcpy(mutableCharPtr, str.c_str());
 	return mutableCharPtr;
@@ -2454,7 +2454,7 @@ HOOK_METHOD(ItemConfig, Load, (char* xmlpath, ModEntry* modentry)->void) {
 
 HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
-	//printf("curse you %s \n", xmlpath);
+	//ZHL::Log("curse you %s \n", xmlpath);
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -2577,7 +2577,7 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 		lua_newtable(L);
 		for each (const auto & att in elem)
 		{
-			printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+			ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 			lua_pushstring(L, att.first.c_str());
 			lua_pushstring(L, att.second.c_str());
 			lua_settable(L, -3);
@@ -2593,14 +2593,14 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 	lua_newtable(L);
 	for each (const auto & att in node)
 	{
-		printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+		ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 		lua_pushstring(L, att.first.c_str());
 		lua_pushstring(L, att.second.c_str());
 		lua_settable(L, -3);
 	}
 	for each (const auto & att in childs)
 	{
-		//printf("---childattr: %s / %s \n", att.first.c_str(), att.first.c_str());
+		//ZHL::Log("---childattr: %s / %s \n", att.first.c_str(), att.first.c_str());
 		lua_pushstring(L, att.first.c_str());
 		Lua_PushXMLSubNodes(L, childs[att.first]);
 		lua_settable(L, -3);
@@ -2865,7 +2865,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 		string error = "[XMLError] " + reason + " in " + dir;
 		g_Game->GetConsole()->PrintError(error);
 		KAGE::LogMessage(3, (error + "\n").c_str());
-		//printf("%s \n", error.c_str());
+		//ZHL::Log("%s \n", error.c_str());
 		//mclear(xmldoc);
 	}
 	return false;
@@ -2890,7 +2890,7 @@ char* GetResources(char* xml,const string &dir,const string &filename) {
 bool GetContent(const string &dir, xml_document<char>* xmldoc) {
 	ifstream file(dir.c_str());
 	if (file.is_open()) {
-//		printf("path: %s \n", dir.c_str());
+//		ZHL::Log("path: %s \n", dir.c_str());
 		std::stringstream sbuffer;
 		sbuffer << file.rdbuf();
 		string filedata = sbuffer.str();
@@ -2911,7 +2911,7 @@ xml_node<char>* find_child(
 	const string& value)
 {
 	xml_node<char>* node = parent->first_node(type.c_str());
-	//printf("node1");
+	//ZHL::Log("node1");
 	try {
 	while (node)
 	{
@@ -2919,7 +2919,7 @@ xml_node<char>* find_child(
 		if (attr && value == attr->value()) return node;
 		node = node->next_sibling(type.c_str());
 	}
-	//printf("node2");
+	//ZHL::Log("node2");
 	return NULL;
 	}
 	catch(exception ex){
@@ -3240,7 +3240,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 			int newmax = GetMaxIdFromChilds(xmldoc->first_node());
 			if (newmax > 0) {
 				xmlmaxnode[filename] = newmax;
-				//printf("filename: %s max: %d \n", filename.c_str(), xmlmaxnode[filename]);
+				//ZHL::Log("filename: %s max: %d \n", filename.c_str(), xmlmaxnode[filename]);
 			}
 		}
 		mclear(xmldoc);
@@ -3251,7 +3251,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 			int newmax = GetMaxIdFromChilds(xmldoc->first_node("fxLayers")); //fuck this xml in particular
 			if (newmax > 0) {
 				maxfxlayerid = newmax;
-				//printf("filename: %s max: %d \n", filename.c_str(), maxfxlayerid);
+				//ZHL::Log("filename: %s max: %d \n", filename.c_str(), maxfxlayerid);
 			}
 		}
 		mclear(xmldoc);
@@ -3431,7 +3431,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 						}
 					}
 					else if (strcmp(filename.c_str(), "stages.xml") == 0) {
-						//printf("1");
+						//ZHL::Log("1");
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							XMLAttributes node;
 							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -3501,7 +3501,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				std::strcpy(xml, modifiedXml.c_str());
 				modifiedXmlStream.clear();
 				//if (strcmp(filename.c_str(), "fxlayers.xml") == 0) {
-					//printf("\nasdsasad: (%s)\n", xml);
+					//ZHL::Log("\nasdsasad: (%s)\n", xml);
 				//}
 			}
 			else{
@@ -3522,18 +3522,18 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				}
 			}
 			else if (strcmp(filename.c_str(), "stages.xml") == 0) {
-				//printf("1");
+				//ZHL::Log("1");
 				xml_node<char>* tocopy = find_child(root, "stage", "consoleid", IntToChar(queuedhackyxmlvalue));
 				if (tocopy != NULL) {
 					if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
 					xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
 				}
-				//printf("2");
+				//ZHL::Log("2");
 				xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
 				if (todel != NULL) {
 					root->remove_node(todel);
 				}
-				//printf("3");
+				//ZHL::Log("3");
 			}
 		}
 		ostringstream modifiedXmlStream;
@@ -3544,11 +3544,11 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 		std::strcpy(xml, modifiedXml.c_str());
 	}
 	if (queuedhackyxmlvalue > 0) {
-		//printf("hackies done");
-		//printf("s: %s",xml); 
+		//ZHL::Log("hackies done");
+		//ZHL::Log("s: %s",xml); 
 	}
-	//if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { printf("s: %s", xml); }
-	//if (strcmp(filename.c_str(), "ambush.xml") == 0) { printf("s: %s", xml); }
+	//if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { ZHL::Log("s: %s", xml); }
+	//if (strcmp(filename.c_str(), "ambush.xml") == 0) { ZHL::Log("s: %s", xml); }
 	//content
 	return xml;
 }
@@ -3594,7 +3594,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 				std::strcpy(xml, modifiedXml.c_str());
 			}
 	}
-	//if (did) {printf("s: %s \n", xml);}
+	//if (did) {ZHL::Log("s: %s \n", xml);}
 	return xml;
 }
 
@@ -3698,7 +3698,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		return;
 	}
 	if (xmlsloaded) {
-		//printf("XML: %s", xmldata);
+		//ZHL::Log("XML: %s", xmldata);
 		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
 			char* x = new char[strlen(bosspoolsxml)];
 			strcpy(x, bosspoolsxml);
@@ -3800,7 +3800,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 
 			for (std::sregex_iterator it = words_begin; it != words_end; ++it) {
 				string itemname = (*it)[1].str();
-				//printf("itemname: %s \n", itemname.c_str());
+				//ZHL::Log("itemname: %s \n", itemname.c_str());
 				size_t pos = 0;
 				int itemid = toint(itemname);
 				if (itemid == 0) {
@@ -3883,7 +3883,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (a.find("<achi") < 50) { 
 			a = "<achievements gfxroot=\"gfx/ui/achievement/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </achievements>";
 		}
-		printf("ERROR: %s", a.c_str());
+		ZHL::Log("ERROR: %s", a.c_str());
 		
 		xmldata = new char[a.length() + 1];
 		strcpy(xmldata, a.c_str());

@@ -3,6 +3,7 @@
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "Log.h"
 #include <bitset>
 
 #include <Windows.h>
@@ -673,7 +674,7 @@ inline void AddTrackers4Achiev(string idx,int i, XMLAttributes node) {
 	}
 
 	if (node.count("conditiontype") > 0) {
-		printf("[Achiev] Mark tracker for '%s' with condition %s \n", node["conditiontype"].c_str(), node["conditionvalue"].c_str());
+		ZHL::Log("[Achiev] Mark tracker for '%s' with condition %s \n", node["conditiontype"].c_str(), node["conditionvalue"].c_str());
 		if (node["conditiontype"] == "completionmark") {
 			AddMarkTracker(i, reversemarksenum[node["conditionvalue"]], completionchara);
 		}

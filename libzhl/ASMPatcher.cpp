@@ -174,11 +174,14 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 		memset((char*)at + 5, 0x90, count - 5);
 	}
 
+	logger.Log("ASMPatcher::Patch: Encoding and writing jump...\n");
 	EncodeAndWriteJump(at, targetPage);
 	size_t textLen = len;
 	if (textLen == 0) {
 		textLen = strlen(with);
 	}
+
+	logger.Log("ASMPatcher::Patch: copying content of the patch to the new page (writing %u bytes at %p)\n", textLen, targetPage);
 	memcpy(targetPage, with, textLen);
 	_firstAvailable = (char*)_firstAvailable + textLen;
 	_bytesRemaining -= textLen;
@@ -189,6 +192,7 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 		return nullptr;
 	}
 
+	logger.Log("ASMPatcher::Patch: flushing instruction pipeline\n");
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 
 	return targetPage;

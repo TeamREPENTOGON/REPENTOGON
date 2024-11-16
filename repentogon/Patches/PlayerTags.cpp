@@ -1,4 +1,5 @@
 #include "HookSystem.h"
+#include "Log.h"
 #include "IsaacRepentance.h"
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
@@ -27,7 +28,7 @@ void ASMPatchNightmareSceneNoShake() {
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching NightmareScene::Show for noshake tag patch at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching NightmareScene::Show for noshake tag patch at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI) // playerType
@@ -47,7 +48,7 @@ void ASMPatchBossIntroNoShake() {
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching RoomTransition:StartBossIntro for noshake tag patch at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching RoomTransition:StartBossIntro for noshake tag patch at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // playerType
@@ -80,7 +81,7 @@ void ASMPatchPlayerItemNoMetronome() {
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching Player::UseActiveItem for nometronome tag at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Player::UseActiveItem for nometronome tag at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // playerType
@@ -108,7 +109,7 @@ void ASMPatchPlayerItemNoExpansionPack() {
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // itemId

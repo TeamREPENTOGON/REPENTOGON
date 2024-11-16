@@ -121,7 +121,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 					}
 				}
 			}
-			printf("[Achiev] Using %d for fake achievement %d \n", dummyachiev, achieveemntid);
+			ZHL::Log("[Achiev] Using %d for fake achievement %d \n", dummyachiev, achieveemntid);
 			int had = this->achievements[dummyachiev];
 			int dum = dummyachiev;
 			this->achievements[dummyachiev] = 0;
@@ -144,7 +144,7 @@ HOOK_METHOD(PersistentGameData, UnlockSteamAchievement, (int achieveemntid) -> v
 	if (!blocksteam) {
 		return super(achieveemntid);
 	}
-	printf("[Achiev] Steam Achievement blocked for %d \n", achieveemntid);
+	ZHL::Log("[Achiev] Steam Achievement blocked for %d \n", achieveemntid);
 }
 
 void ReplaceAchievementSprite(ANM2* AchievPop, int achieveemntid) {
@@ -197,7 +197,7 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 	/*else {
 		ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
 		if (AchievPop->_filename != "gfx/ui/achievement/achievement.anm2") {
-			printf("filename: %s", AchievPop->_filename.c_str());
+			ZHL::Log("filename: %s", AchievPop->_filename.c_str());
 			string def = "gfx/ui/achievement/achievement.anm2";
 			AchievPop->Load(def, true);
 			AchievPop->LoadGraphics(true);
@@ -553,7 +553,7 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			Vector pos = Vector(-251 + offset.x, -3 + offset.y);
 			Vector z = Vector(0, 0);
 			//Vector* a = g_LuaEngine->GetMousePosition(&z, true);
-			//printf("%f %f", a->x, a->y);
+			//ZHL::Log("%f %f", a->x, a->y);
 			DrawStringEntry* sourcename = new DrawStringEntry();
 			if (secretssource == "BaseGame") {
 				sourcename->_text = "Repentance";

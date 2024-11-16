@@ -1,5 +1,6 @@
 
 #include "ASMPatches.h"
+#include "Log.h"
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
@@ -40,7 +41,7 @@ void ASMPatchLogMessage() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Adding LogMessage callback for ImGui at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Adding LogMessage callback for ImGui at %p\n", addr);
 
 	ASMPatch patch;
 	patch.AddBytes("\x51") // Push ECX to the stack, so we can restore it as the function expects later
@@ -69,7 +70,7 @@ void ASMPatchConsoleRunCommand() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Console::RunCommand Player requirement at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Console::RunCommand Player requirement at %p\n", addr);
 
 	ASMPatch patch;
 	patch.AddBytes("\xEB");

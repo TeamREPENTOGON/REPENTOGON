@@ -893,7 +893,7 @@ void ASMPatchFirstPickCollectible()
 	scanner.Scan();
 	void* firstPickSig = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching ItemPool::GetCollectible (First Pick) at %p for CustomItemPools\n", firstPickSig);
+	ZHL::Log("[REPENTOGON] Patching ItemPool::GetCollectible (First Pick) at %p for CustomItemPools\n", firstPickSig);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::ESI, true);
 	ASMPatch patch;
@@ -914,7 +914,7 @@ void ASMPatchRetryPickCollectible()
 	scanner.Scan();
 	void* retryPickSig = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching ItemPool::GetCollectible (Retry Pick) at %p for CustomItemPools\n", retryPickSig);
+	ZHL::Log("[REPENTOGON] Patching ItemPool::GetCollectible (Retry Pick) at %p for CustomItemPools\n", retryPickSig);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
@@ -938,7 +938,7 @@ void ASMPatchPreTriggerGenesis()
     scanner.Scan();
     void* initGenesisItemsSig = scanner.GetAddress();
 
-    printf("[REPENTOGON] Patching Entity_Player::PreTriggerGenesis at %p for CustomItemPools\n", initGenesisItemsSig);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::PreTriggerGenesis at %p for CustomItemPools\n", initGenesisItemsSig);
 
     std::string checkVanillaItemPools = "\x83\xf8"; checkVanillaItemPools += static_cast<char>(NUM_ITEMPOOLS); // cmp eax, NUM_ITEMPOOLS
     ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -980,7 +980,7 @@ void ASMPatchAddGenesisPoolWeight()
     helperScanner.Scan();
     void* leaWeightedOutcomePickerSig = helperScanner.GetAddress();
 
-    printf("[REPENTOGON] Patching Room::Update (Add Genesis Pool Weight) at %p for CustomItemPools\n", addGenesisPoolWeightSig);
+    ZHL::Log("[REPENTOGON] Patching Room::Update (Add Genesis Pool Weight) at %p for CustomItemPools\n", addGenesisPoolWeightSig);
 
     ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -1008,7 +1008,7 @@ void ASMPatchDecreaseRemainingGenesisItems()
     scanner.Scan();
     void* decreaseGenesisItemsSig = scanner.GetAddress();
 
-    printf("[REPENTOGON] Patching Room::Update (Decrease Genesis Items) at %p for CustomItemPools\n", decreaseGenesisItemsSig);
+    ZHL::Log("[REPENTOGON] Patching Room::Update (Decrease Genesis Items) at %p for CustomItemPools\n", decreaseGenesisItemsSig);
 
     std::string checkVanillaItemPools = "\x83\xfe"; checkVanillaItemPools += static_cast<char>(NUM_ITEMPOOLS); // cmp esi, NUM_ITEMPOOLS
     ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -1057,7 +1057,7 @@ void ASMPatchGetDebug12PoolName(const char* signature)
     scanner.Scan();
     void* debug12PoolNameSig = scanner.GetAddress();
 
-    printf("[REPENTOGON] Patching EntityPlayer::RenderDebugInfo at %p for CustomItemPools\n", debug12PoolNameSig);
+    ZHL::Log("[REPENTOGON] Patching EntityPlayer::RenderDebugInfo at %p for CustomItemPools\n", debug12PoolNameSig);
 
     ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::ECX, true);
     ASMPatch patch;

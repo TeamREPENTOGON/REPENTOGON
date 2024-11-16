@@ -1,6 +1,7 @@
 #include "ASMPatcher.hpp"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
+#include "Log.h"
 #include "SigScan.h"
 #include "XMLData.h"
 
@@ -168,7 +169,7 @@ void ASMPatchFamiliarGetMultiplier() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Familiar::GetMultiplier at %p\n", addr);
+	ZHL::Log("[REPENTOGON] Patching Entity_Familiar::GetMultiplier at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

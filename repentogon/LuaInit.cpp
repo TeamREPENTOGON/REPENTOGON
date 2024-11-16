@@ -301,7 +301,7 @@ LUA_FUNCTION(Lua_ToDegrees) {
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
-	printf("[REPENTOGON] Registering Lua functions and metatables\n");
+	ZHL::Log("[REPENTOGON] Registering Lua functions and metatables\n");
 	lua_State *state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	// luaL_openlibs(state);
