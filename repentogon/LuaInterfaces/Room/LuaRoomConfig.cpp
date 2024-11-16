@@ -1,4 +1,5 @@
 #include "IsaacRepentance.h"
+#include "Log.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/VirtualRoomSets.h"
@@ -119,7 +120,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 	}
 
 	RoomConfig_Stage* configStage = &roomConfig->_stages[stage];
-	printf("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
+	ZHL::Log("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
 
 	RoomConfig_Stage** ud = (RoomConfig_Stage**)lua_newuserdata(L, sizeof(RoomConfig_Stage*));
 	*ud = configStage;

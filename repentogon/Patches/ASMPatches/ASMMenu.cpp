@@ -8,7 +8,7 @@ void PatchModMenu_Font(const char* sig) {
 	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching Menu_Mods::Render() to skip font rendering at %p \n", addr);
+	ZHL::Log("[REPENTOGON] Patching Menu_Mods::Render() to skip font rendering at %p \n", addr);
 
 	ASMPatch patch;
 	patch.AddBytes("\x83\xc4\x24"); // add esp, 0x24
@@ -26,7 +26,7 @@ void ASMPatchMenuOptionsLanguageChange() {
 	SigScan scanner("743e8b35????????68????????6a00e8????????83c408");
 	scanner.Scan();
 	void* addr1 = scanner.GetAddress();
-	printf("[REPENTOGON] Patching options menu language change operate at %p.\n", addr1);
+	ZHL::Log("[REPENTOGON] Patching options menu language change operate at %p.\n", addr1);
 	ASMPatch patch;
 	patch.AddInternalCall(GameRestart);
 	sASMPatcher.PatchAt(addr1, &patch);
