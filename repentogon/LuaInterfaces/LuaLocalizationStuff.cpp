@@ -73,9 +73,24 @@ LUA_FUNCTION(Lua_IsaacGetLocalizedString) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsaacGetStringByNum)
+{
+	auto stringTable = &g_Manager->_stringTable;
+
+	const char* category = luaL_checkstring(L, 1);
+	const unsigned int num = luaL_checkinteger(L, 2);
+	const int language = luaL_optinteger(L, 3, stringTable->language);
+
+	const char* retStr = stringTable->GetStringByNum(category, language, num);
+	lua_pushstring(L, retStr);
+
+	return 1;
+}
+
 static void RegisterIsaacGetString(lua_State* L) {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetString", Lua_IsaacGetString);
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetLocalizedString", Lua_IsaacGetLocalizedString);
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetStringByNum", Lua_IsaacGetStringByNum);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
