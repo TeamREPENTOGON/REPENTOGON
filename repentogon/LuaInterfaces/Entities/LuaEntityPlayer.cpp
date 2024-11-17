@@ -458,7 +458,9 @@ LUA_FUNCTION(Lua_PlayerDropCollectible) {
 	}
 	bool removeFromForm = lua::luaL_optboolean(L, 4, false);
 
-	player->DropCollectible(collectible, pickup, removeFromForm);
+	Entity_Pickup* ret = player->DropCollectible(collectible, pickup, removeFromForm);
+	if (ret != nullptr)
+		pickup = ret;
 	if (!pickup) {
 		lua_pushnil(L);
 	}
@@ -466,7 +468,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectible) {
 	{
 		lua::luabridge::UserdataPtr::push(L, pickup, lua::Metatables::ENTITY_PICKUP);
 	}
-	
+
 	return 1;
 }
 

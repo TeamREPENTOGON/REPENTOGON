@@ -11,6 +11,8 @@ Additions:
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
+* Level:
+	- Added overloads for CanPlaceRoom(AtDoor) and FindValidRoomPlacementLocations that accept a RoomShape and DoorMask instead of a RoomConfigRoom.
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
@@ -22,27 +24,39 @@ Additions:
 	- MC_PRE_BED_SLEEP(Player, Bed)
 		Triggers on bed collision and before playing sleep sequence.
 		Return true to cancel vanilla behavior.
-	- PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+	- MC_PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
 		Fires when Entity:SetColor is called
 		Takes an EntityType as its optional argument. 
 		Return a color to override the color. The overridden color is passed into MC_POST_ENTITY_SET_COLOR.
 		Return false to cancel the color change. Prevents MC_POST_ENTITY_SET_COLOR from firing.
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
-	- POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
+	- MC_POST_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
 		Fires after an entity's color is changed via Entity:SetColor
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
+	- MC_POST_PLAYER_TRIGGER_ROOM_CLEAR
+		Previously missing counterpart to MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
+* New Enums:
+	- DoorMask
+* Isaac:
+	- GetDoorMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
 * Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
+* Level:
+	- TryPlaceRoom & related functions no longer consider a room placement valid if the only neighbor would be a secret room and "AllowSpecialNeighbors" is false.
+	- TryPlaceRoom(AtDoor) no longer automatically unlocks the door to the new room if placed adjacent to the player's current room.
 /newline/
 Modified:
 * EntityFamiliar:
 	- GetPathFinder -> GetPathfinder
 * EntityPlayer:
+	- DropCollectible now returns the spawned pedestal if one was spawned, as intended 
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+* Level:
+	- TryPlaceRoom(AtDoor) no longer plays the key unlock sound if a room is created that connects to the player's current room.
 * ImGui:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 	- If an error is caused by a callback, imgui will now properly throw an error
