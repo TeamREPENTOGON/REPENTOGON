@@ -14,7 +14,7 @@ With REPENTOGON, the following xml attributes have changed functionality for reg
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
-|achievement|int|Ties the card/pill-effect to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already). |
+|achievement|int or string|Ties the card/pill-effect to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already). |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/pocketitems.html).
