@@ -13,7 +13,7 @@ With REPENTOGON, the following xml attributes have changed functionality for reg
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
-|achievement|int|Ties the item/trinket to be unlocked by an achievement. For modded ones, use the provided achievement name xml attribute (define one if it doesnt have one already). |
+| achievement | int or string | Ties the item/trinket to be unlocked by an achievement. For modded achievements use the corresponding `name` xml attribute value. |
 
 ## "Null" Items
 
