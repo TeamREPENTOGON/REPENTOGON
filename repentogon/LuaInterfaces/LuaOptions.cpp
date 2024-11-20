@@ -27,13 +27,13 @@ LUA_FUNCTION(Lua_Options_SetVoidGeneration) {
 }
 
 LUA_FUNCTION(Lua_Options_GetHushFix) {
-	lua_pushboolean(L, repentogonOptions.hushPanicStateFix);
+	lua_pushboolean(L, repentogonOptions.hushLaserSpeedFix);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_Options_SetHushFix) {
 	bool value = lua::luaL_checkboolean(L, 1);
-	repentogonOptions.hushPanicStateFix = value;
+	repentogonOptions.hushLaserSpeedFix = value;
 	//repentogonOptions.Write("VanillaTweaks", "HushPanicStateFix", value);
 	return 0;
 }

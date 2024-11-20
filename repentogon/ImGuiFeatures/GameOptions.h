@@ -285,10 +285,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_BETTER_VOID_GEN_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, false);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX, &repentogonOptions.hushPanicStateFix);
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_LASER_FIX, &repentogonOptions.hushLaserSpeedFix);
                         ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.hushPanicStateFix, true);
+                        HelpMarker(LANG.OPT_REPENTOGON_HUSH_LASER_FIX_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.hushLaserSpeedFix, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, &repentogonOptions.keyMasterDealChance);
                         ImGui::SameLine();
