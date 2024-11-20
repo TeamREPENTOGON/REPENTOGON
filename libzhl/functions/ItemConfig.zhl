@@ -41,7 +41,7 @@ __thiscall ItemConfig_Item* ItemConfig::GetTrinket(unsigned int TrinketType);
 __thiscall vector_ItemPtr& ItemConfig::GetTaggedItems(unsigned long long tags);
 
 // this is technically a player func but i'm putting it here
-"558bec5156578b7d??81ff02010000":
+"558bec5153568b75??81fe02010000":
 bool CanRerollCollectible(int id);
 
 struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, ItemConfig_PlayerForm)

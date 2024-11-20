@@ -40,7 +40,7 @@ struct GridEntity_Rock : public GridEntity {
 		skip; // Hurt
 		
 		override
-        "558bec83ec40a1????????33c58945??538b1d":
+        "558bec83ec44a1????????33c58945??8b45":
 		bool Destroy(bool Immediate); 
 		
 		skip; // GetWaterClipInfo
