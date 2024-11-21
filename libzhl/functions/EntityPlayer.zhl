@@ -231,7 +231,7 @@ __thiscall void Entity_Player::Teleport(Vector *position, bool doEffects, bool t
 "558bec83e4f881ec1c01000053":
 __thiscall bool Entity_Player::TryFakeDeath();
 
-"558bec83e4f883ec145356578bf9837f??01":
+"558bec83e4f883ec0c53568b75??8bd9":
 __thiscall int Entity_Player::GetCollectibleNum(int collectibleID, bool OnlyCountTrueItems);
 
 "558bec83e4f8a1????????83ec1c83b8????????02":

@@ -7,7 +7,7 @@ __thiscall void Music::Crossfade(int musicid,float faderate);
 "558bec51568b75??578bf985f6":
 __thiscall void Music::PlayJingle(int musicid, int unusedInt, bool unusedBool);
 
-"558bec5651":
+"558bec568bf18b4d??85c978??8b96":
 __thiscall void Music::Fadein(unsigned int Id, float Volume, float FadeRate);
 
 "558bec690184010000":
@@ -16,16 +16,16 @@ __thiscall void Music::Fadeout(float FadeRate);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b89c010100":
 __thiscall void Music::LoadConfig(char* xmlpath,bool ismod);
 
-"558bec6b01":
+"558bec568bf18b4d??83f90577??6b06618bd1c1ea0583e11f03d0b801000000d3e0f7d0":
 __thiscall void Music::DisableLayer(int id);
 
-"558bec83e4f851568bf18b4d":
+"558bec83e4f8568bf18b4d":
 __thiscall void Music::EnableLayer(int id, bool instant);
 
-"558bec568bf18b4d??8bd183e11f":
+"558bec568bf18b4d??83f90577??6b06618bd1c1ea0583e11f03d0b801000000d3e08584":
 __thiscall bool Music::IsLayerEnabled(unsigned int id);
 
-"53691984010000565703d98b4b??85c974??8b018b40??ffd084c074??8b4b??85c974??8b01ff50??66c743??0001":
+"535657693984010000":
 __thiscall void Music::Pause();
 
 "6901840100008d49":
