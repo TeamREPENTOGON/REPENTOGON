@@ -13,7 +13,7 @@ __thiscall uint32_t Room::GetGridCollision(int index);
 "558bec6aff68????????64a1????????5083ec7ca1????????33c58945??535657508d45??64a3????????8bd9":
 __thiscall void Room::ShopRestockFull();
 
-"558bec83ec1c53568bf1":
+"558bec83ec4453568bf157":
 __thiscall void Room::ShopRestockPartial();
 
 "558bec83ec30f30f7e05":
@@ -96,7 +96,7 @@ __thiscall uint32_t Room::GetBossVictoryJingle();
 __thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
 */
 
-"558bec8b55??56578b02":
+"558bec518b55??5356578b0283f801":
 __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
 "558bec83e4f883ec0c538bc1":
@@ -108,7 +108,7 @@ __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
-"558bec83e4f883ec14538bd956578b43??8148??00400000":
+"558bec83e4f883ec0c538bd9568b75":
 __thiscall void Room::MamaMegaExplosion(Vector * Position);
 
 "558bec83e4f883ec1c5356578bf98b47":
@@ -174,6 +174,6 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
     bool save_entity(Entity* entity, EntitySaveState* data, bool unk);
 
-    "558bec83e4f883ec1c5356578b7d088bf1":
+    "558bec83e4f883ec245356578b7d??8bd9":
     void restore_entity(Entity* entity, EntitySaveState* data);
 } : 0x777c;

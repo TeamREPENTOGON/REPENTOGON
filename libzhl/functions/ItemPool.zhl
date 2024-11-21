@@ -16,7 +16,7 @@ __thiscall void ItemPool::StoreGameState(GameStateItemPool* itemPoolState);
 "558bec83e4f883ec148b45??535657":
 __thiscall void ItemPool::RestoreGameState(GameStateItemPool* itemPoolState);
 
-"558bec81eca8000000a1????????33c58945??8b45":
+"558bec81ecac000000a1":
 __thiscall int ItemPool::GetCollectible(int itemPoolType, uint32_t seed, uint32_t flags, int defaultItem);
 
 "558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????8bd9895d??a1":
