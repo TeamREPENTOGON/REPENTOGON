@@ -221,7 +221,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		
 		skip; // PreUpdate
 		
-        "558bec83e4f081ecd8010000":
+        "558bec83e4f081ec08030000":
         void Update();
 		
 		skip; // Interpolate
