@@ -23,7 +23,7 @@ ___
 
 ___
 ### SpawnDrops () {: aria-label='Functions' }
-#### void SpawnDrops ( [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int GridVariant, int Seed, boolean Unknown, [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
+#### static void SpawnDrops ( [Vector](Vector.md) Position, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int GridVariant, int Seed, boolean Unknown, [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### TrySpawnLadder () {: aria-label='Functions' }
