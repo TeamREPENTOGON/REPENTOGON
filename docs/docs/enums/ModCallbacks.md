@@ -2072,7 +2072,7 @@ Called after the player's `ItemConfigItem` TemporaryEffect is removed.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem][../ItemConfig_Item.md]) | - | void |
+|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem](../ItemConfig_Item.md)) | - | void |
 
 ### MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable }
 Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) is removed.
@@ -2081,7 +2081,7 @@ Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem][../ItemConfig_Item.md]) | - | void |
+|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md)) | - | void |
 
 ### MC_PRE_PLAYER_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
