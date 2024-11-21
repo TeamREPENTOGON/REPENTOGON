@@ -31,7 +31,7 @@ __thiscall void Room::RemoveGridEntityImmediate(int GridIndex, int PathTrail, bo
 "558bec83ec08538bd956578b3d":
 __thiscall void Room::TriggerClear(bool playSound);
 
-"558bec83e4f883ec2ca1????????33c4894424??53568bf1":
+"558bec83e4f883ec2ca1????????33c4894424??5356578b3d":
 __thiscall void Room::UpdateRedKey();
 
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
