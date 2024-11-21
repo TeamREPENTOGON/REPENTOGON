@@ -1,8 +1,9 @@
 "558bec83ec0c53568b75??57803e23":
 __thiscall char* StringTable::GetString(const char* category, int language, const char* key, void* unk);
 
-"558bec5153578bd9":
-__thiscall bool StringTable::Load(char * inlined);
+//it's now using fileName for stringtable.sta and stringtable_pc.sta
+"558bec53578bd9":
+__thiscall bool StringTable::Load(char * fileName);
 
 "558bec6aff68????????64a1????????50b86c000100":
 __thiscall void StringTable::load_ascii_data(char * param_1);
