@@ -160,8 +160,9 @@ HOOK_METHOD(HUD, Render, () -> void) {
 //(POST_)HUD_RENDER callbacks end
 
 
-//Character menu render Callback(id:1023)
-HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
+//Character menu render Callback(id:1023
+//TODO Broken in Rep+ as RenderButtonLayout was inlined.
+/*HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
 	MainMenuInputBlock::_enabled = false;
@@ -176,7 +177,7 @@ HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	if ((this->_state | (1 << 8)) == this->_state) {
 		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
 	};
-}
+}*/
 
 //Character menu render Callback end
 
