@@ -1,8 +1,8 @@
 "558bec83e4c081ec34010000":
 __thiscall void OptionsConfig::Save();
 
-"558bec53568bf157807e??00":
-__thiscall void OptionsConfig::SetFullScreen(bool Value);
+"558bec53568bf15780be????????00":
+__thiscall void OptionsConfig::SetFullScreen(bool value);
 
 struct OptionsConfig depends (Game) {
 {{

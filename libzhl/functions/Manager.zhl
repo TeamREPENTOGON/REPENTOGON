@@ -54,7 +54,7 @@ __thiscall void Manager::cleanup_current_state();
 "558bec6aff68????????64a1000000005083ec3ca1????????33c58945f0535657508d45f464a3000000008b550c8bca":
 static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
 
-"558bec83e4f881ec80000000568b35????????57f68664a2040001":
+"558bec83e4f883ec6856578b3d":
 __thiscall void Manager::Render();
 
 "558bec83e4c083ec34a1":
@@ -63,7 +63,7 @@ __thiscall void Manager::ResizeWindow(int windowWidth,int windowHeight);
 "558bec83e4f8515356578b7d??85ff":
 __thiscall void Manager::ResizeWindowCallback(int windowWidth,int windowHeight);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ece8000000a1????????33c58945??8a43":
+"558bec83ec48a1????????33c58945??538a5d":
 __thiscall void Manager::SetFullscreenRendering(bool value);
 
 "558bec81ec18040000":
