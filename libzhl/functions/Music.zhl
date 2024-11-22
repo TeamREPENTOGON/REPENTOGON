@@ -31,7 +31,7 @@ __thiscall void Music::Pause();
 "6901840100008d49":
 __thiscall void Music::ResetPitch();
 
-"53691984010000565703d98b4b??85c974??8b018b40??ffd084c074??8b4b??85c974??8b01ff50??66c743??0100":
+"53691984010000":
 __thiscall void Music::Resume();
 
 "69118401000056":
