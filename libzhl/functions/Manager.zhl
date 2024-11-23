@@ -1,7 +1,7 @@
 "558bec83e4f881ec28040000":
 static void Manager::Update();
 
-"558bec83ec105356578b3d????????85ff":
+"558bec83ec0853568b35????????5785f6":
 static __stdcall void Manager::RecordPlayerCompletion(int eCompletionEvent);
 
 "558bec81ec38040000":
