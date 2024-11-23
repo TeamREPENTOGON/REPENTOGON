@@ -121,7 +121,7 @@ __thiscall bool Entity_Player::HasCollectible(int type, bool ignoreModifiers);
 "558bec807d??0056578bf974":
 __thiscall bool Entity_Player::HasTrinket(uint32_t Type, bool ignoreModifiers);
 
-"8b91f01500":
+"8b91????????33c08b89????????2bcac1f902":
 __thiscall int Entity_Player::GetCollectibleCount();
 
 "558bec6aff68????????64a1????????5081ece8060000":
@@ -182,7 +182,7 @@ __thiscall void Entity_Player::DischargeActiveItem(unsigned int slot, bool unk);
 "558bec83e4f883ec0c5356578b7d??8bd1":
 __thiscall void Entity_Player::SetPocketActiveItem(int collectible, int slot, bool keepInPools);
 
-"558bec83e4f883ec14538b5d??b841020000":
+"558bec83e4f883ec1453568b75??b841020000":
 __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity_Pickup* existingCollectible, bool removeFromPlayerForm);
 
 "558bec515356578b7d??8bd9895d":
@@ -213,7 +213,7 @@ __thiscall int Entity_Player::GetHealthLimit(bool keeper);
 "558bec83e4f883ec14538b5d??56578bf980bf????????00":
 __thiscall void Entity_Player::IncrementPlayerFormCounter(int ePlayerForm, int num);
 
-"558bec83ec3ca1????????33c58945fc5356":
+"558bec83ec34a1????????33c58945??5356576a20":
 __thiscall void Entity_Player::TriggerNewRoom_TemporaryEffects();
 
 "558bec6aff68????????64a1000000005081ecb8000000535657a1????????":
