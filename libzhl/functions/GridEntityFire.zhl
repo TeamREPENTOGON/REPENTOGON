@@ -7,7 +7,7 @@ struct GridEntity_Fire : public GridEntity {
         void Update();
 		
 		override
-		"558bec83e4f883ec145356578d4424??8bf9":
+		"558bec83e4f881ecc4000000a1????????33c4898424????????538bd9":
         void Render(Vector& Offset);
 		
 		skip; // Hurt

@@ -3,7 +3,7 @@ struct GridEntity_Web : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f883ec308379??00":
+		"558bec83e4f883ec388379??00":
         void Update();
 		
 		skip; // Render

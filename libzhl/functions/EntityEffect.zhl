@@ -1,4 +1,4 @@
-"558bec81ecc0010000":
+"558bec81ecb8010000":
 __thiscall void Entity_Effect::Render(Vector *offset);
 
 "558bec83e4f856578bfa":
@@ -18,7 +18,7 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 		skip; // PreUpdate
 		
         override
-        "558bec6aff68????????64a1????????50b850500000":
+        "558bec6aff68????????64a1????????50b8e0560000":
         void Update();
 		
 		skip; // Interpolate
