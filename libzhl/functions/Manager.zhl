@@ -66,7 +66,7 @@ __thiscall void Manager::ResizeWindowCallback(int windowWidth,int windowHeight);
 "558bec83ec48a1????????33c58945??538a5d":
 __thiscall void Manager::SetFullscreenRendering(bool value);
 
-"558bec81ec18040000":
+"558bec81ec10040000":
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 "558bec518b0d????????8b55":
