@@ -37,7 +37,7 @@ __thiscall Entity* Entity_NPC::GetPlayerTarget();
 "558bec83ec208b81????????0f28ca":
 __thiscall bool Entity_NPC::CheckPlayerProximity(Vector * pos, float margin<xmm2>);
 
-"558beca1????????83ec34":
+"558bec83ec20568bf1e8":
 __thiscall void Entity_NPC::CreateBling();
 
 "558bec83ec74a1":
