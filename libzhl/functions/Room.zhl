@@ -64,7 +64,7 @@ __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec18080000":
 __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 
-"558bec568bf133c03986":
+"558bec578bf933d2":
 __thiscall void Room::SetPauseTimer(int Duration);
 
 "558bec568b75??578bf98b87":
