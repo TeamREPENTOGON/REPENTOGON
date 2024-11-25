@@ -184,7 +184,7 @@ ___
 
 ___
 ### DropCollectible () {: aria-label='Functions' }
-#### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [EntityPickup](EntityPickup.md) ExistingPedestal = nil, boolean RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md) DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [EntityPickup](EntityPickup.md) ExistingPedestal = nil, boolean RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
 
 If `ExistingPedestal` is set, the collectible it contains will be swapped out for the dropped collectible instead of a new pedestal spawning.
 
@@ -1143,10 +1143,12 @@ Spawns a ring of tears that orbit around the player akin to the Saturnus collect
 
 ___
 ### SwapForgottenForm () {: aria-label='Functions' }
-#### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
+#### boolean SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
 If the player is The Forgotten/The Soul, the two will swap forms. Otherwise, this function does nothing.
 
 `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
+
+Returns `true` on success, otherwise `false`.
 
 ___
 ### SyncConsumableCounts () {: aria-label='Functions' }
