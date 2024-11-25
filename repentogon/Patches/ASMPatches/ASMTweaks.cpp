@@ -7,6 +7,7 @@
 
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
+	static bool __stdcall __IsLeadeboardEntryValid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -239,4 +240,38 @@ namespace ASMPatches {
 		};
 		return true;
 	};
+
+	bool __stdcall __IsLeadeboardEntryInvalid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet) {
+		//checks from the code of defunct greedierbutt.com site with restored original version check
+		return schwagBonus > 19150 || timePenalty > INT_MAX || encodedGameVersion < encodedGameVersionFromScoreSheet;
+	}
+
+	bool LeaderboarEntryCheckerUpdate() {
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+		ASMPatch patch;
+
+		SigScan signature("0f9c85");
+		if (!signature.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		printf("[REPENTOGON] Patching Leaderboard::render_leaderboard at %p\n", addr);
+
+		patch.PreserveRegisters(savedRegisters)
+			.Push(ASMPatch::Registers::EBP, -0xAC ) // Encode game version (from ScoreSheet)
+			//base leaderboard entry offset - 0x4E4
+			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x38) // Encode game version
+			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x20)// Time Penalty
+			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x4) // Schwag bonus
+			.AddInternalCall(__IsLeadeboardEntryInvalid)
+			.AddBytes("\x84\xC0") // test al, al
+			.RestoreRegisters(savedRegisters)
+			.AddBytes("\x0F\x95\x95\xC3\xFA\xFF\xFF") // setnz ebp-53d
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x20) // jump for true
+			.AddRelativeJump((char*)addr + 0x9);
+		sASMPatcher.PatchAt(addr, &patch);
+
+		return true;
+	}
 }

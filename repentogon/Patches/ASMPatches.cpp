@@ -217,6 +217,10 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
 
+	if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
+		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
+	};
+
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 
 	//if (!ASMPatches::FixHushFXVeins()) {

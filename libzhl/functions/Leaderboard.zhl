@@ -7,19 +7,31 @@ __thiscall void Leaderboard::get_leaderboard(int RankingState, int LiveSelection
 "558bec83e4f851538bd95657c783????????00000000":
 __thiscall void Leaderboard::Show(unsigned int Date, ScoreSheet* ScoreSheet, bool SubmitScore);
 
-struct Leaderboard depends (ANM2, DailyChallenge) {
+struct LeaderboardEntryData {
+	int _stageBonus : 0x0;
+	int _schwagBonus : 0x4;
+	int _isDead : 0x34;
+	int _encodedGameVersion : 0x38;
+} : 0x3c;
+
+struct LeaderboardEntry depends (LeaderboardEntryData) {
+	uint32_t _numDisplayedEntry : 0x0;
+	LeaderboardEntryData* _entriesData : 0x1c;
+} : 0x28;
+
+struct Leaderboard depends (ANM2, DailyChallenge, ScoreSheet, LeaderboardEntry) {
 	{{
 	}}
     int _selectedDate : 0x0;
     int _currentDate : 0x4;
     DailyChallenge _dailyChallenge : 0x8;
-    char _scoreSheet[0x14c] : 0xbc;
+    ScoreSheet _scoreSheet : 0xbc;
     int _pageEntryStartID: 0x20c;
     int _isLeaderboardClosing : 0x210;
     int _displayState : 0x218;
     int _scoreOrTimeRankingListState : 0x21C; // Ranking by Score or by Time
     int _listTypeSelection : 0x220; // Global, Friends, ...
-    int _numDisplayedEntries : 0x22c;
+    LeaderboardEntry* _leaderboardEntries : 0x22c;
     ANM2 _scoreMenuSprite: 0x234;
     ANM2 _leaderboardMenuSprite : 0x348;
 } : 0x45c;
