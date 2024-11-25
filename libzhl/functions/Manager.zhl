@@ -4,7 +4,7 @@ static void Manager::Update();
 "558bec83ec08568b35????????85f6":
 static __stdcall void Manager::RecordPlayerCompletion(int eCompletionEvent);
 
-"558bec81ec38040000":
+"558bec83e4f881ec34040000":
 __thiscall void Manager::LoadGameState(int saveslot);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8bf9897d??f30f7e05":
@@ -33,20 +33,20 @@ __cdecl void Manager::RestartGame(Seeds param_1,bool param_2,bool param_3) //swi
 __stdcall void Manager::RestartGame() //v1.7.9b maybe
 */
 
-"558bec694508a4":
+"558beca1????????568bb0":
 __thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(int playerType, int challenge,  Seeds unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge, Seeds unk, int difficulty);
 
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecf0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
 __thiscall void Manager::ExecuteStartGame();
 
-"558bec6aff68????????64a1????????5083ec68a1????????33c58945??535657508d45??64a3????????c745??00000000":
-static void Manager::RestartGame();
+"558bec6aff68????????64a1????????5083ec60a1????????33c58945??535657508d45??64a3????????c745??00000000":
+static void Manager::RestartGame(Seeds seeds, bool clearSeedEffects, bool progresScaredHeart);
 
 "568bf18b46??83e801":
 __thiscall void Manager::cleanup_current_state();
@@ -69,8 +69,8 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 "558bec81ec10040000":
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
-"558bec518b0d????????8b55":
-__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup);
+"558bec518b55??8b0d????????83fa1a":
+__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
 
 struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
