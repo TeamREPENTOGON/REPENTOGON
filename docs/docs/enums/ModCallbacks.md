@@ -1178,6 +1178,22 @@ Same as MC_INPUT_ACTION, but only works in the main menu.
 |:--|:--|:--|:--|:--|
 |1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html), <br>[ButtonAction](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html))|[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html) | boolean or float |
 
+### MC_PRE_STATUS_EFFECT_APPLY {: .copyable }
+Triggers before applying a status effect to an Entity.
+
+Return `false` to cancel it.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1465 | MC_PRE_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int duration) | [StatusEffect](StatusEffect.md) | boolean |
+
+### MC_POST_STATUS_EFFECT_APPLY {: .copyable }
+Triggers after applying a status effect to an Entity.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1466 | MC_POST_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int duration) | [StatusEffect](StatusEffect.md) | void |
+
 ### MC_POST_MODS_LOADED {: .copyable }
 Called after all Lua scripts have been loaded. Ideal for running code that is expected to run after all mods are initialized, but without the need for load order idiocy!
 
@@ -2317,6 +2333,40 @@ Called after the costume is added to the player, assuming it wasn't skipped.
 |:--|:--|:--|:--|:--|
 |1284 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
 
+### MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
+Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+
+Return `true` to cancel vanilla behavior.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1285 |MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | boolean |
+
+### MC_POST_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
+Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and after the hearts addition is applied.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1286 |MC_POST_TRIGGER_BED_SLEEP_EFFECT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | void |
+
+### MC_PRE_PLAYER_POCKET_ITEMS_SWAP {: .copyable }
+Called when the player swaps their pocket items using the action drop button (even if they are empty).
+
+Return `true` to cancel pocket item swap.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1287 |MC_PRE_PLAYER_POCKET_ITEMS_SWAP {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+
+### MC_PRE_BED_SLEEP {: .copyable }
+Triggers on bed collision and before playing sleep sequence.
+
+Return `true` to cancel vanilla behavior.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1288 |MC_PRE_BED_SLEEP {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | boolean |
+
 ### MC_PRE_PLAYER_UPDATE {: .copyable }
 Called before this entity is updated.
 
@@ -2417,6 +2467,34 @@ Return `false` to cancel showing the item text.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1484 |MC_PRE_ITEM_TEXT_DISPLAY {: .copyable } | (string Title, string Subtitle, boolean IsSticky, boolean IsCurseDisplay) | - | boolean |
+
+### MC_GET_STATUS_EFFECT_TARGET {: .copyable }
+Return an [Entity](../Entity.md) to change targets
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1485 |MC_GET_STATUS_EFFECT_TARGET {: .copyable } | ([Entity](../Entity.md) Entity) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Entity](../Entity.md) |
+
+### MC_PRE_ENTITY_SET_COLOR {: .copyable }
+Fires when Entity:SetColor is called
+
+Return a color to override the color. The overridden color is passed into MC_POST_ENTITY_SET_COLOR.
+Return `false` to cancel the color change. Prevents MC_POST_ENTITY_SET_COLOR from firing.
+
+This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#setcolor) and does not fire when changing the entity's color directly.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1486 |MC_PRE_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean OR [Color](../Color.md) |
+
+### MC_POST_ENTITY_SET_COLOR {: .copyable }
+Fires when Entity:SetColor is called
+
+This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#setcolor) and does not fire when changing the entity's color directly.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1487 |MC_POST_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_PRE_GET_RANDOM_ROOM_INDEX {: .copyable }
 Called when the game wishes to get a random available room index on the floor.
