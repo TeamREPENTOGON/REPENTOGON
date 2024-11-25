@@ -36,8 +36,9 @@ Additions:
 	- MC_POST_PLAYER_TRIGGER_ROOM_CLEAR
 		Previously missing counterpart to MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
 	- MC_GET_STATUS_EFFECT_TARGET(Entity entity)
-		Takes EntityType as its optional argument
-		Return an Entity to change targets
+		Fires when an Entity is about to recieve a status effect
+		Takes EntityType as its optional argument.
+		Return an Entity to apply the status effect to it instead (good for multi-segment enemies).
 	- MC_PRE/POST_STATUS_EFFECT_APPLY(StatusEffect statusID, Entity entity, EntityRef source, integer duration)
 		Triggers before/after applying a status effect
 		Takes the new StatusEffect enum as its optional argument
