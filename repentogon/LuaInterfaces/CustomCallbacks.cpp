@@ -4437,7 +4437,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 
 //PRE/POST_ENTITY_SET_COLOR (1486/1487)
 HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool fadeOut, bool share) -> void) {
-	const int preCallbackId = 1485;
+	const int preCallbackId = 1486;
 	ColorMod colorCopy;
 
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4471,7 +4471,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 
 	super(color, duration, priority, fadeOut, share);
 
-	const int postCallbackId = 1486;
+	const int postCallbackId = 1487;
 
 	if (CallbackState.test(postCallbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
