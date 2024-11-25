@@ -37,6 +37,8 @@ Additions:
 		Previously missing counterpart to MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
 * New Enums:
 	- DoorMask
+* Room:
+	- GetWallColor()
 * Isaac:
 	- GetDoorMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
 * Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
