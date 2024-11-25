@@ -141,6 +141,7 @@ nav:
     - DialogReturn: enums/DialogReturn.md
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
+    - DoorMask: enums/DoorMask.md
     - DwmWindowAttribute: enums/DwmWindowAttribute.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
@@ -187,6 +188,7 @@ nav:
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
     - SpecialQuest: enums/SpecialQuest.md
+    - StatusEffect: enums/StatusEffect.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
     - StbRailVariant: enums/StbRailVariant.md
