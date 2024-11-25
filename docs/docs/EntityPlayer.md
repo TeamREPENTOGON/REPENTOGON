@@ -170,9 +170,9 @@ By some conditions, usually health-related, determines whether a player can use 
 
 ___
 ### CheckFamiliarEx () {: aria-label='Functions' }
-#### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+#### [EntityFamiliar](EntityFamiliar.md)[] CheckFamiliarEx ( int [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) Familiar, int TargetCount, [RNG](RNG.md) rng, [ItemConfigItem](ItemConfig_Item.md) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
-A version of [CheckFamiliar](EntityPlayer.md#checkfamiliar) that returns all familiars spawned by the function as a table.
+A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
 
 ___
 ### ClearCollectibleAnim () {: aria-label='Functions' }
@@ -779,8 +779,8 @@ Returns `true` if the player has the Faded Polaroid / Camo Undies effect active.
 
 ___
 ### IsItemCostumeVisible () {: aria-label='Functions' }
-#### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) Item, int PlayerSpriteLayerID ) {: .copyable aria-label='Functions' }
-#### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) Item, int PlayerSpriteLayerName ) {: .copyable aria-label='Functions' }
+#### boolean IsItemCostumeVisible ( [ItemConfig_Item](ItemConfig_Item.md) Item, int PlayerSpriteLayerID ) {: .copyable aria-label='Functions' }
+#### boolean IsItemCostumeVisible ( [ItemConfig_Item](ItemConfig_Item.md) Item, int PlayerSpriteLayerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsLocalPlayer () {: aria-label='Functions' }

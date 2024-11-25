@@ -80,8 +80,8 @@ Returns a table containing a list of all outcomes in the outcome picker.
 ___
 
 ### PickOutcome () {: aria-label='Functions' }
-#### int PickOutcome ( [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) RNG ) {: .copyable aria-label='Functions' }
-Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html).
+#### int PickOutcome ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](RNG.md).
 
 ___
 
