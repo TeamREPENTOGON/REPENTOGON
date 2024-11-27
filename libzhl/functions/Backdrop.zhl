@@ -24,14 +24,14 @@ struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":
 __thiscall void Backdrop::LoadConfig(char *xmlpath);
 
-"558bec83e4f081eca80000000f1005????????565783ec10":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81eca8000000":
 void Backdrop::RenderWater(Vector const& offset);
 
-"558bec83e4f081ec08010000568b7508578bf9837f2c00740656e8a11a00008b875001000083f812":
+"558bec83e4f081ecf800000056":
 void Backdrop::RenderWalls(Vector const& renderOffset, ColorMod color);
 
-"558bec83e4f081eca80000000f1005????????568bf1578b7d08897c242883be500100001c0f11442430":
+"558bec83e4f081ece80000000f1005":
 void Backdrop::RenderFloor(Vector const& renderOffset, ColorMod color);
 
-"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ece0040000a1????????33c58945ec5657508d45f464a3000000008bf989bd74feffff":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecc8040000a1????????33c58945??5657508d45??64a3????????8bf989bd":
 void Backdrop::pre_render_walls();

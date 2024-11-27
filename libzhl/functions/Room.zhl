@@ -40,13 +40,13 @@ __thiscall bool Room::CanSpawnObstacleAtPosition(int GridIndex, bool Force);
 "558bec83e4f883ec14538bd9565783bb????????39":
 __thiscall float Room::GetLightingAlpha();
 
-"558bec83e4f881ec8000000056578bf9897c24??e8":
+"558bec83e4f081eca800000056":
 __thiscall void Room::PreRender();
 
 "558bec83ec6cf30f7e05":
 __thiscall void Room::RenderGridLight(GridEntity* grid, Vector &offset);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec50010000":
 __thiscall void Room::RenderEntityLight(Entity* ent, Vector &offset);
 
 "558bec8bc18b4d??81f9bf01000077??8b4c????85c974??8379??00":
@@ -61,13 +61,13 @@ __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 "558bec8b55??568bf185d2":
 __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec18080000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec20080000":
 __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 
 "558bec578bf933d2":
 __thiscall void Room::SetPauseTimer(int Duration);
 
-"558bec568b75??578bf98b87":
+"558becf30f101d":
 __thiscall ColorModState Room::ComputeColorModifier();
 
 "558bec83ec0c5356578b7d??8bd9895d??85ff":

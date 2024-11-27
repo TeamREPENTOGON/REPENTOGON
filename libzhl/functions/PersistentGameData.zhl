@@ -25,13 +25,13 @@ __thiscall int PersistentGameData::GetBestiaryKillCount(int EntityType, int Enti
 "558bec56ff75??8bf18b0d????????ff75??8d89????????e8????????85c0":
 __thiscall int PersistentGameData::GetBestiaryEncounterCount(int EntityType, int EntityVariant);
 
-"558bec83ec14a1????????33c58945??ff75":
+"558bec83ec14a1????????33c58945??8079??00":
 __thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
 
 "558bec515356578bf9837f??00":
 __thiscall void PersistentGameData::Save();
 
-"558bec8079??000f85":
+"558bec8079??008b45":
 __thiscall void PersistentGameData::AddChallenge(int challengeID);
 
 "558bec568bf1807e??000f85":

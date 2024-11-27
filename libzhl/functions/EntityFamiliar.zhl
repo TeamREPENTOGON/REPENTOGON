@@ -46,7 +46,7 @@ __thiscall Entity_Laser* Entity_Familiar::FireTechLaser(const Vector& AimDirecti
 "8b41??83f83e":
 __thiscall bool Entity_Familiar::CanBeDamagedByEnemy();
 
-"558bec83e4f88b41??83ec10":
+"558bec83e4f883ec14568bf18b46??83f823":
 __thiscall bool Entity_Familiar::CanBlockProjectiles();
 
 "558bec83e4f883ec3ca1????????33c4894424??538bd95657895c24":

@@ -35,7 +35,7 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 		skip; // PostRender
 		
 		override
-		"558bec83e4f883ec7453":
+		"558bec83e4f881ec8c000000a1????????33c4898424????????538bd95657895c24??8b4b":
 		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
 		skip; // Kill
