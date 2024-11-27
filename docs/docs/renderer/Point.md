@@ -48,7 +48,7 @@ ___
 
 ___
 ### SetIsWorldSpace () {: aria-label='Functions' }
-#### void SetIsWorldSpace ( boolean Value ) {: .copyable aria-label='Functions' }   .
+#### void SetIsWorldSpace ( boolean Value ) {: .copyable aria-label='Functions' }   
 
 ___
 ### SetSpritesheetCoordinate () {: aria-label='Functions' }
