@@ -500,7 +500,7 @@ float Room::GetChampionBossChance() const {
 			chance = 0.6f;
 		}
 
-		Entity_Player* player = g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_PURPLE_HEART, NULL, true);
+		Entity_Player* player = g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_PURPLE_HEART); // g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_PURPLE_HEART, NULL, true);
 		if (player) {
 			int mult = g_Game->GetPlayerManager()->GetTrinketMultiplier(TRINKET_PURPLE_HEART);
 			chance *= (mult * 2);

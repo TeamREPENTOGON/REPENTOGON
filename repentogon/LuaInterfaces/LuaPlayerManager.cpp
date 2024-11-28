@@ -90,7 +90,7 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 	}
 
 	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 3, true);
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket); // playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -113,7 +113,7 @@ LUA_FUNCTION(Lua_AnyoneHasTrinket)
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int trinket = (int)luaL_checkinteger(L, 1);
 	RNG* rng = new RNG();
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket); // playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
 	if (!player) {
 		lua_pushboolean(L, false);
 	}
