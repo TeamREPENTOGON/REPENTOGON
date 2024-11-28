@@ -1,16 +1,16 @@
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8040000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????5053b8d0100000":
 __thiscall void PlayerHUD::Update();
 
-"558bec83e4f081ecc8020000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec80020000":
 __thiscall void PlayerHUD::RenderActiveItem(unsigned int slot, const Vector& pos, float alpha, float unk, float size<xmm3>);
 
-"558bec83e4f881ec24020000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec00020000a1????????33c58945??5657508d45??64a3????????8bf9897d":
 __thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
 
 "558bec83ec388b45":
 __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entity_Player* player); 
 
-"558bec83e4f081ecc80000008b11":
+"558bec83ec40538b19":
 __thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float scale<xmm3>);
 
 struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem) { {{
