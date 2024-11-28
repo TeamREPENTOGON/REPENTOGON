@@ -60,6 +60,7 @@ option(CURL_DISABLE_SMB "" ON)
 option(CURL_DISABLE_SMTP "" ON)
 option(CURL_DISABLE_TELNET "" ON)
 option(CURL_DISABLE_TFTP "" ON)
+option(CURL_ZLIB "" OFF)
 add_subdirectory("libs/curl")
 
 # Crypto++
