@@ -3,7 +3,7 @@ struct GridEntity_Fire : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f883ec6c53":
+		"558bec83e4f881ecc4000000a1????????33c4898424????????538bd9":
         void Update();
 		
 		override

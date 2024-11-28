@@ -17,8 +17,8 @@ __thiscall void MenuManager::Update();
 //"558bec83ec68a1????????33c58945??56578bf9807f??00":
 //__thiscall void MenuManager::RenderButtonLayout();
 
-"558bec83ec08538b1d????????568b75":
-__thiscall void MenuManager::SetState(int estate);
+//"558bec83ec08538b1d????????568b75":
+//__thiscall void MenuManager::SetState(int estate); //unused?
 
 struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
 {{

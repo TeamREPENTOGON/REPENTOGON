@@ -313,7 +313,7 @@ LUA_FUNCTION(Lua_PlayCutscene) {
 		g_Game->GetConsole()->RunCommand("cutscene " + to_string(cutscene), &out, NULL);
 		return 0;
 	}
-	g_Manager->ShowCutscene(cutscene, shouldClear);
+	g_Manager->ShowCutscene(cutscene, shouldClear,0);
 	return 0;
 
 
