@@ -4,6 +4,7 @@
 #include <variant>
 #include <vector>
 
+#include "SigScan.h"
 #include "HookSystem.h"
 #include "mologie_detours.h"
 
@@ -66,17 +67,28 @@ class LIBZHL_API Definition
 {
 public:
 	static bool Init();
+	/* Does not error if a signature is not found, or if there are multiple 
+	 * matches. Used for debugging signatures during version changes.
+	 */
+	static void OfflineInit(std::vector<SigScanEntry>& result);
 	static const char *GetLastError();
 	static Definition *Find(const char *name);
 	static const std::vector<std::tuple<bool, const char*>>& GetMissing();
 
+	Definition(const char* sig);
+
 protected:
 	static void Add(const char *name, Definition *def);
+	const char* _sig;
 
 public:
 	virtual int Load() = 0;
 	virtual const char* GetName() const = 0;
 	virtual bool IsFunction() const = 0;
+	inline const char* GetSignature() const
+	{
+		return _sig;
+	}
 };
 
 //=================================================================================================
@@ -87,7 +99,6 @@ private:
 	char _shortName[128];
 	char _name[256];
 
-	const char *_sig;
 	const HookSystem::ArgData *_argdata;
 	int _nArgs;
 	void **_outFunc;
@@ -123,7 +134,6 @@ class LIBZHL_API VariableDefinition : public Definition
 private:
 	void *_outVar;
 	const char *_name;
-	const char *_sig;
 
 public:
 	VariableDefinition(const char *name, const char *sig, void *outvar);

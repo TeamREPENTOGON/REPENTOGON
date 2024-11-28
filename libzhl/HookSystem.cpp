@@ -103,6 +103,8 @@ void FunctionDefinition::SetName(const char *name, const char *type)
 	strcpy_s(_shortName, name);
 }
 
+Definition::Definition(const char* sig) : _sig(sig) { }
+
 bool Definition::Init()
 {
 	bool ok = true;
@@ -117,6 +119,25 @@ bool Definition::Init()
 	}
 
 	return ok;
+}
+
+void Definition::OfflineInit(std::vector<SigScanEntry>& result)
+{
+	SigScan::Init();
+
+	for (Definition* definition: Defs())
+	{
+		const char* signature = definition->GetSignature();
+		SigScan scanner(signature);
+		scanner.Scan(false, true, NULL);
+
+		SigScanEntry entry;
+		entry.name = definition->GetName();
+		entry.signature = signature;
+		entry.isFunction = definition->IsFunction();
+		entry.locations = scanner.GetAddresses();
+		result.push_back(std::move(entry));
+	}
 }
 
 Definition *Definition::Find(const char *name)
@@ -138,8 +159,8 @@ void Definition::Add(const char *name, Definition *def)
 // VariableDefinition
 
 VariableDefinition::VariableDefinition(const char *name, const char *sig, void *outvar) :
+	Definition(sig),
 	_name(name),
-	_sig(sig),
 	_outVar(outvar)
 {
 	Add(_name, this);
@@ -182,7 +203,7 @@ bool VariableDefinition::IsFunction() const {
 // FunctionDefinition
 
 FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc) :
-	_sig(sig),
+	Definition(sig),
 	_argdata(argdata),
 	_nArgs(nArgs),
 	_flags(flags),
@@ -194,6 +215,7 @@ FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, 
 }
 
 FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc) :
+	Definition(""),
 	_address(addr),
 	_argdata(argdata),
 	_nArgs(nArgs),

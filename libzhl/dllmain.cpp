@@ -60,4 +60,42 @@ extern "C" {
 
 		return 0;
 	}
+
+	__declspec(dllexport) int OfflineScan(void*) {
+		char filename[4096];
+		time_t now = time(nullptr);
+		tm* nowtm = localtime(&now);
+		strftime(filename, 4096, "offline_scanning_%Y-%m-%d_%H-%M-%S.log", nowtm);
+		FILE* f = fopen(filename, "w");
+		if (!f) {
+			char buffer[4096];
+			sprintf(buffer, "Unable to open log file %s", filename);
+			MessageBoxA(0, buffer, "Fatal error", MB_ICONERROR);
+			return -1;
+		}
+
+		std::vector<SigScanEntry> entries;
+		Definition::OfflineInit(entries);
+
+		for (SigScanEntry const& entry : entries) {
+			size_t nMatches = entry.locations.size();
+
+			fprintf(f, "Signature %s (%s %s), %u matches", entry.signature.c_str(),
+				entry.isFunction ? "function" : "variable",
+				entry.name.c_str(), nMatches);
+
+			if (nMatches) {
+				fprintf(f, ": ");
+				for (void* addr : entry.locations) {
+					fprintf(f, "%p ", addr);
+				}
+			}
+
+			fprintf(f, "\n");
+		}
+
+		fclose(f);
+
+		return 0;
+	}
 }
