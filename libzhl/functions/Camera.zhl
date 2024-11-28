@@ -7,7 +7,7 @@ __thiscall void Camera::SetFocusPosition(Vector* pos);
 "558bec83e4f883ec188b15":
 __thiscall bool Camera::IsPosVisible(Vector * Pos);
 
-"558bec83e4f851a1????????568b":
+"558bec83e4f851a1????????568bf18b80":
 __thiscall void Camera::DoUpdate(bool unk);
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec83ec10568bf1c7":
