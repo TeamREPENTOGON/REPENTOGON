@@ -87,6 +87,8 @@ void ASMPatchFamiliarCanBeDamagedByProjectiles() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching inlined Entity_Familiar::CanBeDamagedByProjectiles in Entity_Projectile::HandleCollision at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -126,14 +128,16 @@ bool __stdcall FamiliarCanBeDamagedByLaserReimplementation(Entity_Familiar* fam)
 // Entity_Familiar::CanBeDamagedByLaser() is inlined into Entity_Laser::CanDamageEntity().
 // This patch injects a re-implementation of that function.
 void ASMPatchFamiliarCanBeDamagedByLaser() {
-	SigScan scanner("8b47??83f83e74??83f84374??3dd3000000");
+	SigScan scanner("8b46??83f83e74??83f84374??3dd300000074??83f86474");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching inlined Entity_Familiar::CanBeDamagedByLaser in Entity_Laser::CanDamageEntity at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.AddBytes("\x57") // Push EDI (the familiar) for function input
+		.AddBytes("\x56") // Push ESI (the familiar) for function input
 		.AddInternalCall(FamiliarCanBeDamagedByLaserReimplementation) // call function
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
@@ -168,7 +172,7 @@ void ASMPatchFamiliarGetMultiplier() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Familiar::GetMultiplier at %p\n", addr);
+	printf("[REPENTOGON] Patching Entity_Familiar::GetMultiplier for familiarignorebffs tag at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

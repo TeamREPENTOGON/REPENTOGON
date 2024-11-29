@@ -38,22 +38,22 @@ bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity)
 
 // This patch injects the PRE_LASER_COLLISION callback for "sample" lasers (lasers that curve, ie have multiple sample points).
 void PatchPreSampleLaserCollision() {
-	SigScan scanner("8b4d??8b41??83f809");
+	SigScan scanner("8b48??83f90975??c780????????00000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (sample laser) at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX)
-		.AddBytes("\x8B\x45\x8C")  // mov eax,dword ptr ss:[ebp-74] (Put the laser in EAX)
-		.AddBytes("\x51\x50") // Push ECX, EAX for function inputs
+		.Push(ASMPatch::Registers::EAX) // Collider Entity
+		.AddBytes("\xFF\x75\x8C")  // push dword ptr [ebp-74] (Entity_Laser)
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x4B)  // Ignore collision
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX) (Restored overridden command)
-		.AddBytes("\x8B\x41\x28")  // mov eax,dword ptr ds:[ecx+28] (Put the entity's type in EAX) (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x30)  // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x6);  // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -64,6 +64,8 @@ void PatchPreLaserCollision() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (non-sample laser) at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -71,8 +73,8 @@ void PatchPreLaserCollision() {
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x49A) // Ignore collision
-		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x494) // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x8); // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -354,6 +356,8 @@ void ASMPatchPrePlayerUseBomb() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -383,9 +387,11 @@ void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bo
 }
 
 void ASMPatchPostPlayerUseBomb() {
-	SigScan scanner("8b7424??46897424??3b7424??0f8c");
+	SigScan scanner("8b7424??46897424??3b7424??0f8c????????5f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (post) at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -799,6 +805,8 @@ void ASMPatchPostChampionRegenCallback() {
 		SigScan scanner(sig.c_str());
 		scanner.Scan();
 		void* addr = scanner.GetAddress();
+
+		printf("[REPENTOGON] Patching Entity_NPC::Update for dark red champion regen callback at %p\n", addr);
 
 		patch.AddBytes("\x8B\x07")  // mov eax, dword ptr ds:[edi]
 			.AddBytes("\x8B\xCF")  // mov ecx,edi

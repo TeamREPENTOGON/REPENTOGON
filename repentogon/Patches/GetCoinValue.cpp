@@ -59,6 +59,8 @@ void PatchSingleInlinedGetCoinValue(const char* sig, const ASMPatch::Registers p
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching inlined GetCoinValue at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~valueOutSavedReg, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -75,14 +77,16 @@ void ASMPatchesForGetCoinValue() {
 	// Entity_NPC::ai_ultra_greed()
 	// These seem to only be used for pathfinding to coins, or to determine the total value of coins in the room, and probably don't matter that much, since the pickup collision code is used to determine how many coins he actually receives.
 	// Therefore, for the moment, I've decided not to run the callback here, and allow modded coins to just count as 1 penny's worth. It is niche enough that I don't think running the callback constantly is worthwhile (xml tag is still supported anyway).
-	PatchSingleInlinedGetCoinValue("8b40??8b0485????????eb??33c003f8", ASMPatch::Registers::EAX, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0xA, /*runCallback=*/false);
-	PatchSingleInlinedGetCoinValue("8b0c8d????????eb", ASMPatch::Registers::EAX, ASMPatch::Registers::ECX, ASMPatch::SavedRegisters::Registers::ECX, 0x7, /*runCallback=*/false);
+	// REP+: Ultra greed doesn't freak out anymore, might not need these, but the sigs were updated anyway.
+	// Commented out for now, might still want to patch so that ultra greed doesn't ignore modded coins, but not high priority.
+	//PatchSingleInlinedGetCoinValue("8b48??8d41??83f80677??8b048d????????eb??33c003f8", ASMPatch::Registers::EAX, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0xA, /*runCallback=*/false);
+	//PatchSingleInlinedGetCoinValue("8b50??8d4a", ASMPatch::Registers::EAX, ASMPatch::Registers::ECX, ASMPatch::SavedRegisters::Registers::ECX, 0x7, /*runCallback=*/false);
 
 	// Entity_Pickup::handle_collision() - This is where the familiars and bosses will actually receive the appropriate coin value, so definately run the callback here.
 	// Familiars
-	PatchSingleInlinedGetCoinValue("8b4e??8b0c8d", ASMPatch::Registers::ESI, ASMPatch::Registers::ECX, ASMPatch::SavedRegisters::Registers::ECX, 0xA, /*runCallback=*/true);
+	PatchSingleInlinedGetCoinValue("8b56??8d4a??83f906", ASMPatch::Registers::ESI, ASMPatch::Registers::ECX, ASMPatch::SavedRegisters::Registers::ECX, 0xB, /*runCallback=*/true);
 	// Ultra Greed
-	PatchSingleInlinedGetCoinValue("8b40??8b0485????????eb??33c08b8d", ASMPatch::Registers::EAX, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0xA, /*runCallback=*/true);
+	PatchSingleInlinedGetCoinValue("8b48??8d41??83f80677??8b048d????????eb??33c08b8d", ASMPatch::Registers::EAX, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0x16, /*runCallback=*/true);
 	// Bumbino
-	PatchSingleInlinedGetCoinValue("8b0485????????0181", ASMPatch::Registers::ESI, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0x7, /*runCallback=*/true);
+	PatchSingleInlinedGetCoinValue("8b95????????8d42", ASMPatch::Registers::ESI, ASMPatch::Registers::EAX, ASMPatch::SavedRegisters::Registers::EAX, 0x19, /*runCallback=*/true);
 }
