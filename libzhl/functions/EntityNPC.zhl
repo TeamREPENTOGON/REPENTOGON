@@ -163,7 +163,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder) : public Entity {
 		skip; // IsValidTarget
 
         override
-        "558bec83e4f8518bd1":
+        "558bec83e4f8518bd156":
         bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
 
 		skip; // GetForwardVector

@@ -241,7 +241,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 
-		"558bec83e4f883ec4c538b5d??56":
+		"558bec83e4f883ec4c538b5d??568b75":
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
 		
 		skip; // SetCollisionDamage
