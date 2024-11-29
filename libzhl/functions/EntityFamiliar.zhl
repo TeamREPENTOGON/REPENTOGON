@@ -12,7 +12,7 @@ __thiscall int Entity_Familiar::GetFollowerPriority();
 
 // GetMultiplier returns a float in XMM0/ST0 (or whatever), but ZHL doesn't support that yet.
 // For now, just allow calling the function to trigger evaluation for my ASM patch at the end of the function, which caches the result.
-"558bec83e4f883ec0853568bf18b86":
+"558bec83e4f883ec0c53568bf1578b86":
 __thiscall void Entity_Familiar::GetMultiplier();
 
 "558bec83e4c081ecf4000000a1????????33c4898424????????53568b75":
