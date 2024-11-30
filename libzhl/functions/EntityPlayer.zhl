@@ -255,8 +255,10 @@ __thiscall void Entity_Player::EnableWeaponType(WeaponType weaponType, bool Set)
 "558bec8b55??33c085d20f4ed0b803000000":
 __thiscall PocketItem* Entity_Player::GetPocketItem(int SlotID);
 
-"a1????????568b90????????8bb0":
+//Replaced to NetplayManager::IsIdxLocalPlayer(?)
+/*"a1????????568b90????????8bb0":
 __thiscall bool Entity_Player::IsLocalPlayer();
+*/
 
 "558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
 __thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);

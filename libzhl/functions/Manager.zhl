@@ -72,7 +72,7 @@ __thiscall void Manager::SetSaveSlot(unsigned int slot);
 "558bec518b55??8b0d????????83fa1a":
 __thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
 
-struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -90,7 +90,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
 	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
-	
+	inline NetplayManager* GetNetplayManager() { return (NetplayManager*)((char*)this + 0x4b038); }
 }} 
 	
 	int _state : 0x8;
@@ -106,6 +106,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	Font _font7_TeamMeat_10 : 0x10a514;
 	Font _font8_TeamMeat_12 : 0x12a550;	
 	unsigned int _framecount : 0x4a264;
+	//NetplayManager _netplayManager : 0x4b038;
 	Music _musicmanager : 0x29a78;
 	bool _networkPlay : 0x1ea804;
 	bool _rerunAvailable : 0x1ea6c1;

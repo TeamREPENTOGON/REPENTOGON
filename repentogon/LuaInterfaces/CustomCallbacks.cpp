@@ -4155,7 +4155,7 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 }
 
 // MC_PRE_ITEM_TEXT_DISPLAY (1484)
-HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+/*HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
 	const int callbackId = 1484;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4190,6 +4190,7 @@ HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool is
 
 	super(title, subtitle, isSticky, isCurseDisplay);
 }
+*/
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
 HOOK_METHOD(RoomTransition, StartBossIntro, (unsigned int bossID1, unsigned int bossID2) -> void) {

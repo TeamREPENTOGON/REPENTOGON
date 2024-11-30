@@ -16,8 +16,9 @@ __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0000000a1????????33c58945??5657508d45??64a3????????898d":
 __stdcall void HUD::ShowItemText(Entity_Player * param_1, ItemConfig_Item * param_2);
 
-"558bec83e4f883ec1c807d??00":
+/*"558bec83e4f883ec1c807d??00":
 __thiscall void HUD::ShowItemTextCustom(wchar_t * title, wchar_t * subtitle, bool isSticky, bool isCurseDisplay);
+*/
 
 "558bec5153565733c08d91????????90803a0074??4081c2f401000083f80672??5f5e5b595dc2100069c0f4010000":
 __thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool isSticky, bool isCurseDisplay);

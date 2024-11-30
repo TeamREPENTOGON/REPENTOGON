@@ -855,7 +855,7 @@ LUA_FUNCTION(Lua_PlayerGetMarkedTarget) {
 
 LUA_FUNCTION(Lua_PlayerIsLocalPlayer) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushboolean(L, player->IsLocalPlayer());
+	lua_pushboolean(L, g_Manager->GetNetplayManager()->IsIdxLocalPlayer(player->_controllerIndex));
 	return 1;
 }
 
