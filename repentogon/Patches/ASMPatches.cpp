@@ -27,6 +27,7 @@
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMXMLItem.h"
+#include "ASMPatches/ASMLocalization.h"
 
 #include "ASMPatcher.hpp"
 
@@ -195,6 +196,9 @@ void PerformASMPatches() {
 	ExtraASMPatchesForCustomItemPools();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForXMLItem();
+	
+	ASMPatchRedirectToLocalizationFolders();
+	
 	HookImGui();
 
 	// Sprite
