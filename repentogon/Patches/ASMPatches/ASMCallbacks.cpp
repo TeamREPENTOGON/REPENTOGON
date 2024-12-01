@@ -567,7 +567,7 @@ void ASMPatchPostNightmareSceneCallback() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
+	SigScan scanner_transition("f30f108f????????0f57d20f2fca0f86");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
@@ -1262,17 +1262,17 @@ void ASMPatchPrePlayerPocketItemSwap() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8dbb????????833f00");
+	SigScan scanner_transition("8d9f????????833b00");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EBX) // Player
+		.Push(ASMPatch::Registers::EDI) // Player
 		.AddInternalCall(RunPrePlayerPocketItemSwapCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xB3) // Skipping pocket item swap
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC5) // Skipping pocket item swap
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 6);
 	sASMPatcher.PatchAt(addr, &patch);

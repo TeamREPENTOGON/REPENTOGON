@@ -23,19 +23,19 @@ void ASMPatchNightmareSceneNoShake() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan signature("83fe040f84????????83fe100f84????????");
+	SigScan signature("83ff0474??83ff10");
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
 	printf("[REPENTOGON] Patching NightmareScene::Show for noshake tag patch at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ESI) // playerType
+		.Push(ASMPatch::Registers::EDI) // playerType
 		.AddInternalCall(PlayerTypeNoShake)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC1) // jump for true
-		.AddRelativeJump((char*)addr + 0x3F);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x3F) // jump for true
+		.AddRelativeJump((char*)addr + 0x23);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -43,19 +43,19 @@ void ASMPatchBossIntroNoShake() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan signature("83f80474??83f81074??");
+	SigScan signature("83f80474??83f81074");
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching RoomTransition:StartBossIntro for noshake tag patch at %p\n", addr);
+	printf("[REPENTOGON] Patching UnnamedPlayerPortraitsHandler? for noshake tag patch at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // playerType
 		.AddInternalCall(PlayerTypeNoShake)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x83) // jump for true
-		.AddRelativeJump((char*)addr + 0x23);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x26) // jump for true
+		.AddRelativeJump((char*)addr + 0x29);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
