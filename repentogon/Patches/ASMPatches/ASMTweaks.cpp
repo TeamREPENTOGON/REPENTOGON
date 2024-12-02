@@ -7,7 +7,7 @@
 
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
-	static bool __stdcall __IsLeadeboardEntryValid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
+	static bool __stdcall __IsLeadeboardEntryInvalid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -250,7 +250,7 @@ namespace ASMPatches {
 		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 		ASMPatch patch;
 
-		SigScan signature("0f9c85");
+		SigScan signature("0f9c85????????7c");
 		if (!signature.Scan()) {
 			return false;
 		}
@@ -268,7 +268,7 @@ namespace ASMPatches {
 			.AddBytes("\x84\xC0") // test al, al
 			.RestoreRegisters(savedRegisters)
 			.AddBytes("\x0F\x95\x95\xC3\xFA\xFF\xFF") // setnz ebp-53d
-			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x20) // jump for true
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x1A) // jump for true
 			.AddRelativeJump((char*)addr + 0x9);
 		sASMPatcher.PatchAt(addr, &patch);
 
