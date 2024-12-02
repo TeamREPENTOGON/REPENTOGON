@@ -46,12 +46,12 @@ struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
 		skip; // LoadEntityConfig
 	};
 	
-	int _scaleAnimNum : 0x3ac;
-	float _deadEyeIntensity : 0x3b4;
-	ANM2 _tearHaloANM2 : 0x3fc;
-	ANM2 _tearEffectANM2 : 0x510;
-	ANM2 _deadEyeANM2 : 0x624;
-	BitSet128 _tearFlags : 0x378;
-	bool _multidimensionalTouched : 0x3b8;
-	bool _prismTouched : 0x3b9;
-} : 0x778;
+	int _scaleAnimNum : 0x454;
+	float _deadEyeIntensity : 0x45c;
+	ANM2 _tearHaloANM2 : 0x4a4;
+	ANM2 _tearEffectANM2 : 0x5b8;
+	ANM2 _deadEyeANM2 : 0x6cc;
+	BitSet128 _tearFlags : 0x420;
+	bool _multidimensionalTouched : 0x460;
+	bool _prismTouched : 0x461;
+} : 0x840;

@@ -108,33 +108,33 @@ __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
 
 struct Entity_NPC depends (Vector, NPCAI_Pathfinder) : public Entity {
 {{
-	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
-    inline uint32_t* GetDeliriumBossType() { return (uint32_t*)((char*)this + 0xB18); }
-    inline uint32_t* GetDeliriumBossVariant() { return (uint32_t*)((char*)this + 0xB1C); }
-    inline uint16_t* GetDeliriumTransformationTimer() { return (uint16_t*)((char*)this + 0xB20); }
-    inline uint8_t* GetDeliriumRemainingAttacks() { return (uint8_t*)((char*)this + 0xB22); }
-    inline uint8_t* GetDeliriumState() { return (uint8_t*)((char*)this + 0xB23); }
-    inline uint32_t* GetDeliriumAttackID() { return (uint32_t*)((char*)this + 0xB28); }
-    inline uint8_t* GetDeliriumAttackAngle() { return (uint8_t*)((char*)this + 0xB2C); }
-    inline uint32_t* GetDeliriumCycleID() { return (uint32_t*)((char*)this + 0xB30); }
-	inline float* GetShieldStrength() { return (float*)((char*)this + 0xB90); }
-	inline std_vector_uint GetHitList() { return *(std_vector_uint*)((char*)this + 0xE5C); }
-	inline int32_t * GetControllerId() { return (int32_t *)((char*)this + 0xE6C); }
-	inline void SetControllerId(int32_t  x) { *(int32_t *)((char*)this + 0xE6C) = x; }
+    inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xCA4); }
+    inline uint32_t* GetDeliriumBossType() { return (uint32_t*)((char*)this + 0xBC0); }
+    inline uint32_t* GetDeliriumBossVariant() { return (uint32_t*)((char*)this + 0xBC4); }
+    inline uint16_t* GetDeliriumTransformationTimer() { return (uint16_t*)((char*)this + 0xBC8); }
+    inline uint8_t* GetDeliriumRemainingAttacks() { return (uint8_t*)((char*)this + 0xBCA); }
+    inline uint8_t* GetDeliriumState() { return (uint8_t*)((char*)this + 0xBCB); }
+    inline uint32_t* GetDeliriumAttackID() { return (uint32_t*)((char*)this + 0xBD0); }
+    inline uint8_t* GetDeliriumAttackAngle() { return (uint8_t*)((char*)this + 0xBD4); }
+    inline uint32_t* GetDeliriumCycleID() { return (uint32_t*)((char*)this + 0xBD8); }
+    inline float* GetShieldStrength() { return (float*)((char*)this + 0xC38); }
+    inline std_vector_uint GetHitList() { return *(std_vector_uint*)((char*)this + 0xEF8); }
+    inline int32_t * GetControllerId() { return (int32_t *)((char*)this + 0xF14); }
+    inline void SetControllerId(int32_t  x) { *(int32_t *)((char*)this + 0xF14) = x; }
 }} 
-    int _stateFrame : 0x360;
-    NPCAI_Pathfinder _pathfinder : 0x364;
-    int _state : 0xAB4;
-    int _projectileCooldown : 0xAF0;
-    int _projectileDelay : 0xAF4;
-    Vector _v1 : 0xB00;
-    Vector _v2 : 0xB08;
-    int _i1 : 0xB10;
-    int _i2 : 0xB14;
-	bool _isBoss : 0xb8d;
-	uint16_t _championRegenTimer : 0xbc4;
-	int _bosscoloridx : 0xbc8;
-	Entity_Player* _sirenPlayerEntity : 0xe90;
+    int _stateFrame : 0x408;
+    NPCAI_Pathfinder _pathfinder : 0x40c;
+    int _state : 0xb5c;
+    int _projectileCooldown : 0xb98;
+    int _projectileDelay : 0xb9c;
+    Vector _v1 : 0xBa8;
+    Vector _v2 : 0xBb0;
+    int _i1 : 0xbb8;
+    int _i2 : 0xbbc;
+    bool _isBoss : 0xc35;
+    uint16_t _championRegenTimer : 0xc6c;
+    int _bosscoloridx : 0xc70;
+    Entity_Player* _sirenPlayerEntity : 0xf38;
 	
     __vtable {
 		skip; // Free
@@ -176,7 +176,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder) : public Entity {
 		skip; // LoadEntityConfig
     };	
 	
-} : 0xeb0;
+} : 0xf58;
 
 
 

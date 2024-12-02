@@ -45,9 +45,9 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 
     };
 
-	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
-	int _state : 0x3a0;
-	int _timeout : 0x3ac;
-	int _lifespan : 0x3b0;
+	BitSet128 _varData : 0x418; // this can be any data type, the game uses it arbitrarily based on effect variant
+	int _state : 0x448;
+	int _timeout : 0x454;
+	int _lifespan : 0x458;
 
-} : 0x3e0;
+} : 0x488;

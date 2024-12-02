@@ -601,3 +601,9 @@ bool Music::ValidateMusicID(int id, int& max) {
 
 	return id >= 0 && id < max;
 }
+
+Vector Entity::GetPredictedTargetPosition(Entity* target, float multiplier) {
+    Vector diff = target->_pos - _pos;
+    float len = sqrtf(diff.x * diff.x + diff.y * diff.y);
+    return Vector(target->_pos.x + target->_velocity.x * len * multiplier, target->_pos.y + target->_velocity.y * len * multiplier);
+}

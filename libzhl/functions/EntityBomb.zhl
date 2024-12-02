@@ -43,14 +43,14 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 		skip; // LoadEntityConfig
 	};
 	
-	int _explosionCountdown1 : 0x360;
-	float _height : 0x36c;
-	float _fallingSpeed : 0x370;
-	float _rocketAngle : 0x378;
-	float _rocketSpeed : 0x37C;
-	float _scale : 0x384;
-	bool _prismTouched : 0x3b0;
-	bool _loadCostumes : 0x3b3;
-	ANM2 _bombCostumesSprites[5] : 0x3b4;
-	std_vector_uint _hitList : 0x918;
-} : 0x928;
+	int _explosionCountdown1 : 0x408;
+	float _height : 0x414;
+	float _fallingSpeed : 0x418;
+	float _rocketAngle : 0x420;
+	float _rocketSpeed : 0x424;
+	float _scale : 0x42c;
+	bool _prismTouched : 0x454;
+	bool _loadCostumes : 0x45a;
+	ANM2 _bombCostumesSprites[5] : 0x45c;
+	std_vector_uint _hitList : 0x9c0;
+} : 0x9d0;

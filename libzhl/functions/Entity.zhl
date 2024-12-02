@@ -36,8 +36,8 @@ __thiscall uint32_t Entity::GetHitListIndex();
 "558bec83e4f881ec9c000000a1????????33c4898424????????a1":
 static void Entity::DoGroundImpactEffects(Vector * pos, Vector * velocity, float strength<xmm3>);
 
-"558bec51568b75??f30f115d":
-__thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
+// "558bec51568b75??f30f115d":
+// __thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
 
 "558bec83e4f883ec0c538b1d????????568b75":
 __thiscall bool Entity::IgnoreEffectFromFriendly(EntityRef* source);
@@ -150,6 +150,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     inline Entity_Player* ToPlayer() { return Downcast<Entity_Player*>(__ptr_EntityPlayerRTTI); }
     inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
+
+    Vector LIBZHL_API Entity::GetPredictedTargetPosition(Entity* target, float multiplier);
 	
 	Entity() 
 	{
@@ -161,60 +163,62 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _type : 0x28;
     unsigned int _variant : 0x2c;
     unsigned int _subtype : 0x30;
-	unsigned int _spawnerType : 0x34;
-	unsigned int _spawnerVariant: 0x38;
-	ANM2 _sprite : 0x3c;
-    unsigned int _shadowSize : 0x150;
-	unsigned long long _flags : 0x160;
-    bool _valid : 0x168; 
-    bool _visible : 0x169;
-	bool _exists : 0x16a;
-	bool _dead : 0x16b;
-	int _entityGridCollisionClass : 0x17c;
-	int _entityCollisionClass : 0x180;
-	// 0x184 is a boolean related to collisions.
-	unsigned short _entityExtraDataPtrUpperBytes : 0x186;
-	bool _collidesWithGrid : 0x188;
-	unsigned short _entityExtraDataPtrLowerBytes : 0x18a;
-	vector_ColorParams _colorParams : 0x1a4;
-	int _fireDamageCountdown : 0x208;
-	int _damageCountdown : 0x20c;
-	int _freezeCountdown : 0x210;
-	int _poisonCountdown : 0x214;
-	int _slowingCountdown : 0x218;
-	int _charmedCountdown : 0x21c;
-	int _confusionCountdown : 0x220;
-	int _midasFreezeCountdown : 0x224;
-	int _fearCountdown : 0x228;
-	int _burnCountdown : 0x22c;
-	int _bossStatusEffectCooldown : 0x230;
-	int _shrinkCountdown : 0x234;
-	int _poisonDamageTimer : 0x238;
-	int _burnDamageTimer : 0x23c;
-	int _bleedingCountdown : 0x240;
-	int _magnetizedCountdown : 0x248;
-	int _baitedCountdown : 0x24c;
-	int _knockbackCountdown : 0x250;
-	int _weaknessCountdown : 0x254;
-	int _iceCountdown : 0x258;
-	int _brimstoneMarkCountdown : 0x25c;
-	Vector _knockbackDirection : 0x260;
-	float _poisonDamage : 0x278;
-	float _burnDamage : 0x27c;
-	float _depthOffset : 0x2b0;
-	float _mass : 0x2d4;
-	float _collisionDamage : 0x2e0;
+    unsigned int _spawnerType : 0x34;
+    unsigned int _spawnerVariant: 0x38;
+    ANM2 _sprite : 0x48;
+    unsigned int _shadowSize : 0x15c;
+    unsigned long long _flags : 0x168;
+    bool _valid : 0x170; 
+    bool _visible : 0x171;
+    bool _exists : 0x172;
+    bool _dead : 0x173;
+    int _entityGridCollisionClass : 0x184;
+    int _entityCollisionClass : 0x188;
+    // 0x184 is a boolean related to collisions.
+    unsigned short _entityExtraDataPtrUpperBytes : 0x18e; // ?
+    bool _collidesWithGrid : 0x190;
+    unsigned short _entityExtraDataPtrLowerBytes : 0x192; // ?
+    vector_ColorParams _colorParams : 0x1a4;
+    int _fireDamageCountdown : 0x208;
+    int _damageCountdown : 0x20c;
+    int _freezeCountdown : 0x210;
+    int _poisonCountdown : 0x214;
+    int _slowingCountdown : 0x218;
+    int _charmedCountdown : 0x21c;
+    int _confusionCountdown : 0x220;
+    int _midasFreezeCountdown : 0x224;
+    int _fearCountdown : 0x228;
+    int _burnCountdown : 0x22c;
+    int _bossStatusEffectCooldown : 0x230;
+    int _shrinkCountdown : 0x234;
+    int _poisonDamageTimer : 0x238;
+    int _burnDamageTimer : 0x23c;
+    int _bleedingCountdown : 0x240;
+    int _magnetizedCountdown : 0x248;
+    int _baitedCountdown : 0x24c;
+    int _knockbackCountdown : 0x250;
+    int _weaknessCountdown : 0x254;
+    int _iceCountdown : 0x258;
+    int _brimstoneMarkCountdown : 0x25c;
+    Vector _knockbackDirection : 0x260;
+    float _poisonDamage : 0x278;
+    float _burnDamage : 0x27c;
+    float _depthOffset : 0x2b0;
+    float _mass : 0x2d4;
+    float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
-	float _shrinkStatus1 : 0x30c;
-	float _shrinkStatus2 : 0x310;
-	Entity * _parent : 0x314;
-	Entity * _child : 0x318;
-	Entity * _target : 0x31c;
-	Entity * _spawnerEntity : 0x320;
-	RNG _dropRNG : 0x334;
+    float _shrinkStatus1 : 0x30c;
+    float _shrinkStatus2 : 0x310;
+    Entity * _parent : 0x3bc;
+    Entity * _child : 0x3c0;
+    Entity * _target : 0x3c4;
+    Entity * _spawnerEntity : 0x3c8;
+    RNG _dropRNG : 0x3dc;
+    Vector _pos : 0x33c;
+    Vector _velocity : 0x360;
 
     __vtable {
-		skip; // Free
+        skip; // Free
 		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
@@ -261,7 +265,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		
 		skip; // LoadEntityConfig
     };
-} : 0x360;
+} : 0x408;
 
 "68(????????)6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec568b75??576a0156ff15????????83c40885c074??6a0168????????ba010000008bcee8????????83c4088b40??6a0068????????68????????6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec568b75??576a0156ff15????????83c40885c074??6a0068????????ba010000008bcee8????????83c4088b40??6a0068????????68????????6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec83e4f883ec08":
 reference void* EntityRTTI;
