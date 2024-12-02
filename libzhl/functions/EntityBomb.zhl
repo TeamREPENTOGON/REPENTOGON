@@ -4,11 +4,12 @@ __thiscall void Entity_Bomb::Render(Vector *offset);
 "558bec83e4f883ec6056":
 __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 
-"558bec83ec5ca1????????33c58945??538bd9":
-__thiscall void Entity_Bomb::UpdateDirtColor();
+// "558bec83ec5ca1????????33c58945??538bd9":
+// __thiscall void Entity_Bomb::UpdateDirtColor();
 
 struct Entity_Bomb depends (ANM2) : public Entity { {{
-	inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
+    inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
+    void LIBZHL_API Entity_Bomb::UpdateDirtColor();
 }}
 
 	__vtable {

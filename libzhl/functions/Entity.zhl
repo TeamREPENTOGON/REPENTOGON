@@ -209,6 +209,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     float _speedMultiplier : 0x2F4;
     float _shrinkStatus1 : 0x30c;
     float _shrinkStatus2 : 0x310;
+    float _size : 0x370;
     Entity * _parent : 0x3bc;
     Entity * _child : 0x3c0;
     Entity * _target : 0x3c4;
