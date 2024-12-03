@@ -203,6 +203,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 }
 
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.AddBytes("\x58\x58\x58\x58\x58")  // Pop EAX x5 to remove the overridden function's inputs from the stack.
@@ -292,11 +293,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 };
 
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 	if (isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.
 		patch.AddBytes("\x84\xC0") // Test Al (Al?)
@@ -311,15 +313,18 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 		.Push(ASMPatch::Registers::EBP)  // Push EBP (We'll get other inputs as offsets from this)
 		.Push(ASMPatch::Registers::EDI)  // Push Entity pointer
 		.AddInternalCall(ProcessPostDamageCallback)  // Run the MC_POST_(ENTITY_)TAKE_DMG callback
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + numOverriddenBytes);
+		.RestoreRegisters(savedRegisters);
+	if (!isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
+	}
+	patch.AddRelativeJump((char*)addr + numOverriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
 // The overridden bytes are restored by the patch.
 void PatchPostEntityTakeDamageCallbacks() {
-	SigScan entityTakeDmgScanner("f30f1147??5f5e5b8be55dc21400");
+	SigScan entityTakeDmgScanner("5f5eb0015b8be55dc21400??????????f30f1041");
 	entityTakeDmgScanner.Scan();
 	InjectPostDamageCallback(entityTakeDmgScanner.GetAddress(), false);
 
@@ -522,10 +527,12 @@ void ASMPatchTrySplit() {
 void ASMPatchInputAction()
 {
 	const char* signatures[] = {
-		"837f??0275??833d????????0074??8d45??505351",
-		"8378??0275??833d????????00",
-		"837f??0275??833d????????0074??8d45??50536a00",
-		"837f??0275??833d????????0074??8d45??50536a01",
+		"837f??0275??833d????????0074??8d45??505351",  // Manager::GetActionValue
+		"8379??0275??833d????????00",  // Console::ProcessInput
+		"837f??0275??833d????????0074??8d45??50536a00",  // Manager::IsActionPressed
+		"837f??0275??833d????????0074??8d45??50536a01",  // Manager::IsActionTriggered
+		"8378??0275??833d????????0074??8d45??506a0e",  // Cutscene::Update (ACTION_MENUCONFIRM)
+		"8378??0275??833d????????0074??8d45??506a0f",  // Cutscene::Update (ACTION_MENUBACK)
 		NULL
 	};
 
@@ -906,7 +913,7 @@ void ASMPatchTrinketRender() {
 		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
 		.AddBytes("\x84\xC0") // test al, al
 		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
-		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, push edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
+		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, pop edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
 		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
 		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
