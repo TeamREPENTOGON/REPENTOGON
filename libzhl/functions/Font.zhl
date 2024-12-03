@@ -6,7 +6,7 @@ __thiscall void Font::DrawString(DrawStringEntry entry);
 "558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e868980000":
 __thiscall void Font::DrawStringUTF8(DrawStringEntry entry);
 
-"558BEC83E4F883EC5453568B752C578BF985F67475FF7508E8D3FCFFFF":
+"558bec83e4f083ec4856578bf9f30f115c24??0f28ea":
 __thiscall void Font::DrawStringScaled(DrawStringScaledEntry entry);
 
 "558BEC568BF18B4D088BD1578D7A01908A024284C075F968000200002BD768????????e8b8900000":
