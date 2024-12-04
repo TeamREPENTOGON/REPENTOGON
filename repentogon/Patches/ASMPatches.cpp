@@ -66,7 +66,7 @@ void ASMPatchLogMessage() {
 *  We just skip over the check by replacing the conditional JMP with an unconditional one.
 */
 void ASMPatchConsoleRunCommand() {
-	SigScan scanner("75??8b0d????????5781c140ba0100");
+	SigScan scanner("75??8b0d????????5781c1a4ba0100");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -102,9 +102,10 @@ void PerformASMPatches() {
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
-	ASMPatchPrePlayerGiveBirth();
-	ASMPatchesBedCallbacks();
-	ASMPatchPrePlayerPocketItemSwap();
+	//ASMPatchPrePlayerGiveBirth(); //commented for rep+ temp
+	//ASMPatchesBedCallbacks(); //commented for rep+ temp
+	
+	//ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
 	delirium::AddTransformationCallback();

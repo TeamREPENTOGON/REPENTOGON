@@ -504,7 +504,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 }
 
 void ASMPatchTrySplit() {
-	SigScan scanner("f30f100d????????0f2f8b");
+	SigScan scanner("f30f100d????????0f2f8f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
@@ -1090,17 +1090,19 @@ void PreBirthPatch(void* addr, const bool isCambion) {
 }
 
 void ASMPatchPrePlayerGiveBirth() {
+	
 	SigScan cambionSig("818f????????000200000bc2");
 	cambionSig.Scan();
 	void* cambionAddr = cambionSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
 	PreBirthPatch(cambionAddr, true);  // Cambion
-
+	
 	SigScan immaculateSig("818f????????000200000bc6");
 	immaculateSig.Scan();
 	void* immaculateAddr = immaculateSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
+	
 }
 
 bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
