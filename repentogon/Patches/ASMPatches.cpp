@@ -97,7 +97,8 @@ void PerformASMPatches() {
 	ASMPatchPrePickupVoidedAbyss();
 	ASMPatchPrePickupComposted();
 	ASMPatchPostChampionRegenCallback();
-	ASMPatchTrinketRender();
+	// Temporarily disabled for REP+: Related code has changed, patch will require more than just a new signature. - Connor
+	//ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
