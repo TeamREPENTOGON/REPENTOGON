@@ -279,8 +279,8 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 				srand(i-40);
 				Streak.SetFrame(&string("Idle"), (float)(rand() % 6));
 				Streak.Update();
-				Streak._scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
-				Streak._offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
+				Streak._scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidth(node["name"].c_str()) / 294.0);
+				Streak._offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidth(order.c_str()) - 10);
 				Streak.Render(&pos, &z, &z);
 			}
 		}

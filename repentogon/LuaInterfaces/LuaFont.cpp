@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_Font_DrawString) {
 }
 
 LUA_FUNCTION(Lua_Font_DrawStringUTF8) {
-	return ValidateDrawStringBase(L, &Font::DrawStringUTF8);
+	//return ValidateDrawStringBase(L, &Font::DrawStringUTF8);
 }
 
 LUA_FUNCTION(Lua_Font_DrawStringScaled) {
@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_Font_DrawStringScaled) {
 }
 
 LUA_FUNCTION(Lua_Font_DrawStringScaledUTF8) {
-	return ValidateDrawStringScaledBase(L, &Font::DrawStringScaledUTF8);
+	//return ValidateDrawStringScaledBase(L, &Font::DrawStringScaledUTF8);
 }
 
 LUA_FUNCTION(Lua_Font_GetStringWidth) {
@@ -62,17 +62,17 @@ LUA_FUNCTION(Lua_Font_GetStringWidth) {
 }
 
 LUA_FUNCTION(Lua_Font_GetStringWidthUTF8) {
-	return ValidateGetStringWidth(L, &Font::GetStringWidthUTF8);
+	//return ValidateGetStringWidth(L, &Font::GetStringWidthUTF8);
 }
 
 static void PatchFontMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "DrawString", Lua_Font_DrawString },
 		{ "DrawStringScaled", Lua_Font_DrawStringScaled },
-		{ "DrawStringUTF8", Lua_Font_DrawStringUTF8 },
-		{ "DrawStringScaledUTF8", Lua_Font_DrawStringScaledUTF8 },
+		//{ "DrawStringUTF8", Lua_Font_DrawStringUTF8 },
+		//{ "DrawStringScaledUTF8", Lua_Font_DrawStringScaledUTF8 },
 		{ "GetStringWidth", Lua_Font_GetStringWidth },
-		{ "GetStringWidthUTF8", Lua_Font_GetStringWidthUTF8 },
+		//{ "GetStringWidthUTF8", Lua_Font_GetStringWidthUTF8 },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::FONT, functions);
