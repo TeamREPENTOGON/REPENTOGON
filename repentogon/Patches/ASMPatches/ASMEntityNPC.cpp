@@ -17,7 +17,7 @@ bool __stdcall IsRoomSlow() {
 
 const float hushLaserAdjust = 0.513f * 0.75; // a base value i got empirically a while back + a slight extra bit of wiggle room
 void PatchHushLaserSpeed() {
-	const char* signature = "e8????????f30f1185????????f30f1005????????f30f1185????????8b95";
+	const char* signature = "e8????????f30f1185????????f30f1005????????f30f1185????????8d85";
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
@@ -83,7 +83,7 @@ void ASMPatchFireProjectiles() {
 }
 
 void ASMPatchFireBossProjectiles() {
-	const char* signature = "f30f104424388bf883c414";
+	const char* signature = "f30f104424??8bd8";
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();

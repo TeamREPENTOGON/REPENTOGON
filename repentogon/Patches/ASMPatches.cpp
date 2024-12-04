@@ -108,8 +108,8 @@ void PerformASMPatches() {
 	//ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
-	delirium::AddTransformationCallback();
-	delirium::AddPostTransformationCallback();
+	//delirium::AddTransformationCallback(); //commented for rep+ temp
+	//delirium::AddPostTransformationCallback(); //commented for rep+ temp
 
 	// EntityNPC
 	ASMPatchHushBug();
@@ -119,7 +119,7 @@ void PerformASMPatches() {
 	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
-	PatchGridCallbackShit();
+	//PatchGridCallbackShit(); //commented for rep+ temp
 
 	// Level
 	ASMPatchBlueWombCurse();
@@ -130,14 +130,14 @@ void PerformASMPatches() {
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
-	ASMPatchModsMenu();
+	//ASMPatchModsMenu(); //commented for rep+ temp
 	ASMPatchMenuOptionsLanguageChange();
 
 	// Room
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
-	ASMPatchMegaSatanEnding();
-	ASMPatchWaterDisabler();
+	//ASMPatchMegaSatanEnding(); //commented for rep+ temp
+	//ASMPatchWaterDisabler(); //commented for rep+ temp
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
 
@@ -150,14 +150,14 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	PatchInlinedGetStatusEffectTarget();
+	//PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp (too much signatures)
 
 	// Render
-	LuaRender::PatchglDrawElements();
-	PatchStatHudPlanetariumChance();
+	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
+	//PatchStatHudPlanetariumChance(); //commented for rep+ temp
 
 	//PlayerManager
-	ASMPatchSpawnSelectedBaby();
+	//ASMPatchSpawnSelectedBaby(); //commented for rep+ temp
 	ASMPatchCoopWheelRespectModdedAchievements();
 
 	// External
@@ -167,8 +167,8 @@ void PerformASMPatches() {
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
-	ASMPatchesForCustomItemPools();
-	ExtraASMPatchesForCustomItemPools();
+	//ASMPatchesForCustomItemPools();
+	//ExtraASMPatchesForCustomItemPools();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForXMLItem();
 	HookImGui();

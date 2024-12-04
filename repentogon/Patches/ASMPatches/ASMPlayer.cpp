@@ -55,7 +55,7 @@ void ASMPatchFireDelay() {
 }
 
 void ASMPatchSpeed() {
-	SigScan scanner("f30f1187????????8b87????????83f829");
+	SigScan scanner("f30f1187????????8b87????????83f828");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* speedPtr = &PlayerStats::modCharacterSpeed;
@@ -152,7 +152,7 @@ void __stdcall SetMarsDoubleTapWindow() {
 }
 
 void ASMPatchMarsDoubleTapWindow() {
-	SigScan scanner("83bf????????0a0f8f????????8bd0"); // cmp dword ptr [EDI + 0x1da8],0xa
+	SigScan scanner("83bf????????0a0f8f"); // cmp dword ptr [EDI + 0x1da8],0xa
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* frameWindowPtr = &marsDoubleTapWindow;

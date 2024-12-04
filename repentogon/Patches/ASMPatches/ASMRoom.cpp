@@ -210,7 +210,7 @@ void ASMPatchDeepGaperClearCheck(void* addr) {
 }
 
 void PatchRoomClearDelay() {
-	SigScan scanner1("c787????????0a00000075??8b469"); // Room::Update
+	SigScan scanner1("c787????????0a00000075??8b46"); // Room::Update
 	SigScan scanner2("8b86????????4883f807"); // Room::SaveState
 	SigScan scanner3("8b80????????83b8????????09"); // ai_deep_gaper
 	scanner1.Scan();
@@ -225,7 +225,7 @@ void PatchRoomClearDelay() {
 
 // this changes the function to check Game's time counter instead of frame counter, in parity with TrySpawnBossRushDoor
 void ASMPatchTrySpawnBlueWombDoor() {
-	SigScan scanner("83f8087c??8b83");
+	SigScan scanner("83f8087c??8b87");
 	scanner.Scan();
 	void* addr = (char*)scanner.GetAddress() + 7;
 	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);

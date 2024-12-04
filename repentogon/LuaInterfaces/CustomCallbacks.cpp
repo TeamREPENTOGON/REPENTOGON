@@ -4155,7 +4155,7 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 }
 
 // MC_PRE_ITEM_TEXT_DISPLAY (1484) //prev: ShowItemTextCustom buw ShowItemTextCustom should work?
-HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+/*HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
 	const int callbackId = 1484;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4190,6 +4190,7 @@ HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky
 
 	super(title, subtitle, isSticky, isCurseDisplay);
 }
+*/
 
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
@@ -4813,7 +4814,7 @@ HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); requires ignoreBossStatusEffectCooldown param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
