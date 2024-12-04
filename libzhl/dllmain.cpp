@@ -80,12 +80,13 @@ extern "C" {
 		for (SigScanEntry const& entry : entries) {
 			size_t nMatches = entry.locations.size();
 
-			fprintf(f, "Signature %s (%s %s), %u matches", entry.signature.c_str(),
-				entry.isFunction ? "function" : "variable",
-				entry.name.c_str(), nMatches);
+			fprintf(f, "%s %s, signature %s, %u matches: ",
+				entry.isFunction ? "Function" : "Variable",
+				entry.name.c_str(),
+				entry.signature.c_str(),
+				nMatches);
 
 			if (nMatches) {
-				fprintf(f, ": ");
 				for (void* addr : entry.locations) {
 					fprintf(f, "%p ", addr);
 				}

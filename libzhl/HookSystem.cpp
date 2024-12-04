@@ -128,14 +128,21 @@ void Definition::OfflineInit(std::vector<SigScanEntry>& result)
 	for (Definition* definition: Defs())
 	{
 		const char* signature = definition->GetSignature();
+		if (!strcmp(signature, ""))
+			continue;
+
 		SigScan scanner(signature);
-		scanner.Scan(false, true, NULL);
+		bool found = scanner.Scan(false, true, NULL);
 
 		SigScanEntry entry;
 		entry.name = definition->GetName();
 		entry.signature = signature;
 		entry.isFunction = definition->IsFunction();
-		entry.locations = scanner.GetAddresses();
+
+		if (found) {
+			entry.locations = scanner.GetAddresses();
+		}
+
 		result.push_back(std::move(entry));
 	}
 }
