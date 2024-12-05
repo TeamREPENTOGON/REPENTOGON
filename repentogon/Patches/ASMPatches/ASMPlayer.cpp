@@ -152,7 +152,7 @@ void __stdcall SetMarsDoubleTapWindow() {
 }
 
 void ASMPatchMarsDoubleTapWindow() {
-	SigScan scanner("83bf????????0a0f8f"); // cmp dword ptr [EDI + 0x1da8],0xa
+	SigScan scanner("83bf????????0a0f8f"); // cmp dword ptr [EDI + 0x1f68],0xa
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* frameWindowPtr = &marsDoubleTapWindow;
@@ -162,7 +162,7 @@ void ASMPatchMarsDoubleTapWindow() {
 	patch.PreserveRegisters(savedRegisters)  // Store for later
 		.AddInternalCall(SetMarsDoubleTapWindow)
 		.AddBytes("\xA1").AddBytes(ByteBuffer().AddAny((char*)&frameWindowPtr, 4)) // mov eax, dword ptr ds:[XXXXXXXX]
-		.AddBytes("\x39\x87\xa8\x1d").AddZeroes(2) // cmp dword ptr [EDI + 0x1da8],EAX
+		.AddBytes("\x39\x87\x68\x1f").AddZeroes(2) // cmp dword ptr [EDI + 0x1f68],EAX
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);

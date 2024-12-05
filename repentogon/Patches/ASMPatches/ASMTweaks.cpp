@@ -33,7 +33,7 @@ namespace ASMPatches {
 		 * Patch immediately after acquiring the list instead. Tear Detonator should
 		 * not be fired too many times either way.
 		 */
-		SigScan signature("c745fc1a0000008d8d????????33??89bd");
+		SigScan signature("c745??1b0000008d8d????????33ff");
 		if (!signature.Scan()) {
 			return false;
 		}
@@ -114,7 +114,7 @@ namespace ASMPatches {
 		 * the vector. Return NULL if not found.
 		 */
 		static void* FindPre() {
-			SigScan scanner("FF742414FF742414E8????????C6471001");
+			SigScan scanner("ff7424??53e8????????eb");
 			if (!scanner.Scan()) {
 				ZHL::Log("[ERROR] Berserk + Spirit Shackles crash ASM patch: unable to find spot for first "
 						 "patch.\n");
@@ -148,8 +148,8 @@ namespace ASMPatches {
 				.Push(ASMPatch::Registers::EDI)
 				.AddInternalCall(&SaveTemporaryEffectsVectorState); // SaveTemporaryEffectsVectorState(this, iterator);
 			patch.RestoreRegisters(registers);
-			patch.AddBytes("\xFF\x74\x24\x14\xFF\x74\x24\x14"); // Overriden instructions
-			patch.AddRelativeJump((char*)addr + 8); // Jump to next valid instruction
+			patch.AddBytes("\xFF\x74\x24\x14\x53"); // Overriden instructions
+			patch.AddRelativeJump((char*)addr + 5); // Jump to next valid instruction
 			sASMPatcher.PatchAt(addr, &patch);
 		}
 

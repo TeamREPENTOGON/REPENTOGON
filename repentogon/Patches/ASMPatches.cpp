@@ -130,7 +130,7 @@ void PerformASMPatches() {
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
-	//ASMPatchModsMenu(); //commented for rep+ temp
+	//ASMPatchModsMenu(); // REP+ Needs investigation+adjustment due to font/drawstring changes
 	ASMPatchMenuOptionsLanguageChange();
 
 	// Room
@@ -150,7 +150,7 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	//PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp (too much signatures)
+	// PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
 
 	// Render
 	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
@@ -185,13 +185,15 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
 
-	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
-		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
-	}
+	// REP+: Patch needs adjustments (specifically the post-patch)
+	//if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
+	//	ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
+	//}
 
-	if (!ASMPatches::SkipArchiveChecksums()) {
-		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
-	};
+	// REP+: Patch needs investigation and possible adjustments.
+	//if (!ASMPatches::SkipArchiveChecksums()) {
+	//	ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
+	//};
 
 	if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
