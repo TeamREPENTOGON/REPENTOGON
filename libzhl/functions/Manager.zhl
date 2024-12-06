@@ -72,52 +72,56 @@ __thiscall void Manager::SetSaveSlot(unsigned int slot);
 "558bec518b55??8b0d????????83fa1a":
 __thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
 
-struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager) { {{
-	inline int GetState() { return *(int*)((char*)this + 0x8); }
-	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
-	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
-	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
-	inline bool GetDebugConsoleEnabled() { return *(bool*)((char*)this + 0x29E4C); }
-	inline int GetMaxRenderScale() { return *(int*)((char*)this + 0x29E58); }
-	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
-	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
-	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
-	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
-	inline Cutscene* GetCutscene() { return (Cutscene*)((char*)this + 0x20A00); }
-	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
-	inline AchievementOverlay* GetAchievementOverlay() { return (AchievementOverlay*)((char*)this + 0x217a8); }
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
+	inline int GetState() { return this->_state; }
+	inline PersistentGameData* GetPersistentGameData() { return &this->_persistentGameData; }
+	inline NightmareScene* GetNightmareScene() { return &this->_nightmareScene; }
+	inline bool GetDebugConsoleEnabled() { return this->_isConsoleEnabled; }
+	inline int GetMaxRenderScale() { return this->_optionsConfig._maxRenderScale; }
+	inline ModManager* GetModManager() { return &this->_modManager; }
+	inline DailyChallenge* GetDailyChallenge() { return &this->_dailyChallenge; }
+	inline StringTable* GetStringTable() { return &this->_stringTable; }
+	inline bool GetNetStart() { return this->_networkPlay; }
+	inline Cutscene* GetCutscene() { return &this->_cutsceneManager; }
+	inline OptionsConfig* GetOptions() { return &this->_optionsConfig; }
+	inline AchievementOverlay* GetAchievementOverlay() { return &this->_achievementOverlay; }
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
-	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
-	inline NetplayManager* GetNetplayManager() { return (NetplayManager*)((char*)this + 0x4b038); }
+	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x2a3cc); }
+	inline NetplayManager* GetNetplayManager() { return &this->_netplayManager; }
 }} 
 	
 	int _state : 0x8;
-    PersistentGameData _persistentGameData : 0x14;
-	GameState _gamestate : 0xf34;
-    StringTable _stringTable : 0x4a234;
-	SoundEffects _sfxManager : 0x29de0;
-	ItemConfig _itemConfig : 0x29e84;
-	EntityConfig _entityConfig : 0x29f88;
-	//ModManager _modManager : 0x29FD8;
-	ANM2 _cursorSprite : 0x1ea840;
-	ANM2 _buttonsSprite : 0x4a284;
-	Font _font7_TeamMeat_10 : 0x10a514;
-	Font _font8_TeamMeat_12 : 0x12a550;	
-	unsigned int _framecount : 0x4a264;
-	//NetplayManager _netplayManager : 0x4b038;
-	Music _musicmanager : 0x29a78;
-	bool _networkPlay : 0x1ea804;
-	bool _rerunAvailable : 0x1ea6c1;
-	bool _startingFromRerun : 0x1ea6c2;
-	bool _debugStart : 0x1ea72c;
-	bool _starting : 0x1ea6c0;
-	Seeds _startSeeds : 0x1ea6cc;
-	void* _unk_runstart : 0x4a268;
-	bool _startCutscene : 0x1ea830;
-
-} : 0x20a9d8;
+	PersistentGameData _persistentGameData : 0x14;
+	GameState _gamestate : 0xf9c;
+	Cutscene _cutsceneManager : 0x20cd0;
+	NightmareScene _nightmareScene : 0x21540;
+	AchievementOverlay _achievementOverlay : 0x21b34;
+	Music _musicmanager : 0x29ea0;
+	SoundEffects _sfxManager : 0x2a208;
+	OptionsConfig _optionsConfig : 0x2a220;
+	ItemConfig _itemConfig : 0x2a2d4;
+	EntityConfig _entityConfig : 0x2a3d8;
+	ModManager _modManager : 0x2a428;
+	StringTable _stringTable : 0x4a688;
+	unsigned int _framecount : 0x4a924;
+	bool _isConsoleEnabled : 0x4a931;
+	ANM2 _buttonsSprite : 0x4a94c;
+	Font _font7_TeamMeat_10 : 0x4ac3c;
+	Font _font8_TeamMeat_12 : 0x4ac88;
+	bool _starting : 0x4ad7c;
+	bool _rerunAvailable : 0x4ad7d;
+	bool _startingFromRerun : 0x4ad7e;
+	Seeds _startSeeds : 0x4ad88;
+	bool _debugStart : 0x4ade8;
+	bool _startCutscene : 0x4aef0;
+	DailyChallenge _dailyChallenge : 0x4ae0c;
+	bool _networkPlay : 0x4aec0;
+	ANM2 _cursorSprite : 0x4af04;
+	NetplayManager _netplayManager : 0x4b038;
+	
+} : 0x4cd94;
 
 "a1(????????)8b80????????83e800":
 reference Manager *g_Manager;

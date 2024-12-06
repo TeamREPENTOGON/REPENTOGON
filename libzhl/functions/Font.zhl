@@ -21,4 +21,4 @@ __thiscall int Font::GetStringWidth(const char* str);
 struct Font {
 
 
-} : 0x2003c;
+} : 0x4c;
