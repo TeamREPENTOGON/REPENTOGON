@@ -75,7 +75,7 @@ __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Pla
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec20020000":
 __thiscall void Game::Render();
 
-"558bec8b0d????????8b55??81c16c5b0200":
+"558bec8b0d????????8b55??81c1705b0200":
 __thiscall void Game::ToggleDebugFlag(unsigned int flag);
 
 "558bec8b55??b801000000568bf18bca83e11fc1ea05d3e08584":

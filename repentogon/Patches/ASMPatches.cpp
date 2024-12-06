@@ -66,7 +66,7 @@ void ASMPatchLogMessage() {
 *  We just skip over the check by replacing the conditional JMP with an unconditional one.
 */
 void ASMPatchConsoleRunCommand() {
-	SigScan scanner("75??8b0d????????5781c1a4ba0100");
+	SigScan scanner("75??8b0d????????5781c1a8ba0100");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -92,7 +92,7 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
-	ASMPatchPrePickupVoided();
+	//ASMPatchPrePickupVoided(); // broke in rep+ 1.9.7.7
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
 	ASMPatchPrePickupComposted();
