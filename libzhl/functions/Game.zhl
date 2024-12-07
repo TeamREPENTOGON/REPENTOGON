@@ -152,80 +152,80 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
     
     uint32_t GetNbRooms() const 
     { 
-        return *(uint32_t*)((char*)this + 0x1815C); 
+        return this->_nbRooms; 
     }
     
-	inline Console* GetConsole() { return (Console*)((char*)this + 0x1BB60); } // Cast to appropriate type
+	inline Console* GetConsole() { return &this->_console; } // Cast to appropriate type
 	
-	inline ItemOverlay* GetItemOverlay() { return (ItemOverlay*)((char*)this + 0x1BCC0) ; }
+	inline ItemOverlay* GetItemOverlay() { return &this->_itemOverlay; }
 	
-	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
+	inline Ambush* GetAmbush() { return &this->_ambush; }
 	
 	inline Room* GetCurrentRoom() { return this->_room; }
 		
-	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
+	inline int GetCurrentRoomIdx() {return this->_currentRoomIdx; }
 
-    inline int GetDimension() {return *(int*)((char*)this + 0x1819C);}
+    inline int GetDimension() {return this->_currentDimensionIdx;}
 	
-	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
+	inline int GetLastBossRoomListIdx() {return this->_lastBossRoomListIdx; }
 	
-	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
+	inline int GetGreedModeWave() { return this->_greedModeWave; }
 	
-	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
+	inline const unsigned int* GetLevelStateFlags() { return &this->_gameStateFlags; }
 	
-	inline RoomConfig* GetRoomConfig() { return (RoomConfig*)((char*)this + 0x1879C); }
+	inline RoomConfig* GetRoomConfig() { return this->_roomConfig; }
 	
-	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
+	inline PlayerManager* GetPlayerManager() { return this->_playerManager; }
 	
-	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
+	inline int GetLastDevilRoomStage() { return this->_lastDevilRoomStage; }
 	
-	inline int GetLastLevelWithDamage() { return *(int*)((char*)this + 0x243628); }
+	inline int GetLastLevelWithDamage() { return this->_lastLevelWithDamage; }
 	
-	inline int GetLastLevelWithoutHalfHp() { return *(int*)((char*)this + 0x24361c); }
+	inline int GetLastLevelWithoutHalfHp() { return this->_lastLevelWithoutHalfHp; }
 
-	inline int GetTreasureRoomsVisited() { return *(int*)((char*)this + 0x1C3178); }
+	inline int GetTreasureRoomsVisited() { return this->_treasureRoomsVisited; }
 	
-	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
+	inline int GetPlanetariumsVisited() { return this->_planetariumsVisited; }
 	
-	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } //in reality this gets the pause menu itself, but the first att is if its opened or not
+	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } // NO LONGER A PART OF GAME, in reality this gets the pause menu itself, but the first att is if its opened or not
 	
-	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x10203C); } 
+	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x10203C); } // NO LONGER A PART OF GAME
 	
-	inline DailyChallenge GetDailyChallenge() { return *(DailyChallenge*)((char*)this + 0x1C3204); }
+	inline DailyChallenge GetDailyChallenge() { return this->_dailyChallenge; }
 	
-	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
+	inline unsigned int GetChallenge() { return this->_challenge; }
 	
 	inline bool* IsDebug() { return &this->_isDebug; }
 	
-	inline unsigned int* GetDebugFlags() { return (unsigned int*)((char*)this + 0X1C3164); }
+	inline unsigned int* GetDebugFlags() { return &this->_debugFlags; }
 	
-	inline ScoreSheet* GetScoreSheet() { return (ScoreSheet*)((char*)this + 0x1c32b8); }
+	inline ScoreSheet* GetScoreSheet() { return &this->_scoreSheet; }
 	
-	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
+	inline int GetDifficulty() {return this->_difficulty; }
 	
-	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
+	inline ProceduralItemManager* GetProceduralItemManager() {return &this->_proceduralItemManager; }
     
-	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x3DA4C); }
+	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x3DA4C); } // NO LONGER A PART OF GAME
 
-	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); } // NO LONGER A PART OF GAME
 	
-	inline Minimap* GetMinimap() { return (Minimap*)((char*)this + 0x1a2ab0); }
+	inline Minimap* GetMinimap() { return &this->_minimap; }
 	
-	inline RoomTransition* GetRoomTransition() { return (RoomTransition*)((char*)this + 0x1b6c0); }
+	inline RoomTransition* GetRoomTransition() { return &this->_roomTransition; }
 
-    inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
+    inline StageTransition* GetStageTransition() { return &this->_stageTransition; }
 	
-	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
+	inline DebugRenderer* GetDebugRenderer() { return &this->_debugRenderer; }
 	
-	inline GenericPrompt* GetGenericPrompt() { return (GenericPrompt*)((char*)this + 0x1c33fc); }
+	inline GenericPrompt* GetGenericPrompt() { return (GenericPrompt*)((char*)this + 0x1c33fc); } // NO LONGER A PART OF GAME
 
-	inline GameOver* GetGameOver() { return (GameOver*)((char*)this + 0x1d154); }
+	inline GameOver* GetGameOver() { return (GameOver*)((char*)this + 0x1d154); } // NO LONGER A PART OF GAME
 	
 	
 	// Wack
-	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x283b84); }
-	inline ColorModState* GetTargetColorModifier() { return (ColorModState*)((char*)this + 0x283b9c); }
-	inline ColorModState* GetLerpColorModifier() { return (ColorModState*)((char*)this + 0x283bb4); }
+	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x66c08); }
+	inline ColorModState* GetTargetColorModifier() { return (ColorModState*)((char*)this + 0x66c20); }
+	inline ColorModState* GetLerpColorModifier() { return (ColorModState*)((char*)this + 0x66c38); }
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
@@ -236,57 +236,65 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	bool _devilRoomDisabled : 0x9;
 	uint32_t _curses : 0xC;
 	RoomDescriptor _gridRooms[507] : 0x14;
-	RoomDescriptor _negativeGridRooms[18] : 0x16c7c;
-	uint32_t _roomOffset[507] : 0x1796c;
-	uint32_t _nbRooms : 0x1815c;
-	uint32_t _startingRoomIdx : 0x18160;
-	Room* _room : 0x18190;
-	uint32_t _currentRoomIdx : 0x18194;
-	uint32_t _lastRoomIdx : 0x18198;
-	uint32_t _currentDimensionIdx : 0x1819c;
-	uint32_t _lastRoomDimensionIdx : 0x181a0;
-	uint32_t _lastBossRoomListIdx : 0x181a4;
-	uint32_t _leaveDoor : 0x181a8;
-	uint32_t _enterDoor : 0x181ac;
-	uint32_t _dungeonPlacementSeed : 0x181bc;
-	uint32_t _greedModeWave : 0x181c4;
-	unsigned int _stateFlags : 0x1822c;
-	vector_EntitySaveState _myosotisPickups : 0x18234;
-	uint32_t _greedModeTreasureRoomIdx : 0x18200;
-	RoomConfig _roomConfig : 0x1879c;
-	ItemPool _itemPool : 0x1A5CC;
-	BossPool _bossPool: 0x1ADF4;
-	PlayerManager _playerManager : 0x1BA40;
-	Seeds _seedEffects : 0x1bb04;
-	Console _console : 0x1bb60;
-	ItemOverlay _itemOverlay : 0x1bcc0;
-	Leaderboard _leaderboard : 0x3d5f0;
-	int _frameCount : 0x1a30dc; // 0x1a30dc
-	Vector _screenShakeOffset : 0x1a30f0;
-	int _treasureRoomsVisited : 0x1c3178;
-	int _planetariumsVisited : 0x1c317c;
-	bool _isRerun : 0x1c31a0;
-	bool _isDebug : 0x1c31a1;
-	Ambush _ambush : 0x1c31b8;
-	unsigned int _challenge : 0x1c319c;
-	DailyChallenge _dailyChallenge: 0x1c3204;
-	int _shopVisits : 0x1c3194;
-	EntityFactory* _entityFactory : 0x1c3198;
-	ScoreSheet _scoreSheet : 0x1c32b8;
-	uint32_t _difficulty : 0x243624;
-	bool _isStoringGlowingHourglassState : 0x243646;
-	bool _isRestoringGlowingHourglassState : 0x243647;
-	GlowingHourglassState _glowingHourglassStates[2] : 0x243648;
-	int _currentGlowingHourglassSlot : 0x283b78;
-	bool _shouldLerpColorModState : 0x283b80;
-	ProceduralItemManager _proceduralItemManager : 0x283c20;
-	vector_ErasedEntities _erasedEntities : 0x283c14; 
-	bool  _triggerWindowResize : 0x1c3154;
-	unsigned int _gameStateFlags : 0x1c316c;
-	int _donationModGreed : 0x1c318c;
-	int _donationModAngel : 0x1c3190;
-	float _lightningIntensity : 0x283c00;
-	float _dizzyIntensity : 0x283c04;
-	float _dizzyTargetIntensity : 0x283c08;
-	float _dizzyIntensityChangeSpeed : 0x283c0c;
-} : 0x285238;
+	RoomDescriptor _negativeGridRooms[20] : 0x16c7c;
+	uint32_t _roomOffset[507] : 0x17adc;
+	uint32_t _nbRooms : 0x182cc;
+	uint32_t _startingRoomIdx : 0x182d0;
+	Room* _room : 0x18300;
+	uint32_t _currentRoomIdx : 0x18304;
+	uint32_t _lastRoomIdx : 0x18308;
+	uint32_t _currentDimensionIdx : 0x1830c;
+	uint32_t _lastRoomDimensionIdx : 0x18310;
+	uint32_t _lastBossRoomListIdx : 0x18314;
+	uint32_t _leaveDoor : 0x18318;
+	uint32_t _enterDoor : 0x1831c;
+	uint32_t _dungeonPlacementSeed : 0x1832c;
+	uint32_t _greedModeWave : 0x18334;
+	unsigned int _stateFlags : 0x1839c;
+	vector_EntitySaveState _myosotisPickups : 0x183a4;
+	uint32_t _greedModeTreasureRoomIdx : 0x18370;
+	RoomConfig _roomConfig : 0x18910;
+	ItemPool _itemPool : 0x1a740;
+	BossPool _bossPool: 0x1af70;
+	RoomTransition _roomTransition : 0x1b83c;
+	StageTransition _stageTransition : 0x1ba78;
+	PlayerManager _playerManager : 0x1baa8;
+	Seeds _seedEffects : 0x1bb84;
+	Console _console : 0x682bc;
+	ItemOverlay _itemOverlay : 0x1c034;
+	Leaderboard _leaderboard : 0x1d5f8;
+	Minimap _minimap : 0x254f8;
+	int _frameCount : 0x25b24;
+	Vector _screenShakeOffset : 0x25b38;
+	int _treasureRoomsVisited : 0x25b88;
+	int _planetariumsVisited : 0x25b8c;
+	bool _isRerun : 0x25bb8;
+	bool _isDebug : 0x25bb9;
+	Ambush _ambush : 0x25bf8;
+	unsigned int _challenge : 0x25bb4;
+	DailyChallenge _dailyChallenge: 0x25c60;
+	int _shopVisits : 0x25ba4;
+	EntityFactory* _entityFactory : 0x25bb0;
+	ScoreSheet _scoreSheet : 0x25d14;
+	int _lastLevelWithoutHalfHp : 0x260a8;
+	uint32_t _difficulty : 0x260b0;
+	int _lastLevelWithDamage : 0x260b4;
+	bool _isStoringGlowingHourglassState : 0x260d2;
+	bool _isRestoringGlowingHourglassState : 0x260d3;
+	GlowingHourglassState _glowingHourglassStates[2] : 0x260d4;
+	int _currentGlowingHourglassSlot : 0x66bfc;
+	bool _shouldLerpColorModState : 0x66c04;
+	ProceduralItemManager _proceduralItemManager : 0x66ca4;
+	vector_ErasedEntities _erasedEntities : 0x66c98; 
+	bool  _triggerWindowResize : 0x25b60;
+	unsigned int _debugFlags : 0x25b70;
+	unsigned int _gameStateFlags : 0x25b78;
+	int _lastDevilRoomStage : 0x25b84;
+	int _donationModGreed : 0x25b9c;
+	int _donationModAngel : 0x25ba0;
+	DebugRenderer _debugRenderer : 0x66c7c;
+	float _lightningIntensity : 0x66c84;
+	float _dizzyIntensity : 0x66c88;
+	float _dizzyTargetIntensity : 0x66c8c;
+	float _dizzyIntensityChangeSpeed : 0x66c90;
+} : 0x683d0;
