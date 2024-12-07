@@ -29,8 +29,8 @@ struct Console depends (Console_HistoryEntry) {
 {{
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 
-int _state : 0x20;
-std_string _input : 0x3c;
-deque_console_historyentry _history : 0x60;
-deque_string _commandHistory : 0x74;
-} : 0x88;
+int _state : 0x0;
+std_string _input : 0x1c;
+deque_console_historyentry _history : 0x40;
+deque_string _commandHistory : 0x54;
+} : 0x108;
