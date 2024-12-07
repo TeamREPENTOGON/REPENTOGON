@@ -121,7 +121,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	ANM2 _cursorSprite : 0x4af04;
 	NetplayManager _netplayManager : 0x4b038;
 	
-} : 0x4cd94;
+} : 0x4cdc0;
 
 "a1(????????)8b80????????83e800":
 reference Manager *g_Manager;

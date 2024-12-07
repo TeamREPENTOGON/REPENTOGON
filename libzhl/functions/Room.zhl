@@ -120,7 +120,7 @@ __thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6056":
 __thiscall KColor Room::GetFloorColorAt(Vector& pos, float radius<xmm3>);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }

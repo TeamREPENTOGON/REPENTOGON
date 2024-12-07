@@ -115,16 +115,17 @@ static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_
 
 static void FixLuaDump()
 {
-	const char* sig = "558bec83e4f881eca4020000";
-	/*const char* sig = "558BEC83E4F881ECA4020000"
-		"A1????????33C4898424A0020000833D????????00"
-		"535657894C24100F848A00000068????????6A00E896290D00"
-		"8B3D????????83C4088B1D????????33F60F1F4400008D442420"
-		"5056FF7718FFD383C40C85C074568D4424205068????????FF7718FF15????????83C40C";*/
-	SigScan scanner(sig);
-	// SigScan scanner("8b442424b9????????85c00f45c88d44244451ff742438");
+	// Signature to start of Lua write minidump function ("catch_exception" in ghidra)
+	SigScan scanner("558bec83e4f881eca4020000");
 	if (!scanner.Scan()) {
 		fprintf(stderr, "Unable to find Lua write minidump function\n");
+		exit(-2);
+	}
+
+	// Signature to the lua_getinfo call within the Lua write minidump function
+	SigScan getInfoScanner("ff15????????83c40c85c075??68");
+	if (!getInfoScanner.Scan()) {
+		fprintf(stderr, "Unable to find lua_getinfo call within Lua write minidump function\n");
 		exit(-2);
 	}
 
@@ -143,7 +144,7 @@ static void FixLuaDump()
 
 	char* base = const_cast<char*>(protectedBase);
 	void* target = (void*)OverrideGetInfo;
-	char* getInfoCall = base + (strlen(sig) / 2) - 9; // Base of call lua_getinfo, FF15 ????????
+	char* getInfoCall = (char*)getInfoScanner.GetAddress();  // Base of call lua_getinfo, FF15 ????????
 	char buffer[5] = { '\xE8', 0, 0, 0, 0};
 	ptrdiff_t diff = (ptrdiff_t)target - (ptrdiff_t)(getInfoCall + 5);
 	memcpy(buffer + 1, &diff, sizeof(diff));

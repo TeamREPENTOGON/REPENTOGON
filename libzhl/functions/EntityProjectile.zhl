@@ -42,7 +42,7 @@ struct Entity_Projectile : public Entity {
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };
-} : 0x3c0;
+} : 0x468;
 
 "68(????????)f30f1000f30f5905":
 reference void* EntityProjectileRTTI;

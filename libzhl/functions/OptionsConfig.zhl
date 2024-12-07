@@ -69,4 +69,4 @@ struct OptionsConfig depends (Game) {
     bool _bossHpOnBottom : 0x86;
     bool field58_0x87 : 0x87;
     int _announcerVoiceMode : 0x88;
-} : 0x8d;
+} : 0x8c;

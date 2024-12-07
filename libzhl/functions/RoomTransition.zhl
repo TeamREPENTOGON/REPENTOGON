@@ -19,5 +19,6 @@ struct RoomTransition depends (ANM2) { {{
 }}
 	int _mode : 0x0;
 	ANM2 _versusScreenANM2: 0x38;
-	ANM2 _playerExtraPortraitANM2 : 0x224;
-} : 0x344;
+	// REP+ Something's weird with this
+	//ANM2 _playerExtraPortraitANM2 : 0x224;
+} : 0x23c;

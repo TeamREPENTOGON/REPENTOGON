@@ -144,7 +144,7 @@ __thiscall bool Game::LevelHasPhotoDoor();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod) { {{
 	Game()
 	{
 		this->constructor();
@@ -173,9 +173,9 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline const unsigned int* GetLevelStateFlags() { return &this->_gameStateFlags; }
 	
-	inline RoomConfig* GetRoomConfig() { return this->_roomConfig; }
+	inline RoomConfig* GetRoomConfig() { return &this->_roomConfig; }
 	
-	inline PlayerManager* GetPlayerManager() { return this->_playerManager; }
+	inline PlayerManager* GetPlayerManager() { return &this->_playerManager; }
 	
 	inline int GetLastDevilRoomStage() { return this->_lastDevilRoomStage; }
 	
