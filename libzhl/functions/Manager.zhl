@@ -1,5 +1,5 @@
 "558bec83e4f081ec68040000":
-static void Manager::Update();
+static void Manager::Update(bool unk);
 
 "558bec83ec08568b35????????85f6":
 static __stdcall void Manager::RecordPlayerCompletion(int eCompletionEvent);
