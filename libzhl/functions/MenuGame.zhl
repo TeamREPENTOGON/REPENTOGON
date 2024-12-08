@@ -17,4 +17,4 @@ struct Menu_Game depends (ANM2) { {{
 	float PositionY : 0xc;
 	ANM2 GameMenuSprite : 0x10;
 	ANM2 ContinueWidgetSprite : 0x124;
-} : 0x360;
+} : 0x240;

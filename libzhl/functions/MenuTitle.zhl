@@ -12,4 +12,4 @@ struct Menu_Title depends (ANM2) {
     float PositionY : 0x4;
     ANM2 TitleScreenSprite : 0x8;
     int unusedVariable : 0x11c;
-} : 0x120;
+} : 0x238;

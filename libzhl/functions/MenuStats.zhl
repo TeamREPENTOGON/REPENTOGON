@@ -39,4 +39,4 @@ struct Menu_Stats depends (ANM2, AchievementOverlay_Entry) { {{
     int _maxAchievementID : 0xa3b8;
     int _holdInputTimer : 0xa3bc;
     float _scrollSpeed : 0xa3c0;
-} : 0xa3c4;
+} : 0xa478;

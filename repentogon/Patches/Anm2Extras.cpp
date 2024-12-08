@@ -269,7 +269,7 @@ void ASMPatchCustomAnm2ShaderHook(const char* sig, const bool isChampion) {
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.Push(isChampion)
-		.Push(ASMPatch::Registers::EDI)  // Push the LayerState
+		.Push(ASMPatch::Registers::ESI)  // Push the LayerState
 		.AddInternalCall(CustomAnm2ShaderHook)
 		.RestoreRegisters(reg)
 		.AddRelativeJump((char*)addr + 0x5);

@@ -94,11 +94,10 @@ bool IsKeyPressed(int key) {
 	return g_InputManagerBase.IsButtonPressed(key, -1, 0);
 }
 
-/*HOOK_METHOD(MenuManager, Update, () -> void) { (rep+, casually crashing at _scrollinterpolationY)
+HOOK_METHOD(MenuManager, Update, () -> void) {
 	prevscroll = g_MenuManager->_scrollinterpolationY;
 	super();
 }
-*/
 
 /*HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	

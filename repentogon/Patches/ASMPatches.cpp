@@ -174,7 +174,7 @@ void PerformASMPatches() {
 	HookImGui();
 
 	// Sprite
-	// ASMPatchesForANM2Extras();  // rep+ temporarily disabled
+	ASMPatchesForANM2Extras();
 
 	// Tweaks (bug crashes)
 	if (!ASMPatches::FixGodheadEntityPartition()) {

@@ -66,4 +66,4 @@ struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, It
 	}}
 	// 0x3C : Unknown, seems to be a pointer to something referenced in GetItemIdByName
 	// 0x40 : Unknown - Looks like a number, count of something or length of the prior, perhaps?
-} : 0x50;
+} : 0xf8;

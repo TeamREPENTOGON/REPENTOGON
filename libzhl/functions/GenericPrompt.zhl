@@ -30,7 +30,7 @@ __thiscall void GenericPrompt::SetText(const char* param_1, const char* param_2,
 "5156578bf98b77??85f674??837e??108bc672??8b06b9????????0f1f44??008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c075??3846??74??3847??75??6a0168????????8bcfe8????????84c074??8d4f??e8????????c647??015f5e59c3??????????????????????8379??00":
 static cleanup void GenericPrompt::Disappear(ANM2 * anm2<ecx>);
 
-struct GenericPrompt depends (ANM2, Font) { {{
+struct GenericPrompt depends (ANM2) { {{
 	
 	/*GenericPrompt() {
 		this->constructor();
@@ -39,10 +39,12 @@ struct GenericPrompt depends (ANM2, Font) { {{
 	
 }}
 	ANM2 _anm2 : 0x0;
-	Font _font_TeamMeatFont12 : 0x114;
-	Font _font_TeamMeatFont16Bold : 0x20150;
-	Font _font_MPlus_12b : 0x4018c;
-	Font _font_KR_MeatFont14 : 0x601c8;
-	int _currentSelection : 0x80218; // 0 - no, 1- yes
-	int _submittedSelection : 0x8021c; // 0 - none, 1 - yes, 2 - no
-} : 0x80220;
+	// REP+: Font class is a lot smaller now, but even that won't fit here.
+	// Maybe pointers to Fonts or FontRenderSettings are involved, IDK
+	//Font _font_TeamMeatFont12 : 0x114;
+	//Font _font_TeamMeatFont16Bold : 0x20150;
+	//Font _font_MPlus_12b : 0x4018c;
+	//Font _font_KR_MeatFont14 : 0x601c8;
+	int _currentSelection : 0x128; // 0 - no, 1- yes
+	int _submittedSelection : 0x12c; // 0 - none, 1 - yes, 2 - no
+} : 0x134;

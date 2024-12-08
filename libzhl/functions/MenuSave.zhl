@@ -21,6 +21,6 @@ struct Menu_Save depends (ANM2, GenericPrompt) {
     ANM2 Save3DrawingSprite : 0x354;
     ANM2 DeleteButtonSprite : 0x46c;
     ANM2 DeletePopupSprite : 0x580;
-	GenericPrompt _deleteSavePrompt : 0x694;
-	int _getMostRecentBackupDateRelated : 0x808b4;
-} : 0x808b8;
+    GenericPrompt _deleteSavePrompt : 0x6a0;
+    int _getMostRecentBackupDateRelated : 0x7d4;
+} : 0x898;
