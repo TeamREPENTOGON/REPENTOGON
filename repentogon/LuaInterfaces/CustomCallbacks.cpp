@@ -934,7 +934,7 @@ HOOK_METHOD(Music, DisableLayer, (int id) -> void) {
 }
 
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
-HOOK_METHOD(Level, Init, () -> void) {
+HOOK_METHOD(Level, Init, (bool unk) -> void) {
 	levelASM.ForceSpecialQuest = 0;
 
 	const int callbackid = 1060;
@@ -947,7 +947,7 @@ HOOK_METHOD(Level, Init, () -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.call(1);
 	}
-	super();
+	super(unk);
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 

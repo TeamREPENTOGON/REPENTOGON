@@ -122,7 +122,7 @@ void PerformASMPatches() {
 	//PatchGridCallbackShit(); //commented for rep+ temp
 
 	// Level
-	ASMPatchBlueWombCurse();
+	//ASMPatchBlueWombCurse(); //commented for rep+ temp
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
