@@ -2448,7 +2448,7 @@ LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
 
 	if ((blackHeart <= player->_soulHearts) && (blackHeart > -1)) {
 		player->_blackHearts |= 1 << (blackHeart >> 1 & 0x1f);
-		player->update_golden_hearts();
+		player->update_golden_hearts(false);
 		player->update_bone_hearts();
 	}
 	return 0;

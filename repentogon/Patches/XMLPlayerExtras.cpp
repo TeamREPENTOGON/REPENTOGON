@@ -42,7 +42,7 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		this->AddGigaBombs(stoi(playerXML["gigabombs"]));
 	}
 	this->update_red_hearts(); 
-	this->update_golden_hearts(); 
+	this->update_golden_hearts(false); 
 	this->update_bone_hearts(); 
 }
 

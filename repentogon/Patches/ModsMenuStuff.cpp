@@ -94,12 +94,13 @@ bool IsKeyPressed(int key) {
 	return g_InputManagerBase.IsButtonPressed(key, -1, 0);
 }
 
-HOOK_METHOD(MenuManager, Update, () -> void) {
+/*HOOK_METHOD(MenuManager, Update, () -> void) { (rep+, casually crashing at _scrollinterpolationY)
 	prevscroll = g_MenuManager->_scrollinterpolationY;
 	super();
 }
+*/
 
-HOOK_METHOD(Menu_Mods, Update, () -> void) {
+/*HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	
 	if (g_InputManagerBase.IsActionTriggered(14,-1,0)) {
 		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
@@ -126,6 +127,7 @@ HOOK_METHOD(Menu_Mods, Update, () -> void) {
 		}
 	}
 }
+*/
 
 HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, int unk) -> bool) {
 	if (issearching){// && ((btnaction == 17) || (btnaction == 18))) {
@@ -134,7 +136,7 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 	return super(btnaction, controllerid, unk);
 }
 
-HOOK_METHOD(Menu_Mods, Render, () -> void) {
+/*HOOK_METHOD(Menu_Mods, Render, () -> void) { (rep+ crashing)
 	Vector menu_ref;
 	Vector offset;
 	Vector initialpos;
@@ -380,3 +382,4 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			}
 		}
 }
+*/

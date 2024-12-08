@@ -223,7 +223,7 @@ HOOK_METHOD(Menu_CustomChallenge, Update, () -> void) {
 	super();
 }
 
-HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
+/*HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) { (rep+, crashing at DrawStringScaled)
 	boundselchal(this);
 	skiplocked(this);
 	int sel = this->SelectedElement;
@@ -286,6 +286,7 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		}
 	}
 }
+*/
 
 int tointc(const string& str) {
 	if (str.length() > 0) {
