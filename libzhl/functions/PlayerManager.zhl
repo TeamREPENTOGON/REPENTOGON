@@ -51,7 +51,8 @@ __thiscall void PlayerManager::RestoreGameState(GameState * state);
 
 struct PlayerManager depends (RNG)
 {
-    RNG _rng : 0x0; //0x0
-	vector_EntityPlayerPtr _playerList : 0x10;
-	Entity_Player* _esauJrState[4] : 0x9c;
-} : 0xac;
+	vector_EntityPlayerPtr _playerList : 0x0;
+	
+	Entity_Player* _esauJrState[4] : 0x80;
+	RNG _rng : 0xb8;
+} : 0xc8;
