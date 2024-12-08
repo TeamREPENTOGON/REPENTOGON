@@ -19,7 +19,7 @@ HOOK_METHOD(Menu_Save, select_save_slot, (uint32_t slot)->void) {
 	repentogonOptions.lastSaveFile = slot;
 	repentogonOptions.Save();
 };
-HOOK_STATIC(Manager,Update,(void)->void,_stdcall){
+/*HOOK_STATIC(Manager, Update, (void)->void, _stdcall) { (rep+, causing huge game stutters)
 	Manager* mngr = g_Manager;
 	bool should_cancel_qstart=true;
 	if (!quickStartChecked) {
@@ -47,3 +47,4 @@ HOOK_STATIC(Manager,Update,(void)->void,_stdcall){
 	};
 	super();
 };
+*/

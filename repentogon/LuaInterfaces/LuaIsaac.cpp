@@ -384,13 +384,14 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 }
 
 bool apipause = false;
-HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
+/*HOOK_STATIC(Manager, Update, () -> void, __stdcall) { (rep+, causing huge game stutters)
 	if (apipause) {
 		g_Manager->_state = 2;
 	}
 	super();
 	
 }
+*/
 LUA_FUNCTION(Lua_IsaacPause) {
 	apipause = true;
 	return 0;
