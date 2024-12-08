@@ -1,0 +1,8 @@
+struct FontSettings
+{
+	int _align : 0x0;
+	int _maxchar : 0x4;
+	int _wrapmode : 0x8; //1 wrap 2 truncate?
+	float _HeightModif : 0xc; //related to wrap
+	int _MissingCharOverride : 0x10; //related to wrap
+} : 0x14;
