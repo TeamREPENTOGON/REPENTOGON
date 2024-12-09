@@ -96,8 +96,7 @@ public:
 class LIBZHL_API FunctionDefinition : public Definition
 {
 private:
-	char _shortName[128];
-	char _name[256];
+	char* _name = nullptr;
 
 	const HookSystem::ArgData *_argdata;
 	int _nArgs;
@@ -105,13 +104,14 @@ private:
 	void *_address;
 
 	unsigned int _flags;
+	bool _canHook;
 
 private:
 	void SetName(const char *name, const char *type);
 
 public:
-	FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc);
-	FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc);
+	FunctionDefinition(const char* name, const type_info& type, const char* sig, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc, bool canHook);
+	FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc, bool canHook);
 
 	virtual int Load();
 	const char* GetName() const override;
@@ -125,6 +125,10 @@ public:
 	const HookSystem::ArgData *GetArgData() const {return _argdata;}
 	int GetArgCount() const {return _nArgs;}
 	void *GetAddress() const {return _address;}
+	inline bool CanHook() { return _canHook; }
+	inline void SetCanHook(bool canHook) { _canHook = canHook; }
+
+	static void UpdateHooksStateFromJSON(const char* json);
 };
 
 //=================================================================================================
@@ -150,8 +154,7 @@ public:
 class FunctionHook_private
 {
 protected:
-	char _shortName[128];
-	char _name[256];
+	char* _name = nullptr;
 
 	void *_hook;
 	void **_outInternalSuper;

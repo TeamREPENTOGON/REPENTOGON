@@ -1,10 +1,15 @@
 #include "HookSystem_private.h"
 #include "mologie_detours.h"
+#include "Log.h"
 #include "SigScan.h"
 #include <unordered_map>
 #include <map>
 #include <string>
 #include <sstream>
+
+#include "document.h"
+#include "filereadstream.h"
+#include "rapidjson.h"
 
 #include "Zydis/Encoder.h"
 
@@ -37,26 +42,6 @@ static void Log(const char *format, ...)
 	vfprintf(hookLog, format, va);
 	fflush(hookLog);
 	va_end(va);
-}
-
-template <size_t Size> static const char *ConvertToUniqueName(char (&dst)[Size], const char *name, const char *type)
-{
-	char tmp[128];
-	strcpy_s(tmp, type);
-	
-	const char *p = tmp;
-	if(p[0] == '.')
-	{
-		++p;
-		if(p[0] == 'P' && p[1] == '8')
-		{
-			p += 2;
-			while(p[0] && (p[0] != '@' || p[1] != '@')) ++p;
-		}
-	}
-
-	sprintf_s(dst, "%s%s", name, p);
-	return dst;
 }
 
 // ArgData
@@ -99,8 +84,8 @@ const std::vector<std::tuple<bool, const char*>>& Definition::GetMissing() {
 
 void FunctionDefinition::SetName(const char *name, const char *type)
 {
-	ConvertToUniqueName(_name, name, type);
-	strcpy_s(_shortName, name);
+	_name = (char*)malloc(strlen(name) + 1);
+	strcpy(_name, name);
 }
 
 Definition::Definition(const char* sig) : _sig(sig) { }
@@ -209,25 +194,31 @@ bool VariableDefinition::IsFunction() const {
 //================================================================================
 // FunctionDefinition
 
-FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc) :
+FunctionDefinition::FunctionDefinition(const char *name, const type_info &type,
+	const char *sig, const HookSystem::ArgData *argdata, int nArgs,
+	unsigned int flags, void **outfunc, bool canHook) :
 	Definition(sig),
 	_argdata(argdata),
 	_nArgs(nArgs),
 	_flags(flags),
-	_outFunc(outfunc)
+	_outFunc(outfunc),
+	_canHook(canHook)
 {
 	SetName(name, type.raw_name());
 	Log("Adding function %s\n", _name);
 	Add(_name, this);
 }
 
-FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc) :
+FunctionDefinition::FunctionDefinition(const char* name, const type_info& type,
+	void* addr, const HookSystem::ArgData* argdata, int nArgs,
+	unsigned int flags, void** outfunc, bool canHook) :
 	Definition(""),
 	_address(addr),
 	_argdata(argdata),
 	_nArgs(nArgs),
 	_flags(flags),
-	_outFunc(outfunc)
+	_outFunc(outfunc),
+	_canHook(canHook)
 {
 	SetName(name, type.raw_name());
 	Add(_name, this);
@@ -270,6 +261,65 @@ bool FunctionDefinition::IsFunction() const {
 	return true;
 }
 
+void FunctionDefinition::UpdateHooksStateFromJSON(const char* json) {
+	FILE* file = fopen(json, "rb");
+	if (!file) {
+		ZHL::Log("[WARN] Unable to open hooks json file %s\n", json);
+		return;
+	}
+
+	char buffer[4096];
+	rapidjson::FileReadStream stream(file, buffer, sizeof(buffer));
+	rapidjson::Document document;
+	document.ParseStream(stream);
+
+	if (!document.IsArray()) {
+		ZHL::Log("[ERROR] Malformed hooks json file: top value is not an array\n");
+		fclose(file);
+		return;
+	}
+
+	auto const& jsonHooks = document.GetArray();
+	for (int i = 0; i < jsonHooks.Size(); ++i) {
+		auto const& hook = jsonHooks[i];
+		if (!hook.HasMember("function")) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no function field\n", i);
+			continue;
+		}
+
+		if (!hook.HasMember("hook")) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no hook field\n", i);
+			continue;
+		}
+
+		const char* name = hook["function"].GetString();
+		const char* canHookStr = hook["hook"].GetString();
+
+		Definition* definition = FunctionDefinition::Find(name);
+		if (!definition) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no definition for function %s\n", i, name);
+			continue;
+		}
+
+		if (!definition->IsFunction()) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: definition %s is not a function\n", i, name);
+			continue;
+		}
+
+		FunctionDefinition* asFunction = dynamic_cast<FunctionDefinition*>(definition);
+		bool canHook = false;
+		if (!strcmp(canHookStr, "yes") || !strcmp(canHookStr, "1")) {
+			asFunction->SetCanHook(true);
+		} else if (!strcmp(canHookStr, "no") || !strcmp(canHookStr, "0")) {
+			asFunction->SetCanHook(false);
+		} else {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: invalid hook value %s", i, canHookStr);
+		}
+	}
+
+	fclose(file);
+}
+
 //================================================================================
 // FunctionHook
 
@@ -289,8 +339,8 @@ const char *FunctionHook_private::GetLastError() {return g_hookLastError;}
 
 void FunctionHook_private::SetName(const char *name, const char *type)
 {
-	ConvertToUniqueName(_name, name, type);
-	strcpy_s(_shortName, name);
+	_name = (char*)malloc(strlen(name) + 1);
+	strcpy(_name, name);
 }
 
 int FunctionHook_private::Init()
@@ -449,6 +499,9 @@ int FunctionHook_private::Install()
 		sprintf_s(g_hookLastError, "Failed to install hook for %s: function not found", _name);
 		return 0;
 	}
+
+	if (!def->CanHook())
+		return 1;
 
 	const HookSystem::ArgData* args = def->GetArgData();
 	int argc = def->GetArgCount();

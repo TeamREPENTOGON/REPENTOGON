@@ -55,6 +55,7 @@ extern "C" {
 			return 1;
 		}
 
+		FunctionDefinition::UpdateHooksStateFromJSON("hooks.json");
 		ASMPatch::_Init();
 		ASMPatch::SavedRegisters::_Init();
 

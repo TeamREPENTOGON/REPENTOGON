@@ -13,10 +13,12 @@ CodeEmitter::CodeEmitter(bool test) {
     if (test) {
         _decls.open("IsaacRepentance.h");
         _impl.open("IsaacRepentance.cpp");
+        _json.open("hooks.json");
     }
     else {
         _decls.open("../include/IsaacRepentance.h");
         _impl.open("../libzhl/IsaacRepentance.cpp");
+        _json.open("../include/hooks.json");
     }
 
 }
@@ -68,11 +70,13 @@ void CodeEmitter::Emit() {
     CheckDependencies();
     CheckVTables();
 
-    EmitDecl();
     EmitGlobalPrologue();
     EmitImplPrologue();
+    EmitJsonPrologue();
 
     EmitForwardDecl();
+
+    EmitDecl();
 
     for (GenericCode const& code : _global._generic) {
         Emit(code);
@@ -97,9 +101,13 @@ void CodeEmitter::Emit() {
     for (auto const& [name, _] : _externals) {
         EmitNamespace(name);
     }
+
+    EmitExternals();
+    EmitJsonEpilogue();
 }
 
 void CodeEmitter::EmitForwardDecl() {
+    EmitDecl();
     for (auto const& [_, type] : _types) {
         if (type.IsStruct() && !type._pending) {
             Emit("struct ");
@@ -108,6 +116,44 @@ void CodeEmitter::EmitForwardDecl() {
             EmitNL();
         }
     }
+}
+
+void CodeEmitter::EmitExternals() {
+    EmitDecl();
+    Emit("struct IsHookable {\n"
+        "\tvoid* addr;\n"
+        "\tbool canHook;\n"
+        "};\n"
+        "\n"
+        "namespace ZHL {\n"
+        "\tvoid InitializeSymbols();\n"
+        "}\n"
+        "extern std::map<void*, std::string> symbols;\n"
+        "extern std::map<std::string, IsHookable> symbolsHookableState;\n");
+}
+
+void CodeEmitter::EmitJsonPrologue() {
+    EmitJson();
+    Emit("[\n");
+}
+
+void CodeEmitter::EmitJsonEpilogue() {
+    EmitJson();
+    Emit("\t{ \"function\": \"\", \"hook\": \"no\" }\n");
+    Emit("]");
+}
+
+void CodeEmitter::EmitJson(Function const& fn) {
+    EmitJson();
+    Emit("\t{ \"function\": \"");
+    EmitFunctionPrototype(fn, true);
+    Emit("\", \"hook\": ");
+    if (fn.CanHook()) {
+        Emit("\"yes\"");
+    } else {
+        Emit("\"no\"");
+    }
+    Emit(" },\n");
 }
 
 void CodeEmitter::Emit(Type const& type) {
@@ -411,6 +457,10 @@ void CodeEmitter::EmitDecl() {
 
 void CodeEmitter::EmitImpl() {
     _emitContext = &_impl;
+}
+
+void CodeEmitter::EmitJson() {
+    _emitContext = &_json;
 }
 
 void CodeEmitter::IncrDepth() {
@@ -860,11 +910,7 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
         if (!emittingPureVirtual) {
             EmitTab();
             Emit("static FunctionDefinition fn(\"");
-            if (_currentStructure) {
-                Emit(_currentStructure->_name);
-                Emit("::");
-            }
-            Emit(fn._name);
+            EmitFunctionPrototype(fn, true);
             Emit("\", ");
             EmitTypeID(fn);
             Emit(", \"");
@@ -874,9 +920,17 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
 
             Emit(", ");
             Emit(std::to_string(flags));
-            Emit(", &func);");
+            Emit(", &func, ");
+            if (fn.CanHook()) {
+                Emit("true");
+            } else {
+                Emit("false");
+            }
+            Emit("); ");
             EmitNL();
 
+            EmitJson(fn);
+            EmitImpl();
         }
 
         // End namespace
@@ -1160,23 +1214,24 @@ void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
 }
 
 void CodeEmitter::EmitGlobalPrologue() {
-    Emit("#pragma once");
+    EmitDecl();
+    Emit("#pragma once\n");
     EmitNL();
-    EmitNL();
-    Emit("#include \"libzhl.h\"");
-    EmitNL();
+    Emit("#include \"libzhl.h\"\n"
+        "#include <map>\n"
+        "#include <vector>\n");
     EmitNL();
 }
 
 void CodeEmitter::EmitImplPrologue() {
     EmitImpl();
-    Emit("#include \"HookSystem_private.h\"");
+    Emit("#include \"HookSystem_private.h\"\n");
+    Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
-    Emit("#include \"IsaacRepentance.h\"");
-    EmitNL();
-    EmitNL();
-
-    EmitDecl();
+    Emit("namespace ZHL {\n"
+        "\tstd::map<void*, std::string> symbols;\n"
+        "\tstd::map<std::string, IsHookable> symbolsHookableState;\n"
+        "}");
 }
 
 void CodeEmitter::BuildExternalNamespaces() {
@@ -1248,7 +1303,13 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     Emit(std::to_string(fn._fn._params.size() + (hasImplicitOutput ? 1 : 0)));
     Emit(", ");
     Emit(std::to_string(GetFlags(fn._fn)));
-    Emit(", &func);");
+    Emit(", &func, ");
+    if (fn._fn.CanHook()) {
+        Emit("true");
+    } else {
+        Emit("false");
+    }
+    Emit("); ");
     EmitNL();
     DecrDepth();
     Emit("}");
@@ -1475,13 +1536,23 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
     Emit("typeid(");
+    EmitFunctionPrototype(fn, false);
+    Emit(")");
+}
+
+void CodeEmitter::EmitFunctionPrototype(Function const& fn, bool includeName) {
     Emit(*fn._ret);
     Emit(" (");
     if (_currentStructure && fn._kind == METHOD) {
         Emit(_currentStructure->_name);
         Emit("::");
     }
-    Emit("*)(");
+    if (includeName) {
+        Emit(fn._name);
+    } else {
+        Emit("*");
+    }
+    Emit(")(");
     for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
         Emit(*param._type);
@@ -1489,7 +1560,7 @@ void CodeEmitter::EmitTypeID(Function const& fn) {
             Emit(", ");
         }
     }
-    Emit("))");
+    Emit(")");
 }
 
 uint32_t CodeEmitter::GetFlags(Function const& fn) const {

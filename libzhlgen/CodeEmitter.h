@@ -41,6 +41,9 @@ private:
 	void CheckDependencies(Type const& t);
 
 	void EmitForwardDecl();
+	void EmitExternals();
+	void EmitJsonPrologue();
+	void EmitJsonEpilogue();
 
 	void Emit(Type const& type);
 	void Emit(Struct const& s);
@@ -55,6 +58,7 @@ private:
 	void Emit(ExternalFunction const& fn);
 	void Emit(std::vector<Variable> const& vars);
 	void EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize, bool comma);
+	void EmitJson(Function const& fun);
 
 	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
@@ -68,6 +72,7 @@ private:
 
 	std::tuple<bool, uint32_t, uint32_t> EmitArgData(Function const& fn);
 	void EmitTypeID(Function const& fn);
+	void EmitFunctionPrototype(Function const& fn, bool includeName);
 	uint32_t GetFlags(Function const& fn) const;
 
 	void EmitGlobalPrologue();
@@ -78,6 +83,7 @@ private:
 
 	void EmitDecl();
 	void EmitImpl();
+	void EmitJson();
 
 	void IncrDepth();
 	void DecrDepth();
@@ -92,7 +98,7 @@ private:
 	std::map<std::string, Type> _types;
 	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
-	std::ofstream _decls, _impl;
+	std::ofstream _decls, _impl, _json;
 	std::ofstream* _emitContext = nullptr;
 	Variable const* _variableContext = nullptr;
 	Struct const* _currentStructure = nullptr;
@@ -104,6 +110,9 @@ private:
 	// Allows for a white / grey / black coloration of the dependencies graph
 	std::set<std::string> _emittedStructures;
 	std::set<std::string> _processingStructures;
+
+	// Track the structures whose methods have been emitted in InitializeSymbols
+	std::set<std::string> _initializedStructures;
 
 	std::set<std::string> _vtableProcessingStructures;
 	ErrorLogger _logger;
