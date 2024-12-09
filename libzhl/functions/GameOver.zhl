@@ -3,9 +3,9 @@ __thiscall void GameOver::Show();
 
 struct GameOver depends (ANM2, EntityConfig_Entity) {
     ANM2 anm2 : 0x8;
-    ANM2 exitSprite : 0x11C;
-    ANM2 restartSprite : 0x230;
-    ANM2 maybeControllerDisconnectPopup : 0x20384;
+    //ANM2 exitSprite : 0x11C;
+    //ANM2 restartSprite : 0x230;
+    //ANM2 maybeControllerDisconnectPopup : 0x20384;
     // Points to the EntityConfig_Entity of a modded entity when the player was killed by one.
-    EntityConfig_Entity* modEntityConfig : 0x20498;
-} : 0x2049C;  // Full size unconfirmed.
+    EntityConfig_Entity* modEntityConfig : 0x12c;
+} : 0x130;  // Full size confirmed. (rep+)

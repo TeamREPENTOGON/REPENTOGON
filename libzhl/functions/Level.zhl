@@ -63,4 +63,4 @@ struct Level {
 	uint32_t _stageType : 0x4;
 	uint32_t _levelStateFlag : 0x1822c;
 	uint32_t _greedwavesclearedwithoutredheartdamage : 0x18204;
-} : 0x18230;
+} : 0x1890c;

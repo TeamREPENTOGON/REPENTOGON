@@ -9,8 +9,8 @@ static int ValidateDrawStringBase(lua_State* L, void (Font::* fn)(DrawStringEntr
 	entry._x = (float)luaL_checknumber(L, 3);
 	entry._y = (float)luaL_checknumber(L, 4);
 	entry._color = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	entry._boxWidth = (int)luaL_optinteger(L, 6, -1);
-	entry._center = lua::luaL_optboolean(L, 7, false);
+	//entry._boxWidth = (int)luaL_optinteger(L, 6, -1);
+	//entry._center = lua::luaL_optboolean(L, 7, false);
 
 	(font->*fn)(entry);
 	return 0;

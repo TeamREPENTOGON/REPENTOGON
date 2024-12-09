@@ -6,5 +6,5 @@ struct DrawStringEntry depends (KColor,FontSettings)
     float _scaleX : 0xc; // 0xC
     float _scaleY : 0x10; // 0x10
     KColor _color : 0x14; // 0x1C
-	FontSettings fontset : 0x24; // 0x2
+	FontSettings* fontset : 0x24; // 0x2
 } : 0x30; 

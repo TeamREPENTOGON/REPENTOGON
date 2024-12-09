@@ -219,7 +219,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline GenericPrompt* GetGenericPrompt() { return (GenericPrompt*)((char*)this + 0x1c33fc); } // NO LONGER A PART OF GAME
 
-	inline GameOver* GetGameOver() { return (GameOver*)((char*)this + 0x1d154); } // NO LONGER A PART OF GAME
+	inline GameOver* GetGameOver() { return &this->_gameOver; }
 	
 	
 	// Wack
@@ -262,6 +262,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	Seeds _seedEffects : 0x1bb84;
 	//Console _console : 0x682bc;
 	ItemOverlay _itemOverlay : 0x1c034;
+	GameOver _gameOver : 0x1d4c8;
 	Leaderboard _leaderboard : 0x1d5f8;
 	Minimap _minimap : 0x254f8;
 	int _frameCount : 0x25b24;

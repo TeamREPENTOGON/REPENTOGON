@@ -565,8 +565,8 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			sourcename->_color._green = 1;
 			sourcename->_color._red = 1;
 			sourcename->_color._alpha = 0.8f;
-			sourcename->_center = true;
-			sourcename->_boxWidth = 900;
+			//sourcename->_center = true;
+			//sourcename->_boxWidth = 900;
 			sourcename->_x = pos.x;
 			sourcename->_y = pos.y;
 			g_Manager->_font7_TeamMeat_10.DrawString(*sourcename);
