@@ -372,8 +372,6 @@ HOOK_METHOD(_type, HandleCollision, (Entity* collider, bool low) -> bool) { \
 	return HandleCollisionCallbacks(inputs, _precallback, _postcallback, _COLLISION_SUPER_LAMBDA()); \
 }
 
-// REP+ Disabled temporarily
-/*
 HOOK_COLLISION_CALLBACKS(Entity_Player, lua::Metatables::ENTITY_PLAYER, true, 33, 1231)
 HOOK_COLLISION_CALLBACKS(Entity_Tear, lua::Metatables::ENTITY_TEAR, true, 42, 1233)
 HOOK_COLLISION_CALLBACKS(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR, true, 26, 1235)
@@ -383,7 +381,6 @@ HOOK_COLLISION_CALLBACKS(Entity_Knife, lua::Metatables::ENTITY_KNIFE, true, 53, 
 HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, true, 46, 1245)
 HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, true, 30, 1247)
 HOOK_COLLISION_CALLBACKS(Entity_Slot, lua::metatables::EntitySlotMT, false, 1240, 1241)
-*/
 
 // Nullify the vanilla pre-collision callbacks.
 HOOK_METHOD(LuaEngine, PrePlayerCollide, (Entity_Player* player, Entity* collider, bool low) -> int) { return 0; }
