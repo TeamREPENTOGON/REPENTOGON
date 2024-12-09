@@ -7,13 +7,6 @@ __thiscall void Game::StartDebug(int levelStage,int stageType,int difficulty,std
 "558bec6aff68????????64a1????????5081eca0000000a1????????33c58945??535657508d45??64a3????????8b1d":
 __thiscall void Game::StartFromRerunState(GameState* state);
 
-/*
-FuncSignature Signature_GameIsPaused = {
-	"\x83\xB9\x00\x00\x00\x00\x00\x8B\x15",
-	//mask
-	"xx?????xx",
-*/
-
 "558bec6aff68????????64a1????????5081ecac000000a1????????33c58945??535657508d45??64a3????????8bf9":
 __thiscall void Game::RestoreState(GameState* state,bool startGame);
 
@@ -118,7 +111,7 @@ __thiscall bool Game::IsGreedMode();
 __thiscall void Game::End(int EndingID);
 
 "558bec8b55??83ec14": //lua binder version
-__thiscall void Game::FadeOut(float Speed, int FadeoutTarget);
+__thiscall void Game::FadeOut(float Speed, int FadeoutTarget, KColor* color);
 
 "558bec83e4f851a1????????566aff":
 __thiscall void Game::MoveToRandomRoom(bool iAmErrorRoom, int Seed, Entity_Player* player);
@@ -205,9 +198,9 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return &this->_proceduralItemManager; }
     
-	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x3DA4C); } // NO LONGER A PART OF GAME
+	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x1da64); } // NO LONGER A PART OF GAME
 
-	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); } // NO LONGER A PART OF GAME
+	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x1da64 + playerId * 0x6e0); } // NO LONGER A PART OF GAME
 	
 	inline Minimap* GetMinimap() { return &this->_minimap; }
 	

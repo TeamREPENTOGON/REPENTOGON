@@ -29,23 +29,23 @@ __thiscall void HUD::ShowFortuneText(int * * param_1);
 
 
 struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
-	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
+	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1760); }
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
-    ANM2 _chargeBarSprite : 0xc36e8;
-    ANM2 _heartsSprite : 0xc37fc;
-    ANM2 _pickupHUDSprite : 0xc3910;
-    ANM2 _cardsPillsSprite : 0xc3a44;
-    ANM2 _streakSprite : 0xc3b58;
-    ANM2 _fortuneSprite : 0xc3c6c;
-	ANM2 _oldHUDStatsSprite : 0xc3d80;
-	float _bossHPBarFill : 0xc3ea4;
-	bool _isVisible : 0xc3eb6;
-	int _hudRefreshType : 0xc3eb8;
-	int _hudRefreshCountdown : 0xc3ec0;
-	ANM2 _coopMenuSprite : 0xc3ec4;
-	ANM2 _inventorySprite : 0xc3fd8;
-	ANM2 _craftingTableSprite : 0x0c40ec;
-	ANM2 _poopSpellsSprite : 0xc4200;
-	StatHUD _statHUD : 0xc4314;
-} : 0xc45f0;
+    ANM2 _chargeBarSprite : 0x3798;
+    ANM2 _heartsSprite : 0x38ac;
+    ANM2 _pickupHUDSprite : 0x39c0;
+    ANM2 _cardsPillsSprite : 0x3be8;
+    ANM2 _streakSprite : 0x5278;
+    ANM2 _fortuneSprite : 0x5394;
+	//ANM2 _oldHUDStatsSprite : 0xc3d80;
+	float _bossHPBarFill : 0x54b0;
+	bool _isVisible : 0x54e4;
+	int _hudRefreshType : 0x54e8;
+	int _hudRefreshCountdown : 0x54f0;
+	ANM2 _coopMenuSprite : 0x54f4;
+	ANM2 _inventorySprite : 0x5608;
+	ANM2 _craftingTableSprite : 0x571c;
+	ANM2 _poopSpellsSprite : 0x5830;
+	StatHUD _statHUD : 0x59b4;
+} : 0x5c90;

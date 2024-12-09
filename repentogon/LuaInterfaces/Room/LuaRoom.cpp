@@ -490,12 +490,13 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	}
 }
 
-HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int) {
+/*HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int) {
 	if (roomASM.ItemPool != POOL_NULL) {
 		return g_Game->_itemPool.GetCollectible(roomASM.ItemPool, seed, noDecrease, COLLECTIBLE_NULL);
 	}
 	return super(seed, noDecrease);
 }
+*/
 
 LUA_FUNCTION(Lua_RoomGetWallColor) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);

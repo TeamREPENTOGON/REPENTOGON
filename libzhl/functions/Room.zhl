@@ -85,7 +85,7 @@ __thiscall void Room::MakeDoor(int slot);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
-"558bec6aff68????????64a1????????5081ecf8000000":
+"558bec6aff68????????64a1????????5081ec0801000056":
 __thiscall void Room::SaveState();
 
 "568b35????????578bf9833e0d":
@@ -102,8 +102,10 @@ __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 "558bec83e4f883ec0c538bc1":
 __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
 
-"558bec83e4f85153568bf18b0d":
+//changed in rep+
+/*"558bec83e4f85153568bf18b0d":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
+*/
 
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
