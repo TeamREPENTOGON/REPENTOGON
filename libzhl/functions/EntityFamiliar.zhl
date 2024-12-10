@@ -67,7 +67,7 @@ __thiscall void Entity_Familiar::delirium_morph();
 
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 {{
-	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
+	inline Entity_Player** GetPlayer() { return &this->_player; }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}

@@ -105,7 +105,7 @@ void PerformASMPatches() {
 	//ASMPatchPrePlayerGiveBirth(); //commented for rep+ temp
 	//ASMPatchesBedCallbacks(); //commented for rep+ temp
 	
-	//ASMPatchPrePlayerPocketItemSwap();
+	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
 	//delirium::AddTransformationCallback(); //commented for rep+ temp
@@ -164,7 +164,7 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
-	ASMPatchesForAddRemovePocketItemCallbacks();
+	//ASMPatchesForAddRemovePocketItemCallbacks(); //commented for rep+ temp
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
 	//ASMPatchesForCustomItemPools();
