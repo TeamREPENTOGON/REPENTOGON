@@ -96,7 +96,8 @@ public:
 class LIBZHL_API FunctionDefinition : public Definition
 {
 private:
-	char* _name = nullptr;
+	char _shortName[128];
+	char _name[256];
 
 	const HookSystem::ArgData *_argdata;
 	int _nArgs;
@@ -154,7 +155,8 @@ public:
 class FunctionHook_private
 {
 protected:
-	char* _name = nullptr;
+	char _shortName[128];
+	char _name[256];
 
 	void *_hook;
 	void **_outInternalSuper;

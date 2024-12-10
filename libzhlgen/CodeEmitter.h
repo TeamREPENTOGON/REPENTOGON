@@ -41,7 +41,6 @@ private:
 	void CheckDependencies(Type const& t);
 
 	void EmitForwardDecl();
-	void EmitExternals();
 	void EmitJsonPrologue();
 	void EmitJsonEpilogue();
 

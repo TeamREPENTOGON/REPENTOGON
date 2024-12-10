@@ -102,7 +102,6 @@ void CodeEmitter::Emit() {
         EmitNamespace(name);
     }
 
-    EmitExternals();
     EmitJsonEpilogue();
 }
 
@@ -116,20 +115,6 @@ void CodeEmitter::EmitForwardDecl() {
             EmitNL();
         }
     }
-}
-
-void CodeEmitter::EmitExternals() {
-    EmitDecl();
-    Emit("struct IsHookable {\n"
-        "\tvoid* addr;\n"
-        "\tbool canHook;\n"
-        "};\n"
-        "\n"
-        "namespace ZHL {\n"
-        "\tvoid InitializeSymbols();\n"
-        "}\n"
-        "extern std::map<void*, std::string> symbols;\n"
-        "extern std::map<std::string, IsHookable> symbolsHookableState;\n");
 }
 
 void CodeEmitter::EmitJsonPrologue() {
@@ -146,7 +131,11 @@ void CodeEmitter::EmitJsonEpilogue() {
 void CodeEmitter::EmitJson(Function const& fn) {
     EmitJson();
     Emit("\t{ \"function\": \"");
-    EmitFunctionPrototype(fn, true);
+    if (_currentStructure) {
+        Emit(_currentStructure->_name);
+        Emit("::");
+    }
+    Emit(fn._name);
     Emit("\", \"hook\": ");
     if (fn.CanHook()) {
         Emit("\"yes\"");
@@ -910,7 +899,11 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
         if (!emittingPureVirtual) {
             EmitTab();
             Emit("static FunctionDefinition fn(\"");
-            EmitFunctionPrototype(fn, true);
+            if (_currentStructure) {
+                Emit(_currentStructure->_name);
+                Emit("::");
+            }
+            Emit(fn._name);
             Emit("\", ");
             EmitTypeID(fn);
             Emit(", \"");
@@ -1228,10 +1221,6 @@ void CodeEmitter::EmitImplPrologue() {
     Emit("#include \"HookSystem_private.h\"\n");
     Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
-    Emit("namespace ZHL {\n"
-        "\tstd::map<void*, std::string> symbols;\n"
-        "\tstd::map<std::string, IsHookable> symbolsHookableState;\n"
-        "}");
 }
 
 void CodeEmitter::BuildExternalNamespaces() {

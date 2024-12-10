@@ -44,6 +44,26 @@ static void Log(const char *format, ...)
 	va_end(va);
 }
 
+template <size_t Size> static const char *ConvertToUniqueName(char (&dst)[Size], const char *name, const char *type)
+{
+	char tmp[128];
+	strcpy_s(tmp, type);
+	
+	const char *p = tmp;
+	if(p[0] == '.')
+	{
+		++p;
+		if(p[0] == 'P' && p[1] == '8')
+		{
+			p += 2;
+			while(p[0] && (p[0] != '@' || p[1] != '@')) ++p;
+		}
+	}
+
+	sprintf_s(dst, "%s%s", name, p);
+	return dst;
+}
+
 // ArgData
 
 bool HookSystem::ArgData::IsRegister() const {
@@ -84,8 +104,8 @@ const std::vector<std::tuple<bool, const char*>>& Definition::GetMissing() {
 
 void FunctionDefinition::SetName(const char *name, const char *type)
 {
-	_name = (char*)malloc(strlen(name) + 1);
-	strcpy(_name, name);
+	ConvertToUniqueName(_name, name, type);
+	strcpy_s(_shortName, name);
 }
 
 Definition::Definition(const char* sig) : _sig(sig) { }
@@ -339,8 +359,8 @@ const char *FunctionHook_private::GetLastError() {return g_hookLastError;}
 
 void FunctionHook_private::SetName(const char *name, const char *type)
 {
-	_name = (char*)malloc(strlen(name) + 1);
-	strcpy(_name, name);
+	ConvertToUniqueName(_name, name, type);
+	strcpy_s(_shortName, name);
 }
 
 int FunctionHook_private::Init()
