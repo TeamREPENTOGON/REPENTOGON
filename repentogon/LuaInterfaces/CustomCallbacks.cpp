@@ -2029,11 +2029,11 @@ HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD
 	return result;
 }
 
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int hudSlot, float size, float alpha, bool unused) -> void) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, hudSlot, size, alpha, unused);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();
@@ -2459,8 +2459,9 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
-	const bool isSchoolbagSlot = (slot == 1);
+// TODO(connor): REP+ refactors may have made some of the offset corrections here obselete, also hudSlot might be relevant, investigate more later
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int hudSlot, float size, float alpha, bool unused) -> void) {
+	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
 	// The game does this inside RenderActiveItem.
@@ -2483,7 +2484,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 	}
 	chargeBarPos.y += 17 * actualSize;
 
-	if (this->_activeItem[slot].bookImage != nullptr) {
+	if (this->_activeItem[activeSlot].bookImage != nullptr) {
 		// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
 		// Update the offsets we're sending through the callbacks to match where the corresponding sprites were actually rendered.
 		itemPos.y -= 4;
@@ -2499,7 +2500,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2511,7 +2512,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		}
 	}
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, hudSlot, size, alpha, unused);
 
 	const int postcallbackid = 1079;
 	if (CallbackState.test(postcallbackid - 1000)) {
@@ -2522,7 +2523,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2532,7 +2533,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 }
 
 //PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
-HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &pos, float unk2) -> void) {
+HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int hudSlot, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
 	const int callbackid1 = 1118;
@@ -2544,10 +2545,10 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -2559,7 +2560,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			}
 		}
 	}
-	super(unk1, sprite, pos, unk2);
+	super(unk, sprite, hudSlot, scale, pos);
 
 	const int callbackid2 = 1091;
 	if (CallbackState.test(callbackid2 - 1000)) {
@@ -2568,10 +2569,10 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
@@ -4036,8 +4037,8 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 }
 
 //MC_PRE_PICKUP_GET_LOOT_LIST (1334)
-HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
-	LootList list = super(shouldAdvance);
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
+	LootList list = super(shouldAdvance, player);
 
 	const int callbackid = 1334;
 	if (CallbackState.test(callbackid - 1000)) {

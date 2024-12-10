@@ -2,10 +2,10 @@
 __thiscall void PlayerHUD::Update();
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec80020000":
-__thiscall void PlayerHUD::RenderActiveItem(unsigned int slot, const Vector& pos, float alpha, float unk, float size<xmm3>);
+__thiscall void PlayerHUD::RenderActiveItem(unsigned int activeSlot, const Vector& pos, int hudSlot, float size, float alpha, bool unused);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec00020000a1????????33c58945??5657508d45??64a3????????8bf9897d":
-__thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
+__thiscall void PlayerHUD::RenderHearts(Vector* unk, ANM2* sprite, int hudSlot, float scale, Vector pos);
 
 "558bec83ec388b45":
 __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entity_Player* player); 

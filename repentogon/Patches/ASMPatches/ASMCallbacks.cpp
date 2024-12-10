@@ -970,7 +970,7 @@ void ASMPatchPickupUpdatePickupGhosts() {
         .RestoreRegisters(savedRegisters)
         .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
         //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-        .AddRelativeJump((char*)addr + 0xCA);
+        .AddRelativeJump((char*)addr + 0xCC);
     sASMPatcher.PatchAt(addr, &patch);
 }
 

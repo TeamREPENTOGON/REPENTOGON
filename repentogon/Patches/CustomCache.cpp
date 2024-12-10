@@ -392,13 +392,13 @@ void PatchHudRenderCoins() {
 	patch.Pop(ASMPatch::Registers::EAX)  // Pop inputs to overridden FirstCollectibleOwner
 		.Pop(ASMPatch::Registers::EAX)
 		.Pop(ASMPatch::Registers::EAX)
-		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 0x5))  // Restore a thing
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 3))  // Restore a thing
 		.PreserveRegisters(savedRegisters)
 		.AddInternalCall(GetHudCoinsStringFormat)
 		.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
 		.MoveImmediate(ASMPatch::Registers::EAX, 0)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x1A);
+		.AddRelativeJump((char*)addr + 0x17);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchAddCoins() {
@@ -543,8 +543,8 @@ void ASMPatchesForCustomCache() {
 	PatchAddKeys();
 	PatchAddBombs();
 	// REP+
-	//PatchHudRenderCoins();
-	//PatchHudRenderKeys();
-	//PatchHudRenderBombs();
+	PatchHudRenderCoins();
+	PatchHudRenderKeys();
+	PatchHudRenderBombs();
 	PatchRemoveCurseMistEffect();
 }
