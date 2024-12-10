@@ -19,7 +19,7 @@ __thiscall void Entity_Player::update_bone_hearts();
 
 //AddCollectible - 
 "558bec6aff68????????64a1????????5081ece4030000":
-__thiscall void Entity_Player::AddCollectible(int type, int charge, bool firsttime,int slot,int vardata);
+__thiscall void Entity_Player::AddCollectible(int type, int charge, bool firsttime,int slot,int vardata, int unk);
 
 //AddBrokenHearts
 "558bec83e4f8568bf15783be????????2875??8b86????????85c074??8bf083be????????2874??8bbe":
@@ -644,7 +644,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
     
     {{ 
     inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
-    inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
+    inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1f14); }
 	inline std_map_int_int* GetItemWispsList() { return &this->_itemWispsList; }
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
@@ -654,44 +654,44 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
-	ANM2 _heldSprite : 0xf48;
-	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
-	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
-	std_string _headAnim : 0x1270;
-	int _blinkTime : 0x1288;
-	int _headDirectionTime : 0x128c;
-	int _maxHearts : 0x1290, _redHearts : 0x1294,  _eternalHearts : 0x1298, _soulHearts : 0x129C, _blackHearts : 0x12A0;
-	int _numKeys : 0x12ac;
-	bool _hasGoldenKey : 0x12b0;
-	bool _hasGoldenBomb : 0x12b1;
-	int _numBombs : 0x12b4;
-	int _numCoins : 0x12b8;
-	int _gnawedLeafTimer : 0x12c4;
-	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
-	int _metronomeCollectibleID : 0x12d8;
-	int _damageCooldown : 0x1308;
-	int _playerType: 0x130c;
-	float _damage : 0x13b8;
-	float _movespeed : 0x14ac;
-	float _luck : 0x14b0;
-	float _shotspeed : 0x13ac;
-	float _tearheight : 0x13bc;
-	float _tearfallspeed : 0x13c0;
-	float _tearfallaccel : 0x13c4;
-	float _tearrange : 0x13c8;
+	ANM2 _heldSprite : 0xff0;
+	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1218;
+	PlayerCostumeMap _playerCostumeMap[15] : 0x1224;
+	std_string _headAnim : 0x1318;
+	int _blinkTime : 0x1330;
+	int _headDirectionTime : 0x1334;
+	int _maxHearts : 0x1338, _redHearts : 0x133c,  _eternalHearts : 0x1340, _soulHearts : 0x1344, _blackHearts : 0x1348;
+	int _numKeys : 0x1354;
+	bool _hasGoldenKey : 0x1358;
+	bool _hasGoldenBomb : 0x1359;
+	int _numBombs : 0x135c;
+	int _numCoins : 0x1360;
+	int _gnawedLeafTimer : 0x136c;
+	short _bloodLustCounter : 0x1374;	//not sure whether its actually short but we are on x86 so who cares lul
+	int _metronomeCollectibleID : 0x1380;
+	int _damageCooldown : 0x13b0;
+	int _playerType: 0x13b4;
+	float _damage : 0x1460;
+	float _movespeed : 0x1554;
+	float _luck : 0x1558;
+	float _shotspeed : 0x1454;
+	float _tearheight : 0x1464;
+	float _tearfallspeed : 0x1468;
+	float _tearfallaccel : 0x146c;
+	float _tearrange : 0x1470;
 	float _maxfiredelay : 0x13a8;
-	ColorMod _laserColor : 0x140c;
-	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
+	ColorMod _laserColor : 0x14b4;
+	int _speedModifier : 0x1510, _fireDelayModifier : 0x1514, _damageModifier : 0x1518, _tearRangeModifier : 0x151c, _shotSpeedModifier : 0x1520, _luckModifier : 0x1524;
 	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
-	uint32_t _cacheFlags : 0x14b8;
-	int8_t _tearDisplacement : 0x14bc;
-	ActiveItemDesc _activeDesc[4] : 0x14c4;
+	uint32_t _cacheFlags : 0x1560;
+	int8_t _tearDisplacement : 0x1564;
+	ActiveItemDesc _activeDesc[4] : 0x156c;
 	int _bombPlaceDelay : 0x1544;
 	int _forgottenSwapFormCooldown : 0x1548;
 	int _controllerIndex : 0x154c;
 	int _playerIndex : 0x1550;
-	int _moveDirection : 0x1558;
-	int _headDirection: 0x155c;
+	int _moveDirection : 0x1610;
+	int _headDirection: 0x1614;
 	uint32_t _trinketsID[2] : 0x15e8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	uint32_t _actionHoldDrop : 0x16e8;
@@ -707,7 +707,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;
 	int _maggySwingCooldown : 0x1df8;
-	char _bagOfCraftingContent[8]: 0x1e44;
+	char _bagOfCraftingContent[8]: 0x1f14;
 	char _poopSpellQueue[6] : 0x1e54;
 	int _eveSumptoriumCharge : 0x1e78;
 	std_map_int_int _itemWispsList : 0x1e7c;
@@ -715,12 +715,12 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	ConsumableData _consumablesBackup : 0x1f20;
 	bool _isCoopGhost : 0x1f88;
 	bool _canShoot : 0x1745;
-	bool _canFly : 0x14b4;
+	bool _canFly : 0x155c;
 	std_vector_int _unkcolentry: 0x15f0;
 	uint32_t _urnSouls: 0x1cf0;
-	TemporaryEffects _temporaryeffects : 0x1450;
+	TemporaryEffects _temporaryeffects : 0x14f8;
 	Entity_Player* _twinPlayer : 0x1d80;
-} : 0x2580;
+} : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":
 reference void* EntityPlayerRTTI;

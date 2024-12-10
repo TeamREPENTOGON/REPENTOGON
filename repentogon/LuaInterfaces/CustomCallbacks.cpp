@@ -47,7 +47,7 @@ void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, i
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
+HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata, int unk) -> void) {
 	const int callbackid = 1004; 
 	if (CallbackState.test(callbackid - 1000)) {
 
@@ -76,7 +76,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 					result[i - 1] = (int)lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
 					lua_pop(L, 1);
 				}
-				super(result[0], result[1], result[2], result[3], result[4]);
+				super(result[0], result[1], result[2], result[3], result[4], unk);
 				ProcessPostAddCollectible(result[0], result[1], result[2], result[3], result[4], this);
 				return;
 			}
@@ -88,14 +88,14 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			}
 			else if (lua_isinteger(L, -1))
 			{
-				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, unk);
 				ProcessPostAddCollectible((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, this);
 				return;
 			}
 		}
 	}
 
-	super(type, charge, firsttime, slot, vardata);
+	super(type, charge, firsttime, slot, vardata, unk);
 	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 }
 

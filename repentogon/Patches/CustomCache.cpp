@@ -289,8 +289,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
 
 // Collectibles (both real and via wisps) trigger cache evaluations immediately when added or removed.
 
-HOOK_METHOD_PRIORITY(Entity_Player, AddCollectible, -1, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
-	super(type, charge, firsttime, slot, vardata);
+HOOK_METHOD_PRIORITY(Entity_Player, AddCollectible, -1, (int type, int charge, bool firsttime, int slot, int vardata, int unk) -> void) {
+	super(type, charge, firsttime, slot, vardata, unk);
 	TriggerCollectibleCustomCache(this, type, true);
 }
 

@@ -198,7 +198,7 @@ LUA_FUNCTION(Lua_AddCollectible) {
 	const bool firstTimePickingUp = (bool)lua::luaL_optboolean(L, 4, true);  // aka "addConsumables"
 	const int activeSlot = LuaCheckActiveSlot(L, 5, false);
 	const int varData = (int)luaL_optinteger(L, 6, 0);
-	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData);
+	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData, 0);
 	return 0;
 }
 
