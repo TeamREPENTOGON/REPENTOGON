@@ -61,6 +61,8 @@ namespace HookSystem {
 		bool IsGPRegister() const;
 		bool IsXMMRegister() const;
 	};
+
+	static constexpr size_t FUNCTION_INTERNAL_NAME_MAX_LEN = 16;
 }
 
 class LIBZHL_API Definition
@@ -78,7 +80,8 @@ public:
 	Definition(const char* sig);
 
 protected:
-	static void Add(const char *name, Definition *def);
+	static void Add(const char *name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		Definition *def);
 	const char* _sig;
 
 public:
@@ -111,8 +114,14 @@ private:
 	void SetName(const char *name, const char *type);
 
 public:
-	FunctionDefinition(const char* name, const type_info& type, const char* sig, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc, bool canHook);
-	FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc, bool canHook);
+	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		const type_info& type, const char* sig, const HookSystem::ArgData* argdata, 
+		int nArgs, unsigned int flags, void** outfunc, bool canHook);
+	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		const type_info& type, void* addr, const HookSystem::ArgData* argdata,
+		int nArgs, unsigned int flags, void** outfunc, bool canHook);
+
+	static FunctionDefinition* FindByInternalName(const char* internalName);
 
 	virtual int Load();
 	const char* GetName() const override;
@@ -143,8 +152,8 @@ private:
 public:
 	VariableDefinition(const char *name, const char *sig, void *outvar);
 
-	virtual int Load();
-	virtual const char* GetName() const override;
+	int Load();
+	const char* GetName() const override;
 	bool IsFunction() const override;
 };
 
