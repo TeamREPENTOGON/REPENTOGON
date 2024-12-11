@@ -12,8 +12,11 @@ __thiscall void Font::DrawStringScaled(DrawStringScaledEntry entry);
 //"558BEC568BF18B4D088BD1578D7A01908A024284C075F968000200002BD768????????e8b8900000":
 //__thiscall void Font::DrawStringScaledUTF8(DrawStringScaledEntry entry);
 
-"558bec83e4f883ec2c538bd95657803b00":
+"558bec6affff75":
 __thiscall int Font::GetStringWidth(const char* str);
+
+"558bec83e4f883ec2c538bd95657803b00":
+__thiscall int Font::GetStringWidthWithLength(const char* str, int length);
 
 //"558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e838990000":
 //__thiscall int Font::GetStringWidthUTF8(const char* str);
