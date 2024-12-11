@@ -198,7 +198,9 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
 	};
 
-	ASMPatches::AllowConsoleInOnline();
+//	the patch is disabled because it does not do the actual heavylifting and results in a desync ;p
+//
+//	ASMPatches::AllowConsoleInOnline();
 
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 
