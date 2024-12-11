@@ -274,4 +274,11 @@ namespace ASMPatches {
 
 		return true;
 	}
+
+	bool AllowConsoleInOnline() {
+		ASMPatch patch;
+		patch.AddBytes("\xEB");
+
+		return sASMPatcher.FlatPatch("74??2bc133f6", "AllowConsoleInOnline", &patch);
+	};
 }
