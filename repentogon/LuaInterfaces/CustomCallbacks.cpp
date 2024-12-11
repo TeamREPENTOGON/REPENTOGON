@@ -2029,11 +2029,11 @@ HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD
 	return result;
 }
 
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int hudSlot, float size, float alpha, bool unused) -> void) {
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	super(activeSlot, pos, hudSlot, size, alpha, unused);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();
@@ -2459,8 +2459,7 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
-// TODO(connor): REP+ refactors may have made some of the offset corrections here obselete, also hudSlot might be relevant, investigate more later
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int hudSlot, float size, float alpha, bool unused) -> void) {
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
 	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
@@ -2475,11 +2474,12 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector 
 	Vector itemPos = pos;
 	Vector chargeBarPos = pos;
 
-	// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
-	if (this->_playerHudIndex < 4) {
+	// Player 1's esau gets different charge bar offsets.
+	const bool playerOneEsau = this->_playerHudIndex == 4 && playerHudLayout == 1;
+
+	if (!playerOneEsau) {
 		chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
-	}
-	else if (isSchoolbagSlot) {
+	} else if (isSchoolbagSlot) {
 		chargeBarPos.x += 38 * actualSize;
 	}
 	chargeBarPos.y += 17 * actualSize;
@@ -2512,7 +2512,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector 
 		}
 	}
 
-	super(activeSlot, pos, hudSlot, size, alpha, unused);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	const int postcallbackid = 1079;
 	if (CallbackState.test(postcallbackid - 1000)) {
@@ -2533,7 +2533,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector 
 }
 
 //PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
-HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int hudSlot, float scale, Vector pos) -> void) {
+HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
 	const int callbackid1 = 1118;
@@ -2560,7 +2560,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int hudSlot, fl
 			}
 		}
 	}
-	super(unk, sprite, hudSlot, scale, pos);
+	super(unk, sprite, playerHudLayout, scale, pos);
 
 	const int callbackid2 = 1091;
 	if (CallbackState.test(callbackid2 - 1000)) {

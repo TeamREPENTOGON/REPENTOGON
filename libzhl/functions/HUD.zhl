@@ -26,6 +26,13 @@ __thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
 
+// 0 = Normal
+// 1 = Jacob & Esau
+// 2 = Compact (Used for co-op players, and for P1 if there are >2 players)
+// 3 = J&E Compact (Used for J&E if they are not P1 or if there are >3 players)
+"558bec53568b35????????8bd1":
+__thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player);
+
 
 
 struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{

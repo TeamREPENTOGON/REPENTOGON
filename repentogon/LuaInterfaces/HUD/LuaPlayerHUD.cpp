@@ -41,12 +41,9 @@ LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
 	float alpha = (float)luaL_optnumber(L, 4, 1.0);
 	float size = (float)luaL_optnumber(L, 5, 1.0);
 
-	// TODO(connor): REP+ passing _playerHudIndex here likely isn't accurate, revisit later
-	// There's a HUD function that seems to return the value thats supposed to go there @ 558bec53568b35????????8bd1
-	// I think its a co-op friendly "slot" to render the player's hud which is distinct from playerHudIndex
-	playerHUD->RenderActiveItem(activeSlot, *pos, playerHUD->_playerHudIndex, size, alpha, false);
+	const int layout = g_Game->GetHUD()->GetPlayerHUDLayout(playerHUD->_playerHudIndex, playerHUD->GetPlayer());
+	playerHUD->RenderActiveItem(activeSlot, *pos, layout, size, alpha, false);
 	return 0;
-
 }
 
 LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
