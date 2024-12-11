@@ -59,8 +59,8 @@ __thiscall bool Entity::IsFlying();
 "558bec83e4f883ec5ca1????????33c4894424??538b5d??565753":
 __thiscall void Entity::AddBaited(const EntityRef& ref, int duration);
 
-"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
-__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
+"558bec83e4f883ec34538b5d??565753":
+__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration, int* unk);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????57ff75":
 __thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
@@ -93,7 +93,7 @@ __thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);
 __thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
-__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage);
+__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBoss);
 
 "558bec83e4f883ec10568b75??5756":
 __thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
@@ -112,10 +112,10 @@ __thiscall bool Entity::DoesEntityShareStatus();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
-	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
-	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
-	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
-	inline unsigned int* GetSubType() { return (unsigned int*)((char*)this + 0x30); }
+	inline int GetIndex() { return this->_index; }
+	inline unsigned int* GetType() { return &this->_type; }
+	inline unsigned int* GetVariant() { return &this->_variant; }
+	inline unsigned int* GetSubType() { return &this->_subtype; }
 	inline AnimationState* GetAnimationState() { return (AnimationState*)((char*)this + 0x6c); }
 	inline bool IsAnimationExist() {
 		int animSomething = *(int*)((char*)this + 0x70); //unknown type, so use int instead

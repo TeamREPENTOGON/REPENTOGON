@@ -595,21 +595,21 @@ HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soul hp
+HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount, bool unk) -> void) {	//soul hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, unk);
 	}
 
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, unk);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 2, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 
@@ -655,7 +655,7 @@ HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bone
+HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> void) {	//bone
 	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
@@ -667,7 +667,7 @@ HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bo
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
@@ -4811,11 +4811,11 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) 
 }
 
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); requires unk param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); requires ignoreBossStatusEffectCooldown param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
@@ -4823,7 +4823,7 @@ HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13);
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
 
 HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3);
-HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12);
+//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12); requires ignoreBoss param
 
 HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBosses) -> void) {
 	const int preCallbackId = 1465;

@@ -198,13 +198,13 @@ __thiscall void Entity_Player::AddMaxHearts(int amount, bool ignoreKeeper);
 __thiscall void Entity_Player::AddEternalHearts(int amount);
 
 "558bec83e4f8515356578bf10f1f400083be????????28":
-__thiscall Entity_Player* Entity_Player::AddSoulHearts(int amount);
+__thiscall void Entity_Player::AddSoulHearts(int amount, bool unk);
 
 "558bec83e4f8568bf15783be????????2875??8b86????????85c074??8bf0c645??00":
 __thiscall void Entity_Player::AddGoldenHearts(int amount);
 
-"558bec83e4f851568bf1ff86":
-__thiscall Entity_Player* Entity_Player::AddBoneHearts(int amount);
+"558bec83e4f8515356578bf10f1f40008b96":
+__thiscall void Entity_Player::AddBoneHearts(int amount);
 
 
 "558bec83e4f851a1????????53565783b8????????028bf9":
@@ -588,8 +588,8 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
 	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
 	inline int* GetGigaBombs() {return (int*)((char*)this + 0x1CF4); }
-	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
-	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x14c0); }
+	inline History* GetHistory() { return (History*)((char*)this + 0x1dd0); }
+	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x1568); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return &this->_activeDesc[index]; }
 	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
@@ -679,47 +679,47 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	float _tearfallspeed : 0x1468;
 	float _tearfallaccel : 0x146c;
 	float _tearrange : 0x1470;
-	float _maxfiredelay : 0x13a8;
+	float _maxfiredelay : 0x1450;
 	ColorMod _laserColor : 0x14b4;
 	int _speedModifier : 0x1510, _fireDelayModifier : 0x1514, _damageModifier : 0x1518, _tearRangeModifier : 0x151c, _shotSpeedModifier : 0x1520, _luckModifier : 0x1524;
-	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
+	float _edenSpeed : 0x1538, _edenFireDelay : 0x153c, _edenDamage : 0x1540, _edenTearRange : 0x1544, _edenShotSpeed : 0x1548, _edenLuck : 0x154c;
 	uint32_t _cacheFlags : 0x1560;
 	int8_t _tearDisplacement : 0x1564;
 	ActiveItemDesc _activeDesc[4] : 0x156c;
-	int _bombPlaceDelay : 0x1544;
-	int _forgottenSwapFormCooldown : 0x1548;
-	int _controllerIndex : 0x154c;
-	int _playerIndex : 0x1550;
+	int _bombPlaceDelay : 0x15fc;
+	int _forgottenSwapFormCooldown : 0x1600;
+	int _controllerIndex : 0x1604;
+	int _playerIndex : 0x1608;
 	int _moveDirection : 0x1610;
 	int _headDirection: 0x1614;
-	uint32_t _trinketsID[2] : 0x15e8;
-	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
-	uint32_t _actionHoldDrop : 0x16e8;
-	int _playerForms[15] : 0x1700;
+	uint32_t _trinketsID[2] : 0x16a8;
+	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1730;
+	uint32_t _actionHoldDrop : 0x17a8;
+	int _playerForms[15] : 0x17c4;
 	KColor _footprintColor1 : 0x1768;
 	KColor _footprintColor2 : 0x1794;
-	uint32_t _deadEyeCharges : 0x17d0;
-	uint32_t _deadEyeMisses : 0x17d4;
+	uint32_t _deadEyeCharges : 0x1894;
+	uint32_t _deadEyeMisses : 0x1898;
 	uint32_t _conceptionFamiliarFlags : 0x1858;
 	int _babySkin : 0x1a0c;
 	vector_EntitySaveState _movingBoxContents : 0x1c9c;
 	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;
-	Entity_Player* _backupPlayer : 0x1d84;
-	int _maggySwingCooldown : 0x1df8;
+	Entity_Player* _backupPlayer : 0x1e48;
+	int _maggySwingCooldown : 0x1ebc;
 	char _bagOfCraftingContent[8]: 0x1f14;
-	char _poopSpellQueue[6] : 0x1e54;
-	int _eveSumptoriumCharge : 0x1e78;
-	std_map_int_int _itemWispsList : 0x1e7c;
+	char _poopSpellQueue[6] : 0x1f24;
+	int _eveSumptoriumCharge : 0x1f48;
+	std_map_int_int _itemWispsList : 0x1f50;
 	int _keepersSackBonus : 0x1eb4;
-	ConsumableData _consumablesBackup : 0x1f20;
-	bool _isCoopGhost : 0x1f88;
-	bool _canShoot : 0x1745;
+	ConsumableData _consumablesBackup : 0x2008;
+	bool _isCoopGhost : 0x2070;
+	bool _canShoot : 0x1809;
 	bool _canFly : 0x155c;
 	std_vector_int _unkcolentry: 0x15f0;
 	uint32_t _urnSouls: 0x1cf0;
 	TemporaryEffects _temporaryeffects : 0x14f8;
-	Entity_Player* _twinPlayer : 0x1d80;
+	Entity_Player* _twinPlayer : 0x1e44;
 } : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":

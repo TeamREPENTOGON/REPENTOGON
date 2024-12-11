@@ -8,7 +8,7 @@ LUA_FUNCTION(Lua_EntityAddBleeding)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddBleeding(*ref, duration);
+	ent->AddBleeding(*ref, duration, nullptr);
 	return 0;
 }
 

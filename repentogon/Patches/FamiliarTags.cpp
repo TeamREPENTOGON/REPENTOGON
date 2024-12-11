@@ -97,7 +97,7 @@ void ASMPatchFamiliarCanBeDamagedByProjectiles() {
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x1D) // Jump for TRUE (can be hit)
-		.AddRelativeJump((char*)addr + 0x76); // Jump for FALSE (can't be hit)
+		.AddRelativeJump((char*)addr + 0x94); // Jump for FALSE (can't be hit)
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
