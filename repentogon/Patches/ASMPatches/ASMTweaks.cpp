@@ -211,8 +211,8 @@ namespace ASMPatches {
 	};
 
 	bool SkipArchiveChecksums() {
-		SigScan loopsig("8bf88d8d????????3d00020000");
-		SigScan ifchecksig("74??ffb5????????8bb5");
+		SigScan loopsig("8b40??8985????????0f1f44??00");	//0x00e19252 in ghidra for 1.9.7.7, beginning of an other "do-while" block
+		SigScan ifchecksig("74??ffb5????????ff77");
 		ASMPatch ifpatch;
 		ASMPatch patch;
 
@@ -224,7 +224,7 @@ namespace ASMPatches {
 		};
 
 		void* startptr = loopsig.GetAddress();
-		void* endptr = (void*)((char*)startptr + 0x8f);
+		void* endptr = (void*)((char*)startptr + 0x99);		//0x00e192eb in ghidra for 1.9.7.7, the label slightly above the if check patch pos
 		void* ifcheck = ifchecksig.GetAddress();
 
 		ifpatch.AddBytes("\xEB");	//swap to uncond jump

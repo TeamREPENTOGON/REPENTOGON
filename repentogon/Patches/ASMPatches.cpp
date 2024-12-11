@@ -190,10 +190,9 @@ void PerformASMPatches() {
 	//	ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
 	//}
 
-	// REP+: Patch needs investigation and possible adjustments.
-	//if (!ASMPatches::SkipArchiveChecksums()) {
-	//	ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
-	//};
+	if (!ASMPatches::SkipArchiveChecksums()) {
+		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
+	};
 
 	if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
