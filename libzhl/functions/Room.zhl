@@ -127,7 +127,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
 	inline EntityList* GetEntityList() { return (EntityList*)((char*)this + 0x1218); }
-	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1c90); } // doing this the lazy way while FXLayers isn't exposed
+	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1618); } // doing this the lazy way while FXLayers isn't exposed
 	inline float* GetWaterAmount() { return &this->_waterAmount; }
 	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
 	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }

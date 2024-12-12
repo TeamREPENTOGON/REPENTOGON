@@ -547,7 +547,6 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline int* GetBlackHearts() {return &this->_blackHearts; }
 	inline int* GetMetronomeCollectibleID() { return &this->_metronomeCollectibleID; } 
 	inline int GetPlayerType() { return this->_playerType; }
-	inline int* GetPlayerTypeMutable() { return (int*)((char*)this + 0x130c); }
 	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
 	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
@@ -649,7 +648,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
-	inline Entity_Player* GetBackupPlayer() { return *(Entity_Player**)((char*)this + 0x1d84); }
+	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
 	
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}

@@ -122,7 +122,7 @@ bool __stdcall FamiliarCanBeDamagedByLaserReimplementation(Entity_Familiar* fam)
 	}
 
 	// Re-implementation of Entity_Familiar::CanBeDamagedByLaser()
-	return var == 62 || var == 67 || var == 211 || (var == 206 && subt == 427);
+	return var == 62 || var == 67 || var == 211 || var == 100 || (var == 206 && subt == 427);
 }
 
 // Entity_Familiar::CanBeDamagedByLaser() is inlined into Entity_Laser::CanDamageEntity().
@@ -141,8 +141,8 @@ void ASMPatchFamiliarCanBeDamagedByLaser() {
 		.AddInternalCall(FamiliarCanBeDamagedByLaserReimplementation) // call function
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x24) // Jump for TRUE (can be hit)
-		.AddRelativeJump((char*)addr + 0x28); // Jump for FALSE (can't be hit)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x29) // Jump for TRUE (can be hit)
+		.AddRelativeJump((char*)addr + 0x2D); // Jump for FALSE (can't be hit)
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

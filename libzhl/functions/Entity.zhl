@@ -126,25 +126,24 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		int overlayAnimSomething = *(int*)((char*)this + 0x90); //unknown type, so use int instead
 		return overlayAnimSomething != NULL;
 	}
-	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
-	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
+	inline float* GetShadowSize() { return &this->_shadowSize; }
+	inline bool* GetVisible() { return &this->_visible; }
 	inline bool* IsDead() { return &this->_dead; }
-	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
-	inline int* GetPauseTime() { return (int*)((char*)this + 0x274); }
-	inline Vector* GetPosition() { return (Vector*)((char*)this + 0x294); }
-	inline bool* IsInvincible() { return (bool*)((char*)this + 0x308); }
-	inline int* GetFireDamageCountdown() { return (int*)((char*)this + 0x208); }
-	inline int* GetDamageCountdown() { return (int*)((char*)this + 0x20c); }
+	inline int* GetBossStatusEffectCooldown() { return &this->_bossStatusEffectCooldown; }
+	inline int* GetPauseTime() { return &this->_pauseTimer; }
+	inline Vector* GetPosition() { return &this->_pos; }
+	inline bool* IsInvincible() { return &this->_isInvicible; }
+	inline int* GetFireDamageCountdown() { return &this->_fireDamageCountdown; }
+	inline int* GetDamageCountdown() { return &this->_damageCountdown; }
 
     template<typename T>
     inline T Downcast(void* target) {
         return (T)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, target, false); 
     }
 
-    inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
-	inline RNG GetDropRNG() { return *(RNG*)((char*)this + 0x334); }
+    inline Entity_NPC* GetMinecart() { return this->_minecart; }
 	
-	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
+	inline LuaBridgeRef** GetLuaRef() { return &this->_luaBridgeRef; }
 	
     inline Entity_NPC* ToNPC() { return Downcast<Entity_NPC*>(__ptr_EntityNPCRTTI); } 
     inline Entity_Player* ToPlayer() { return Downcast<Entity_Player*>(__ptr_EntityPlayerRTTI); }
@@ -166,7 +165,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _spawnerType : 0x34;
     unsigned int _spawnerVariant: 0x38;
     ANM2 _sprite : 0x48;
-    unsigned int _shadowSize : 0x15c;
+    float _shadowSize : 0x15c;
     unsigned long long _flags : 0x168;
     bool _valid : 0x170; 
     bool _visible : 0x171;
@@ -179,44 +178,48 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     bool _collidesWithGrid : 0x190;
     unsigned short _entityExtraDataPtrLowerBytes : 0x192; // ?
     vector_ColorParams _colorParams : 0x1a4;
-    int _fireDamageCountdown : 0x208;
-    int _damageCountdown : 0x20c;
-    int _freezeCountdown : 0x210;
-    int _poisonCountdown : 0x214;
-    int _slowingCountdown : 0x218;
-    int _charmedCountdown : 0x21c;
-    int _confusionCountdown : 0x220;
-    int _midasFreezeCountdown : 0x224;
-    int _fearCountdown : 0x228;
-    int _burnCountdown : 0x22c;
-    int _bossStatusEffectCooldown : 0x230;
-    int _shrinkCountdown : 0x234;
-    int _poisonDamageTimer : 0x238;
-    int _burnDamageTimer : 0x23c;
-    int _bleedingCountdown : 0x240;
-    int _magnetizedCountdown : 0x248;
-    int _baitedCountdown : 0x24c;
-    int _knockbackCountdown : 0x250;
-    int _weaknessCountdown : 0x254;
-    int _iceCountdown : 0x258;
-    int _brimstoneMarkCountdown : 0x25c;
-    Vector _knockbackDirection : 0x260;
+    int _fireDamageCountdown : 0x210;
+    int _damageCountdown : 0x214;
+    int _freezeCountdown : 0x218;
+	int _poisonCountdown : 0x21C;
+	int _slowingCountdown : 0x220;
+	int _charmedCountdown : 0x224;
+	int _confusionCountdown : 0x228;
+	int _midasFreezeCountdown : 0x22C;
+	int _fearCountdown : 0x230;
+	int _burnCountdown : 0x234;
+    int _bossStatusEffectCooldown : 0x238;
+    int _shrinkCountdown : 0x23c;
+    int _poisonDamageTimer : 0x2e0;
+    int _burnDamageTimer : 0x2e4;
+    int _bleedingCountdown : 0x2e8;
+    int _magnetizedCountdown : 0x2f0;
+    int _baitedCountdown : 0x2f4;
+    int _knockbackCountdown : 0x2f8;
+    int _weaknessCountdown : 0x2fc;
+    int _iceCountdown : 0x300;
+    int _brimstoneMarkCountdown : 0x304;
+    Vector _knockbackDirection : 0x308;
     float _poisonDamage : 0x278;
     float _burnDamage : 0x27c;
     float _depthOffset : 0x2b0;
     float _mass : 0x2d4;
-    float _collisionDamage : 0x2e0;
+    float _collisionDamage : 0x388;
     float _speedMultiplier : 0x2F4;
-    float _shrinkStatus1 : 0x30c;
-    float _shrinkStatus2 : 0x310;
+    float _shrinkStatus1 : 0x3b4;
+    float _shrinkStatus2 : 0x3b8;
+	int _pauseTimer : 0x31c;
     float _size : 0x370;
+	bool _isInvicible : 0x3b0;
     Entity * _parent : 0x3bc;
     Entity * _child : 0x3c0;
     Entity * _target : 0x3c4;
     Entity * _spawnerEntity : 0x3c8;
+	Entity_NPC * _minecart : 0x3d4;
     RNG _dropRNG : 0x3dc;
     Vector _pos : 0x33c;
     Vector _velocity : 0x360;
+	LuaBridgeRef* _luaBridgeRef: 0x404;
 
     __vtable {
         skip; // Free
