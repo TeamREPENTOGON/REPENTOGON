@@ -1,0 +1,16 @@
+"558bec6aff68????????64a1????????5083ec0856a1????????33c5508d45??64a3????????8bf18975??e8":
+__thiscall SoundStreamSet * SoundStreamSet::game_constructor();
+
+"538bd956578b0b":
+__thiscall void SoundStreamSet::Play();
+
+struct SoundStreamSet depends (SoundStream) {
+	SoundStream _streams[7] : 0x0;
+	unsigned int _layerBitfield : 0x16c;
+	int _volumeMode : 0x170;
+	float _volume : 0x174;
+	float _targetVolume : 0x178;
+	float _fadeRate : 0x17c;
+	bool _playing : 0x180;
+	uint8_t _HIJACK_id : 0x183;
+} : 0x184;

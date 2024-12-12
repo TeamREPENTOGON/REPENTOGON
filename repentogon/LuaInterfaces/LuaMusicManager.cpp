@@ -53,15 +53,17 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 		return luaL_argerror(L, 3, "Duration must be greater than zero!");
 	music->PlayJingle(musicId, 140, false);
 
-	//duration was inlined and (at least most) calls to the func had it stripped from the args, just set it ourselves
-	music->_jingleCountdownMaybe = duration;
+	if (luaL_checkinteger(L, 3))
+		//duration was inlined and (at least most) calls to the func had it stripped from the args, just set it ourselves
+		music->_jingleCountdown = duration;
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MusicManager_StopJingle) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	music->StopJingle();
+	music->_jingleVolume = 0.f;
+	music->_jingleCountdown = 0;
 
 	return 0;
 }

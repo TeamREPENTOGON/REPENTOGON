@@ -782,6 +782,8 @@ namespace lua {
 		const char* MinimapMT = "Minimap";
 		const char* ModsMenuMT = "ModsMenu";
 		const char* MultiShotParamsMT = "MultiShotParams";
+		const char* MusicEntryMT = "MusicEntry";
+		const char* MusicLayerMT = "MusicLayer";
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* NullFrameMT = "NullFrame";
 		const char* OptionsMenuMT = "OptionsMenu";
@@ -804,7 +806,12 @@ namespace lua {
 		const char* RoomTransitionMT = "RoomTransition";
 		const char* SaveMenuMT = "SaveMenu";
 		const char* ScoreSheetMT = "ScoreSheet";
+		const char* SFXEntryMT = "SFXEntry";
+		const char* SFXEntrySampleMT = "SFXEntrySample";
 		const char* ShapeMT = "Shape";
+		const char* SoundActorMT = "SoundActor";
+		const char* SoundStreamMT = "SoundStream";
+		const char* SoundStreamSetMT = "SoundStreamSet";
 		const char* SpecialSeedsMenuMT = "SpecialSeedsMenu";
 		const char* StageTransitionMT = "StageTransition";
 		const char* StatsMenuMT = "StatsMenu";
