@@ -559,7 +559,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline float* GetEdenShotSpeed() { return &this->_edenShotSpeed; }
 	inline float* GetEdenLuck() { return &this->_edenLuck; }
 	inline bool* GetCanFly() { return &this->_canFly; }
-	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
+	inline std_vector_int GetCollectiblesList() { return this->_unkcolentry; }
 	inline vector_SmeltedTrinketDesc* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
@@ -715,7 +715,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	bool _isCoopGhost : 0x2070;
 	bool _canShoot : 0x1809;
 	bool _canFly : 0x155c;
-	std_vector_int _unkcolentry: 0x15f0;
+	std_vector_int _unkcolentry: 0x16b0;
 	uint32_t _urnSouls: 0x1cf0;
 	TemporaryEffects _temporaryeffects : 0x14f8;
 	Entity_Player* _twinPlayer : 0x1e44;

@@ -228,7 +228,7 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 void ASMPatchesForExtraLives() {
 	// ASMPatchInlinedGetExtraLives();
 	ASMPatchReviveQuestionMark();
-	ASMPatchPostTriggerPlayerDeathCheckRevivesCallback();
+	//ASMPatchPostTriggerPlayerDeathCheckRevivesCallback(); //commented for rep+ temp
 
 	// PauseScreen::ProcessInput
 	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff", 0xF, 0xA);
