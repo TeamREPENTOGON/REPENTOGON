@@ -641,14 +641,14 @@ HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
+HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount, bool retBool) -> void) {	//golden
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, retBool);
 	}
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, retBool);
 	}
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);

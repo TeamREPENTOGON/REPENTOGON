@@ -201,11 +201,10 @@ __thiscall void Entity_Player::AddEternalHearts(int amount);
 __thiscall void Entity_Player::AddSoulHearts(int amount, bool unk);
 
 "558bec83e4f8568bf15783be????????2875??8b86????????85c074??8bf0c645??00":
-__thiscall void Entity_Player::AddGoldenHearts(int amount);
+__thiscall void Entity_Player::AddGoldenHearts(int amount, bool retBool);
 
 "558bec83e4f8515356578bf10f1f40008b96":
 __thiscall void Entity_Player::AddBoneHearts(int amount);
-
 
 "558bec83e4f851a1????????53565783b8????????028bf9":
 __thiscall int Entity_Player::GetHealthLimit(bool keeper);
