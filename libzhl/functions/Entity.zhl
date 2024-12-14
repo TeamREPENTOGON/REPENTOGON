@@ -75,7 +75,7 @@ __thiscall void Entity::AddCharmed(const EntityRef& ref, int duration, bool igno
 __thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
 
 "558bec83e4f883ec34a1????????33c4894424??538b5d":
-__thiscall void Entity::AddFear(const EntityRef& ref, int duration);
+__thiscall void Entity::AddFear(const EntityRef& ref, int duration, bool ignoreBoss);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
 __thiscall void Entity::AddFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusEffectCooldown);

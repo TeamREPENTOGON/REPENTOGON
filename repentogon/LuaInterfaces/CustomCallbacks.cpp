@@ -4814,7 +4814,7 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) 
 //HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); //requires unk param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
 //HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //requires ignoreBoss param
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6); //requires ignoreBoss param
 //HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
 //HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10); //requires unk param
