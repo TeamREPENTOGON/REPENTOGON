@@ -4810,20 +4810,20 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) 
 	HandleDamageStatusApplyCallback(statusId, inputs, _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA()); \
 }
 
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0);
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); requires unk param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0); // requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); //requires unk param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
 //HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10); //requires unk param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11); //requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
 
-HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3);
-//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12); requires ignoreBoss param
+//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3); //requires ignoreBoss param
+//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12); //requires ignoreBoss param
 
 HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBosses) -> void) {
 	const int preCallbackId = 1465;
