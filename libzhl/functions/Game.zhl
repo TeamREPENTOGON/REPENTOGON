@@ -182,7 +182,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } // NO LONGER A PART OF GAME, in reality this gets the pause menu itself, but the first att is if its opened or not
 	
-	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x10203C); } // NO LONGER A PART OF GAME
+	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x236f4); }
 	
 	inline DailyChallenge GetDailyChallenge() { return this->_dailyChallenge; }
 	
