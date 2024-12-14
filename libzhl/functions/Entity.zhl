@@ -69,7 +69,7 @@ __thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
 __thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage);
 
 "558bec83e4f883ec4ca1????????33c4894424??5356578bf98b4d":
-__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
+__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration, bool ignoreBoss);
 
 "558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
 __thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
