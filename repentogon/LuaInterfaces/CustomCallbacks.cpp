@@ -566,14 +566,14 @@ void PostAddHeartsCallbacks(Entity_Player* player, int hearts, int heartcallback
 	return;
 }
 
-HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
+HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk, bool retBool) -> void) {	//red hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 	else{
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 1<<0, std::nullopt);	//do not pass unk
 		hearts = heartcount.value_or(hearts);
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {

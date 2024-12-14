@@ -189,7 +189,7 @@ __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity
 __thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible, bool unusedBool);
 
 "558bec83e4f8518a55":
-__thiscall void Entity_Player::AddHearts(int hearts, bool unk);
+__thiscall void Entity_Player::AddHearts(int hearts, bool unk, bool unk2);
 
 "558bec83e4f85153568bf1578b7d??83be????????28":
 __thiscall void Entity_Player::AddMaxHearts(int amount, bool ignoreKeeper);
