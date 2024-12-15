@@ -55,6 +55,7 @@ void ASMPatchBossIntroNoShake() {
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x26) // jump for true
+		.AddBytes("\x8B\x4D\x0C") // mov ecx, dword ptr ss : [ebp+C]
 		.AddRelativeJump((char*)addr + 0x29);
 	sASMPatcher.PatchAt(addr, &patch);
 }
