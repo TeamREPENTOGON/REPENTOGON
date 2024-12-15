@@ -41,7 +41,7 @@ struct GridEntity_Rock : public GridEntity {
 		
 		override
         "558bec83ec44a1????????33c58945??8b45":
-		bool Destroy(bool Immediate); 
+		bool Destroy(bool Immediate, EntityRef* Source); 
 		
 		skip; // GetWaterClipInfo
 		skip; // CanTakeDamageFromTearEffects

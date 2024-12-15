@@ -17,7 +17,8 @@ LUA_FUNCTION(Lua_EntityAddMagnetized)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddMagnetized(*ref, duration);
+	bool ignoreBoss = lua::luaL_optboolean(L, 4, false);
+	ent->AddMagnetized(*ref, duration, ignoreBoss);
 	return 0;
 }
 
@@ -26,7 +27,7 @@ LUA_FUNCTION(Lua_EntityAddBaited)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddBaited(*ref, duration);
+	ent->AddBaited(*ref, duration, false);
 	return 0;
 }
 

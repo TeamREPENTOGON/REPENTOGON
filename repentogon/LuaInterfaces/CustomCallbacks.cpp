@@ -2868,7 +2868,7 @@ HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolat
 }
 
 //POST_GRID_ROCK_DESTROY (1011)
-void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type) {
+void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, EntityRef* Source, int type) {
 	const int callbackid = 1011;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2881,16 +2881,17 @@ void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type)
 			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
 			.push(type)
 			.push(Immediate)
+			.push(Source, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
 }
 
 
-HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate) -> bool) {
-	bool result = super(Immediate);
+HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> bool) {
+	bool result = super(Immediate, Source);
 	GridEntity_Rock* gridRock = (GridEntity_Rock*)this;
 	int gridType = gridRock->GetDesc()->_type;
-	if (result) ProcessGridRockDestroy(gridRock,Immediate, gridType);
+	if (result) ProcessGridRockDestroy(gridRock,Immediate, Source, gridType);
 	return result;
 	
 }

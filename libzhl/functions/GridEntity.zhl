@@ -35,7 +35,7 @@ struct GridEntity depends (GridEntityDesc) {
 		skip; // Hurt
 		
 		"8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??????????????56":
-		bool Destroy(bool Immediate);
+		bool Destroy(bool Immediate, EntityRef* Source);
 		
 		skip; // GetWaterClipInfo
 		skip; // CanTakeDamageFromTearEffects
