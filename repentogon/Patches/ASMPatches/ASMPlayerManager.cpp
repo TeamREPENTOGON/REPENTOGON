@@ -10,7 +10,7 @@ void ASMPatchSpawnSelectedBaby() {
 	void* addr = scanner.GetAddress();
 
 	ASMPatch patch;
-	patch.MoveFromMemory(ASMPatch::Registers::EBP, -0x38, ASMPatch::Registers::ECX)
+	patch.MoveFromMemory(ASMPatch::Registers::EBP, -0x34, ASMPatch::Registers::ECX)
 		.Push(ASMPatch::Registers::EBX, 0x8) //death awaits
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);

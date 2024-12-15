@@ -63,7 +63,7 @@ void ASMPatchSpeed() {
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x05").AddBytes(ByteBuffer().AddAny((char*)&speedPtr, 4)) // addss xmm0, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x11\x87\xAC\x14").AddZeroes(2) // movss dword ptr [edi + 0x14ac], xmm0
+		.AddBytes("\xF3\x0F\x11\x87\x54\x15").AddZeroes(2) // movss dword ptr [edi + 0x1554], xmm0
 		.AddRelativeJump((char*)addr + 0x8); // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
