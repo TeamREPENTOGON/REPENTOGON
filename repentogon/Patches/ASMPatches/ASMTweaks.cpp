@@ -258,16 +258,18 @@ namespace ASMPatches {
 		void* addr = signature.GetAddress();
 		printf("[REPENTOGON] Patching Leaderboard::render_leaderboard at %p\n", addr);
 
+		//base leaderboard entry offset - 0x4ec
+		const int leaderboardEntryOffset = -0x4ec;
+
 		patch.PreserveRegisters(savedRegisters)
-			.Push(ASMPatch::Registers::EBP, -0xAC ) // Encode game version (from ScoreSheet)
-			//base leaderboard entry offset - 0x4E4
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x38) // Encode game version
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x20)// Time Penalty
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x4) // Schwag bonus
+			.Push(ASMPatch::Registers::EBP, -0xb4) // Encode game version (from ScoreSheet)
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x38) // Encode game version
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x20)// Time Penalty
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x4) // Schwag bonus
 			.AddInternalCall(__IsLeadeboardEntryInvalid)
 			.AddBytes("\x84\xC0") // test al, al
 			.RestoreRegisters(savedRegisters)
-			.AddBytes("\x0F\x95\x95\xC3\xFA\xFF\xFF") // setnz ebp-53d
+			.AddBytes("\x0F\x95\x95\xBF\xFA\xFF\xFF") // setnz ebp-0x541
 			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x1A) // jump for true
 			.AddRelativeJump((char*)addr + 0x9);
 		sASMPatcher.PatchAt(addr, &patch);
