@@ -123,7 +123,7 @@ void PerformASMPatches() {
 	//PatchGridCallbackShit(); //commented for rep+ temp
 
 	// Level
-	//ASMPatchBlueWombCurse(); //commented for rep+ temp
+	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
@@ -137,7 +137,7 @@ void PerformASMPatches() {
 	// Room
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
-	ASMPatchMegaSatanEnding(); //commented for rep+ temp
+	ASMPatchMegaSatanEnding();
 	//ASMPatchWaterDisabler(); //commented for rep+ temp
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
@@ -158,7 +158,7 @@ void PerformASMPatches() {
 	//PatchStatHudPlanetariumChance(); //commented for rep+ temp
 
 	//PlayerManager
-	//ASMPatchSpawnSelectedBaby(); //commented for rep+ temp
+	ASMPatchSpawnSelectedBaby();
 	ASMPatchCoopWheelRespectModdedAchievements();
 
 	// External
