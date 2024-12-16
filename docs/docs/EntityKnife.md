@@ -39,7 +39,7 @@ ___
 
 ___
 ### SetMultidimensionalTouched () {: aria-label='Functions' }
-#### void SetMultiDimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+#### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
 Sets if the knife was created through the Angelic Prism effect.
 
 ___

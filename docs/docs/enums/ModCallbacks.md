@@ -985,18 +985,28 @@ Accepts no return parameters.
 |1429 |MC_POST_GRID_ENTITY_WEB_UPDATE {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_GRID_HURT_DAMAGE {: .copyable }
-Return false if entity or player should ignore damage from it.
+Called before a GridEntity attempts to inflict damage on an entity.
+
+Return false if the entity or player should ignore the damage.
+
+???+ bug "Bug"
+	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int DamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_HURT_DAMAGE {: .copyable }
+Called after a GridEntity attempts to inflict damage on an entity. Note that this does not guarantee that the entity actually took the damage (for example, if a player is currently invincible).
+
 Accepts no return parameters.
+
+???+ bug "Bug"
+	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int DamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_POST_GRID_ROCK_DESTROY {: .copyable }
 Accepts no return parameters.

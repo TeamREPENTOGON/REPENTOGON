@@ -31,7 +31,7 @@ Now accepts a `Force` argument to forcefully reset the charge instead of only ro
 
 ___
 ### GetCollectibleNum () {: aria-label='Modified Functions' }
-#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, bool IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
@@ -177,14 +177,6 @@ A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlay
 ___
 ### ClearCollectibleAnim () {: aria-label='Functions' }
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
-
-___
-### ClearItemAnimCollectible () {: aria-label='Functions' }
-#### void ClearItemAnimCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ID ) {: .copyable aria-label='Functions' }
-
-___
-### ClearItemAnimNullItems () {: aria-label='Functions' }
-#### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### ClearQueueItem () {: aria-label='Functions' }
@@ -964,6 +956,9 @@ ___
 ### SetFootprintColor () {: aria-label='Functions' }
 #### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, boolean RightFoot = false ) {: .copyable aria-label='Functions' }
 Sets the player's footprint color.
+
+???+ bug "Bug"
+	  This function currently crashes the game - will be fixed in a future update.
 
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
