@@ -31,7 +31,7 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 	auto loadedMod = std::find_if(modman->_mods.begin(), modman->_mods.end(), [](ModEntry* mod) { return mod->_loaded; });
 
 	if (loadedMod != modman->_mods.end() || g_Manager->GetOptions()->_enableDebugConsole) {
-		if ((unk) || ((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
+		if (((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
 			return true;
 		}
 	}
