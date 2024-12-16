@@ -7,7 +7,7 @@ REPENTOGON = {
 
 collectgarbage("generational")
 
-
+REPENTANCE = true
 
 local function MeetsVersion(targetVersion)
 	if (REPENTOGON.Version == "dev build") then return true end
