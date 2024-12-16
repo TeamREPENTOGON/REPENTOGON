@@ -26,7 +26,7 @@ void ASMPatchAmbushWaveCount() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-/* This function overrides the call to GetRandomRoom in spawn_wave.
+/* This function overrides the call to GetRandomRoom in spawn_wave in order to avoid a crash when no difficulty 15 wave exists.
  * spawn_wave is thiscall. stdcall will mirror the stack cleaning
  * convention, and, as we don't need to preserve ecx under thiscall, nothing
  * more is required.
@@ -111,6 +111,7 @@ bool __stdcall MegaSatanCallbackTrampoline() {
 
 	return false;
 }
+
 void ASMPatchMegaSatanEnding() {
 	SigScan scanner("807d??0074??807d??0074??a1");
 	scanner.Scan();
@@ -131,6 +132,7 @@ void ASMPatchMegaSatanEnding() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Used for Better Void Generation to mark when a downpour/dross room shouldn't have water, since we add it manually
 void ASMPatchWaterDisabler() {
 	SigScan scanner("c685????????018b47??8148??00100000");
 	scanner.Scan();
@@ -143,6 +145,11 @@ void ASMPatchWaterDisabler() {
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+/*
+ * Quick Room Clear
+ * reduces the delay in frames between the last enemy killed and the room being cleared
+*/
 
 void __stdcall SetRoomClearDelay(Room* room) {
 	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 3 : 10;

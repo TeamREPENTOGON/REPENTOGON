@@ -8,8 +8,8 @@ struct AchievementOverlay depends (ANM2) { {{
 	uint32_t displayedachievement : 0x14; //achievement id of the current pop
 	uint32_t frame : 0x18; //update frames elapsed while the pop up is still
 	uint32_t status : 0x1c; //1: sliding-in 2:still 3:sliding-out 0:done
-        ANM2 anm2 : 0x20;
-} : 0x82d0;
+    ANM2 anm2 : 0x20;
+} : 0x836c;
 
 struct AchievementOverlay_Entry {
 	uint32_t id: 0x0;

@@ -26,6 +26,7 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMXMLItem.h"
 
 #include "ASMPatcher.hpp"
@@ -136,7 +137,7 @@ void PerformASMPatches() {
 	// Room
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
-	//ASMPatchMegaSatanEnding(); //commented for rep+ temp
+	ASMPatchMegaSatanEnding(); //commented for rep+ temp
 	//ASMPatchWaterDisabler(); //commented for rep+ temp
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
