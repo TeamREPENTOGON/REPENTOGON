@@ -189,7 +189,7 @@ void ASMPatchDeepGaperClearCheck(void* addr) {
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EAX, 0x18190) // push Room
+		.Push(ASMPatch::Registers::EAX, 0x18300) // push Room
 		.AddInternalCall(CheckDeepGaperClearDelay) // call CheckDeepGaperClearDelay()
 		.AddBytes("\x84\xc0") // TEST AL, AL
 		.RestoreRegisters(reg)
