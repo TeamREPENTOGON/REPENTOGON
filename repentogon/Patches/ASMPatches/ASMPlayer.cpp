@@ -94,10 +94,10 @@ void ASMPatchRange() {
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&rangePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x58\x87\xC8\x13").AddZeroes(2) // addss xmm0, dword ptr [edi + 0x13c8]
-		.AddBytes("\xF3\x0F\x11\x87\xC8\x13").AddZeroes(2) // movss dword ptr [edi + 0x13c8], xmm0
+		.AddBytes("\xF3\x0F\x58\x87\x44\x15").AddZeroes(2) // addss xmm0, dword ptr [edi + 0x1544]
+		.AddBytes("\xF3\x0F\x11\x87\x44\x15").AddZeroes(2) // movss dword ptr [edi + 0x1544], xmm0
 		.AddBytes("\x83\xF8\x09") // cmp eax, 0x9
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x48) // jz isaac-ng.XXXXXXXX
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x30) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -128,7 +128,7 @@ void ASMPatchLuck() {
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x15").AddBytes(ByteBuffer().AddAny((char*)&luckPtr, 4)) // addss xmm2, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x58\x97\xA4\x14").AddZeroes(2) // addss xmm2, dword ptr [edi + 0x14a4]
+		.AddBytes("\xF3\x0F\x58\x97\x4c\x15").AddZeroes(2) // addss xmm2, dword ptr [edi + 154c]
 		.AddRelativeJump((char*)addr + 0x8);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -152,7 +152,7 @@ void __stdcall SetMarsDoubleTapWindow() {
 }
 
 void ASMPatchMarsDoubleTapWindow() {
-	SigScan scanner("83bf????????0a0f8f"); // cmp dword ptr [EDI + 0x1f68],0xa
+	SigScan scanner("83bf????????0a7f"); // cmp dword ptr [EDI + 0x1e78],0xa
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* frameWindowPtr = &marsDoubleTapWindow;
@@ -162,7 +162,7 @@ void ASMPatchMarsDoubleTapWindow() {
 	patch.PreserveRegisters(savedRegisters)  // Store for later
 		.AddInternalCall(SetMarsDoubleTapWindow)
 		.AddBytes("\xA1").AddBytes(ByteBuffer().AddAny((char*)&frameWindowPtr, 4)) // mov eax, dword ptr ds:[XXXXXXXX]
-		.AddBytes("\x39\x87\x68\x1f").AddZeroes(2) // cmp dword ptr [EDI + 0x1f68],EAX
+		.AddBytes("\x39\x87\x78\x1e").AddZeroes(2) // cmp dword ptr [EDI + 0x1e],EAX
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
