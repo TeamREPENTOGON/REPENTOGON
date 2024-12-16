@@ -226,6 +226,6 @@ void ASMPatchTrySpawnBlueWombDoor() {
 	void* addr = (char*)scanner.GetAddress() + 7;
 	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
 	ASMPatch patch;
-	patch.AddBytes("\x24");
+	patch.AddBytes("\x28"); // 025b24 - > 025b28
 	sASMPatcher.FlatPatch(addr, &patch);
 }
