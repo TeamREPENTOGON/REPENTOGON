@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "Room.h"
+#include "Log.h"
 
 #include "../../Patches/CustomItemPools.h"
 
@@ -483,10 +484,12 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	roomASM.WaterDisabled = false;
 	roomASM.ItemPool = POOL_NULL;
 	super(param_1, desc);
-	//printf("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
+	ZHL::Logger logger;
+	logger.Log("WaterDisabled is %s, stage is %d, desc stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage, this->_descriptor->Data->StageId);
 	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
+		__debugbreak();
 		this->_waterAmount = 1.0f;
-		//printf("setting water\n");
+		logger.Log("setting water\n");
 	}
 }
 

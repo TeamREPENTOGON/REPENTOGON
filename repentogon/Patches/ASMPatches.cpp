@@ -155,7 +155,7 @@ void PerformASMPatches() {
 
 	// Render
 	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
-	//PatchStatHudPlanetariumChance(); //commented for rep+ temp
+	PatchStatHudPlanetariumChance();
 
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
