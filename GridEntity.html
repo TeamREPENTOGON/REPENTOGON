@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -3750,15 +3750,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hurtsurroundings" class="md-nav__link">
-    <span class="md-ellipsis">
-      HurtSurroundings ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#isbreakablerock" class="md-nav__link">
     <span class="md-ellipsis">
       IsBreakableRock ()
@@ -7373,15 +7364,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hurtsurroundings" class="md-nav__link">
-    <span class="md-ellipsis">
-      HurtSurroundings ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#isbreakablerock" class="md-nav__link">
     <span class="md-ellipsis">
       IsBreakableRock ()
@@ -7525,10 +7507,11 @@
 <h4 aria-label="Functions" class="copyable" id="vector-getrenderposition"><a href="Vector.html">Vector</a> GetRenderPosition ( )<a class="headerlink" href="#vector-getrenderposition" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="hurtdamage">HurtDamage ()<a class="headerlink" href="#hurtdamage" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-hurtdamage-entity-entity-int-damage-int-damageflags-float-unknown-boolean-unknown">void HurtDamage ( <a href="Entity.html">Entity</a> Entity, int Damage, int DamageFlags, float Unknown, boolean Unknown )<a class="headerlink" href="#void-hurtdamage-entity-entity-int-damage-int-damageflags-float-unknown-boolean-unknown" title="Permanent link">⚓︎</a></h4>
-<hr />
-<h3 aria-label="Functions" id="hurtsurroundings">HurtSurroundings ()<a class="headerlink" href="#hurtsurroundings" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-hurtsurroundings-int-damage-int-damageflags-float-unknown-boolean-unknown">void HurtSurroundings ( int Damage, int DamageFlags, float Unknown, boolean Unknown )<a class="headerlink" href="#void-hurtsurroundings-int-damage-int-damageflags-float-unknown-boolean-unknown" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-hurtdamage-entity-entity-int-playerdamage-int-damageflags-float-damage-boolean-ignoregridcollision">void HurtDamage ( <a href="Entity.html">Entity</a> Entity, int PlayerDamage, int DamageFlags, float Damage, boolean ignoreGridCollision )<a class="headerlink" href="#void-hurtdamage-entity-entity-int-playerdamage-int-damageflags-float-damage-boolean-ignoregridcollision" title="Permanent link">⚓︎</a></h4>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>The value passed to the float Damage parameter (the intended damage amount to non-player entities) is currently ignored - will be fixed in a future update.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="isbreakablerock">IsBreakableRock ()<a class="headerlink" href="#isbreakablerock" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-isbreakablerock">void IsBreakableRock ( )<a class="headerlink" href="#void-isbreakablerock" title="Permanent link">⚓︎</a></h4>
@@ -7687,7 +7670,7 @@
     <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       

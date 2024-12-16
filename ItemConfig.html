@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -4367,15 +4367,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#isvalidtrinket" class="md-nav__link">
-    <span class="md-ellipsis">
-      IsValidTrinket ()
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -7225,15 +7216,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#isvalidtrinket" class="md-nav__link">
-    <span class="md-ellipsis">
-      IsValidTrinket ()
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -7273,6 +7255,10 @@
 <h3 aria-label="Functions" id="canrerollcollectible">CanRerollCollectible ()<a class="headerlink" href="#canrerollcollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-canrerollcollectible-int-id">boolean CanRerollCollectible ( int ID )<a class="headerlink" href="#boolean-canrerollcollectible-int-id" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>true</code> if the collectible can be rerolled.</p>
+<details class="- bug">
+<summary>Bug</summary>
+<p>Despite not being a static function, this function must be called with a <code>.</code>, like <code>Isaac.GetItemConfig().CanRerollCollectible(1)</code>.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="gettaggeditems">GetTaggedItems ()<a class="headerlink" href="#gettaggeditems" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="itemconfig_item-gettaggeditems-int-tags"><a href="ItemConfig_Item.html">ItemConfig_Item</a>[] GetTaggedItems ( int Tags )<a class="headerlink" href="#itemconfig_item-gettaggeditems-int-tags" title="Permanent link">⚓︎</a></h4>
@@ -7281,9 +7267,6 @@
 <summary>Bug</summary>
 <p>Calling this function with will crash the game. This will be fixed in the next update.</p>
 </details>
-<hr />
-<h3 aria-label="Functions" id="isvalidtrinket">IsValidTrinket ()<a class="headerlink" href="#isvalidtrinket" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="boolean-isvalidtrinket-trinkettype-trinkettype">boolean IsValidTrinket ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html">TrinketType</a> TrinketType )<a class="headerlink" href="#boolean-isvalidtrinket-trinkettype-trinkettype" title="Permanent link">⚓︎</a></h4>
 <hr />
 
 
@@ -7359,7 +7342,7 @@
     <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       

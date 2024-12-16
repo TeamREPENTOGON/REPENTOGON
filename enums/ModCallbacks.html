@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -18129,7 +18129,12 @@ Return an integer or <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Pic
 </tbody>
 </table>
 <h3 class="copyable" id="mc_grid_hurt_damage">MC_GRID_HURT_DAMAGE<a class="headerlink" href="#mc_grid_hurt_damage" title="Permanent link">⚓︎</a></h3>
-<p>Return false if entity or player should ignore damage from it.</p>
+<p>Called before a GridEntity attempts to inflict damage on an entity.</p>
+<p>Return false if the entity or player should ignore the damage.</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.</p>
+</details>
 <table>
 <thead>
 <tr>
@@ -18144,14 +18149,19 @@ Return an integer or <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Pic
 <tr>
 <td style="text-align: left;">1012</td>
 <td class="copyable" style="text-align: left;">MC_GRID_HURT_DAMAGE</td>
-<td style="text-align: left;">(<a href="../GridEntity.html">GridEntity</a> GridEntity, <br><a href="../Entity.html">Entity</a> Entity, <br>int DamageAmount, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlags</a> DamageFlags, <br>float Unknown  boolean Unknown)</td>
+<td style="text-align: left;">(<a href="../GridEntity.html">GridEntity</a> GridEntity, <br><a href="../Entity.html">Entity</a> Entity, <br>int PlayerDamageAmount, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlags</a> DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass)</td>
 <td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html">GridEntityType</a></td>
 <td style="text-align: left;">boolean</td>
 </tr>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_post_grid_hurt_damage">MC_POST_GRID_HURT_DAMAGE<a class="headerlink" href="#mc_post_grid_hurt_damage" title="Permanent link">⚓︎</a></h3>
+<p>Called after a GridEntity attempts to inflict damage on an entity. Note that this does not guarantee that the entity actually took the damage (for example, if a player is currently invincible).</p>
 <p>Accepts no return parameters.</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.</p>
+</details>
 <table>
 <thead>
 <tr>
@@ -18166,7 +18176,7 @@ Return an integer or <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Pic
 <tr>
 <td style="text-align: left;">1013</td>
 <td class="copyable" style="text-align: left;">MC_POST_GRID_HURT_DAMAGE</td>
-<td style="text-align: left;">(<a href="../GridEntity.html">GridEntity</a> GridEntity, <br><a href="../Entity.html">Entity</a> Entity, <br>int DamageAmount, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlags</a> DamageFlags, <br>float Unknown  boolean Unknown)</td>
+<td style="text-align: left;">(<a href="../GridEntity.html">GridEntity</a> GridEntity, <br><a href="../Entity.html">Entity</a> Entity, <br>int PlayerDamageAmount, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlags</a> DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass)</td>
 <td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html">GridEntityType</a></td>
 <td style="text-align: left;">void</td>
 </tr>
@@ -22418,7 +22428,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
     <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       
