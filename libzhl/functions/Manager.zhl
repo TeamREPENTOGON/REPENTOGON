@@ -103,7 +103,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	OptionsConfig _optionsConfig : 0x2a220;
 	ItemConfig _itemConfig : 0x2a2d4;
 	EntityConfig _entityConfig : 0x2a3d8;
-	ModManager _modManager : 0x2a428;
+	ModManager _modManager : 0x2a454;
 	StringTable _stringTable : 0x4a6b4;
 	unsigned int _framecount : 0x4a924;
 	bool _isConsoleEnabled : 0x4a931;
@@ -121,7 +121,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	ANM2 _cursorSprite : 0x4af04;
 	NetplayManager _netplayManager : 0x4b038;
 	
-} : 0x4cdc0;
+} : 0x4cde8;
 
 "a1(????????)8b80????????83e800":
 reference Manager *g_Manager;
