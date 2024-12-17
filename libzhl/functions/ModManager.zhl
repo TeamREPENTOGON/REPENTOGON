@@ -33,4 +33,4 @@ __thiscall void ModManager::TriggerResize();
 struct ModManager depends (ModEntry, RedirectedPath) {
 	vector_ModEntryPointer _mods : 0x0;
 	RedirectedPath* _redirectedPathsMap[32768] : 0xc;
-} : 0x2025c;
+} : 0x20260;
