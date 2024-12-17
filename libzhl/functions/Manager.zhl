@@ -104,7 +104,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	ItemConfig _itemConfig : 0x2a2d4;
 	EntityConfig _entityConfig : 0x2a3d8;
 	ModManager _modManager : 0x2a428;
-	StringTable _stringTable : 0x4a688;
+	StringTable _stringTable : 0x4a6b4;
 	unsigned int _framecount : 0x4a924;
 	bool _isConsoleEnabled : 0x4a931;
 	ANM2 _buttonsSprite : 0x4a94c;

@@ -96,7 +96,7 @@ LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 LUA_FUNCTION(Lua_GameDevolveEnemy) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	game->DevolveEnemy(ent);
+	game->DevolveEnemy(ent, nullptr);
 
 	return 0;
 }
