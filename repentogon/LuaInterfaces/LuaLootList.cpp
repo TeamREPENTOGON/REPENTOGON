@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_PickupGetLootList) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
-	LootList loot = pickup->GetLootList(shouldAdvance);
+	LootList loot = pickup->GetLootList(shouldAdvance, nullptr);
 	LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
 
 	luaL_setmetatable(L, lua::metatables::LootListMT);

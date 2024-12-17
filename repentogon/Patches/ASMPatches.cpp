@@ -26,6 +26,7 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMXMLItem.h"
 #include "ASMPatches/ASMLocalization.h"
 
@@ -67,7 +68,7 @@ void ASMPatchLogMessage() {
 *  We just skip over the check by replacing the conditional JMP with an unconditional one.
 */
 void ASMPatchConsoleRunCommand() {
-	SigScan scanner("75??8b0d????????5781c140ba0100");
+	SigScan scanner("75??8b0d????????5781c1a8ba0100");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -78,35 +79,9 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
-const char* repentogonResources = "resources-repentogon";
-
-void ASMBuildResoucesRepentogon() {
-	SigScan scanner("8d4424??50e8????????50e8");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	SigScan addFilepath("558bec6aff68????????64a1????????5083ec70a1????????33c58945??5657508d45??64a3????????8bf9");
-	addFilepath.Scan();
-
-	void* addFilepathAddr = addFilepath.GetAddress();
-
-	void* stringPtr = &repentogonResources;
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.AddBytes("\x8B\x0D").AddBytes(ByteBuffer().AddAny((char*)&stringPtr, 4))
-		.AddInternalCall(addFilepathAddr)
-		.RestoreRegisters(reg)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-		.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
-	ASMBuildResoucesRepentogon();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();
@@ -119,22 +94,24 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
-	ASMPatchPrePickupVoided();
+	//ASMPatchPrePickupVoided(); // broke in rep+ 1.9.7.7
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
 	ASMPatchPrePickupComposted();
 	ASMPatchPostChampionRegenCallback();
-	ASMPatchTrinketRender();
+	// Temporarily disabled for REP+: Related code has changed, patch will require more than just a new signature. - Connor
+	//ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
-	ASMPatchPrePlayerGiveBirth();
-	ASMPatchesBedCallbacks();
+	//ASMPatchPrePlayerGiveBirth(); //commented for rep+ temp
+	//ASMPatchesBedCallbacks(); //commented for rep+ temp
+	
 	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
-	delirium::AddTransformationCallback();
-	delirium::AddPostTransformationCallback();
+	//delirium::AddTransformationCallback(); //commented for rep+ temp
+	//delirium::AddPostTransformationCallback(); //commented for rep+ temp
 
 	// EntityNPC
 	ASMPatchHushBug();
@@ -144,7 +121,7 @@ void PerformASMPatches() {
 	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
-	PatchGridCallbackShit();
+	//PatchGridCallbackShit(); //commented for rep+ temp
 
 	// Level
 	ASMPatchBlueWombCurse();
@@ -155,14 +132,14 @@ void PerformASMPatches() {
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
-	ASMPatchModsMenu();
+	//ASMPatchModsMenu(); // REP+ Needs investigation+adjustment due to font/drawstring changes
 	ASMPatchMenuOptionsLanguageChange();
 
 	// Room
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
-	ASMPatchWaterDisabler();
+	//ASMPatchWaterDisabler(); //commented for rep+ temp
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
 
@@ -175,10 +152,10 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	PatchInlinedGetStatusEffectTarget();
+	// PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
 
 	// Render
-	LuaRender::PatchglDrawElements();
+	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
 	PatchStatHudPlanetariumChance();
 
 	//PlayerManager
@@ -189,11 +166,11 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
-	ASMPatchesForAddRemovePocketItemCallbacks();
+	//ASMPatchesForAddRemovePocketItemCallbacks(); //commented for rep+ temp
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
-	ASMPatchesForCustomItemPools();
-	ExtraASMPatchesForCustomItemPools();
+	//ASMPatchesForCustomItemPools();
+	//ExtraASMPatchesForCustomItemPools();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForXMLItem();
 	
@@ -213,9 +190,10 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
 
-	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
-		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
-	}
+	// REP+: Patch needs adjustments (specifically the post-patch)
+	//if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
+	//	ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
+	//}
 
 	if (!ASMPatches::SkipArchiveChecksums()) {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
@@ -224,6 +202,10 @@ void PerformASMPatches() {
 	if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
 	};
+
+//	the patch is disabled because it does not do the actual heavylifting and results in a desync ;p
+//
+//	ASMPatches::AllowConsoleInOnline();
 
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 

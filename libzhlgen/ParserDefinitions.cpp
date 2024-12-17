@@ -800,6 +800,10 @@ bool Function::IsDebug() const {
     return _qualifiers & DEBUG;
 }
 
+bool Function::CanHook() const {
+    return !(_qualifiers & NOHOOK);
+}
+
 std::string Function::ToString() const {
     std::ostringstream str;
     str << "Function " << _name << std::endl;

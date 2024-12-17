@@ -9,14 +9,25 @@ void CodeEmitter::TypeEmitter::operator()(T const& t) {
     _emitter->EmitType(t);
 }
 
+CodeEmitter::TypeGenerator::TypeGenerator(CodeEmitter* emitter) : _emitter(emitter) {
+
+}
+
+template<typename T>
+std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
+    return _emitter->GenerateType(t);
+}
+
 CodeEmitter::CodeEmitter(bool test) {
     if (test) {
         _decls.open("IsaacRepentance.h");
         _impl.open("IsaacRepentance.cpp");
+        _json.open("hooks.json");
     }
     else {
         _decls.open("../include/IsaacRepentance.h");
         _impl.open("../libzhl/IsaacRepentance.cpp");
+        _json.open("../include/hooks.json");
     }
 
 }
@@ -68,11 +79,13 @@ void CodeEmitter::Emit() {
     CheckDependencies();
     CheckVTables();
 
-    EmitDecl();
     EmitGlobalPrologue();
     EmitImplPrologue();
+    EmitJsonPrologue();
 
     EmitForwardDecl();
+
+    EmitDecl();
 
     for (GenericCode const& code : _global._generic) {
         Emit(code);
@@ -97,9 +110,12 @@ void CodeEmitter::Emit() {
     for (auto const& [name, _] : _externals) {
         EmitNamespace(name);
     }
+
+    EmitJsonEpilogue();
 }
 
 void CodeEmitter::EmitForwardDecl() {
+    EmitDecl();
     for (auto const& [_, type] : _types) {
         if (type.IsStruct() && !type._pending) {
             Emit("struct ");
@@ -110,24 +126,56 @@ void CodeEmitter::EmitForwardDecl() {
     }
 }
 
-void CodeEmitter::Emit(Type const& type) {
+void CodeEmitter::EmitJsonPrologue() {
+    EmitJson();
+    Emit("[\n");
+}
+
+void CodeEmitter::EmitJsonEpilogue() {
+    EmitJson();
+    Emit("\t{ \"function\": \"\", \"hook\": \"no\" }\n");
+    Emit("]");
+}
+
+void CodeEmitter::EmitJson(Function const& fn, std::string const& internalName,
+    std::string const& fullName) {
+    EmitJson();
+    Emit("\t{ \"function\": \"");
+    Emit(internalName);
+    Emit("\", \"fullName\": \""); 
+    Emit(fullName);
+    Emit("\", \"hook\": ");
+    if (fn.CanHook()) {
+        Emit("\"yes\"");
+    } else {
+        Emit("\"no\"");
+    }
+    Emit(" },\n");
+}
+
+std::string CodeEmitter::GenerateType(Type const& type) {
+    std::string result = "";
+
     if (type._synonym) {
-        Emit(*type._synonym);
-        return;
+        return GenerateType(*type._synonym);
     }
 
     if (type._base) {
-        Emit(*type._base);
+        result = GenerateType(*type._base);
         if (type._const) {
-            Emit(" const");
+            result += " const";
+        } else if (type.IsPointer()) {
+            result += GenerateType(type._pointerDecl.front());
         }
-        else if (type.IsPointer()) {
-            Emit(type._pointerDecl.front());
-        }
+    } else {
+        result = std::visit(TypeGenerator(this), type._value);
     }
-    else {
-        std::visit(TypeEmitter(this), type._value);
-    }
+
+    return result;
+}
+
+void CodeEmitter::Emit(Type const& type) {
+    Emit(GenerateType(type));
 }
 
 void CodeEmitter::Emit(Struct const& s) {
@@ -325,66 +373,89 @@ void CodeEmitter::Dump() {
     }
 }
 
-void CodeEmitter::EmitType(BasicType const& t) {
+std::string CodeEmitter::GenerateType(BasicType const& t) {
+    std::string result;
     if (t._sign) {
-        Emit(SignednessToString(*t._sign));
-        Emit(" ");
+        result += SignednessToString(*t._sign) + " ";
     }
 
     if (t._length) {
-        Emit(LengthToString(*t._length));
-        Emit(" ");
+        result += LengthToString(*t._length) + " ";
     }
 
-    Emit(BasicTypeToString(t._type));
+    result += BasicTypeToString(t._type);
+    return result;
+}
+
+void CodeEmitter::EmitType(BasicType const& t) {
+    Emit(GenerateType(t));
+}
+
+std::string CodeEmitter::GenerateType(Struct const& s) {
+    std::string result = s._name;
+    
+    if (s._template) {
+        result += "<";
+
+        for (size_t i = 0; i < s._templateParams.size(); ++i) {
+            result += GenerateType(*s._templateParams[i]);
+            if (i != s._templateParams.size() - 1) {
+                result += ", ";
+            }
+        }
+        result += ">";
+    }
+
+    return result;
 }
 
 void CodeEmitter::EmitType(Struct const& s) {
-    Emit(s._name);
-
-    if (s._template) {
-        Emit("<");
-        for (size_t i = 0; i < s._templateParams.size(); ++i) {
-            Emit(*s._templateParams[i]);
-            if (i != s._templateParams.size() - 1) {
-                Emit(", ");
-            }
-        }
-        Emit(">");
-    }
+    Emit(GenerateType(s));
 }
 
-void CodeEmitter::EmitType(FunctionPtr* ptr) {
+std::string CodeEmitter::GenerateType(FunctionPtr* ptr) {
+    std::string result = "";
     if (_variableContext) {
-        Emit(*ptr->_ret);
-        Emit(" (");
+        result += GenerateType(*ptr->_ret) + " (";
 
         if (ptr->_convention) {
-            Emit("");
+            result += "";   // TODO: why did I write that already ? Shouldn't I
+                            // be emitting the calling convention here ?
         }
 
         if (ptr->_scope) {
-            Emit(*ptr->_scope);
-            Emit("::");
+            result += GenerateType(*ptr->_scope) + "::";
         }
 
-        Emit("*");
-        Emit(_variableContext->_name);
-        Emit(")(");
+        result += "*" + _variableContext->_name + ")(";
 
         for (size_t i = 0; i < ptr->_parameters.size(); ++i) {
-            Emit(*(ptr->_parameters[i]));
+            result += GenerateType(*(ptr->_parameters[i]));
             if (i != ptr->_parameters.size()) {
-                Emit(", ");
+                result += ", ";
             }
         }
 
-        Emit(")");
+        result += ")";
     }
+
+    return result;
+}
+
+void CodeEmitter::EmitType(FunctionPtr* ptr) {
+    Emit(GenerateType(ptr));
+}
+
+std::string CodeEmitter::GenerateType(std::string const& t) {
+    return t;
 }
 
 void CodeEmitter::EmitType(std::string const& t) {
     Emit(t);
+}
+
+std::string CodeEmitter::GenerateType(EmptyType const&) {
+    throw std::runtime_error("[FATAL] Attempting to generate empty type");
 }
 
 void CodeEmitter::EmitType(EmptyType const&) {
@@ -411,6 +482,10 @@ void CodeEmitter::EmitDecl() {
 
 void CodeEmitter::EmitImpl() {
     _emitContext = &_impl;
+}
+
+void CodeEmitter::EmitJson() {
+    _emitContext = &_json;
 }
 
 void CodeEmitter::IncrDepth() {
@@ -789,24 +864,31 @@ void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
     }
 }
 
-void CodeEmitter::Emit(PointerDecl const& ptr) {
+std::string CodeEmitter::GenerateType(const PointerDecl& ptr) {
+    std::string result = "";
     switch (ptr._kind) {
     case LREF:
-        Emit(" &");
+        result = " &";
         break;
 
     case RREF:
-        Emit(" &&");
+        result = " &&";
         break;
 
     case POINTER:
-        Emit(" *");
+        result = " *";
         break;
     }
 
     if (ptr._const) {
-        Emit(" const");
+        result += " const";
     }
+
+    return result;
+}
+
+void CodeEmitter::Emit(PointerDecl const& ptr) {
+    Emit(GenerateType(ptr));
 }
 
 enum FunctionDefFlags {
@@ -858,6 +940,8 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
     // Function definition object
     if (!isPure) {
         if (!emittingPureVirtual) {
+            std::string internalName = "_fun" + std::to_string(_nEmittedFuns);
+
             EmitTab();
             Emit("static FunctionDefinition fn(\"");
             if (_currentStructure) {
@@ -865,6 +949,8 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
                 Emit("::");
             }
             Emit(fn._name);
+            Emit("\", \"");
+            Emit(internalName);
             Emit("\", ");
             EmitTypeID(fn);
             Emit(", \"");
@@ -874,9 +960,19 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
 
             Emit(", ");
             Emit(std::to_string(flags));
-            Emit(", &func);");
+            Emit(", &func, ");
+            if (fn.CanHook()) {
+                Emit("true");
+            } else {
+                Emit("false");
+            }
+            Emit("); ");
             EmitNL();
 
+            std::string fullName = GenerateFunctionPrototype(fn, true);
+            _fullNameToInternalName[fullName] = internalName;
+            EmitJson(fn, internalName, fullName);
+            EmitImpl();
         }
 
         // End namespace
@@ -1160,23 +1256,20 @@ void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
 }
 
 void CodeEmitter::EmitGlobalPrologue() {
-    Emit("#pragma once");
+    EmitDecl();
+    Emit("#pragma once\n");
     EmitNL();
-    EmitNL();
-    Emit("#include \"libzhl.h\"");
-    EmitNL();
+    Emit("#include \"libzhl.h\"\n"
+        "#include <map>\n"
+        "#include <vector>\n");
     EmitNL();
 }
 
 void CodeEmitter::EmitImplPrologue() {
     EmitImpl();
-    Emit("#include \"HookSystem_private.h\"");
+    Emit("#include \"HookSystem_private.h\"\n");
+    Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
-    Emit("#include \"IsaacRepentance.h\"");
-    EmitNL();
-    EmitNL();
-
-    EmitDecl();
 }
 
 void CodeEmitter::BuildExternalNamespaces() {
@@ -1242,13 +1335,19 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     Emit(fn._namespace);
     Emit("::");
     Emit(fn._fn._name);
-    Emit("\", ");
+    Emit("\", \"\", "); // Empty internal name
     EmitTypeID(fn._fn);
     Emit(", ptr, args, ");
     Emit(std::to_string(fn._fn._params.size() + (hasImplicitOutput ? 1 : 0)));
     Emit(", ");
     Emit(std::to_string(GetFlags(fn._fn)));
-    Emit(", &func);");
+    Emit(", &func, ");
+    if (fn._fn.CanHook()) {
+        Emit("true");
+    } else {
+        Emit("false");
+    }
+    Emit("); ");
     EmitNL();
     DecrDepth();
     Emit("}");
@@ -1475,21 +1574,35 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
     Emit("typeid(");
-    Emit(*fn._ret);
-    Emit(" (");
+    EmitFunctionPrototype(fn, false);
+    Emit(")");
+}
+
+std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool includeName) {
+    std::string result = GenerateType(*fn._ret) + " (";
     if (_currentStructure && fn._kind == METHOD) {
-        Emit(_currentStructure->_name);
-        Emit("::");
+        result += _currentStructure->_name + "::";
     }
-    Emit("*)(");
+    if (includeName) {
+        result += fn._name;
+    } else {
+        result += "*";
+    }
+
+    result += ")(";
     for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
-        Emit(*param._type);
+        result += GenerateType(*param._type);
         if (i != fn._params.size() - 1) {
-            Emit(", ");
+            result += ", ";
         }
     }
-    Emit("))");
+    result += ")";
+    return result;
+}
+
+void CodeEmitter::EmitFunctionPrototype(Function const& fn, bool includeName) {
+    Emit(GenerateFunctionPrototype(fn, includeName));
 }
 
 uint32_t CodeEmitter::GetFlags(Function const& fn) const {

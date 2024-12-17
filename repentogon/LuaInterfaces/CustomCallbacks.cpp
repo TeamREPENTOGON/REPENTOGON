@@ -47,7 +47,7 @@ void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, i
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
+HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata, int unk) -> void) {
 	const int callbackid = 1004; 
 	if (CallbackState.test(callbackid - 1000)) {
 
@@ -76,7 +76,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 					result[i - 1] = (int)lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
 					lua_pop(L, 1);
 				}
-				super(result[0], result[1], result[2], result[3], result[4]);
+				super(result[0], result[1], result[2], result[3], result[4], unk);
 				ProcessPostAddCollectible(result[0], result[1], result[2], result[3], result[4], this);
 				return;
 			}
@@ -88,14 +88,14 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			}
 			else if (lua_isinteger(L, -1))
 			{
-				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, unk);
 				ProcessPostAddCollectible((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, this);
 				return;
 			}
 		}
 	}
 
-	super(type, charge, firsttime, slot, vardata);
+	super(type, charge, firsttime, slot, vardata, unk);
 	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 }
 
@@ -160,8 +160,9 @@ HOOK_METHOD(HUD, Render, () -> void) {
 //(POST_)HUD_RENDER callbacks end
 
 
-//Character menu render Callback(id:1023)
-HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
+//Character menu render Callback(id:1023
+//TODO Broken in Rep+ as RenderButtonLayout was inlined.
+/*HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
 	MainMenuInputBlock::_enabled = false;
@@ -176,7 +177,7 @@ HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	if ((this->_state | (1 << 8)) == this->_state) {
 		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
 	};
-}
+}*/
 
 //Character menu render Callback end
 
@@ -565,14 +566,14 @@ void PostAddHeartsCallbacks(Entity_Player* player, int hearts, int heartcallback
 	return;
 }
 
-HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
+HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk, bool retBool) -> void) {	//red hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 	else{
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 1<<0, std::nullopt);	//do not pass unk
 		hearts = heartcount.value_or(hearts);
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {
@@ -594,21 +595,21 @@ HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soul hp
+HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount, bool unk) -> void) {	//soul hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, unk);
 	}
 
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, unk);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 2, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 
@@ -640,21 +641,21 @@ HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
+HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount, bool retBool) -> void) {	//golden
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, retBool);
 	}
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, retBool);
 	}
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bone
+HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> void) {	//bone
 	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
@@ -666,7 +667,7 @@ HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bo
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
@@ -930,7 +931,7 @@ HOOK_METHOD(Music, DisableLayer, (int id) -> void) {
 }
 
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
-HOOK_METHOD(Level, Init, () -> void) {
+HOOK_METHOD(Level, Init, (bool unk) -> void) {
 	levelASM.ForceSpecialQuest = 0;
 
 	const int callbackid = 1060;
@@ -943,7 +944,7 @@ HOOK_METHOD(Level, Init, () -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.call(1);
 	}
-	super();
+	super(unk);
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 
@@ -2028,11 +2029,11 @@ HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD
 	return result;
 }
 
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();
@@ -2458,8 +2459,8 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
-	const bool isSchoolbagSlot = (slot == 1);
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
+	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
 	// The game does this inside RenderActiveItem.
@@ -2473,16 +2474,17 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 	Vector itemPos = pos;
 	Vector chargeBarPos = pos;
 
-	// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
-	if (this->_playerHudIndex < 4) {
+	// Player 1's esau gets different charge bar offsets.
+	const bool playerOneEsau = this->_playerHudIndex == 4 && playerHudLayout == 1;
+
+	if (!playerOneEsau) {
 		chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
-	}
-	else if (isSchoolbagSlot) {
+	} else if (isSchoolbagSlot) {
 		chargeBarPos.x += 38 * actualSize;
 	}
 	chargeBarPos.y += 17 * actualSize;
 
-	if (this->_activeItem[slot].bookImage != nullptr) {
+	if (this->_activeItem[activeSlot].bookImage != nullptr) {
 		// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
 		// Update the offsets we're sending through the callbacks to match where the corresponding sprites were actually rendered.
 		itemPos.y -= 4;
@@ -2498,7 +2500,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2510,7 +2512,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		}
 	}
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	const int postcallbackid = 1079;
 	if (CallbackState.test(postcallbackid - 1000)) {
@@ -2521,7 +2523,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2531,7 +2533,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 }
 
 //PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
-HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &pos, float unk2) -> void) {
+HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
 	const int callbackid1 = 1118;
@@ -2543,10 +2545,10 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -2558,7 +2560,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			}
 		}
 	}
-	super(unk1, sprite, pos, unk2);
+	super(unk, sprite, playerHudLayout, scale, pos);
 
 	const int callbackid2 = 1091;
 	if (CallbackState.test(callbackid2 - 1000)) {
@@ -2567,10 +2569,10 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
@@ -2866,7 +2868,7 @@ HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolat
 }
 
 //POST_GRID_ROCK_DESTROY (1011)
-void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type) {
+void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, EntityRef* Source, int type) {
 	const int callbackid = 1011;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2879,16 +2881,17 @@ void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type)
 			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
 			.push(type)
 			.push(Immediate)
+			.push(Source, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
 }
 
 
-HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate) -> bool) {
-	bool result = super(Immediate);
+HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> bool) {
+	bool result = super(Immediate, Source);
 	GridEntity_Rock* gridRock = (GridEntity_Rock*)this;
 	int gridType = gridRock->GetDesc()->_type;
-	if (result) ProcessGridRockDestroy(gridRock,Immediate, gridType);
+	if (result) ProcessGridRockDestroy(gridRock,Immediate, Source, gridType);
 	return result;
 	
 }
@@ -4035,8 +4038,8 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 }
 
 //MC_PRE_PICKUP_GET_LOOT_LIST (1334)
-HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
-	LootList list = super(shouldAdvance);
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
+	LootList list = super(shouldAdvance, player);
 
 	const int callbackid = 1334;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -4153,8 +4156,8 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 	super(param_1);
 }
 
-// MC_PRE_ITEM_TEXT_DISPLAY (1484)
-HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+// MC_PRE_ITEM_TEXT_DISPLAY (1484) //prev: ShowItemTextCustom buw ShowItemTextCustom should work?
+/*HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
 	const int callbackId = 1484;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4189,6 +4192,8 @@ HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool is
 
 	super(title, subtitle, isSticky, isCurseDisplay);
 }
+*/
+
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
 HOOK_METHOD(RoomTransition, StartBossIntro, (unsigned int bossID1, unsigned int bossID2) -> void) {
@@ -4806,20 +4811,20 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) 
 	HandleDamageStatusApplyCallback(statusId, inputs, _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA()); \
 }
 
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0); // requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); //requires unk param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6); //requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13);
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10); //requires unk param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11); //requires ignoreBoss param
+//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13); //requires ignoreBoss param
 HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
 
-HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3);
-HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12);
+//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3); //requires ignoreBoss param
+//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12); //requires ignoreBoss param
 
 HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBosses) -> void) {
 	const int preCallbackId = 1465;

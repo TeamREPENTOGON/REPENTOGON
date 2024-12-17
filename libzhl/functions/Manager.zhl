@@ -1,10 +1,10 @@
-"558bec83e4f883ec1856578b3d":
-static void Manager::Update();
+"558bec83e4f081ec68040000":
+static void Manager::Update(bool unk);
 
-"558bec83ec105356578b3d????????85ff":
+"558bec83ec08568b35????????85f6":
 static __stdcall void Manager::RecordPlayerCompletion(int eCompletionEvent);
 
-"558bec81ec38040000":
+"558bec83e4f881ec34040000":
 __thiscall void Manager::LoadGameState(int saveslot);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8bf9897d??f30f7e05":
@@ -14,7 +14,7 @@ __thiscall void Manager::LoadConfigs();
 __thiscall void Manager::LoadChallenges(char *xmlpath, bool ismod);
 
 
-"68(????????)ffd683f8ff74??24113c1074??6800040000e8????????68????????68????????8bf0680004000056e8????????83c4146a0068????????56ff15????????50ff15????????56e8????????8b35???????":
+"68(????????)68????????8d8424":
 reference std_string g_SaveDataPath;
 
 "a2(????????)75??6a00":
@@ -33,20 +33,20 @@ __cdecl void Manager::RestartGame(Seeds param_1,bool param_2,bool param_3) //swi
 __stdcall void Manager::RestartGame() //v1.7.9b maybe
 */
 
-"558bec694508a4":
+"558beca1????????568bb0":
 __thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(int playerType, int challenge,  Seeds unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge, Seeds unk, int difficulty);
 
-"558bec51568b35????????8b86":
+"558bec5153568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecf0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
 __thiscall void Manager::ExecuteStartGame();
 
-"558bec6aff68????????64a1????????5083ec68a1????????33c58945??535657508d45??64a3????????c745??00000000":
-static void Manager::RestartGame();
+"558bec6aff68????????64a1????????5083ec60a1????????33c58945??535657508d45??64a3????????c745??00000000":
+static void Manager::RestartGame(Seeds seeds, bool clearSeedEffects, bool progresScaredHeart);
 
 "568bf18b46??83e801":
 __thiscall void Manager::cleanup_current_state();
@@ -54,7 +54,7 @@ __thiscall void Manager::cleanup_current_state();
 "558bec6aff68????????64a1000000005083ec3ca1????????33c58945f0535657508d45f464a3000000008b550c8bca":
 static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
 
-"558bec83e4f881ec80000000568b35????????57f68664a2040001":
+"558bec83e4f883ec6856578b3d":
 __thiscall void Manager::Render();
 
 "558bec83e4c083ec34a1":
@@ -63,63 +63,65 @@ __thiscall void Manager::ResizeWindow(int windowWidth,int windowHeight);
 "558bec83e4f8515356578b7d??85ff":
 __thiscall void Manager::ResizeWindowCallback(int windowWidth,int windowHeight);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ece8000000a1????????33c58945??8a43":
+"558bec83ec48a1????????33c58945??538a5d":
 __thiscall void Manager::SetFullscreenRendering(bool value);
 
-"558bec81ec18040000":
+"558bec81ec10040000":
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
-"558bec518b0d????????8b55":
-__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup);
+"558bec518b55??8b0d????????83fa1a":
+__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
 
-"a1????????8b80????????83f813":
-static char* Manager::GetLanguage();
-
-struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
-	inline int GetState() { return *(int*)((char*)this + 0x8); }
-	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
-	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
-	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
-	inline bool GetDebugConsoleEnabled() { return *(bool*)((char*)this + 0x29E4C); }
-	inline int GetMaxRenderScale() { return *(int*)((char*)this + 0x29E58); }
-	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
-	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
-	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
-	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
-	inline Cutscene* GetCutscene() { return (Cutscene*)((char*)this + 0x20A00); }
-	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
-	inline AchievementOverlay* GetAchievementOverlay() { return (AchievementOverlay*)((char*)this + 0x217a8); }
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
+	inline int GetState() { return this->_state; }
+	inline PersistentGameData* GetPersistentGameData() { return &this->_persistentGameData; }
+	inline NightmareScene* GetNightmareScene() { return &this->_nightmareScene; }
+	inline bool GetDebugConsoleEnabled() { return this->_isConsoleEnabled; }
+	inline int GetMaxRenderScale() { return this->_optionsConfig._maxRenderScale; }
+	inline ModManager* GetModManager() { return &this->_modManager; }
+	inline DailyChallenge* GetDailyChallenge() { return &this->_dailyChallenge; }
+	inline StringTable* GetStringTable() { return &this->_stringTable; }
+	inline bool GetNetStart() { return this->_networkPlay; }
+	inline Cutscene* GetCutscene() { return &this->_cutsceneManager; }
+	inline OptionsConfig* GetOptions() { return &this->_optionsConfig; }
+	inline AchievementOverlay* GetAchievementOverlay() { return &this->_achievementOverlay; }
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
-	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
-	
+	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x2a3cc); }
+	inline NetplayManager* GetNetplayManager() { return &this->_netplayManager; }
 }} 
 	
 	int _state : 0x8;
-    PersistentGameData _persistentGameData : 0x14;
-	GameState _gamestate : 0xf34;
-    StringTable _stringTable : 0x4a234;
-	SoundEffects _sfxManager : 0x29de0;
-	ItemConfig _itemConfig : 0x29e84;
-	EntityConfig _entityConfig : 0x29f88;
-	//ModManager _modManager : 0x29FD8;
-	ANM2 _cursorSprite : 0x1ea840;
-	ANM2 _buttonsSprite : 0x4a284;
-	Font _font7_TeamMeat_10 : 0x10a514;
-	Font _font8_TeamMeat_12 : 0x12a550;	
-	unsigned int _framecount : 0x4a264;
-	Music _musicmanager : 0x29a78;
-	bool _networkPlay : 0x1ea804;
-	bool _rerunAvailable : 0x1ea6c1;
-	bool _startingFromRerun : 0x1ea6c2;
-	bool _debugStart : 0x1ea72c;
-	bool _starting : 0x1ea6c0;
-	Seeds _startSeeds : 0x1ea6cc;
-	void* _unk_runstart : 0x4a268;
-	bool _startCutscene : 0x1ea830;
+	PersistentGameData _persistentGameData : 0x14;
+	GameState _gamestate : 0xf9c;
+	Cutscene _cutsceneManager : 0x20cd0;
+	NightmareScene _nightmareScene : 0x21540;
+	AchievementOverlay _achievementOverlay : 0x21b34;
+	Music _musicmanager : 0x29ea0;
+	SoundEffects _sfxManager : 0x2a208;
+	OptionsConfig _optionsConfig : 0x2a220;
+	ItemConfig _itemConfig : 0x2a2d4;
+	EntityConfig _entityConfig : 0x2a3d8;
+	ModManager _modManager : 0x2a428;
+	StringTable _stringTable : 0x4a6b4;
+	unsigned int _framecount : 0x4a924;
+	bool _isConsoleEnabled : 0x4a931;
+	ANM2 _buttonsSprite : 0x4a94c;
+	Font _font7_TeamMeat_10 : 0x4ac3c;
+	Font _font8_TeamMeat_12 : 0x4ac88;
+	bool _starting : 0x4ad7c;
+	bool _rerunAvailable : 0x4ad7d;
+	bool _startingFromRerun : 0x4ad7e;
+	Seeds _startSeeds : 0x4ad88;
+	bool _debugStart : 0x4ade8;
+	bool _startCutscene : 0x4aef0;
+	DailyChallenge _dailyChallenge : 0x4ae0c;
+	bool _networkPlay : 0x4aec0;
+	ANM2 _cursorSprite : 0x4af04;
+	NetplayManager _netplayManager : 0x4b038;
+	
+} : 0x4cdc0;
 
-} : 0x20a9d8;
-
-"e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
+"a1(????????)8b80????????83e800":
 reference Manager *g_Manager;

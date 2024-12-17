@@ -7,7 +7,7 @@
 
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
-	static bool __stdcall __IsLeadeboardEntryValid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
+	static bool __stdcall __IsLeadeboardEntryInvalid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -33,7 +33,7 @@ namespace ASMPatches {
 		 * Patch immediately after acquiring the list instead. Tear Detonator should
 		 * not be fired too many times either way.
 		 */
-		SigScan signature("c745fc1a0000008d8d????????33??89bd");
+		SigScan signature("c745??1b0000008d8d????????33ff");
 		if (!signature.Scan()) {
 			return false;
 		}
@@ -114,7 +114,7 @@ namespace ASMPatches {
 		 * the vector. Return NULL if not found.
 		 */
 		static void* FindPre() {
-			SigScan scanner("FF742414FF742414E8????????C6471001");
+			SigScan scanner("ff7424??53e8????????eb");
 			if (!scanner.Scan()) {
 				ZHL::Log("[ERROR] Berserk + Spirit Shackles crash ASM patch: unable to find spot for first "
 						 "patch.\n");
@@ -148,8 +148,8 @@ namespace ASMPatches {
 				.Push(ASMPatch::Registers::EDI)
 				.AddInternalCall(&SaveTemporaryEffectsVectorState); // SaveTemporaryEffectsVectorState(this, iterator);
 			patch.RestoreRegisters(registers);
-			patch.AddBytes("\xFF\x74\x24\x14\xFF\x74\x24\x14"); // Overriden instructions
-			patch.AddRelativeJump((char*)addr + 8); // Jump to next valid instruction
+			patch.AddBytes("\xFF\x74\x24\x14\x53"); // Overriden instructions
+			patch.AddRelativeJump((char*)addr + 5); // Jump to next valid instruction
 			sASMPatcher.PatchAt(addr, &patch);
 		}
 
@@ -211,8 +211,8 @@ namespace ASMPatches {
 	};
 
 	bool SkipArchiveChecksums() {
-		SigScan loopsig("8bf88d8d????????3d00020000");
-		SigScan ifchecksig("74??ffb5????????8bb5");
+		SigScan loopsig("8b40??8985????????0f1f44??00");	//0x00e19252 in ghidra for 1.9.7.7, beginning of an other "do-while" block
+		SigScan ifchecksig("74??ffb5????????ff77");
 		ASMPatch ifpatch;
 		ASMPatch patch;
 
@@ -224,7 +224,7 @@ namespace ASMPatches {
 		};
 
 		void* startptr = loopsig.GetAddress();
-		void* endptr = (void*)((char*)startptr + 0x8f);
+		void* endptr = (void*)((char*)startptr + 0x99);		//0x00e192eb in ghidra for 1.9.7.7, the label slightly above the if check patch pos
 		void* ifcheck = ifchecksig.GetAddress();
 
 		ifpatch.AddBytes("\xEB");	//swap to uncond jump
@@ -250,7 +250,7 @@ namespace ASMPatches {
 		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 		ASMPatch patch;
 
-		SigScan signature("0f9c85");
+		SigScan signature("0f9c85????????7c");
 		if (!signature.Scan()) {
 			return false;
 		}
@@ -258,20 +258,29 @@ namespace ASMPatches {
 		void* addr = signature.GetAddress();
 		printf("[REPENTOGON] Patching Leaderboard::render_leaderboard at %p\n", addr);
 
+		//base leaderboard entry offset - 0x4ec
+		const int leaderboardEntryOffset = -0x4ec;
+
 		patch.PreserveRegisters(savedRegisters)
-			.Push(ASMPatch::Registers::EBP, -0xAC ) // Encode game version (from ScoreSheet)
-			//base leaderboard entry offset - 0x4E4
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x38) // Encode game version
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x20)// Time Penalty
-			.Push(ASMPatch::Registers::EBP, -0x4E4 + 0x4) // Schwag bonus
+			.Push(ASMPatch::Registers::EBP, -0xb4) // Encode game version (from ScoreSheet)
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x38) // Encode game version
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x20)// Time Penalty
+			.Push(ASMPatch::Registers::EBP, leaderboardEntryOffset + 0x4) // Schwag bonus
 			.AddInternalCall(__IsLeadeboardEntryInvalid)
 			.AddBytes("\x84\xC0") // test al, al
 			.RestoreRegisters(savedRegisters)
-			.AddBytes("\x0F\x95\x95\xC3\xFA\xFF\xFF") // setnz ebp-53d
-			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x20) // jump for true
+			.AddBytes("\x0F\x95\x95\xBF\xFA\xFF\xFF") // setnz ebp-0x541
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x1A) // jump for true
 			.AddRelativeJump((char*)addr + 0x9);
 		sASMPatcher.PatchAt(addr, &patch);
 
 		return true;
 	}
+
+	bool AllowConsoleInOnline() {
+		ASMPatch patch;
+		patch.AddBytes("\xEB");
+
+		return sASMPatcher.FlatPatch("74??2bc133f6", "AllowConsoleInOnline", &patch);
+	};
 }

@@ -31,7 +31,7 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 	auto loadedMod = std::find_if(modman->_mods.begin(), modman->_mods.end(), [](ModEntry* mod) { return mod->_loaded; });
 
 	if (loadedMod != modman->_mods.end() || g_Manager->GetOptions()->_enableDebugConsole) {
-		if ((unk) || ((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
+		if (((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
 			return true;
 		}
 	}
@@ -68,8 +68,8 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 }
 
 // Instruct the stat HUD to recalculate planetarium chance after every new level. Avoids running planetarium chance calculation and associated callbacks every frame
-HOOK_METHOD(Level, Init, () -> void) {
-	super();
+HOOK_METHOD(Level, Init, (bool unk) -> void) {
+	super(unk);
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
 	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
 };

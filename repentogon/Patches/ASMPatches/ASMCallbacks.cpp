@@ -38,22 +38,22 @@ bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity)
 
 // This patch injects the PRE_LASER_COLLISION callback for "sample" lasers (lasers that curve, ie have multiple sample points).
 void PatchPreSampleLaserCollision() {
-	SigScan scanner("8b4d??8b41??83f809");
+	SigScan scanner("8b48??83f90975??c780????????00000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (sample laser) at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX)
-		.AddBytes("\x8B\x45\x8C")  // mov eax,dword ptr ss:[ebp-74] (Put the laser in EAX)
-		.AddBytes("\x51\x50") // Push ECX, EAX for function inputs
+		.Push(ASMPatch::Registers::EAX) // Collider Entity
+		.AddBytes("\xFF\x75\x8C")  // push dword ptr [ebp-74] (Entity_Laser)
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x4B)  // Ignore collision
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX) (Restored overridden command)
-		.AddBytes("\x8B\x41\x28")  // mov eax,dword ptr ds:[ecx+28] (Put the entity's type in EAX) (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x30)  // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x6);  // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -64,6 +64,8 @@ void PatchPreLaserCollision() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (non-sample laser) at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -71,8 +73,8 @@ void PatchPreLaserCollision() {
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x49A) // Ignore collision
-		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x494) // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x8); // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -201,6 +203,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 }
 
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.AddBytes("\x58\x58\x58\x58\x58")  // Pop EAX x5 to remove the overridden function's inputs from the stack.
@@ -290,11 +293,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 };
 
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 	if (isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.
 		patch.AddBytes("\x84\xC0") // Test Al (Al?)
@@ -309,15 +313,18 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 		.Push(ASMPatch::Registers::EBP)  // Push EBP (We'll get other inputs as offsets from this)
 		.Push(ASMPatch::Registers::EDI)  // Push Entity pointer
 		.AddInternalCall(ProcessPostDamageCallback)  // Run the MC_POST_(ENTITY_)TAKE_DMG callback
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + numOverriddenBytes);
+		.RestoreRegisters(savedRegisters);
+	if (!isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
+	}
+	patch.AddRelativeJump((char*)addr + numOverriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
 // The overridden bytes are restored by the patch.
 void PatchPostEntityTakeDamageCallbacks() {
-	SigScan entityTakeDmgScanner("f30f1147??5f5e5b8be55dc21400");
+	SigScan entityTakeDmgScanner("5f5eb0015b8be55dc21400??????????f30f1041");
 	entityTakeDmgScanner.Scan();
 	InjectPostDamageCallback(entityTakeDmgScanner.GetAddress(), false);
 
@@ -354,6 +361,8 @@ void ASMPatchPrePlayerUseBomb() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -383,9 +392,11 @@ void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bo
 }
 
 void ASMPatchPostPlayerUseBomb() {
-	SigScan scanner("8b7424??46897424??3b7424??0f8c");
+	SigScan scanner("8b7424??46897424??3b7424??0f8c????????5f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (post) at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -493,7 +504,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 }
 
 void ASMPatchTrySplit() {
-	SigScan scanner("f30f100d????????0f2f8b");
+	SigScan scanner("f30f100d????????0f2f8f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
@@ -516,10 +527,12 @@ void ASMPatchTrySplit() {
 void ASMPatchInputAction()
 {
 	const char* signatures[] = {
-		"837f??0275??833d????????0074??8d45??505351",
-		"8378??0275??833d????????00",
-		"837f??0275??833d????????0074??8d45??50536a00",
-		"837f??0275??833d????????0074??8d45??50536a01",
+		"837f??0275??833d????????0074??8d45??505351",  // Manager::GetActionValue
+		"8379??0275??833d????????00",  // Console::ProcessInput
+		"837f??0275??833d????????0074??8d45??50536a00",  // Manager::IsActionPressed
+		"837f??0275??833d????????0074??8d45??50536a01",  // Manager::IsActionTriggered
+		"8378??0275??833d????????0074??8d45??506a0e",  // Cutscene::Update (ACTION_MENUCONFIRM)
+		"8378??0275??833d????????0074??8d45??506a0f",  // Cutscene::Update (ACTION_MENUBACK)
 		NULL
 	};
 
@@ -561,7 +574,7 @@ void ASMPatchPostNightmareSceneCallback() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
+	SigScan scanner_transition("f30f108f????????0f57d20f2fca0f86");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
@@ -606,7 +619,7 @@ void ASMPatchPrePickupVoided() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("e8????????8bcf46e8????????3bf00f82????????8bbd78faffff33c9");
+	SigScan scanner("e8????????8bcf46e8????????3bf00f82????????8bbd????????33c9");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -651,7 +664,7 @@ void ASMPatchPrePickupVoidedBlackRune() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("e8????????83f8640f85????????8bcee8????????85c00f84????????8bcee8????????85c00f8f????????8d8768140000c6859bfdffff01");
+	SigScan scanner("e8????????83f8640f85????????8b8d");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -696,7 +709,7 @@ void ASMPatchPrePickupVoidedAbyss() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("50e8????????508bcfe8????????8bd08bcee8????????83c4048bcf6a04e8????????8bcfe8????????c68553faffff01");
+	SigScan scanner("50e8????????508bcee8????????8bd0");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -742,7 +755,7 @@ void ASMPatchPrePickupComposted() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("8b4028ffd0ff8570faffff8d8e981600006a0268e0010000e8????????8bc8e8????????8bcf85c075168d8538f3ffff50e8????????508bce");
+	SigScan scanner("8b40??ffd0ff85????????8d8e");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -799,6 +812,8 @@ void ASMPatchPostChampionRegenCallback() {
 		SigScan scanner(sig.c_str());
 		scanner.Scan();
 		void* addr = scanner.GetAddress();
+
+		printf("[REPENTOGON] Patching Entity_NPC::Update for dark red champion regen callback at %p\n", addr);
 
 		patch.AddBytes("\x8B\x07")  // mov eax, dword ptr ds:[edi]
 			.AddBytes("\x8B\xCF")  // mov ecx,edi
@@ -898,7 +913,7 @@ void ASMPatchTrinketRender() {
 		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
 		.AddBytes("\x84\xC0") // test al, al
 		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
-		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, push edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
+		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, pop edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
 		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
 		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
@@ -955,7 +970,7 @@ void ASMPatchPickupUpdatePickupGhosts() {
         .RestoreRegisters(savedRegisters)
         .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
         //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-        .AddRelativeJump((char*)addr + 0xCA);
+        .AddRelativeJump((char*)addr + 0xCC);
     sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1075,17 +1090,19 @@ void PreBirthPatch(void* addr, const bool isCambion) {
 }
 
 void ASMPatchPrePlayerGiveBirth() {
+	
 	SigScan cambionSig("818f????????000200000bc2");
 	cambionSig.Scan();
 	void* cambionAddr = cambionSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
 	PreBirthPatch(cambionAddr, true);  // Cambion
-
+	
 	SigScan immaculateSig("818f????????000200000bc6");
 	immaculateSig.Scan();
 	void* immaculateAddr = immaculateSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
+	
 }
 
 bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
@@ -1254,17 +1271,17 @@ void ASMPatchPrePlayerPocketItemSwap() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8dbb????????833f00");
+	SigScan scanner_transition("8d9f????????833b00");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EBX) // Player
+		.Push(ASMPatch::Registers::EDI) // Player
 		.AddInternalCall(RunPrePlayerPocketItemSwapCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xB3) // Skipping pocket item swap
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC5) // Skipping pocket item swap
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 6);
 	sASMPatcher.PatchAt(addr, &patch);

@@ -1106,6 +1106,13 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
                 fn._qualifiers |= FunctionQualifiers::DEBUG;
             }
         }
+        else if (text == "nohook") {
+            if (!fn.CanHook()) {
+                WarnRepeatedFunctionQualifier(fn._name, text);
+            } else {
+                fn._qualifiers |= FunctionQualifiers::NOHOOK;
+            }
+        }
     }
 }
 

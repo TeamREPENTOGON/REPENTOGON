@@ -92,6 +92,8 @@ LUA_FUNCTION(Lua_MenuManager_GetShadowSprite)
 	return 1;
 }
 
+// REP+: Disabled because we lost track of these sprite objects.
+/*
 LUA_FUNCTION(Lua_MenuManager_GetBackWidgetSprite)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
@@ -101,7 +103,6 @@ LUA_FUNCTION(Lua_MenuManager_GetBackWidgetSprite)
 
 	return 1;
 }
-
 LUA_FUNCTION(Lua_MenuManager_GetSelectWidgetSprite)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
@@ -111,6 +112,7 @@ LUA_FUNCTION(Lua_MenuManager_GetSelectWidgetSprite)
 
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_GetSelectedMenuID)
 {
@@ -260,8 +262,9 @@ static void RegisterMenuManager(lua_State* L)
 
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetShadowSprite", Lua_MenuManager_GetShadowSprite);
-	lua::TableAssoc(L, "GetBackWidgetSprite", Lua_MenuManager_GetBackWidgetSprite);
-	lua::TableAssoc(L, "GetSelectWidgetSprite", Lua_MenuManager_GetSelectWidgetSprite);
+	// REP+: Disabled because we lost track of these sprite objects.
+	// lua::TableAssoc(L, "GetBackWidgetSprite", Lua_MenuManager_GetBackWidgetSprite);
+	// lua::TableAssoc(L, "GetSelectWidgetSprite", Lua_MenuManager_GetSelectWidgetSprite);
 	lua::TableAssoc(L, "SetActiveMenu", Lua_SetSelectedMenuID);
 	lua::TableAssoc(L, "GetActiveMenu", Lua_GetSelectedMenuID);
 

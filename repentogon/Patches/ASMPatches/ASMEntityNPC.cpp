@@ -6,43 +6,18 @@
 
 thread_local FireProjectilesStorage projectilesStorage;
 
-/*
-* It's Over.
-* Hush's AI freaks out since Repentance due to an internal restructure of the code.
-* The values Hush uses to track HP percentage internally was reduced by 100, but HP checks weren't.
-* This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
-*/
-float hushPanicLevel = 0.005f;
-
-static bool IsHushPanicStateFixEnabled() {
-	return repentogonOptions.hushPanicStateFix && g_Game->GetDailyChallenge()._id == 0;
-}
-void __stdcall SetHushPanicLevel() {
-	// This goes out to the masochists that want to deliberately play bugged Hush (hereby dubbed VINH MODE)
-	hushPanicLevel = IsHushPanicStateFixEnabled() ? 0.005f : 0.5f;
-}
-
-void PerformHushPanicPatch(void* addr) {
-
-	void* panicPtr = &hushPanicLevel;
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.AddInternalCall(SetHushPanicLevel) // call SetHushPanicLevel()
-		.RestoreRegisters(reg)
-		.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&panicPtr, 4))  // movss xmm0, dword ptr ds:[0xXXXXXXXX]
-		.AddRelativeJump((char*)addr + 0x8); // jmp isaac-ng.XXXXXXXX
-	sASMPatcher.PatchAt(addr, &patch);
+static bool IsHushLaserSpeedFixEnabled() {
+	return repentogonOptions.hushLaserSpeedFix && g_Game->GetDailyChallenge()._id == 0;
 }
 
 bool __stdcall IsRoomSlow() {
 	Room* room = g_Game->_room;
-	return IsHushPanicStateFixEnabled() && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
+	return IsHushLaserSpeedFixEnabled() && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
 }
 
 const float hushLaserAdjust = 0.513f * 0.75; // a base value i got empirically a while back + a slight extra bit of wiggle room
 void PatchHushLaserSpeed() {
-	const char* signature = "e8????????f30f1185????????f30f1005????????f30f1185????????8b95";
+	const char* signature = "e8????????f30f1185????????f30f1005????????f30f1185????????8d85";
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
@@ -53,7 +28,7 @@ void PatchHushLaserSpeed() {
 	patch.Push(ASMPatch::Registers::ECX); // preserve player
 	patch.AddInternalCall(IsRoomSlow);
 	patch.Pop(ASMPatch::Registers::ECX); // restore player
-	patch.AddBytes("\xF3\x0F\x10\x81\xAC\x14").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+14AC]
+	patch.AddBytes("\xF3\x0F\x10\x81\x54\x15").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+1554]
 	patch.AddBytes("\x84\xC0"); // test al, al
 	patch.AddBytes("\x74\x08"); // je, eip+0x8
 	patch.AddBytes("\xF3\x0F\x59\x05").AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4)); // mulss xmm0, dword ptr [0xXXXXXXXX]
@@ -62,14 +37,6 @@ void PatchHushLaserSpeed() {
 }
 
 void ASMPatchHushBug() {
-	SigScan scanner1("f30f1005????????0f2f85????????0f86????????33c9");
-	SigScan scanner2("f30f1005????????0f2f85????????0f86????????837f??00");
-	scanner1.Scan();
-	scanner2.Scan();
-	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
-	printf("[REPENTOGON] Patching the Hush panic state bug at %p, %p\n", addrs[0], addrs[1]);
-	PerformHushPanicPatch(addrs[0]);
-	PerformHushPanicPatch(addrs[1]);
 	PatchHushLaserSpeed();
 }
 
@@ -116,7 +83,7 @@ void ASMPatchFireProjectiles() {
 }
 
 void ASMPatchFireBossProjectiles() {
-	const char* signature = "f30f104424388bf883c414";
+	const char* signature = "f30f104424??8bd8";
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
@@ -160,7 +127,7 @@ void __stdcall ProcessApplyFrozenEnemyDeathEffects(Entity_NPC* npc) {
 }
 
 void ASMPatchApplyFrozenEnemyDeathEffects() {
-	SigScan scanner("8d85????????508d8f????????e8????????8d85????????508d8f????????e8????????50");
+	SigScan scanner("8d85????????508d8f????????e8????????8d85????????508d8f????????e8????????508d8d????????e8????????84c074??8d8d");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching Frozen Enemy Death Effects at %p\n", addr);

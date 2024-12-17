@@ -198,7 +198,7 @@ LUA_FUNCTION(Lua_AddCollectible) {
 	const bool firstTimePickingUp = (bool)lua::luaL_optboolean(L, 4, true);  // aka "addConsumables"
 	const int activeSlot = LuaCheckActiveSlot(L, 5, false);
 	const int varData = (int)luaL_optinteger(L, 6, 0);
-	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData);
+	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData, 0);
 	return 0;
 }
 
@@ -855,7 +855,7 @@ LUA_FUNCTION(Lua_PlayerGetMarkedTarget) {
 
 LUA_FUNCTION(Lua_PlayerIsLocalPlayer) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushboolean(L, player->IsLocalPlayer());
+	lua_pushboolean(L, g_Manager->GetNetplayManager()->IsIdxLocalPlayer(player->_controllerIndex));
 	return 1;
 }
 
@@ -2448,7 +2448,7 @@ LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
 
 	if ((blackHeart <= player->_soulHearts) && (blackHeart > -1)) {
 		player->_blackHearts |= 1 << (blackHeart >> 1 & 0x1f);
-		player->update_golden_hearts();
+		player->update_golden_hearts(false);
 		player->update_bone_hearts();
 	}
 	return 0;

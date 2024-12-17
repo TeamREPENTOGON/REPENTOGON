@@ -3,8 +3,8 @@ __thiscall void Weapon::PlayItemAnim(unsigned int collectibleID, int itemAnim, c
 
 "558bec8b51??5685d2":
 __thiscall void Weapon::SetBlinkTime(int Delay);
-
-"558bec83e4f081ec88020000":
+ 
+"558bec83e4f081ec98020000":
 __thiscall void Weapon::TriggerTearFired(const Vector& pos, int FireAmount);
 
 "558bec83e4f851568b71??85f674??8b46??83f80174??83f80375??8b86":

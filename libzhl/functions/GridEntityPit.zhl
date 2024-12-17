@@ -3,11 +3,11 @@ struct GridEntity_Pit : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f881ec84000000538bd9":
+		"558bec83e4f881ec14010000a1????????33c4898424????????538bd9":
         void Update();
 		
 		override
-		"558bec83e4f883ec445356578d4424":
+		"558bec83e4f883ec3c5356578d4424":
         void Render(Vector& Offset);
 		
 		skip; // Hurt

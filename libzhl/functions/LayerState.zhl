@@ -32,4 +32,4 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod, BlendMode) { {{
     Vector _cropOffset : 0x8c;  // 0x8c
     KAGE_Graphics_ImageBase* _imageBasePtr : 0x94;  // 0x94
     void* _unkPtr : 0x98;
-} : 0x9C;
+} : 0xA0;

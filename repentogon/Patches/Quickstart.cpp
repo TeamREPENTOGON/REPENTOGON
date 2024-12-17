@@ -19,7 +19,7 @@ HOOK_METHOD(Menu_Save, select_save_slot, (uint32_t slot)->void) {
 	repentogonOptions.lastSaveFile = slot;
 	repentogonOptions.Save();
 };
-HOOK_STATIC(Manager,Update,(void)->void,_stdcall){
+HOOK_STATIC(Manager, Update, (bool unk)->void, _stdcall) {
 	Manager* mngr = g_Manager;
 	bool should_cancel_qstart=true;
 	if (!quickStartChecked) {
@@ -31,19 +31,19 @@ HOOK_STATIC(Manager,Update,(void)->void,_stdcall){
 		};
 		quickStartChecked = true;
 		if (should_cancel_qstart || repentogonOptions.lastSaveFile==0) {
-			return super();
+			return super(unk);
 		};
 		g_Manager->SetSaveSlot(repentogonOptions.lastSaveFile);
 		g_Manager->_networkPlay = false;
 		g_Manager->_debugStart = false;
 		g_Manager->_rerunAvailable = quickstart_IsGameStateValid();
 		if (!g_Manager->_rerunAvailable) {
-			return super();
+			return super(unk);
 		};
 		g_Manager->_startingFromRerun = false;
 		g_Manager->GetDailyChallenge()->_id = 0;
 		g_Manager->_starting = true;
 		g_Manager->_startCutscene = false;
 	};
-	super();
+	super(unk);
 };

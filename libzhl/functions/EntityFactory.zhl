@@ -3,4 +3,4 @@ __thiscall Entity* EntityFactory::Create(unsigned int type, bool force);
 
 struct EntityFactory depends(Entity, Entity_Familiar){
 	Entity_Familiar _familiar[64] : 0xf8008;
-} : 0x5f5260 ;
+} : 0x695c60 ;

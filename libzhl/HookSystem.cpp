@@ -1,15 +1,23 @@
+#include "Exception.h"
 #include "HookSystem_private.h"
 #include "mologie_detours.h"
+#include "Log.h"
 #include "SigScan.h"
 #include <unordered_map>
 #include <map>
 #include <string>
 #include <sstream>
 
+#include "document.h"
+#include "filereadstream.h"
+#include "rapidjson.h"
+
 #include "Zydis/Encoder.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+static std::map<std::string, FunctionDefinition*> s_internalNameToDefinition;
 
 void ZHL::Init()
 {
@@ -103,6 +111,8 @@ void FunctionDefinition::SetName(const char *name, const char *type)
 	strcpy_s(_shortName, name);
 }
 
+Definition::Definition(const char* sig) : _sig(sig) { }
+
 bool Definition::Init()
 {
 	bool ok = true;
@@ -119,6 +129,32 @@ bool Definition::Init()
 	return ok;
 }
 
+void Definition::OfflineInit(std::vector<SigScanEntry>& result)
+{
+	SigScan::Init();
+
+	for (Definition* definition: Defs())
+	{
+		const char* signature = definition->GetSignature();
+		if (!strcmp(signature, ""))
+			continue;
+
+		SigScan scanner(signature);
+		bool found = scanner.Scan(false, true, NULL);
+
+		SigScanEntry entry;
+		entry.name = definition->GetName();
+		entry.signature = signature;
+		entry.isFunction = definition->IsFunction();
+
+		if (found) {
+			entry.locations = scanner.GetAddresses();
+		}
+
+		result.push_back(std::move(entry));
+	}
+}
+
 Definition *Definition::Find(const char *name)
 {
 	auto it = DefsByName().find(name);
@@ -128,21 +164,35 @@ Definition *Definition::Find(const char *name)
 		return NULL;
 }
 
-void Definition::Add(const char *name, Definition *def)
+void Definition::Add(const char *name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+	Definition *def)
 {
 	Defs().push_back(def);
 	DefsByName().insert(std::pair<std::string, Definition*>(name, def));
+
+	if (!strcmp(internalName, ""))
+		return;
+
+	std::string asString(internalName);
+	auto iter = s_internalNameToDefinition.find(asString);
+
+	if (iter != s_internalNameToDefinition.end()) {
+		ZHL::Throw<std::runtime_error>("Error while adding definition for function"
+			"%s: internal name %s already in use\n", name, internalName);
+	}
+
+	s_internalNameToDefinition[asString] = dynamic_cast<FunctionDefinition*>(def);
 }
 
 //================================================================================
 // VariableDefinition
 
 VariableDefinition::VariableDefinition(const char *name, const char *sig, void *outvar) :
+	Definition(sig),
 	_name(name),
-	_sig(sig),
 	_outVar(outvar)
 {
-	Add(_name, this);
+	Add(_name, "", this);
 }
 
 int VariableDefinition::Load()
@@ -181,27 +231,46 @@ bool VariableDefinition::IsFunction() const {
 //================================================================================
 // FunctionDefinition
 
-FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc) :
-	_sig(sig),
+FunctionDefinition::FunctionDefinition(const char *name, 
+	char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info &type,
+	const char *sig, const HookSystem::ArgData *argdata, int nArgs,
+	unsigned int flags, void **outfunc, bool canHook) :
+	Definition(sig),
 	_argdata(argdata),
 	_nArgs(nArgs),
 	_flags(flags),
-	_outFunc(outfunc)
+	_outFunc(outfunc),
+	_canHook(canHook)
 {
 	SetName(name, type.raw_name());
 	Log("Adding function %s\n", _name);
-	Add(_name, this);
+	Add(_name, internalName, this);
 }
 
-FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc) :
+FunctionDefinition::FunctionDefinition(const char* name, 
+	char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN], const type_info& type,
+	void* addr, const HookSystem::ArgData* argdata, int nArgs,
+	unsigned int flags, void** outfunc, bool canHook) :
+	Definition(""),
 	_address(addr),
 	_argdata(argdata),
 	_nArgs(nArgs),
 	_flags(flags),
-	_outFunc(outfunc)
+	_outFunc(outfunc),
+	_canHook(canHook)
 {
 	SetName(name, type.raw_name());
-	Add(_name, this);
+	Add(_name, internalName, this);
+}
+
+FunctionDefinition* FunctionDefinition::FindByInternalName(const char* name) {
+	std::string asString(name);
+	auto iter = s_internalNameToDefinition.find(asString);
+	if (iter != s_internalNameToDefinition.end()) {
+		return iter->second;
+	} else {
+		return nullptr;
+	}
 }
 
 int FunctionDefinition::Load()
@@ -239,6 +308,71 @@ const char* FunctionDefinition::GetName() const {
 
 bool FunctionDefinition::IsFunction() const {
 	return true;
+}
+
+void FunctionDefinition::UpdateHooksStateFromJSON(const char* json) {
+	FILE* file = fopen(json, "rb");
+	if (!file) {
+		ZHL::Log("[WARN] Unable to open hooks json file %s\n", json);
+		return;
+	}
+
+	char buffer[4096];
+	rapidjson::FileReadStream stream(file, buffer, sizeof(buffer));
+	rapidjson::Document document;
+	document.ParseStream(stream);
+
+	if (!document.IsArray()) {
+		ZHL::Log("[ERROR] Malformed hooks json file: top value is not an array\n");
+		fclose(file);
+		return;
+	}
+
+	auto const& jsonHooks = document.GetArray();
+	for (int i = 0; i < jsonHooks.Size(); ++i) {
+		auto const& hook = jsonHooks[i];
+		if (!hook.HasMember("function")) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no function field\n", i);
+			continue;
+		}
+
+		if (!hook.HasMember("hook")) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no hook field\n", i);
+			continue;
+		}
+
+		std::string fullName = "unk";
+		if (hook.HasMember("fullName")) {
+			fullName = hook["fullName"].GetString();
+		}
+		const char* name = hook["function"].GetString();
+		const char* canHookStr = hook["hook"].GetString();
+
+		Definition* definition = FunctionDefinition::FindByInternalName(name);
+		if (!definition) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: no definition for function %s\n", i, name);
+			continue;
+		}
+
+		if (!definition->IsFunction()) {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: definition %s is not a function\n", i, name);
+			continue;
+		}
+
+		FunctionDefinition* asFunction = dynamic_cast<FunctionDefinition*>(definition);
+		bool canHook = false;
+		if (!strcmp(canHookStr, "yes") || !strcmp(canHookStr, "1")) {
+			ZHL::Log("[INFO] Enabling hooks on %s (internal name %s)\n", fullName.c_str(), name);
+			asFunction->SetCanHook(true);
+		} else if (!strcmp(canHookStr, "no") || !strcmp(canHookStr, "0")) {
+			ZHL::Log("[INFO] Disabling hooks on %s (internal name %s)\n", fullName.c_str(), name);
+			asFunction->SetCanHook(false);
+		} else {
+			ZHL::Log("[ERROR] Skipping %d-th object in hooks json file: invalid hook value %s", i, canHookStr);
+		}
+	}
+
+	fclose(file);
 }
 
 //================================================================================
@@ -420,6 +554,9 @@ int FunctionHook_private::Install()
 		sprintf_s(g_hookLastError, "Failed to install hook for %s: function not found", _name);
 		return 0;
 	}
+
+	if (!def->CanHook())
+		return 1;
 
 	const HookSystem::ArgData* args = def->GetArgData();
 	int argc = def->GetArgCount();
@@ -906,6 +1043,9 @@ int FunctionHookCustom_private::Install() {
 		sprintf_s(g_hookLastError, "Failed to install hook for %s: Function not found", _name);
 		return 0;
 	}
+
+	if (!def->CanHook())
+		return 1;
 
 	struct ArgData
 	{

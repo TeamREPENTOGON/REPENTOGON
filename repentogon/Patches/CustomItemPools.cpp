@@ -886,44 +886,36 @@ ItemPool_Item* __stdcall GetItemPool_Item(uint32_t itemPoolOffset)
     return &CustomItemPool::itemPools[itemPoolType - NUM_ITEMPOOLS];
 }
 
-// This covers both pick_collectible and the BibleUpgrade evaluation
-void ASMPatchFirstPickCollectible()
+static void patch_pre_pick_collectible(void* address)
 {
-	SigScan scanner("8d77??03f0");
-	scanner.Scan();
-	void* firstPickSig = scanner.GetAddress();
-
-	printf("[REPENTOGON] Patching ItemPool::GetCollectible (First Pick) at %p for CustomItemPools\n", firstPickSig);
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::ESI, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
+    ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(reg)
         .Push(ASMPatch::Registers::EAX) // itemPoolOffset
-		.AddInternalCall(GetItemPool_Item) // call GetItemPool_Item
-        .CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX) // pool = result
-		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)firstPickSig + 0x5);
-	sASMPatcher.PatchAt(firstPickSig, &patch);
+        .AddInternalCall(GetItemPool_Item) // call GetItemPool_Item
+        .RestoreRegisters(reg)
+        .AddRelativeJump((char*)address + 0x5);
+
+    sASMPatcher.PatchAt(address, &patch);
 }
 
-// On retries the code was compiled differently, though luckily the only difference for our purposes is that the result should remain in EAX rather than being moved to ESI
 // This also covers both pick_collectible and the BibleUpgrade evaluation
-void ASMPatchRetryPickCollectible()
+// The code is now similar enough to allow the same patch to work on both tries
+void ASMPatchPickCollectible()
 {
-	SigScan scanner("83c00403c78945");
+    SigScan scanner("83c00403c78945??e8");
+    scanner.Scan();
+    void* firstPickSig = scanner.GetAddress();
+
+	scanner = SigScan("83c00403c78945??85d2");
 	scanner.Scan();
 	void* retryPickSig = scanner.GetAddress();
 
+    printf("[REPENTOGON] Patching ItemPool::GetCollectible (First Pick) at %p for CustomItemPools\n", firstPickSig);
 	printf("[REPENTOGON] Patching ItemPool::GetCollectible (Retry Pick) at %p for CustomItemPools\n", retryPickSig);
 
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-        .Push(ASMPatch::Registers::EAX) // itemPoolOffset
-		.AddInternalCall(GetItemPool_Item) // call GetItemPool_Item
-		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)retryPickSig + 0x5);
-	sASMPatcher.PatchAt(retryPickSig, &patch);
+	patch_pre_pick_collectible(firstPickSig);
+    patch_pre_pick_collectible(retryPickSig);
 }
 
 void __stdcall IncreaseRemainingGenesisItem(int itemPoolType)
@@ -1072,8 +1064,7 @@ void ASMPatchGetDebug12PoolName(const char* signature)
 
 void ASMPatchesForCustomItemPools()
 {
-    ASMPatchFirstPickCollectible();
-    ASMPatchRetryPickCollectible();
+    ASMPatchPickCollectible();
     ASMPatchPreTriggerGenesis();
     ASMPatchAddGenesisPoolWeight();
     ASMPatchDecreaseRemainingGenesisItems();
@@ -1082,8 +1073,8 @@ void ASMPatchesForCustomItemPools()
 void ExtraASMPatchesForCustomItemPools()
 {
     ASMPatchPoolNotFoundLogINFO();
-    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d45");
-    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d85");
+    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d45??e9");
+    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d45??50");
 }
 
 LUA_FUNCTION(Lua_CustomItemPoolGetPoolIdByName)

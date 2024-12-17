@@ -138,11 +138,15 @@ int __stdcall GetExtraLivesHook(Entity_Player* player) {
 	return player->GetExtraLives();
 }
 
+// Seems like this call isn't inlined in rep+
+/*
 // Patch over what seems to be an inlined or simply duplicate instance of Entity_Player::GetExtraLives in PlayerHUD::RenderHearts.
 void ASMPatchInlinedGetExtraLives() {
 	SigScan scanner("8b82????????0fbf8a");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching inline Entity_Player::GetExtraLives in PlayerHUD::RenderHearts at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::ESI, true);
 	ASMPatch patch;
@@ -154,12 +158,15 @@ void ASMPatchInlinedGetExtraLives() {
 		.AddRelativeJump((char*)addr + 0x4A);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+*/
 
 // Patch over the decision of whether or not to display the "?" after the extra lives count.
 void ASMPatchReviveQuestionMark() {
-	SigScan scanner("e8????????84c0ba????????b9????????8d8424");
+	SigScan scanner("e8????????84c0ba????????b9????????8d45");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching PlayerHUD::RenderHearts for revives question mark at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
@@ -178,6 +185,8 @@ void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
 	SigScan scanner("807d??000f84????????32c0");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -202,6 +211,8 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching to prevent save deletion for revives at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -215,14 +226,14 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 }
 
 void ASMPatchesForExtraLives() {
-	ASMPatchInlinedGetExtraLives();
+	// ASMPatchInlinedGetExtraLives();
 	ASMPatchReviveQuestionMark();
-	ASMPatchPostTriggerPlayerDeathCheckRevivesCallback();
+	//ASMPatchPostTriggerPlayerDeathCheckRevivesCallback(); //commented for rep+ temp
 
 	// PauseScreen::ProcessInput
-	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????a1", 0xF, 0xA);
+	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff", 0xF, 0xA);
 	// GameState::Save
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d????????80bf????????00", 0xE, 0x297);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b3d", 0xE, 0x2B5);
 	// GameState::SaveSteamCloud
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d????????8db3", 0xE, 0x2B4);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d", 0xE, 0x2B7);
 }

@@ -313,7 +313,7 @@ LUA_FUNCTION(Lua_PlayCutscene) {
 		g_Game->GetConsole()->RunCommand("cutscene " + to_string(cutscene), &out, NULL);
 		return 0;
 	}
-	g_Manager->ShowCutscene(cutscene, shouldClear);
+	g_Manager->ShowCutscene(cutscene, shouldClear,0);
 	return 0;
 
 
@@ -384,11 +384,11 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 }
 
 bool apipause = false;
-HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
+HOOK_STATIC(Manager, Update, (bool unk) -> void, __stdcall) {
 	if (apipause) {
 		g_Manager->_state = 2;
 	}
-	super();
+	super(unk);
 	
 }
 LUA_FUNCTION(Lua_IsaacPause) {

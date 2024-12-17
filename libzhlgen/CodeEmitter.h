@@ -18,6 +18,7 @@ public:
 
 private:
 	friend class TypeEmitter;
+	friend class TypeGenerator;
 
 	class TypeEmitter {
 	public:
@@ -25,6 +26,17 @@ private:
 
 		template<typename T>
 		void operator()(T const& t);
+
+	private:
+		CodeEmitter* _emitter;
+	};
+
+	class TypeGenerator {
+	public:
+		TypeGenerator(CodeEmitter*);
+
+		template<typename T>
+		std::string operator()(T const& t);
 
 	private:
 		CodeEmitter* _emitter;
@@ -41,8 +53,9 @@ private:
 	void CheckDependencies(Type const& t);
 
 	void EmitForwardDecl();
+	void EmitJsonPrologue();
+	void EmitJsonEpilogue();
 
-	void Emit(Type const& type);
 	void Emit(Struct const& s);
 	void Emit(std::string const& s);
 	void Emit(Variable const& var);
@@ -55,11 +68,22 @@ private:
 	void Emit(ExternalFunction const& fn);
 	void Emit(std::vector<Variable> const& vars);
 	void EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize, bool comma);
+	void EmitJson(Function const& fn, std::string const& internalName,
+		std::string const& fullName);
 
 	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
 	void EmitInstruction(std::string const& ins);
 	
+	std::string GenerateType(Type const& type);
+	std::string GenerateType(BasicType const& t);
+	std::string GenerateType(Struct const& s);
+	std::string GenerateType(FunctionPtr* ptr);
+	std::string GenerateType(std::string const& s);
+	std::string GenerateType(EmptyType const&);
+	std::string GenerateType(const PointerDecl& decl);
+
+	void Emit(Type const& type);
 	void EmitType(BasicType const& t);
 	void EmitType(Struct const& s);
 	void EmitType(FunctionPtr* ptr);
@@ -68,6 +92,8 @@ private:
 
 	std::tuple<bool, uint32_t, uint32_t> EmitArgData(Function const& fn);
 	void EmitTypeID(Function const& fn);
+	std::string GenerateFunctionPrototype(Function const& fn, bool includeName);
+	void EmitFunctionPrototype(Function const& fn, bool includeName);
 	uint32_t GetFlags(Function const& fn) const;
 
 	void EmitGlobalPrologue();
@@ -78,6 +104,7 @@ private:
 
 	void EmitDecl();
 	void EmitImpl();
+	void EmitJson();
 
 	void IncrDepth();
 	void DecrDepth();
@@ -92,7 +119,7 @@ private:
 	std::map<std::string, Type> _types;
 	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
-	std::ofstream _decls, _impl;
+	std::ofstream _decls, _impl, _json;
 	std::ofstream* _emitContext = nullptr;
 	Variable const* _variableContext = nullptr;
 	Struct const* _currentStructure = nullptr;
@@ -105,10 +132,19 @@ private:
 	std::set<std::string> _emittedStructures;
 	std::set<std::string> _processingStructures;
 
+	// Track the structures whose methods have been emitted in InitializeSymbols
+	std::set<std::string> _initializedStructures;
+
 	std::set<std::string> _vtableProcessingStructures;
 	ErrorLogger _logger;
 
 	uint32_t _emitDepth = 0;
+
+	/* Convert from a function's fully qualified name to its internal name
+	 * used in the hook enabler system. FQFN is <ret> <full_namespace>::name([params]*);,
+	 * internal name is _fun<ID>.
+	 */
+	std::map<std::string, std::string> _fullNameToInternalName;
 
 	static Function const* GetFunction(std::variant<Signature, Skip, Function> const& fn);
 };

@@ -28,7 +28,7 @@ struct REPENTOGONOptions {
 			printf("INI doesn't exist, creating\n");
 			
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
-			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
+			ini["VanillaTweaks"]["HushLaserSpeedFix"] = "1";
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
@@ -51,7 +51,7 @@ struct REPENTOGONOptions {
 		iniFile.read(ini);
 
 		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
-		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
+		hushLaserSpeedFix = defstoi(ini["VanillaTweaks"]["HushLaserSpeedFix"],1);
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		consoleAutofillLimit = defstoi(ini["VanillaTweaks"]["ConsoleAutofillLimit"], 10);
@@ -97,7 +97,7 @@ struct REPENTOGONOptions {
 
 	void Save() {
 		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
-		Write("VanillaTweaks", "HushPanicStateFix",    hushPanicStateFix);
+		Write("VanillaTweaks", "HushLaserSpeedFix",    hushLaserSpeedFix);
 		Write("VanillaTweaks", "KeyMasterDealChance",  keyMasterDealChance);
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
@@ -117,7 +117,7 @@ struct REPENTOGONOptions {
 
 	mINI::INIStructure ini;
 	bool betterVoidGeneration;
-	bool hushPanicStateFix;
+	bool hushLaserSpeedFix;
 	bool keyMasterDealChance;
 	bool quickRoomClear;
 	bool preventModUpdates;
