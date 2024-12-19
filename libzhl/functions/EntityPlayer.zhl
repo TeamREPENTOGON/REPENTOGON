@@ -344,6 +344,10 @@ __thiscall bool Entity_Player::IsCollectibleAnimFinished(CollectibleType collect
 "558bec578bf980bf????????0075":
 __thiscall void Entity_Player::ClearCollectibleAnim(CollectibleType collectible);
 
+// This is hardcoded to ONLY remove the animation for Hemoptysis.
+//"568bf180be????????0075??a1":
+//__thiscall void Entity_Player::ClearItemAnimNullItems(int unused);
+
 "558bec83e4f856576a00":
 __thiscall unsigned int Entity_Player::GetMaxPocketItems();
 
@@ -373,12 +377,6 @@ __thiscall bool Entity_Player::CanAddCollectibleToInventory(int id);
 
 "558bec568b75??83fe03":
 __thiscall bool Entity_Player::CanOverrideActiveItem(unsigned int slot);
-
-"558bec578bf980bf????????0075":
-__thiscall void Entity_Player::ClearItemAnimCollectible(int id);
-
-"568bf180be????????0075??a1":
-__thiscall void Entity_Player::ClearItemAnimNullItems();
 
 "558bec83e4f081ecb8000000a1????????33c4898424????????8b45":
 __thiscall Entity_Bomb* Entity_Player::FireBomb(Vector * pos, Vector * vel, Entity * source);

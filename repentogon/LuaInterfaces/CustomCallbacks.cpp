@@ -2897,7 +2897,7 @@ HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> boo
 }
 
 //(POST_)GRID_HURT_DAMAGE (1012/1013)
-void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) {
+void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int damage, uint64_t damageFlags, float enemyDamage, bool ignoreGridCol) {
 	const int callbackid = 1013;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2909,17 +2909,17 @@ void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int D
 			.push(type)
 			.push(gridEnt, lua::Metatables::GRID_ENTITY)
 			.push(ent, lua::Metatables::ENTITY)
-			.push(Damage)
-			.push(DamageFlags)
-			.push(unk3)
-			.push(unk4)
+			.push(damage)
+			.push(damageFlags)
+			.push(enemyDamage)
+			.push(ignoreGridCol)
 			.call(1);
 	}
 }
 
-HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) -> void) {
+HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, float enemyDamage, int playerDamage, uint64_t damageFlags, bool ignoreGridCol) -> void) {
 	const int callbackid = 1012;
-	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, Damage, DamageFlags, unk3, unk4); return; }
+	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, enemyDamage, playerDamage, damageFlags, ignoreGridCol); return; }
 	int gridType = this->GetDesc()->_type;
 
 	lua_State* L = g_LuaEngine->_state;
@@ -2931,10 +2931,10 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 		.push(gridType)
 		.push(this, lua::Metatables::GRID_ENTITY)
 		.push(ent, lua::Metatables::ENTITY)
-		.push(Damage)
-		.push(DamageFlags)
-		.push(unk3)
-		.push(unk4)
+		.push(playerDamage)
+		.push(damageFlags)
+		.push(enemyDamage)
+		.push(ignoreGridCol)
 		.call(1);
 
 	if (!result) {
@@ -2944,8 +2944,8 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 			}
 		}
 		else {
-			super(ent, Damage, DamageFlags, unk3, unk4);
-			ProcessPostGridHurtDamage(this, gridType, ent, Damage, DamageFlags, unk3, unk4);
+			super(ent, enemyDamage, playerDamage, damageFlags, ignoreGridCol);
+			ProcessPostGridHurtDamage(this, gridType, ent, playerDamage, damageFlags, enemyDamage, ignoreGridCol);
 		}
 	}
 }

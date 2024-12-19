@@ -1765,21 +1765,6 @@ LUA_FUNCTION(Lua_PlayerCanOverrideActiveItem) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerClearItemAnimCollectible) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int id = (int)luaL_checkinteger(L, 2);
-	player->ClearItemAnimCollectible(id);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_PlayerClearItemAnimNullItems) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->ClearItemAnimNullItems();
-
-	return 0;
-}
-
 /*
 // Spawns club, immediately kills it. Needs investigation
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
@@ -2721,6 +2706,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "PlayCollectibleAnim", Player_PlayCollectibleAnim },
 		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
 		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },
+		{ "ClearItemAnimCollectible", Player_ClearCollectibleAnim },  // Deprecated duplicate function anme
 		{ "CheckFamiliarEx", Lua_EntityPlayer_CheckFamiliarEx },
 		{ "GetEveSumptoriumCharge", Lua_PlayerGetEveSumptoriumCharge },
 		{ "SetEveSumptoriumCharge", Lua_PlayerSetEveSumptoriumCharge },
@@ -2734,8 +2720,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanAddCollectibleToInventory", Lua_PlayerCanAddCollectibleToInventory },
 		{ "CanCrushRocks", Lua_PlayerCanCrushRocks },
 		{ "CanOverrideActiveItem", Lua_PlayerCanOverrideActiveItem },
-		{ "ClearItemAnimCollectible", Lua_PlayerClearItemAnimCollectible },
-		{ "ClearItemAnimNullItems", Lua_PlayerClearItemAnimNullItems },
 		//{ "FireBoneClub", Lua_PlayerFireBoneClub },
 		{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },

@@ -189,13 +189,13 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
+/*LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
 	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
 	const unsigned int trinketType = (const unsigned int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, ItemConfig::IsValidTrinket(trinketType));
 
 	return 1;
-}
+}*/
 
 static void FixItemConfigPillEffects(lua_State* L) {
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);

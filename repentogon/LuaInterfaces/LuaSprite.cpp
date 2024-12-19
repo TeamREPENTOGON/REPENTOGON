@@ -134,7 +134,9 @@ LUA_FUNCTION(Lua_SpriteSetOverlayLayerFrame)
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const int layerID = (int)luaL_checkinteger(L, 2);
 	const int frame = (int)luaL_checkinteger(L, 3);
-	anm2->GetOverlayAnimationState()->SetLayerFrame(layerID, frame);
+	if (anm2->GetOverlayAnimationState()->GetAnimationData()) {
+		anm2->GetOverlayAnimationState()->SetLayerFrame(layerID, frame);
+	}
 	return 0;
 }
 

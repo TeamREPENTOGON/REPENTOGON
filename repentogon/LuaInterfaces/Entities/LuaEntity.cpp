@@ -306,7 +306,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 	
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
@@ -332,7 +332,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);

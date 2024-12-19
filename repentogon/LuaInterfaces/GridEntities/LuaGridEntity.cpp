@@ -6,22 +6,24 @@ LUA_FUNCTION(Lua_GridEntityHurtDamage)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int damage = (int)luaL_checkinteger(L, 3);
-	int damageFlags = (int)luaL_checkinteger(L, 4);
-	float unk3 = (float)luaL_checknumber(L, 5);
-	bool unk4 = lua::luaL_checkboolean(L, 6);
-	gridEnt->hurt_func(entity, damage, damageFlags, unk3, unk4);
+	int playerDamage = (int)luaL_checkinteger(L, 3);
+	uint64_t damageFlags = (uint64_t)luaL_checkinteger(L, 4);
+	float enemyDamage = (float)luaL_checknumber(L, 5);
+	bool ignoreGridCol = lua::luaL_checkboolean(L, 6);
+	gridEnt->hurt_func(entity, enemyDamage, playerDamage, damageFlags, ignoreGridCol);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	int damage = (int)luaL_checkinteger(L, 2);
-	int damageFlags = (int)luaL_checkinteger(L, 3);
-	float unk3 = (float)luaL_checknumber(L, 4);
-	bool unk4 = lua::luaL_checkboolean(L, 5);
-	gridEnt->hurt_surroundings(damage, damageFlags, unk3, unk4);
+	float enemyDistance = (float)luaL_checknumber(L, 2);
+	float playerDistance = (float)luaL_checknumber(L, 3);
+	float enemyDamage = (float)luaL_checknumber(L, 4);
+	int playerDamage = (int)luaL_checkinteger(L, 5);
+	uint64_t damageFlags = (uint64_t)luaL_checkinteger(L, 6);
+	bool ignoreGridCol = lua::luaL_checkboolean(L, 7);
+	gridEnt->hurt_surroundings(enemyDistance, playerDistance, enemyDamage, playerDamage, damageFlags, ignoreGridCol);
 	return 0;
 }
 
