@@ -2139,15 +2139,19 @@ LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 
 LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	KColor* color = nullptr;
-	if (lua::luaL_checkboolean(L, 2)) {
-		color = &player->_footprintColor2;
-	}
-	else
-	{
-		color = &player->_footprintColor1;
-	}
-	lua::luabridge::UserdataPtr::push(L, color, lua::Metatables::KCOLOR);
+
+	ColorMod* footprintColor = lua::luaL_checkboolean(L, 2) ? &player->_footprintColor2 : &player->_footprintColor1;
+
+	// This lua function was made before we knew the footprint colors were ColorMod and not KColor.
+	// Just gonna maintain the current output structure for the sake of the REP+ migration.
+	KColor color;
+	color._red = footprintColor->_offset[0];
+	color._green = footprintColor->_offset[1];
+	color._blue = footprintColor->_offset[2];
+	color._alpha = footprintColor->_tint[3];
+
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = color;
 
 	return 1;
 }
@@ -2155,9 +2159,10 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	g_Game->GetConsole()->Print(std::to_string(color->_red) + "\n", 0xFFFFFFFF, 60);
+	// Allegedly this boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 	bool unk = lua::luaL_optboolean(L, 3, false);
-	player->SetFootprintColor(color, unk);
-
+	player->SetFootprintColor(*color, unk);
 	return 0;
 }
 

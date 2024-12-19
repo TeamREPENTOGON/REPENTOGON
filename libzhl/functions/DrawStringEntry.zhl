@@ -1,3 +1,4 @@
+// Might not be used in rep+
 struct DrawStringEntry depends (KColor,FontSettings)
 {
 	const char* _text : 0x0; // 0x0
@@ -5,6 +6,6 @@ struct DrawStringEntry depends (KColor,FontSettings)
     float _y : 0x8; // 0x8
     float _scaleX : 0xc; // 0xC
     float _scaleY : 0x10; // 0x10
-    KColor _color : 0x14; // 0x1C
+    //KColor _color : 0x14; // 0x1C  // Got 4 bytes bigger in rep+
 	FontSettings* fontset : 0x24; // 0x2
 } : 0x30; 

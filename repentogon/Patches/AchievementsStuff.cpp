@@ -561,10 +561,10 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			else {
 				sourcename->_text = XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"].c_str();
 			}
-			sourcename->_color._blue = 1;
-			sourcename->_color._green = 1;
-			sourcename->_color._red = 1;
-			sourcename->_color._alpha = 0.8f;
+			//sourcename->_color._blue = 1;
+			//sourcename->_color._green = 1;
+			//sourcename->_color._red = 1;
+			//sourcename->_color._alpha = 0.8f;
 			//sourcename->_center = true;
 			//sourcename->_boxWidth = 900;
 			sourcename->_x = pos.x;

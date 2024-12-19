@@ -483,8 +483,9 @@ __thiscall void Entity_Player::SalvageCollectible(Vector * pos, int subtype, uns
 "558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8bf9ffb7":
 __thiscall void Entity_Player::SetControllerIndex(unsigned int index);
 
+// Allegedly the boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 "558bec566aff":
-__thiscall void Entity_Player::SetFootprintColor(KColor * color, bool unk);
+__thiscall void Entity_Player::SetFootprintColor(KColor color, bool unk);
 
 "558bec83e4f881ecb8000000a1????????33c4898424????????56576a008bf9e8????????f30f1005????????83e001f30f114424??8d0445????????5051c704240000803f8d4424??6a01508bcfe8????????8b45??8bcf6a0050f30f1000f30f114424??f30f1040??8d4424??50f30f114424??e8????????f30f105c24??f30f591d????????f30f1050??f30f5818f30f591d????????f30f115c24??f30f105c24??f30f591d????????f30f58daf30f591d????????f30f115c24??e8????????8b0d????????6a00506a00578d4424??508d87????????506a0a":
 __thiscall void Entity_Player::ShootBlueCandle(Vector * dir);
@@ -694,14 +695,14 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1730;
 	uint32_t _actionHoldDrop : 0x17a8;
 	int _playerForms[15] : 0x17c4;
-	KColor _footprintColor1 : 0x1768;
-	KColor _footprintColor2 : 0x1794;
+	ColorMod _footprintColor1 : 0x180c;
+	ColorMod _footprintColor2 : 0x1838;
 	uint32_t _deadEyeCharges : 0x1894;
 	uint32_t _deadEyeMisses : 0x1898;
-	uint32_t _conceptionFamiliarFlags : 0x1858;
-	int _babySkin : 0x1a0c;
-	vector_EntitySaveState _movingBoxContents : 0x1c9c;
-	int _hallowedGroundCountdown : 0x1cb0;
+	uint32_t _conceptionFamiliarFlags : 0x191c;
+	int _babySkin : 0x1ad0;
+	vector_EntitySaveState _movingBoxContents : 0x1d60;
+	int _hallowedGroundCountdown : 0x1d74;
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _maggySwingCooldown : 0x1ebc;

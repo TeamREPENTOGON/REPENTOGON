@@ -4,4 +4,5 @@ struct KColor
     float _green : 0x4;
     float _blue : 0x8;
     float _alpha : 0xC;
-} : 0x10;
+    int _unk : 0x10;
+} : 0x14;

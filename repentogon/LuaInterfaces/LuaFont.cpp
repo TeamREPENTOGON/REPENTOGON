@@ -8,7 +8,7 @@ static int ValidateDrawStringBase(lua_State* L, void (Font::* fn)(DrawStringEntr
 	entry._text = luaL_checkstring(L, 2);
 	entry._x = (float)luaL_checknumber(L, 3);
 	entry._y = (float)luaL_checknumber(L, 4);
-	entry._color = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	//entry._color = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
 	//entry._boxWidth = (int)luaL_optinteger(L, 6, -1);
 	//entry._center = lua::luaL_optboolean(L, 7, false);
 
@@ -24,7 +24,7 @@ static int ValidateDrawStringScaledBase(lua_State* L, void (Font::* fn)(DrawStri
 	entry._y = (float)luaL_checknumber(L, 4);
 	entry._scaleX = (float)luaL_checknumber(L, 5);
 	entry._scaleY = (float)luaL_checknumber(L, 6);
-	entry._color = *lua::GetUserdata<KColor*>(L, 7, lua::Metatables::KCOLOR, "KColor");
+	//entry._color = *lua::GetUserdata<KColor*>(L, 7, lua::Metatables::KCOLOR, "KColor");
 	entry._boxWidth = (int)luaL_optinteger(L, 8, -1);
 	entry._center = lua::luaL_optboolean(L, 9, false);
 

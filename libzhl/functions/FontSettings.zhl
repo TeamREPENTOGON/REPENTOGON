@@ -1,8 +1,11 @@
-struct FontSettings
+struct FontSettings  // aka FontRenderSettings
 {
 	int _align : 0x0;
-	int _maxchar : 0x4;
-	int _wrapmode : 0x8; //1 wrap 2 truncate?
-	float _HeightModif : 0xc; //related to wrap
-	int _MissingCharOverride : 0x10; //related to wrap
-} : 0x14;
+	short _maxChars : 0x4;
+	short _maxCharsPerLine : 0x6; // Maybe? Like for wrap mode, how many chars before wrapping
+	int _wrapMode : 0x8; //0 nowrap 1 wrap 2 truncate?
+	float _lineHeightModifier : 0xc; //related to wrap
+	int _missingCharOverride : 0x10; //related to wrap
+	int _unk1 : 0x14;
+	int _unk2 : 0x18;
+} : 0x1c;
