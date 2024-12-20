@@ -537,7 +537,7 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -545,9 +545,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline int* GetBlackHearts() {return &this->_blackHearts; }
 	inline int* GetMetronomeCollectibleID() { return &this->_metronomeCollectibleID; } 
 	inline int GetPlayerType() { return this->_playerType; }
-	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
-	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
-	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
+	inline Weapon** GetWeapon(int index) { return &_weapon[index]; }
+	inline Entity_Effect* GetMarkedTarget() { return this->_markedTarget; }
+	inline Entity* GetHeldEntity() { return this->_heldEntity; }
 	inline int* GetFireDelayModifier() { return &this->_fireDelayModifier; }
 	inline int* GetDamageModifier() { return &this->_damageModifier; }
 	inline float* GetEdenSpeed() { return &this->_edenSpeed; }
@@ -560,33 +560,33 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline std_vector_int GetCollectiblesList() { return this->_unkcolentry; }
 	inline vector_SmeltedTrinketDesc* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
-	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
+	inline int* GetPonyCharge() { return &this->_ponyCharge; } 
 	inline uint32_t GetDeadEyeCharge() { return this->_deadEyeCharges; }
 	inline uint32_t GetDeadEyeMisses() { return this->_deadEyeMisses; }
 	inline bool* GetCanShoot() { return &this->_canShoot; }
-	inline int* GetEpiphoraCharge() { return (int*)((char*)this + 0x17c4); }
-	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
-	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
-	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
-	inline int* GetBladderCharge() { return (int*)((char*)this + 0x1820); }
-	inline int* GetMaxBladderCharge() { return (int*)((char*)this + 0x1824); }
-	inline bool* IsUrethraBlocked() { return (bool*)((char*)this + 0x1828); }
-	inline int* GetNextUrethraBlockFrame() { return (int*)((char*)this + 0x182c); }
-	inline int* GetPurityState() { return (int*)((char*)this + 0x184c); }
-	inline int* GetImmaculateConceptionState() { return (int*)((char*)this + 0x1850); }
-	inline int* GetCambionConceptionState() { return (int*)((char*)this + 0x1854); }
-	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
-	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
-	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
-	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
-	inline int* GetGoldenHearts() { return (int*)((char*)this + 0x186C); }
+	inline int* GetEpiphoraCharge() { return &this->_epiphoraCharge; }
+	inline int* GetMegaBlastDuration() { return &this->_megaBlastDuration; }
+	inline int* GetPeeBurstCooldown() { return &this->_peeBurstCooldown; }
+	inline int* GetMaxPeeBurstCooldown() { return &this->_maxPeeBurstCooldown; }
+	inline int* GetBladderCharge() { return &this->_bladderCharge; }
+	inline int* GetMaxBladderCharge() { return &this->_maxBladderCharge; }
+	inline bool* IsUrethraBlocked() { return &this->_isUrethraBlocked; }
+	inline int* GetNextUrethraBlockFrame() { return &this->_nextUrethraBlockFrame; }
+	inline int* GetPurityState() { return &this->_purityState; }
+	inline int* GetImmaculateConceptionState() { return &this->_immaculateConceptionState; }
+	inline int* GetCambionConceptionState() { return &this->_cambionConceptionState; }
+	inline float* GetD8DamageModifier() { return &this->_d8DamageModifier; }
+	inline float* GetD8SpeedModifier() { return &this->_d8SpeedModifier; }
+	inline float* GetD8RangeModifier() { return &this->_d8RangeModifier; }
+	inline float* GetD8FireDelayModifier() { return &this->_d8FireDelayModifier; }
+	inline int* GetGoldenHearts() { return &this->_goldenHearts; }
 	inline vector_EntitySaveState* GetMovingBoxContents() {return &this->_movingBoxContents; }
-	inline int* GetBoneHearts() {return (int*)((char*)this + 0x1CA8); }
-	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
-	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
-	inline int* GetGigaBombs() {return (int*)((char*)this + 0x1CF4); }
-	inline History* GetHistory() { return (History*)((char*)this + 0x1dd0); }
-	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x1568); }
+	inline int* GetBoneHearts() { return &this->_boneHearts; }
+	inline int* GetBrokenHearts() { return &this->_brokenHearts; }
+	inline int* GetRottenHearts() { return &this->_rottenHearts; }
+	inline int* GetGigaBombs() { return &this->_numGigaBombs; }
+	inline History* GetHistory() { return &this->_history; }
+	inline float* GetTearPoisonDamage() { return &this->_tearPoisonDamage; }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return &this->_activeDesc[index]; }
 	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
@@ -640,12 +640,12 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
     };
     
     {{ 
-    inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
-    inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1f14); }
+    inline int* GetRedStewBonusDuration() { return &this->_redStewBonusDuration; }
+    inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)(&this->_bagOfCraftingContent); }
 	inline std_map_int_int* GetItemWispsList() { return &this->_itemWispsList; }
-    inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
-	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
-	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
+    inline int* GetBagOfCraftingOutput() { return &this->_bagOfCraftingResult; }
+	inline uint8_t* GetWildCardItemType() { return &this->_wildCardItemType; }
+	inline int* GetWildCardItem() { return &this->_wildCardItem; }
 	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
 	
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
@@ -668,6 +668,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _metronomeCollectibleID : 0x1380;
 	int _damageCooldown : 0x13b0;
 	int _playerType: 0x13b4;
+	Weapon* _weapon[5] : 0x13d0;
+	Entity_Effect* _markedTarget : 0x13fc;
+	Entity* _heldEntity : 0x1400;
 	float _damage : 0x1460;
 	float _movespeed : 0x1554;
 	float _luck : 0x1558;
@@ -678,10 +681,12 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	float _tearrange : 0x1470;
 	float _maxfiredelay : 0x1450;
 	ColorMod _laserColor : 0x14b4;
+	TemporaryEffects _temporaryeffects : 0x14f8;
 	int _speedModifier : 0x1510, _fireDelayModifier : 0x1514, _damageModifier : 0x1518, _tearRangeModifier : 0x151c, _shotSpeedModifier : 0x1520, _luckModifier : 0x1524;
 	float _edenSpeed : 0x1538, _edenFireDelay : 0x153c, _edenDamage : 0x1540, _edenTearRange : 0x1544, _edenShotSpeed : 0x1548, _edenLuck : 0x154c;
 	uint32_t _cacheFlags : 0x1560;
 	int8_t _tearDisplacement : 0x1564;
+	float _tearPoisonDamage : 0x1568;
 	ActiveItemDesc _activeDesc[4] : 0x156c;
 	int _bombPlaceDelay : 0x15fc;
 	int _forgottenSwapFormCooldown : 0x1600;
@@ -695,28 +700,53 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _playerForms[15] : 0x17c4;
 	ColorMod _footprintColor1 : 0x180c;
 	ColorMod _footprintColor2 : 0x1838;
+	int _ponyCharge : 0x186c;
+	int _epiphoraCharge : 0x1888;
 	uint32_t _deadEyeCharges : 0x1894;
 	uint32_t _deadEyeMisses : 0x1898;
+	int _megaBlastDuration : 0x18d8;
+	int _peeBurstCooldown : 0x18dc;
+	int _maxPeeBurstCooldown : 0x18e0;
+	int _bladderCharge : 0x18e4;
+	int _maxBladderCharge : 0x18e8;
+	bool _isUrethraBlocked : 0x18ec;
+	int _nextUrethraBlockFrame : 0x18f0;
+	int _purityState : 0x1910;
+	int _immaculateConceptionState : 0x1914;
+	int _cambionConceptionState : 0x1918;
 	uint32_t _conceptionFamiliarFlags : 0x191c;
+	float _d8DamageModifier : 0x1920;
+	float _d8SpeedModifier : 0x1924;
+	float _d8RangeModifier : 0x1928;
+	float _d8FireDelayModifier : 0x192c;
+	int _goldenHearts : 0x1930;
 	int _babySkin : 0x1ad0;
-	vector_EntitySaveState _movingBoxContents : 0x1d60;
-	int _hallowedGroundCountdown : 0x1d74;
 	//std_vector_int _wispStorage : 0x1cfc;
+	vector_EntitySaveState _movingBoxContents : 0x1d60;
+	int _boneHearts : 0x1d6c;
+	int _hallowedGroundCountdown : 0x1d74;
+	int _brokenHearts : 0x1d84;
+	int _rottenHearts : 0x1d88;
+	int _numGigaBombs : 0x1db8;
+	History _history : 0x1dd0;
+	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
+	int _redStewBonusDuration : 0x1e50;
 	int _maggySwingCooldown : 0x1ebc;
 	char _bagOfCraftingContent[8]: 0x1f14;
+	int _bagOfCraftingResult : 0x1f1c;
 	char _poopSpellQueue[6] : 0x1f24;
 	int _eveSumptoriumCharge : 0x1f48;
 	std_map_int_int _itemWispsList : 0x1f50;
 	int _keepersSackBonus : 0x1eb4;
 	ConsumableData _consumablesBackup : 0x2008;
+	uint8_t _wildCardItemType : 0x2058;
+	int _wildCardItem : 0x205c;
 	bool _isCoopGhost : 0x2070;
 	bool _canShoot : 0x1809;
 	bool _canFly : 0x155c;
 	std_vector_int _unkcolentry: 0x16b0;
 	uint32_t _urnSouls: 0x1cf0;
-	TemporaryEffects _temporaryeffects : 0x14f8;
-	Entity_Player* _twinPlayer : 0x1e44;
 } : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":

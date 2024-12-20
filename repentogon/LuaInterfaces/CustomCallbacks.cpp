@@ -723,7 +723,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 		return super(Velocity);
 	}
 	lua_State* L = g_LuaEngine->_state;
-	Entity** heldEntity = this->GetHeldEntity();
+	Entity* heldEntity = this->GetHeldEntity();
 	lua::LuaStackProtector protector(L);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -732,7 +732,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 		//.push((*heldEntity)->GetType())
 		.pushnil()
 		.push(this, lua::Metatables::ENTITY_PLAYER)
-		.push(*heldEntity, lua::Metatables::ENTITY)
+		.push(heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
 		.call(1);
 

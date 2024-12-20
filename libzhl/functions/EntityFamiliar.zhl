@@ -65,17 +65,19 @@ __thiscall bool Entity_Familiar::wisp_kill();
 __thiscall void Entity_Familiar::delirium_morph();
 
 
-struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return &this->_player; }
-	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
-	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
+	inline NPCAI_Pathfinder* GetPathFinder() { return &this->_pathfinder; }
+	inline Weapon** GetWeapon() { return &this->_weapon; }
 }}
 	
 	Entity_Player* _player : 0x408;
 	int _moveDelayNum: 0x5f0;
+	NPCAI_Pathfinder _pathfinder : 0x5f4;
 	bool _isFollower : 0xd6c;
 	bool _isDelayed : 0xd6d;
+	Weapon* _weapon : 0xda4;
 	int _state : 0xcd4;
 	bool _isLilDelirium : 0xd7c;
 	ItemConfig_Item* _item : 0xec8;

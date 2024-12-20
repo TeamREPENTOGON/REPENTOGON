@@ -1256,7 +1256,7 @@ LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 LUA_FUNCTION(Lua_PlayerGetHeldEntity)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity* heldEntity = *plr->GetHeldEntity();
+	Entity* heldEntity = plr->GetHeldEntity();
 	if (!heldEntity) {
 		lua_pushnil(L);
 	}
