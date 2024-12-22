@@ -666,6 +666,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _gnawedLeafTimer : 0x136c;
 	short _bloodLustCounter : 0x1374;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x1380;
+	int _monkeyPawCounter : 0x138c;
 	int _damageCooldown : 0x13b0;
 	int _playerType: 0x13b4;
 	Weapon* _weapon[5] : 0x13d0;

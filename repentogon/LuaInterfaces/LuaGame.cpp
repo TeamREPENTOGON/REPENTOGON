@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 LUA_FUNCTION(Lua_GameGetPauseMenuState)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	lua_pushinteger(L, game->GetPauseMenu()->status);
+	lua_pushinteger(L, game->GetPauseMenu()->state);
 
 	return 1;
 }

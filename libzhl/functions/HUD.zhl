@@ -36,7 +36,12 @@ __thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player
 
 
 struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
-	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1760); }
+	inline PlayerHUD* GetPlayerHUD(int index) {
+		if (index < 0 || index > 7) {
+			return nullptr;
+		}
+		return &this->_playerHUD[index];
+	}
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
     ANM2 _chargeBarSprite : 0x3798;

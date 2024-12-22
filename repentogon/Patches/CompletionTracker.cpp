@@ -900,7 +900,7 @@ HOOK_METHOD_PRIORITY(GenericPopup, Render, 100, () -> void) {
 
 HOOK_METHOD(PauseScreen, Render, () -> void) {
 	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
-	if ((playertype > 40) && (this->status != 2)) {
+	if ((playertype > 40) && (this->state != 2)) {
 		postponepromptrender = true;
 		super();
 		postponepromptrender = false;
@@ -917,9 +917,10 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 			cmpl->CharacterId = playertype;
 			cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
 		}
-		if (this->notinfocus){
-			this->_controllerconnectionpopup.Render();
-		}
+		// PauseScreen class doesn't seem to handle this in REP+? Uncertain
+		//if (this->notinfocus){
+		//	this->_controllerconnectionpopup.Render();
+		//}
 		g_Game->GetGenericPrompt()->Render();
 	}
 	else {

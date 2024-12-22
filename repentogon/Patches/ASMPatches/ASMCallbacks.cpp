@@ -828,11 +828,21 @@ void ASMPatchPostChampionRegenCallback() {
 	}
 }
 
-bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector* position, Box<float> scale,Vector* cropoffset) {
+// MC_PRE_PLAYERHUD_TRINKET_RENDER (1264)
+std::unordered_map<short, Vector[2]> trinketRenderCropOffsetCache;
+
+bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vector* position, float* scale) {
+	Entity_Player* player = playerHUD->_player;
+
+	Vector cropOffset(0, 0);
+
+	// This is the only thing vanilla does with CropOffset
+	if (player && playerHUD->_trinket[slot].id == TRINKET_MONKEY_PAW) {
+		cropOffset.x = (3 - player->_monkeyPawCounter) * 32.0f;
+	}
+
 	const int callbackid = 1264;
-	if (CallbackState.test(callbackid - 1000)) {
-		float new_scale;
-		new_scale = scale.Get();
+	if (player && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -842,9 +852,9 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 			.push(slot)
 			.push(slot)
 			.pushUserdataValue(*position, lua::Metatables::VECTOR)
-			.push(new_scale)
-			.push(hud->_player, lua::Metatables::ENTITY_PLAYER)
-			.pushUserdataValue(*cropoffset, lua::Metatables::VECTOR)
+			.push(*scale)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(cropOffset, lua::Metatables::VECTOR)
 			.call(1);
 		
 		if (!result) {
@@ -858,13 +868,13 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 							*(position) = *(new_pos);
 						}
 						else if (key == "CropOffset") {
-							*cropoffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							cropOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Scale") {
-							new_scale = (float)lua_tonumber(L, -1);
+							*scale = (float)lua_tonumber(L, -1);
 						}
 					}
 					lua_pop(L, 1);
@@ -877,48 +887,69 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 				}
 			}
 		}
-		float newx = (position->x) + (g_Game->_screenShakeOffset).x;
-		float newy = (position->y) + (g_Game->_screenShakeOffset).y;
-		__asm {
-			movd xmm2, newx
-			movd xmm3, newy
-			movd xmm4, new_scale
-		}	//updating the xmm registers
 	}
+
+	trinketRenderCropOffsetCache[playerHUD->_playerHudIndex][slot] = cropOffset;
+
 	return true;
 };
 
+// Hook that runs the callback
+HOOK_METHOD(PlayerHUD, RenderTrinket, (uint32_t slot, Vector* pos, float unused, float scale, bool unk) -> void) {
+	if (slot < 0 || slot > 1 || this->_trinket[slot].id == TRINKET_NULL || this->_trinket[slot].image == nullptr) {
+		return;
+	}
+	Vector posCopy = *pos;  // Copy this in case the callback modifies it.
+	if (RunTrinketRenderCallback(this, slot, &posCopy, &scale)) {
+		super(slot, &posCopy, unused, scale, unk);
+	}
+}
+
+// Fetches the cached CropOffset for this PlayerHUDTrinket and puts it in xmm1/xmm2
+void __stdcall GetPlayerHUDTrinketCropOffset(PlayerHUDTrinket* hudTrinket, Entity_Player* player) {
+	short playerHudIndex = 0;
+	int slot = 0;
+
+	// Slightly unfortunate, but we need to find the corresponding PlayerHUD in order to tell which slot is being rendered.
+	for (int i = 0; i < 8; i++) {
+		PlayerHUD* playerHud = g_Game->GetPlayerHUD(i);
+		if (playerHud && playerHud->_player == player) {
+			playerHudIndex = playerHud->_playerHudIndex;
+			if (&playerHud->_trinket[1] == hudTrinket) {
+				slot = 1;
+			}
+			break;
+		}
+	}
+
+	const Vector& cropOffset = trinketRenderCropOffsetCache[playerHudIndex][slot];
+
+	float x = cropOffset.x;
+	float y = cropOffset.y;
+
+	__asm {
+		movd xmm1, x
+		movd xmm2, y
+	}
+}
+
+// Patches overtop where the CropOffset is calculated to use our cached one instead.
 void ASMPatchTrinketRender() {
-	SigScan signature("8d8c24????????e8????????a1");
+	SigScan signature("75??8b45??b903000000");
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
+	printf("[REPENTOGON] Patching PlayerHUDTrinket::Render at %p\n", addr);
+
 	ASMPatch patch;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::EAX | ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
-	patch
-		.Push(ASMPatch::Registers::EAX)				// manually restoring later
-		.PreserveRegisters(savedRegisters)
-		.AddBytes("\x8B\x9C\x24\x80").AddZeroes(3)	//(mov ebx,esp+0x80), playerhud aka (this)
-		.Push(ASMPatch::Registers::EAX)				//cropoffset ptr which resides in eax
-		.AddBytes("\x66\x0F\x7E\xE0")				//(movd eax,xmm4), scale
-		.Push(ASMPatch::Registers::EAX)
-		.AddBytes("\x8B\x45\x0C")					//(mov eax, ebx+0xC):
-		.Push(ASMPatch::Registers::EAX)				//	position
-		.AddBytes("\x8B\x45\x08")					//(mov eax, ebx+0x8):
-		.Push(ASMPatch::Registers::EAX)				//	slot
-		.Push(ASMPatch::Registers::EBX)				//hud from the ebx
-		.AddInternalCall(&RunTrinketRenderCallback)
-		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
-		.AddBytes("\x84\xC0") // test al, al
-		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
-		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, pop edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
-		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
-		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
-		.AddBytes("\x66\x0F\x7E\x5C\x24\x34")		//movd esp+0x34, xmm3
-		.AddRelativeJump((char*)addr + 0x7);		//jump for true, continue with rendering
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::XMM_REGISTERS) & ~(ASMPatch::SavedRegisters::XMM1 | ASMPatch::SavedRegisters::XMM2), true);
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, 0x10)  // Entity_Player*
+		.Push(ASMPatch::Registers::EDX)  // PlayerHUDTrinket*
+		.AddInternalCall(GetPlayerHUDTrinketCropOffset)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x1F);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }

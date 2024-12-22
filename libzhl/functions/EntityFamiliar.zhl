@@ -77,9 +77,9 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
 	NPCAI_Pathfinder _pathfinder : 0x5f4;
 	bool _isFollower : 0xd6c;
 	bool _isDelayed : 0xd6d;
+	int _state : 0xd7c;
 	Weapon* _weapon : 0xda4;
-	int _state : 0xcd4;
-	bool _isLilDelirium : 0xd7c;
+	bool _isLilDelirium : 0xda8;
 	ItemConfig_Item* _item : 0xec8;
 	ColorMod _dirtColor : 0xed0;
 	int _wispCollectibleType : 0xefc;
