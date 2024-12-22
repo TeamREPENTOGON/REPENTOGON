@@ -11,4 +11,6 @@ namespace ASMPatches {
 	namespace BerserkSpiritShacklesCrash {
 		bool Patch();
 	}
+
+	void NativeRepentogonResources();
 }

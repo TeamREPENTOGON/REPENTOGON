@@ -207,5 +207,6 @@ void PerformASMPatches() {
 	//if (!ASMPatches::FixHushFXVeins()) {
 	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
 	//}
-	
+
+	ASMPatches::NativeRepentogonResources();
 }
