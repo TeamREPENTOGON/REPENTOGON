@@ -102,7 +102,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	SoundEffects _sfxManager : 0x2a208;
 	OptionsConfig _optionsConfig : 0x2a220;
 	ItemConfig _itemConfig : 0x2a2d4;
-	EntityConfig _entityConfig : 0x2a3d8;
+	EntityConfig _entityConfig : 0x2a404;
 	ModManager _modManager : 0x2a454;
 	StringTable _stringTable : 0x4a6b4;
 	unsigned int _framecount : 0x4a924;
