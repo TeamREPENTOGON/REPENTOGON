@@ -7148,9 +7148,37 @@
 <p><strong class="xmlInfo red">Resource-Folder</strong>: Using this file in a resource folder of a mod will replace the original file.</p>
 <p><strong class="xmlInfo green">Content-Folder</strong>: Using this file in a content folder will add new backdrops animations.</p>
 <p>With REPENTOGON, you have the ability to add new backdrops in an organic way, they should work just as vanilla backdrops do with the same xml structure. <br />
-Take in mind that, in the same way as other content xmls, ids are automatically assigned and shouldnt be specified. If you do specify an id for a xml node, it will be ignored.  <br />
-To get the Id of a backdrop animation in lua, you can use Isaac.GetBackdropIdByName, you can then set modded backdrops using the Room.SetBackdropType () function.</p>
-<p>The following custom attributes can be defined for backdrop in the backdrops xml.</p>
+Take in mind that, in the same way as other content xmls, ids are automatically assigned and shouldnt be specified. If you do specify an id for a xml node, it will be ignored.
+Instead, you should use the added "name" variable, then use Isaac.GetBackdropIdByName to retrieve its id.
+You can then set modded backdrops using the Room.SetBackdropType () function.</p>
+<details class="- example">
+<summary>Example XML</summary>
+</details>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&lt;backdrops</span><span class="w"> </span><span class="na">gfxroot=</span><span class="s">&quot;gfx/backdrop/&quot;</span><span class="w"> </span><span class="na">gridgfxroot=</span><span class="s">&quot;gfx/grid/&quot;</span><span class="w"> </span><span class="na">effectsgfxroot=</span><span class="s">&quot;gfx/effects/&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;backdrop</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;placement&quot;</span><span class="w"> </span><span class="na">reftype=</span><span class="s">&quot;1&quot;</span><span class="w"> </span><span class="na">gfx=</span><span class="s">&quot;01_Basement.png&quot;</span><span class="w"> </span><span class="na">walls=</span><span class="s">&quot;1&quot;</span><span class="w"> </span><span class="na">wallvariants=</span><span class="s">&quot;3&quot;</span><span class="w"> </span><span class="na">floors=</span><span class="s">&quot;1&quot;</span><span class="w"> </span><span class="na">floorvariants=</span><span class="s">&quot;6&quot;</span>
+<span class="w">        </span><span class="na">lfloorgfx   =</span><span class="w"> </span><span class="s">&quot;01_LBasementFloor.png&quot;</span>
+<span class="w">        </span><span class="na">nfloorgfx   =</span><span class="w"> </span><span class="s">&quot;01_Basement_nfloor.png&quot;</span>
+<span class="w">        </span><span class="na">props       =</span><span class="w"> </span><span class="s">&quot;Props_01_Basement.anm2&quot;</span>
+<span class="w">        </span><span class="na">rocks       =</span><span class="w"> </span><span class="s">&quot;rocks_basement.png&quot;</span>
+<span class="w">        </span><span class="na">pit         =</span><span class="w"> </span><span class="s">&quot;grid_pit.png&quot;</span>
+<span class="w">        </span><span class="na">bridge      =</span><span class="w"> </span><span class="s">&quot;grid_bridge.png&quot;</span>
+<span class="w">        </span><span class="na">door        =</span><span class="w"> </span><span class="s">&quot;door_01_normaldoor.png&quot;</span>
+<span class="w">        </span><span class="na">holeinwall  =</span><span class="w"> </span><span class="s">&quot;door_08_holeinwall.png&quot;</span>
+<span class="w">    </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/backdrops&gt;</span>
+</code></pre></div></td></tr></table></div>
+<p>The following custom attributes can be defined for backdrop in the backdrops xml:</p>
 <table>
 <thead>
 <tr>
@@ -7164,6 +7192,11 @@ To get the Id of a backdrop animation in lua, you can use Isaac.GetBackdropIdByN
 <td style="text-align: left;">reftype</td>
 <td style="text-align: left;">int</td>
 <td style="text-align: left;">Defines the id of the backdrop to use as a base for the custom backdrop. This is useful to grab elements from preexistent backdrops, like running water and the such</td>
+</tr>
+<tr>
+<td style="text-align: left;">name</td>
+<td style="text-align: left;">string</td>
+<td style="text-align: left;">The name of the custom backdrop, for use with Isaac.GetBackdropIdByName</td>
 </tr>
 </tbody>
 </table>
