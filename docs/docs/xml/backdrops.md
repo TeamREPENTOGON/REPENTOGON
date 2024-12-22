@@ -14,21 +14,20 @@ Instead, you should use the added "name" variable, then use Isaac.GetBackdropIdB
 You can then set modded backdrops using the Room.SetBackdropType () function.
 
 ???- example "Example XML"
-
-```xml
-<backdrops gfxroot="gfx/backdrop/" gridgfxroot="gfx/grid/" effectsgfxroot="gfx/effects/">
-	<backdrop name="placement" reftype="1" gfx="01_Basement.png" walls="1" wallvariants="3" floors="1" floorvariants="6"
-		lfloorgfx	= "01_LBasementFloor.png"
-		nfloorgfx	= "01_Basement_nfloor.png"
-		props		= "Props_01_Basement.anm2"
-		rocks		= "rocks_basement.png"
-		pit			= "grid_pit.png"
-		bridge		= "grid_bridge.png"
-		door		= "door_01_normaldoor.png"
-		holeinwall	= "door_08_holeinwall.png"
-	/>
-</backdrops>
-```
+	```xml
+	<backdrops gfxroot="gfx/backdrop/" gridgfxroot="gfx/grid/" effectsgfxroot="gfx/effects/">
+		<backdrop name="placement" reftype="1" gfx="01_Basement.png" walls="1" wallvariants="3" floors="1" floorvariants="6"
+			lfloorgfx	= "01_LBasementFloor.png"
+			nfloorgfx	= "01_Basement_nfloor.png"
+			props		= "Props_01_Basement.anm2"
+			rocks		= "rocks_basement.png"
+			pit			= "grid_pit.png"
+			bridge		= "grid_bridge.png"
+			door		= "door_01_normaldoor.png"
+			holeinwall	= "door_08_holeinwall.png"
+		/>
+	</backdrops>
+	```
 
 The following custom attributes can be defined for backdrop in the backdrops xml:
 
