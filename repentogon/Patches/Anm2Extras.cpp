@@ -160,7 +160,7 @@ CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool ch
 		}
 
 		// Initialize the CustomShaderInfo object and contained KAGE_Graphics_Shader.
-		custom_shaders[path].path = path;
+		shader_map[path].path = path;
 		KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
 		KAGE_Graphics_Manager_GL::LoadShader(&shader_map[path].shader, desc, fullpath.c_str());
 	}
