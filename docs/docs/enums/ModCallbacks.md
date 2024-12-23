@@ -1520,13 +1520,13 @@ Return `true` to cancel hearts HUD rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1118 |MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float Unknown, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+|1118 |MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset, <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float SpriteScale, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
 
 ### MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float Unknown, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | void |
+|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset, <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float SpriteScale, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | void |
 
 ### MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable }
 
