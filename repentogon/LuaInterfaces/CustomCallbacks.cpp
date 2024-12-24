@@ -4634,14 +4634,14 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 }
 
 // PRE/POST_STATUS_EFFECT_APPLY (1465/1466)
-struct TimedOnlyStatusEffectApplyInputs {
+struct StatusEffectApplyInputs {
 	Entity* entity;
 	EntityRef source;
 	int duration;
+	bool ignoreBossStatusCooldown;
 };
 
-void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int)> super)
-{
+void HandleStatusApplyCallback(int statusId, StatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, bool)> super) {
 	const int preCallbackId = 1465;
 	
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4655,10 +4655,18 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
-			if (lua_isinteger(L, -1)) {
+			if (lua_istable(L, -1)) {
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					inputs.duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					inputs.ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 2);
+			}
+			else if (lua_isinteger(L, -1)) {
 				inputs.duration = (int)lua_tointeger(L, -1);
 			}
 			else if (lua_isboolean(L, -1))
@@ -4670,7 +4678,7 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 		}
 	}
 
-	super(inputs.source, inputs.duration);
+	super(inputs.source, inputs.duration, inputs.ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -4685,15 +4693,23 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 	}
 }
 
-#define _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration) { return super(ref, duration); }
-#define HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(_method, statusId) \
+#define _APPLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration, ignoreBossStatusCooldown); }
+#define HOOK_STATUS_APPLY_CALLBACKS(_method, statusId) \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) -> void) { \
+	StatusEffectApplyInputs inputs = {this, ref, duration, ignoreBossStatusCooldown}; \
+	HandleStatusApplyCallback(statusId, inputs, _APPLY_STATUS_EFFECT_LAMBDA()); \
+}
+
+#define _APPLY_NOBOOL_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration); }
+#define HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(_method, statusId) \
 HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration) -> void) { \
-	TimedOnlyStatusEffectApplyInputs inputs = {this, ref, duration}; \
-	HandleTimedOnlyStatusApplyCallback(statusId, inputs, _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA()); \
+	StatusEffectApplyInputs inputs = {this, ref, duration, false}; \
+	HandleStatusApplyCallback(statusId, inputs, _APPLY_NOBOOL_STATUS_EFFECT_LAMBDA()); \
 }
 
 struct DamageStatusEffectApplyInputs {
@@ -4701,10 +4717,10 @@ struct DamageStatusEffectApplyInputs {
 	EntityRef source;
 	int duration;
 	float damage;
+	bool ignoreBossStatusCooldown;
 };
 
-void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, float)> super)
-{
+void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, float, bool)> super) {
 	const int preCallbackId = 1465;
 
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4719,12 +4735,18 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
 			.push(inputs.damage)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				inputs.duration = lua::callbacks::ToInteger(L, 1);
-				inputs.damage = (float)lua::callbacks::ToNumber(L, 2);
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					inputs.duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					inputs.damage = (float)lua::callbacks::ToNumber(L, 2);
+				if (len > 2)
+					inputs.ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 3);
 			}
 			else if (lua_isinteger(L, -1)) {
 				inputs.duration = (int)lua_tointeger(L, -1);
@@ -4738,7 +4760,7 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 		}
 	}
 
-	super(inputs.source, inputs.duration, inputs.damage);
+	super(inputs.source, inputs.duration, inputs.damage, inputs.ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -4754,86 +4776,37 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
 			.push(inputs.damage)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 	}
 }
 
-#define _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, float damage) { return super(ref, duration, damage); }
+#define _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown) { return super(ref, duration, damage, ignoreBossStatusCooldown); }
 #define HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(_method, statusId) \
-HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) -> void) { \
-	DamageStatusEffectApplyInputs inputs = {this, ref, duration, damage}; \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown) -> void) { \
+	DamageStatusEffectApplyInputs inputs = {this, ref, duration, damage, ignoreBossStatusCooldown}; \
 	HandleDamageStatusApplyCallback(statusId, inputs, _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA()); \
 }
 
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0); // requires ignoreBoss param
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1); //requires unk param
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //requires ignoreBoss param
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6); //requires ignoreBoss param
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7); //requires ignoreBoss param
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10); //requires unk param
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11); //requires ignoreBoss param
-//HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13); //requires ignoreBoss param
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
+// As of rep+, these all take a "ignoreBossStatusCooldown" boolean.
+HOOK_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
+HOOK_STATUS_APPLY_CALLBACKS(AddConfusion, 5);
+HOOK_STATUS_APPLY_CALLBACKS(AddFear, 6);
+HOOK_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
+HOOK_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
+HOOK_STATUS_APPLY_CALLBACKS(AddShrink, 13);
 
-//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3); //requires ignoreBoss param
-//HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12); //requires ignoreBoss param
+// These ones take a boolean parameter but it is unused.
+HOOK_STATUS_APPLY_CALLBACKS(AddBaited, 0);
+HOOK_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
+HOOK_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
 
-HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBosses) -> void) {
-	const int preCallbackId = 1465;
-	const int statusId = 5;
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddIce, 8);
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
 
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(statusId)
-			.push(statusId)
-			.push(this, lua::Metatables::ENTITY)
-			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(ignoreBosses)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-				ignoreBosses = lua::callbacks::ToBoolean(L, 2);
-			}
-			else if (lua_isinteger(L, -1)) {
-				duration = (int)lua_tointeger(L, -1);
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1)) {
-					return;
-				}
-			}
-		}
-	}
-
-	super(ref, duration, ignoreBosses);
-
-	const int postCallbackId = 1466;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result =  lua::LuaCaller(L).push(postCallbackId)
-			.push(statusId)
-			.push(statusId)
-			.push(this, lua::Metatables::ENTITY)
-			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(ignoreBosses)
-			.call(1);
-	}
-}
+HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3);
+HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12);
 
 HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
 	Vector pushVector(pushDirection);
@@ -4858,14 +4831,17 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-
-				lua_pushinteger(L, 2);
-				lua_gettable(L, -2);
-				pushVector = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-				lua_pop(L, 1);
-
-				takeImpactDamage = lua::callbacks::ToBoolean(L, 3);
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1) {
+					lua_pushinteger(L, 2);
+					lua_gettable(L, -2);
+					pushVector = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+					lua_pop(L, 1);
+				}
+				if (len > 2)
+					takeImpactDamage = lua::callbacks::ToBoolean(L, 3);
 			}
 			else if (lua_isinteger(L, -1)) {
 				duration = (int)lua_tointeger(L, -1);
@@ -4900,7 +4876,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 	}
 }
 
-HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amount, ColorMod color) -> void) {
+HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amount, ColorMod color, bool ignoreBossStatusCooldown) -> void) {
 	const int preCallbackId = 1465;
 	const int statusId = 14;
 
@@ -4917,18 +4893,24 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push(duration)
 			.push(amount)
 			.push(&color, lua::Metatables::COLOR)
+			.push(ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-				amount = (float)lua::callbacks::ToNumber(L, 1);
-
-				lua_pushinteger(L, 3);
-				lua_gettable(L, -2);
-				color = *lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
-				lua_pop(L, 1);
-
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					amount = (float)lua::callbacks::ToNumber(L, 2);
+				if (len > 2) {
+					lua_pushinteger(L, 3);
+					lua_gettable(L, -2);
+					color = *lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+					lua_pop(L, 1);
+				}
+				if (len > 3)
+					ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 4);
 			}
 			else if (lua_isinteger(L, -1)) {
 				duration = (int)lua_tointeger(L, -1);
@@ -4942,7 +4924,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 		}
 	}
 
-	super(ref, duration, amount, color);
+	super(ref, duration, amount, color, ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -4959,6 +4941,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push(duration)
 			.push(amount)
 			.push(&color, lua::Metatables::COLOR)
+			.push(ignoreBossStatusCooldown)
 			.call(1);
 	}
 }
