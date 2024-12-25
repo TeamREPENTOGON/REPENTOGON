@@ -5,7 +5,7 @@ __thiscall void Music::Play(int musicid,float volume);
 __thiscall void Music::Crossfade(int musicid,float faderate);
 
 "558bec51568bf1578b860c030000":
-__thiscall void Music::PlayJingle(int musicid, int unusedInt, bool unusedBool);
+__thiscall void Music::PlayJingle(int musicid, int unusedLength, bool unusedBool);
 
 "558bec5651":
 __thiscall void Music::Fadein(unsigned int Id, float Volume, float FadeRate);
@@ -40,24 +40,19 @@ __thiscall void Music::UpdateVolume();
 "558beca1????????f30f1045":
 __thiscall void Music::VolumeSlide(float TargetVolume, float FadeRate);
 
-struct Music depends (MusicEntry) {
+struct Music depends (MusicEntry, SoundStream, SoundStreamSet) {
 {{
-	inline void StopJingle() {
-		*(int*)((char*)this + 0x348) = 0;
-		*(int*)((char*)this + 0x364) = -99;
-	};
-	
 	  bool LIBZHL_API ValidateMusicID(int id, int& max);
 }} 
 	unsigned int _currentStream : 0x0;
-	// i'll add StreamSet later
+	SoundStreamSet _streamSets[2] : 0x4;
 	unsigned int _currentId : 0x30c;
 	unsigned int _queuedId : 0x310;
 	float _pitch : 0x314;
 	float _targetPitch : 0x318;
 	vector_MusicEntry _entries : 0x31c;
 	bool _enabled : 0x328;
-	// and Stream
-	float _jingleVolumeMaybe : 0x360;
-	int _jingleCountdownMaybe : 0x364;
+	SoundStream _jingleStream : 0x32c;
+	float _jingleVolume : 0x360;
+	int _jingleCountdown : 0x364;
 } : 0x368;
