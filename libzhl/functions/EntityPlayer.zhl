@@ -500,7 +500,7 @@ __thiscall void Entity_Player::SyncConsumableCounts(Entity_Player* player, int b
 "558bec83e4f851538bd9565783bb????????000f8c":
 __thiscall void Entity_Player::ConsumableCountChanged(int bitflags);
 
-"558bec83e4f883ec74a1????????33c4894424??53568b75":
+"558bec83e4f881ecc4000000a1????????33c4898424????????53568b75":
 __thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);
 
 "558bec51538a5d??32ff":

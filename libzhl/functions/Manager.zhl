@@ -119,7 +119,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	DailyChallenge _dailyChallenge : 0x4ae0c;
 	bool _networkPlay : 0x4aec0;
 	ANM2 _cursorSprite : 0x4af04;
-	NetplayManager _netplayManager : 0x4b038;
+	NetplayManager _netplayManager : 0x4b060;
 	
 } : 0x4cde8;
 
