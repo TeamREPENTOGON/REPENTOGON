@@ -173,11 +173,11 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     bool _dead : 0x173;
     int _entityGridCollisionClass : 0x184;
     int _entityCollisionClass : 0x188;
-    // 0x184 is a boolean related to collisions.
-    unsigned short _entityExtraDataPtrUpperBytes : 0x18e; // ?
+    // 0x18c is a boolean related to collisions. Seems to be essentially a "_collidesWithEntity"
+    unsigned short _entityExtraDataPtrUpperBytes : 0x18e;
     bool _collidesWithGrid : 0x190;
-    unsigned short _entityExtraDataPtrLowerBytes : 0x192; // ?
-    vector_ColorParams _colorParams : 0x1a4;
+    unsigned short _entityExtraDataPtrLowerBytes : 0x192;
+    vector_ColorParams _colorParams : 0x1ac;
     int _fireDamageCountdown : 0x210;
     int _damageCountdown : 0x214;
     int _freezeCountdown : 0x218;
