@@ -229,7 +229,7 @@ LUA_FUNCTION(Lua_GameGetPlayer) {
 LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
-	game->_leaderboard.Show(1, &game->_scoreSheet, false);
+	game->_leaderboard.Show(1, &game->_scoreSheet, false, 0);
 	return 0;
 }
 
