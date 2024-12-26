@@ -61,4 +61,4 @@ struct ItemPool depends (ItemPool_Item, RNG) {
 	int _pillEffects[15] : 0x7a4;
 	bool _idendifiedPillEffects[15] : 0x7e0;
 	uint16_t _remainingGenesisItems[31] : 0x7f0;
-} : 0x828;
+} : 0x830;

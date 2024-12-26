@@ -5,7 +5,7 @@ __thiscall void Leaderboard::ProcessInput();
 __thiscall void Leaderboard::get_leaderboard(int RankingState, int LiveSelectionState);
 
 "558bec51538bd95657c783????????00000000":
-__thiscall void Leaderboard::Show(unsigned int Date, ScoreSheet* ScoreSheet, bool SubmitScore, uint8_t PlayerIdx?);
+__thiscall void Leaderboard::Show(unsigned int Date, ScoreSheet* ScoreSheet, bool SubmitScore, uint8_t PlayerIdx);
 
 struct LeaderboardEntryData {
 	int _stageBonus : 0x0;
