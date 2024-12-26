@@ -56,9 +56,9 @@ struct ItemPool depends (ItemPool_Item, RNG) {
 	RNG _itemPoolRNG : 0x654;
 	vector_bool _removedCollectibles : 0x67c;  // Something goofy seemed to be happening with std::vector<bool> in zhl
 	vector_bool _roomBlacklistedCollectibles : 0x68c;  // doing this as a precaution too
-	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
-	int _numAvailableTrinkets : 0x798;
-	int _pillEffects[15] : 0x79c;
-	bool _idendifiedPillEffects[15] : 0x7d8;
-	uint16_t _remainingGenesisItems[31] : 0x7e8;
+	vector_TrinketPoolItem _trinketPoolItems : 0x794;
+	int _numAvailableTrinkets : 0x7a0;
+	int _pillEffects[15] : 0x7a4;
+	bool _idendifiedPillEffects[15] : 0x7e0;
+	uint16_t _remainingGenesisItems[31] : 0x7f0;
 } : 0x828;
