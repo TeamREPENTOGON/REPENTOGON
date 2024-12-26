@@ -93,4 +93,4 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
 	float _scrollinterpolationX : 0xf8d4;
 	float _scrollinterpolationY : 0xf8d8;
 	ANM2 _flySprite : 0xf8e4;
-} : 0xfc28;
+} : 0xf9f8;

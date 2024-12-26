@@ -137,7 +137,7 @@ void PerformASMPatches() {
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
-	//ASMPatchWaterDisabler(); //commented for rep+ temp
+	ASMPatchWaterDisabler(); //commented for rep+ temp
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
 
