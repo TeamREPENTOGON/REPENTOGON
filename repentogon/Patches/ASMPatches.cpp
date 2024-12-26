@@ -164,7 +164,7 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
-	//ASMPatchesForAddRemovePocketItemCallbacks(); //commented for rep+ temp
+	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
 	//ASMPatchesForCustomItemPools();
