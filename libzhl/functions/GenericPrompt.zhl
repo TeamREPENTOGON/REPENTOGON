@@ -10,7 +10,7 @@ __thiscall void GenericPrompt::constructor();
 __thiscall void GenericPrompt::Initialize(bool SmallPrompt);
 
 "558bec5156578bf9c787????????00000000":
-__thiscall void GenericPrompt::Show();
+__thiscall void GenericPrompt::Show(bool UNK);
 
 "8379??0074??8079??00":
 __thiscall bool GenericPrompt::IsActive();
