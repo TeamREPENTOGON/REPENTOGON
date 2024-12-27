@@ -93,10 +93,15 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
-	//ASMPatchPrePickupVoided(); // broke in rep+ 1.9.7.7
+
+	// rep+ nami: these are still a bit fucked
+	ASMPatchPrePickupVoided();
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
-	ASMPatchPrePickupComposted();
+	// in particular, the area this patches is never reached despite being correct,
+	// so the item never gets removed...
+	ASMPatchPrePickupComposted(); 
+
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
@@ -137,7 +142,7 @@ void PerformASMPatches() {
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
-	ASMPatchWaterDisabler(); //commented for rep+ temp
+	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
 

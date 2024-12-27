@@ -5,6 +5,7 @@
 
 #include "../XMLData.h"
 #include "../../LuaInit.h"
+#include "Log.h"
 
 /* * MC_PRE_LASER_COLLISION * *
 * There is no function you can hook that would allow you to skip a laser "collision".
@@ -619,11 +620,12 @@ void ASMPatchPrePickupVoided() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("e8????????8bcf46e8????????3bf00f82????????8bbd????????33c9");
+	SigScan scanner("E8????????8BCF46E8????????3BF072??8BBD????????33");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem VOID at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // push the pickup
@@ -668,14 +670,15 @@ void ASMPatchPrePickupVoidedBlackRune() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseCard at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseCard BLACK RUNE at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
 		.AddInternalCall(RunPrePickupVoidedBlackRune)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x14c) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1b9) // jump for false
 		.AddInternalCall(((char*)addr + 0x5) + *(ptrdiff_t*)((char*)addr + 0x1)) // restore the commands we overwrote (god this is ugly)
 		.AddRelativeJump((char*)addr + 0x5);
 
@@ -713,14 +716,15 @@ void ASMPatchPrePickupVoidedAbyss() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem ABYSS at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
 		.AddInternalCall(RunPrePickupVoidedAbyss)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x31) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0xAA) // jump for false
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x1)) // restore push eax
 		.AddInternalCall(((char*)addr + 0x6) + *(ptrdiff_t*)((char*)addr + 0x2)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x6);
@@ -759,7 +763,8 @@ void ASMPatchPrePickupComposted() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem COMPOSTED at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
