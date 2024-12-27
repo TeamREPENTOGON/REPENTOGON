@@ -93,15 +93,10 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
-
-	// rep+ nami: these are still a bit fucked
 	ASMPatchPrePickupVoided();
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
-	// in particular, the area this patches is never reached despite being correct,
-	// so the item never gets removed...
-	ASMPatchPrePickupComposted(); 
-
+	ASMPatchPrePickupComposted();
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
