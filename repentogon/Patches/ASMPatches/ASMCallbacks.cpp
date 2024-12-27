@@ -515,7 +515,7 @@ void ASMPatchTrySplit() {
 	patch.PreserveRegisters(savedRegisters);
 	patch.AddBytes("\x0f\xb6\xc0") // MOVZX EAX,AL
 		.Push(ASMPatch::Registers::EAX)  // Push current result
-		.Push(ASMPatch::Registers::EBX)  // Push NPC
+		.Push(ASMPatch::Registers::EDI)  // Push NPC
 		.AddInternalCall(TrySplitTrampoline)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
