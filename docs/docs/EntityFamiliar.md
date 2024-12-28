@@ -53,9 +53,9 @@ ___
 Returns the "multiplier" for the familiar, from effects such as **BFFS!** or **Hive Mind**. Typically used to multiply things such as familiar damage.
 
 ???- info "Multipliers"
-    **BFFS!** and **Hive Mind**: x2.0
-    **Tainted Bethany**: x0.75
-    **Tainted Lazarus Birthright**: x0.25
+    - **BFFS!** and **Hive Mind**: x2.0
+    - **Tainted Bethany**: x0.75
+    - **Tainted Lazarus Birthright**: x0.25
 
 ___
 ### GetPathFinder () {: aria-label='Functions' }
