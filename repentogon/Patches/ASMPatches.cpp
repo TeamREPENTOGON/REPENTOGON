@@ -17,7 +17,8 @@
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
 #include "ASMPatches/ASMEntityNPC.h"
-#include "ASMPatches/ASMGridEntity.h"
+#include "ASMPatches/ASMGridEntityCollision.h"
+#include "ASMPatches/ASMGridEntitySpawn.h"
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
@@ -119,7 +120,8 @@ void PerformASMPatches() {
 	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
-	//PatchGridCallbackShit(); //commented for rep+ temp
+	//PatchGridCollisionCallback(); //commented for rep+ temp
+	//PatchGridSpawnCallback(); //commented for rep+ temp
 
 	// Level
 	ASMPatchBlueWombCurse();
