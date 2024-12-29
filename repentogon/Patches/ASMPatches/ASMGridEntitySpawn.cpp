@@ -43,13 +43,15 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, unsigned in
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-
 void PatchInlinedSpawnGridEntity()
 {
 	ZHL::Logger logger;
 	for (const GridEntitySpawnPatchInfo& i : patches) {
 		SigScan scanner(i.signature);
-		scanner.Scan();
+		if (!scanner.Scan()) {
+			logger.Log("SpawnGridEntity patch %s failed, signature not found!\n", i.comment);
+			continue;
+		}
 		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
 
 		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment, addr);
@@ -135,49 +137,6 @@ void ASMPatchRoomSpawnEntity() {
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr - 0xf2a) // jump to misc + return false
 		.AddRelativeJump((char*)addr + 0x3a); // jump to misc + return true
 	sASMPatcher.PatchAt(addr, &patch);
-}
-
-// Room::SpawnGridEntity
-
-void __stdcall PostGridSpawnTrampoline(GridEntity* grid) {
-	const int callbackid = 1101;
-
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(grid->GetType())
-			.push(grid, lua::Metatables::GRID_ENTITY)
-			.call(1);
-	}
-}
-
-void ASMPatchSpawnGridEntityPost(void* addr) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EDI) // GridEntity
-		.AddInternalCall(PostGridSpawnTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 5))  // Restore the commands we overwrote
-		.AddRelativeJump((char*)addr + 5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void PatchPostSpawnGridEntity()
-{
-	SigScan scanner1("8947??b0015f5e5b5dc21400");
-	SigScan scanner2("8947??b0015f5e5b595dc20800");
-	scanner1.Scan();
-	scanner2.Scan();
-	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
-
-	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_ENTITY_SPAWN at %p, %p\n", addrs[0], addrs[1]);
-	ASMPatchSpawnGridEntityPost(addrs[0]);
-	ASMPatchSpawnGridEntityPost(addrs[1]);
 }
 
 void PatchInlinedSpawnGridEntityaa()

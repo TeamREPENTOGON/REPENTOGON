@@ -1845,7 +1845,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 }
 
 //POST_GRID_ENTITY_SPAWN (id: 1101)
-//there's another call in ASMPatches
+//GridEntity::Init doesn't appear to be inlined anymore, so it doesn't have to be patched in
 HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 	super(Seed);
 

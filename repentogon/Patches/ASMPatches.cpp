@@ -121,7 +121,7 @@ void PerformASMPatches() {
 
 	// GridEntity
 	//PatchGridCollisionCallback(); //commented for rep+ temp
-	PatchGridSpawnCallback(); //commented for rep+ temp
+	PatchGridSpawnCallback();
 
 	// Level
 	ASMPatchBlueWombCurse();
