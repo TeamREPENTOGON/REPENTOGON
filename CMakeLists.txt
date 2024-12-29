@@ -63,6 +63,9 @@ option(CURL_DISABLE_TFTP "" ON)
 option(CURL_ZLIB "" OFF)
 add_subdirectory("libs/curl")
 
+# General logger
+add_library(logger STATIC ${CMAKE_SOURCE_DIR}/logger/logger.cpp)
+
 # Crypto++
 option(CRYPTOPP_BUILD_TESTING "" OFF)
 add_subdirectory("libs/cryptopp-cmake")
