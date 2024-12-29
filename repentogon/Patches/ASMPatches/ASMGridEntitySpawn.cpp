@@ -2,13 +2,67 @@
 #include "../ASMPatches.h"
 #include "HookSystem.h"
 
-//////////////////////////////////////////////
-// !!!!! GRID CALLBACK STUFF HERE !!!!!
-//////////////////////////////////////////////
+#include "ASMGridEntitySpawn.h"
 
-/* /////////////////
+/* /////////////////////
+// shared SpawnGridEntity trampoline
+*/ /////////////////////
+
+bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) {
+	return g_Game->_room->SpawnGridEntity(idx, type, variant, seed, vardata);
+}
+
+/* /////////////////////
+// Generic inline patch
+*/ /////////////////////
+
+void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, unsigned int variant, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(0); // vardata
+	if (seedOffset != 0) {
+		patch.Push(seedReg, seedOffset);
+	}
+	else
+	{
+		patch.Push(seedReg);
+	}
+	patch.Push((int32_t)variant) // variant
+		.Push((int32_t)type); // type
+	if (idxOffset != 0) {
+		patch.Push(idxReg, idxOffset);
+	}
+	else
+	{
+		patch.Push(idxReg);
+	}
+	patch.AddInternalCall(SpawnGridEntityTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+void PatchInlinedSpawnGridEntity()
+{
+	ZHL::Logger logger;
+	for (const GridEntitySpawnPatchInfo& i : patches) {
+		SigScan scanner(i.signature);
+		scanner.Scan();
+		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
+
+		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment, addr);
+		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variant, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset);
+	};
+}
+void PatchGridSpawnCallback()
+{
+	PatchInlinedSpawnGridEntity();
+}
+
+/*
 // Room::spawn_entity
-*/ /////////////////
 
 GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned short entrySubtype, unsigned int teleState) {
 	const int callbackid = 1192;
@@ -83,9 +137,7 @@ void ASMPatchRoomSpawnEntity() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-/* /////////////////////
 // Room::SpawnGridEntity
-*/ /////////////////////
 
 void __stdcall PostGridSpawnTrampoline(GridEntity* grid) {
 	const int callbackid = 1101;
@@ -128,77 +180,7 @@ void PatchPostSpawnGridEntity()
 	ASMPatchSpawnGridEntityPost(addrs[1]);
 }
 
-/* /////////////////////
-// shared SpawnGridEntity trampoline
-*/ /////////////////////
-
-bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) {
-	return g_Game->_room->SpawnGridEntity(idx, type, variant, seed, vardata);
-}
-
-/* /////////////////////
-// Generic inline patch
-*/ /////////////////////
-
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, unsigned int jumpOffset, GridEntityType type, unsigned int variant) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(0); // vardata
-	if (seedOffset != 0) {
-		patch.Push(seedReg, seedOffset);
-	}
-	else
-	{
-		patch.Push(seedReg);
-	}
-	patch.Push((int32_t)variant) // variant
-		.Push((int32_t)type); // type
-	if (idxOffset != 0) {
-		patch.Push(idxReg, idxOffset);
-	}
-	else
-	{
-		patch.Push(idxReg);
-	}
-	patch.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-// Condensed that works for majority of cases
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, unsigned int variant) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(0) // vardata
-		.Push(ASMPatch::Registers::EAX) // seed
-		.Push((int32_t)variant) // variant
-		.Push((int32_t)type) // type
-		.Push(idxReg) // idx
-		.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, ASMPatch::Registers varReg, int varJumpOffset) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(0) // vardata
-		.Push(ASMPatch::Registers::EAX) // seed
-		.Push(varReg, varJumpOffset) // variant
-		.Push((int32_t)type) // type
-		.Push(idxReg) // idx
-		.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void PatchInlinedSpawnGridEntity()
+void PatchInlinedSpawnGridEntityaa()
 {
 	SigScan scanner_megafatty("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??06000000e8????????c706");
 	SigScan scanner_larryjr("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??08000000");
@@ -301,3 +283,4 @@ void PatchInlinedSpawnGridEntity()
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[20], ASMPatch::Registers::EAX, 0, ASMPatch::Registers::EBP, -0x1c, 0x1164, GRID_POOP, 0); // pressure plate reward (1)
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[21], ASMPatch::Registers::EAX, 0, ASMPatch::Registers::EBP, -0x1c, 0x1164, GRID_POOP, 3); // pressure plate reward (2)
 }
+*/
