@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 
 #include "ASMGridEntitySpawn.h"
+#include "ASMGridEntitySpawn_Definitions.h"
 
 /* /////////////////////
 // shared SpawnGridEntity trampoline
@@ -16,7 +17,7 @@ bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned in
 // Generic inline patch
 */ /////////////////////
 
-void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, ASMPatch::Registers variantReg, int variantOffset, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
+void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, std::optional<ASMPatch::Registers> variantReg, int variantOffset, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	
@@ -29,13 +30,13 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, ASMPatch::R
 	{
 		patch.Push(seedReg);
 	}
-	if (variantReg == NO_VARIANT_REG)
+	if (variantReg.has_value() == false)
 	{
 		patch.Push((int32_t)variantOffset); // variant constant
 	}
 	else
 	{
-		patch.Push(variantReg, variantOffset); // variant from register
+		patch.Push(variantReg.value(), variantOffset); // variant from register
 	}
 	patch.Push((int32_t)type); // type
 	if (idxOffset != 0) {
