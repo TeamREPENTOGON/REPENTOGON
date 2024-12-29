@@ -16,9 +16,10 @@ bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned in
 // Generic inline patch
 */ /////////////////////
 
-void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, unsigned int variant, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
+void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, ASMPatch::Registers variantReg, int variantOffset, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
+	
 	patch.PreserveRegisters(savedRegisters)
 		.Push(0); // vardata
 	if (seedOffset != 0) {
@@ -28,8 +29,15 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, unsigned in
 	{
 		patch.Push(seedReg);
 	}
-	patch.Push((int32_t)variant) // variant
-		.Push((int32_t)type); // type
+	if (variantReg == NO_VARIANT_REG)
+	{
+		patch.Push((int32_t)variantOffset); // variant constant
+	}
+	else
+	{
+		patch.Push(variantReg, variantOffset); // variant from register
+	}
+	patch.Push((int32_t)type); // type
 	if (idxOffset != 0) {
 		patch.Push(idxReg, idxOffset);
 	}
@@ -55,7 +63,7 @@ void PatchInlinedSpawnGridEntity()
 		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
 
 		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment, addr);
-		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variant, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset);
+		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variantReg, i.variantOffset, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset);
 	};
 }
 void PatchGridSpawnCallback()
