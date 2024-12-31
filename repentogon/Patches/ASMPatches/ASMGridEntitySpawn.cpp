@@ -17,7 +17,7 @@ bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned in
 // Generic inline patch
 */ /////////////////////
 
-void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, std::optional<ASMPatch::Registers> variantReg, int variantOffset, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset) {
+void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, std::optional<ASMPatch::Registers> variantReg, int variantOffset, ASMPatch::Registers idxReg, int idxOffset, ASMPatch::Registers seedReg, int seedOffset, int jumpOffset, std::optional<int> jumpCondOffset) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	
@@ -46,9 +46,17 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, std::option
 	{
 		patch.Push(idxReg);
 	}
-	patch.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
+	patch.AddInternalCall(SpawnGridEntityTrampoline);
+	if (jumpCondOffset.has_value())
+	{
+		patch.AddBytes("\x85\xc0");  // cmp eax, eax
+	}
+	patch.RestoreRegisters(savedRegisters);
+	if (jumpCondOffset.has_value())
+	{
+		patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + jumpCondOffset.value());
+	}
+		patch.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -64,7 +72,7 @@ void PatchInlinedSpawnGridEntity()
 		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
 
 		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment, addr);
-		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variantReg, i.variantOffset, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset);
+		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variantReg, i.variantOffset, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset, i.jumpCondOffset);
 	};
 }
 void PatchGridSpawnCallback()
