@@ -1,4 +1,4 @@
-struct LayerState depends (LayerData, ANM2, Vector, ColorMod, BlendMode) { {{
+struct LayerState depends (LayerData, Vector, ColorMod, BlendMode) { {{
     inline int GetLayerID() { return this->_layerData->ID; }
     inline std_string GetName() { return this->_layerData->name; }
 	inline std_string GetSpritesheetPath() { return this->_spriteSheetPath; }

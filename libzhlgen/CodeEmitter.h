@@ -1,17 +1,22 @@
 #pragma once
 
+#include <fstream>
 #include <filesystem>
 #include <map>
-#include "ParserCore.h"
+
+#include "ParserDefinitions.h"
+#include "TypeMap.h"
+
+#include "logger/logger.h"
 
 namespace fs = std::filesystem;
 
 class CodeEmitter {
 public:
-	CodeEmitter(bool test);
+	CodeEmitter(TypeMap* types, bool test);
 
-	void ProcessZHLFiles(fs::path const& base);
-	void ProcessFile(fs::path const& path);
+	bool ProcessZHLFiles(fs::path const& base);
+	bool ProcessFile(fs::path const& path);
 
 	void Emit();
 	void Dump();
@@ -42,15 +47,7 @@ private:
 		CodeEmitter* _emitter;
 	};
 
-	void CheckVTables();
-	void CheckVTableInternalConsistency(Struct const& s);
-	void CheckVTableHierarchyConsistency(Struct const& s, std::vector<Struct const*> const& parents);
-
 	void BuildExternalNamespaces();
-
-	void AssertReady(Type const* t);
-	void CheckDependencies();
-	void CheckDependencies(Type const& t);
 
 	void EmitForwardDecl();
 	void EmitJsonPrologue();
@@ -116,7 +113,7 @@ private:
 	void AssertEmitted(Struct const& s);
 
 	Namespace _global;
-	std::map<std::string, Type> _types;
+	TypeMap* _types;
 	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
 	std::ofstream _decls, _impl, _json;
@@ -136,7 +133,6 @@ private:
 	std::set<std::string> _initializedStructures;
 
 	std::set<std::string> _vtableProcessingStructures;
-	ErrorLogger _logger;
 
 	uint32_t _emitDepth = 0;
 
@@ -145,6 +141,6 @@ private:
 	 * internal name is _fun<ID>.
 	 */
 	std::map<std::string, std::string> _fullNameToInternalName;
-
-	static Function const* GetFunction(std::variant<Signature, Skip, Function> const& fn);
 };
+
+Logger* ParserLogger();

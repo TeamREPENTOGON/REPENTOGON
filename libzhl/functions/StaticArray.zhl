@@ -2,4 +2,4 @@ struct StaticArray
 {
     void* data : 0x0;
     uint16_t size : 0x4;
-} : 0x6;
+} : 0x8;

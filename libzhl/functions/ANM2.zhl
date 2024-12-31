@@ -64,7 +64,7 @@ __thiscall void ANM2::construct_from_copy(ANM2* right);
 "558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf1e8????????8b46":
 __thiscall void ANM2::destructor();
 
-struct ANM2 depends (AnimationState, ColorMod, LayerState, Vector) { {{
+struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
     inline AnimationState* GetAnimationState() { return &this->_animState; }
     inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
     inline unsigned int GetAnimationCount() { return this->_animCount; }

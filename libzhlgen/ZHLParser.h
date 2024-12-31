@@ -858,6 +858,8 @@ public:
     antlr4::tree::TerminalNode *Name();
     std::vector<antlr4::tree::TerminalNode *> RightParen();
     antlr4::tree::TerminalNode* RightParen(size_t i);
+    antlr4::tree::TerminalNode *Colon();
+    antlr4::tree::TerminalNode *Number();
     antlr4::tree::TerminalNode *Semi();
     antlr4::tree::TerminalNode *CallingConvention();
     std::vector<antlr4::tree::TerminalNode *> Star();
@@ -886,6 +888,7 @@ public:
     antlr4::tree::TerminalNode* Colon(size_t i);
     std::vector<antlr4::tree::TerminalNode *> RightParen();
     antlr4::tree::TerminalNode* RightParen(size_t i);
+    antlr4::tree::TerminalNode *Number();
     antlr4::tree::TerminalNode *Semi();
     antlr4::tree::TerminalNode *CallingConvention();
     std::vector<antlr4::tree::TerminalNode *> Star();
