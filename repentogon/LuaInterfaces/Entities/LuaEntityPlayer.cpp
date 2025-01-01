@@ -1011,7 +1011,7 @@ LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 LUA_FUNCTION(Lua_PlayerGetCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& collectibleInv = plr->GetCollectiblesList();
+	const std::vector<int>& collectibleInv = *plr->GetCollectiblesList();
 
 	lua_newtable(L);
 
@@ -1048,7 +1048,7 @@ LUA_FUNCTION(Lua_PlayerSetTearPoisonDamage) {
 LUA_FUNCTION(Lua_PlayerGetVoidedCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& collecitbleInv = plr->GetVoidedCollectiblesList();
+	const std::vector<int>& collecitbleInv = *plr->GetVoidedCollectiblesList();
 
 	lua_newtable(L);
 	int idx = 1;

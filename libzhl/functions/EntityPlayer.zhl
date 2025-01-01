@@ -236,7 +236,7 @@ __thiscall int Entity_Player::GetCollectibleNum(int collectibleID, bool OnlyCoun
 "558bec83e4f8a1????????83ec1c83b8????????02":
 __thiscall void Entity_Player::TriggerCollectibleRemoved(unsigned int collectibleID);
 
-"558bec83e4f8515356578bf9837f??00":
+"558bec5153568bf157837e??000f85":
 __thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool firstTimePickingUp);
 
 "558bec83ec1053568bf157":
@@ -557,9 +557,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline float* GetEdenShotSpeed() { return &this->_edenShotSpeed; }
 	inline float* GetEdenLuck() { return &this->_edenLuck; }
 	inline bool* GetCanFly() { return &this->_canFly; }
-	inline std_vector_int GetCollectiblesList() { return this->_unkcolentry; }
+	inline std_vector_int* GetCollectiblesList() { return &this->_collectibleCounts; }
 	inline vector_SmeltedTrinketDesc* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
-	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
+	inline std_vector_int* GetVoidedCollectiblesList() { return &this->_voidedCollectibles; }
 	inline int* GetPonyCharge() { return &this->_ponyCharge; } 
 	inline uint32_t GetDeadEyeCharge() { return this->_deadEyeCharges; }
 	inline uint32_t GetDeadEyeMisses() { return this->_deadEyeMisses; }
@@ -685,6 +685,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	TemporaryEffects _temporaryeffects : 0x14f8;
 	int _speedModifier : 0x1510, _fireDelayModifier : 0x1514, _damageModifier : 0x1518, _tearRangeModifier : 0x151c, _shotSpeedModifier : 0x1520, _luckModifier : 0x1524;
 	float _edenSpeed : 0x1538, _edenFireDelay : 0x153c, _edenDamage : 0x1540, _edenTearRange : 0x1544, _edenShotSpeed : 0x1548, _edenLuck : 0x154c;
+	bool _canFly : 0x155c;
 	uint32_t _cacheFlags : 0x1560;
 	int8_t _tearDisplacement : 0x1564;
 	float _tearPoisonDamage : 0x1568;
@@ -696,7 +697,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _moveDirection : 0x1610;
 	int _headDirection: 0x1614;
 	uint32_t _trinketsID[2] : 0x16a8;
+	std_vector_int _collectibleCounts: 0x16b0;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1730;
+	std_vector_int _voidedCollectibles : 0x173c;
 	uint32_t _actionHoldDrop : 0x17a8;
 	int _playerForms[15] : 0x17c4;
 	ColorMod _footprintColor1 : 0x180c;
@@ -745,8 +748,6 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _wildCardItem : 0x205c;
 	bool _isCoopGhost : 0x2070;
 	bool _canShoot : 0x1809;
-	bool _canFly : 0x155c;
-	std_vector_int _unkcolentry: 0x16b0;
 	uint32_t _urnSouls: 0x1cf0;
 } : 0x2e98;
 
