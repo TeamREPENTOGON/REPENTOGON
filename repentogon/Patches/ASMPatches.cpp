@@ -120,7 +120,7 @@ void PerformASMPatches() {
 	//ASMPatchApplyFrozenEnemyDeathEffects();
 
 	// GridEntity
-	//PatchGridCollisionCallback(); //commented for rep+ temp
+	PatchGridCollisionCallback();
 	PatchGridSpawnCallback();
 
 	// Level

@@ -103,6 +103,8 @@ void ASMPatchBulletGridCollisionCallback() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching 'GRIDCOLL_BULLET' grid collision callback at % p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
@@ -112,7 +114,7 @@ void ASMPatchBulletGridCollisionCallback() {
 		.AddInternalCall(BulletGridCollisionCallbackHook)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xF73)  // If call returned true, ignore collision
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x10DB)  // If call returned true, ignore collision
 		.AddRelativeJump((char*)addr + 0x7);
 
 	sASMPatcher.PatchAt(addr, &patch);
@@ -129,17 +131,18 @@ int __stdcall GroundGridCollisionCallbackHook(Entity* entity, const int gridInde
 	return gridCol;
 }
 void ASMPatchGroundGridCollisionCallback() {
-	SigScan scanner("508bcee8????????85c074??f30f1055");
+	SigScan scanner("508bcee8????????f30f104424??85c0");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching 'GRIDCOLL_GROUND' grid collision callback at % p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX)  // Push the grid index
-		.AddBytes("\x8B\x45\xE8")  // mov eax, dword ptr [ebp-0x18]
-		.Push(ASMPatch::Registers::EAX)  // Push the Entity*
+		.AddBytes("\xFF\x75\xA8")  // push DWORD PTR [ebp-0x58] (Entity*)
 		.AddInternalCall(GroundGridCollisionCallbackHook)  // Ignore collision if result is 0
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x8);
@@ -153,23 +156,25 @@ bool __stdcall NoPitsGridCollisionCallbackHook(Entity* entity, const int gridRow
 	return TriggerGridCollisionCallbacks(entity, gridIndex);
 }
 void ASMPatchNoPitsGridCollisionCallback() {
-	SigScan scanner("8b75??8b87????????f30f1045");
+	SigScan scanner("8b7424??8b87????????f30f104c24");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching 'GRIDCOLL_NOPITS' grid collision callback at % p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
-		.AddBytes("\xFF\x75\xDC")  // push dword ptr [ebp-0x24] (column)
-		.AddBytes("\xFF\x75\xE4")  // push dword ptr [ebp-0x1C] (row)
+		.AddBytes("\xFF\x75\xB4")  // push DWORD PTR [ebp-0x4c] (column)		// push DWORD PTR [esp+0x28] (column) +c = -4C?
+		.AddBytes("\xFF\x75\xAC")  // push DWORD PTR [ebp-0x54] (row)			// push DWORD PTR [esp+0x20] (row) +4 = -54?
 		.Push(ASMPatch::Registers::EDI)  // Push the Entity*
 		.AddInternalCall(NoPitsGridCollisionCallbackHook)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x35)  // If call returned true, ignore collision
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9))  // Restore the commands we overwrote
-		.AddRelativeJump((char*)addr + 0x9);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0xA);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -185,18 +190,19 @@ int __stdcall PitsOnlyCollisionCallbackHook(Entity* entity, const int gridIndex)
 	return gridCol;
 }
 void ASMPatchPitsOnlyGridCollisionCallback() {
-	SigScan scanner("508bcee8????????f30f104d??83f801");
+	SigScan scanner("508bcee8????????f30f104424??83f801");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching 'GRIDCOLL_PITSONLY' grid collision callback at % p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX)  // Push the grid index
-		.AddBytes("\x8B\x45\xE8")  // mov eax, dword ptr [ebp-0x18]
-		.Push(ASMPatch::Registers::EAX)  // Push the Entity*
-		.AddInternalCall(PitsOnlyCollisionCallbackHook)  // Entity colides if this returns anything other than 1
+		.AddBytes("\xFF\x75\xA8")  // push DWORD PTR [ebp-0x58] (Entity*)
+		.AddInternalCall(PitsOnlyCollisionCallbackHook)  // Entity collides if this returns anything other than 1
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x8);
 
@@ -219,13 +225,14 @@ void ASMPatchWallCollisionCallback() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching 'GRIDCOLL_WALLS' grid collision callback at % p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX)  // Push the grid index
-		.AddBytes("\x8B\x45\xE8")  // mov eax, dword ptr [ebp-0x18]
-		.Push(ASMPatch::Registers::EAX)  // Push the Entity*
+		.AddBytes("\xFF\x75\xA8")  // push DWORD PTR [ebp-0x58] (Entity*)
 		.AddInternalCall(WallCollisionCallbackHook)  // Entity collides if this returns 4 or 5, and roomtype != 0x10 (16, crawlspace)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x8);
@@ -243,19 +250,21 @@ void __stdcall PlayerGridCollisionTrackGridIndex(const int gridIndex) {
 	playerGridCollisionCurrentGridIndex = gridIndex;
 }
 void ASMPatchPlayerGridCollisionTrackGridIndex() {
-	SigScan scanner("81ffc00100007d??8b45");
+	SigScan scanner("3dc00100007d??8b4c24??8b74");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching player grid collision index catcher at % p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EDI)  // Push the grid index
+		.Push(ASMPatch::Registers::EAX)  // Push the grid index
 		.AddInternalCall(PlayerGridCollisionTrackGridIndex)
 		.RestoreRegisters(savedRegisters)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
-		.AddRelativeJump((char*)addr + 0x6);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x5);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -264,9 +273,11 @@ int __stdcall PlayerGridCollisionCallbackHook(Entity_Player* player) {
 	return TriggerGridCollisionCallbacks(player, playerGridCollisionCurrentGridIndex);
 }
 void ASMPatchPlayerGridCollisionCallback() {
-	SigScan scanner("8b55??8b87????????8d0cd5");
+	SigScan scanner("8b5424??8b87????????8d0cd5");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching player grid collision callback at % p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -276,9 +287,9 @@ void ASMPatchPlayerGridCollisionCallback() {
 		.AddInternalCall(PlayerGridCollisionCallbackHook)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x2C3)  // If call returned true, ignore collision
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9))  // Restore the commands we overwrote
-		.AddRelativeJump((char*)addr + 0x9);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x5DD)  // If call returned true, ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0xA);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
