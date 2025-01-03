@@ -49,7 +49,7 @@ void PatchPreSampleLaserCollision() {
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::EAX) // Collider Entity
-		.AddBytes("\xFF\x75\x8C")  // push dword ptr [ebp-74] (Entity_Laser)
+		.AddBytes("\xFF\x75\x8C")  // push dword ptr [ebp-0x74] (Entity_Laser)
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)

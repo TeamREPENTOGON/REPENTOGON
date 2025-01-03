@@ -109,8 +109,8 @@ void PerformASMPatches() {
 	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
-	//delirium::AddTransformationCallback(); //commented for rep+ temp
-	//delirium::AddPostTransformationCallback(); //commented for rep+ temp
+	delirium::AddTransformationCallback();
+	delirium::AddPostTransformationCallback();
 
 	// EntityNPC
 	ASMPatchHushBug();
