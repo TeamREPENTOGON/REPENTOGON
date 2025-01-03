@@ -53,3 +53,17 @@ void PatchInlinedGetStatusEffectTarget()
 		ASMPatchInlinedGetStatusEffectTarget(addr, i.entityReg, i.targetReg, i.saveReg, i.jumpOffset, i.preserveXMM1);
 	};
 }
+
+void ASMPatchAddWeakness() {
+	SigScan scanner("576afd"); // this is the first push of args for ComputeStausEffectDuration
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EDI)  // Push entity
+		.Push(ASMPatch::Registers::EBP, 0xc) // Push duration
+		.AddBytes("\x8b\xce") // MOV ECX, ESI
+		// this fits exactly in the 5 bytes uses to push arguments
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}

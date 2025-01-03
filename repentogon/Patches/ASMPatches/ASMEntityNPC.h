@@ -19,5 +19,4 @@ static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 void ASMPatchHushBug();
 void ASMPatchFireProjectiles();
 void ASMPatchFireBossProjectiles();
-void ASMPatchAddWeakness();
 void ASMPatchApplyFrozenEnemyDeathEffects();

@@ -116,7 +116,6 @@ void PerformASMPatches() {
 	ASMPatchHushBug();
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
-	ASMPatchAddWeakness();
 	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
 
 	// GridEntity
@@ -152,7 +151,8 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
+	PatchInlinedGetStatusEffectTarget();
+	ASMPatchAddWeakness();
 
 	// Render
 	//LuaRender::PatchglDrawElements();  // Related to unfinished features, not required for rep+ update
