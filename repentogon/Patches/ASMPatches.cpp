@@ -103,8 +103,8 @@ void PerformASMPatches() {
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
-	//ASMPatchPrePlayerGiveBirth(); //commented for rep+ temp
-	//ASMPatchesBedCallbacks(); //commented for rep+ temp
+	ASMPatchPrePlayerGiveBirth();
+	//ASMPatchesBedCallbacks(); // Needs a rework due to rep+ bed code changes. This callback was never in a release, though.
 	
 	ASMPatchPrePlayerPocketItemSwap();
 
@@ -117,7 +117,7 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	ASMPatchAddWeakness();
-	//ASMPatchApplyFrozenEnemyDeathEffects();
+	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
 
 	// GridEntity
 	PatchGridCollisionCallback();
@@ -128,7 +128,7 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
-	//PatchOverrideDataHandling();
+	//PatchOverrideDataHandling();  // This was disabled prior to rep+, ignore it!
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
@@ -155,7 +155,7 @@ void PerformASMPatches() {
 	// PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
 
 	// Render
-	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
+	//LuaRender::PatchglDrawElements();  // Related to unfinished features, not required for rep+ update
 	PatchStatHudPlanetariumChance();
 
 	//PlayerManager
@@ -186,11 +186,6 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
-
-	// REP+: Patch needs adjustments (specifically the post-patch)
-	//if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
-	//	ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
-	//}
 
 	if (!ASMPatches::SkipArchiveChecksums()) {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
