@@ -152,7 +152,7 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	// PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
+	PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
 
 	// Render
 	//LuaRender::PatchglDrawElements();  // Related to unfinished features, not required for rep+ update
