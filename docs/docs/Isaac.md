@@ -12,7 +12,7 @@ Same as vanilla, but much faster.
 
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
-#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, [EntityPartition](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 
 ___
