@@ -167,7 +167,7 @@ __thiscall int Entity_Player::GetBatteryCharge(int slot);
 "558bec53568b75??578bf985f679":
 __thiscall bool Entity_Player::NeedsCharge(int slot);
 
-"558bec83e4f883ec0c53568b75??8bd9":
+"558bec83e4f85153568b75??578bf985f679??8b5d":
 __thiscall void Entity_Player::SetActiveCharge(int charge, int slot);
 
 "558bec83e4f883ec14538b5d??56578bf985db":
@@ -670,21 +670,21 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _damageCooldown : 0x13b0;
 	int _playerType: 0x13b4;
 	Weapon* _weapon[5] : 0x13d0;
-	Entity_Effect* _markedTarget : 0x13fc;
-	Entity* _heldEntity : 0x1400;
-	float _damage : 0x1460;
-	float _movespeed : 0x1554;
-	float _luck : 0x1558;
-	float _shotspeed : 0x1454;
-	float _tearheight : 0x1464;
-	float _tearfallspeed : 0x1468;
-	float _tearfallaccel : 0x146c;
-	float _tearrange : 0x1470;
-	float _maxfiredelay : 0x1450;
+	Entity_Effect* _markedTarget : 0x1400;
+	Entity* _heldEntity : 0x1404;
+	float _maxfiredelay : 0x1454;
+	float _shotspeed : 0x1458;
+	float _damage : 0x1464;
+	float _tearheight : 0x1468;
+	float _tearfallspeed : 0x146c;
+	float _tearfallaccel : 0x1470;
+	float _tearrange : 0x1474;
 	ColorMod _laserColor : 0x14b4;
 	TemporaryEffects _temporaryeffects : 0x14f8;
 	int _speedModifier : 0x1510, _fireDelayModifier : 0x1514, _damageModifier : 0x1518, _tearRangeModifier : 0x151c, _shotSpeedModifier : 0x1520, _luckModifier : 0x1524;
 	float _edenSpeed : 0x1538, _edenFireDelay : 0x153c, _edenDamage : 0x1540, _edenTearRange : 0x1544, _edenShotSpeed : 0x1548, _edenLuck : 0x154c;
+	float _movespeed : 0x1554;
+	float _luck : 0x1558;
 	bool _canFly : 0x155c;
 	uint32_t _cacheFlags : 0x1560;
 	int8_t _tearDisplacement : 0x1564;
