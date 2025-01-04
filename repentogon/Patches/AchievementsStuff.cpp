@@ -100,7 +100,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 		//AccomplishCondition(achieveemntid);
 		//return false;
 	//}
-	if ((achieveemntid >= 0) && (achieveemntid < 638)) {
+	if ((achieveemntid >= 0) && (achieveemntid < 641)) {
 		return super(achieveemntid);
 	}
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
@@ -114,7 +114,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 			pendingachievs.push(achieveemntid);
 			if (dummyachiev < 0) {
 				dummyachiev = 2;
-				for (int x = 2; x < 638; x++) {
+				for (int x = 2; x < 641; x++) {
 					if (this->achievements[x]) {
 						dummyachiev = x;
 						break;
@@ -207,7 +207,7 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 }
 
 HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
-	if (achieveemntid < 638) {
+	if (achieveemntid < 641) {
 		return super(achieveemntid);
 	}
 	XMLAttributes modachiev = XMLStuff.AchievementData->GetNodeById(achieveemntid);
@@ -237,7 +237,7 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 
 bool LockAchievement(int achievementid) {
 	if (!achset) { return false; }
-	if (achievementid < 638) {
+	if (achievementid < 641) {
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		bool had = ps->achievements[achievementid];
 		ps->achievements[achievementid] = 0;
@@ -422,7 +422,7 @@ int ConstrainId(int x) {
 	return res;
 }
 
-int achievbckup[638];
+int achievbckup[641];
 int lastfuck = 0;
 void BackupAchievsNOverride() {
 	if (secretssource != "BaseGame") {
@@ -551,26 +551,18 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			ref = &posbase;
 			Vector offset = Vector(ref->x - 480, ref->y + 1350);
 			Vector pos = Vector(-251 + offset.x, -3 + offset.y);
+			pos.x += 450;  // Compensation for  pre-rep+ "boxWidth" of 900
 			Vector z = Vector(0, 0);
 			//Vector* a = g_LuaEngine->GetMousePosition(&z, true);
 			//printf("%f %f", a->x, a->y);
-			DrawStringEntry* sourcename = new DrawStringEntry();
-			if (secretssource == "BaseGame") {
-				sourcename->_text = "Repentance";
-			}
-			else {
-				sourcename->_text = XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"].c_str();
-			}
-			//sourcename->_color._blue = 1;
-			//sourcename->_color._green = 1;
-			//sourcename->_color._red = 1;
-			//sourcename->_color._alpha = 0.8f;
-			//sourcename->_center = true;
-			//sourcename->_boxWidth = 900;
-			sourcename->_x = pos.x;
-			sourcename->_y = pos.y;
-			g_Manager->_font7_TeamMeat_10.DrawString(*sourcename);
-			float txtwidth = (float)g_Manager->_font7_TeamMeat_10.GetStringWidth(sourcename->_text)/2;
+			const std::string text = (secretssource == "BaseGame") ? "Repentance" : XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"];
+			KColor color(1, 1, 1, 0.8f);
+			FontSettings settings;
+			settings._align = 1;  // DrawStringAlignment.TOP_CENTER
+			Font* font = &g_Manager->_font1_TeamMeatEx10;
+			Vector scale(1, 1);
+			font->DrawString(text.c_str(), pos, scale, &color, &settings);
+			float txtwidth = (float)font->GetStringWidth(text.c_str())/2;
 			float x = 0;
 			float y = 100;
 			this->_cursorLeftSprite._scale = Vector(0.5, 0.5);

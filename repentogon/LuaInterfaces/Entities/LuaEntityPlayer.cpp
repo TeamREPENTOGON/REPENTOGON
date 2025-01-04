@@ -2129,11 +2129,7 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 
 	// This lua function was made before we knew the footprint colors were ColorMod and not KColor.
 	// Just gonna maintain the current output structure for the sake of the REP+ migration.
-	KColor color;
-	color._red = footprintColor->_offset[0];
-	color._green = footprintColor->_offset[1];
-	color._blue = footprintColor->_offset[2];
-	color._alpha = footprintColor->_tint[3];
+	KColor color(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
 
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
 	*toLua = color;

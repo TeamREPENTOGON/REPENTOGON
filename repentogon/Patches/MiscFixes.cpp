@@ -51,3 +51,10 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 	}
 	super();
 };
+
+// Fix crash if nil is passed as the string from luaside.
+HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
+	if (str) {
+		super(str, pos, scale, color, settings);
+	}
+}

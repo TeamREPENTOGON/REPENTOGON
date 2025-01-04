@@ -1,5 +1,6 @@
-struct KColor
-{
+struct KColor { {{
+	KColor(float r = 1, float g = 1, float b = 1, float a = 1, int unk = 0) : _red(r), _green(g), _blue(b), _alpha(a), _unk(unk) {}
+}}
     float _red : 0x0;
     float _green : 0x4;
     float _blue : 0x8;

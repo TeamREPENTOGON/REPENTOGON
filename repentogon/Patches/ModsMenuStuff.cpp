@@ -99,7 +99,7 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 	super();
 }
 
-/*HOOK_METHOD(Menu_Mods, Update, () -> void) {
+HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	
 	if (g_InputManagerBase.IsActionTriggered(14,-1,0)) {
 		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
@@ -126,7 +126,6 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 		}
 	}
 }
-*/
 
 HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, int unk) -> bool) {
 	if (issearching){// && ((btnaction == 17) || (btnaction == 18))) {
@@ -135,7 +134,7 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 	return super(btnaction, controllerid, unk);
 }
 
-/*HOOK_METHOD(Menu_Mods, Render, () -> void) { (rep+ crashing)
+HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	Vector menu_ref;
 	Vector offset;
 	Vector initialpos;
@@ -167,15 +166,11 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 	barpos = Vector(pos.x + 90, (g_HEIGHT- 30));
 	z = Vector(0, 0);
 	ModManager* modman = g_Manager->GetModManager();
-	DrawStringScaledEntry entry = DrawStringScaledEntry();
 
-	entry._boxWidth = 0;
-	entry._center = false;
-	entry._scaleX = 0.9f;
-	entry._scaleY = 0.9f;
-	entry._color._blue = 0.f;
-	entry._color._green = 0.f;
-	entry._color._red = 0.f;
+	FontSettings settings;
+	settings._align = 0;  // DrawStringAlignment.TOP_LEFT
+	Vector scale(0.9f, 0.9f);
+	KColor color(0.f, 0.f, 0.f, 0.f);
 	int i = 1;
 	int actualpos = -1;
 
@@ -208,7 +203,7 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 									did = true;
 								}
 							}
-							else if ((g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
+							else if ((g_Manager->_font1_TeamMeatEx10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
 								char ch = static_cast<char>(i);
 								searchstr += tolower(ch);
 								did = true;
@@ -242,23 +237,20 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 	for each (ModEntry* mod in modman->_mods) {	
 			string order = to_string(i) + ".";
 			string modname = order + mod->GetName();
-			entry._text = modname.c_str();
 			if (mod->IsEnabled()) {
 				string modnamelower = stringlower(modname.c_str());
 				if ((searchstr.length() > 0) && (modnamelower.find(searchstr) == string::npos)) { continue; }
 				actualpos++;
 				pos.y += 25;
-				entry._color._alpha = 1;
+				color._alpha = 1;
 			}
 			else {
 				continue;
 			}
-			entry._x = pos.x;
-			entry._y = pos.y;
 			if (!modsenabled) {
-				entry._color._alpha = entry._color._alpha * 0.3f;
+				color._alpha = color._alpha * 0.3f;
 			}
-			g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
+			g_Manager->_font1_TeamMeatEx10.DrawString(modname.c_str(), pos, scale, &color, &settings);
 			if (actualpos == this->SelectedElement) {
 				this->_pointerToSelectedMod = mod;
 			}
@@ -268,7 +260,6 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 	for each (ModEntry * mod in modman->_mods) {
 		string order = to_string(i) + ".";
 		string modname = order + mod->GetName();
-		entry._text = modname.c_str();
 		if (mod->IsEnabled()) {
 			continue;
 		}
@@ -276,14 +267,12 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 			if ((searchstr.length() > 0) && (stringlower(modname.c_str()).find(searchstr) == string::npos)) { continue; }
 			actualpos++;
 			pos.y += 25;
-			entry._color._alpha = 0.5;
+			color._alpha = 0.5;
 		}
-		entry._x = pos.x;
-		entry._y = pos.y;
 		if (!modsenabled) {
-			entry._color._alpha = entry._color._alpha * 0.3f;
+			color._alpha = color._alpha * 0.3f;
 		}
-		g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
+		g_Manager->_font1_TeamMeatEx10.DrawString(modname.c_str(), pos, scale, &color, &settings);
 		if (actualpos == this->SelectedElement) {
 			this->_pointerToSelectedMod = mod;
 		}
@@ -315,32 +304,28 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 			undopop.Update();
 		}
 
-		entry._text = searchstr.c_str();
 		if (issearching) {
-			entry._color._alpha = 1;
+			color._alpha = 1;
 		}
 		else {
-			if ((searchstr.length() <= 0)) {
-				entry._text = "Press CTRL and type to filter";
-			}
-			entry._color._alpha = 0.5;
+			color._alpha = 0.5;
 		}
-		entry._x = pos.x - 20;
+		pos.x = pos.x - 20;
 		
 		int egde = (int)(initialpos.y + paperedge);
 		if (modman->_mods.size() > minmods) {
 			if (barpos.y >= egde) {
 				Vector vdif = Vector(barpos.x, (float)egde);
-				entry._y = (float)egde;
+				pos.y = (float)egde;
 				searchbar.Render(&vdif, &z, &z);
 			}
 			else if (((barpos.y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
 				Vector vdif = Vector(barpos.x, barpos.y + 20);
-				entry._y = barpos.y + 20;
+				pos.y = barpos.y + 20;
 				searchbar.Render(&vdif, &z, &z);
 			}
 			else {
-				entry._y = barpos.y;
+				pos.y = barpos.y;
 				searchbar.Render(&barpos, &z, &z);
 			}
 		}
@@ -366,19 +351,17 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 			this->ModsMenuSprite.GetLayer(c)->_visible = true;
 		}
 		if (modman->_mods.size() > minmods) {
-			entry._scaleX = 1;
-			entry._scaleY = 1;
-			g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
+			scale.x = 1;
+			scale.y = 1;
+			g_Manager->_font1_TeamMeatEx10.DrawString(searchstr.empty() ? "Press CTRL and type to filter" : searchstr.c_str(), pos, scale, &color, &settings);
 			if (issearching) {
-				entry._text = "|";
-				entry._color._alpha = 0.8f;
-				if (cursorblink) { entry._color._alpha = 0.3f; }
+				color._alpha = 0.8f;
+				if (cursorblink) { color._alpha = 0.3f; }
 				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 10; }
-				//entry._x += 2;
-				entry._x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
-				entry._scaleY = 1.2f;
-				g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
+				//pos.x += 2;
+				pos.x += g_Manager->_font1_TeamMeatEx10.GetStringWidth(searchstr.c_str());
+				scale.y = 1.2f;
+				g_Manager->_font1_TeamMeatEx10.DrawString("|", pos, scale, &color, &settings);
 			}
 		}
 }
-*/

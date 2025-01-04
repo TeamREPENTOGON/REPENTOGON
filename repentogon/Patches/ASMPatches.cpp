@@ -131,7 +131,7 @@ void PerformASMPatches() {
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
-	//ASMPatchModsMenu(); // REP+ Needs investigation+adjustment due to font/drawstring changes
+	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
 
 	// Room
