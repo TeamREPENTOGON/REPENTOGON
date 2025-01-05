@@ -104,7 +104,7 @@ void PerformASMPatches() {
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
-	//ASMPatchesBedCallbacks(); // Needs a rework due to rep+ bed code changes. This callback was never in a release, though.
+	ASMPatchesBedCallbacks();
 	
 	ASMPatchPrePlayerPocketItemSwap();
 
