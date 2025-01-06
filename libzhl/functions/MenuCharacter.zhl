@@ -56,15 +56,15 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     ANM2 _CharacterMenuBGSprite : 0x37c;
     CompletionWidget _completionWidget : 0x490;
     ANM2 _DifficultyPageSprite : 0x5ac;
-    ANM2 _SeedPageSprite : 0x6c0;
-    ANM2 _WinStreakPageSprite : 0x7d4;
-    ANM2 _EastereggPageSprite : 0x8e8;
-    ANM2 _SeedUnlockPageSprite : 0x9fc;
-    int _numCharacters : 0xb10;
-    int _numCharacters_MINUS_SelectedEntry : 0xb14;
-    ANM2 _CharacterPortraitsSprite : 0xb18;
-    ANM2 _SeedEntrySprite : 0xc48;
-    int _characterMenuShown : 0xdac; /* 0 Normal 1 Tained */
-    ANM2 _PageSwapWidgetSprite : 0xdb0;
-    ANM2 _TaintedMenuBGDecoSprite : 0xec4;
+    ANM2 _SeedPageSprite : 0x6c8;
+    ANM2 _WinStreakPageSprite : 0x7dc;
+    ANM2 _EastereggPageSprite : 0x8f0;
+    ANM2 _SeedUnlockPageSprite : 0xa04;
+    int _numCharacters : 0xb18;
+    int _numCharacters_MINUS_SelectedEntry : 0xb1c;
+    ANM2 _CharacterPortraitsSprite : 0xb20;
+    ANM2 _SeedEntrySprite : 0xc50;
+    int _characterMenuShown : 0xdb4; /* 0 Normal 1 Tained */
+    ANM2 _PageSwapWidgetSprite : 0xdb8;
+    ANM2 _TaintedMenuBGDecoSprite : 0xecc;
 } : 0xfe8;
