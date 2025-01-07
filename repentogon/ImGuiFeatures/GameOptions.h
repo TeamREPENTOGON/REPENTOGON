@@ -17,6 +17,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     }
     const char* extraHudModes[3] = { "Off", "Normal", "Mini" };
     const char* announcerModes[3] = { "Random", "Off", "Always on" };
+    const char* popUpModes[3] = { "Off", "Large", "Small" };
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
     const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
@@ -29,6 +30,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
         announcerModes[0] = LANG.OPT_ANNOUNCER_MODES_RANDOM;
         announcerModes[1] = LANG.OPT_ANNOUNCER_MODES_OFF;
         announcerModes[2] = LANG.OPT_ANNOUNCER_MODES_ALWAYS_ON;
+
+        popUpModes[0] = LANG.OPT_POPUP_MODES_OFF;
+        popUpModes[1] = LANG.OPT_POPUP_MODES_BIG;
+        popUpModes[2] = LANG.OPT_POPUP_MODES_SMALL;
 
         consoleFontModes[0] = LANG.OPT_CONSOLE_FOND_MODES_DEFAULT;
         consoleFontModes[1] = LANG.OPT_CONSOLE_FOND_MODES_SMALL;
@@ -97,8 +102,8 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_FILTER_MARK);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_filterEnabled, false);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_POP_UPS, &g_Manager->GetOptions()->_popupsEnabled);
-                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_popupsEnabled, true);
+                        ImGui::SliderInt(LANG.OPT_POP_UPS, &g_Manager->GetOptions()->_popupsMode, 0, 2, popUpModes[g_Manager->GetOptions()->_popupsMode], ImGuiSliderFlags_NoInput);
+                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_popupsMode, 1);
                         AddNewTableRow();
                         ImGui::SliderInt(LANG.OPT_ANNOUNCER_VOICE_MODE, &g_Manager->GetOptions()->_announcerVoiceMode, 0, 2, announcerModes[g_Manager->GetOptions()->_announcerVoiceMode], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_announcerVoiceMode, 0);

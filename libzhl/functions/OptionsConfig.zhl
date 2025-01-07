@@ -7,7 +7,7 @@ __thiscall void OptionsConfig::SetFullScreen(bool value);
 struct OptionsConfig depends (Game) {
 {{
 	inline bool ModsEnabled() { return _enableMods; }
-	inline bool PopUpsEnabled() { return _popupsEnabled; }
+	inline bool PopUpsEnabled() { return _popupsMode > 0; }
 }}
     std_string _optionsIniFilePath : 0x0;
     float _musicVolume : 0x18;
@@ -20,7 +20,7 @@ struct OptionsConfig depends (Game) {
     float _brightness : 0x30;
     float _contrast : 0x34;
     bool _controlHotplugEnabled : 0x38;
-	bool _popupsEnabled : 0x3c;
+	int _popupsMode : 0x3c;
 	bool _enableFoundHUD : 0x40;
     int _cameraStyle : 0x44;
     int _historyHudMode : 0x48;
@@ -60,4 +60,15 @@ struct OptionsConfig depends (Game) {
     bool _enableColorModifier : 0x8d;
     bool _bossHpOnBottom : 0x8e;
     int _announcerVoiceMode : 0x90;
-} : 0x94;		//todo: extend the struct to have rep+ values
+	int _jacobEsauControls : 0x94;
+	int _onlineHud : 0x98;
+	bool _streamerMode : 0x9c;
+	int _onlinePlayerVolume : 0xa0;
+	int _onlinePlayerOpacity : 0xa4;
+	bool _onlineChatEnabled : 0xa8;
+	bool _onlineFilterEnabled : 0xa9;
+	int _onlineColorSet : 0xac;
+	bool _acceptedPublicBeta_VERSION : 0xb0; // VERSION changes to version string
+	bool _acceptedModDisclaimer : 0xb1;
+	bool _acceptedDataCollectionDisclaimer : 0xb2;
+} : 0xb4;
