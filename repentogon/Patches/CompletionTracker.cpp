@@ -778,7 +778,7 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender =
 		marks = CompletionMarks[idx];
 		if (anm) {
 			if (ischartainted) {
-				anm->SetLayerFrame(0, marks[CompletionTypeRender[0]] + 3);
+				anm->SetLayerFrame(0, marks[CompletionTypeRender[0]] + 5);
 			}
 			else {
 				anm->SetLayerFrame(0, marks[CompletionTypeRender[0]]);
