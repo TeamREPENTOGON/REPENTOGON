@@ -95,8 +95,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         if ((flags & 0x40) != 0) // Shopkeeper crushkilled
             chance += 0.1f;
 
-        // if (manager->FirstTrinketOwner(TRINKET_NUMBER_MAGNET, &rng, true))
-        if (manager->FirstTrinketOwner(TRINKET_NUMBER_MAGNET))
+        if (manager->AnyoneHasTrinket(TRINKET_NUMBER_MAGNET))
             chance += 0.1f;
 
         if (manager->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, &rng, true))
@@ -242,7 +241,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     int stageType = this->_stageType;
     int stage = this->_stage;
     PlayerManager* manager = g_Game->GetPlayerManager();
-    bool hasTelescopeLens = manager->FirstTrinketOwner(TRINKET_TELESCOPE_LENS); // manager->FirstTrinketOwner(TRINKET_TELESCOPE_LENS, 0, true);
+    bool hasTelescopeLens = manager->AnyoneHasTrinket(TRINKET_TELESCOPE_LENS);
     bool shouldBypassPlanetariumRestriction = false;
     bool shouldApplyStageRestriction = true;
     float chance = 0.01f;
