@@ -161,7 +161,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 
 //Character menu render Callback(id:1023
-//TODO Broken in Rep+ as RenderButtonLayout was inlined.
+//Moved to ASMCallbacks
 /*HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;

@@ -1342,6 +1342,9 @@ Achievement = {
 	A_STRANGE_DOOR = 635, STRANGE_DOOR = 635, ASCENT_DOOR = 635,
 	DEATH_CERTIFICATE = 636,
 	DEAD_GOD = 637,
+	PLAYED_ONLINE = 638,
+	WON_ONLINE = 639, ONLINE_WON = 639,
+	WON_ONLINE_DAILY = 640, DAILY_ONLINE_WON = 640,
 }
 
 FollowerPriority = {
@@ -2074,7 +2077,7 @@ EventCounter = {
 	BABY_PLUM_KILLS = 493,
 	BATTERY_BUMS_KILLED = 494,
 	BATTERY_BUM_COLLECTIBLE_PAYOUTS = 495, -- counts how often the battery bum paid out with a collectible item
-	NUM_EVENT_COUNTERS = 496,
+	NUM_EVENT_COUNTERS = 521,
 }
 
 WispSubType = {

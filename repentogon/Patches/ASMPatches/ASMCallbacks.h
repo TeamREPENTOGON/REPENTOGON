@@ -23,3 +23,4 @@ void ASMPatchTearDeath();
 void ASMPatchPrePlayerGiveBirth();
 void ASMPatchesBedCallbacks();
 void ASMPatchPrePlayerPocketItemSwap();
+void ASMPatchMainMenuCallback();

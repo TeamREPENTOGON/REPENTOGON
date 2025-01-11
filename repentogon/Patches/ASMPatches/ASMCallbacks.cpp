@@ -6,6 +6,7 @@
 #include "../XMLData.h"
 #include "../../LuaInit.h"
 #include "Log.h"
+#include "../../Patches/MainMenuBlock.h"
 
 /* * MC_PRE_LASER_COLLISION * *
 * There is no function you can hook that would allow you to skip a laser "collision".
@@ -1316,5 +1317,39 @@ void ASMPatchPrePlayerPocketItemSwap() {
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC5) // Skipping pocket item swap
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall RunMainMenuRenderCallback(MenuManager* menuManager) {
+	const int callbackid = 1023;
+	MainMenuInputBlock::_enabled = false;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid).call(1);
+	}
+	MainMenuInputBlock::_enabled = true;
+	if ((menuManager->_state | (1 << 8)) == menuManager->_state) {
+		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
+	};
+}
+
+void ASMPatchMainMenuCallback() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+
+	SigScan scanner_transition("8b86????????f30f101d");
+	scanner_transition.Scan();
+	void* addr = scanner_transition.GetAddress();
+	printf("[REPENTOGON] Patching MenuManager::Render at %p for MainMenuRender callback\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // MenuManager
+		.AddInternalCall(RunMainMenuRenderCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x6);
 	sASMPatcher.PatchAt(addr, &patch);
 }

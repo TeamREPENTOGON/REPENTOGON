@@ -105,6 +105,7 @@ void PerformASMPatches() {
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
 	ASMPatchesBedCallbacks();
+	ASMPatchMainMenuCallback();
 	
 	ASMPatchPrePlayerPocketItemSwap();
 

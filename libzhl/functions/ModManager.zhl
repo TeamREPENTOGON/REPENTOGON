@@ -32,4 +32,5 @@ __thiscall void ModManager::TriggerResize();
 
 struct ModManager depends (ModEntry) {
 	vector_ModEntryPointer _mods : 0x0;
+	int _modBanStatus : 0x2025c;
 } : 0x20260;
