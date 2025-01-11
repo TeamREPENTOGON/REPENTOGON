@@ -584,6 +584,24 @@ LUA_FUNCTION(Lua_PlayerTryFakeDeath)
 	return 1;
 }
 
+void RecalculateBagOfCraftingOutput(Entity_Player* player) {
+	g_Game->GetHUD()->InvalidateCraftingItem(player);
+
+	BagOfCraftingPickup* content = player->GetBagOfCraftingContent();
+	BagOfCraftingOutput* output = player->GetBagOfCraftingOutput();
+
+	// If any slots are empty, wipe the crafting result.
+	for (int i = 0; i < 8; i++) {
+		if (content[i] == BagOfCraftingPickup::BOC_NONE) {
+			output->collectibleType = COLLECTIBLE_NULL;
+			output->unk = -1;
+			return;
+		}
+	}
+
+	player->CalculateBagOfCraftingOutput(output, content);
+}
+
 LUA_FUNCTION(Lua_PlayerGetBoCContent) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_newtable(L);
@@ -625,6 +643,8 @@ LUA_FUNCTION(Lua_PlayerSetBoCContent) {
 	}
 	memcpy(&player->_bagOfCraftingContent, list, sizeof(list));
 
+	RecalculateBagOfCraftingOutput(player);
+
 	return 0;
 }
 
@@ -653,20 +673,25 @@ LUA_FUNCTION(Lua_PlayerSetBoCSlot) {
 	}
 
 	player->GetBagOfCraftingContent()[slot] = (BagOfCraftingPickup)pickup;
+
+	RecalculateBagOfCraftingOutput(player);
+
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetBagOfCraftingOutput)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushinteger(L, *player->GetBagOfCraftingOutput());
+	lua_pushinteger(L, player->GetBagOfCraftingOutput()->collectibleType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetBagOfCraftingOutput() = (int)luaL_checkinteger(L, 2);
+	player->GetBagOfCraftingOutput()->collectibleType = (int)luaL_checkinteger(L, 2);
+	player->GetBagOfCraftingOutput()->unk = 0;
+	g_Game->GetHUD()->InvalidateCraftingItem(player);
 	return 0;
 }
 

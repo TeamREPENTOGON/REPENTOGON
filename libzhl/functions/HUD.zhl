@@ -26,6 +26,9 @@ __thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
 
+"558bec8b55??85d274??33c0":
+__thiscall void HUD::InvalidateCraftingItem(Entity_Player * player);
+
 // 0 = Normal
 // 1 = Jacob & Esau
 // 2 = Compact (Used for co-op players, and for P1 if there are >2 players)

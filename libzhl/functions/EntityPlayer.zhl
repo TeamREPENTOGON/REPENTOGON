@@ -506,6 +506,9 @@ __thiscall void Entity_Player::ConsumableCountChanged(int bitflags);
 "558bec83e4f881ecc4000000a1????????33c4898424????????53568b75":
 __thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8b4b":
+__thiscall void Entity_Player::CalculateBagOfCraftingOutput(BagOfCraftingOutput* out, BagOfCraftingPickup* bagContent);
+
 "558bec51538a5d??32ff":
 __thiscall void Entity_Player::TryDecreaseGlowingHourglassUses(int unk1, bool unk2);
 
@@ -540,7 +543,7 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -646,7 +649,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
     inline int* GetRedStewBonusDuration() { return &this->_redStewBonusDuration; }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)(&this->_bagOfCraftingContent); }
 	inline std_map_int_int* GetItemWispsList() { return &this->_itemWispsList; }
-    inline int* GetBagOfCraftingOutput() { return &this->_bagOfCraftingResult; }
+    inline BagOfCraftingOutput* GetBagOfCraftingOutput() { return &this->_bagOfCraftingOutput; }
 	inline uint8_t* GetWildCardItemType() { return &this->_wildCardItemType; }
 	inline int* GetWildCardItem() { return &this->_wildCardItem; }
 	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
@@ -741,7 +744,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _redStewBonusDuration : 0x1e50;
 	int _maggySwingCooldown : 0x1ebc;
 	char _bagOfCraftingContent[8]: 0x1f14;
-	int _bagOfCraftingResult : 0x1f1c;
+	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f1c;
 	char _poopSpellQueue[6] : 0x1f24;
 	int _eveSumptoriumCharge : 0x1f48;
 	std_map_int_int _itemWispsList : 0x1f50;

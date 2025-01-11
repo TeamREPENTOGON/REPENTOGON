@@ -671,12 +671,15 @@ HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> void) {	//bone
 }
 
 HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
-	if (!CallbackState.test(1009 - 1000)) {
-		super(amount, unk);
-	}
-	else {
+	if (CallbackState.test(1009 - 1000)) {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 7, std::nullopt);	//do not pass unk
 		amount = heartcount.value_or(amount);
+	}
+
+	// Fix a vanilla oversight where _rottenHearts can be set to a negative value.
+	if (amount < -this->_rottenHearts) {
+		super(-this->_rottenHearts, unk);
+	} else {
 		super(amount, unk);
 	}
 
