@@ -27,8 +27,8 @@ struct LayerState depends (LayerData, Vector, ColorMod, BlendMode) { {{
     Vector _pos : 0x40;
     ColorMod _color : 0x48;
     bool _visible : 0x74;
-    BlendMode _blendMode : 0x78;
-    unsigned int _bitflags : 0x88;
+    BlendMode _blendMode : 0x7c;
+    unsigned int _bitflags : 0x8c;
     Vector _cropOffset : 0x90;
     KAGE_Graphics_ImageBase* _imageBasePtr : 0x98;
 } : 0xA0;
