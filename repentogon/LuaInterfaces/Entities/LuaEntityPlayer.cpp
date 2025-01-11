@@ -6,6 +6,7 @@
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/CustomCache.h"
+#include "../../Patches/CustomItemPools.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
@@ -584,22 +585,37 @@ LUA_FUNCTION(Lua_PlayerTryFakeDeath)
 	return 1;
 }
 
-void RecalculateBagOfCraftingOutput(Entity_Player* player) {
+inline void RecalculateBagOfCraftingOutput(Entity_Player* player) {
 	g_Game->GetHUD()->InvalidateCraftingItem(player);
 
 	BagOfCraftingPickup* content = player->GetBagOfCraftingContent();
 	BagOfCraftingOutput* output = player->GetBagOfCraftingOutput();
 
-	// If any slots are empty, wipe the crafting result.
-	for (int i = 0; i < 8; i++) {
+	// Go through the slots, and if any empty spots are found before the end, shift everything after it down.
+	// SetBagOfCraftingContent and SetBagOfCraftingSlot can allow people to write empty slots into the middle
+	// of the array, which can cause issues, so this corrects it if it happens.
+	for (int i = 0; i < 7; i++) {
 		if (content[i] == BagOfCraftingPickup::BOC_NONE) {
-			output->collectibleType = COLLECTIBLE_NULL;
-			output->unk = -1;
-			return;
+			bool didShift = false;
+			for (int j = i + 1; j < 8; j++) {
+				if (content[j] > BagOfCraftingPickup::BOC_NONE) {
+					content[i] = content[j];
+					content[j] = BagOfCraftingPickup::BOC_NONE;
+					didShift = true;
+					break;
+				}
+			}
+			if (!didShift) break;
 		}
 	}
 
-	player->CalculateBagOfCraftingOutput(output, content);
+	if (content[7] == BagOfCraftingPickup::BOC_NONE) {
+		output->collectibleType = COLLECTIBLE_NULL;
+		output->itemPoolType = POOL_NULL;
+	}
+	else {
+		player->CalculateBagOfCraftingOutput(output, content);
+	}
 }
 
 LUA_FUNCTION(Lua_PlayerGetBoCContent) {
@@ -686,11 +702,23 @@ LUA_FUNCTION(Lua_PlayerGetBagOfCraftingOutput)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBagOfCraftingOutputItemPool)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetBagOfCraftingOutput()->itemPoolType);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->GetBagOfCraftingOutput()->collectibleType = (int)luaL_checkinteger(L, 2);
-	player->GetBagOfCraftingOutput()->unk = 0;
+	const int collectible = (int)luaL_checkinteger(L, 2);
+	int itemPoolType = (int)luaL_optinteger(L, 3, -1);
+	if (itemPoolType < 0 || itemPoolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+		itemPoolType = g_Game->_itemPool.GetFirstItemPoolForCollectible(collectible);
+	}
+	player->GetBagOfCraftingOutput()->collectibleType = collectible;
+	player->GetBagOfCraftingOutput()->itemPoolType = itemPoolType;
 	g_Game->GetHUD()->InvalidateCraftingItem(player);
 	return 0;
 }
@@ -2635,6 +2663,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot },
 		{ "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot },
 		{ "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput },
+		{ "GetBagOfCraftingOutputItemPool", Lua_PlayerGetBagOfCraftingOutputItemPool },
 		{ "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput },
 		{ "GetMovingBoxContents", Lua_PlayerGetMovingBoxContents },
 		{ "GetSpeedModifier", Lua_PlayerGetSpeedModifier },

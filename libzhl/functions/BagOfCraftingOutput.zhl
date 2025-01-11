@@ -1,4 +1,4 @@
 struct BagOfCraftingOutput {
 	int collectibleType : 0x0;
-	int unk : 0x4;  // Its not ItemType, its not CraftingQuality, its usually 0, but have seen 1 or 2 for certain items?
+	int itemPoolType : 0x4;
 } : 0x8;
