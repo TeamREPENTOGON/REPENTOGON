@@ -27,7 +27,7 @@ local TotalStreakText = "Total Runs: 0"
 local TextLen = 38
 
 local font = Font()
-font:Load("font/teammeatfont10.fnt")
+font:Load("font/teammeatex/teammeatex10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local function RefreshDailyStats()
@@ -76,12 +76,12 @@ local function LoadAssets()
         --HardModeIcon:SetAnimation("Idle", true)
         --HardModeIcon:SetFrame(4)
 		
-		LeaderboardSprite:LoadRGON("gfx/ui/daily_destinations.anm2", true)
+		LeaderboardSprite:Load("gfx/ui/daily_destinations.anm2", true)
 		LeaderboardSprite:SetAnimation("Destination", true)
 		LeaderboardSprite:SetFrame(0)
     end
     if not font:IsLoaded() then
-        font:Load("font/teammeatfont10.fnt")
+        font:Load("font/teammeatex/teammeatex10.fnt")
     end
     if font:IsLoaded() and #(StreakSheet:GetDefaultAnimation()) > 0 then
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2

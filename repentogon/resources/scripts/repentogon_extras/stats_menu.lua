@@ -121,7 +121,7 @@ local StatsMenuPos = Vector(35, 34)
 local MaxCategoryID = 1
 
 local font = Font()
-font:Load("font/teammeatfont10.fnt")
+font:Load("font/teammeatex/teammeatex10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local MaxPollCIdx = 3
@@ -156,7 +156,7 @@ local function LoadAssets()
         StatsMenuRep.ArrowSprite:SetFrame("Idle", 0)
     end
     if not font:IsLoaded() then
-        font:Load("font/teammeatfont10.fnt")
+        font:Load("font/teammeatex/teammeatex10.fnt")
     end
     if font:IsLoaded() and #(StatsMenuRep.StatSheetSprite:GetDefaultAnimation()) > 0 then
         Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
