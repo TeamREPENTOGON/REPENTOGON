@@ -15,6 +15,4 @@ struct Menu_Mods depends (ANM2) {
     ANM2 ModsMenuSprite : 0x10;
     int State : 0x124; /* 1 = was changed */
     ModEntry* _pointerToSelectedMod : 0x128;
-    float _scrollPositionX : 0x1ac;
-    float _scrollPositionY : 0x1b0;
-} : 0x1b4;
+} : 0x12c;

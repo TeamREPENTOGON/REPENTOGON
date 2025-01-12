@@ -1815,6 +1815,32 @@ enum eBossId {
     BOSS_CADAVRA = 103
 };
 
+enum eMainMenuType {
+    TITLE = 1, // 0 exists but it's unusable
+    SAVES = 2,
+    GAME = 3, // the actual menu where all the menus are
+    DAILYRUN = 4,
+    CHARACTER = 5,
+    SPECIALSEEDS = 6,
+    CHALLENGE = 7,
+    COLLECTION = 8,
+    STATS = 9,
+    OPTIONS = 10,
+    CONTROLS = 11,
+    KEYCONFIG = 12,
+    ENDINGS = 13,
+    BESTIARY = 14,
+    MODCHALLENGES = 15,
+    MODS = 16,
+    ONLINELOBBY = 17,
+	FRIENDLOBBIES = 18,
+	MULTIPLAYER = 19,
+	OPTIONSONLINE = 20,
+	CREATELOBBY = 21,
+	ONLINEAWARDS = 22 //sins list
+};
+
+
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");

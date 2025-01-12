@@ -86,6 +86,7 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
     Menu_Bestiary _menuBestiary : 0xd560;
     Menu_CustomChallenge _menuCustomChallenge : 0xd8d8;
     Menu_Mods _menuMods : 0xd9fc;
+	Vector _viewPositionSet[23] : 0xf7d0;
 	bool _shouldLerpColorModState : 0xf888;
 	ColorModState _currentColorModState : 0xf88c;
 	ColorModState _targetColorModState : 0xf8a4;
