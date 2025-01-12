@@ -61,6 +61,7 @@ Modified:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 	- If an error is caused by a callback, imgui will now properly throw an error
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
+* Daily goal path icon will now be displayed on Mega Satan daily runs.
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.
