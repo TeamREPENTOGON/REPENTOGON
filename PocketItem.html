@@ -7257,7 +7257,7 @@
 </ul>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">pocket</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span><span class="n">GetPocketItem</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">pocket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetPlayer</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span><span class="nf">GetPocketItem</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
@@ -7275,10 +7275,10 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">pocketItem</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetPocketItem</span><span class="p">(</span><span class="n">PillCardSlot</span><span class="p">.</span><span class="n">PRIMARY</span><span class="p">)</span>
-<span class="kr">if</span> <span class="n">pocketItem</span><span class="p">:</span><span class="n">GetType</span><span class="p">()</span> <span class="o">==</span> <span class="n">PocketItemType</span><span class="p">.</span><span class="n">ACTIVE_ITEM</span> <span class="kr">then</span>
-  <span class="kd">local</span> <span class="n">activeSlot</span> <span class="o">=</span> <span class="n">pocketItem</span><span class="p">:</span><span class="n">GetSlot</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
-  <span class="kd">local</span> <span class="n">activeItemID</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetActiveItem</span><span class="p">(</span><span class="n">activeSlot</span><span class="p">)</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">pocketItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetPocketItem</span><span class="p">(</span><span class="nv">PillCardSlot</span><span class="p">.</span><span class="py">PRIMARY</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">pocketItem</span><span class="p">:</span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">PocketItemType</span><span class="p">.</span><span class="py">ACTIVE_ITEM</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">activeSlot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">pocketItem</span><span class="p">:</span><span class="nf">GetSlot</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">activeItemID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetActiveItem</span><span class="p">(</span><span class="nv">activeSlot</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>

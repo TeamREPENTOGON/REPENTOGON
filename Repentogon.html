@@ -7274,24 +7274,24 @@ exactly matches the current Repentogon version.</p>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Assume REPENTOGON.Version = &quot;1.0.9a&quot;</span>
-<span class="n">REPENTOGON</span><span class="p">.</span><span class="n">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.0.8b&quot;</span><span class="p">)</span> <span class="c1">-- False</span>
+<span class="nv">REPENTOGON</span><span class="p">.</span><span class="nf">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.0.8b&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">-- False</span>
 <span class="cm">--[[ 1 is compared against 1: they are equal so continue.</span>
 <span class="cm">0 is compared against 0: they are equal so continue.</span>
 <span class="cm">8 is compared against 9: it&#39;s lower so return false. --]]</span>
 
-<span class="n">REPENTOGON</span><span class="p">.</span><span class="n">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.0.9&quot;</span><span class="p">)</span> <span class="c1">-- True</span>
+<span class="nv">REPENTOGON</span><span class="p">.</span><span class="nf">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.0.9&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">-- True</span>
 <span class="cm">--[[ 1 is compared against 1, 0 is compared against 0, 9 is compared against </span>
 <span class="cm">9: all are equals, all tokens are consumed: return true.</span>
 <span class="cm">Note that the letter is silently discarded. --]]</span>
 
-<span class="n">REPENTOGON</span><span class="p">.</span><span class="n">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="c1">-- True</span>
+<span class="nv">REPENTOGON</span><span class="p">.</span><span class="nf">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">-- True</span>
 <span class="cm">--[[ 2 is compared against 1: it&#39;s higher, so return true. --]]</span>
 
-<span class="n">REPENTOGON</span><span class="p">.</span><span class="n">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.12&quot;</span><span class="p">)</span> <span class="c1">-- True</span>
+<span class="nv">REPENTOGON</span><span class="p">.</span><span class="nf">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1.12&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">-- True</span>
 <span class="cm">--[[ 1 is compared against 1: they are equal so continue.</span>
 <span class="cm">12 is compared against 0: it&#39;s greater so return true. --]]</span>
 
-<span class="n">REPENTOGON</span><span class="p">.</span><span class="n">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1c1&quot;</span><span class="p">)</span> <span class="c1">-- True</span>
+<span class="nv">REPENTOGON</span><span class="p">.</span><span class="nf">MeetsVersion</span><span class="p">(</span><span class="s2">&quot;1c1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">-- True</span>
 <span class="cm">--[[ 1 is compared against 1: they are equal so continue.</span>
 <span class="cm">1 is compared against 0: it&#39;s greater so return true. --]]</span>
 </code></pre></div></td></tr></table></div>

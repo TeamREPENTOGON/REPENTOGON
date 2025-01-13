@@ -7840,14 +7840,14 @@
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Returns true if a room placed at this GridIndex with this RoomShape would have a neighboring secret room.</span>
-<span class="kd">local</span> <span class="kr">function</span> <span class="nf">WouldHaveSecretRoomNeighbor</span><span class="p">(</span><span class="n">gridIndex</span><span class="p">,</span> <span class="n">roomShape</span><span class="p">)</span>
-    <span class="kr">for</span> <span class="n">doorSlot</span><span class="p">,</span> <span class="n">neighborDesc</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">Game</span><span class="p">():</span><span class="n">GetLevel</span><span class="p">():</span><span class="n">GetNeighboringRooms</span><span class="p">(</span><span class="n">gridIndex</span><span class="p">,</span> <span class="n">roomShape</span><span class="p">))</span> <span class="kr">do</span>
-        <span class="kd">local</span> <span class="n">roomType</span> <span class="o">=</span> <span class="n">neighborDesc</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">Type</span>
-        <span class="kr">if</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SUPERSECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_ULTRASECRET</span> <span class="kr">then</span>
-            <span class="kr">return</span> <span class="kc">true</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
-    <span class="kr">return</span> <span class="kc">false</span>
+<span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">WouldHaveSecretRoomNeighbor</span><span class="p">(</span><span class="nv">gridIndex</span><span class="p">,</span><span class="w"> </span><span class="nv">roomShape</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">doorSlot</span><span class="p">,</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nf">Game</span><span class="p">():</span><span class="nf">GetLevel</span><span class="p">():</span><span class="nf">GetNeighboringRooms</span><span class="p">(</span><span class="nv">gridIndex</span><span class="p">,</span><span class="w"> </span><span class="nv">roomShape</span><span class="p">))</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="py">Type</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_SECRET</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_SUPERSECRET</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_ULTRASECRET</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>
@@ -7945,47 +7945,47 @@
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Adds another treasure room to the floor at a random valid location.</span>
-<span class="kd">local</span> <span class="kr">function</span> <span class="nf">AddAnotherTreasureRoomToTheFloorAtARandomValidLocation</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">level</span> <span class="o">=</span> <span class="n">game</span><span class="p">:</span><span class="n">GetLevel</span><span class="p">()</span>
+<span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">AddAnotherTreasureRoomToTheFloorAtARandomValidLocation</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">game</span><span class="p">:</span><span class="nf">GetLevel</span><span class="p">()</span>
 
-    <span class="kd">local</span> <span class="n">dimension</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1">-- current dimension</span>
-    <span class="kd">local</span> <span class="n">seed</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">GetDungeonPlacementSeed</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w">  </span><span class="c1">-- current dimension</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">GetDungeonPlacementSeed</span><span class="p">()</span>
 
-    <span class="c1">-- Fetch a random RoomConfig for a new treasure room.</span>
-    <span class="kd">local</span> <span class="n">roomConfig</span> <span class="o">=</span> <span class="n">RoomConfigHolder</span><span class="p">.</span><span class="n">GetRandomRoom</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="n">StbType</span><span class="p">.</span><span class="n">SPECIAL_ROOMS</span><span class="p">,</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_TREASURE</span><span class="p">,</span> <span class="n">RoomShape</span><span class="p">.</span><span class="n">ROOMSHAPE_1x1</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Fetch a random RoomConfig for a new treasure room.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">roomConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">RoomConfigHolder</span><span class="p">.</span><span class="nf">GetRandomRoom</span><span class="p">(</span><span class="nv">seed</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">StbType</span><span class="p">.</span><span class="py">SPECIAL_ROOMS</span><span class="p">,</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_TREASURE</span><span class="p">,</span><span class="w"> </span><span class="nv">RoomShape</span><span class="p">.</span><span class="py">ROOMSHAPE_1x1</span><span class="p">)</span>
 
-    <span class="c1">-- Disallow placements with multiple doors, or placements that connect to other special rooms.</span>
-    <span class="kd">local</span> <span class="n">allowMultipleDoors</span> <span class="o">=</span> <span class="kc">false</span>
-    <span class="kd">local</span> <span class="n">allowSpecialNeighbors</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="w">    </span><span class="c1">-- Disallow placements with multiple doors, or placements that connect to other special rooms.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">allowMultipleDoors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">allowSpecialNeighbors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
 
-    <span class="c1">-- Fetch all valid locations.</span>
-    <span class="kd">local</span> <span class="n">options</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">FindValidRoomPlacementLocations</span><span class="p">(</span><span class="n">roomConfig</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">allowMultipleDoors</span><span class="p">,</span> <span class="n">allowSpecialNeighbors</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Fetch all valid locations.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">FindValidRoomPlacementLocations</span><span class="p">(</span><span class="nv">roomConfig</span><span class="p">,</span><span class="w"> </span><span class="nv">dimension</span><span class="p">,</span><span class="w"> </span><span class="nv">allowMultipleDoors</span><span class="p">,</span><span class="w"> </span><span class="nv">allowSpecialNeighbors</span><span class="p">)</span>
 
-    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">gridIndex</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="kr">do</span>
-        <span class="c1">-- You may have additional conditions or priorities when it comes to where you would prefer to place your room.</span>
-        <span class="c1">-- For the purposes of this example we arbitarily forbid the new room from being connected to the starting room,</span>
-        <span class="c1">-- and otherwise just place the room at the first place we check.</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">gridIndex</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">options</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="c1">-- You may have additional conditions or priorities when it comes to where you would prefer to place your room.</span>
+<span class="w">        </span><span class="c1">-- For the purposes of this example we arbitarily forbid the new room from being connected to the starting room,</span>
+<span class="w">        </span><span class="c1">-- and otherwise just place the room at the first place we check.</span>
 
-        <span class="c1">-- Get the RoomDescriptors of all rooms that would be neighboring the room if placed here.</span>
-        <span class="kd">local</span> <span class="n">neighbors</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">GetNeighboringRooms</span><span class="p">(</span><span class="n">gridIndex</span><span class="p">,</span> <span class="n">roomConfig</span><span class="p">.</span><span class="n">Shape</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">-- Get the RoomDescriptors of all rooms that would be neighboring the room if placed here.</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">neighbors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">GetNeighboringRooms</span><span class="p">(</span><span class="nv">gridIndex</span><span class="p">,</span><span class="w"> </span><span class="nv">roomConfig</span><span class="p">.</span><span class="py">Shape</span><span class="p">)</span>
 
-        <span class="kd">local</span> <span class="n">connectsToStartingRoom</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">connectsToStartingRoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
 
-        <span class="kr">for</span> <span class="n">doorSlot</span><span class="p">,</span> <span class="n">neighborDesc</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="kr">do</span>
-            <span class="kr">if</span> <span class="n">neighborDesc</span><span class="p">.</span><span class="n">GridIndex</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span><span class="n">GetStartingRoomIndex</span><span class="p">()</span> <span class="kr">then</span>
-                <span class="n">connectsToStartingRoom</span> <span class="o">=</span> <span class="kc">true</span>
-            <span class="kr">end</span>
-        <span class="kr">end</span>
+<span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">doorSlot</span><span class="p">,</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">neighbors</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="p">.</span><span class="py">GridIndex</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">GetStartingRoomIndex</span><span class="p">()</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                </span><span class="nv">connectsToStartingRoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">            </span><span class="kr">end</span>
+<span class="w">        </span><span class="kr">end</span>
 
-        <span class="kr">if</span> <span class="ow">not</span> <span class="n">connectsToStartingRoom</span> <span class="kr">then</span>
-            <span class="c1">-- Try to place the room.</span>
-            <span class="kd">local</span> <span class="n">room</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">TryPlaceRoom</span><span class="p">(</span><span class="n">roomConfig</span><span class="p">,</span> <span class="n">gridIndex</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">allowMultipleDoors</span><span class="p">,</span> <span class="n">allowSpecialNeighbors</span><span class="p">)</span>
-            <span class="kr">if</span> <span class="n">room</span> <span class="kr">then</span>
-                <span class="c1">-- The room was placed successfully!</span>
-                <span class="kr">return</span>
-            <span class="kr">end</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">connectsToStartingRoom</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="c1">-- Try to place the room.</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">room</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">TryPlaceRoom</span><span class="p">(</span><span class="nv">roomConfig</span><span class="p">,</span><span class="w"> </span><span class="nv">gridIndex</span><span class="p">,</span><span class="w"> </span><span class="nv">dimension</span><span class="p">,</span><span class="w"> </span><span class="nv">seed</span><span class="p">,</span><span class="w"> </span><span class="nv">allowMultipleDoors</span><span class="p">,</span><span class="w"> </span><span class="nv">allowSpecialNeighbors</span><span class="p">)</span>
+<span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="nv">room</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                </span><span class="c1">-- The room was placed successfully!</span>
+<span class="w">                </span><span class="kr">return</span>
+<span class="w">            </span><span class="kr">end</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>
@@ -8026,35 +8026,35 @@
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Example code for an active item that creates a new 1x1 room at every doorslot available in the current room.</span>
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_USE_ITEM</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">level</span> <span class="o">=</span> <span class="n">game</span><span class="p">:</span><span class="n">GetLevel</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">room</span> <span class="o">=</span> <span class="n">game</span><span class="p">:</span><span class="n">GetRoom</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">roomDesc</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">GetCurrentRoomDesc</span><span class="p">()</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_USE_ITEM</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">id</span><span class="p">,</span><span class="w"> </span><span class="nv">rng</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">,</span><span class="w"> </span><span class="nv">flags</span><span class="p">,</span><span class="w"> </span><span class="nv">slot</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">game</span><span class="p">:</span><span class="nf">GetLevel</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">room</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">game</span><span class="p">:</span><span class="nf">GetRoom</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">roomDesc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">GetCurrentRoomDesc</span><span class="p">()</span>
 
-    <span class="kd">local</span> <span class="n">success</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
 
-    <span class="kr">for</span> <span class="n">doorSlot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span> <span class="kr">do</span>
-        <span class="c1">-- Bitmask check to identify if the current room would even allow a door to be placed here.</span>
-        <span class="kd">local</span> <span class="n">doorSlotAllowed</span> <span class="o">=</span> <span class="n">roomDesc</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">Doors</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">doorSlot</span><span class="p">)</span> <span class="o">~=</span> <span class="mi">0</span>
-        <span class="kr">if</span> <span class="n">doorSlotAllowed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">room</span><span class="p">:</span><span class="n">GetDoor</span><span class="p">(</span><span class="n">doorSlot</span><span class="p">)</span> <span class="kr">then</span>
-            <span class="kd">local</span> <span class="n">seed</span> <span class="o">=</span> <span class="n">rng</span><span class="p">:</span><span class="n">Next</span><span class="p">()</span>
-            <span class="kd">local</span> <span class="n">requiredDoors</span> <span class="o">=</span> <span class="mi">15</span>  <span class="c1">-- Bitmask value that requires the new 1x1 room to have all 4 doorslots available, just so we&#39;re sure it fits.</span>
-            <span class="kd">local</span> <span class="n">roomConfig</span> <span class="o">=</span> <span class="n">RoomConfigHolder</span><span class="p">.</span><span class="n">GetRandomRoom</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetCurrentStageConfigId</span><span class="p">(),</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_DEFAULT</span><span class="p">,</span> <span class="n">RoomShape</span><span class="p">.</span><span class="n">ROOMSHAPE_1x1</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="n">requiredDoors</span><span class="p">)</span>
-            <span class="kr">if</span> <span class="n">roomConfig</span> <span class="kr">then</span>
-                <span class="kd">local</span> <span class="n">newRoom</span> <span class="o">=</span> <span class="n">level</span><span class="p">:</span><span class="n">TryPlaceRoomAtDoor</span><span class="p">(</span><span class="n">roomConfig</span><span class="p">,</span> <span class="n">roomDesc</span><span class="p">,</span> <span class="n">doorSlot</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-                <span class="kr">if</span> <span class="n">newRoom</span> <span class="kr">then</span>
-                    <span class="n">success</span> <span class="o">=</span> <span class="kc">true</span>
-                <span class="kr">end</span>
-            <span class="kr">end</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">doorSlot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="c1">-- Bitmask check to identify if the current room would even allow a door to be placed here.</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">doorSlotAllowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">roomDesc</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="py">Doors</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="nv">doorSlot</span><span class="p">)</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">doorSlotAllowed</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">room</span><span class="p">:</span><span class="nf">GetDoor</span><span class="p">(</span><span class="nv">doorSlot</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">rng</span><span class="p">:</span><span class="nf">Next</span><span class="p">()</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">requiredDoors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="w">  </span><span class="c1">-- Bitmask value that requires the new 1x1 room to have all 4 doorslots available, just so we&#39;re sure it fits.</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">roomConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">RoomConfigHolder</span><span class="p">.</span><span class="nf">GetRandomRoom</span><span class="p">(</span><span class="nv">seed</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetCurrentStageConfigId</span><span class="p">(),</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="nv">RoomShape</span><span class="p">.</span><span class="py">ROOMSHAPE_1x1</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nv">requiredDoors</span><span class="p">)</span>
+<span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="nv">roomConfig</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                </span><span class="kd">local</span><span class="w"> </span><span class="nv">newRoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">level</span><span class="p">:</span><span class="nf">TryPlaceRoomAtDoor</span><span class="p">(</span><span class="nv">roomConfig</span><span class="p">,</span><span class="w"> </span><span class="nv">roomDesc</span><span class="p">,</span><span class="w"> </span><span class="nv">doorSlot</span><span class="p">,</span><span class="w"> </span><span class="nv">seed</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">                </span><span class="kr">if</span><span class="w"> </span><span class="nv">newRoom</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                    </span><span class="nv">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">                </span><span class="kr">end</span>
+<span class="w">            </span><span class="kr">end</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span>
-        <span class="kr">return</span> <span class="p">{</span><span class="n">ShowAnim</span><span class="o">=</span><span class="kc">true</span><span class="p">}</span>
-    <span class="kr">else</span>
-        <span class="kr">return</span> <span class="p">{</span><span class="n">Discharge</span><span class="o">=</span><span class="kc">false</span><span class="p">}</span>
-    <span class="kr">end</span>
-<span class="kr">end</span><span class="p">,</span> <span class="n">MY_ACTIVE_ITEM_ID</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">success</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="p">{</span><span class="nv">ShowAnim</span><span class="o">=</span><span class="kc">true</span><span class="p">}</span>
+<span class="w">    </span><span class="kr">else</span>
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="p">{</span><span class="nv">Discharge</span><span class="o">=</span><span class="kc">false</span><span class="p">}</span>
+<span class="w">    </span><span class="kr">end</span>
+<span class="kr">end</span><span class="p">,</span><span class="w"> </span><span class="nv">MY_ACTIVE_ITEM_ID</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />

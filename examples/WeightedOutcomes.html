@@ -7197,11 +7197,11 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">weightedOutcomePicker</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">weightedOutcomePicker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 
 <span class="c1">-- Each outcome has a 50% chance to be chosen. (50 / 100)</span>
-<span class="n">weightedOutcomePicker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">weightedOutcomePicker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="nv">weightedOutcomePicker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
+<span class="nv">weightedOutcomePicker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 <p>Meanwhile, this code snippet has each outcome having a 33% chance to be chosen. 50 (weight) divided by sum of the weight of all outcomes (150) is 0.33 (33%).
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -7209,12 +7209,12 @@
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">weightedOutcomePicker</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">weightedOutcomePicker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 
 <span class="c1">-- Each outcome has a 33% chance to be chosen. (50 / 150)</span>
-<span class="n">weightedOutcomePicker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">weightedOutcomePicker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">weightedOutcomePicker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="nv">weightedOutcomePicker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
+<span class="nv">weightedOutcomePicker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
+<span class="nv">weightedOutcomePicker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 <p>The follow example mod adds a new chest variant that only gives blue items, and uses a WeightedOutcomePicker filled with collectible types to make stronger items more rare.</p>
 <h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">⚓︎</a></h2>
@@ -7372,149 +7372,149 @@
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Custom Chest Example&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">sfx</span> <span class="o">=</span> <span class="n">SFXManager</span><span class="p">()</span>
+<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Custom Chest Example&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">sfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">SFXManager</span><span class="p">()</span>
 
-<span class="kd">local</span> <span class="n">BLUE_CHEST_SUBTYPE</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetEntitySubTypeByName</span><span class="p">(</span><span class="s2">&quot;Blue Chest&quot;</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">BLUE_CHEST_SUBTYPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetEntitySubTypeByName</span><span class="p">(</span><span class="s2">&quot;Blue Chest&quot;</span><span class="p">)</span>
 
 <span class="c1">-- First, let&#39;s create our WeightedOutcomePicker.</span>
 <span class="c1">-- This allows us to assign weights to a number outcome, and randomly chooses an outcome based on the total weight.</span>
 <span class="c1">-- To be specific, it&#39;s (itemWeight / sumOfItemWeights).</span>
 <span class="c1">-- We will be making a WeightedOutcomePicker for the items in which the chest can give.</span>
-<span class="kd">local</span> <span class="n">itemOutcomes</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">itemOutcomes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 
 <span class="c1">-- Just add a few blue items. You don&#39;t HAVE to make the weights add up to 100, they can add up to anything, but it&#39;s easier to understand this way.</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_CONVERTER</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_ISAACS_TEARS</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_BLUE_BOX</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1">-- Pandora&#39;s Box</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_TELEPORT</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_D12</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_CUBE_BABY</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_PISCES</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_BLUE_MAP</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_BLANKET</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_EVIL_CHARM</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_FATE</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_RELIC</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_GLOWING_HOUR_GLASS</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_PARASITOID</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">itemOutcomes</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_VENUS</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_CONVERTER</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_ISAACS_TEARS</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_BLUE_BOX</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Pandora&#39;s Box</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_TELEPORT</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_D12</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_CUBE_BABY</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_PISCES</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_BLUE_MAP</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_BLANKET</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_EVIL_CHARM</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_FATE</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_RELIC</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_GLOWING_HOUR_GLASS</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_PARASITOID</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_VENUS</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1">-- Creates a pedestal that looks like our chest.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">CreateChestPedestal</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">isCoinChest</span><span class="p">)</span>
-    <span class="c1">-- Get an outcome, aka a collectible type.</span>
-    <span class="kd">local</span> <span class="n">collectibleId</span> <span class="o">=</span> <span class="n">itemOutcomes</span><span class="p">:</span><span class="n">PickOutcome</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">CreateChestPedestal</span><span class="p">(</span><span class="nv">location</span><span class="p">,</span><span class="w"> </span><span class="nv">rng</span><span class="p">,</span><span class="w"> </span><span class="nv">isCoinChest</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Get an outcome, aka a collectible type.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">collectibleId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">itemOutcomes</span><span class="p">:</span><span class="nf">PickOutcome</span><span class="p">(</span><span class="nv">rng</span><span class="p">)</span>
 
-    <span class="c1">-- Spawn a pedestal with that item, and change</span>
-    <span class="kd">local</span> <span class="n">itemPedestal</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">Spawn</span><span class="p">(</span><span class="n">EntityType</span><span class="p">.</span><span class="n">ENTITY_PICKUP</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_COLLECTIBLE</span><span class="p">,</span> <span class="n">collectibleId</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">Vector</span><span class="p">.</span><span class="n">Zero</span><span class="p">,</span> <span class="kc">nil</span><span class="p">):</span><span class="n">ToPickup</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">-- Spawn a pedestal with that item, and change</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">itemPedestal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">Spawn</span><span class="p">(</span><span class="nv">EntityType</span><span class="p">.</span><span class="py">ENTITY_PICKUP</span><span class="p">,</span><span class="w"> </span><span class="nv">PickupVariant</span><span class="p">.</span><span class="py">PICKUP_COLLECTIBLE</span><span class="p">,</span><span class="w"> </span><span class="nv">collectibleId</span><span class="p">,</span><span class="w"> </span><span class="nv">location</span><span class="p">,</span><span class="w"> </span><span class="nv">Vector</span><span class="p">.</span><span class="py">Zero</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">):</span><span class="nf">ToPickup</span><span class="p">()</span>
 
-    <span class="c1">-- Replace the item pedestal&#39;s altar spritesheet with our own.</span>
-    <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">itemPedestal</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
-    <span class="n">sprite</span><span class="p">:</span><span class="n">ReplaceSpritesheet</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;gfx/items/blue_chest_altar.png&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Replace the item pedestal&#39;s altar spritesheet with our own.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">itemPedestal</span><span class="p">:</span><span class="nf">GetSprite</span><span class="p">()</span>
+<span class="w">    </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">ReplaceSpritesheet</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gfx/items/blue_chest_altar.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 
-    <span class="c1">-- Remove the poof effect from the pedestal spawning.</span>
-    <span class="n">itemPedestal</span><span class="p">:</span><span class="n">ClearEntityFlags</span><span class="p">(</span><span class="n">EntityFlag</span><span class="p">.</span><span class="n">FLAG_APPEAR</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Remove the poof effect from the pedestal spawning.</span>
+<span class="w">    </span><span class="nv">itemPedestal</span><span class="p">:</span><span class="nf">ClearEntityFlags</span><span class="p">(</span><span class="nv">EntityFlag</span><span class="p">.</span><span class="py">FLAG_APPEAR</span><span class="p">)</span>
 
-    <span class="c1">-- Change the sprite. In the anm2, 5 is the frame with the opened golden chest, and 16 is the frame with the coin version.</span>
-    <span class="c1">-- Our altar spritesheet replaces those two sprites, so we will use those frames.</span>
-    <span class="kr">if</span> <span class="n">isCoinChest</span> <span class="kr">then</span>
-        <span class="n">itemPedestal</span><span class="p">:</span><span class="n">SetAlternatePedestal</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-    <span class="kr">else</span>
-        <span class="n">itemPedestal</span><span class="p">:</span><span class="n">SetAlternatePedestal</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Change the sprite. In the anm2, 5 is the frame with the opened golden chest, and 16 is the frame with the coin version.</span>
+<span class="w">    </span><span class="c1">-- Our altar spritesheet replaces those two sprites, so we will use those frames.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">isCoinChest</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">itemPedestal</span><span class="p">:</span><span class="nf">SetAlternatePedestal</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">else</span>
+<span class="w">        </span><span class="nv">itemPedestal</span><span class="p">:</span><span class="nf">SetAlternatePedestal</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">--! To be clear, leaving and entering the room again or leaving and continuing the run will cause the pedestal to turn into a normal golden chest pedestal.</span>
-    <span class="c1">--! This can be fixed by using save data to track what pedestals are blue chest pedestals.</span>
-    <span class="c1">--! That is outside the scope of this example mod, but keep this in mind.</span>
+<span class="w">    </span><span class="c1">--! To be clear, leaving and entering the room again or leaving and continuing the run will cause the pedestal to turn into a normal golden chest pedestal.</span>
+<span class="w">    </span><span class="c1">--! This can be fixed by using save data to track what pedestals are blue chest pedestals.</span>
+<span class="w">    </span><span class="c1">--! That is outside the scope of this example mod, but keep this in mind.</span>
 <span class="kr">end</span>
 
 <span class="c1">-- Handle giving an item.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">HandleGivingLoot</span><span class="p">(</span><span class="n">chest</span><span class="p">,</span> <span class="n">collider</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">collider</span><span class="p">:</span><span class="n">ToPlayer</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">chest</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">HandleGivingLoot</span><span class="p">(</span><span class="nv">chest</span><span class="p">,</span><span class="w"> </span><span class="nv">collider</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">player</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">collider</span><span class="p">:</span><span class="nf">ToPlayer</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">chest</span><span class="p">:</span><span class="nf">GetSprite</span><span class="p">()</span>
 
-    <span class="c1">-- If a player didn&#39;t touch the chest, return (collider:ToPlayer() returns nil if it&#39;s not a player).</span>
-    <span class="c1">-- Also return if it&#39;s not our chest.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">player</span> <span class="ow">or</span> <span class="n">chest</span><span class="p">.</span><span class="n">SubType</span> <span class="o">~=</span> <span class="n">BLUE_CHEST_SUBTYPE</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- If a player didn&#39;t touch the chest, return (collider:ToPlayer() returns nil if it&#39;s not a player).</span>
+<span class="w">    </span><span class="c1">-- Also return if it&#39;s not our chest.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">player</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">chest</span><span class="p">.</span><span class="py">SubType</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">BLUE_CHEST_SUBTYPE</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Make sure it&#39;s not already being opened.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">sprite</span><span class="p">:</span><span class="n">IsPlaying</span><span class="p">(</span><span class="s2">&quot;Open&quot;</span><span class="p">)</span>  <span class="kr">then</span>
-        <span class="c1">-- Check if we should open the chest, and remove either a coin or a key if so.</span>
-        <span class="kd">local</span> <span class="n">shouldOpen</span> <span class="o">=</span> <span class="kc">false</span>
-        <span class="kd">local</span> <span class="n">someoneHasPayToPlay</span> <span class="o">=</span> <span class="n">PlayerManager</span><span class="p">.</span><span class="n">AnyoneHasCollectible</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_PAY_TO_PLAY</span><span class="p">)</span>
-        <span class="kr">if</span> <span class="n">someoneHasPayToPlay</span> <span class="ow">and</span> <span class="n">player</span><span class="p">:</span><span class="n">GetNumCoins</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
-            <span class="n">player</span><span class="p">:</span><span class="n">AddCoins</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">shouldOpen</span> <span class="o">=</span> <span class="kc">true</span>
-        <span class="kr">elseif</span> <span class="n">player</span><span class="p">:</span><span class="n">HasGoldenKey</span><span class="p">()</span> <span class="ow">or</span> <span class="n">player</span><span class="p">:</span><span class="n">GetNumKeys</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
-            <span class="n">player</span><span class="p">:</span><span class="n">AddKeys</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">shouldOpen</span> <span class="o">=</span> <span class="kc">true</span>
-        <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Make sure it&#39;s not already being opened.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">IsPlaying</span><span class="p">(</span><span class="s2">&quot;Open&quot;</span><span class="p">)</span><span class="w">  </span><span class="kr">then</span>
+<span class="w">        </span><span class="c1">-- Check if we should open the chest, and remove either a coin or a key if so.</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">shouldOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">someoneHasPayToPlay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">PlayerManager</span><span class="p">.</span><span class="nf">AnyoneHasCollectible</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_PAY_TO_PLAY</span><span class="p">)</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">someoneHasPayToPlay</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetNumCoins</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="nv">player</span><span class="p">:</span><span class="nf">AddCoins</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">            </span><span class="nv">shouldOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">HasGoldenKey</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetNumKeys</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="nv">player</span><span class="p">:</span><span class="nf">AddKeys</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">            </span><span class="nv">shouldOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="kr">end</span>
 
-        <span class="c1">-- If we are opening the chest, make an RNG object based on the drop seed of the chest and run the pedestal creation code.</span>
-        <span class="kr">if</span> <span class="n">shouldOpen</span> <span class="kr">then</span>
-            <span class="kd">local</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">RNG</span><span class="p">()</span>
-            <span class="n">rng</span><span class="p">:</span><span class="n">SetSeed</span><span class="p">(</span><span class="n">chest</span><span class="p">.</span><span class="n">DropSeed</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">-- If we are opening the chest, make an RNG object based on the drop seed of the chest and run the pedestal creation code.</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">shouldOpen</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RNG</span><span class="p">()</span>
+<span class="w">            </span><span class="nv">rng</span><span class="p">:</span><span class="nf">SetSeed</span><span class="p">(</span><span class="nv">chest</span><span class="p">.</span><span class="py">DropSeed</span><span class="p">)</span>
 
-            <span class="c1">-- Spawn our pedestal.</span>
-            <span class="n">mod</span><span class="p">:</span><span class="n">CreateChestPedestal</span><span class="p">(</span><span class="n">chest</span><span class="p">.</span><span class="n">Position</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">someoneHasPayToPlay</span><span class="p">)</span>
+<span class="w">            </span><span class="c1">-- Spawn our pedestal.</span>
+<span class="w">            </span><span class="nv">mod</span><span class="p">:</span><span class="nf">CreateChestPedestal</span><span class="p">(</span><span class="nv">chest</span><span class="p">.</span><span class="py">Position</span><span class="p">,</span><span class="w"> </span><span class="nv">rng</span><span class="p">,</span><span class="w"> </span><span class="nv">someoneHasPayToPlay</span><span class="p">)</span>
 
-            <span class="c1">-- Remove the opened chest.</span>
-            <span class="c1">-- Wait 4 frames to do this so that there isn&#39;t a brief period where there&#39;s no visible sprite.</span>
-            <span class="c1">-- We can delay the function by a frame by using a timer.</span>
-            <span class="n">Isaac</span><span class="p">.</span><span class="n">CreateTimer</span><span class="p">(</span><span class="kr">function</span> <span class="p">()</span>
-                <span class="n">chest</span><span class="p">:</span><span class="n">Remove</span><span class="p">()</span>
-            <span class="kr">end</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="w">            </span><span class="c1">-- Remove the opened chest.</span>
+<span class="w">            </span><span class="c1">-- Wait 4 frames to do this so that there isn&#39;t a brief period where there&#39;s no visible sprite.</span>
+<span class="w">            </span><span class="c1">-- We can delay the function by a frame by using a timer.</span>
+<span class="w">            </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">CreateTimer</span><span class="p">(</span><span class="kr">function</span><span class="w"> </span><span class="p">()</span>
+<span class="w">                </span><span class="nv">chest</span><span class="p">:</span><span class="nf">Remove</span><span class="p">()</span>
+<span class="w">            </span><span class="kr">end</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 
-            <span class="c1">-- Play the animation so that this doesn&#39;t happen again.</span>
-            <span class="n">sprite</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Open&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="c1">-- Play the animation so that this doesn&#39;t happen again.</span>
+<span class="w">            </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="s2">&quot;Open&quot;</span><span class="p">)</span>
 
-            <span class="c1">-- Play the sound.</span>
-            <span class="n">sfx</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="n">SoundEffect</span><span class="p">.</span><span class="n">SOUND_CHEST_OPEN</span><span class="p">)</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
+<span class="w">            </span><span class="c1">-- Play the sound.</span>
+<span class="w">            </span><span class="nv">sfx</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="nv">SoundEffect</span><span class="p">.</span><span class="py">SOUND_CHEST_OPEN</span><span class="p">)</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Cancel internal code of the normal chest and just allow collision.</span>
-    <span class="kr">return</span> <span class="p">{</span>
-        <span class="n">Collide</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-        <span class="n">SkipCollisionEffects</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">-- Cancel internal code of the normal chest and just allow collision.</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">Collide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">SkipCollisionEffects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_PICKUP_COLLISION</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">HandleGivingLoot</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_PRE_PICKUP_COLLISION</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">HandleGivingLoot</span><span class="p">,</span><span class="w"> </span><span class="nv">PickupVariant</span><span class="p">.</span><span class="py">PICKUP_CHEST</span><span class="p">)</span>
 
 <span class="c1">-- Handle general update logic.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">HandleBlueChestUpdate</span><span class="p">(</span><span class="n">chest</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">chest</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">HandleBlueChestUpdate</span><span class="p">(</span><span class="nv">chest</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">chest</span><span class="p">:</span><span class="nf">GetSprite</span><span class="p">()</span>
 
-    <span class="c1">-- End the callback early if it&#39;s not our chest.</span>
-    <span class="kr">if</span> <span class="n">chest</span><span class="p">.</span><span class="n">SubType</span> <span class="o">~=</span> <span class="n">BLUE_CHEST_SUBTYPE</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- End the callback early if it&#39;s not our chest.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">chest</span><span class="p">.</span><span class="py">SubType</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">BLUE_CHEST_SUBTYPE</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Play sound.</span>
-    <span class="kr">if</span> <span class="n">sprite</span><span class="p">:</span><span class="n">IsEventTriggered</span><span class="p">(</span><span class="s2">&quot;DropSound&quot;</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="n">sfx</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="n">SoundEffect</span><span class="p">.</span><span class="n">SOUND_CHEST_DROP</span><span class="p">)</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Play sound.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">IsEventTriggered</span><span class="p">(</span><span class="s2">&quot;DropSound&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">sfx</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="nv">SoundEffect</span><span class="p">.</span><span class="py">SOUND_CHEST_DROP</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Handle switching animations.</span>
-    <span class="kr">if</span> <span class="n">sprite</span><span class="p">:</span><span class="n">IsFinished</span><span class="p">(</span><span class="s2">&quot;Appear&quot;</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="n">sprite</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Handle switching animations.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">IsFinished</span><span class="p">(</span><span class="s2">&quot;Appear&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PICKUP_UPDATE</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">HandleBlueChestUpdate</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_PICKUP_UPDATE</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">HandleBlueChestUpdate</span><span class="p">,</span><span class="w"> </span><span class="nv">PickupVariant</span><span class="p">.</span><span class="py">PICKUP_CHEST</span><span class="p">)</span>
 
 <span class="c1">-- Handle the chest using the pay-to-play sprite.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">HandlePayToPlay</span><span class="p">(</span><span class="n">chest</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">chest</span><span class="p">.</span><span class="n">SubType</span> <span class="o">==</span> <span class="n">BLUE_CHEST_SUBTYPE</span> <span class="ow">and</span> <span class="n">PlayerManager</span><span class="p">.</span><span class="n">AnyoneHasCollectible</span><span class="p">(</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_PAY_TO_PLAY</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">chest</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
-        <span class="n">sprite</span><span class="p">:</span><span class="n">ReplaceSpritesheet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;gfx/items/pick ups/blue_chest_coinslot.png&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-    <span class="kr">end</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">HandlePayToPlay</span><span class="p">(</span><span class="nv">chest</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">chest</span><span class="p">.</span><span class="py">SubType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">BLUE_CHEST_SUBTYPE</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">PlayerManager</span><span class="p">.</span><span class="nf">AnyoneHasCollectible</span><span class="p">(</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_PAY_TO_PLAY</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">chest</span><span class="p">:</span><span class="nf">GetSprite</span><span class="p">()</span>
+<span class="w">        </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">ReplaceSpritesheet</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gfx/items/pick ups/blue_chest_coinslot.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PICKUP_INIT</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">HandlePayToPlay</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_PICKUP_INIT</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">HandlePayToPlay</span><span class="p">,</span><span class="w"> </span><span class="nv">PickupVariant</span><span class="p">.</span><span class="py">PICKUP_CHEST</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 

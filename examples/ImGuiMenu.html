@@ -7314,12 +7314,12 @@
 <span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
-<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon ImGui&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">sfx</span> <span class="o">=</span> <span class="n">SFXManager</span><span class="p">()</span>
-<span class="kd">local</span> <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">()</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon ImGui&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">sfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">SFXManager</span><span class="p">()</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">game</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Game</span><span class="p">()</span>
 
 <span class="c1">-- We&#39;ll use this later.</span>
-<span class="kd">local</span> <span class="n">notificationText</span> <span class="o">=</span> <span class="s2">&quot;What do you want to shout...&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">notificationText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;What do you want to shout...&quot;</span>
 
 <span class="c1">-- This example mod demonstrates many general applications for ImGui.</span>
 <span class="c1">-- For a very thorough and generic usage example, please see the ImGui Lua Test Menu:</span>
@@ -7330,98 +7330,98 @@
 <span class="c1">-- This &quot;\u{f0c3}&quot; represents a unicode character. The font used for ImGui is powered by fontawesome.com, so it has many emojis you can use.</span>
 <span class="c1">-- Find an emoji, then click on it and find the Unicode representation at the top right.</span>
 <span class="c1">-- https://fontawesome.com/search?m=free&amp;o=r</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">CreateMenu</span><span class="p">(</span><span class="s2">&quot;ExampleMenu&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u{f0c3}</span><span class="s2"> ImGui Example&quot;</span><span class="p">)</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">CreateMenu</span><span class="p">(</span><span class="s2">&quot;ExampleMenu&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\u{f0c3}</span><span class="s2"> ImGui Example&quot;</span><span class="p">)</span>
 
 <span class="c1">-- To add a button under the dropdown for the menu, we need to use the generic AddElement function.</span>
 <span class="c1">-- This can be used to add any element, or you can use the dedicated function for the type of element if there is one.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddElement</span><span class="p">(</span><span class="s2">&quot;ExampleMenu&quot;</span><span class="p">,</span> <span class="s2">&quot;ExampleMenuMainWindowButton&quot;</span><span class="p">,</span> <span class="n">ImGuiElement</span><span class="p">.</span><span class="n">MenuItem</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u{f005}</span><span class="s2"> Fun Menu&quot;</span><span class="p">)</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddElement</span><span class="p">(</span><span class="s2">&quot;ExampleMenu&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ExampleMenuMainWindowButton&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">ImGuiElement</span><span class="p">.</span><span class="py">MenuItem</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\u{f005}</span><span class="s2"> Fun Menu&quot;</span><span class="p">)</span>
 
 <span class="c1">-- Create Fun Menu. This will hold some buttons and sliders that we will make do fun things.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">CreateWindow</span><span class="p">(</span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\u{f005}</span><span class="s2"> Fun Menu&quot;</span><span class="p">)</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">CreateWindow</span><span class="p">(</span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\u{f005}</span><span class="s2"> Fun Menu&quot;</span><span class="p">)</span>
 
 <span class="c1">-- Link it to ExampleMenuMainWindowButton, the button we made earlier.</span>
 <span class="c1">-- It&#39;ll now open or close when that button is pressed.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">LinkWindowToElement</span><span class="p">(</span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span> <span class="s2">&quot;ExampleMenuMainWindowButton&quot;</span><span class="p">)</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">LinkWindowToElement</span><span class="p">(</span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ExampleMenuMainWindowButton&quot;</span><span class="p">)</span>
 
 <span class="c1">-- The fun menu will have four things:</span>
-    <span class="c1">-- A progress bar showing how close we are to missing Boss Rush.</span>
-    <span class="c1">-- A that updates some text.</span>
-    <span class="c1">-- A text input and button to cause a notification to appear.</span>
-    <span class="c1">-- A button that plays a funny sound (SoundEffect.SOUND_DERP).</span>
+<span class="w">    </span><span class="c1">-- A progress bar showing how close we are to missing Boss Rush.</span>
+<span class="w">    </span><span class="c1">-- A that updates some text.</span>
+<span class="w">    </span><span class="c1">-- A text input and button to cause a notification to appear.</span>
+<span class="w">    </span><span class="c1">-- A button that plays a funny sound (SoundEffect.SOUND_DERP).</span>
 
 <span class="c1">-- First, add a progress bar showing how close we are to missing Boss Rush.</span>
 <span class="c1">-- The code controlling the value of it as at the bottom of this file.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddProgressBar</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ExampleMenuBossRushProgress&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Boss Rush deadline!&quot;</span><span class="p">,</span>
-    <span class="mi">0</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddProgressBar</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuBossRushProgress&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Boss Rush deadline!&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span>
 <span class="p">)</span>
 
 <span class="c1">-- Add that slider.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddSliderInteger</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ExampleMenuHpSlider&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Cool slider&quot;</span><span class="p">,</span> <span class="c1">-- Slider label.</span>
-    <span class="kr">function</span> <span class="p">(</span><span class="n">newValue</span><span class="p">)</span> <span class="c1">-- Function ran whenever the slider is changed.</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">newValue</span><span class="p">)</span>
-    <span class="kr">end</span><span class="p">,</span>
-    <span class="mi">50</span><span class="p">,</span> <span class="c1">-- Default value</span>
-    <span class="mi">0</span><span class="p">,</span> <span class="c1">-- Minimum value</span>
-    <span class="mi">100</span><span class="p">,</span> <span class="c1">-- Maximum value</span>
-    <span class="s2">&quot;Coolness factor: %d%&quot;</span> <span class="c1">-- Number label formatting. So, at default, the label will say &quot;Coolness factor: 50&quot;</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddSliderInteger</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuHpSlider&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Cool slider&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Slider label.</span>
+<span class="w">    </span><span class="kr">function</span><span class="w"> </span><span class="p">(</span><span class="nv">newValue</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Function ran whenever the slider is changed.</span>
+<span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="nv">newValue</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Default value</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Minimum value</span>
+<span class="w">    </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Maximum value</span>
+<span class="w">    </span><span class="s2">&quot;Coolness factor: %d%&quot;</span><span class="w"> </span><span class="c1">-- Number label formatting. So, at default, the label will say &quot;Coolness factor: 50&quot;</span>
 <span class="p">)</span>
 
 <span class="c1">-- Add the text input and notification.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddInputText</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ExampleMenuNotificationInput&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="c1">-- We&#39;ll use the hint text to indicate what this does instead of a label.</span>
-    <span class="kr">function</span> <span class="p">(</span><span class="n">newValue</span><span class="p">)</span> <span class="c1">-- Function ran whenever the text input is updated.</span>
-        <span class="n">notificationText</span> <span class="o">=</span> <span class="n">newValue</span>
-    <span class="kr">end</span><span class="p">,</span>
-    <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="c1">-- Default value.</span>
-    <span class="s2">&quot;What do you want to shout...&quot;</span> <span class="c1">-- Hint text; This is the text that will appear when there is no user-inputted text in the box.</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddInputText</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuNotificationInput&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- We&#39;ll use the hint text to indicate what this does instead of a label.</span>
+<span class="w">    </span><span class="kr">function</span><span class="w"> </span><span class="p">(</span><span class="nv">newValue</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Function ran whenever the text input is updated.</span>
+<span class="w">        </span><span class="nv">notificationText</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">newValue</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Default value.</span>
+<span class="w">    </span><span class="s2">&quot;What do you want to shout...&quot;</span><span class="w"> </span><span class="c1">-- Hint text; This is the text that will appear when there is no user-inputted text in the box.</span>
 <span class="p">)</span>
 
 <span class="c1">-- By default, ImGui elements are on separate lines.</span>
 <span class="c1">-- Add a &quot;SameLine&quot; element to make the next element appear on the same line.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddElement</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="c1">-- No element id needed since we&#39;re never gonna need to reference this later. We&#39;re allowed to add multiple elements to an empty id.</span>
-    <span class="n">ImGuiElement</span><span class="p">.</span><span class="n">SameLine</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddElement</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- No element id needed since we&#39;re never gonna need to reference this later. We&#39;re allowed to add multiple elements to an empty id.</span>
+<span class="w">    </span><span class="nv">ImGuiElement</span><span class="p">.</span><span class="py">SameLine</span>
 <span class="p">)</span>
 
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddButton</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ExampleMenuNotificationButton&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;</span><span class="se">\u{f0a1}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="c1">-- Since this button will be small, we&#39;ll just put an emoji to indicate what it does.</span>
-    <span class="kr">function</span> <span class="p">(</span><span class="n">clickCount</span><span class="p">)</span>
-        <span class="c1">-- Send a notification of type INFO with a lifetime of 5000 (in milliseconds).</span>
-        <span class="n">ImGui</span><span class="p">.</span><span class="n">PushNotification</span><span class="p">(</span><span class="n">notificationText</span><span class="p">,</span> <span class="n">ImGuiNotificationType</span><span class="p">.</span><span class="n">INFO</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
-    <span class="kr">end</span><span class="p">,</span>
-    <span class="kc">true</span> <span class="c1">-- It&#39;ll be a small button.</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddButton</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuNotificationButton&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;</span><span class="se">\u{f0a1}</span><span class="s2">&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Since this button will be small, we&#39;ll just put an emoji to indicate what it does.</span>
+<span class="w">    </span><span class="kr">function</span><span class="w"> </span><span class="p">(</span><span class="nv">clickCount</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">-- Send a notification of type INFO with a lifetime of 5000 (in milliseconds).</span>
+<span class="w">        </span><span class="nv">ImGui</span><span class="p">.</span><span class="nf">PushNotification</span><span class="p">(</span><span class="nv">notificationText</span><span class="p">,</span><span class="w"> </span><span class="nv">ImGuiNotificationType</span><span class="p">.</span><span class="py">INFO</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">    </span><span class="kc">true</span><span class="w"> </span><span class="c1">-- It&#39;ll be a small button.</span>
 <span class="p">)</span>
 
 <span class="c1">-- Let&#39;s also add a help marker to indicator what the button does.</span>
 <span class="c1">-- Help markers look like: (?) and can be hovered over with your mouse to display a box of text.</span>
 
-<span class="n">ImGui</span><span class="p">.</span><span class="n">SetHelpmarker</span><span class="p">(</span><span class="s2">&quot;ExampleMenuNotificationButton&quot;</span><span class="p">,</span> <span class="s2">&quot;Send a notification with the text of your choice using this fashionable button!&quot;</span><span class="p">)</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">SetHelpmarker</span><span class="p">(</span><span class="s2">&quot;ExampleMenuNotificationButton&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Send a notification with the text of your choice using this fashionable button!&quot;</span><span class="p">)</span>
 
 <span class="c1">-- Finally, make a button that plays a funny sound.</span>
-<span class="n">ImGui</span><span class="p">.</span><span class="n">AddButton</span><span class="p">(</span>
-    <span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ExampleMenuFunnyButton&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Funny button!&quot;</span><span class="p">,</span> <span class="c1">-- Button label.</span>
-    <span class="kr">function</span> <span class="p">(</span><span class="n">clickCount</span><span class="p">)</span>
-        <span class="n">sfx</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="n">SoundEffect</span><span class="p">.</span><span class="n">SOUND_DERP</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="nb">math.random</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="c1">-- A random pitch is pretty funny...</span>
-    <span class="kr">end</span><span class="p">,</span>
-    <span class="kc">false</span> <span class="c1">-- Normal sized button.</span>
+<span class="nv">ImGui</span><span class="p">.</span><span class="nf">AddButton</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunMenu&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ExampleMenuFunnyButton&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Funny button!&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Button label.</span>
+<span class="w">    </span><span class="kr">function</span><span class="w"> </span><span class="p">(</span><span class="nv">clickCount</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">sfx</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="nv">SoundEffect</span><span class="p">.</span><span class="py">SOUND_DERP</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nb">math.random</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">-- A random pitch is pretty funny...</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">    </span><span class="kc">false</span><span class="w"> </span><span class="c1">-- Normal sized button.</span>
 <span class="p">)</span>
 
 <span class="c1">-- Update the progress bar</span>
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_UPDATE</span><span class="p">,</span> <span class="kr">function</span> <span class="p">()</span>
-    <span class="n">ImGui</span><span class="p">.</span><span class="n">UpdateData</span><span class="p">(</span><span class="s2">&quot;ExampleMenuBossRushProgress&quot;</span><span class="p">,</span> <span class="n">ImGuiData</span><span class="p">.</span><span class="n">Value</span><span class="p">,</span> <span class="n">game</span><span class="p">.</span><span class="n">TimeCounter</span> <span class="o">/</span> <span class="n">game</span><span class="p">.</span><span class="n">BossRushParTime</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_UPDATE</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="nv">ImGui</span><span class="p">.</span><span class="nf">UpdateData</span><span class="p">(</span><span class="s2">&quot;ExampleMenuBossRushProgress&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">ImGuiData</span><span class="p">.</span><span class="py">Value</span><span class="p">,</span><span class="w"> </span><span class="nv">game</span><span class="p">.</span><span class="py">TimeCounter</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nv">game</span><span class="p">.</span><span class="py">BossRushParTime</span><span class="p">)</span>
 <span class="kr">end</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>

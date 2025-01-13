@@ -7223,27 +7223,27 @@
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Color Modifiers&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">()</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Color Modifiers&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">game</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Game</span><span class="p">()</span>
 
-<span class="kd">local</span> <span class="n">RED_LENGTH</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">RED_LENGTH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
 
 <span class="c1">-- Make our red color modifier.</span>
-<span class="kd">local</span> <span class="n">redModifier</span> <span class="o">=</span> <span class="n">ColorModifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">redModifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">ColorModifier</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.33</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1">-- Add a red color modifier when the player is hurt.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">OnPlayerHurt</span><span class="p">()</span>
-    <span class="c1">-- Set the red effect. &quot;lerp&quot; stands for linear interpolation, and means it&#39;ll &quot;fade&quot; to our color modifier from the current one.</span>
-    <span class="n">game</span><span class="p">:</span><span class="n">SetColorModifier</span><span class="p">(</span><span class="n">redModifier</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">OnPlayerHurt</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">-- Set the red effect. &quot;lerp&quot; stands for linear interpolation, and means it&#39;ll &quot;fade&quot; to our color modifier from the current one.</span>
+<span class="w">    </span><span class="nv">game</span><span class="p">:</span><span class="nf">SetColorModifier</span><span class="p">(</span><span class="nv">redModifier</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">)</span>
 
-    <span class="c1">-- Fade back to normal after RED_LENGTH frames.</span>
-    <span class="n">Isaac</span><span class="p">.</span><span class="n">CreateTimer</span><span class="p">(</span><span class="kr">function</span> <span class="p">()</span>
-        <span class="c1">-- Set&#39;s the color modifier back to what was specified in &quot;fxparams.xml&quot;.</span>
-        <span class="n">game</span><span class="p">:</span><span class="n">GetRoom</span><span class="p">():</span><span class="n">UpdateColorModifier</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
-    <span class="kr">end</span><span class="p">,</span> <span class="n">RED_LENGTH</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Fade back to normal after RED_LENGTH frames.</span>
+<span class="w">    </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">CreateTimer</span><span class="p">(</span><span class="kr">function</span><span class="w"> </span><span class="p">()</span>
+<span class="w">        </span><span class="c1">-- Set&#39;s the color modifier back to what was specified in &quot;fxparams.xml&quot;.</span>
+<span class="w">        </span><span class="nv">game</span><span class="p">:</span><span class="nf">GetRoom</span><span class="p">():</span><span class="nf">UpdateColorModifier</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.05</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span><span class="w"> </span><span class="nv">RED_LENGTH</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_ENTITY_TAKE_DMG</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">OnPlayerHurt</span><span class="p">,</span> <span class="n">EntityType</span><span class="p">.</span><span class="n">ENTITY_PLAYER</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_ENTITY_TAKE_DMG</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">OnPlayerHurt</span><span class="p">,</span><span class="w"> </span><span class="nv">EntityType</span><span class="p">.</span><span class="py">ENTITY_PLAYER</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 

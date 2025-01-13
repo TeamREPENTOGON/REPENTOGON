@@ -7348,17 +7348,17 @@
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">item</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemConfig</span><span class="p">():</span><span class="n">GetCollectible</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetItemConfig</span><span class="p">():</span><span class="nf">GetCollectible</span><span class="p">(</span><span class="nv">id</span><span class="p">)</span>
 
 <span class="c1">-- Returns true if the entity has the tag string specified.</span>
 <span class="c1">-- Capitalization does not matter.</span>
-<span class="kr">if</span> <span class="n">item</span><span class="p">:</span><span class="n">HasCustomTag</span><span class="p">(</span><span class="s2">&quot;yourcustomtag&quot;</span><span class="p">)</span> <span class="kr">then</span>
-  <span class="c1">-- ...</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">item</span><span class="p">:</span><span class="nf">HasCustomTag</span><span class="p">(</span><span class="s2">&quot;yourcustomtag&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="c1">-- ...</span>
 <span class="kr">end</span>
 
 <span class="c1">-- Returns a table containing all customtags specified for this entity.</span>
 <span class="c1">-- Tags are provided in all lowercase.</span>
-<span class="kd">local</span> <span class="n">customTags</span> <span class="o">=</span> <span class="n">item</span><span class="p">:</span><span class="n">GetCustomTags</span><span class="p">()</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">customTags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">item</span><span class="p">:</span><span class="nf">GetCustomTags</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div></p>
 <p>Repentogon itself adds some tags that can be used to apply certain features to items with little to no required lua code at all:</p>
 <table>
@@ -7418,23 +7418,23 @@
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- &quot;Real&quot; held collectible-based revive with higher priority than all vanilla revives, like 1UP.</span>
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_TRIGGER_PLAYER_DEATH</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">player</span><span class="p">:</span><span class="n">HasCollectible</span><span class="p">(</span><span class="n">yourItemID</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="n">player</span><span class="p">:</span><span class="n">RemoveCollectible</span><span class="p">(</span><span class="n">yourItemID</span><span class="p">)</span>
-        <span class="n">player</span><span class="p">:</span><span class="n">SetMinDamageCooldown</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>  <span class="c1">-- Grant iframes to the player.</span>
-        <span class="kr">return</span> <span class="kc">false</span>  <span class="c1">-- Causes the player to revive on the spot with half a heart.</span>
-    <span class="kr">end</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_PRE_TRIGGER_PLAYER_DEATH</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">HasCollectible</span><span class="p">(</span><span class="nv">yourItemID</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">player</span><span class="p">:</span><span class="nf">RemoveCollectible</span><span class="p">(</span><span class="nv">yourItemID</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">player</span><span class="p">:</span><span class="nf">SetMinDamageCooldown</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w">  </span><span class="c1">-- Grant iframes to the player.</span>
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span><span class="w">  </span><span class="c1">-- Causes the player to revive on the spot with half a heart.</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span><span class="p">)</span>
 
 <span class="c1">-- Null Item-based revive effect with lower priority than vanilla revives such as 1UP.</span>
 <span class="c1">-- Null Items (or any item TemporaryEffect) can be a good way to handle multiple extra lives.</span>
-<span class="kd">local</span> <span class="n">nullID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetNullItemIdByName</span><span class="p">(</span><span class="s2">&quot;my null item&quot;</span><span class="p">)</span>
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
-    <span class="kr">if</span> <span class="n">player</span><span class="p">:</span><span class="n">GetEffects</span><span class="p">():</span><span class="n">HasNullEffect</span><span class="p">(</span><span class="n">nullID</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="n">player</span><span class="p">:</span><span class="n">GetEffects</span><span class="p">():</span><span class="n">RemoveNullEffect</span><span class="p">(</span><span class="n">nullID</span><span class="p">)</span>
-        <span class="n">player</span><span class="p">:</span><span class="n">Revive</span><span class="p">()</span>  <span class="c1">-- Calling Revive manually like this is acceptable, and will still prevent later callbacks from running.</span>
-        <span class="c1">-- You can manipulate the player&#39;s post-revive health here, such as fully healing them, or setting them to a single red heart container.</span>
-    <span class="kr">end</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">nullID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetNullItemIdByName</span><span class="p">(</span><span class="s2">&quot;my null item&quot;</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetEffects</span><span class="p">():</span><span class="nf">HasNullEffect</span><span class="p">(</span><span class="nv">nullID</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetEffects</span><span class="p">():</span><span class="nf">RemoveNullEffect</span><span class="p">(</span><span class="nv">nullID</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">player</span><span class="p">:</span><span class="nf">Revive</span><span class="p">()</span><span class="w">  </span><span class="c1">-- Calling Revive manually like this is acceptable, and will still prevent later callbacks from running.</span>
+<span class="w">        </span><span class="c1">-- You can manipulate the player&#39;s post-revive health here, such as fully healing them, or setting them to a single red heart container.</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 <h2 id="customcache">CustomCache<a class="headerlink" href="#customcache" title="Permanent link">⚓︎</a></h2>
@@ -7471,25 +7471,25 @@
 <span class="normal">21</span>
 <span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Returns a table containing all customtags specified for this entity.</span>
 <span class="c1">-- Tags are provided in all lowercase.</span>
-<span class="kd">local</span> <span class="n">customTags</span> <span class="o">=</span> <span class="n">item</span><span class="p">:</span><span class="n">GetCustomCacheTags</span><span class="p">()</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">customTags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">item</span><span class="p">:</span><span class="nf">GetCustomCacheTags</span><span class="p">()</span>
 
 <span class="c1">-- Triggers evaluation for the customcache immediately.</span>
-<span class="n">player</span><span class="p">:</span><span class="n">AddCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="nv">player</span><span class="p">:</span><span class="nf">AddCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 
 <span class="c1">-- Queue multiple customcaches for evaluation, but does not trigger evaluation immediately.</span>
 <span class="c1">-- The evaluation will happen whenever a standard cache evaluation is triggered, such as via `player:EvaluateItems()`.</span>
-<span class="n">player</span><span class="p">:</span><span class="n">AddCustomCacheTag</span><span class="p">({</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span> <span class="s2">&quot;myothercustomcache&quot;</span><span class="p">},</span> <span class="kc">false</span><span class="p">)</span>
+<span class="nv">player</span><span class="p">:</span><span class="nf">AddCustomCacheTag</span><span class="p">({</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;myothercustomcache&quot;</span><span class="p">},</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 
 <span class="c1">-- Get the current cached value.</span>
-<span class="kd">local</span> <span class="n">cacheValue</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetCustomCacheValue</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">cacheValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetCustomCacheValue</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span>
 
 <span class="c1">-- The tags listed in the `customcache` attribute can be checked via the ItemConfig.</span>
-<span class="kd">local</span> <span class="n">item</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemConfig</span><span class="p">():</span><span class="n">GetCollectible</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">item</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetItemConfig</span><span class="p">():</span><span class="nf">GetCollectible</span><span class="p">(</span><span class="nv">id</span><span class="p">)</span>
 
 <span class="c1">-- Returns true if the entity has the tag string specified.</span>
 <span class="c1">-- Capitalization does not matter.</span>
-<span class="kr">if</span> <span class="n">item</span><span class="p">:</span><span class="n">HasCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span> <span class="kr">then</span>
-  <span class="c1">-- ...</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">item</span><span class="p">:</span><span class="nf">HasCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="c1">-- ...</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div></p>
 <p>Repentogon itself adds some tags that can be used to apply certain features to items with minimal lua code:</p>

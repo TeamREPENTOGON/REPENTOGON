@@ -7497,7 +7497,7 @@
 <p><strong>Note that to call these functions, you must use a <code>.</code> (period) instead of a <code>:</code> (colon)!</strong></p>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">numEntries</span> <span class="o">=</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetNumEntries</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ENTITY</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">numEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetNumEntries</span><span class="p">(</span><span class="nv">XMLNode</span><span class="p">.</span><span class="py">ENTITY</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
@@ -7511,7 +7511,7 @@
 <p>Returns a table containing the attributes of the bosscolor on bosscolors.xml that match the given type variant and subtype. </p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Red Monstro&#39;s suffix:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetBossColorByTypeVarSub</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">).</span><span class="n">suffix</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Red Monstro&#39;s suffix:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetBossColorByTypeVarSub</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">).</span><span class="nv">suffix</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />
@@ -7520,7 +7520,7 @@
 <p>Returns a table containing the attributes of the entity on entities2.xml that match the given type and/or variant and/or subtype. The strict parameter determines if it should only return a value when all 3 attributes(type, var and sub) match or return whatever matches the type and take the rest as maybes.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Monstro&#39;s BossID:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntityByTypeVarSub</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="n">bossid</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Monstro&#39;s BossID:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetEntityByTypeVarSub</span><span class="p">(</span><span class="mi">20</span><span class="p">).</span><span class="nv">bossid</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
@@ -7533,7 +7533,7 @@
 <p>Returns a table containing the attributes of the corresponding xml, the matching NodeType(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryById</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetEntryById</span><span class="p">(</span><span class="nv">XMLNode</span><span class="p">.</span><span class="py">ITEM</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="nv">description</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
@@ -7550,7 +7550,7 @@
 <p>Returns a table containing the attributes of the corresponding xml, the matching NodeType (Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryByName</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="s2">&quot;The Sad Onion&quot;</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetEntryByName</span><span class="p">(</span><span class="nv">XMLNode</span><span class="p">.</span><span class="py">ITEM</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;The Sad Onion&quot;</span><span class="p">).</span><span class="nv">description</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
@@ -7563,7 +7563,7 @@
 <p>Similar to GetByName or GetById, but it returns the node based on the order in which it appears on the xmls (1 will return the first node, 2 the second one and so on). Useful to iterate through xmls in combination with GetNumEntries, specially for redundant xmls like entities.xml.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryByOrder</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetEntryByOrder</span><span class="p">(</span><span class="nv">XMLNode</span><span class="p">.</span><span class="py">ITEM</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">).</span><span class="nv">description</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
@@ -7580,7 +7580,7 @@
 <p>Returns a table containing the attributes of the provided entity. The <code>AutoXMLPick</code> parameter determines if only entities2.xml should be used or if it should pick the xml that matches the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html">EntityType</a> (Ex: items.xml for pedestal collectibles) . The strict parameter determines if it should only return a value when the type,variant and subtype attributes match or return whatever matches the type and take the rest as maybes.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Player&#39;s birthright:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryFromEntity</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">()).</span><span class="n">birthright</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Player&#39;s birthright:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetEntryFromEntity</span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetPlayer</span><span class="p">()).</span><span class="nv">birthright</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
@@ -7593,7 +7593,7 @@
 <p>Returns a table containing the attributes of the metdata xml of the matching mod id.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Car&#39;s mod name:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetModById</span><span class="p">(</span><span class="s2">&quot;2788006730&quot;</span><span class="p">).</span><span class="n">name</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Car&#39;s mod name:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetModById</span><span class="p">(</span><span class="s2">&quot;2788006730&quot;</span><span class="p">).</span><span class="nv">name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">

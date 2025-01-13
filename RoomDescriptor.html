@@ -7466,8 +7466,8 @@
 <p>This tests if the DoorSlot <code>LEFT0</code> is enabled.
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">if</span> <span class="n">roomDesc</span><span class="p">.</span><span class="n">AllowedDoors</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">DoorSlot</span><span class="p">.</span><span class="n">LEFT0</span><span class="p">)</span> <span class="o">~=</span> <span class="mi">0</span> <span class="kr">then</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Room has a door in slot LEFT0&quot;</span><span class="p">)</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">if</span><span class="w"> </span><span class="nv">roomDesc</span><span class="p">.</span><span class="py">AllowedDoors</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="nv">DoorSlot</span><span class="p">.</span><span class="py">LEFT0</span><span class="p">)</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Room has a door in slot LEFT0&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div></p>
 </details>
@@ -7502,14 +7502,14 @@
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Returns true if the room has a neighboring secret room.</span>
-<span class="kd">local</span> <span class="kr">function</span> <span class="nf">HasSecretRoomNeighbor</span><span class="p">(</span><span class="n">roomDesc</span><span class="p">)</span>
-    <span class="kr">for</span> <span class="n">doorSlot</span><span class="p">,</span> <span class="n">neighborDesc</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">roomDesc</span><span class="p">:</span><span class="n">GetNeighboringRooms</span><span class="p">())</span> <span class="kr">do</span>
-        <span class="kd">local</span> <span class="n">roomType</span> <span class="o">=</span> <span class="n">neighborDesc</span><span class="p">.</span><span class="n">Data</span><span class="p">.</span><span class="n">Type</span>
-        <span class="kr">if</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_SUPERSECRET</span> <span class="ow">or</span> <span class="n">roomType</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_ULTRASECRET</span> <span class="kr">then</span>
-            <span class="kr">return</span> <span class="kc">true</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
-    <span class="kr">return</span> <span class="kc">false</span>
+<span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">HasSecretRoomNeighbor</span><span class="p">(</span><span class="nv">roomDesc</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">doorSlot</span><span class="p">,</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">roomDesc</span><span class="p">:</span><span class="nf">GetNeighboringRooms</span><span class="p">())</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">neighborDesc</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="py">Type</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_SECRET</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_SUPERSECRET</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">roomType</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">RoomType</span><span class="p">.</span><span class="py">ROOM_ULTRASECRET</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>

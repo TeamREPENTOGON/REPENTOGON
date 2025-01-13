@@ -7266,67 +7266,67 @@
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Beam Example&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Beam Example&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1">-- Some constants.</span>
-<span class="kd">local</span> <span class="n">DAMAGE_MULTIPLIER</span> <span class="o">=</span> <span class="mf">0.01</span>
-<span class="kd">local</span> <span class="n">ITEM_ID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Life-Drain Gem&quot;</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">DAMAGE_MULTIPLIER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">ITEM_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Life-Drain Gem&quot;</span><span class="p">)</span>
 
 <span class="c1">-- First make a sprite.</span>
-<span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="p">()</span>
-<span class="n">sprite</span><span class="p">:</span><span class="n">Load</span><span class="p">(</span><span class="s2">&quot;gfx/chain_beam.anm2&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-<span class="n">sprite</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Sprite</span><span class="p">()</span>
+<span class="nv">sprite</span><span class="p">:</span><span class="nf">Load</span><span class="p">(</span><span class="s2">&quot;gfx/chain_beam.anm2&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="nv">sprite</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 
 <span class="c1">-- Handles the beam and damaging of the closest enemy to the player.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">HandleLifeSteam</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetData</span><span class="p">()</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">HandleLifeSteam</span><span class="p">(</span><span class="nv">player</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">GetData</span><span class="p">()</span>
 
-    <span class="c1">-- Check if the player has our item, first.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">player</span><span class="p">:</span><span class="n">HasCollectible</span><span class="p">(</span><span class="n">ITEM_ID</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Check if the player has our item, first.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">player</span><span class="p">:</span><span class="nf">HasCollectible</span><span class="p">(</span><span class="nv">ITEM_ID</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Get the beam stored in player:GetData(), or create one if it doesn&#39;t exist.</span>
-    <span class="kd">local</span> <span class="n">beam</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">beam</span> <span class="kr">then</span>
-        <span class="c1">-- Create the beam. We don&#39;t need to use the overlay here.</span>
-        <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span> <span class="o">=</span> <span class="n">Beam</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-        <span class="n">beam</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Get the beam stored in player:GetData(), or create one if it doesn&#39;t exist.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">beam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">LifeStealBeam</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">beam</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="c1">-- Create the beam. We don&#39;t need to use the overlay here.</span>
+<span class="w">        </span><span class="nv">data</span><span class="p">.</span><span class="py">LifeStealBeam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Beam</span><span class="p">(</span><span class="nv">sprite</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;chain&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">beam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">LifeStealBeam</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Get the closest enemy</span>
-    <span class="kd">local</span> <span class="n">closestDistance</span><span class="p">,</span> <span class="n">closestEnemy</span>
-    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">enemy</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">GetRoomEntities</span><span class="p">())</span> <span class="kr">do</span>
-        <span class="kr">if</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsActiveEnemy</span><span class="p">()</span> <span class="ow">and</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsVulnerableEnemy</span><span class="p">()</span> <span class="kr">then</span>
-            <span class="kd">local</span> <span class="n">distanceToPlayer</span> <span class="o">=</span> <span class="n">enemy</span><span class="p">.</span><span class="n">Position</span><span class="p">:</span><span class="n">Distance</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">)</span>
-            <span class="kr">if</span> <span class="ow">not</span> <span class="n">closestDistance</span> <span class="ow">or</span> <span class="n">closestDistance</span> <span class="o">&gt;</span> <span class="n">distanceToPlayer</span> <span class="kr">then</span>
-                <span class="n">closestEnemy</span> <span class="o">=</span> <span class="n">enemy</span><span class="p">:</span><span class="n">ToNPC</span><span class="p">()</span>
-                <span class="n">closestDistance</span> <span class="o">=</span> <span class="n">distanceToPlayer</span>
-            <span class="kr">end</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Get the closest enemy</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">closestDistance</span><span class="p">,</span><span class="w"> </span><span class="nv">closestEnemy</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">enemy</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetRoomEntities</span><span class="p">())</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">IsActiveEnemy</span><span class="p">()</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">IsVulnerableEnemy</span><span class="p">()</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">distanceToPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">enemy</span><span class="p">.</span><span class="py">Position</span><span class="p">:</span><span class="nf">Distance</span><span class="p">(</span><span class="nv">player</span><span class="p">.</span><span class="py">Position</span><span class="p">)</span>
+<span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">closestDistance</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">closestDistance</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">distanceToPlayer</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                </span><span class="nv">closestEnemy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">ToNPC</span><span class="p">()</span>
+<span class="w">                </span><span class="nv">closestDistance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">distanceToPlayer</span>
+<span class="w">            </span><span class="kr">end</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- If there&#39;s no enemy in the room, end the function early.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">closestEnemy</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- If there&#39;s no enemy in the room, end the function early.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">closestEnemy</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Deal damage every frame.</span>
-    <span class="n">closestEnemy</span><span class="p">:</span><span class="n">TakeDamage</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Damage</span> <span class="o">*</span> <span class="n">DAMAGE_MULTIPLIER</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">EntityRef</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Deal damage every frame.</span>
+<span class="w">    </span><span class="nv">closestEnemy</span><span class="p">:</span><span class="nf">TakeDamage</span><span class="p">(</span><span class="nv">player</span><span class="p">.</span><span class="py">Damage</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">DAMAGE_MULTIPLIER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nf">EntityRef</span><span class="p">(</span><span class="nv">player</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="c1">-- Render the beam. The position is in screen coordinates.</span>
-    <span class="c1">-- The second argument, SpritesheetCoordinate, is what the Y position of the spritesheet is by the time this Point is reached.</span>
-    <span class="c1">-- So for example, two points of 0 and 64 SpritesheetCoordinate will render the sprite starting from y0 to 64.</span>
-    <span class="c1">-- An additional Point with a SpritesheetCoordinate of 0 will draw it in reverse from y64 to y0.</span>
-    <span class="c1">-- Width is an optional third argument that is a multiplier used to determine the width of the Beam.</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">closestEnemy</span><span class="p">.</span><span class="n">Position</span><span class="p">),</span> <span class="mi">64</span><span class="p">)</span> <span class="c1">-- 64 is the height of the spritesheet.</span>
+<span class="w">    </span><span class="c1">-- Render the beam. The position is in screen coordinates.</span>
+<span class="w">    </span><span class="c1">-- The second argument, SpritesheetCoordinate, is what the Y position of the spritesheet is by the time this Point is reached.</span>
+<span class="w">    </span><span class="c1">-- So for example, two points of 0 and 64 SpritesheetCoordinate will render the sprite starting from y0 to 64.</span>
+<span class="w">    </span><span class="c1">-- An additional Point with a SpritesheetCoordinate of 0 will draw it in reverse from y64 to y0.</span>
+<span class="w">    </span><span class="c1">-- Width is an optional third argument that is a multiplier used to determine the width of the Beam.</span>
+<span class="w">    </span><span class="nv">beam</span><span class="p">:</span><span class="nf">Add</span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">WorldToScreen</span><span class="p">(</span><span class="nv">player</span><span class="p">.</span><span class="py">Position</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">beam</span><span class="p">:</span><span class="nf">Add</span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">WorldToScreen</span><span class="p">(</span><span class="nv">closestEnemy</span><span class="p">.</span><span class="py">Position</span><span class="p">),</span><span class="w"> </span><span class="mi">64</span><span class="p">)</span><span class="w"> </span><span class="c1">-- 64 is the height of the spritesheet.</span>
 
-    <span class="c1">-- Render the beam. By default, this will clear all points.</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Render</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">-- Render the beam. By default, this will clear all points.</span>
+<span class="w">    </span><span class="nv">beam</span><span class="p">:</span><span class="nf">Render</span><span class="p">()</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PLAYER_RENDER</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">HandleLifeSteam</span><span class="p">)</span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_PLAYER_RENDER</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">HandleLifeSteam</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 

@@ -7454,29 +7454,29 @@
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">myPrompt</span> <span class="o">=</span> <span class="n">GenericPrompt</span><span class="p">()</span>
-<span class="n">myPrompt</span><span class="p">:</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="n">myPrompt</span><span class="p">:</span><span class="n">SetText</span><span class="p">(</span><span class="s2">&quot;Some test text&quot;</span><span class="p">)</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">myPrompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">GenericPrompt</span><span class="p">()</span>
+<span class="nv">myPrompt</span><span class="p">:</span><span class="nf">Initialize</span><span class="p">()</span>
+<span class="nv">myPrompt</span><span class="p">:</span><span class="nf">SetText</span><span class="p">(</span><span class="s2">&quot;Some test text&quot;</span><span class="p">)</span>
 
-<span class="kd">local</span> <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">wasPromptDisplayed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
 
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">myRenderFunction</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
-    <span class="n">myPrompt</span><span class="p">:</span><span class="n">Render</span><span class="p">()</span>
-<span class="kr">end</span> 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_RENDER</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">myRenderFunction</span><span class="p">)</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">myRenderFunction</span><span class="p">(</span><span class="nv">_</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">myPrompt</span><span class="p">:</span><span class="nf">Render</span><span class="p">()</span>
+<span class="kr">end</span><span class="w"> </span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_RENDER</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">myRenderFunction</span><span class="p">)</span>
 
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">myUpdateFunction</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> 
-    <span class="n">myPrompt</span><span class="p">:</span><span class="n">Update</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="c1">-- true = Process user inputs</span>
-    <span class="kr">if</span> <span class="n">wasPromptDisplayed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">myPrompt</span><span class="p">:</span><span class="n">IsActive</span><span class="p">()</span> <span class="kr">then</span> <span class="c1">-- prompt was closed by user </span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User selected option: &quot;</span><span class="o">..</span><span class="n">myPrompt</span><span class="p">:</span><span class="n">GetSubmittedSelection</span><span class="p">())</span> 
-        <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">false</span> 
-    <span class="kr">end</span>
-    <span class="kr">if</span> <span class="n">Input</span><span class="p">.</span><span class="n">IsButtonTriggered</span><span class="p">(</span><span class="n">Keyboard</span><span class="p">.</span><span class="n">KEY_MINUS</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="kr">then</span> <span class="c1">-- on Pressing minus button will open prompt </span>
-        <span class="n">myPrompt</span><span class="p">:</span><span class="n">Show</span><span class="p">()</span> 
-        <span class="n">wasPromptDisplayed</span> <span class="o">=</span> <span class="kc">true</span> 
-    <span class="kr">end</span> 
-<span class="kr">end</span> 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_UPDATE</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">myUpdateFunction</span><span class="p">)</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">mod</span><span class="p">:</span><span class="nf">myUpdateFunction</span><span class="p">(</span><span class="nv">_</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="nv">myPrompt</span><span class="p">:</span><span class="nf">Update</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="c1">-- true = Process user inputs</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">wasPromptDisplayed</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">myPrompt</span><span class="p">:</span><span class="nf">IsActive</span><span class="p">()</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="c1">-- prompt was closed by user </span>
+<span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User selected option: &quot;</span><span class="o">..</span><span class="nv">myPrompt</span><span class="p">:</span><span class="nf">GetSubmittedSelection</span><span class="p">())</span><span class="w"> </span>
+<span class="w">        </span><span class="nv">wasPromptDisplayed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span>
+<span class="w">    </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">Input</span><span class="p">.</span><span class="nf">IsButtonTriggered</span><span class="p">(</span><span class="nv">Keyboard</span><span class="p">.</span><span class="py">KEY_MINUS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="c1">-- on Pressing minus button will open prompt </span>
+<span class="w">        </span><span class="nv">myPrompt</span><span class="p">:</span><span class="nf">Show</span><span class="p">()</span><span class="w"> </span>
+<span class="w">        </span><span class="nv">wasPromptDisplayed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span>
+<span class="w">    </span><span class="kr">end</span><span class="w"> </span>
+<span class="kr">end</span><span class="w"> </span>
+<span class="nv">mod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_UPDATE</span><span class="p">,</span><span class="w"> </span><span class="nv">mod</span><span class="p">.</span><span class="py">myUpdateFunction</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
 </details>
 </details>

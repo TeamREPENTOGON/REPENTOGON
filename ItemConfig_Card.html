@@ -7400,26 +7400,26 @@
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
-<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="kr">function</span> <span class="nf">AvailabilityCondition</span><span class="p">()</span>
-    <span class="c1">-- Your code here</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">AvailabilityCondition</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">-- Your code here</span>
 <span class="kr">end</span>
 
 
-<span class="kd">local</span> <span class="kr">function</span> <span class="nf">AvailabilityWrapper</span><span class="p">()</span>
-    <span class="c1">-- Call function with pcall to catch errors</span>
-    <span class="kd">local</span> <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="n">AvailabilityCondition</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">AvailabilityWrapper</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">-- Call function with pcall to catch errors</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">success</span><span class="p">,</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="nv">AvailabilityCondition</span><span class="p">)</span>
 
-    <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span>
-        <span class="kr">return</span> <span class="n">result</span>  <span class="c1">-- Return result if no error</span>
-    <span class="kr">else</span>
-        <span class="kd">local</span> <span class="n">errorMessage</span> <span class="o">=</span> <span class="s1">&#39;Error whilst checking Availability of card &quot;Your Card&quot;: &#39;</span> <span class="o">..</span> <span class="n">result</span>
-        <span class="n">Console</span><span class="p">.</span><span class="n">PrintError</span><span class="p">(</span><span class="n">errorMessage</span><span class="p">)</span> <span class="c1">-- Print the error message</span>
-        <span class="n">Isaac</span><span class="p">.</span><span class="n">DebugString</span><span class="p">(</span><span class="n">errorMessage</span><span class="p">)</span> <span class="c1">-- Log the error message</span>
-        <span class="kr">return</span> <span class="kc">false</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">success</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="nv">result</span><span class="w">  </span><span class="c1">-- Return result if no error</span>
+<span class="w">    </span><span class="kr">else</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">errorMessage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Error whilst checking Availability of card &quot;Your Card&quot;: &#39;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">result</span>
+<span class="w">        </span><span class="nv">Console</span><span class="p">.</span><span class="nf">PrintError</span><span class="p">(</span><span class="nv">errorMessage</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Print the error message</span>
+<span class="w">        </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">DebugString</span><span class="p">(</span><span class="nv">errorMessage</span><span class="p">)</span><span class="w"> </span><span class="c1">-- Log the error message</span>
+<span class="w">        </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span>
 
-<span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemConfig</span><span class="p">():</span><span class="n">GetCard</span><span class="p">(</span><span class="n">YourCardId</span><span class="p">):</span><span class="n">SetAvailabilityCondition</span><span class="p">(</span><span class="n">AvailabilityWrapper</span><span class="p">)</span>
+<span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetItemConfig</span><span class="p">():</span><span class="nf">GetCard</span><span class="p">(</span><span class="nv">YourCardId</span><span class="p">):</span><span class="nf">SetAvailabilityCondition</span><span class="p">(</span><span class="nv">AvailabilityWrapper</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />

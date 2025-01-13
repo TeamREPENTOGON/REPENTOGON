@@ -7278,79 +7278,79 @@
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
-<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">exampleMod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Null Capsule Example&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">sfx</span> <span class="o">=</span> <span class="n">SFXManager</span><span class="p">()</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">exampleMod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Null Capsule Example&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">sfx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">SFXManager</span><span class="p">()</span>
 
 <span class="c1">-- Setup some constants.</span>
-<span class="kd">local</span> <span class="n">PIPE_ITEM_ID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Swinging Pipe&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">PIPE_EFFECT_ID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetEntityVariantByName</span><span class="p">(</span><span class="s2">&quot;Pipe Swing&quot;</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">DAMAGE_MULTIPLIER</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">PIPE_ITEM_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Swinging Pipe&quot;</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">PIPE_EFFECT_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetEntityVariantByName</span><span class="p">(</span><span class="s2">&quot;Pipe Swing&quot;</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">DAMAGE_MULTIPLIER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5</span>
 
 <span class="c1">---@param player EntityPlayer</span>
-<span class="kr">function</span> <span class="nc">exampleMod</span><span class="p">:</span><span class="nf">ActivatePipeItem</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
-    <span class="c1">-- Don&#39;t run a second time for Car Battery, because it would be strange for an item like this.</span>
-    <span class="kr">if</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">UseFlag</span><span class="p">.</span><span class="n">USE_CARBATTERY</span> <span class="o">==</span> <span class="n">UseFlag</span><span class="p">.</span><span class="n">USE_CARBATTERY</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">exampleMod</span><span class="p">:</span><span class="nf">ActivatePipeItem</span><span class="p">(</span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">,</span><span class="w"> </span><span class="nv">flags</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Don&#39;t run a second time for Car Battery, because it would be strange for an item like this.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">flags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">UseFlag</span><span class="p">.</span><span class="py">USE_CARBATTERY</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">UseFlag</span><span class="p">.</span><span class="py">USE_CARBATTERY</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- Spawn the pipe effect. We will be checking for things to damage in the update callback.</span>
-    <span class="kd">local</span> <span class="n">effect</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">Spawn</span><span class="p">(</span><span class="n">EntityType</span><span class="p">.</span><span class="n">ENTITY_EFFECT</span><span class="p">,</span> <span class="n">PIPE_EFFECT_ID</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">,</span> <span class="n">Vector</span><span class="p">.</span><span class="n">Zero</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span><span class="n">ToEffect</span><span class="p">()</span>
-    <span class="n">effect</span><span class="p">:</span><span class="n">FollowParent</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Spawn the pipe effect. We will be checking for things to damage in the update callback.</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">Spawn</span><span class="p">(</span><span class="nv">EntityType</span><span class="p">.</span><span class="py">ENTITY_EFFECT</span><span class="p">,</span><span class="w"> </span><span class="nv">PIPE_EFFECT_ID</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">.</span><span class="py">Position</span><span class="p">,</span><span class="w"> </span><span class="nv">Vector</span><span class="p">.</span><span class="py">Zero</span><span class="p">,</span><span class="w"> </span><span class="nv">player</span><span class="p">):</span><span class="nf">ToEffect</span><span class="p">()</span>
+<span class="w">    </span><span class="nv">effect</span><span class="p">:</span><span class="nf">FollowParent</span><span class="p">(</span><span class="nv">player</span><span class="p">)</span>
 
-    <span class="c1">-- Sound effects.</span>
-    <span class="n">sfx</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="n">SoundEffect</span><span class="p">.</span><span class="n">SOUND_SWORD_SPIN</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Sound effects.</span>
+<span class="w">    </span><span class="nv">sfx</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="nv">SoundEffect</span><span class="p">.</span><span class="py">SOUND_SWORD_SPIN</span><span class="p">)</span>
 <span class="kr">end</span>
 
 <span class="c1">-- Connect the callback, only for our item.</span>
-<span class="n">exampleMod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_USE_ITEM</span><span class="p">,</span> <span class="n">exampleMod</span><span class="p">.</span><span class="n">ActivatePipeItem</span><span class="p">,</span> <span class="n">PIPE_ITEM_ID</span><span class="p">)</span>
+<span class="nv">exampleMod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_USE_ITEM</span><span class="p">,</span><span class="w"> </span><span class="nv">exampleMod</span><span class="p">.</span><span class="py">ActivatePipeItem</span><span class="p">,</span><span class="w"> </span><span class="nv">PIPE_ITEM_ID</span><span class="p">)</span>
 
 <span class="c1">-- Now, let&#39;s handle capsules.</span>
 <span class="c1">-- Capsules are our hitboxes.</span>
 <span class="c1">---@param pipe EntityEffect</span>
-<span class="kr">function</span> <span class="nc">exampleMod</span><span class="p">:</span><span class="nf">PipeEffectUpdate</span><span class="p">(</span><span class="n">pipe</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">pipe</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">pipe</span><span class="p">.</span><span class="n">Parent</span><span class="p">:</span><span class="n">ToPlayer</span><span class="p">()</span>
-    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">pipe</span><span class="p">:</span><span class="n">GetData</span><span class="p">()</span>
+<span class="kr">function</span><span class="w"> </span><span class="nc">exampleMod</span><span class="p">:</span><span class="nf">PipeEffectUpdate</span><span class="p">(</span><span class="nv">pipe</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">sprite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">pipe</span><span class="p">:</span><span class="nf">GetSprite</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">player</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">pipe</span><span class="p">.</span><span class="py">Parent</span><span class="p">:</span><span class="nf">ToPlayer</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">pipe</span><span class="p">:</span><span class="nf">GetData</span><span class="p">()</span>
 
-    <span class="c1">-- We are going to use this table as a way to make sure enemies are only hurt once in a swing.</span>
-    <span class="c1">-- This line will either set the hit blacklist to itself, or create one if it doesn&#39;t exist.</span>
-    <span class="n">data</span><span class="p">.</span><span class="n">HitBlacklist</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">HitBlacklist</span> <span class="ow">or</span> <span class="p">{}</span>
+<span class="w">    </span><span class="c1">-- We are going to use this table as a way to make sure enemies are only hurt once in a swing.</span>
+<span class="w">    </span><span class="c1">-- This line will either set the hit blacklist to itself, or create one if it doesn&#39;t exist.</span>
+<span class="w">    </span><span class="nv">data</span><span class="p">.</span><span class="py">HitBlacklist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">HitBlacklist</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">{}</span>
 
-    <span class="c1">-- Handle removing the pipe when the spin is done.</span>
-    <span class="kr">if</span> <span class="n">sprite</span><span class="p">:</span><span class="n">IsFinished</span><span class="p">(</span><span class="s2">&quot;Spin&quot;</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="n">pipe</span><span class="p">:</span><span class="n">Remove</span><span class="p">()</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="w">    </span><span class="c1">-- Handle removing the pipe when the spin is done.</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">sprite</span><span class="p">:</span><span class="nf">IsFinished</span><span class="p">(</span><span class="s2">&quot;Spin&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">pipe</span><span class="p">:</span><span class="nf">Remove</span><span class="p">()</span>
+<span class="w">        </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">end</span>
 
-    <span class="c1">-- We&#39;re doing a for loop before because the effect is based off of Spirit Sword&#39;s anm2.</span>
-    <span class="c1">-- Spirit Sword&#39;s anm2 has two hitboxes with the same name with a different number at the ending, so we use a for loop to avoid repeating code.</span>
-    <span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="kr">do</span>
-        <span class="c1">-- Get the &quot;null capsule&quot;, which is the hitbox defined by the null layer in the anm2.</span>
-        <span class="kd">local</span> <span class="n">capsule</span> <span class="o">=</span> <span class="n">pipe</span><span class="p">:</span><span class="n">GetNullCapsule</span><span class="p">(</span><span class="s2">&quot;Hit&quot;</span> <span class="o">..</span> <span class="n">i</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- We&#39;re doing a for loop before because the effect is based off of Spirit Sword&#39;s anm2.</span>
+<span class="w">    </span><span class="c1">-- Spirit Sword&#39;s anm2 has two hitboxes with the same name with a different number at the ending, so we use a for loop to avoid repeating code.</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="c1">-- Get the &quot;null capsule&quot;, which is the hitbox defined by the null layer in the anm2.</span>
+<span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">capsule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">pipe</span><span class="p">:</span><span class="nf">GetNullCapsule</span><span class="p">(</span><span class="s2">&quot;Hit&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span>
 
-        <span class="c1">-- Search for all enemies within the capsule.</span>
-        <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">enemy</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">FindInCapsule</span><span class="p">(</span><span class="n">capsule</span><span class="p">,</span> <span class="n">EntityPartition</span><span class="p">.</span><span class="n">ENEMY</span><span class="p">))</span> <span class="kr">do</span>
-            <span class="c1">-- Make sure it can be hurt.</span>
-            <span class="kr">if</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsVulnerableEnemy</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsActiveEnemy</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="p">.</span><span class="n">HitBlacklist</span><span class="p">[</span><span class="n">GetPtrHash</span><span class="p">(</span><span class="n">enemy</span><span class="p">)]</span> <span class="kr">then</span>
-                <span class="c1">-- Now hurt it.</span>
-                <span class="n">enemy</span><span class="p">:</span><span class="n">TakeDamage</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Damage</span> <span class="o">*</span> <span class="n">DAMAGE_MULTIPLIER</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">EntityRef</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">-- Search for all enemies within the capsule.</span>
+<span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">enemy</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">FindInCapsule</span><span class="p">(</span><span class="nv">capsule</span><span class="p">,</span><span class="w"> </span><span class="nv">EntityPartition</span><span class="p">.</span><span class="py">ENEMY</span><span class="p">))</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">            </span><span class="c1">-- Make sure it can be hurt.</span>
+<span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">IsVulnerableEnemy</span><span class="p">()</span>
+<span class="w">            </span><span class="ow">and</span><span class="w"> </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">IsActiveEnemy</span><span class="p">()</span>
+<span class="w">            </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">HitBlacklist</span><span class="p">[</span><span class="nf">GetPtrHash</span><span class="p">(</span><span class="nv">enemy</span><span class="p">)]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">                </span><span class="c1">-- Now hurt it.</span>
+<span class="w">                </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">TakeDamage</span><span class="p">(</span><span class="nv">player</span><span class="p">.</span><span class="py">Damage</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">DAMAGE_MULTIPLIER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nf">EntityRef</span><span class="p">(</span><span class="nv">player</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 
-                <span class="c1">-- Add it to the blacklist, so it can&#39;t be hurt again.</span>
-                <span class="n">data</span><span class="p">.</span><span class="n">HitBlacklist</span><span class="p">[</span><span class="n">GetPtrHash</span><span class="p">(</span><span class="n">enemy</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">true</span>
+<span class="w">                </span><span class="c1">-- Add it to the blacklist, so it can&#39;t be hurt again.</span>
+<span class="w">                </span><span class="nv">data</span><span class="p">.</span><span class="py">HitBlacklist</span><span class="p">[</span><span class="nf">GetPtrHash</span><span class="p">(</span><span class="nv">enemy</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
 
-                <span class="c1">-- Do some fancy effects, while we&#39;re at it.</span>
-                <span class="n">enemy</span><span class="p">:</span><span class="n">BloodExplode</span><span class="p">()</span>
-                <span class="n">enemy</span><span class="p">:</span><span class="n">MakeBloodPoof</span><span class="p">(</span><span class="n">enemy</span><span class="p">.</span><span class="n">Position</span><span class="p">,</span> <span class="kc">nil</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-                <span class="n">sfx</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="n">SoundEffect</span><span class="p">.</span><span class="n">SOUND_DEATH_BURST_LARGE</span><span class="p">)</span>
-            <span class="kr">end</span>
-        <span class="kr">end</span>
-    <span class="kr">end</span>
+<span class="w">                </span><span class="c1">-- Do some fancy effects, while we&#39;re at it.</span>
+<span class="w">                </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">BloodExplode</span><span class="p">()</span>
+<span class="w">                </span><span class="nv">enemy</span><span class="p">:</span><span class="nf">MakeBloodPoof</span><span class="p">(</span><span class="nv">enemy</span><span class="p">.</span><span class="py">Position</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span>
+<span class="w">                </span><span class="nv">sfx</span><span class="p">:</span><span class="nf">Play</span><span class="p">(</span><span class="nv">SoundEffect</span><span class="p">.</span><span class="py">SOUND_DEATH_BURST_LARGE</span><span class="p">)</span>
+<span class="w">            </span><span class="kr">end</span>
+<span class="w">        </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">end</span>
 <span class="kr">end</span>
 
 <span class="c1">-- Connect the callback, only for our effect.</span>
-<span class="n">exampleMod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_EFFECT_UPDATE</span><span class="p">,</span> <span class="n">exampleMod</span><span class="p">.</span><span class="n">PipeEffectUpdate</span><span class="p">,</span> <span class="n">PIPE_EFFECT_ID</span><span class="p">)</span>
+<span class="nv">exampleMod</span><span class="p">:</span><span class="nf">AddCallback</span><span class="p">(</span><span class="nv">ModCallbacks</span><span class="p">.</span><span class="py">MC_POST_EFFECT_UPDATE</span><span class="p">,</span><span class="w"> </span><span class="nv">exampleMod</span><span class="p">.</span><span class="py">PipeEffectUpdate</span><span class="p">,</span><span class="w"> </span><span class="nv">PIPE_EFFECT_ID</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 

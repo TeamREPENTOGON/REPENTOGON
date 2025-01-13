@@ -9068,15 +9068,15 @@
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">marks</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="kr">if</span> <span class="p">(</span><span class="n">marks</span><span class="p">.</span><span class="n">MomsHeart</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="kr">then</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;got mom&quot;</span><span class="p">)</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">marks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">marks</span><span class="p">.</span><span class="py">MomsHeart</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;got mom&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
-<span class="kr">if</span> <span class="p">(</span><span class="n">marks</span><span class="p">.</span><span class="n">Lamb</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="kr">then</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GOATED ON H4RD&quot;</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">marks</span><span class="p">.</span><span class="py">Lamb</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GOATED ON H4RD&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
-<span class="kr">if</span> <span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="n">Delirium</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="kr">then</span> <span class="c1">--doing it the lazy way, fitting deliriums theme</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Got Deli&quot;</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nv">Delirium</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="c1">--doing it the lazy way, fitting deliriums theme</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Got Deli&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div></li>
 </ul>
@@ -9194,11 +9194,11 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">marks</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">--getting the current table</span>
-<span class="n">marks</span><span class="p">.</span><span class="n">MomsHeart</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">--Isaac now will have the hard mark on MHeart</span>
-<span class="n">marks</span><span class="p">.</span><span class="n">Satan</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">--Isaac will now have the normal mark on Satan</span>
-<span class="n">marks</span><span class="p">.</span><span class="n">BlueBaby</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">--Removes the BlueBaby Mark if its present</span>
-<span class="n">Isaac</span><span class="p">.</span><span class="n">SetCompletionMarks</span><span class="p">(</span><span class="n">marks</span><span class="p">)</span> <span class="c1">--Impacts the changes on the player</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">marks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Isaac</span><span class="p">.</span><span class="nf">GetCompletionMarks</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">--getting the current table</span>
+<span class="nv">marks</span><span class="p">.</span><span class="py">MomsHeart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c1">--Isaac now will have the hard mark on MHeart</span>
+<span class="nv">marks</span><span class="p">.</span><span class="py">Satan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c1">--Isaac will now have the normal mark on Satan</span>
+<span class="nv">marks</span><span class="p">.</span><span class="py">BlueBaby</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="c1">--Removes the BlueBaby Mark if its present</span>
+<span class="nv">Isaac</span><span class="p">.</span><span class="nf">SetCompletionMarks</span><span class="p">(</span><span class="nv">marks</span><span class="p">)</span><span class="w"> </span><span class="c1">--Impacts the changes on the player</span>
 </code></pre></div></td></tr></table></div></li>
 </ul>
 </li>

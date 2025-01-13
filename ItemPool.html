@@ -7697,17 +7697,17 @@
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">PoolList</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_BEGGAR</span><span class="p">,</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_DEMON_BEGGAR</span><span class="p">,</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_KEY_MASTER</span><span class="p">,</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_BATTERY_BUM</span><span class="p">,</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_BOMB_BUM</span><span class="p">,</span>
-    <span class="n">ItemPoolType</span><span class="p">.</span><span class="n">POOL_ROTTEN_BEGGAR</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">PoolList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_BEGGAR</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_DEMON_BEGGAR</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_KEY_MASTER</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_BATTERY_BUM</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_BOMB_BUM</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">ItemPoolType</span><span class="p">.</span><span class="py">POOL_ROTTEN_BEGGAR</span>
 <span class="p">}</span>
 
-<span class="kd">local</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">RNG</span><span class="p">()</span> <span class="c1">-- replace this with your own rng</span>
-<span class="kd">local</span> <span class="n">randomPool</span> <span class="o">=</span> <span class="n">Game</span><span class="p">():</span><span class="n">GetItemPool</span><span class="p">():</span><span class="n">GetRandomPool</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="n">PoolList</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RNG</span><span class="p">()</span><span class="w"> </span><span class="c1">-- replace this with your own rng</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">randomPool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Game</span><span class="p">():</span><span class="nf">GetItemPool</span><span class="p">():</span><span class="nf">GetRandomPool</span><span class="p">(</span><span class="nv">rng</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">PoolList</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="example" open="open">
@@ -7724,17 +7724,17 @@
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
 <span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">itemPool</span> <span class="o">=</span> <span class="n">Game</span><span class="p">():</span><span class="n">GetItemPool</span><span class="p">()</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">itemPool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Game</span><span class="p">():</span><span class="nf">GetItemPool</span><span class="p">()</span>
 
-<span class="kd">local</span> <span class="n">CustomPools</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">CustomPools</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="c1">-- Put all custom pools within the Filter</span>
-<span class="kr">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">31</span><span class="p">,</span> <span class="n">itemPool</span><span class="p">:</span><span class="n">GetNumItemPools</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">do</span>
-    <span class="nb">table.insert</span><span class="p">(</span><span class="n">CustomPools</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+<span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="nv">itemPool</span><span class="p">:</span><span class="nf">GetNumItemPools</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">table.insert</span><span class="p">(</span><span class="nv">CustomPools</span><span class="p">,</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span>
 <span class="kr">end</span>
 
-<span class="kd">local</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">RNG</span><span class="p">(</span><span class="n">Random</span><span class="p">())</span> <span class="c1">-- replace this with your own rng</span>
-<span class="kd">local</span> <span class="n">randomPool</span> <span class="o">=</span> <span class="n">Game</span><span class="p">():</span><span class="n">GetItemPool</span><span class="p">():</span><span class="n">GetRandomPool</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="n">CustomPools</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">rng</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">RNG</span><span class="p">(</span><span class="nf">Random</span><span class="p">())</span><span class="w"> </span><span class="c1">-- replace this with your own rng</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">randomPool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Game</span><span class="p">():</span><span class="nf">GetItemPool</span><span class="p">():</span><span class="nf">GetRandomPool</span><span class="p">(</span><span class="nv">rng</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">CustomPools</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <hr />
 <h3 aria-label="Functions" id="getremovedcollectibles">GetRemovedCollectibles ()<a class="headerlink" href="#getremovedcollectibles" title="Permanent link">⚓︎</a></h3>
@@ -7747,10 +7747,10 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">removedCollectibles</span> <span class="o">=</span> <span class="n">itemPool</span><span class="p">:</span><span class="n">GetRemovedCollectibles</span><span class="p">()</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">removedCollectibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">itemPool</span><span class="p">:</span><span class="nf">GetRemovedCollectibles</span><span class="p">()</span>
 
-<span class="kr">if</span> <span class="n">removedCollectibles</span><span class="p">[</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_SAD_ONION</span><span class="p">]</span> <span class="kr">then</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion removed!&quot;</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">removedCollectibles</span><span class="p">[</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_SAD_ONION</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion removed!&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>
@@ -7765,10 +7765,10 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">blacklistedCollectibles</span> <span class="o">=</span> <span class="n">itemPool</span><span class="p">:</span><span class="n">GetRoomBlacklistedCollectibles</span><span class="p">()</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">blacklistedCollectibles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">itemPool</span><span class="p">:</span><span class="nf">GetRoomBlacklistedCollectibles</span><span class="p">()</span>
 
-<span class="kr">if</span> <span class="n">blacklistedCollectibles</span><span class="p">[</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_SAD_ONION</span><span class="p">]</span> <span class="kr">then</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion blacklisted!&quot;</span><span class="p">)</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">blacklistedCollectibles</span><span class="p">[</span><span class="nv">CollectibleType</span><span class="p">.</span><span class="py">COLLECTIBLE_SAD_ONION</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion blacklisted!&quot;</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div>
 </details>

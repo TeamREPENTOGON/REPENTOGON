@@ -7393,7 +7393,7 @@
 <p>This class can be obtained using its constructor:</p>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">wop</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">wop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
@@ -7411,11 +7411,11 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">picker</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">picker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeFloat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">-- ~45%</span>
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeFloat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1">-- ~45%</span>
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeFloat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span> <span class="c1">-- ~9%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeFloat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span><span class="w"> </span><span class="c1">-- ~45%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeFloat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span><span class="w"> </span><span class="c1">-- ~45%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeFloat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2</span><span class="p">)</span><span class="w"> </span><span class="c1">-- ~9%</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />
@@ -7428,11 +7428,11 @@
 <span class="normal">2</span>
 <span class="normal">3</span>
 <span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">picker</span> <span class="o">=</span> <span class="n">WeightedOutcomePicker</span><span class="p">()</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span><span class="w"> </span><span class="nv">picker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">WeightedOutcomePicker</span><span class="p">()</span>
 
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">)</span> <span class="c1">-- 65%</span>
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="c1">-- 30%</span>
-<span class="n">picker</span><span class="p">:</span><span class="n">AddOutcomeWeight</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">-- 5%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">65</span><span class="p">)</span><span class="w"> </span><span class="c1">-- 65%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="c1">-- 30%</span>
+<span class="nv">picker</span><span class="p">:</span><span class="nf">AddOutcomeWeight</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c1">-- 5%</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />
@@ -7455,8 +7455,8 @@
 <li>Weight: weight of the outcome
     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">outcome</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">GetOutcomes</span><span class="p">())</span> <span class="kr">do</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">outcome</span><span class="p">.</span><span class="n">Value</span><span class="p">,</span> <span class="n">outcome</span><span class="p">.</span><span class="n">Weight</span><span class="p">)</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="p">,</span><span class="w"> </span><span class="nv">outcome</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">p</span><span class="p">:</span><span class="nf">GetOutcomes</span><span class="p">())</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="nv">outcome</span><span class="p">.</span><span class="py">Value</span><span class="p">,</span><span class="w"> </span><span class="nv">outcome</span><span class="p">.</span><span class="py">Weight</span><span class="p">)</span>
 <span class="kr">end</span>
 </code></pre></div></td></tr></table></div></li>
 </ul>
