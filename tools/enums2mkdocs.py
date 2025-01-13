@@ -1,7 +1,7 @@
 import os
 import sys
 import yaml
-from yaml import Loader, Dumper
+from yaml import Loader
 import subprocess
 
 BRANCH_NAME = "main"
@@ -31,9 +31,6 @@ with open(ENUM_FILE_PATH, "r") as enums:
             content[len(content) - 1] = content[len(content) - 1] + " -- " + comment
         for entry in content:
             data.append(entry)    
-
-with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml")) as cfg:
-    mkdocs = yaml.load(cfg, Loader)
 
 new_mkdocs_enums = [
     {"ModCallbacks": "enums/ModCallbacks.md"},
@@ -91,10 +88,30 @@ for class_name in filtered_data:
                 md.write(f"|{entry['value']} |{entry['name']} \u007b: .copyable \u007d |  |\n")
     new_mkdocs_enums.append({class_name: f"enums/{class_name}.md"})
 
+
+# Read mkdocs.yaml file
+# Replace yaml "python class constructor"-syntax with placeholder text. We only care about the raw content here
+yamlFileContent = []
+with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml"), 'r') as cfg:
+    for line in cfg:
+        if "!!python/name:" in line:
+            line = line.replace("!!python/name:", "XXX!!python/name:XXX")
+        yamlFileContent.append(line)
+with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml"), 'w+') as cfg:
+    for line in yamlFileContent:
+        cfg.write(line)
+
+# read altered yaml file
+with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml"), 'r') as cfg:
+    mkdocs = yaml.load(cfg, Loader)
+
+# add missing enum file links to yaml
 mkdocs['nav'][2]['Docs'][3]['Enums'] = sorted(new_mkdocs_enums, key=lambda x: list(x.keys())[0])
 
+# revert the placeholder change and write altered yaml file
 with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml"), 'w+') as cfg:
-    cfg.write(yaml.dump(mkdocs))
+    cfg.write(yaml.dump(mkdocs).replace("XXX!!python/name:XXX", "!!python/name:"))
+
 
 
 # Try push changed doc files to git repo
