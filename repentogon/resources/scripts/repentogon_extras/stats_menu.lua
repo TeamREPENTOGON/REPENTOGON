@@ -58,6 +58,7 @@ local StatsMenuRep = {
                 return unlocked .. "/" .. sum
             end },
             { "best streak",   _EventCounter.BEST_STREAK },
+            { "best online streak",   _EventCounter.ONLINE_BEST_STREAK },
             { "",              function() return "" end }, -- spacer
             { "eden tokens",   _EventCounter.EDEN_TOKENS },
             { "",              function() return "" end }, -- spacer
