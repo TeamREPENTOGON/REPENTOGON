@@ -266,7 +266,7 @@ void PostCollectPocketItemPatch(const char* sig) {
 	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the overridden bytes first.
 		.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
-		.AddBytes("\xFF\x75\x84")  // push dword ptr [EBP - 0x7C] (Entity_Pickup*)
+		.AddBytes("\xFF\xB5\x48\xFF\xFF\xFF")  // push dword ptr [EBP - 0xB8] (Entity_Pickup*)
 		.AddInternalCall(RunPostCollectPocketItemCallback)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
