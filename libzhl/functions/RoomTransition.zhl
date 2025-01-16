@@ -16,9 +16,11 @@ struct RoomTransition depends (ANM2) { {{
 	inline bool IsRenderingBossIntro() {
 		return GetTransitionMode() == 2;
 	}
+	// Map of layer->ANM2
+	// Used for player extra portraits but will work for any layer
+	inline std::map<int, ANM2>* GetExtraANM2s() { return (std::map<int, ANM2>*)((char*)this + 0x224); }
 }}
 	int _mode : 0x0;
 	ANM2 _versusScreenANM2: 0x38;
-	// REP+ Something's weird with this
-	//ANM2 _playerExtraPortraitANM2 : 0x224;
+	//ANM2 _playerExtraPortraitANM2 : 0x224;  // Replaced by an std::map in REP+
 } : 0x23c;

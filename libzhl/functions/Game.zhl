@@ -148,7 +148,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
         return this->_nbRooms; 
     }
     
-	inline Console* GetConsole() { return (Console*)((char*)this + 0x682bc); } // Cast to appropriate type
+	inline Console* GetConsole() { return &this->_console; }
 	
 	inline ItemOverlay* GetItemOverlay() { return &this->_itemOverlay; }
 	
@@ -253,7 +253,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	StageTransition _stageTransition : 0x1ba78;
 	PlayerManager _playerManager : 0x1baa8;
 	Seeds _seedEffects : 0x1bb84;
-	//Console _console : 0x682bc;
+	Console _console : 0x682bc;
 	ItemOverlay _itemOverlay : 0x1c034;
 	GameOver _gameOver : 0x1d4c8;
 	Leaderboard _leaderboard : 0x1d5f8;
