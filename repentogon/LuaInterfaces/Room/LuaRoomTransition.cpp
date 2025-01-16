@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_RoomTransitionGetPlayerExtraPortraitSprite) {
 	// Previously, RoomTransition contained a single sprite for the first player's "extra portrait" (ie tainted eden's glitchy effect)
 	// In REP+, with online co-op showing all players in the versus screen, this was replaced with an std::map of layer (int) to ANM2
 	// For backward compatability's sake, this function returns the sprite for layer 5 (player 1's portrait).
-	auto& map = *roomTransition->GetExtraANM2s();
+	auto& map = *roomTransition->GetExtraLayerANM2s();
 	if (map.count(5) == 0) {
 		lua_pushnil(L);
 	} else {
