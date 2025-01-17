@@ -47,18 +47,28 @@ LUA_FUNCTION(Lua_EffectCreateLootPreview) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetGridEntityDesc) {
+	auto* entity = lua::GetUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+
+	if (entity->_variant != 136) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	lua::luabridge::UserdataPtr::push(L, (GridEntityDesc*)&entity->_varData, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY_DESC));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
-	/*
 	luaL_Reg functions[] = {
-		{ "CreateLight", Lua_EffectCreateLight },
+		{ "GetGridEntityDesc", Lua_GetGridEntityDesc },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_EFFECT, functions);
-	*/
 
 	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLight", Lua_EffectCreateLight);
 	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLootPreview", Lua_EffectCreateLootPreview);
