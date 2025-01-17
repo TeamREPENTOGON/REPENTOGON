@@ -69,6 +69,7 @@ typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::vector<GridEntityDesc> vector_GridEntityDesc;
 typedef std::map<int, int> std_map_int_int;
+typedef std::map<int, ANM2> std_map_int_ANM2;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player*> vector_EntityPlayerPtr;
 typedef std::vector<ItemConfig_Item*> vector_ItemPtr;
@@ -1814,6 +1815,32 @@ enum eBossId {
     BOSS_CLUTCH = 102,
     BOSS_CADAVRA = 103
 };
+
+enum eMainMenuType {
+    TITLE = 1, // 0 exists but it's unusable
+    SAVES = 2,
+    GAME = 3, // the actual menu where all the menus are
+    DAILYRUN = 4,
+    CHARACTER = 5,
+    SPECIALSEEDS = 6,
+    CHALLENGE = 7,
+    COLLECTION = 8,
+    STATS = 9,
+    OPTIONS = 10,
+    CONTROLS = 11,
+    KEYCONFIG = 12,
+    ENDINGS = 13,
+    BESTIARY = 14,
+    MODCHALLENGES = 15,
+    MODS = 16,
+    ONLINELOBBY = 17,
+	FRIENDLOBBIES = 18,
+	MULTIPLAYER = 19,
+	OPTIONSONLINE = 20,
+	CREATELOBBY = 21,
+	ONLINEAWARDS = 22 //sins list
+};
+
 
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed

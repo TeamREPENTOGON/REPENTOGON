@@ -38,17 +38,19 @@ __thiscall void PersistentGameData::AddChallenge(int challengeID);
 __thiscall void PersistentGameData::AddBoss(int bossID);
 
 struct PersistentGameData { {{
-	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
+	inline int GetEventCounter(int eventCounterNum) {return this->eventCounter[eventCounterNum]; }
 	inline bool IsItemInCollection (int collectibleID) {
-		bool savedata = *(bool*)((char*)this + collectibleID * 0x1 + 0xa78);
+		bool savedata = this->itemsCollection[collectibleID];
 		return savedata != false; 
 	}
 	inline bool IsChallengeCompleted (int challengeID) {
-		bool savedata = *(bool*)((char*)this + challengeID * 0x1 + 0xdff);
+		bool savedata = this->challenges[challengeID];
 		return savedata != false; 
 	}
 }}
 	bool achievements[641] : 0x38;
+	int eventCounter[521] : 0x2bc;
+	bool itemsCollection[733] : 0xae0;
 	bool bosses[104] : 0xdff;
 	bool challenges[45] : 0xe67;
 } : 0xf88;

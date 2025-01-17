@@ -542,7 +542,6 @@ void ASMPatchesForCustomCache() {
 	PatchAddCoins();
 	PatchAddKeys();
 	PatchAddBombs();
-	// REP+
 	PatchHudRenderCoins();
 	PatchHudRenderKeys();
 	PatchHudRenderBombs();

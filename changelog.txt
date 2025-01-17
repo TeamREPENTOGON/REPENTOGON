@@ -17,11 +17,11 @@ Additions:
 	[COMMENTED OUT, REVIEW!]- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
 		Return true to cancel pocket item swap.
-	[COMMENTED OUT, REVIEW!]- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
-		Triggers if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player)
+		Triggers if "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
 		Return true to cancel vanilla behavior.
-	[COMMENTED OUT, REVIEW!]- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
-	[COMMENTED OUT, REVIEW!]- MC_PRE_BED_SLEEP(Player, Bed)
+	[MIGHT BE AXED]- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
+	- MC_PRE_BED_SLEEP(Player, Bed)
 		Triggers on bed collision and before playing sleep sequence.
 		Return true to cancel vanilla behavior.
 	- MC_PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
@@ -61,6 +61,7 @@ Modified:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 	- If an error is caused by a callback, imgui will now properly throw an error
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
+* Daily goal path icon will now be displayed on Mega Satan daily runs.
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.

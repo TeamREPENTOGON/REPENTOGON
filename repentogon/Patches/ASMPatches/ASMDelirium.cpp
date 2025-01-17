@@ -198,7 +198,7 @@ namespace delirium {
 	}
 
 	void AddTransformationCallback() {
-		SigScan scanner("898b180b000089bb1c0b0000");
+		SigScan scanner("898b????????89bb");
 		scanner.Scan();
 		void* addr = scanner.GetAddress();
 
@@ -239,15 +239,15 @@ namespace delirium {
 			.AddBytes(movVariantBytes)
 			.FreeReturn(space)
 			.RestoreRegisters(registers)
-			.MoveToMemory(ASMPatch::Registers::ECX, 0xB18, ASMPatch::Registers::EBX)
-			.MoveToMemory(ASMPatch::Registers::EDI, 0xB1C, ASMPatch::Registers::EBX)
+			.MoveToMemory(ASMPatch::Registers::ECX, 0xBC0, ASMPatch::Registers::EBX)
+			.MoveToMemory(ASMPatch::Registers::EDI, 0xBC4, ASMPatch::Registers::EBX)
 			.AddRelativeJump((char*)addr + 12);
 
 		sASMPatcher.PatchAt(addr, &patch);
 	}
 
 	void AddPostTransformationCallback() {
-		SigScan scanner("e9180e00003c08");
+		SigScan scanner("e9????????3c080f85????????8b43");
 		scanner.Scan();
 		void* addr = scanner.GetAddress();
 

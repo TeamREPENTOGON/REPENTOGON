@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 LUA_FUNCTION(Lua_GameGetPauseMenuState)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	lua_pushinteger(L, game->GetPauseMenu()->status);
+	lua_pushinteger(L, game->GetPauseMenu()->state);
 
 	return 1;
 }
@@ -229,7 +229,7 @@ LUA_FUNCTION(Lua_GameGetPlayer) {
 LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
-	game->_leaderboard.Show(1, &game->_scoreSheet, false);
+	game->_leaderboard.Show(1, &game->_scoreSheet, false, 0);
 	return 0;
 }
 

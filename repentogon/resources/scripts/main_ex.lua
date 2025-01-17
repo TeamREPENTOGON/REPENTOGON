@@ -440,7 +440,7 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = {
 		["number"] = checkInteger,
 		["boolean"] = true,
-		["table"] = checkTableSizeFunctionUpTo(3), -- per-status type checking done manually
+		["table"] = checkTableSizeFunctionUpTo(4), -- per-status type checking done manually
 	},
 }
 
@@ -1425,47 +1425,43 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
-local preStatusApplyTypes = {
+local preStatusApplyReturnTableTypes = {
 	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.CHARMED] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.FEAR] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.FREEZE] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.MIDAS_FREEZE] = checkTableTypeFunction({ "integer", "boolean" }),
+	[StatusEffect.SHRINK] = checkTableTypeFunction({ "integer", "boolean" }),
 	[StatusEffect.KNOCKBACK] = checkTableTypeFunction({ "integer", "Vector", "boolean" }),
-	[StatusEffect.SLOWING] =checkTableTypeFunction({ "integer", "number", "Color" }),
-	[StatusEffect.POISON] = checkTableTypeFunction({ "integer", "number" }),
-	[StatusEffect.BURN] = checkTableTypeFunction({ "integer", "number" }),
-}
-
-local preStatusApplySizes = {
-	[StatusEffect.CONFUSION] = checkTableSizeFunctionMinimum(2),
-	[StatusEffect.KNOCKBACK] = checkTableSizeFunctionMinimum(3),
-	[StatusEffect.SLOWING] = checkTableSizeFunctionMinimum(3),
-	[StatusEffect.POISON] = checkTableSizeFunctionMinimum(2),
-	[StatusEffect.BURN] = checkTableSizeFunctionMinimum(2),
+	[StatusEffect.SLOWING] = checkTableTypeFunction({ "integer", "number", "Color", "boolean" }),
+	[StatusEffect.POISON] = checkTableTypeFunction({ "integer", "number", "boolean" }),
+	[StatusEffect.BURN] = checkTableTypeFunction({ "integer", "number", "boolean" }),
 }
 
 -- Custom handling for MC_PRE_STATUS_EFFECT_APPLY
 -- Handle type checking here since the callback is called for several status effects with different types,
 -- terminate early if false is returned,
 -- and use additive callback logic instead of the default one.
-local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity, entityRef, duration, extraParam1, extraParam2)
+local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 	local recentRet = nil
 
 	for callback in GetCallbackIterator(callbackID, param) do
-		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2)
+		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 
 		if type(ret) == "boolean" then
 			if ret == false then return false end
 		elseif type(ret) == "table" then
-			if preStatusApplyTypes[status] then
-				local err = preStatusApplyTypes[status](ret)
-				if not err then err = preStatusApplySizes[status](ret) end
+			if preStatusApplyReturnTableTypes[status] then
+				local err = preStatusApplyReturnTableTypes[status](ret)
 
 				if err then
 					logError(callbackID, callback.Mod.Name, err)
 				else
-					
-					recentRet = ret
-					duration = ret[1]
-					extraParam1 = ret[2]
-					extraParam2 = ret[3]
+					if ret[1] ~= nil then duration = ret[1] end
+					if ret[2] ~= nil then extraParam1 = ret[2] end
+					if ret[3] ~= nil then extraParam2 = ret[3] end
+					if ret[4] ~= nil then extraParam3 = ret[4] end
+					recentRet = { duration, extraParam1, extraParam2, extraParam3 }
 				end
 			else
 				logError(callbackID, callback.Mod.Name, "bad return type (table not expected for status)")
@@ -1506,7 +1502,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_EVALUATE_CUSTOM_CACHE] = RunAdditiveThirdArgCallback,
-	[ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER] = RunAdditiveSecondArgCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,

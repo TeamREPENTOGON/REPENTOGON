@@ -134,12 +134,12 @@ HOOK_METHOD(Entity_Player, GetExtraLives, ()->int) {
 	return super() + GetCustomReviveCount(this, /*includeHidden=*/false);
 }
 
+// Seems like this call isn't inlined in rep+
+/*
 int __stdcall GetExtraLivesHook(Entity_Player* player) {
 	return player->GetExtraLives();
 }
 
-// Seems like this call isn't inlined in rep+
-/*
 // Patch over what seems to be an inlined or simply duplicate instance of Entity_Player::GetExtraLives in PlayerHUD::RenderHearts.
 void ASMPatchInlinedGetExtraLives() {
 	SigScan scanner("8b82????????0fbf8a");
@@ -196,7 +196,7 @@ void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
 		.Push(ASMPatch::Registers::EBX)  // Push the Entity_Player
 		.AddInternalCall(RunPostTriggerPlayerDeathCheckRevivesCallback)  // Run the callback
 		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addr - 0x895);  // We go to the same place regardless of whether or not the player was revived
+		.AddRelativeJump((char*)addr - 0x920);  // We go to the same place regardless of whether or not the player was revived
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -228,7 +228,7 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 void ASMPatchesForExtraLives() {
 	// ASMPatchInlinedGetExtraLives();
 	ASMPatchReviveQuestionMark();
-	//ASMPatchPostTriggerPlayerDeathCheckRevivesCallback(); //commented for rep+ temp
+	ASMPatchPostTriggerPlayerDeathCheckRevivesCallback();
 
 	// PauseScreen::ProcessInput
 	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff", 0xF, 0xA);

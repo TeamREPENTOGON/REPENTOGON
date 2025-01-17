@@ -1,25 +1,8 @@
-// TODO REP+: Scaled / UTF8 functions likely removed in Rep+ as the Font class has been significantly refactored and these are now wrapped in the API.
-
 "558bec6aff68????????64a1????????5083ec18535657a1????????33c5508d45??64a3????????8bd98b75??8d45??56ff75??50e8????????8bf88b55??f30f1045":
-__thiscall void Font::DrawString(DrawStringEntry entry);
-
-//"558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e868980000":
-//__thiscall void Font::DrawStringUTF8(DrawStringEntry entry);
-
-"558bec83e4f083ec4856578bf9f30f115c24??0f28ea":
-__thiscall void Font::DrawStringScaled(DrawStringScaledEntry entry);
-
-//"558BEC568BF18B4D088BD1578D7A01908A024284C075F968000200002BD768????????e8b8900000":
-//__thiscall void Font::DrawStringScaledUTF8(DrawStringScaledEntry entry);
+__thiscall void Font::DrawString(const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings);
 
 "558bec6affff75":
 __thiscall int Font::GetStringWidth(const char* str);
-
-"558bec83e4f883ec2c538bd95657803b00":
-__thiscall int Font::GetStringWidthWithLength(const char* str, int length);
-
-//"558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e838990000":
-//__thiscall int Font::GetStringWidthUTF8(const char* str);
 
 struct Font {
 

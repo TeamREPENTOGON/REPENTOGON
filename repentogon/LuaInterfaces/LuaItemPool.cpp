@@ -466,7 +466,7 @@ LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 	lua_pushboolean(L,
 		!removedCollectibles[id] && !blacklistedCollectibles[id]
 		&& item->IsAvailableEx((unkFlag ^ 1) * 2 - 3)
-		&& !(g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_NO) /* g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_NO, 0x0, true) != 0x0 */ && item->type == 3));
+		&& !(g_Game->GetPlayerManager()->AnyoneHasTrinket(TRINKET_NO) && item->type == 3));
 
 	return 1;
 }

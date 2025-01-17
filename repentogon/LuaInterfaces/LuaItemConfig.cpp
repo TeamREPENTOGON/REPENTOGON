@@ -189,19 +189,31 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
+/*LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
 	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
 	const unsigned int trinketType = (const unsigned int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, ItemConfig::IsValidTrinket(trinketType));
 
 	return 1;
-}
+}*/
 
 static void FixItemConfigPillEffects(lua_State* L) {
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
+}
+
+LUA_FUNCTION(Lua_ItemConfigCostume_GetSkinColor) {
+	ItemConfig_Costume* costume = lua::GetUserdata<ItemConfig_Costume*>(L, 1, lua::Metatables::CONST_COSTUME, "Costume");
+	lua_pushinteger(L, costume->skinColor);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCostume_SetSkinColor) {
+	ItemConfig_Costume* costume = lua::GetUserdata<ItemConfig_Costume*>(L, 1, lua::Metatables::CONST_COSTUME, "Costume");
+	costume->skinColor = (int)luaL_checkinteger(L, 2);
+	return 1;
 }
 
 
@@ -231,4 +243,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);
 	//lua::RegisterGlobalClassFunction(_state, "Config", "IsValidTrinket", Lua_ItemConfig_IsValidTrinket);
+
+	lua::RegisterVariable(_state, lua::Metatables::COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor, Lua_ItemConfigCostume_SetSkinColor);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor);
 }

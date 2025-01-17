@@ -27,12 +27,13 @@ __thiscall void Camera::UpdateUltrasmooth(bool unk);
 
 struct Camera depends (Room) {
 {{
-
-	inline bool* ShouldOverride() { return (bool*)((char*)this + 0x8C); }
+	inline bool* ShouldOverride() { return &_shouldOverride; }
 	
 	Camera(Room* room)
 	{
 		this->constructor(room);
 	}
+}}
 
-}} } : 0x94;
+	bool _shouldOverride: 0x8c;
+} : 0x94;

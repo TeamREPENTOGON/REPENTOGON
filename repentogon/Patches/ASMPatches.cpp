@@ -17,7 +17,8 @@
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
 #include "ASMPatches/ASMEntityNPC.h"
-#include "ASMPatches/ASMGridEntity.h"
+#include "ASMPatches/ASMGridEntityCollision.h"
+#include "ASMPatches/ASMGridEntitySpawn.h"
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
@@ -79,9 +80,25 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
+void ASMPatchShaderLogSpam() {
+	SigScan scanner("ff34??68????????6a02");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching to remove custom shader log spam at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddRelativeJump((char*)addr + 0x71);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
+
+	// REP+, probably temporary, see https://github.com/epfly6/RepentanceAPIIssueTracker/issues/591
+	// I do not want this crap filling logs while we're working on/testing REPENTOGON+ with mods
+	ASMPatchShaderLogSpam();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();
@@ -94,52 +111,52 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
-	//ASMPatchPrePickupVoided(); // broke in rep+ 1.9.7.7
+	ASMPatchPrePickupVoided();
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
 	ASMPatchPrePickupComposted();
 	ASMPatchPostChampionRegenCallback();
-	// Temporarily disabled for REP+: Related code has changed, patch will require more than just a new signature. - Connor
-	//ASMPatchTrinketRender();
+	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
-	//ASMPatchPrePlayerGiveBirth(); //commented for rep+ temp
-	//ASMPatchesBedCallbacks(); //commented for rep+ temp
+	ASMPatchPrePlayerGiveBirth();
+	ASMPatchesBedCallbacks();
+	ASMPatchMainMenuCallback();
 	
 	ASMPatchPrePlayerPocketItemSwap();
 
 	// Delirium
-	//delirium::AddTransformationCallback(); //commented for rep+ temp
-	//delirium::AddPostTransformationCallback(); //commented for rep+ temp
+	delirium::AddTransformationCallback();
+	delirium::AddPostTransformationCallback();
 
 	// EntityNPC
 	ASMPatchHushBug();
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
-	ASMPatchAddWeakness();
-	//ASMPatchApplyFrozenEnemyDeathEffects();
+	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
 
 	// GridEntity
-	//PatchGridCallbackShit(); //commented for rep+ temp
+	PatchGridCollisionCallback();
+	PatchGridSpawnCallback();
 
 	// Level
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
-	//PatchOverrideDataHandling();
+	//PatchOverrideDataHandling();  // This was disabled prior to rep+, ignore it!
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
-	//ASMPatchModsMenu(); // REP+ Needs investigation+adjustment due to font/drawstring changes
+	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
 
 	// Room
 	ASMPatchAmbushWaveCount();
 	PatchBossWaveDifficulty();
 	ASMPatchMegaSatanEnding();
-	//ASMPatchWaterDisabler(); //commented for rep+ temp
+	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
 	ASMPatchTrySpawnBlueWombDoor();
 
@@ -152,10 +169,11 @@ void PerformASMPatches() {
 	ASMPatchAddActiveCharge();
 
 	// Status Effects
-	// PatchInlinedGetStatusEffectTarget(); //commented for rep+ temp
+	PatchInlinedGetStatusEffectTarget();
+	ASMPatchAddWeakness();
 
 	// Render
-	//LuaRender::PatchglDrawElements(); //commented for rep+ temp
+	//LuaRender::PatchglDrawElements();  // Related to unfinished features, not required for rep+ update
 	PatchStatHudPlanetariumChance();
 
 	//PlayerManager
@@ -166,7 +184,7 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
-	//ASMPatchesForAddRemovePocketItemCallbacks(); //commented for rep+ temp
+	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
 	//ASMPatchesForCustomItemPools();
@@ -190,11 +208,6 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
 
-	// REP+: Patch needs adjustments (specifically the post-patch)
-	//if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
-	//	ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
-	//}
-
 	if (!ASMPatches::SkipArchiveChecksums()) {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
@@ -212,5 +225,6 @@ void PerformASMPatches() {
 	//if (!ASMPatches::FixHushFXVeins()) {
 	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
 	//}
-	
+
+	ASMPatches::NativeRepentogonResources();
 }

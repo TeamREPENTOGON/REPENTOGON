@@ -8,7 +8,7 @@ LUA_FUNCTION(Lua_EntityAddBleeding)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddBleeding(*ref, duration, nullptr);
+	ent->AddBleeding(*ref, duration, false);
 	return 0;
 }
 
@@ -17,8 +17,7 @@ LUA_FUNCTION(Lua_EntityAddMagnetized)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	bool ignoreBoss = lua::luaL_optboolean(L, 4, false);
-	ent->AddMagnetized(*ref, duration, ignoreBoss);
+	ent->AddMagnetized(*ref, duration, false);
 	return 0;
 }
 
@@ -306,7 +305,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 	
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
@@ -332,7 +331,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);

@@ -26,6 +26,9 @@ __thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
 
+"558bec8b55??85d274??33c0":
+__thiscall void HUD::InvalidateCraftingItem(Entity_Player * player);
+
 // 0 = Normal
 // 1 = Jacob & Esau
 // 2 = Compact (Used for co-op players, and for P1 if there are >2 players)
@@ -36,7 +39,12 @@ __thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player
 
 
 struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
-	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1760); }
+	inline PlayerHUD* GetPlayerHUD(int index) {
+		if (index < 0 || index > 7) {
+			return nullptr;
+		}
+		return &this->_playerHUD[index];
+	}
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
     ANM2 _chargeBarSprite : 0x3798;

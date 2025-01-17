@@ -11,15 +11,15 @@ struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector
     ReferenceCounter_ImageBase nlfloorGfx : 0x34; // 0x34
     ANM2 floorANM2 : 0x3C; // 0x3C
     uint32_t backdropId : 0x150; // 0x150
-    BackdropConfig configurations[61] : 0x154; // 0x154
-    Vector unkVec1 : 0x4ca0;
-    Vector unkVec2 : 0x4ca8;
-    RNG rng : 0x4cb0; // 0x4cb0;
-    uint32_t seed : 0x4cc0;
-    ANM2 _wallDetailANM2 : 0x4cc4;
-    ANM2 _controlsANM2 : 0x4dd8;
-    ANM2 _controlsButtonsANM2 : 0x4eec;
-};
+    BackdropConfig configurations[63] : 0x154; // 0x154
+    Vector unkVec1 : 0x4f18;
+    Vector unkVec2 : 0x4f20;
+    RNG rng : 0x4f28;
+    uint32_t seed : 0x4f38;
+    ANM2 _wallDetailANM2 : 0x4f3c;
+    ANM2 _controlsANM2 : 0x5050;
+    ANM2 _controlsButtonsANM2 : 0x5164;
+} : 0x5278;
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":
 __thiscall void Backdrop::LoadConfig(char *xmlpath);

@@ -64,7 +64,7 @@ __thiscall void ANM2::construct_from_copy(ANM2* right);
 "558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf1e8????????8b46":
 __thiscall void ANM2::destructor();
 
-struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
+struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
     inline AnimationState* GetAnimationState() { return &this->_animState; }
     inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
     inline unsigned int GetAnimationCount() { return this->_animCount; }
@@ -97,7 +97,6 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
     Vector _scale : 0x9c;
     float _rotation : 0xa4;
     ColorMod _color : 0xa8;
-    KColor _kColor : 0xd4;
     bool _flipX : 0x100;
     bool _flipY : 0x101;
     float _playbackSpeed : 0x104;

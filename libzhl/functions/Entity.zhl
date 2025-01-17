@@ -57,28 +57,28 @@ __thiscall bool Entity::IsFlying();
 // Status effects
 
 "558bec83e4f883ec5ca1????????33c4894424??538b5d??565753":
-__thiscall void Entity::AddBaited(const EntityRef& ref, int duration, bool unusedBool);
+__thiscall void Entity::AddBaited(const EntityRef& ref, int duration, bool unused);
 
 "558bec83e4f883ec34538b5d??565753":
-__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration, int* unk);
+__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration, bool unused);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????57ff75":
 __thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
 
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????837e??01":
-__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage, bool ignoreBoss);
+__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec4ca1????????33c4894424??5356578bf98b4d":
-__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration, bool ignoreBoss);
+__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
-__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec34a1????????33c4894424??538b5d":
-__thiscall void Entity::AddFear(const EntityRef& ref, int duration, bool ignoreBoss);
+__thiscall void Entity::AddFear(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
-__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusEffectCooldown);
+__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f85156ff75??8bf1e8":
 __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
@@ -87,19 +87,19 @@ __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDir
 __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec64a1????????33c4894424??53":
-__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration, bool unusedBool);
+__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration, bool unused);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bf8":
-__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration, bool ignoreBoss);
+__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
-__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBoss);
+__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec10568b75??5756":
-__thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBoss);
+__thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
-__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color);
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color, bool ignoreBossStatusCooldown);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
 __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
@@ -173,11 +173,11 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     bool _dead : 0x173;
     int _entityGridCollisionClass : 0x184;
     int _entityCollisionClass : 0x188;
-    // 0x184 is a boolean related to collisions.
-    unsigned short _entityExtraDataPtrUpperBytes : 0x18e; // ?
+    // 0x18c is a boolean related to collisions. Seems to be essentially a "_collidesWithEntity"
+    unsigned short _entityExtraDataPtrUpperBytes : 0x18e;
     bool _collidesWithGrid : 0x190;
-    unsigned short _entityExtraDataPtrLowerBytes : 0x192; // ?
-    vector_ColorParams _colorParams : 0x1a4;
+    unsigned short _entityExtraDataPtrLowerBytes : 0x192;
+    vector_ColorParams _colorParams : 0x1ac;
     int _fireDamageCountdown : 0x210;
     int _damageCountdown : 0x214;
     int _freezeCountdown : 0x218;

@@ -17,9 +17,10 @@ struct CutsceneEntry {
     int  _id : 0x0;
     std_string _name : 0x4;
     bool _isVideo : 0x45;
-} : 0x48;
+} : 0x4C;
+
 struct Cutscene depends (Vector, CutsceneEntry) {
     int _state : 0x0;
     CutsceneEntry _cutscenes[27] : 0x4;
-    int _queuedCutscene : 0x79c;
-} : 0x7b0;
+    int _queuedCutscene : 0x808;
+} : 0x81c;

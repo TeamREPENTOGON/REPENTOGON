@@ -6,6 +6,7 @@
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/CustomCache.h"
+#include "../../Patches/CustomItemPools.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
@@ -584,6 +585,39 @@ LUA_FUNCTION(Lua_PlayerTryFakeDeath)
 	return 1;
 }
 
+inline void RecalculateBagOfCraftingOutput(Entity_Player* player) {
+	g_Game->GetHUD()->InvalidateCraftingItem(player);
+
+	BagOfCraftingPickup* content = player->GetBagOfCraftingContent();
+	BagOfCraftingOutput* output = player->GetBagOfCraftingOutput();
+
+	// Go through the slots, and if any empty spots are found before the end, shift everything after it down.
+	// SetBagOfCraftingContent and SetBagOfCraftingSlot can allow people to write empty slots into the middle
+	// of the array, which can cause issues, so this corrects it if it happens.
+	for (int i = 0; i < 7; i++) {
+		if (content[i] == BagOfCraftingPickup::BOC_NONE) {
+			bool didShift = false;
+			for (int j = i + 1; j < 8; j++) {
+				if (content[j] > BagOfCraftingPickup::BOC_NONE) {
+					content[i] = content[j];
+					content[j] = BagOfCraftingPickup::BOC_NONE;
+					didShift = true;
+					break;
+				}
+			}
+			if (!didShift) break;
+		}
+	}
+
+	if (content[7] == BagOfCraftingPickup::BOC_NONE) {
+		output->collectibleType = COLLECTIBLE_NULL;
+		output->itemPoolType = POOL_NULL;
+	}
+	else {
+		player->CalculateBagOfCraftingOutput(output, content);
+	}
+}
+
 LUA_FUNCTION(Lua_PlayerGetBoCContent) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_newtable(L);
@@ -625,6 +659,8 @@ LUA_FUNCTION(Lua_PlayerSetBoCContent) {
 	}
 	memcpy(&player->_bagOfCraftingContent, list, sizeof(list));
 
+	RecalculateBagOfCraftingOutput(player);
+
 	return 0;
 }
 
@@ -653,20 +689,37 @@ LUA_FUNCTION(Lua_PlayerSetBoCSlot) {
 	}
 
 	player->GetBagOfCraftingContent()[slot] = (BagOfCraftingPickup)pickup;
+
+	RecalculateBagOfCraftingOutput(player);
+
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetBagOfCraftingOutput)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushinteger(L, *player->GetBagOfCraftingOutput());
+	lua_pushinteger(L, player->GetBagOfCraftingOutput()->collectibleType);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBagOfCraftingOutputItemPool)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetBagOfCraftingOutput()->itemPoolType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetBagOfCraftingOutput() = (int)luaL_checkinteger(L, 2);
+	const int collectible = (int)luaL_checkinteger(L, 2);
+	int itemPoolType = (int)luaL_optinteger(L, 3, -1);
+	if (itemPoolType < 0 || itemPoolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+		itemPoolType = g_Game->_itemPool.GetFirstItemPoolForCollectible(collectible);
+	}
+	player->GetBagOfCraftingOutput()->collectibleType = collectible;
+	player->GetBagOfCraftingOutput()->itemPoolType = itemPoolType;
+	g_Game->GetHUD()->InvalidateCraftingItem(player);
 	return 0;
 }
 
@@ -1011,7 +1064,7 @@ LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 LUA_FUNCTION(Lua_PlayerGetCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& collectibleInv = plr->GetCollectiblesList();
+	const std::vector<int>& collectibleInv = *plr->GetCollectiblesList();
 
 	lua_newtable(L);
 
@@ -1048,7 +1101,7 @@ LUA_FUNCTION(Lua_PlayerSetTearPoisonDamage) {
 LUA_FUNCTION(Lua_PlayerGetVoidedCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& collecitbleInv = plr->GetVoidedCollectiblesList();
+	const std::vector<int>& collecitbleInv = *plr->GetVoidedCollectiblesList();
 
 	lua_newtable(L);
 	int idx = 1;
@@ -1256,7 +1309,7 @@ LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 LUA_FUNCTION(Lua_PlayerGetHeldEntity)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity* heldEntity = *plr->GetHeldEntity();
+	Entity* heldEntity = plr->GetHeldEntity();
 	if (!heldEntity) {
 		lua_pushnil(L);
 	}
@@ -1765,21 +1818,6 @@ LUA_FUNCTION(Lua_PlayerCanOverrideActiveItem) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerClearItemAnimCollectible) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int id = (int)luaL_checkinteger(L, 2);
-	player->ClearItemAnimCollectible(id);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_PlayerClearItemAnimNullItems) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->ClearItemAnimNullItems();
-
-	return 0;
-}
-
 /*
 // Spawns club, immediately kills it. Needs investigation
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
@@ -2139,15 +2177,15 @@ LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 
 LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	KColor* color = nullptr;
-	if (lua::luaL_checkboolean(L, 2)) {
-		color = &player->_footprintColor2;
-	}
-	else
-	{
-		color = &player->_footprintColor1;
-	}
-	lua::luabridge::UserdataPtr::push(L, color, lua::Metatables::KCOLOR);
+
+	ColorMod* footprintColor = lua::luaL_checkboolean(L, 2) ? &player->_footprintColor2 : &player->_footprintColor1;
+
+	// This lua function was made before we knew the footprint colors were ColorMod and not KColor.
+	// Just gonna maintain the current output structure for the sake of the REP+ migration.
+	KColor color(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
+
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = color;
 
 	return 1;
 }
@@ -2155,9 +2193,10 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	g_Game->GetConsole()->Print(std::to_string(color->_red) + "\n", 0xFFFFFFFF, 60);
+	// Allegedly this boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 	bool unk = lua::luaL_optboolean(L, 3, false);
-	player->SetFootprintColor(color, unk);
-
+	player->SetFootprintColor(*color, unk);
 	return 0;
 }
 
@@ -2624,6 +2663,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot },
 		{ "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot },
 		{ "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput },
+		{ "GetBagOfCraftingOutputItemPool", Lua_PlayerGetBagOfCraftingOutputItemPool },
 		{ "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput },
 		{ "GetMovingBoxContents", Lua_PlayerGetMovingBoxContents },
 		{ "GetSpeedModifier", Lua_PlayerGetSpeedModifier },
@@ -2716,6 +2756,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "PlayCollectibleAnim", Player_PlayCollectibleAnim },
 		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
 		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },
+		{ "ClearItemAnimCollectible", Player_ClearCollectibleAnim },  // Deprecated duplicate function anme
 		{ "CheckFamiliarEx", Lua_EntityPlayer_CheckFamiliarEx },
 		{ "GetEveSumptoriumCharge", Lua_PlayerGetEveSumptoriumCharge },
 		{ "SetEveSumptoriumCharge", Lua_PlayerSetEveSumptoriumCharge },
@@ -2729,8 +2770,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanAddCollectibleToInventory", Lua_PlayerCanAddCollectibleToInventory },
 		{ "CanCrushRocks", Lua_PlayerCanCrushRocks },
 		{ "CanOverrideActiveItem", Lua_PlayerCanOverrideActiveItem },
-		{ "ClearItemAnimCollectible", Lua_PlayerClearItemAnimCollectible },
-		{ "ClearItemAnimNullItems", Lua_PlayerClearItemAnimNullItems },
 		//{ "FireBoneClub", Lua_PlayerFireBoneClub },
 		{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },

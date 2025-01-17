@@ -8,7 +8,7 @@ __thiscall void Entity_Laser::DoDamage(Entity* entity, float damage<xmm2>);
 __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec51568bf1f30f1155":
-__thiscall void Entity_Laser::RotateToAngle(float angle, float speed<xmm2>);
+__thiscall void Entity_Laser::RotateToAngle(float angle<xmm1>, float speed<xmm2>);
 
 "8b91????????538b99":
 __thiscall void Entity_Laser::ClearLaserSamples();

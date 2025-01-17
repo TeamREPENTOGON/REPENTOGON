@@ -8,7 +8,5 @@ namespace ASMPatches {
 	bool LeaderboarEntryCheckerUpdate();
 	bool AllowConsoleInOnline();
 
-	namespace BerserkSpiritShacklesCrash {
-		bool Patch();
-	}
+	void NativeRepentogonResources();
 }

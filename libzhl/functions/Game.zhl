@@ -137,7 +137,7 @@ __thiscall bool Game::LevelHasPhotoDoor();
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen) { {{
 	Game()
 	{
 		this->constructor();
@@ -148,7 +148,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
         return this->_nbRooms; 
     }
     
-	inline Console* GetConsole() { return (Console*)((char*)this + 0x682bc); } // Cast to appropriate type
+	inline Console* GetConsole() { return &this->_console; }
 	
 	inline ItemOverlay* GetItemOverlay() { return &this->_itemOverlay; }
 	
@@ -180,9 +180,9 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline int GetPlanetariumsVisited() { return this->_planetariumsVisited; }
 	
-	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } // NO LONGER A PART OF GAME, in reality this gets the pause menu itself, but the first att is if its opened or not
+	inline bool IsPauseMenuOpen() { return this->_pauseScreen.state > 0; }
 	
-	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x236f4); }
+	inline PauseScreen* GetPauseMenu() { return &this->_pauseScreen; }
 	
 	inline DailyChallenge GetDailyChallenge() { return this->_dailyChallenge; }
 	
@@ -198,9 +198,9 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return &this->_proceduralItemManager; }
     
-	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x1da64); } // NO LONGER A PART OF GAME
+	inline HUD* GetHUD() { return &this->_hud; }
 
-	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x1da64 + playerId * 0x6e0); } // NO LONGER A PART OF GAME
+	inline PlayerHUD* GetPlayerHUD(int playerId) { return this->_hud.GetPlayerHUD(playerId); }
 	
 	inline Minimap* GetMinimap() { return &this->_minimap; }
 	
@@ -210,7 +210,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline DebugRenderer* GetDebugRenderer() { return &this->_debugRenderer; }
 	
-	inline GenericPrompt* GetGenericPrompt() { return (GenericPrompt*)((char*)this + 0x1c33fc); } // NO LONGER A PART OF GAME
+	inline GenericPrompt* GetGenericPrompt() { return &this->_genericPrompt; }
 
 	inline GameOver* GetGameOver() { return &this->_gameOver; }
 	
@@ -253,10 +253,12 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	StageTransition _stageTransition : 0x1ba78;
 	PlayerManager _playerManager : 0x1baa8;
 	Seeds _seedEffects : 0x1bb84;
-	//Console _console : 0x682bc;
+	Console _console : 0x682bc;
 	ItemOverlay _itemOverlay : 0x1c034;
 	GameOver _gameOver : 0x1d4c8;
 	Leaderboard _leaderboard : 0x1d5f8;
+	HUD _hud : 0x1da64;
+	PauseScreen _pauseScreen : 0x236f4;
 	Minimap _minimap : 0x254f8;
 	int _frameCount : 0x25b24;
 	Vector _screenShakeOffset : 0x25b38;
@@ -270,6 +272,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	int _shopVisits : 0x25ba4;
 	EntityFactory* _entityFactory : 0x25bb0;
 	ScoreSheet _scoreSheet : 0x25d14;
+	GenericPrompt _genericPrompt : 0x25e60;
 	int _lastLevelWithoutHalfHp : 0x260a8;
 	uint32_t _difficulty : 0x260b0;
 	int _lastLevelWithDamage : 0x260b4;

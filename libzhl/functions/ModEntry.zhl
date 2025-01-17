@@ -30,7 +30,7 @@ struct ModEntry depends (ModShader) {
 	std_string _metadataVersion : 0x78;
 	std_string _metadataWorkshopID : 0x90;
 	std_string _metadataDescription : 0xa8;
-	std_string _metadataVisibility : 0xa8;
+	std_string _metadataVisibility : 0xc0;
 	bool _enabled : 0xfc;
 	bool _loaded : 0xfd;
 } : 0xf04;

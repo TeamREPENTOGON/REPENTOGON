@@ -20,14 +20,14 @@ local TotalSheet = Sprite()
 
 local LeaderboardSprite = Sprite()
 
-local StreakPos = Vector(212, 12) + Vector(36, 24)
+local StreakPos = Vector(428, 110) + Vector(36, 24)
 StreakSheet.Offset = Vector(-36, -24)
 
 local TotalStreakText = "Total Runs: 0"
 local TextLen = 38
 
 local font = Font()
-font:Load("font/teammeatfont10.fnt")
+font:Load("font/teammeatex/teammeatex10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local function RefreshDailyStats()
@@ -76,12 +76,12 @@ local function LoadAssets()
         --HardModeIcon:SetAnimation("Idle", true)
         --HardModeIcon:SetFrame(4)
 		
-		LeaderboardSprite:LoadRGON("gfx/ui/daily_destinations.anm2", true)
+		LeaderboardSprite:Load("gfx/ui/daily_destinations.anm2", true)
 		LeaderboardSprite:SetAnimation("Destination", true)
 		LeaderboardSprite:SetFrame(0)
     end
     if not font:IsLoaded() then
-        font:Load("font/teammeatfont10.fnt")
+        font:Load("font/teammeatex/teammeatex10.fnt")
     end
     if font:IsLoaded() and #(StreakSheet:GetDefaultAnimation()) > 0 then
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2
@@ -120,17 +120,23 @@ local function RenderDailyStats()
     local pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, StreakPos)
     StreakSheet:Render(pos)
     font:DrawString(WinStreak, pos.X, pos.Y, fontcolor, 0, false)
-    pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(286, 90))
+    pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(470, 205))
     TotalSheet:RenderLayer(0, pos)
+    
+    local goalPosition = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(258, 80))
+    local goalFrame = GetGoalDestination(GetStageGoal, isAltPath) + diffOffsetFrameNum
+
     if isMegaSatan then
-        --GoalDestinationIcon:SetFrame(6)
-		LeaderboardSprite:SetFrame(6 + diffOffsetFrameNum)
+        LeaderboardSprite:SetFrame(6 + diffOffsetFrameNum)
+        LeaderboardSprite:RenderLayer(0, goalPosition)
+        LeaderboardSprite:SetFrame(goalFrame)
+        LeaderboardSprite:RenderLayer(0, goalPosition - Vector(16, 0)) --alr variant -8,48
     else
-        --GoalDestinationIcon:SetFrame(GetGoalDestination(GetStageGoal, isAltPath))
-		LeaderboardSprite:SetFrame(GetGoalDestination(GetStageGoal, isAltPath) + diffOffsetFrameNum)
+        LeaderboardSprite:SetFrame(goalFrame)
+        LeaderboardSprite:RenderLayer(0, goalPosition)
     end
     --GoalDestinationIcon:RenderLayer(0, Vector(pos.X + 69, pos.Y - 32))
-	LeaderboardSprite:RenderLayer(0, Vector(pos.X + 78, pos.Y - 26))
+	
     --[[if isHardMode then
         HardModeIcon:RenderLayer(0, Vector(pos.X + 75, pos.Y - 82))
     end]]
