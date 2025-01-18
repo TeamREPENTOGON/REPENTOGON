@@ -600,6 +600,20 @@ namespace lua {
 		return *this;
 	}
 
+	LuaCaller& LuaCaller::pushluaref(int idx, int ref) {
+		lua_rawgeti(_L, idx, ref);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushluaref(int ref) {
+		return pushluaref(LUA_REGISTRYINDEX, ref);
+	}
+
+	LuaCaller& LuaCaller::push(LuaBridgeRef* ref) {
+		return pushluaref(ref->_ref);
+	}
+
 	LuaCaller& LuaCaller::push(const char* fmt, va_list va) {
 		lua_pushvfstring(_L, fmt, va);
 		++_n;

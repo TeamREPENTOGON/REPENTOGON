@@ -717,6 +717,16 @@ LUA_FUNCTION(Lua_StartDailyGame) {
 	return 0;
 }
 
+static bool shuttingDown = false;
+HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
+	shuttingDown = true;
+	super();
+}
+LUA_FUNCTION(Lua_IsaacIsShuttingDown) {
+	lua_pushboolean(L, shuttingDown);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -771,6 +781,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

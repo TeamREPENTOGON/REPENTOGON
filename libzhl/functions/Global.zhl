@@ -11,6 +11,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <list>
 #include <functional>
 #include <deque>
 #include <cstdarg>
@@ -60,6 +61,7 @@ typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
+typedef std::list<ModReference> std_list_ModReference;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
 typedef std::vector<Vector> std_vector_vector2;
