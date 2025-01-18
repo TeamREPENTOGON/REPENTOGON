@@ -57,11 +57,21 @@ namespace REPENTOGON {
 	}
 
 	static const char* GetRepentogonDataPath() {
-		if (!CreateDirectory(optionsPath.c_str(), NULL)) {
-			if (GetLastError() != ERROR_ALREADY_EXISTS) {
-				ZHL::Log("Error %s creating Repentogon Save directory: %s\n", GetLastError(), optionsPath.c_str());
-				return "";
+		if (CreateDirectory(optionsPath.c_str(), NULL)) {
+			ZHL::Log("Newly created REPENTOGON savedata folder @ %s\n", optionsPath.c_str());
+			std::string optionsPathMinus = optionsPath;
+			optionsPathMinus.erase(optionsPathMinus.find_last_of('+'), 1);  // REP- savedata path is the same, just without the '+'
+			ZHL::Log("Checking for legacy REPENTOGON savedata @ %s\n", optionsPathMinus.c_str());
+			if (std::filesystem::is_directory(optionsPathMinus)) {
+				ZHL::Log("Legacy REPENTOGON savedata directory found. Copying contents to new savedata folder...\n");
+				std::filesystem::copy(optionsPathMinus, optionsPath, std::filesystem::copy_options::recursive);
+				ZHL::Log("...Done!\n");
+			} else {
+				ZHL::Log("No legacy REPENTOGON savedata directory found.\n");
 			}
+		} else if (GetLastError() != ERROR_ALREADY_EXISTS) {
+			ZHL::Log("Error %s creating Repentogon Save directory: %s\n", GetLastError(), optionsPath.c_str());
+			return "";
 		}
 		return optionsPath.c_str();
 	}
