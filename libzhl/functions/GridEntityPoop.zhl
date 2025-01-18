@@ -3,7 +3,7 @@ struct GridEntity_Poop : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f881ec94000000a1????????33c4898424????????538bd9":
+		"558bec83e4f081ec08020000":
         void Update();
 		
 		override
