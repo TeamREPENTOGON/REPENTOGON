@@ -4,36 +4,53 @@
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
-//to-do:
-/*
-* Add DLC3 support for resources/content folders
-*/
 bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std::string& targetFile, ModEntry** modEntry, RedirectedPath* redirectPath) {
-	auto copyOfFileString = resFileString;
 	auto* manager = g_Manager->GetModManager();
 	auto* langCode = g_Manager->GetLanguage();
 
-	if (g_Manager->_stringTable.language == 0 || targetFile[0] == '\0') {
+	if (targetFile[0] == '\0') {
 		return false;
 	}
 
-	//std::cout << targetFile << std::endl;
-	copyOfFileString = resFileString + "." + langCode + "/" + targetFile;
+	auto buildAndCheckPath = [&](const std::string& postfix, bool useLangCode) -> bool {
+		std::string potentialPath = resFileString + postfix;
 
-	//printf("[RGON] kinda string filename: %s %s \n", copyOfFileString.c_str(), g_FileManager_kinda->GetExpandedPath(copyOfFileString.c_str()));
+		if (useLangCode && g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
+			potentialPath = potentialPath + "." + langCode;
+		}
 
-	if (g_FileManager_kinda->GetExpandedPath(copyOfFileString.c_str()) != NULL) {
-		
-		resFileString = copyOfFileString;
+		potentialPath = potentialPath + "/" + targetFile;
 
-		redirectPath->_modEntry = *modEntry;
-		redirectPath->_filePath = resFileString;
+		if (g_FileManager_kinda->GetExpandedPath(potentialPath.c_str()) != NULL) {
+			resFileString = potentialPath;
+			redirectPath->_modEntry = *modEntry;
+			redirectPath->_filePath = resFileString;
+			std::cout << "[REPENTOGON] Patched " << resFileString << std::endl;
+			return true;
+		}
+		return false;
+	};
 
-		std::cout << "[REPENTOGON] Patched " << resFileString << std::endl;
+	// Check for "resources-repentogon.langCode"
+	if (buildAndCheckPath("-repentogon", true)) return true;
 
-		return true;
+	// Check for "resources-repentogon" (without langCode)
+	if (buildAndCheckPath("-repentogon", false)) return true;
+
+	// Check for "resources-dlc3.langCode"
+	if (buildAndCheckPath("-dlc3", true)) return true;
+
+	// Check for "resources.langCode" (original behavior)
+	if (g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
+		std::string originalPath = resFileString + "." + langCode + "/" + targetFile;
+		if (g_FileManager_kinda->GetExpandedPath(originalPath.c_str()) != NULL) {
+			resFileString = originalPath;
+			redirectPath->_modEntry = *modEntry;
+			redirectPath->_filePath = resFileString;
+			std::cout << "[REPENTOGON] Patched " << resFileString << std::endl;
+			return true;
+		}
 	}
-
 
 	return false;
 }
@@ -119,21 +136,47 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string& resFileString, std::string& 
 	auto* manager = g_Manager->GetModManager();
 	auto* langCode = g_Manager->GetLanguage();
 
-	if (g_Manager->_stringTable.language == 0 || targetFile[0] == '\0') {
+	if (targetFile[0] == '\0') {
 		return;
 	}
 
-	auto copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
+	auto buildAndCheckPath = [&](const std::string& postfix, bool useLangCode) -> bool {
+		auto copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
+		std::string potentialPath = copyOfContentDirectory + postfix;
 
-	copyOfContentDirectory = copyOfContentDirectory + "." + langCode + "/" + targetFile;
+		if (useLangCode && g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
+			potentialPath = potentialPath + "." + langCode;
+		}
 
-	if (g_FileManager_kinda->GetExpandedPath(copyOfContentDirectory.c_str()) != NULL) {
+		potentialPath = potentialPath + "/" + targetFile;
 
-		resFileString = copyOfContentDirectory;
+		if (g_FileManager_kinda->GetExpandedPath(potentialPath.c_str()) != NULL) {
+			resFileString = potentialPath;
+			std::cout << "[REPENTOGON] Patched path: " << resFileString << std::endl;
+			return true;
+		}
+		return false;
+	};
 
-		std::cout << "[REPENTOGON] Patched path: " << resFileString << std::endl;
+	// Check for "content-repentogon.langCode"
+	if (buildAndCheckPath("-repentogon", true)) return;
+
+	// Check for "content-repentogon" (without langCode)
+	if (buildAndCheckPath("-repentogon", false)) return;
+
+	// Check for "content-dlc3.langCode"
+	if (buildAndCheckPath("-dlc3", true)) return;
+
+	// Check for "content.langCode" (original behavior)
+	if (g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
+		auto copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
+		std::string originalPath = copyOfContentDirectory + "." + langCode + "/" + targetFile;
+		if (g_FileManager_kinda->GetExpandedPath(originalPath.c_str()) != NULL) {
+			resFileString = originalPath;
+			std::cout << "[REPENTOGON] Patched path: " << resFileString << std::endl;
+			return;
+		}
 	}
-
 }
 
 void ASMPatchRedirectToLocalizationFolders() {
