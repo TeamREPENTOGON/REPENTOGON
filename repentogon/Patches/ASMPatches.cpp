@@ -87,7 +87,7 @@ void ASMPatchShaderLogSpam() {
 	printf("[REPENTOGON] Patching to remove custom shader log spam at %p\n", addr);
 
 	ASMPatch patch;
-	patch.AddRelativeJump((char*)addr + 0x71);
+	patch.AddRelativeJump((char*)addr + 0x12);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -223,4 +223,5 @@ void PerformASMPatches() {
 	//}
 
 	ASMPatches::NativeRepentogonResources();
+	ASMPatches::PatchGotInvaldParameterReadingChallengesXml();
 }

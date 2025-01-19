@@ -9,4 +9,5 @@ namespace ASMPatches {
 	bool AllowConsoleInOnline();
 
 	void NativeRepentogonResources();
+	void PatchGotInvaldParameterReadingChallengesXml();
 }
