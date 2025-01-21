@@ -1372,7 +1372,7 @@ void __stdcall RunPreModUnloadCallbacks() {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(mod._luaTableRef)
+			.pushluaref(mod._luaTableRef->_ref)
 			.push(true)
 			.call(1);
 	}
