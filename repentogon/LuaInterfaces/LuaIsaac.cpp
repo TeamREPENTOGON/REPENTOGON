@@ -223,6 +223,22 @@ LUA_FUNCTION(Lua_DrawQuad) {
 
 }
 
+std::wstring mb_to_wide(const char* input,size_t len) {
+	std::wstring out;
+	size_t size=MultiByteToWideChar(CP_UTF8, 0, input, len,nullptr,0);
+	out.resize(size);
+	MultiByteToWideChar(CP_UTF8, 0, input, len, out.data(), size);
+	return out;
+};
+
+std::string wide_to_mb(const wchar_t* input, size_t len) {
+	std::string out;
+	size_t size = WideCharToMultiByte(CP_UTF8, 0, input, len, nullptr, 0,NULL,NULL);
+	out.resize(size);
+	WideCharToMultiByte(CP_UTF8, 0, input, len, out.data(), size, NULL, NULL);
+	return out;
+};
+
 LUA_FUNCTION(Lua_SetClipboard) {
 	const char* text = luaL_checkstring(L, 1);
 
@@ -235,7 +251,11 @@ LUA_FUNCTION(Lua_SetClipboard) {
 	size_t textLength = strlen(text);
 
 	//allocate global memory to hold the text
-	HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, textLength + 1);
+	std::wstring converted_str=mb_to_wide(text,textLength);
+	size_t allocsize = wcslen(converted_str.c_str()) + 1;
+	allocsize *= sizeof(wchar_t);
+
+	HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, allocsize);
 	if (hData == NULL) {
 		CloseClipboard();
 		lua_pushboolean(L, false);
@@ -243,17 +263,16 @@ LUA_FUNCTION(Lua_SetClipboard) {
 	}
 
 	//lock the global memory to get a pointer to the data
-	char* pszText = static_cast<char*>(GlobalLock(hData));
+	wchar_t* pszText = static_cast<wchar_t*>(GlobalLock(hData));
 	if (pszText == NULL) {
 		CloseClipboard();
 		GlobalFree(hData);
 		lua_pushboolean(L, false);
 		return 2;
 	}
-
-	strcpy_s(pszText, textLength + 1, text); //copy the text to the global memory
+	wcscpy(pszText, converted_str.c_str()); //copy the text to the global memory
 	GlobalUnlock(hData);//unlock the global memory
-	SetClipboardData(CF_TEXT, hData);
+	SetClipboardData(CF_UNICODETEXT, hData);
 	CloseClipboard();
 	lua_pushboolean(L, true);
 
@@ -266,20 +285,20 @@ LUA_FUNCTION(Lua_GetClipboard) {
 		return 1;
 	}
 
-	HANDLE hData = GetClipboardData(CF_TEXT); //get the clipboard data handle
+	HANDLE hData = GetClipboardData(CF_UNICODETEXT); //get the clipboard data handle
 	if (hData == NULL) {
 		CloseClipboard();
 		lua_pushnil(L);
 		return 1;
 	}
 
-	char* pszText = static_cast<char*>(GlobalLock(hData)); 	//lock the handle to get a pointer to the data
+	wchar_t* pszText = static_cast<wchar_t*>(GlobalLock(hData)); 	//lock the handle to get a pointer to the data
 	if (pszText == NULL) {
 		CloseClipboard();
 		lua_pushnil(L);
 		return 1;
 	}
-	std::string clipboardText(pszText);
+	std::string clipboardText=wide_to_mb(pszText,wcslen(pszText)+1);
 
 	//unlock and close the clipboard
 	GlobalUnlock(hData);
