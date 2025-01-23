@@ -117,7 +117,7 @@ HOOK_METHOD(Level, IsAltPath, () -> bool) {
 bool CheckQuest(Level* level, const int levelStage, const int expected, const int quest) {
 	unsigned int stage;
 	if (g_Game->_difficulty < 2 && levelASM.ForceSpecialQuest > -1) {
-		if (stage = g_Game->_stage, 5 < stage - 1 || (g_Game->_stateFlags & 0x10000) == 0 && level->IsAltPath()) {
+		if (stage = g_Game->_stage, 5 < stage - 1 || (g_Game->_levelStateFlags & 0x10000) == 0 && level->IsAltPath()) {
 			return (levelASM.ForceSpecialQuest == quest || levelStage == expected || (levelStage == expected - 1 && (g_Game->_curses & 2) != 0));
 		}
 	}
