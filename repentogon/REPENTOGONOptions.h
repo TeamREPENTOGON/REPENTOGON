@@ -38,6 +38,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
+			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -60,6 +61,7 @@ struct REPENTOGONOptions {
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 //		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
 		fastLasers = 0;
+		ecoMode = defstoi(ini["VanillaTweaks"]["EcoMode"], 0);
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
@@ -104,10 +106,11 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
-		Write("VanillaTweaks", "FastLasers", fastLasers);
+//		Write("VanillaTweaks", "FastLasers", fastLasers);
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
+		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -135,6 +138,7 @@ struct REPENTOGONOptions {
 	int consoleAutofillLimit;
 	std::string optionsPath;
 	bool renderDebugFindInRadius;
+	bool ecoMode;
 };
 
 extern REPENTOGONOptions repentogonOptions;

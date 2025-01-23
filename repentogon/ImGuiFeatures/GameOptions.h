@@ -348,6 +348,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
 
                         AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_ECO_MODE, &repentogonOptions.ecoMode);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_ECO_MODE_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.ecoMode, false);
+
+                        AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK);

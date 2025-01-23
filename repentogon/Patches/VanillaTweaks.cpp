@@ -133,3 +133,38 @@ HOOK_METHOD(Entity_Familiar, Init, (unsigned int type, unsigned int variant, uns
 
 	super(type, variant, subtype, initSeed);
 }
+
+// eco mode stuff begin
+
+void EcoMode_toggle_qos(bool eco_state) {
+	HANDLE cur_process = GetCurrentProcess();
+	PROCESS_POWER_THROTTLING_STATE PowerThrottling = { 0 };
+	PowerThrottling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+	PowerThrottling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
+	PowerThrottling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED*(eco_state);	// 0 is normal, the macro is eco
+	if (eco_state) {
+		SetPriorityClass(cur_process, IDLE_PRIORITY_CLASS);
+	}
+	else {
+		SetPriorityClass(cur_process, NORMAL_PRIORITY_CLASS);
+	};
+	SetProcessInformation(cur_process, ProcessPowerThrottling, &PowerThrottling, sizeof(PowerThrottling));
+};
+
+bool EcoMode_old_state = 0;
+HOOK_METHOD(Manager, Render, (void)->void) {
+	if (repentogonOptions.ecoMode) {
+		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_unk_HWND->HWND;
+		bool EcoMode_new_state = IsIconic(hwnd);
+		if ((EcoMode_new_state ^ EcoMode_old_state) == 1) {
+			EcoMode_toggle_qos(EcoMode_new_state);
+		};
+		EcoMode_old_state = EcoMode_new_state;
+		if (EcoMode_new_state == 1) {
+			return;	//skip over super
+		};
+	};
+	super();
+};
+
+// eco mode stuff end
