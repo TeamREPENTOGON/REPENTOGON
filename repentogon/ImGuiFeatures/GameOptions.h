@@ -319,11 +319,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
-                        AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
+                        //AddNewTableRow();
+                        //ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
+                        //ImGui::SameLine();
+                        //HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
+                        //AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_INTERPOLV2, &repentogonOptions.interpolV2);
                         ImGui::SameLine();

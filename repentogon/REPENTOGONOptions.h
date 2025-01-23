@@ -58,7 +58,8 @@ struct REPENTOGONOptions {
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
-		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+//		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+		fastLasers = 0;
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
