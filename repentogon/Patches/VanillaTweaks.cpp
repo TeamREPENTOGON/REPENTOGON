@@ -156,11 +156,14 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 	if (repentogonOptions.ecoMode) {
 		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_unk_HWND->HWND;
 		bool EcoMode_new_state = IsIconic(hwnd);
+//		EcoMode_new_state = GetForegroundWindow() != hwnd;
 		if ((EcoMode_new_state ^ EcoMode_old_state) == 1) {
 			EcoMode_toggle_qos(EcoMode_new_state);
 		};
 		EcoMode_old_state = EcoMode_new_state;
+		bool game_inactive = (g_Manager->_state!=2 || g_Game->IsPauseMenuOpen());
 		if (EcoMode_new_state == 1) {
+			Sleep(5+(333-5)*game_inactive);
 			return;	//skip over super
 		};
 	};
