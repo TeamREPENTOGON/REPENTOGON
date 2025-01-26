@@ -93,15 +93,16 @@ void PatchPreLaserCollision() {
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	const int callbackid = 11;
-	if (VanillaCallbackState.test(callbackid)) {
-		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		// As pointers so we can modify them :)
-		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
-		float* damage = (float*)(ebp + 0x08);
-		int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
-		EntityRef** source = (EntityRef**)(ebp + 0x14);
-		int* damageCountdown = (int*)(ebp + 0x18);
 
+	// Obtain inputs as offsets from EBP (same way the compiled code reads them).
+	// As pointers so we can modify them :)
+	uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
+	float* damage = (float*)(ebp + 0x08);
+	int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
+	EntityRef** source = (EntityRef**)(ebp + 0x14);
+	int* damageCountdown = (int*)(ebp + 0x18);
+
+	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -201,6 +202,10 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 		}
 	}
 
+	if (isPlayer) {
+		*damage = (float)*damageHearts;
+	}
+
 	return true;
 }
 
@@ -261,11 +266,11 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
-		float damage = *(float*)(ebp + 0x08);
-		int damageHearts = isPlayer ? *(int*)(ebp - 0x100) : 0;
+		const unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
+		const float damage = *(float*)(ebp + 0x08);
+		const int damageHearts = (int)std::round(damage);
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
-		int damageCountdown = *(int*)(ebp + 0x18);
+		const int damageCountdown = *(int*)(ebp + 0x18);
 
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
 			// The white fireplace is a unique case where the game considers the player to have taken "damage"

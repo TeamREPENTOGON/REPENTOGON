@@ -145,9 +145,15 @@ float RunEvaluateFamiliarMultiplierCallback(Entity_Familiar* familiar, const flo
 
 // Take the customcache string as a copy to be extra safe that it can't get destroyed while this is running.
 void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string customcache) {
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (!playerPlus) {
+		// Aaah!
+		return;
+	}
+
 	const bool maxCoinsKeysBombs = customcache == "maxcoins" || customcache == "maxkeys" || customcache == "maxbombs";
-	
-	float initialValue = 0.0;
+
+	double initialValue = 0.0;
 
 	if (maxCoinsKeysBombs) {
 		// Only run evaluations as player 1 for global stats like this.
@@ -177,13 +183,13 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 		// familiars, indirectly triggering MC_EVALUATE_FAMILIAR_MULTIPLIER instead.
 		InvalidateCachedFamiliarMultipliers(player);
 		return;
+	} else if (customcache == "healthtype") {
+		playerPlus->disableHealthTypeModification = true;
+		initialValue = (double)player->GetHealthType();
+		playerPlus->disableHealthTypeModification = false;
 	}
-	
-	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
-	if (!playerPlus) {
-		// Aaah!
-		return;
-	}
+
+	double newValue = initialValue;
 
 	// MC_EVALUATE_CUSTOM_CACHE
 	const int callbackid = 1224;
@@ -201,25 +207,17 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 			.call(1);
 
 		if (!result && lua_isnumber(L, -1)) {
-			const double resultValue = lua_tonumber(L, -1);
-
-			playerPlus->customCacheResults[customcache] = resultValue;
-
-			if (maxCoinsKeysBombs) {
-				UpdateMaxCoinsKeysBombs(customcache, resultValue);
-			}
-
-			return;
+			newValue = lua_tonumber(L, -1);
 		}
 	}
 
-	// Callback did not run, or did not return a valid value.
+	playerPlus->customCacheResults[customcache] = newValue;
 
 	if (maxCoinsKeysBombs) {
-		UpdateMaxCoinsKeysBombs(customcache, initialValue);
+		UpdateMaxCoinsKeysBombs(customcache, newValue);
+	} else if (customcache == "healthtype") {
+		player->GetHealthType();
 	}
-
-	playerPlus->customCacheResults.erase(customcache);
 }
 
 void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& customcaches, const bool immediate) {
