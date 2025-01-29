@@ -3660,9 +3660,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		iscontent = iscontentax;
 		mclear(a);
 
-		//unsigned int lang = g_Manager->_stringTable.language;
-		g_Manager->_stringTable.load_ascii_data("stringtable.sta");
-		//g_Manager->_stringTable.language = lang;
+		//g_Manager->_stringTable.load_ascii_data("stringtable.sta"); //diabled due to mem corruption (ToDo)
 	}
 
 	super();
@@ -3786,11 +3784,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
-		}
-		else if (charfind(xmldata, "<stringtab", 50)) {			
-			char * notxmldata = new char[strlen(xmldata) + 1];
-			strcpy(notxmldata, xmldata);
-			super(BuildModdedXML(notxmldata, "stringtable.sta", true));
+		//}
+		//else if (charfind(xmldata, "<stringtab", 50)) {		//disableddue to mem corruption 
+			//char * notxmldata = new char[strlen(xmldata) + 1];
+			//strcpy(notxmldata, xmldata);
+			//super(BuildModdedXML(notxmldata, "stringtable.sta", true));
 		}else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
