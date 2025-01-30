@@ -8,6 +8,12 @@ Additions:
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]RockBottomMoveSpeed
+	- [Get/Set]RockBottomMaxFireDelay
+	- [Get/Set]RockBottomDamage
+	- [Get/Set]RockBottomTearRange
+	- [Get/Set]RockBottomShotSpeed
+	- [Get/Set]RockBottomLuck
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium

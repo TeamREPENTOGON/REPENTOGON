@@ -752,6 +752,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _redStewBonusDuration : 0x1e50;
+	float _rockBottomMoveSpeed : 0x1e88, _rockBottomMaxFireDelay : 0x1e8c, _rockBottomDamage : 0x1e90, _rockBottomTearRange : 0x1e94, _rockBottomShotSpeed : 0x1e98, _rockBottomLuck : 0x1e9c;
 	int _maggySwingCooldown : 0x1ebc;
 	char _bagOfCraftingContent[8]: 0x1f14;
 	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f1c;
