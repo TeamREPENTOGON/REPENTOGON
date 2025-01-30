@@ -5,6 +5,7 @@
 #include "IsaacRepentance.h"
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
+#include "Anm2Extras.h"
 
 // Normalizes input shader paths for use as keys and for identification.
 // Converts to lowercase and strips excess slashes, ie `shaders\\MyShader` -> `shaders/myshader`
@@ -13,11 +14,6 @@ std::string NormalizeShaderPath(const std::string& input_path) {
 	std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c) { return std::tolower(c); });
 	return path;
 }
-
-struct CustomShader {
-	std::string path;  // Relative path starting from `.../resources/`, without the file extensions, ie `shaders/myshader`
-	KAGE_Graphics_Shader shader;
-};
 
 // Layer-specific extra data.
 struct Anm2LayerExtras {
@@ -145,6 +141,12 @@ std::string FindShaderFullPath(const std::string& path) {
 	return "";
 }
 
+void LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion) {
+	const std::string fullpath = FindShaderFullPath(path);
+	KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
+	KAGE_Graphics_Manager_GL::LoadShader(shader, desc, fullpath.c_str());
+}
+
 // Returns the custom shader corresponding to the relative path.
 // Initializes the shader if necessary.
 CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool champion) {
@@ -154,15 +156,7 @@ CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool ch
 	const std::string path = NormalizeShaderPath(input_path);
 	auto& shader_map = champion ? custom_champion_shaders : custom_shaders;
 	if (shader_map.count(path) == 0) {
-		const std::string fullpath = FindShaderFullPath(path);
-		if (fullpath.empty()) {
-			return nullptr;
-		}
-
-		// Initialize the CustomShaderInfo object and contained KAGE_Graphics_Shader.
-		shader_map[path].path = path;
-		KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
-		KAGE_Graphics_Manager_GL::LoadShader(&shader_map[path].shader, desc, fullpath.c_str());
+		LoadCustomShader(path, &shader_map[path].shader, champion);
 	}
 	return &shader_map[path];
 }
