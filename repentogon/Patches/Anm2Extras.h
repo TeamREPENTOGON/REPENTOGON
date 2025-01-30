@@ -18,7 +18,7 @@ struct CustomShader {
 	KAGE_Graphics_Shader shader;
 };
 
-void LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion);
+bool LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion);
 
 extern std::unordered_map<std::string, CustomShader> custom_shaders;
 extern std::unordered_map<std::string, CustomShader> custom_champion_shaders;
