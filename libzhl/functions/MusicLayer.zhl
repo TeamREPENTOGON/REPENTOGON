@@ -1,0 +1,6 @@
+struct MusicLayer
+{
+    std_string _intro : 0x0;
+	std_string _path : 0x18;
+	float _mul : 0x30;
+} : 0x34;

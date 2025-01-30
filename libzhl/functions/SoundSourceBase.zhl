@@ -1,0 +1,105 @@
+struct SoundSourceBase {
+	__vtable {
+		"558bec568bf18d4e??c706????????e8????????f645??0174??6a24":
+		void * Free(bool param_1);
+		
+		pure
+		bool ApplyDataToHardware(int param_1, int param_2);
+
+		pure
+		int GetHardwareBufferSize();
+		
+		"32c0c20800":
+		bool open_file_dunno(char * param_1, bool param_2);
+		
+		"558bec8b51??568d71":
+		void Queue(uint64_t UNK_param_1, int UNK_param_2);
+		
+		"558bec568bf18b56??8b46??4a":
+		void Deque(void * UNK_param_1);
+		
+		"8379??000f97c0c3????????????????c641??01":
+		bool HasQueuedData();
+		
+		"c641??01b001c20400":
+		bool Open(char * path);
+		
+		"558bec8b55??85d274??8b41??8942??8a41":
+		bool Clone(SoundSourceBase* right);
+		
+		"558bec83ec0c568bf18b46":
+		void Close();
+		
+		"8a41??c3????????????????????????8a41":
+		bool IsOpen();
+		
+		pure
+		void Play(bool unk);
+		
+		pure
+		void Pause();
+
+		pure
+		void Resume();
+
+		pure
+		bool IsPlaying();
+
+		pure
+		void Stop();
+		
+		"558bec8a45??8841??5dc20400??????558bec6aff":
+		void SetLooping(bool value);
+		
+		"8a41??c3????????????????????????c641??01":
+		bool IsLooping();
+		
+		pure
+		void SetVolume(float param_1);
+
+		pure
+		float GetVolume();
+
+		pure
+		void SetPan(float param_1);
+
+		pure
+		float GetPan();
+
+		pure
+		void SetPitch(float param_1);
+
+		pure
+		float GetPitch();
+		
+		pure
+		uint16_t GetNumChannels();
+
+		pure
+		int GetSourceFormat();
+		
+		pure
+		unsigned int GetSampleRate();
+		
+		pure
+		void SystemSuspend();
+
+		pure
+		void SystemResume();
+		
+		pure
+		int ProcessData(void * param_1);
+		
+		pure
+		bool ActivateNextQueuedData();
+		
+		pure
+		void Update();
+		
+		pure
+		bool IsPlayingFinished();
+		
+		pure
+		bool IsProcessingFinished();
+	};
+} : 0x4;
