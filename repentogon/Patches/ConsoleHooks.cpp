@@ -147,7 +147,6 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
     };
 
     if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {
-        printf("[REPENTOGON] Attempting to reload custom shaders\n");
         if (!custom_shaders.empty()) {
             for (auto & [ key, value ] : custom_shaders)
                 LoadCustomShader(key, &value.shader, false);
@@ -157,7 +156,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
                 LoadCustomShader(key, &value.shader, true);
         }
         return;
-    };
+    }
 
     if ((in == "help") || (in.rfind("help ", 0) == 0)) {
 

@@ -141,6 +141,7 @@ std::string FindShaderFullPath(const std::string& path) {
 	return "";
 }
 
+// Abstracted shader loading (for reloading shaders via console)
 void LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion) {
 	const std::string fullpath = FindShaderFullPath(path);
 	KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
@@ -150,12 +151,13 @@ void LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, boo
 // Returns the custom shader corresponding to the relative path.
 // Initializes the shader if necessary.
 CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool champion) {
-	if (input_path.empty()) {
+	if (input_path.empty())
 		return nullptr;
-	}
 	const std::string path = NormalizeShaderPath(input_path);
 	auto& shader_map = champion ? custom_champion_shaders : custom_shaders;
 	if (shader_map.count(path) == 0) {
+		if (FindShaderFullPath(path).empty())
+			return nullptr;
 		LoadCustomShader(path, &shader_map[path].shader, champion);
 	}
 	return &shader_map[path];
