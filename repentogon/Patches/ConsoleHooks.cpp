@@ -5,9 +5,10 @@
 #include "LuaCore.h"
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
+#include "Anm2Extras.h"
 
 #include <filesystem>
-#include <iostream> 
+#include <iostream>
 #include <fstream>
 #include <string>
 
@@ -144,6 +145,14 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         REPENTOGONFileMap::GenerateMap();
         return super(in,out,player);
     };
+
+    if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {
+        for (auto & [ key, value ] : custom_shaders)
+            LoadCustomShader(key, &value.shader, false);
+        for (auto & [ key, value ] : custom_champion_shaders)
+            LoadCustomShader(key, &value.shader, true);
+        return;
+    }
 
     if ((in == "help") || (in.rfind("help ", 0) == 0)) {
 
