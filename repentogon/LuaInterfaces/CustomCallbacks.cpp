@@ -3845,7 +3845,7 @@ struct GridRenderCallback callbacks[8] = {
 
 HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
-	for (int i = 5; i < 8; i++) {
+	for (int i = 6; i < 8; i++) {
 		if (gridType == callbacks[i].type)
 		{
 			GridEntityRenderInputs inputs = { this, offset };
