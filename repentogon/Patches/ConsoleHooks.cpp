@@ -151,7 +151,6 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             LoadCustomShader(key, &value.shader, false);
         for (auto & [ key, value ] : custom_champion_shaders)
             LoadCustomShader(key, &value.shader, true);
-        return;
     }
 
     if ((in == "help") || (in.rfind("help ", 0) == 0)) {
