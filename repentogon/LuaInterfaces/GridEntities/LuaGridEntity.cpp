@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/GridEntityPlus.h"
 
 LUA_FUNCTION(Lua_GridEntityHurtDamage)
 {
@@ -44,6 +45,37 @@ LUA_FUNCTION(Lua_GridEntityIsBreakableRock)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GridEntityGetWaterClipFlags)
+{
+	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	WaterClipInfo info;
+	gridEnt->GetWaterClipInfo(&info);
+	lua_pushinteger(L, info.bitFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GridEntitySetWaterClipFlags)
+{
+	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	const uint32_t flags = (uint32_t)luaL_checkinteger(L, 2);
+	GridEntityPlus* gridEntPlus = GetGridEntityPlus(gridEnt);
+	if (gridEntPlus) {
+		gridEntPlus->waterClipInfoFlagsOverride = flags;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GridEntityResetWaterClipFlags)
+{
+	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntityPlus* gridEntPlus = GetGridEntityPlus(gridEnt);
+	if (gridEntPlus) {
+		gridEntPlus->waterClipInfoFlagsOverride = std::nullopt;
+	}
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -53,6 +85,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
 		{ "GetRenderPosition", Lua_GridEntityGetRenderPosition },
 		{ "IsBreakableRock", Lua_GridEntityIsBreakableRock },
+		{ "GetWaterClipFlags", Lua_GridEntityGetWaterClipFlags },
+		{ "SetWaterClipFlags", Lua_GridEntitySetWaterClipFlags },
+		{ "ResetWaterClipFlags", Lua_GridEntityResetWaterClipFlags },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY, functions);

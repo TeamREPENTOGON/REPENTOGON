@@ -9,7 +9,11 @@ struct GridEntity_Gravity : public GridEntity {
 		skip; // Render
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec8b45??c70039000000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

@@ -135,6 +135,19 @@ HOOK_METHOD(Entity, IsFlying, ()->bool) {
 
 
 // ----------------------------------------------------------------------------------------------------
+// -- WaterClipInfo
+
+HOOK_METHOD(Entity, GetWaterClipInfo, (WaterClipInfo* out) -> WaterClipInfo*) {
+	super(out);
+	EntityPlus* entityPlus = GetEntityPlus(this);
+	if (entityPlus && entityPlus->waterClipInfoFlagsOverride) {
+		out->bitFlags = *entityPlus->waterClipInfoFlagsOverride;
+	}
+	return out;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
 // -- ASM Patches
 
 namespace {

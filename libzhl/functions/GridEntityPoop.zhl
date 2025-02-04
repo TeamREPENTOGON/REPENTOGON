@@ -12,7 +12,11 @@ struct GridEntity_Poop : public GridEntity {
 		
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec83ec088179??e8030000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches
