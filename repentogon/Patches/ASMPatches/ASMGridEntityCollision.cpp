@@ -92,7 +92,7 @@ bool __stdcall TriggerGridCollisionCallbacks(Entity* entity, const int gridIndex
 
 // EntityGridCollisionClass.GRIDCOLL_BULLET (4)
 bool __stdcall BulletGridCollisionCallbackHook(Entity* entity, GridEntity* gridEntity) {
-	if (TriggerGridCollisionCallbacks(entity, *gridEntity->GetGridIndex())) {
+	if (TriggerGridCollisionCallbacks(entity, gridEntity->_gridIndex)) {
 		return true;
 	}
 	entity->_collidesWithGrid = true;

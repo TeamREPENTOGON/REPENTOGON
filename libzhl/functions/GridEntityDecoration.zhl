@@ -12,7 +12,11 @@ struct GridEntity_Decoration : public GridEntity {
 		
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec8b45??c70026000000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

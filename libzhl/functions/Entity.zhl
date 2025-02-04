@@ -110,6 +110,9 @@ __thiscall Entity * Entity::GetStatusEffectTarget();
 "8b41??3d8d030000":
 __thiscall bool Entity::DoesEntityShareStatus();
 
+"558bec568b75??578bf98b4f??81f9e8030000":
+__thiscall WaterClipInfo* Entity::GetWaterClipInfo(WaterClipInfo* out);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
 	inline int GetIndex() { return this->_index; }

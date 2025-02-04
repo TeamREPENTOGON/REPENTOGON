@@ -11,6 +11,7 @@ class EntityPlus {
 	virtual ~EntityPlus() {}
 
 	std::optional<bool> isFlyingOverride = std::nullopt;
+	std::optional<uint32_t> waterClipInfoFlagsOverride = std::nullopt;
 };
 
 // Attributes for EntityPlayer.

@@ -2854,6 +2854,17 @@ DoorMask = {
 	DOWN1 = 1 << DoorSlot.DOWN1,
 }
 
+WaterClipFlag = {
+	--UNKNOWN_UNUSED = 1 << 0,
+	DISABLE_RENDER_ABOVE_WATER = 1 << 1,  -- When set for an Entity, also enables rendering below water
+	ENABLE_RENDER_BELOW_WATER = 1 << 2,  -- Entity only, Allows the "below water" rendering to happen alongside "above water" rendering
+	DISABLE_RENDER_BELOW_WATER = 1 << 3,  -- Takes priority over other flags
+	--UNKNOWN_UNUSED = 1 << 4,
+	DISABLE_RENDER_REFLECTION = 1 << 5,  -- Entity only, GridEntities don't get reflections
+	IGNORE_WATER_RENDERING = 1 << 6,  -- Entity only, overrides other flags and renders the entity above water only, no reflection
+	FORCE_WATER_RIPPLE_WHEN_MOVING = 1 << 7,  -- Entity only, only "grounded" entities will spawn water ripples without this flag
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
