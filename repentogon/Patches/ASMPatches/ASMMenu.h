@@ -2,3 +2,4 @@
 
 void ASMPatchModsMenu();
 void ASMPatchMenuOptionsLanguageChange();
+void ASMPatchOnlineMenu();

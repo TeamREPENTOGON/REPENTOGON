@@ -150,6 +150,7 @@ void PerformASMPatches() {
 	// Menu
 	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
+	ASMPatchOnlineMenu();
 
 	// Room
 	ASMPatchAmbushWaveCount();
