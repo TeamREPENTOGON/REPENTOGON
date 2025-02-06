@@ -4,7 +4,33 @@ __thiscall void Font::DrawString(const char* str, Vector pos, Vector scale, KCol
 "558bec6affff75":
 __thiscall int Font::GetStringWidth(const char* str);
 
+
+//most of the variables are parsed from .fnt binary (https://www.angelcode.com/products/bmfont/doc/file_format.html)
 struct Font {
-
-
+	bool _isLoaded : 0x0;
+	//block info
+	int16_t _fontSize : 0x4;
+	uint8_t _infoBitField : 0x6;
+	uint8_t _charSet : 0x7;
+	uint16_t _stretchH : 0x8;
+	uint8_t _aa : 0xA;
+	uint8_t _paddingUp : 0xB;
+	uint8_t _paddingRight : 0xC;
+	uint8_t _paddingDown : 0xD;
+	uint8_t _paddingLeft : 0xE;
+	uint8_t _spacingHoriz : 0xF;
+	uint8_t _spacingVert : 0x10;
+	uint8_t _outline : 0x11;
+	
+	//block common
+	uint16_t _lineHeight : 0x14;
+	uint16_t _base : 0x16;
+	uint16_t _scaleW : 0x18;
+	uint16_t _scaleH : 0x1a;
+	uint16_t _pages : 0x1c;
+	
+	uint32_t _numChars : 0x24;
+	FontCharBlock* _chars : 0x28;
+	std_vector_int _unusedVec : 0x2c; //not so unused for PF Tempesta Seven font
+	std_unk_charsBlock _charsBlock : 0x40;
 } : 0x4c;
