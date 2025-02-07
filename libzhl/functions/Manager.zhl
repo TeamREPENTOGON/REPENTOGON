@@ -93,6 +93,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 }} 
 	
 	int _state : 0x8;
+	uint32_t _currentSaveSlot : 0x10;
 	PersistentGameData _persistentGameData : 0x14;
 	GameState _gamestate : 0xf9c;
 	Cutscene _cutsceneManager : 0x20d00;

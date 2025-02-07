@@ -6,7 +6,7 @@
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/CustomCache.h"
-#include "../../Patches/CustomItemPools.h"
+#include "../../Patches/ItemPoolManager.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/XmlData.h"
@@ -714,7 +714,7 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	const int collectible = (int)luaL_checkinteger(L, 2);
 	int itemPoolType = (int)luaL_optinteger(L, 3, -1);
-	if (itemPoolType < 0 || itemPoolType >= (int)CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+	if (itemPoolType < 0 || (uint32_t)itemPoolType >= ItemPoolManager::GetNumItemPools()) {
 		itemPoolType = g_Game->_itemPool.GetFirstItemPoolForCollectible(collectible);
 	}
 	player->GetBagOfCraftingOutput()->collectibleType = collectible;

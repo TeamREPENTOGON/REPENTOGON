@@ -11,7 +11,7 @@
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 #include "EntityPlus.h"
-#include "CustomItemPools.h"
+#include "ItemPoolManager.h"
 #include "CardsExtras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
@@ -186,8 +186,8 @@ void PerformASMPatches() {
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
-	//ASMPatchesForCustomItemPools();
-	//ExtraASMPatchesForCustomItemPools();
+	ASMPatches::__ItemPoolManager();
+	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForXMLItem();
 	HookImGui();
