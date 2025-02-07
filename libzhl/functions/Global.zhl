@@ -128,7 +128,16 @@ struct FontCharBlock {
 	int8_t _channel;
 };
 
-typedef std::map<const char*, int*> std_unk_charsBlock; //not correct?
+typedef std::map<char, int> std_map_CharBlocks;
+
+struct FontKerningPair {
+	uint32_t _first;
+	uint32_t _second;
+	int16_t _amount;
+	int _unk;
+};
+
+typedef std::vector<FontKerningPair> vector_KerningPair;
 
 }}
 
