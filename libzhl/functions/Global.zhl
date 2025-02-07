@@ -115,6 +115,30 @@ struct ShopRestockDesc {
 };
 typedef std::deque<ShopRestockDesc> deque_ShopRestockDesc;
 
+struct FontCharBlock {
+	uint32_t _id;
+	uint16_t _x;
+	uint16_t _y;
+	uint16_t _width;
+	uint16_t _height;
+	int16_t _xoffset;
+	int16_t _yoffset;
+	int16_t _xAdvance;
+	int8_t _page;
+	int8_t _channel;
+};
+
+typedef std::map<char, int> std_map_CharBlocks;
+
+struct FontKerningPair {
+	uint32_t _first;
+	uint32_t _second;
+	int16_t _amount;
+	int _unk;
+};
+
+typedef std::vector<FontKerningPair> vector_KerningPair;
+
 }}
 
 //=================================================================================================================

@@ -1,7 +1,7 @@
 // Throwing anything from the global namespace here so ZHL doesn't throw a fit
 
 "558bec6aff68????????64a1????????5051535657a1????????33c5508d45??64a3????????8bda":
-static __fastcall GridEntity* Isaac::CreateGridEntity(int Type, unsigned int Index);
+static cleanup GridEntity* Isaac::CreateGridEntity(int Type<ecx>, unsigned int Index<edx>);
 
 "568bf185f6750433c05ec3e8":
 static __fastcall int Isaac::Random(int Max);

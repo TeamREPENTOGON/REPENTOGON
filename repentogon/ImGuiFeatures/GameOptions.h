@@ -319,11 +319,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
-                        AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
+                        //AddNewTableRow();
+                        //ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
+                        //ImGui::SameLine();
+                        //HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
+                        //AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_INTERPOLV2, &repentogonOptions.interpolV2);
                         ImGui::SameLine();
@@ -346,6 +346,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
+
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_ECO_MODE, &repentogonOptions.ecoMode);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_ECO_MODE_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.ecoMode, false);
 
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);

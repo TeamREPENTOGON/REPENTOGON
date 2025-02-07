@@ -111,7 +111,7 @@ ModCallbacks.MC_POST_SLOT_CREATE_EXPLOSION_DROPS = 1124
 ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE = 1125
 ModCallbacks.MC_POST_SLOT_SET_PRIZE_COLLECTIBLE = 1126
 ModCallbacks.MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS = 1127
-
+ModCallbacks.MC_PLAYER_HEALTH_TYPE_CHANGE = 1128
 ModCallbacks.MC_POST_FORCE_ADD_PILL_EFFECT = 1129
 
 ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS = 1130
@@ -998,7 +998,7 @@ Achievement = {
 	COMPOUND_FRACTURE = 291,
 	EUTHANASIA = 292,
 	HOLY_CARD = 293,
-	CROOKED_CARD = 294,
+	CROOKED_PENNY = 294,
 	VOID = 295,
 	D1 = 296,
 	GLYPH_OF_BALANCE = 297,
@@ -2854,9 +2854,21 @@ DoorMask = {
 	DOWN1 = 1 << DoorSlot.DOWN1,
 }
 
+WaterClipFlag = {
+	--UNKNOWN_UNUSED = 1 << 0,
+	DISABLE_RENDER_ABOVE_WATER = 1 << 1,  -- When set for an Entity, also enables rendering below water
+	ENABLE_RENDER_BELOW_WATER = 1 << 2,  -- Entity only, Allows the "below water" rendering to happen alongside "above water" rendering
+	DISABLE_RENDER_BELOW_WATER = 1 << 3,  -- Takes priority over other flags
+	--UNKNOWN_UNUSED = 1 << 4,
+	DISABLE_RENDER_REFLECTION = 1 << 5,  -- Entity only, GridEntities don't get reflections
+	IGNORE_WATER_RENDERING = 1 << 6,  -- Entity only, overrides other flags and renders the entity above water only, no reflection
+	FORCE_WATER_RIPPLE_WHEN_MOVING = 1 << 7,  -- Entity only, only "grounded" entities will spawn water ripples without this flag
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
 Achievement.RESERVED_HEIROPHANT = 529
 Achievement.HAEMOLACHRIA = Achievement.HAEMOLACRIA
+Achievement.CROOKED_CARD = Achievement.CROOKED_PENNY
 MainMenuType.SEED = MainMenuType.ONLINELOBBY

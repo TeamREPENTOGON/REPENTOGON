@@ -12,7 +12,11 @@ struct GridEntity_Lock : public GridEntity {
 		
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec83ec088379??00b926000000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

@@ -169,6 +169,11 @@ TypeInfo std_list_ModReference {
     Align 4;
 };
 
+TypeInfo std_map_CharBlocks {
+    Size 8;
+    Align 4;
+};
+
 TypeInfo vector_ErasedEntities {
     Size 12;
     Align 4;
@@ -237,5 +242,10 @@ TypeInfo vector_HomingLaserBezier {
 
 TypeInfo deque_ShopRestockDesc {
 	Size 20;
+    Align 4;
+};
+
+TypeInfo vector_KerningPair {
+    Size 12;
     Align 4;
 };

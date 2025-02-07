@@ -94,10 +94,10 @@ HOOK_METHOD(Entity_Laser, ClearLaserSamples, ()->void) {
 	if (!this->_sampleLaser || (this->_homingLaser._sampleNum < 10) || (this->_variant == 2 && !*(this->GetOneHit()) && !is_circle_laser(this))) {
 		return super();
 	};
-	if (repentogonOptions.fastLasers) {
-		ApplyFastLasers(this);
-		return super();
-	};
+	//if (repentogonOptions.fastLasers) {
+	//	ApplyFastLasers(this);
+	//	return super();
+	//};
 	return super();
 };
 HOOK_METHOD(Entity_Laser, Update, (void)->void) {
@@ -108,9 +108,9 @@ HOOK_METHOD(Entity_Laser, Update, (void)->void) {
 	if (!this->_sampleLaser || (this->_homingLaser._sampleNum < 10) || (this->_variant==2 && !*(this->GetOneHit()) && !is_circle_laser(this)) ) {
 		return super();
 	};
-	if (repentogonOptions.fastLasers) {
-		ApplyFastLasers(this);
-		return super();
-	};
+	//if (repentogonOptions.fastLasers) {
+	//	ApplyFastLasers(this);
+	//	return super();
+	//};
 	return super();
 };

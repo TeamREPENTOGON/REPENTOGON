@@ -17,6 +17,15 @@ __thiscall void Entity_Player::update_golden_hearts(bool unk);
 "a1????????53565783b8????????028bf90f8d":
 __thiscall void Entity_Player::update_bone_hearts();
 
+"558bec51a1????????578bf983b8????????02":
+__thiscall void Entity_Player::AdjustBlackHearts();
+
+"558bec83e4f851a1????????53565780b8????????00":
+__thiscall void Entity_Player::update_greeds_gullet();
+
+"558bec8b45??5699":
+__thiscall void Entity_Player::trigger_max_hearts_removed(int removed);
+
 //AddCollectible - 
 "558bec6aff68????????64a1????????5081ece4030000":
 __thiscall void Entity_Player::AddCollectible(int type, int charge, bool firsttime,int slot,int vardata, int unk);
@@ -734,6 +743,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	//std_vector_int _wispStorage : 0x1cfc;
 	vector_EntitySaveState _movingBoxContents : 0x1d60;
 	int _boneHearts : 0x1d6c;
+	int _boneHeartsMask : 0x1d70;
 	int _hallowedGroundCountdown : 0x1d74;
 	int _brokenHearts : 0x1d84;
 	int _rottenHearts : 0x1d88;
@@ -742,6 +752,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _redStewBonusDuration : 0x1e50;
+	float _rockBottomMoveSpeed : 0x1e88, _rockBottomMaxFireDelay : 0x1e8c, _rockBottomDamage : 0x1e90, _rockBottomTearRange : 0x1e94, _rockBottomShotSpeed : 0x1e98, _rockBottomLuck : 0x1e9c;
 	int _maggySwingCooldown : 0x1ebc;
 	char _bagOfCraftingContent[8]: 0x1f14;
 	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f1c;

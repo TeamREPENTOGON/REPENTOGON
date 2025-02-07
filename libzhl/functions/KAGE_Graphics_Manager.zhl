@@ -6,7 +6,8 @@ struct KAGE_Graphics_Manager depends (UnkStructWithHWND){
     KAGE_Graphics_ImageBase* currentRenderTarget : 0x18; // 0x18
     bool unk : 0x1c; // 0x1C
     uint32_t openGLFramebufferID : 0xc8; // 0xC8
-    UnkStructWithHWND* _unk_HWND : 0xd8;
+	//this struct pointer got shifted in rep+, be careful
+    UnkStructWithHWND* _unk_HWND : 0xe0;
 
     "558bec518a45":
     void SetCurrentRenderTarget(KAGE_Graphics_ImageBase* target, bool unk);

@@ -8,6 +8,12 @@ Additions:
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]RockBottomMoveSpeed
+	- [Get/Set]RockBottomMaxFireDelay
+	- [Get/Set]RockBottomDamage
+	- [Get/Set]RockBottomTearRange
+	- [Get/Set]RockBottomShotSpeed
+	- [Get/Set]RockBottomLuck
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -39,7 +45,6 @@ Additions:
 	- DoorMask
 * Isaac:
 	- GetDoorMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
-* Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 Fixes:
