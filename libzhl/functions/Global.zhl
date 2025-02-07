@@ -82,13 +82,13 @@ typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
 typedef std::vector<float> std_vector_float;
 
 struct PoolItem {
-	uint32_t _itemID;
-	float _initialWeight;
-	float _weight;
-	float _decreaseBy;
-	float _removeOn;
-        bool _isUnlocked;
-        bool _isSpecial;
+	uint32_t _itemID = 0;
+	float _initialWeight = 1.0f;
+	float _weight = 1.0f;
+	float _decreaseBy = 0.5f;
+	float _removeOn = 0.1f;
+        bool _isUnlocked = false;
+        bool _isSpecial = false;
 	char _pad[2];
 	
 	//std_string _itemName;
@@ -148,6 +148,15 @@ typedef std::vector<FontKerningPair> vector_KerningPair;
 
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
 {{	
+
+enum eManagerState
+{
+    STATE_NULL = 0,
+    STATE_MENU = 1,
+    STATE_GAME = 2,
+    STATE_CUTSCENE = 3,
+    STATE_NIGHTMARE = 5
+};
 
 enum CharacterLockedFlag
 {
