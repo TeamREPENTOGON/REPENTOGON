@@ -2255,18 +2255,6 @@ HOOK_METHOD(ItemPool, GetItemPoolsForCollectible, (int collectible, std_vector_u
 	ItemPoolManager::__GetItemPoolsForCollectible(collectible, *result);
 }
 
-// Fix itemPoolId as a safety measure (could realistically happen if the old item pool ids were not properly fixed on game state load)
-HOOK_METHOD(ItemPool, GetCollectible, (int itemPoolType, uint32_t seed, uint32_t flags, int defaultItem) -> int)
-{
-	if (itemPoolType < POOL_NULL || (uint32_t)itemPoolType >= ItemPoolManager::GetNumItemPools())
-	{
-		// Should this be logged?
-		itemPoolType = POOL_TREASURE;
-	}
-
-	return super(itemPoolType, seed, flags, defaultItem);
-}
-
 #pragma endregion
 
 #pragma region Patches
