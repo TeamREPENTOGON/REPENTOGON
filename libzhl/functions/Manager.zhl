@@ -72,6 +72,9 @@ __thiscall void Manager::SetSaveSlot(unsigned int slot);
 "558bec518b55??8b0d????????83fa1a":
 __thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
 
+"a1????????8b80????????83f813":
+static char* Manager::GetLanguage();
+
 struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
 	inline int GetState() { return this->_state; }
 	inline PersistentGameData* GetPersistentGameData() { return &this->_persistentGameData; }
