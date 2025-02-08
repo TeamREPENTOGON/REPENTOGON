@@ -17,6 +17,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     }
     const char* extraHudModes[3] = { "Off", "Normal", "Mini" };
     const char* announcerModes[3] = { "Random", "Off", "Always on" };
+    const char* popUpModes[3] = { "Off", "Large", "Small" };
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
     const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
@@ -29,6 +30,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
         announcerModes[0] = LANG.OPT_ANNOUNCER_MODES_RANDOM;
         announcerModes[1] = LANG.OPT_ANNOUNCER_MODES_OFF;
         announcerModes[2] = LANG.OPT_ANNOUNCER_MODES_ALWAYS_ON;
+
+        popUpModes[0] = LANG.OPT_POPUP_MODES_OFF;
+        popUpModes[1] = LANG.OPT_POPUP_MODES_BIG;
+        popUpModes[2] = LANG.OPT_POPUP_MODES_SMALL;
 
         consoleFontModes[0] = LANG.OPT_CONSOLE_FOND_MODES_DEFAULT;
         consoleFontModes[1] = LANG.OPT_CONSOLE_FOND_MODES_SMALL;
@@ -97,8 +102,8 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_FILTER_MARK);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_filterEnabled, false);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_POP_UPS, &g_Manager->GetOptions()->_popupsEnabled);
-                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_popupsEnabled, true);
+                        ImGui::SliderInt(LANG.OPT_POP_UPS, &g_Manager->GetOptions()->_popupsMode, 0, 2, popUpModes[g_Manager->GetOptions()->_popupsMode], ImGuiSliderFlags_NoInput);
+                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_popupsMode, 1);
                         AddNewTableRow();
                         ImGui::SliderInt(LANG.OPT_ANNOUNCER_VOICE_MODE, &g_Manager->GetOptions()->_announcerVoiceMode, 0, 2, announcerModes[g_Manager->GetOptions()->_announcerVoiceMode], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_announcerVoiceMode, 0);
@@ -285,10 +290,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_BETTER_VOID_GEN_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, false);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX, &repentogonOptions.hushPanicStateFix);
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_LASER_FIX, &repentogonOptions.hushLaserSpeedFix);
                         ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.hushPanicStateFix, true);
+                        HelpMarker(LANG.OPT_REPENTOGON_HUSH_LASER_FIX_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.hushLaserSpeedFix, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, &repentogonOptions.keyMasterDealChance);
                         ImGui::SameLine();
@@ -314,11 +319,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
-                        AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
+                        //AddNewTableRow();
+                        //ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
+                        //ImGui::SameLine();
+                        //HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
+                        //AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_INTERPOLV2, &repentogonOptions.interpolV2);
                         ImGui::SameLine();
@@ -341,6 +346,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
+
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_ECO_MODE, &repentogonOptions.ecoMode);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_ECO_MODE_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.ecoMode, false);
 
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);

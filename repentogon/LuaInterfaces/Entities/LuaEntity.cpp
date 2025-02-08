@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/ASMPatches/ASMCallbacks.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityAddBleeding)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddBleeding(*ref, duration);
+	ent->AddBleeding(*ref, duration, false);
 	return 0;
 }
 
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_EntityAddMagnetized)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddMagnetized(*ref, duration);
+	ent->AddMagnetized(*ref, duration, false);
 	return 0;
 }
 
@@ -26,7 +27,7 @@ LUA_FUNCTION(Lua_EntityAddBaited)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = (int)luaL_checkinteger(L, 3);
-	ent->AddBaited(*ref, duration);
+	ent->AddBaited(*ref, duration, false);
 	return 0;
 }
 
@@ -259,8 +260,7 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	const float delay = (float)luaL_checknumber(L, 3);
-	Vector res;
-	entity->GetPredictedTargetPosition(&res, target, delay);
+	Vector res = entity->GetPredictedTargetPosition(target, delay);
 
 	lua::luabridge::UserdataPtr::push(L, &res, lua::GetMetatableKey(lua::Metatables::VECTOR));
 
@@ -306,7 +306,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 	
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
@@ -332,7 +332,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
@@ -807,6 +807,36 @@ LUA_FUNCTION(Lua_EntitySetKnockbackDirection)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityGetWaterClipFlags)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	WaterClipInfo info;
+	ent->GetWaterClipInfo(&info);
+	lua_pushinteger(L, info.bitFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetWaterClipFlags)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	const uint32_t flags = (uint32_t)luaL_checkinteger(L, 2);
+	EntityPlus* entityPlus = GetEntityPlus(ent);
+	if (entityPlus) {
+		entityPlus->waterClipInfoFlagsOverride = flags;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityResetWaterClipFlags)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityPlus* entityPlus = GetEntityPlus(ent);
+	if (entityPlus) {
+		entityPlus->waterClipInfoFlagsOverride = std::nullopt;
+	}
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -853,7 +883,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetColorParams", Lua_EntitySetColorParams },
 		{ "GetDamageCountdown", Lua_EntityGetDamageCountdown },
 		{ "SetDamageCountdown", Lua_EntitySetDamageCountdown },
-
 		{ "GetFireDamageCooldown", Lua_EntityGetFireDamageCooldown },
 		{ "SetFireDamageCooldown", Lua_EntitySetFireDamageCooldown },
 		{ "GetFreezeCountdown", Lua_EntityGetFreezeCountdown },
@@ -888,7 +917,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetIceCountdown", Lua_EntitySetIceCountdown },
 		{ "GetBrimstoneMarkCountdown", Lua_EntityGetBrimstoneMarkCountdown },
 		{ "SetBrimstoneMarkCountdown", Lua_EntitySetBrimstoneMarkCountdown },
-
 		{ "GetPoisonDamageTimer", Lua_EntityGetPoisonDamageTimer },
 		{ "SetPoisonDamageTimer", Lua_EntitySetPoisonDamageTimer },
 		{ "GetBurnDamageTimer", Lua_EntityGetBurnDamageTimer },
@@ -899,6 +927,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBurnDamage", Lua_EntitySetBurnDamage },
 		{ "GetKnockbackDirection", Lua_EntityGetKnockbackDirection },
 		{ "SetKnockbackDirection", Lua_EntitySetKnockbackDirection },
+		{ "GetWaterClipFlags", Lua_EntityGetWaterClipFlags },
+		{ "SetWaterClipFlags", Lua_EntitySetWaterClipFlags },
+		{ "ResetWaterClipFlags", Lua_EntityResetWaterClipFlags },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

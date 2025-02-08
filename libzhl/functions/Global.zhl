@@ -11,6 +11,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <list>
 #include <functional>
 #include <deque>
 #include <cstdarg>
@@ -60,6 +61,7 @@ typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
+typedef std::list<ModReference> std_list_ModReference;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
 typedef std::vector<Vector> std_vector_vector2;
@@ -69,6 +71,7 @@ typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::vector<GridEntityDesc> vector_GridEntityDesc;
 typedef std::map<int, int> std_map_int_int;
+typedef std::map<int, ANM2> std_map_int_ANM2;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player*> vector_EntityPlayerPtr;
 typedef std::vector<ItemConfig_Item*> vector_ItemPtr;
@@ -79,13 +82,13 @@ typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
 typedef std::vector<float> std_vector_float;
 
 struct PoolItem {
-	uint32_t _itemID;
-	float _initialWeight;
-	float _weight;
-	float _decreaseBy;
-	float _removeOn;
-        bool _isUnlocked;
-        bool _isSpecial;
+	uint32_t _itemID = 0;
+	float _initialWeight = 1.0f;
+	float _weight = 1.0f;
+	float _decreaseBy = 0.5f;
+	float _removeOn = 0.1f;
+        bool _isUnlocked = false;
+        bool _isSpecial = false;
 	char _pad[2];
 	
 	//std_string _itemName;
@@ -112,6 +115,30 @@ struct ShopRestockDesc {
 };
 typedef std::deque<ShopRestockDesc> deque_ShopRestockDesc;
 
+struct FontCharBlock {
+	uint32_t _id;
+	uint16_t _x;
+	uint16_t _y;
+	uint16_t _width;
+	uint16_t _height;
+	int16_t _xoffset;
+	int16_t _yoffset;
+	int16_t _xAdvance;
+	int8_t _page;
+	int8_t _channel;
+};
+
+typedef std::map<char, int> std_map_CharBlocks;
+
+struct FontKerningPair {
+	uint32_t _first;
+	uint32_t _second;
+	int16_t _amount;
+	int _unk;
+};
+
+typedef std::vector<FontKerningPair> vector_KerningPair;
+
 }}
 
 //=================================================================================================================
@@ -121,6 +148,15 @@ typedef std::deque<ShopRestockDesc> deque_ShopRestockDesc;
 
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
 {{	
+
+enum eManagerState
+{
+    STATE_NULL = 0,
+    STATE_MENU = 1,
+    STATE_GAME = 2,
+    STATE_CUTSCENE = 3,
+    STATE_NIGHTMARE = 5
+};
 
 enum CharacterLockedFlag
 {
@@ -1815,6 +1851,32 @@ enum eBossId {
     BOSS_CADAVRA = 103
 };
 
+enum eMainMenuType {
+    TITLE = 1, // 0 exists but it's unusable
+    SAVES = 2,
+    GAME = 3, // the actual menu where all the menus are
+    DAILYRUN = 4,
+    CHARACTER = 5,
+    SPECIALSEEDS = 6,
+    CHALLENGE = 7,
+    COLLECTION = 8,
+    STATS = 9,
+    OPTIONS = 10,
+    CONTROLS = 11,
+    KEYCONFIG = 12,
+    ENDINGS = 13,
+    BESTIARY = 14,
+    MODCHALLENGES = 15,
+    MODS = 16,
+    ONLINELOBBY = 17,
+	FRIENDLOBBIES = 18,
+	MULTIPLAYER = 19,
+	OPTIONSONLINE = 20,
+	CREATELOBBY = 21,
+	ONLINEAWARDS = 22 //sins list
+};
+
+
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
@@ -1829,7 +1891,7 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
 
-"558bec6aff68????????64a1????????5081ece4010000a1????????33c58945??5657508d45??64a3????????837d??01":
+"558bec6aff68????????64a1????????5081ece8010000a1????????33c58945??5657508d45??64a3????????8bc2":
 __cdecl void IsaacStartup(int param_1, int param_2);
 
 "a1(????????)895d??8945":
@@ -1838,3 +1900,6 @@ reference char* ModReferences; // ModReference data from RegisterMod
 struct GlobalPost {
 {{
 }} };
+
+"68(????????)68????????8d89????????e8????????50":
+reference const char g_GameVersionString;

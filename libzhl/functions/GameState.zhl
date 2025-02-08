@@ -1,4 +1,35 @@
-struct GameState depends (GameStateItemPool, Seeds){
-    GameStateItemPool _itemPool : 0x1e080;
-    Seeds _seeds : 0x1e3d8;
-} : 0x20294;
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecf8000000a1????????33c58945??5657508d45??64a3????????8bf989bd????????b831000000":
+__thiscall void GameState::Clear();
+
+"558bec6aff68????????64a1????????5081ec60040000":
+__thiscall bool GameState::write(GameStateIO** gameStateIO);
+
+"558bec6aff68????????64a1????????5083ec48a1????????33c58945??535657508d45??64a3????????8bd98b7d":
+__thiscall bool GameState::write_rerun(GameStateIO** gameStateIO);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8060000":
+__thiscall bool GameState::read(GameStateIO** gameStateIO, bool isLocalRun); // isLocalRun is set to false when loading the GameState upon joining an existing online match
+
+"558bec83ec78a1????????33c58945??538b5d":
+__thiscall bool GameState::read_rerun(GameStateIO** gameStateIO);
+
+"538b1d????????56578b3d????????8bf168????????ffd3":
+__thiscall void GameState::Delete();
+
+"538b1d????????56578b3d????????8bf168????????ffd7":
+__thiscall void GameState::DeleteRerun();
+
+struct GameState depends (RoomDescriptor, GameStatePlayer, GameStateItemPool, Seeds){
+    uint32_t _roomCount : 0x260;
+    RoomDescriptor _rooms[527] : 0x264;
+    uint32_t _playerCount : 0x19e34;
+    GameStatePlayer _players[8] : 0x19e38;
+    GameStatePlayer _esauJrStates[4] : 0x1cc18;
+    GameStateItemPool _itemPool : 0x1e308;
+    Seeds _seeds : 0x1e660;
+    uint32_t _checksum : 0x1fce0;
+    uint32_t _rerunChecksum : 0x1fce4;
+    std_string _cloudGameStatePath : 0x1fd30;
+    std_string _cloudRerunStatePath : 0x1fd48;
+    GameStateIO* _saveFile : 0x1fd60;
+} : 0x1fd64;

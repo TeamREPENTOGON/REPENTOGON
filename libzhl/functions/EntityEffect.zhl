@@ -1,4 +1,4 @@
-"558bec81ecc0010000":
+"558bec81ecb8010000":
 __thiscall void Entity_Effect::Render(Vector *offset);
 
 "558bec83e4f856578bfa":
@@ -18,7 +18,7 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 		skip; // PreUpdate
 		
         override
-        "558bec6aff68????????64a1????????50b850500000":
+        "558bec6aff68????????64a1????????50b8e0560000":
         void Update();
 		
 		skip; // Interpolate
@@ -45,9 +45,9 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 
     };
 
-	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
-	int _state : 0x3a0;
-	int _timeout : 0x3ac;
-	int _lifespan : 0x3b0;
+	BitSet128 _varData : 0x418; // this can be any data type, the game uses it arbitrarily based on effect variant
+	int _state : 0x448;
+	int _timeout : 0x454;
+	int _lifespan : 0x458;
 
-} : 0x3e0;
+} : 0x488;

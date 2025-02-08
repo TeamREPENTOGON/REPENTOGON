@@ -13,7 +13,7 @@ local BestiaryMenuRep = {
 }
 
 local font = Font()
-font:Load("font/teammeatfont10.fnt")
+font:Load("font/teammeatex/teammeatex10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local MaxPollCIdx = 3
@@ -41,14 +41,14 @@ end
 
 local function LoadAssets()
     if #BestiaryMenuRep.BestiarySheetSprite:GetDefaultAnimation() <= 0 then
-        BestiaryMenuRep.BestiarySheetSprite:LoadRGON("gfx/ui/bestiary_tabs.anm2", true)
+        BestiaryMenuRep.BestiarySheetSprite:Load("gfx/ui/bestiary_tabs.anm2", true)
         BestiaryMenuRep.BestiarySheetSprite:SetFrame("Tabs", 0)
         
         BestiaryMenuRep.ArrowSprite:Load("gfx/ui/leaderboardmenu.anm2", true)
         BestiaryMenuRep.ArrowSprite:SetFrame("Idle", 0)
     end
     if not font:IsLoaded() then
-        font:Load("font/teammeatfont10.fnt")
+        font:Load("font/teammeatex/teammeatex10.fnt")
     end
     if font:IsLoaded() and #(BestiaryMenuRep.BestiarySheetSprite:GetDefaultAnimation()) > 0 then
         Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)

@@ -1,4 +1,4 @@
-"558bec83ec3453568bf157":
+"558bec83e4f883ec5453568bf1":
 __thiscall void Menu_Challenge::Render();
 
 struct Menu_Challenge depends (ANM2) { 

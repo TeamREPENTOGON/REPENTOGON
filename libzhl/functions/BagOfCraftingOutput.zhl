@@ -1,0 +1,4 @@
+struct BagOfCraftingOutput {
+	int collectibleType : 0x0;
+	int itemPoolType : 0x4;
+} : 0x8;

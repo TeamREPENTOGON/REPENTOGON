@@ -12,16 +12,16 @@
 #include "AchievementsStuff.h"
 #include "CardsExtras.h"
 
-std::vector<ItemConfig_Card_EX> cardList_EX;
-CardPool cardPools[NUM_CARDPOOLS];
+std::vector<ItemConfig_Card_EX> CardsEX::g_CardConfigsEX;
+CardPool CardsEX::g_CardPools[NUM_CARDPOOLS];
 
-inline void PrintLuaError(std::string errorMessage)
+static inline void print_lua_error(std::string errorMessage)
 {
     g_Game->GetConsole()->PrintError(errorMessage);
     KAGE::LogMessage(0, (errorMessage + "\n").c_str());
 }
 
-inline const char* GetTranslatedPocketItemName(const std::string& rawName)
+static inline const char* get_localized_pocket_item_name(const std::string& rawName)
 {
     if (rawName.find("#") == std::string::npos)
     {
@@ -49,7 +49,7 @@ CardChance::CardChance(float chance)
     this->isFloat = true;
 }
 
-bool CardChance::Check(RNG& rng)
+bool CardChance::Check(RNG& rng) const
 {
     if (this->IsZero())
     {
@@ -66,7 +66,7 @@ bool CardChance::Check(RNG& rng)
     }
 }
 
-bool CardChance::IsGuaranteed()
+bool CardChance::IsGuaranteed() const
 {
     if (this->isFloat)
     {
@@ -75,9 +75,9 @@ bool CardChance::IsGuaranteed()
     return this->chance.intChance == 1;
 }
 
-inline bool IsCardAvailableEX(ItemConfig_Card* card)
+static inline bool is_card_available_ex(ItemConfig_Card* card)
 {
-    auto cardConfig_EX = Cards_EX::GetCardConfigEX(card);
+    auto cardConfig_EX = CardsEX::GetCardConfigEX(card);
 
     if (cardConfig_EX->hidden)
         return false;
@@ -90,8 +90,8 @@ inline bool IsCardAvailableEX(ItemConfig_Card* card)
         if (lua_pcall(L, 0, 1, 0) != LUA_OK)
         {
             std::stringstream err;
-            err << "Error whilst checking availability of card \"" << GetTranslatedPocketItemName(card->name) << "\": " << lua_tostring(L, -1);
-            PrintLuaError(err.str());
+            err << "Error whilst checking availability of card \"" << get_localized_pocket_item_name(card->name) << "\": " << lua_tostring(L, -1);
+            print_lua_error(err.str());
             lua_pop(L, 1);
         }
         else
@@ -182,7 +182,7 @@ void CardPool::BuildSpecialPool(bool allowNonCards)
 
 void CardPool::AddCard(ItemConfig_Card* cardConfig)
 {
-    auto cardConfig_EX = Cards_EX::GetCardConfigEX(cardConfig);
+    auto cardConfig_EX = CardsEX::GetCardConfigEX(cardConfig);
     this->cardList.push_back(PoolCard(cardConfig->id, cardConfig_EX->weight));
     this->totalWeight += cardConfig_EX->weight;
     this->invalidateVanillaMethod |= cardConfig_EX->invalidateVanillaMethod;
@@ -195,7 +195,7 @@ void CardPool::AddCard(int cardId, float weight)
     this->invalidateVanillaMethod |= weight != 1.0f;
 }
 
-int CardPool::PickCard(RNG& rng)
+int CardPool::PickCard(RNG& rng) const
 {
     if (this->totalWeight == 0.0f) // indirectly handles the case where size == 0
     {
@@ -222,13 +222,13 @@ int CardPool::PickCard(RNG& rng)
     return CARD_NULL;
 }
 
-namespace Cards_EX
+namespace CardsEX
 {
-    inline int PickCard(RNG& rng, CardChance specialChance, CardChance runeChance, CardChance suitChance, bool onlyRunes, bool allowNonCards)
+    static inline int pick_card(RNG& rng, CardChance specialChance, CardChance runeChance, CardChance suitChance, bool onlyRunes, bool allowNonCards)
     {
         if (specialChance.Check(rng))
         {
-            CardPool& specialPool = cardPools[CARDPOOL_SPECIAL];
+            CardPool& specialPool = g_CardPools[CARDPOOL_SPECIAL];
             specialPool.BuildSpecialPool(allowNonCards);
             int specialCard = specialPool.PickCard(rng);
 
@@ -240,7 +240,7 @@ namespace Cards_EX
 
         if (runeChance.Check(rng))
         {
-            CardPool& runePool = cardPools[CARDPOOL_RUNE];
+            CardPool& runePool = g_CardPools[CARDPOOL_RUNE];
             runePool.BuildPool();
 
             if ((runePool.cardList.size() != 0 || onlyRunes))
@@ -266,7 +266,7 @@ namespace Cards_EX
 
         if (suitChance.Check(rng))
         {
-            CardPool& suitPool = cardPools[CARDPOOL_SUIT];
+            CardPool& suitPool = g_CardPools[CARDPOOL_SUIT];
             suitPool.BuildPool();
             int suitCard = suitPool.PickCard(rng);
 
@@ -276,12 +276,12 @@ namespace Cards_EX
             }
         }
 
-        CardPool& tarotPool = cardPools[CARDPOOL_TAROT];
+        CardPool& tarotPool = g_CardPools[CARDPOOL_TAROT];
         tarotPool.BuildPool();
         return tarotPool.PickCard(rng);
     }
 
-    int GetCard(int seed, CardChance specialChance, CardChance runeChance, CardChance suitChance, bool onlyRunes, bool allowNonCards)
+    static int get_card(int seed, CardChance specialChance, CardChance runeChance, CardChance suitChance, bool onlyRunes, bool allowNonCards)
     {
         const auto itemConfig = g_Manager->GetItemConfig();
         const auto cardList = itemConfig->GetCards();
@@ -289,7 +289,7 @@ namespace Cards_EX
         RNG rng = RNG();
         rng.SetSeed(seed, 21);
 
-        int pickedCard = PickCard(rng, specialChance, runeChance, suitChance, onlyRunes, allowNonCards);
+        int pickedCard = pick_card(rng, specialChance, runeChance, suitChance, onlyRunes, allowNonCards);
 
         if (pickedCard >= CARD_FOOL && pickedCard <= CARD_WORLD) // IsMajorArcanaCard
         {
@@ -322,7 +322,7 @@ namespace Cards_EX
 
 const char* xmlParseErrorPrefix = "[Pocket Items] Error whilst Parsing Card XML";
 
-inline void TryAddCardToPool(ItemConfig_Card* cardConfig)
+static inline void try_add_card_to_pool(ItemConfig_Card* cardConfig)
 {
     if (cardConfig->id == CARD_NULL || cardConfig->id == RUNE_SHARD)
     {
@@ -332,24 +332,24 @@ inline void TryAddCardToPool(ItemConfig_Card* cardConfig)
     switch (cardConfig->cardType)
     {
     case CARDTYPE_TAROT:
-        cardPools[CARDPOOL_TAROT].AddCandidate(cardConfig->id);
+        CardsEX::g_CardPools[CARDPOOL_TAROT].AddCandidate(cardConfig->id);
         break;
     case CARDTYPE_SUIT:
-        cardPools[CARDPOOL_SUIT].AddCandidate(cardConfig->id);
+        CardsEX::g_CardPools[CARDPOOL_SUIT].AddCandidate(cardConfig->id);
         break;
     case CARDTYPE_RUNE:
-        cardPools[CARDPOOL_RUNE].AddCandidate(cardConfig->id);
+        CardsEX::g_CardPools[CARDPOOL_RUNE].AddCandidate(cardConfig->id);
         break;
     case CARDTYPE_SPECIAL:
     case CARDTYPE_OBJECT:
-        cardPools[CARDPOOL_SPECIAL].AddCandidate(cardConfig->id);
+        CardsEX::g_CardPools[CARDPOOL_SPECIAL].AddCandidate(cardConfig->id);
         break;
     default:
         return;
     }
 }
 
-inline void ParseCardNode(int cardId, int nodeId)
+static inline void parse_card_node(int cardId, int nodeId)
 {
     XMLCard* xmlCardData = XMLStuff.CardData;
     if (xmlCardData->nodes.find(nodeId) == xmlCardData->nodes.end())
@@ -358,7 +358,7 @@ inline void ParseCardNode(int cardId, int nodeId)
     }
 
     const XMLAttributes attributes = XMLStuff.CardData->nodes.at(nodeId);
-    auto& cardConfig_EX = cardList_EX[cardId];
+    auto& cardConfig_EX = CardsEX::g_CardConfigsEX[cardId];
 
     if (attributes.find("weight") != attributes.end())
     {
@@ -378,10 +378,10 @@ inline void ParseCardNode(int cardId, int nodeId)
     }
 
     cardConfig_EX.hidden = (attributes.find("hidden") != attributes.end()) && (attributes.at("hidden") == "true");
-    TryAddCardToPool(g_Manager->GetItemConfig()->GetCard(cardId));
+    try_add_card_to_pool(g_Manager->GetItemConfig()->GetCard(cardId));
 }
 
-inline void ParseBaseGameCards()
+static inline void parse_base_game_cards()
 {
     for (int i = 0; i < NUM_CARDS; i++)
     {
@@ -390,11 +390,11 @@ inline void ParseBaseGameCards()
             continue;
         }
 
-        ParseCardNode(i, i);
+        parse_card_node(i, i);
     }
 }
 
-inline void ParseModCards(int startCardId, ModEntry* modEntry)
+static inline void parse_mod_cards(int startCardId, ModEntry* modEntry)
 {
     XMLCard* xmlCardData = XMLStuff.CardData;
     std::string modId = modEntry->GetId();
@@ -409,7 +409,7 @@ inline void ParseModCards(int startCardId, ModEntry* modEntry)
     
     for (int i = startCardId, j = startNodeId; i < (int)g_Manager->GetItemConfig()->GetCards()->size() && j <= xmlCardData->maxid; i++, j++)
     {
-        ParseCardNode(i, j);
+        parse_card_node(i, j);
     }
 }
 
@@ -419,41 +419,41 @@ HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlPath, ModEntry* modEntry) -> 
 
     super(xmlPath, modEntry);
 
-    cardList_EX.resize(g_Manager->GetItemConfig()->GetCards()->size());
+    CardsEX::g_CardConfigsEX.resize(g_Manager->GetItemConfig()->GetCards()->size());
     if (modEntry == nullptr)
     {
-        ParseBaseGameCards();
+        parse_base_game_cards();
     }
     else
     {
-        ParseModCards(startCardId, modEntry);
+        parse_mod_cards(startCardId, modEntry);
     }    
 }
 
 HOOK_METHOD(ItemConfig, Unload, () -> void)
 {
     super();
-    cardList_EX.clear();
+    CardsEX::g_CardConfigsEX.clear();
     for (size_t i = CARDPOOL_TAROT; i < NUM_CARDPOOLS; i++)
     {
-        cardPools[i].candidateCards.clear();
+        CardsEX::g_CardPools[i].candidateCards.clear();
     }
 }
 
 HOOK_METHOD(ItemConfig_Card, IsAvailable, () -> bool)
 {
-    return super() && IsCardAvailableEX(this);
+    return super() && is_card_available_ex(this);
 }
 
 HOOK_STATIC(ItemPool, GetCardEx, (int seed, int specialChance, int runeChance, int suitChance, bool allowNonCards) -> int, __stdcall)
 {
     bool onlyRunes = runeChance == -1;
     runeChance = runeChance == -1 ? 1 : runeChance;
-    return Cards_EX::GetCard(seed, specialChance, runeChance, suitChance, onlyRunes, allowNonCards);
+    return CardsEX::get_card(seed, specialChance, runeChance, suitChance, onlyRunes, allowNonCards);
 }
 
 // Edit the vanilla function so that when OnlyRunes is set to true the RuneChance is set to -1 instead of 1
-void ASMPatchGetCard()
+static void asm_patch_get_card()
 {
     SigScan scanner("8d4f??eb??33c9");
     scanner.Scan();
@@ -468,5 +468,5 @@ void ASMPatchGetCard()
 
 void ASMPatchesForCardsExtras()
 {
-    ASMPatchGetCard();
+    asm_patch_get_card();
 }

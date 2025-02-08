@@ -1,13 +1,13 @@
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b804010100":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b80c010100":
 __thiscall void Cutscene::Init(char *xmlresourcespath);
 
-"558bec83ec208b15":
+"558bec83ec205356578b7d??8bf1":
 __thiscall void Cutscene::Show(int cutsceneid);
 
-"c701000000008bc1c741??00000000c741??00000000c741??0f000000c741??00000000c741??00000000c741??00000000":
+"568bf168000000ff":
 __thiscall CutsceneEntry* CutsceneEntry::Constructor();
 
-"56578bf933f68b47??8b57??2bc2c1f80285c074??8b0c":
+"56578bf933f68b47??8b57??2bc2c1f802":
 __thiscall void CutsceneEntry::Destructor();
 
 "568bf15733ffc746??ffffffff":
@@ -17,9 +17,10 @@ struct CutsceneEntry {
     int  _id : 0x0;
     std_string _name : 0x4;
     bool _isVideo : 0x45;
-} : 0x48;
+} : 0x4C;
+
 struct Cutscene depends (Vector, CutsceneEntry) {
     int _state : 0x0;
     CutsceneEntry _cutscenes[27] : 0x4;
-    int _queuedCutscene : 0x79c;
-} : 0x7b0;
+    int _queuedCutscene : 0x808;
+} : 0x81c;

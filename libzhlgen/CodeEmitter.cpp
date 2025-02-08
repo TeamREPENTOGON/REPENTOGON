@@ -1,4 +1,18 @@
 #include "CodeEmitter.h"
+#include "ParserCore.h"
+
+#include <fstream>
+#include <iostream>
+
+static Logger parserLogger(LOG_INFO, "ZHL Generator", { 
+    new StdoutLogOutput(),
+    new StderrLogOutput(),
+    new FileLogOutput("libzhlgen.log", "w")
+});
+
+Logger* ParserLogger() {
+    return &parserLogger;
+}
 
 CodeEmitter::TypeEmitter::TypeEmitter(CodeEmitter* emitter) : _emitter(emitter) {
 
@@ -9,19 +23,32 @@ void CodeEmitter::TypeEmitter::operator()(T const& t) {
     _emitter->EmitType(t);
 }
 
-CodeEmitter::CodeEmitter(bool test) {
+CodeEmitter::TypeGenerator::TypeGenerator(CodeEmitter* emitter) : _emitter(emitter) {
+
+}
+
+template<typename T>
+std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
+    return _emitter->GenerateType(t);
+}
+
+CodeEmitter::CodeEmitter(TypeMap* types, bool test) : _types(types) {
     if (test) {
         _decls.open("IsaacRepentance.h");
         _impl.open("IsaacRepentance.cpp");
+        _json.open("hooks.json");
     }
     else {
         _decls.open("../include/IsaacRepentance.h");
         _impl.open("../libzhl/IsaacRepentance.cpp");
+        _json.open("../include/hooks.json");
     }
 
 }
 
-void CodeEmitter::ProcessZHLFiles(fs::path const& base) {
+bool CodeEmitter::ProcessZHLFiles(fs::path const& base) {
+    bool ok = true;
+
 	for (fs::directory_entry const& entry : fs::directory_iterator(base)) {
 		//std::cout << "File " << entry.path() << std::endl;
 		if (!entry.is_regular_file())
@@ -31,15 +58,19 @@ void CodeEmitter::ProcessZHLFiles(fs::path const& base) {
 		if (entry.path().extension() != std::string(".zhl"))
 			continue;
 
-		ProcessFile(entry.path());
+        if (!ProcessFile(entry.path())) {
+            ok = false;
+        }
 	}
+
+    return ok;
 }
 
-void CodeEmitter::ProcessFile(fs::path const& file) {
+bool CodeEmitter::ProcessFile(fs::path const& file) {
     std::ifstream stream(file);
 
     if (!stream.is_open()) {
-        return;
+        return false;
     }
 
     // std::cout << "Visiting " << path << std::endl;
@@ -51,28 +82,41 @@ void CodeEmitter::ProcessFile(fs::path const& file) {
     antlr4::tree::ParseTree* tree = parser.zhl();
 
     if (lexer.getNumberOfSyntaxErrors() != 0 || parser.getNumberOfSyntaxErrors() != 0) {
-        // std::cerr << "Error while parsing " << file << std::endl;
-        // throw std::runtime_error("Parse error");
+        if constexpr (std::is_same_v<char, fs::path::value_type>) {
+            ParserLogger()->Fatal("Errors encountered while parsing %s\n", file.c_str());
+        } else if constexpr (std::is_same_v<wchar_t, fs::path::value_type>) {
+            ParserLogger()->Fatal("Errors encountered while parsing %ls\n", file.c_str());
+        } else {
+            ParserLogger()->Fatal("Errors encountered while parsing input\n");
+        }
 
-        std::ostringstream str;
-        str << "Error while parsing " << file << std::endl;
-        std::cerr << str.str() << std::endl;
-        ErrorsHolder::ThrowOrLog(str);
-        return;
+        return false;
     }
-    Parser p2(&_global, &_types, file.string());
-    p2.visit(tree);
+
+    Parser p2(&_global, _types, file.string());
+    bool result = std::any_cast<bool>(p2.visit(tree));
+    
+    if (!result) {
+        if constexpr (std::is_same_v<char, fs::path::value_type>) {
+            ParserLogger()->Fatal("Errors encountered while visting %s\n", file.c_str());
+        } else if constexpr (std::is_same_v<wchar_t, fs::path::value_type>) {
+            ParserLogger()->Fatal("Errors encountered while visting %ls\n", file.c_str());
+        } else {
+            ParserLogger()->Fatal("Errors encountered while visiting input\n");
+        }
+    }
+
+    return result;
 }
 
 void CodeEmitter::Emit() {
-    CheckDependencies();
-    CheckVTables();
-
-    EmitDecl();
     EmitGlobalPrologue();
     EmitImplPrologue();
+    EmitJsonPrologue();
 
     EmitForwardDecl();
+
+    EmitDecl();
 
     for (GenericCode const& code : _global._generic) {
         Emit(code);
@@ -83,9 +127,9 @@ void CodeEmitter::Emit() {
         Emit(sig);
     }
 
-    for (auto const& [_, type] : _types) {
-        if (type.IsStruct() && !type._pending) {
-            Emit(type.GetStruct());
+    for (auto const& [_, type] : *_types) {
+        if (type->IsStruct() && !type->_pending) {
+            Emit(type->GetStruct());
         }
     }
 
@@ -97,37 +141,72 @@ void CodeEmitter::Emit() {
     for (auto const& [name, _] : _externals) {
         EmitNamespace(name);
     }
+
+    EmitJsonEpilogue();
 }
 
 void CodeEmitter::EmitForwardDecl() {
-    for (auto const& [_, type] : _types) {
-        if (type.IsStruct() && !type._pending) {
+    EmitDecl();
+    for (auto const& [_, type] : *_types) {
+        if (type->IsStruct() && !type->_pending) {
             Emit("struct ");
-            Emit(type.GetStruct()._name);
+            Emit(type->GetStruct()._name);
             Emit(";");
             EmitNL();
         }
     }
 }
 
-void CodeEmitter::Emit(Type const& type) {
+void CodeEmitter::EmitJsonPrologue() {
+    EmitJson();
+    Emit("[\n");
+}
+
+void CodeEmitter::EmitJsonEpilogue() {
+    EmitJson();
+    Emit("\t{ \"function\": \"\", \"hook\": \"no\" }\n");
+    Emit("]");
+}
+
+void CodeEmitter::EmitJson(Function const& fn, std::string const& internalName,
+    std::string const& fullName) {
+    EmitJson();
+    Emit("\t{ \"function\": \"");
+    Emit(internalName);
+    Emit("\", \"fullName\": \""); 
+    Emit(fullName);
+    Emit("\", \"hook\": ");
+    if (fn.CanHook()) {
+        Emit("\"yes\"");
+    } else {
+        Emit("\"no\"");
+    }
+    Emit(" },\n");
+}
+
+std::string CodeEmitter::GenerateType(Type const& type) {
+    std::string result = "";
+
     if (type._synonym) {
-        Emit(*type._synonym);
-        return;
+        return GenerateType(*type._synonym);
     }
 
     if (type._base) {
-        Emit(*type._base);
+        result = GenerateType(*type._base);
         if (type._const) {
-            Emit(" const");
+            result += " const";
+        } else if (type.IsPointer()) {
+            result += GenerateType(type._pointerDecl.front());
         }
-        else if (type.IsPointer()) {
-            Emit(type._pointerDecl.front());
-        }
+    } else {
+        result = std::visit(TypeGenerator(this), type._value);
     }
-    else {
-        std::visit(TypeEmitter(this), type._value);
-    }
+
+    return result;
+}
+
+void CodeEmitter::Emit(Type const& type) {
+    Emit(GenerateType(type));
 }
 
 void CodeEmitter::Emit(Struct const& s) {
@@ -160,11 +239,9 @@ void CodeEmitter::Emit(Struct const& s) {
     EmitNL();
     IncrDepth();
 
-    /* for (Variable const& var : s._namespace._fields) {
+    for (Variable const& var : s._namespace._fields) {
         Emit(var);
-    } */
-
-    Emit(s._namespace._fields);
+    }
 
     for (Signature const& sig : s._namespace._signatures) {
         Emit(sig, false);
@@ -185,11 +262,9 @@ void CodeEmitter::Emit(Struct const& s) {
 
     DecrDepth();
     Emit("};");
-    if (s._size) {
-        std::ostringstream size;
-        size << " // 0x" << std::hex << *s._size;
-        Emit(size.str());
-    }
+    std::ostringstream size;
+    size << " // 0x" << std::hex << s.size();
+    Emit(size.str());
     EmitNL();
     EmitNL();
 
@@ -199,192 +274,125 @@ void CodeEmitter::Emit(Struct const& s) {
     _currentStructure = nullptr;
 }
 
-void CodeEmitter::Emit(std::vector<Variable> const& vars) {
-    // Build a set containing the Variables ordered by offset
-    std::set<Variable> attributes;
-    auto iter = std::inserter(attributes, attributes.begin());
-    std::copy(vars.begin(), vars.end(), iter);
-
-    int pad = 0;
-    size_t offset = 0;
-
-    // The starting offset of the structure is located after all parent
-    // structures in memory.
-    for (auto const& [parent, vis] : _currentStructure->_parents) {
-        Struct const& st = parent->GetStruct();
-        if (!st._size) {
-            std::ostringstream err;
-            err << "[FATAL] Class " << _currentStructure->_name << " derives from " << st._name <<
-                " that does not specify a size. Impossible to place fields in the structure." << std::endl;
-            ErrorsHolder::ThrowOrLog(err);
-            continue;
-        }
-
-        offset += *st._size;
-    }
-
-    for (Variable const& var : attributes) {
-        // Mandatory for class attributes
-        size_t varOffset = *var._offset;
-        if (varOffset != offset) {
-            if (varOffset < offset) {
-                std::ostringstream err;
-                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
-                    ". Field " << var._name << " at offset 0x" << std::hex << varOffset << " overlaps with a previous field" << std::endl;
-                ErrorsHolder::ThrowOrLog(err);
-                continue;
-            }
-            else {
-                // Not necessarily fatal sanity check
-                if (_currentStructure->_size) {
-                    if (varOffset >= *_currentStructure->_size) {
-                        std::ostringstream err;
-                        err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
-                            ". Field " << var._name << " at offset 0x" << std::hex << varOffset << " is outside the structure " << std::endl;
-                        ErrorsHolder::ThrowOrLog(err);
-                        continue;
-                    }
-                }
-                
-                // Emit padding
-                std::ostringstream offsetStr;
-                offsetStr << "char pad" << pad << "[0x" << std::hex << varOffset - offset << "]; // 0x" << offset;
-                EmitTab();
-                Emit(offsetStr.str());
-                EmitNL();
-
-                ++pad;
-                offset = varOffset;
-            }
-        }
-
-        size_t align = var._type->alignment();
-        if (align) {
-            if (varOffset % align != 0) {
-                std::ostringstream err;
-                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
-                    ". Field " << var._name << " with alignment constraint " << align << " positioned at offset 0x" <<
-                    std::hex << varOffset << " is misaligned" << std::endl;
-                ErrorsHolder::ThrowOrLog(err);
-                continue;
-            }
-        }
-        else {
-            std::cerr << "[WARN] Unable to compute alignment of class " << var._type->_name << std::endl;
-        }
-        Emit(var);
-        offset += var._type->size();
-    }
-
-    if (_currentStructure->_size) {
-        if (offset < *_currentStructure->_size) {
-            std::ostringstream offsetStr;
-            offsetStr << "char pad" << pad << "[0x" << std::hex << *_currentStructure->_size - offset << "]; // 0x" << std::hex << offset;
-            EmitTab();
-            Emit(offsetStr.str());
-            EmitNL();
-        }
-        else {
-            if (offset > *_currentStructure->_size) {
-                std::ostringstream err;
-                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
-                    ". Last field causes the size of the struct to exceed manually indicated size" << std::endl;
-                ErrorsHolder::ThrowOrLog(err);
-                return;
-            }
-        }
-    }
-}
-
 void CodeEmitter::Dump() {
     std::set<std::string> pending;
-    for (auto const& [name, type] : _types) {
-        std::cout << name << " => " << type.ToString(true) << " (size = ";
+    ParserLogger()->Debug("CodeEmitter: Dumping TypeMap\n");
+    for (auto const& [name, type] : *_types) {
+        std::ostringstream stream;
+        stream << name << " => " << type->ToString(true) << " (size = ";
         try {
-            std::cout << type.size();
+            stream << type->size();
         }
         catch (std::exception&) {
-            std::cout << " ERROR";
+            stream << " ERROR";
         }
 
-        std::cout << ")" << std::endl;
+        stream << ")" << std::endl;
 
-        if (!type.IsResolved()) {
-            if (type.IsEmpty()) {
-                std::cout << "EMPTY TYPE" << std::endl;
+        if (!type->IsResolved()) {
+            if (type->IsEmpty()) {
+                stream << "EMPTY TYPE" << std::endl;
             }
             else {
-                pending.insert(std::get<std::string>(type._value));
+                pending.insert(std::get<std::string>(type->_value));
             }
         }
+
+        ParserLogger()->Debug("%s", stream.str().c_str());
     }
 
-    std::cout << "UNRESOLVED TYPES:" << std::endl;
+    std::ostringstream stream;
+    stream << "UNRESOLVED TYPES: ";
     for (std::string const& s : pending) {
-        std::cout << s << std::endl;
+        stream << s << " ";
     }
+    stream << std::endl;
+    ParserLogger()->Debug("%s", stream.str().c_str());
 }
 
-void CodeEmitter::EmitType(BasicType const& t) {
+std::string CodeEmitter::GenerateType(BasicType const& t) {
+    std::string result;
     if (t._sign) {
-        Emit(SignednessToString(*t._sign));
-        Emit(" ");
+        result += SignednessToString(*t._sign) + " ";
     }
 
     if (t._length) {
-        Emit(LengthToString(*t._length));
-        Emit(" ");
+        result += LengthToString(*t._length) + " ";
     }
 
-    Emit(BasicTypeToString(t._type));
+    result += BasicTypeToString(t._type);
+    return result;
+}
+
+void CodeEmitter::EmitType(BasicType const& t) {
+    Emit(GenerateType(t));
+}
+
+std::string CodeEmitter::GenerateType(Struct const& s) {
+    std::string result = s._name;
+    
+    if (s._template) {
+        result += "<";
+
+        for (size_t i = 0; i < s._templateParams.size(); ++i) {
+            result += GenerateType(*s._templateParams[i]);
+            if (i != s._templateParams.size() - 1) {
+                result += ", ";
+            }
+        }
+        result += ">";
+    }
+
+    return result;
 }
 
 void CodeEmitter::EmitType(Struct const& s) {
-    Emit(s._name);
-
-    if (s._template) {
-        Emit("<");
-        for (size_t i = 0; i < s._templateParams.size(); ++i) {
-            Emit(*s._templateParams[i]);
-            if (i != s._templateParams.size() - 1) {
-                Emit(", ");
-            }
-        }
-        Emit(">");
-    }
+    Emit(GenerateType(s));
 }
 
-void CodeEmitter::EmitType(FunctionPtr* ptr) {
+std::string CodeEmitter::GenerateType(FunctionPtr* ptr) {
+    std::string result = "";
     if (_variableContext) {
-        Emit(*ptr->_ret);
-        Emit(" (");
+        result += GenerateType(*ptr->_ret) + " (";
 
         if (ptr->_convention) {
-            Emit("");
+            result += "";   // TODO: why did I write that already ? Shouldn't I
+                            // be emitting the calling convention here ?
         }
 
         if (ptr->_scope) {
-            Emit(*ptr->_scope);
-            Emit("::");
+            result += GenerateType(*ptr->_scope) + "::";
         }
 
-        Emit("*");
-        Emit(_variableContext->_name);
-        Emit(")(");
+        result += "*" + _variableContext->_name + ")(";
 
         for (size_t i = 0; i < ptr->_parameters.size(); ++i) {
-            Emit(*(ptr->_parameters[i]));
+            result += GenerateType(*(ptr->_parameters[i]));
             if (i != ptr->_parameters.size()) {
-                Emit(", ");
+                result += ", ";
             }
         }
 
-        Emit(")");
+        result += ")";
     }
+
+    return result;
+}
+
+void CodeEmitter::EmitType(FunctionPtr* ptr) {
+    Emit(GenerateType(ptr));
+}
+
+std::string CodeEmitter::GenerateType(std::string const& t) {
+    return t;
 }
 
 void CodeEmitter::EmitType(std::string const& t) {
     Emit(t);
+}
+
+std::string CodeEmitter::GenerateType(EmptyType const&) {
+    throw std::runtime_error("[FATAL] Attempting to generate empty type");
 }
 
 void CodeEmitter::EmitType(EmptyType const&) {
@@ -411,6 +419,10 @@ void CodeEmitter::EmitDecl() {
 
 void CodeEmitter::EmitImpl() {
     _emitContext = &_impl;
+}
+
+void CodeEmitter::EmitJson() {
+    _emitContext = &_json;
 }
 
 void CodeEmitter::IncrDepth() {
@@ -461,206 +473,6 @@ bool CodeEmitter::InProcessing(Struct const& s) const {
     return _processingStructures.find(s._name) != _processingStructures.end();
 }
 
-void CodeEmitter::AssertReady(Type const* t) {
-    if (t->_pending && t->_name != "std") {
-        std::ostringstream str;
-        str << "[FATAL] Structure " << std::get<Struct>(t->_value)._name << " has not been properly defined" << std::endl;
-        throw std::runtime_error(str.str());
-    }
-}
-
-void CodeEmitter::CheckVTables() {
-    for (auto const& [_, type] : _types) {
-        if (!type.IsStruct()) {
-            continue;
-        }
-
-        Struct const& s = type.GetStruct();
-        CheckVTableInternalConsistency(s);
-        
-        std::set<std::string> seen;
-        std::vector<Struct const*> parents;
-        std::stack<Struct const*> parentsBuffer;
-
-        for (auto const& [parent, _] : s._parents) {
-            Struct const& parentStruct = parent->GetStruct();
-            if (seen.find(parentStruct._name) != seen.end()) {
-                continue;
-            }
-
-            parentsBuffer.push(&parentStruct);
-            seen.insert(parentStruct._name);
-            // CheckVTableHierarchyConsistency(s, parent->GetStruct());
-        }
-
-        while (!parentsBuffer.empty()) {
-            Struct const* parent = parentsBuffer.top();
-            parentsBuffer.pop();
-
-            for (auto const& [parentParent, _] : parent->_parents) {
-                Struct const& parentStruct = parentParent->GetStruct();
-                if (seen.find(parentStruct._name) != seen.end()) {
-                    continue;
-                }
-
-                parentsBuffer.push(&parentStruct);
-            }
-
-            parents.push_back(parent);
-        }
-
-        CheckVTableHierarchyConsistency(s, parents);
-    }
-}
-
-void CodeEmitter::CheckVTableInternalConsistency(Struct const& s) {
-    // Check that each function declared as override does not conflict with 
-    // a function not declared as override.
-
-    for (Signature const& sig : s._overridenVirtualFunctions) {
-        for (std::variant<Signature, Skip, Function> const& fn : s._virtualFunctions) {
-            Function const* function = GetFunction(fn);
-
-            if (function) {
-                if (function->_name == sig._function._name) {
-                    if (*function == sig._function) {
-                        std::ostringstream str;
-                        str << "[FATAL] In structure " << s._name << ", virtual function " << sig._function._name << " overrides itself" << std::endl;
-                        throw std::runtime_error(str.str());
-                    }
-                }
-            }
-        }
-    }
-}
-
-void CodeEmitter::CheckVTableHierarchyConsistency(Struct const& s, std::vector<Struct const*> const& parents) {
-    // Check that each function declared as override has an actual non overidden
-    // version somewhere.
-
-    for (Signature const& sig : s._overridenVirtualFunctions) {
-        bool found = false;
-        for (Struct const* parent : parents) {
-            for (std::variant<Signature, Skip, Function> const& fn : parent->_virtualFunctions) {
-                Function const* function = GetFunction(fn);
-                if (function) {
-                    if (*function == sig._function) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (found) {
-                break;
-            }
-        }
-
-        if (!found) {
-            std::ostringstream str;
-            str << "Structure " << s._name << " specified function " << sig._function._name << " as an override, but it doesn't override anything" << std::endl;
-            throw std::runtime_error(str.str());
-        }
-    }
-
-    // Check that each function declared as not override is not actually an override.
-    for (std::variant<Signature, Skip, Function> const& fun : s._virtualFunctions) {
-        if (std::holds_alternative<Skip>(fun)) {
-            continue;
-        }
-
-        Function const* source = GetFunction(fun);
-        std::optional<std::string> badOverride;
-
-        for (Struct const* parent : parents) {
-            for (std::variant<Signature, Skip, Function> const& other : parent->_virtualFunctions) {
-                Function const* function = GetFunction(other);
-                if (function) {
-                    if (*source == *function) {
-                        badOverride = parent->_name;
-                        break;
-                    }
-                }
-            }
-
-            if (badOverride) {
-                std::ostringstream str;
-                str << "Structure " << s._name << " specified function " << source->_name <<
-                    " as a non override, but it overrides its parent in class " << *badOverride << std::endl;
-                throw std::runtime_error(str.str());
-            }
-        }
-    }
-}
-
-void CodeEmitter::CheckDependencies() {
-    for (auto const& [_, type] : _types) {
-        if (!type.IsStruct()) {
-            continue;
-        }
-
-        CheckDependencies(type);
-    }
-}
-
-void CodeEmitter::CheckDependencies(Type const& t) {
-    Struct const& s = t.GetStruct();
-
-    // Assert dependencies have a definition
-    for (Type* t: s._deps) {
-        AssertReady(t);
-    }
-
-    // Assert parents have a definition
-    for (auto const& [type, _] : s._parents) {
-        AssertReady(type);
-    }
-
-    // Check fields
-    for (Variable const& v : s._namespace._fields) {
-        if (v._type->IsStruct() && !v._type->IsPointer()) {
-            AssertReady(v._type);
-
-            Struct const& var = v._type->GetStruct();
-
-            bool found = false;
-            for (Type* t : s._deps) {
-                Struct const& dep = t->GetStruct();
-                if (dep._name == var._name) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                std::stack<Type*> parents;
-                for (auto const& [type, _] : s._parents) {
-                    parents.push(type);
-                }
-
-                while (!parents.empty()) {
-                    Type* t = parents.top();
-                    parents.pop();
-
-                    if (t->GetStruct()._name == var._name) {
-                        found = true;
-                        break;
-                    }
-
-                    for (auto const& [type, _] : t->GetStruct()._parents) {
-                        parents.push(type);
-                    }
-                }
-            }
-
-            if (!found) {
-                _logger << ErrorLogger::warn << " Structure " << s._name << "'s field " << v._name << " has non pointer structure type " << v._type->GetStruct()._name << 
-                    " which is not specified in the dependency list, this may lead to compile errors" << ErrorLogger::endl << ErrorLogger::_end;
-            }
-        }
-    }
-}
-
 void CodeEmitter::Emit(Variable const& var) {
     _variableContext = &var;
 
@@ -674,7 +486,13 @@ void CodeEmitter::Emit(Variable const& var) {
 
     if (var._type->IsArray()) {
         Emit("[");
-        Emit(std::to_string(var._type->_arraySize));
+        if (var._name.substr(0, 3) != "pad") {
+            Emit(std::to_string(var._type->_arraySize));
+        } else {
+            std::ostringstream stream;
+            stream << "0x" << std::hex << var._type->_arraySize;
+            Emit(stream.str());
+        }
         Emit("]");
     }
 
@@ -789,24 +607,31 @@ void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
     }
 }
 
-void CodeEmitter::Emit(PointerDecl const& ptr) {
+std::string CodeEmitter::GenerateType(const PointerDecl& ptr) {
+    std::string result = "";
     switch (ptr._kind) {
     case LREF:
-        Emit(" &");
+        result = " &";
         break;
 
     case RREF:
-        Emit(" &&");
+        result = " &&";
         break;
 
     case POINTER:
-        Emit(" *");
+        result = " *";
         break;
     }
 
     if (ptr._const) {
-        Emit(" const");
+        result += " const";
     }
+
+    return result;
+}
+
+void CodeEmitter::Emit(PointerDecl const& ptr) {
+    Emit(GenerateType(ptr));
 }
 
 enum FunctionDefFlags {
@@ -858,6 +683,8 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
     // Function definition object
     if (!isPure) {
         if (!emittingPureVirtual) {
+            std::string internalName = "_fun" + std::to_string(_nEmittedFuns);
+
             EmitTab();
             Emit("static FunctionDefinition fn(\"");
             if (_currentStructure) {
@@ -865,6 +692,8 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
                 Emit("::");
             }
             Emit(fn._name);
+            Emit("\", \"");
+            Emit(internalName);
             Emit("\", ");
             EmitTypeID(fn);
             Emit(", \"");
@@ -874,9 +703,19 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
 
             Emit(", ");
             Emit(std::to_string(flags));
-            Emit(", &func);");
+            Emit(", &func, ");
+            if (fn.CanHook()) {
+                Emit("true");
+            } else {
+                Emit("false");
+            }
+            Emit("); ");
             EmitNL();
 
+            std::string fullName = GenerateFunctionPrototype(fn, true);
+            _fullNameToInternalName[fullName] = internalName;
+            EmitJson(fn, internalName, fullName);
+            EmitImpl();
         }
 
         // End namespace
@@ -1160,23 +999,20 @@ void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
 }
 
 void CodeEmitter::EmitGlobalPrologue() {
-    Emit("#pragma once");
+    EmitDecl();
+    Emit("#pragma once\n");
     EmitNL();
-    EmitNL();
-    Emit("#include \"libzhl.h\"");
-    EmitNL();
+    Emit("#include \"libzhl.h\"\n"
+        "#include <map>\n"
+        "#include <vector>\n");
     EmitNL();
 }
 
 void CodeEmitter::EmitImplPrologue() {
     EmitImpl();
-    Emit("#include \"HookSystem_private.h\"");
+    Emit("#include \"HookSystem_private.h\"\n");
+    Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
-    Emit("#include \"IsaacRepentance.h\"");
-    EmitNL();
-    EmitNL();
-
-    EmitDecl();
 }
 
 void CodeEmitter::BuildExternalNamespaces() {
@@ -1242,13 +1078,19 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     Emit(fn._namespace);
     Emit("::");
     Emit(fn._fn._name);
-    Emit("\", ");
+    Emit("\", \"\", "); // Empty internal name
     EmitTypeID(fn._fn);
     Emit(", ptr, args, ");
     Emit(std::to_string(fn._fn._params.size() + (hasImplicitOutput ? 1 : 0)));
     Emit(", ");
     Emit(std::to_string(GetFlags(fn._fn)));
-    Emit(", &func);");
+    Emit(", &func, ");
+    if (fn._fn.CanHook()) {
+        Emit("true");
+    } else {
+        Emit("false");
+    }
+    Emit("); ");
     EmitNL();
     DecrDepth();
     Emit("}");
@@ -1475,21 +1317,35 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
     Emit("typeid(");
-    Emit(*fn._ret);
-    Emit(" (");
+    EmitFunctionPrototype(fn, false);
+    Emit(")");
+}
+
+std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool includeName) {
+    std::string result = GenerateType(*fn._ret) + " (";
     if (_currentStructure && fn._kind == METHOD) {
-        Emit(_currentStructure->_name);
-        Emit("::");
+        result += _currentStructure->_name + "::";
     }
-    Emit("*)(");
+    if (includeName) {
+        result += fn._name;
+    } else {
+        result += "*";
+    }
+
+    result += ")(";
     for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
-        Emit(*param._type);
+        result += GenerateType(*param._type);
         if (i != fn._params.size() - 1) {
-            Emit(", ");
+            result += ", ";
         }
     }
-    Emit("))");
+    result += ")";
+    return result;
+}
+
+void CodeEmitter::EmitFunctionPrototype(Function const& fn, bool includeName) {
+    Emit(GenerateFunctionPrototype(fn, includeName));
 }
 
 uint32_t CodeEmitter::GetFlags(Function const& fn) const {
@@ -1511,18 +1367,6 @@ uint32_t CodeEmitter::GetFlags(Function const& fn) const {
     }
 
     return flags;
-}
-
-Function const* CodeEmitter::GetFunction(std::variant<Signature, Skip, Function> const& fn) {
-    if (std::holds_alternative<Signature>(fn)) {
-        return &(std::get<Signature>(fn)._function);
-    }
-    else if (std::holds_alternative<Function>(fn)) {
-        return &std::get<Function>(fn);
-    }
-    else {
-        return nullptr;
-    }
 }
 
 void CodeEmitter::EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize, bool comma) {

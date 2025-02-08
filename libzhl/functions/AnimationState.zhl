@@ -22,16 +22,16 @@ __thiscall void AnimationState::AdvanceLayerPosition(int layerID, float targetFr
 "558bec51568b75??0f28ca578bf9f30f114d??8b57??85d274??85f678??3b72??7c??68????????6a03e8????????8b57??83c408f30f104d??8b47??8b0c??8d3c??c1e6040372??85c978??6bd154":
 __thiscall void AnimationState::AdvanceNullLayerPosition(int nullLayerID, float targetFrame<xmm2>);
 
-"568bf1c746??00000000c746??00000000":
+"568bf1c746??00000000c746??00000000c746??00000000":
 __thiscall void AnimationState::Rewind();
 
 "558bec8b45??568bf1578946":
 __thiscall void AnimationState::Reset(AnimationState* right);
 
-"558bec568b75??578bf985f678??8b07":
+"558bec568b75??578bf985f678??8b073bb0????????7c??68????????6a03e8????????83c40885f6":
 __thiscall void AnimationState::SetLayerFrame(int layerID, int frame);
 
-struct AnimationState depends (AnimationData, ANM2) { {{
+struct AnimationState depends (AnimationData) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
     inline void SetFrame(const float frame) { this->_animFrame = frame; }
     inline bool IsPlaying() { return this->_isPlaying; }

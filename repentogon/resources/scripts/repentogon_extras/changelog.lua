@@ -282,11 +282,11 @@ REPENTOGON.Extras.ChangeLog = ChangeLog
 local curattempt=0
 function ChangeLog.LoadAssets()
     if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
-        Cl.ChangelogSprite:LoadRGON("gfx/ui/changelog.anm2", true)
+        Cl.ChangelogSprite:Load("gfx/ui/changelog.anm2", true)
         Cl.ChangelogSprite:Play("SwapOut")
         Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
 
-        Cl.NoteSprite:LoadRGON("gfx/ui/changelog_tab_paper.anm2", true)
+        Cl.NoteSprite:Load("gfx/ui/changelog_tab_paper.anm2", true)
         Cl.NoteSprite:Play("Idle")
         curattempt=curattempt+1
         if curattempt>5 then
@@ -296,7 +296,7 @@ function ChangeLog.LoadAssets()
         end
     end
     if not Cl.Font:IsLoaded() then
-        Cl.Font:Load("font/teammeatfont10.fnt")
+        Cl.Font:Load("font/teammeatex/teammeatex10.fnt")
     end
 
     if not Cl.VersionFont:IsLoaded() then

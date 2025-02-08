@@ -1,4 +1,4 @@
-"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??c707????????c747??00000000c747??00000000":
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??c707????????c747??00000000c747??00000000c747??00000000c745??00000000":
 __thiscall void Entity::constructor();
 
 "558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf980bf????????00":
@@ -18,7 +18,7 @@ __thiscall unsigned int Entity::ComputeStatusEffectDuration(int initial, EntityR
 "558bec83e4f883ec14568bf1837e??00":
 __thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
 
-"558bec83e4f883ec24568bf1837e7000":
+"558bec83e4f883ec24568bf1837e??00":
 __thiscall Capsule Entity::GetNullCapsule(const char* nullLayerName);
 
 "558bec83e4c081ecb4000000f30f1005":
@@ -27,19 +27,19 @@ __thiscall bool Entity::RenderShadowLayer(Vector *offset);
 "558becff05":
 static cleanup bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
-"558bec83e4f883ec088b45":
+"558bec83e4f883ec088b45??f30f1081":
 __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 
-"8b51??8d42??3ddd0300000f87????????8bc2":
+"a1????????8bd183b8????????027c??837a??0174??8b4a??8d41??3ddd03000077??81f9d8000000":
 __thiscall uint32_t Entity::GetHitListIndex();
 
-"558bec83e4f883ec5c53568b35":
+"558bec83e4f881ec9c000000a1????????33c4898424????????a1":
 static void Entity::DoGroundImpactEffects(Vector * pos, Vector * velocity, float strength<xmm3>);
 
-"558bec51568b75??f30f115d":
-__thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
+// "558bec51568b75??f30f115d":
+// __thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
 
-"558bec83e4f883ec088b81":
+"558bec83e4f883ec0c538b1d????????568b75":
 __thiscall bool Entity::IgnoreEffectFromFriendly(EntityRef* source);
 
 "558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a03":
@@ -48,7 +48,7 @@ __thiscall Entity_Effect * Entity::MakeBloodPoof(Vector * pos, ColorMod * color,
 "558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a01":
 __thiscall Entity_Effect * Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float size<xmm2>);
 
-"558bec83e4f881ec94000000f30f1005":
+"558bec83e4f881ec34010000a1????????33c4898424????????f30f1005":
 __thiscall void Entity::TeleportToRandomPosition(bool unused);
 
 "8b81????????85c074??83f80374??83f80174??83f80274??32c0":
@@ -56,29 +56,29 @@ __thiscall bool Entity::IsFlying();
 
 // Status effects
 
-"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
-__thiscall void Entity::AddBaited(const EntityRef& ref, int duration);
+"558bec83e4f883ec5ca1????????33c4894424??538b5d??565753":
+__thiscall void Entity::AddBaited(const EntityRef& ref, int duration, bool unused);
 
-"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
-__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
+"558bec83e4f883ec34538b5d??565753":
+__thiscall void Entity::AddBleeding(const EntityRef& ref, int duration, bool unused);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????57ff75":
 __thiscall void Entity::AddBrimstoneMark(const EntityRef& ref, int duration);
 
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????837e??01":
-__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage);
+__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
-"558bec83e4f883ec3ca1????????33c4894424??5356578bf98b4d":
-__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
+"558bec83e4f883ec4ca1????????33c4894424??5356578bf98b4d":
+__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
-__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBosses);
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
-"558bec83e4f883ec3ca1????????33c4894424??538b5d":
-__thiscall void Entity::AddFear(const EntityRef& ref, int duration);
+"558bec83e4f883ec34a1????????33c4894424??538b5d":
+__thiscall void Entity::AddFear(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
-"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57":
-__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration);
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bd0":
+__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f85156ff75??8bf1e8":
 __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
@@ -86,20 +86,20 @@ __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDir
 "558bec5156ff75":
 __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 
-"558bec83e4f883ec38a1????????33c4894424??56578b7d??8bf1":
-__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);
+"558bec83e4f883ec64a1????????33c4894424??53":
+__thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration, bool unused);
 
-"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bf8":
-__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration);
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bf8":
+__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
-__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage);
+__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec10568b75??5756":
-__thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
+__thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
-"558bec83e4f856578b7d??8bf1":
-__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color);
+"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color, bool ignoreBossStatusCooldown);
 
 "558bec83ec30a1????????33c58945??56578b7d??8bf157e8????????84c00f85????????576afd":
 __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
@@ -110,12 +110,15 @@ __thiscall Entity * Entity::GetStatusEffectTarget();
 "8b41??3d8d030000":
 __thiscall bool Entity::DoesEntityShareStatus();
 
+"558bec568b75??578bf98b4f??81f9e8030000":
+__thiscall WaterClipInfo* Entity::GetWaterClipInfo(WaterClipInfo* out);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
-	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
-	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
-	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
-	inline unsigned int* GetSubType() { return (unsigned int*)((char*)this + 0x30); }
+	inline int GetIndex() { return this->_index; }
+	inline unsigned int* GetType() { return &this->_type; }
+	inline unsigned int* GetVariant() { return &this->_variant; }
+	inline unsigned int* GetSubType() { return &this->_subtype; }
 	inline AnimationState* GetAnimationState() { return (AnimationState*)((char*)this + 0x6c); }
 	inline bool IsAnimationExist() {
 		int animSomething = *(int*)((char*)this + 0x70); //unknown type, so use int instead
@@ -126,30 +129,31 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		int overlayAnimSomething = *(int*)((char*)this + 0x90); //unknown type, so use int instead
 		return overlayAnimSomething != NULL;
 	}
-	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
-	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
+	inline float* GetShadowSize() { return &this->_shadowSize; }
+	inline bool* GetVisible() { return &this->_visible; }
 	inline bool* IsDead() { return &this->_dead; }
-	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
-	inline int* GetPauseTime() { return (int*)((char*)this + 0x274); }
-	inline Vector* GetPosition() { return (Vector*)((char*)this + 0x294); }
-	inline bool* IsInvincible() { return (bool*)((char*)this + 0x308); }
-	inline int* GetFireDamageCountdown() { return (int*)((char*)this + 0x208); }
-	inline int* GetDamageCountdown() { return (int*)((char*)this + 0x20c); }
+	inline int* GetBossStatusEffectCooldown() { return &this->_bossStatusEffectCooldown; }
+	inline int* GetPauseTime() { return &this->_pauseTimer; }
+	inline Vector* GetPosition() { return &this->_pos; }
+	inline bool* IsInvincible() { return &this->_isInvicible; }
+	inline int* GetFireDamageCountdown() { return &this->_fireDamageCountdown; }
+	inline int* GetDamageCountdown() { return &this->_damageCountdown; }
 
     template<typename T>
     inline T Downcast(void* target) {
         return (T)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, target, false); 
     }
 
-    inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
-	inline RNG GetDropRNG() { return *(RNG*)((char*)this + 0x334); }
+    inline Entity_NPC* GetMinecart() { return this->_minecart; }
 	
-	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
+	inline LuaBridgeRef** GetLuaRef() { return &this->_luaBridgeRef; }
 	
     inline Entity_NPC* ToNPC() { return Downcast<Entity_NPC*>(__ptr_EntityNPCRTTI); } 
     inline Entity_Player* ToPlayer() { return Downcast<Entity_Player*>(__ptr_EntityPlayerRTTI); }
     inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
+
+    Vector LIBZHL_API Entity::GetPredictedTargetPosition(Entity* target, float multiplier);
 	
 	Entity() 
 	{
@@ -161,67 +165,74 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _type : 0x28;
     unsigned int _variant : 0x2c;
     unsigned int _subtype : 0x30;
-	unsigned int _spawnerType : 0x34;
-	unsigned int _spawnerVariant: 0x38;
-	ANM2 _sprite : 0x3c;
-    unsigned int _shadowSize : 0x150;
-	unsigned long long _flags : 0x160;
-    bool _valid : 0x168; 
-    bool _visible : 0x169;
-	bool _exists : 0x16a;
-	bool _dead : 0x16b;
-	int _entityGridCollisionClass : 0x17c;
-	int _entityCollisionClass : 0x180;
-	// 0x184 is a boolean related to collisions.
-	unsigned short _entityExtraDataPtrUpperBytes : 0x186;
-	bool _collidesWithGrid : 0x188;
-	unsigned short _entityExtraDataPtrLowerBytes : 0x18a;
-	vector_ColorParams _colorParams : 0x1a4;
-	int _fireDamageCountdown : 0x208;
-	int _damageCountdown : 0x20c;
-	int _freezeCountdown : 0x210;
-	int _poisonCountdown : 0x214;
-	int _slowingCountdown : 0x218;
-	int _charmedCountdown : 0x21c;
-	int _confusionCountdown : 0x220;
-	int _midasFreezeCountdown : 0x224;
-	int _fearCountdown : 0x228;
-	int _burnCountdown : 0x22c;
-	int _bossStatusEffectCooldown : 0x230;
-	int _shrinkCountdown : 0x234;
-	int _poisonDamageTimer : 0x238;
-	int _burnDamageTimer : 0x23c;
-	int _bleedingCountdown : 0x240;
-	int _magnetizedCountdown : 0x248;
-	int _baitedCountdown : 0x24c;
-	int _knockbackCountdown : 0x250;
-	int _weaknessCountdown : 0x254;
-	int _iceCountdown : 0x258;
-	int _brimstoneMarkCountdown : 0x25c;
-	Vector _knockbackDirection : 0x260;
-	float _poisonDamage : 0x278;
-	float _burnDamage : 0x27c;
-	float _depthOffset : 0x2b0;
-	float _mass : 0x2d4;
-	float _collisionDamage : 0x2e0;
-    float _speedMultiplier : 0x2F4;
-	float _shrinkStatus1 : 0x30c;
-	float _shrinkStatus2 : 0x310;
-	Entity * _parent : 0x314;
-	Entity * _child : 0x318;
-	Entity * _target : 0x31c;
-	Entity * _spawnerEntity : 0x320;
-	RNG _dropRNG : 0x334;
+    unsigned int _spawnerType : 0x34;
+    unsigned int _spawnerVariant: 0x38;
+    ANM2 _sprite : 0x48;
+    float _shadowSize : 0x15c;
+    unsigned long long _flags : 0x168;
+    bool _valid : 0x170; 
+    bool _visible : 0x171;
+    bool _exists : 0x172;
+    bool _dead : 0x173;
+    int _entityGridCollisionClass : 0x184;
+    int _entityCollisionClass : 0x188;
+    // 0x18c is a boolean related to collisions. Seems to be essentially a "_collidesWithEntity"
+    unsigned short _entityExtraDataPtrUpperBytes : 0x18e;
+    bool _collidesWithGrid : 0x190;
+    unsigned short _entityExtraDataPtrLowerBytes : 0x192;
+    vector_ColorParams _colorParams : 0x1ac;
+    int _fireDamageCountdown : 0x210;
+    int _damageCountdown : 0x214;
+    int _freezeCountdown : 0x218;
+	int _poisonCountdown : 0x21C;
+	int _slowingCountdown : 0x220;
+	int _charmedCountdown : 0x224;
+	int _confusionCountdown : 0x228;
+	int _midasFreezeCountdown : 0x22C;
+	int _fearCountdown : 0x230;
+	int _burnCountdown : 0x234;
+    int _bossStatusEffectCooldown : 0x238;
+    int _shrinkCountdown : 0x23c;
+    int _poisonDamageTimer : 0x2e0;
+    int _burnDamageTimer : 0x2e4;
+    int _bleedingCountdown : 0x2e8;
+    int _magnetizedCountdown : 0x2f0;
+    int _baitedCountdown : 0x2f4;
+    int _knockbackCountdown : 0x2f8;
+    int _weaknessCountdown : 0x2fc;
+    int _iceCountdown : 0x300;
+    int _brimstoneMarkCountdown : 0x304;
+    Vector _knockbackDirection : 0x308;
+    float _poisonDamage : 0x278;
+    float _burnDamage : 0x27c;
+    float _depthOffset : 0x2b0;
+    float _mass : 0x2d4;
+    float _collisionDamage : 0x388;
+    float _speedMultiplier : 0x39c;
+    float _shrinkStatus1 : 0x3b4;
+    float _shrinkStatus2 : 0x3b8;
+	int _pauseTimer : 0x31c;
+    float _size : 0x370;
+	bool _isInvicible : 0x3b0;
+    Entity * _parent : 0x3bc;
+    Entity * _child : 0x3c0;
+    Entity * _target : 0x3c4;
+    Entity * _spawnerEntity : 0x3c8;
+	Entity_NPC * _minecart : 0x3d4;
+    RNG _dropRNG : 0x3dc;
+    Vector _pos : 0x33c;
+    Vector _velocity : 0x360;
+	LuaBridgeRef* _luaBridgeRef: 0x404;
 
     __vtable {
-		skip; // Free
+        skip; // Free
 		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 		
 		skip; // PreUpdate
 		
-        "558bec83e4f081ecd8010000":
+        "558bec83e4f081ec08030000":
         void Update();
 		
 		skip; // Interpolate
@@ -241,7 +252,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 
-		"558bec83e4f883ec4c538b5d??56":
+		"558bec83e4f883ec4c538b5d??568b75":
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
 		
 		skip; // SetCollisionDamage
@@ -256,17 +267,17 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		skip; // GetForwardVector
 		skip; // HandleCollision
 		
-		"8d81????????81c1e4000000":
+		"8d81????????81c1f0000000":
 		void ResetColor();
 		
 		skip; // LoadEntityConfig
     };
-} : 0x360;
+} : 0x408;
 
-"568bf18b861403000085c074306a0068????????68(????????)":
+"68(????????)6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec568b75??576a0156ff15????????83c40885c074??6a0168????????ba010000008bcee8????????83c4088b40??6a0068????????68????????6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec568b75??576a0156ff15????????83c40885c074??6a0068????????ba010000008bcee8????????83c4088b40??6a0068????????68????????6a0050e8????????8bf883c41485ff74??6a0856ff15????????68????????68d8b9f0ff56c700????????8978??ff15????????6afe56ff15????????83c41cb8010000005f5e5dc356ff15????????83c404b8010000005f5e5dc3??????????????558bec83e4f883ec08":
 reference void* EntityRTTI;
 
-"558bec51535657894dfce8914d03008b75088b0d????????506a006a0068????????566a0068c5030000e8013ed9ff":
+"558bec51535657894d":
 __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
 
 /* For convenience's sake:

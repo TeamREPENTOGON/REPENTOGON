@@ -41,15 +41,36 @@ void* ASMPatcher::AttemptPatchFunction(const char*, const char*, const char*, co
 	return nullptr;
 }
 
-void* ASMPatcher::PatchFromSig(const char* sig, const char* with) {
-	SigScan scan(sig);
-	bool found = scan.Scan();
+static void* ScanLog(const char* signature, const char* name, const char* patchKind) {
+	SigScan scanner(signature);
+	bool found = scanner.Scan();
 
 	if (!found) {
+		ZHL::Log("[ERROR] Unable to patch %s: signature %s not found\n", name, signature);
 		return nullptr;
 	}
 
-	return PatchAt(scan.GetAddress(), with);
+	void* addr = scanner.GetAddress();
+	ZHL::Log("[INFO] %s %s at %p\n", patchKind, name, addr);
+	return addr;
+}
+
+void* ASMPatcher::PatchAt(const char* signature, const char* name, ASMPatch* with) {
+	void* addr = ScanLog(signature, name, "Patching");
+	if (!addr) {
+		return addr;
+	}
+
+	return PatchAt(addr, with);
+}
+
+void* ASMPatcher::PatchAt(const char* signature, const char* name, const char* with, size_t len) {
+	void* addr = ScanLog(signature, name, "Patching");
+	if (!addr) {
+		return addr;
+	}
+
+	return PatchAt(addr, with, len);
 }
 
 void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
@@ -61,6 +82,26 @@ void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
 void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
 	void* targetPage = GetAllocPage(with, true);
 	return Patch(at, targetPage, with, len);
+}
+
+bool ASMPatcher::FlatPatch(const char* signature, const char* name, ASMPatch* with, bool nopRest) {
+	void* addr = ScanLog(signature, name, "Flat patching");
+	if (!addr) {
+		return false;
+	}
+
+	FlatPatch(addr, with, nopRest);
+	return true;
+}
+
+bool ASMPatcher::FlatPatch(const char* signature, const char* name, const char* with, size_t len, bool nopRest) {
+	void* addr = ScanLog(signature, name, "Flat patching");
+	if (!addr) {
+		return false;
+	}
+
+	FlatPatch(addr, with, len, nopRest);
+	return true;
 }
 
 void ASMPatcher::FlatPatch(void* at, ASMPatch* with, bool nopRest) {

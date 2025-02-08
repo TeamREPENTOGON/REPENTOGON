@@ -3,8 +3,10 @@
 #pragma warning (disable: 4530)
 
 #include "libzhl.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <typeinfo>
+
+#include <string>
 
 //=================================================================================================
 

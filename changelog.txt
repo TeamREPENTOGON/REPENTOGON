@@ -10,6 +10,12 @@ Additions:
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]RockBottomMoveSpeed
+	- [Get/Set]RockBottomMaxFireDelay
+	- [Get/Set]RockBottomDamage
+	- [Get/Set]RockBottomTearRange
+	- [Get/Set]RockBottomShotSpeed
+	- [Get/Set]RockBottomLuck
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -19,10 +25,9 @@ Additions:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
 		Return true to cancel pocket item swap.
-	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(EntityPlayer player, EntityPickup bed)
-		Triggers if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(EntityPlayer player)
+		Triggers if "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
 		Return true to cancel vanilla behavior.
-	- MC_POST_TRIGGER_BED_SLEEP_EFFECT(EntityPlayer player, EntityPickup bed)
 	- MC_PRE_BED_SLEEP(EntityPlayer player, EntityPickup bed)
 		Triggers on bed collision and before playing sleep sequence.
 		Return true to cancel vanilla behavior.
@@ -67,15 +72,16 @@ Modified:
 * EntityPlayer:
 	- DropCollectible now returns the spawned pedestal if one was spawned, as intended 
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
+* Level:
+	- TryPlaceRoom(AtDoor) no longer plays the key unlock sound if a room is created that connects to the player's current room.
 * ImGui:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 	- If an error is caused by a callback, imgui will now properly throw an error
-* Level:
-	- TryPlaceRoom(AtDoor) no longer plays the key unlock sound if a room is created that connects to the player's current room.
 * ModCallbacks:
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
 		Added Count argument (how many instances of this effect were removed)
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
+* Daily goal path icon will now be displayed on Mega Satan daily runs.
 Fixes:
 * ImGui:
 	- Fixed RemoveElement not working on elements created with AddInputColor.

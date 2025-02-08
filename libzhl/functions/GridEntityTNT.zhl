@@ -3,13 +3,17 @@ struct GridEntity_TNT : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f883ec3c538bd933d2":
+		"558bec83e4f881eca4000000a1????????33c4898424????????53":
         void Update();
 		
 		skip; // Render
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec8b45??c70039000000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

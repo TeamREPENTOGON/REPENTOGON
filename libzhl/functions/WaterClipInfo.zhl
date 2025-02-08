@@ -1,0 +1,4 @@
+struct WaterClipInfo {
+	unsigned int bitFlags : 0x0;
+	float unkFloat : 0x4;
+} : 0x8;

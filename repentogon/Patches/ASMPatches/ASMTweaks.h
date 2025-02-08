@@ -6,8 +6,8 @@ namespace ASMPatches {
 	bool FixHushFXVeins();
 	bool SkipArchiveChecksums();
 	bool LeaderboarEntryCheckerUpdate();
+	bool AllowConsoleInOnline();
 
-	namespace BerserkSpiritShacklesCrash {
-		bool Patch();
-	}
+	void NativeRepentogonResources();
+	void PatchGotInvaldParameterReadingChallengesXml();
 }

@@ -285,7 +285,7 @@ void PatchDealRoomVariant(char * signature, char* message) {
 
 void ASMPatchDealRoomVariants()
 {
-	PatchDealRoomVariant("E825040D008BCF894310E82BFCFFFF", "InitializeDevilAngelRoom");
+	PatchDealRoomVariant("e8????????8bcf8943", "InitializeDevilAngelRoom");
 	PatchDealRoomVariant("e8????????85c075??68????????6a00", "MakeRedRoomDoor call #1");
 	PatchDealRoomVariant("e8????????85c00f85????????83fe01", "MakeRedRoomDoor call #2");
 	PatchDealRoomVariant("e8????????85c00f85????????6aff", "MakeRedRoomDoor call #3");
@@ -293,7 +293,7 @@ void ASMPatchDealRoomVariants()
 
 // eliminates the checks that replaces the current OverrideData if it's not a miniboss RoomConfig_Room
 void PatchOverrideDataHandling() {
-	const char* signature[2] = { "74??83380075", "8945??85c974??833900" };
+	const char* signature[2] = { "74??83380075??8378??06", "8945??85c974??833900" };
 	SigScan scanner(signature[0]); // jz 0x0061bcb2
 	if (!scanner.Scan()) {
 		ZHL::Log("[ERROR] Unable to find signature to patch OverrideData handling\n");

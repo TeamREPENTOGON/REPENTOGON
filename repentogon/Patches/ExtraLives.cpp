@@ -134,6 +134,8 @@ HOOK_METHOD(Entity_Player, GetExtraLives, ()->int) {
 	return super() + GetCustomReviveCount(this, /*includeHidden=*/false);
 }
 
+// Seems like this call isn't inlined in rep+
+/*
 int __stdcall GetExtraLivesHook(Entity_Player* player) {
 	return player->GetExtraLives();
 }
@@ -143,6 +145,8 @@ void ASMPatchInlinedGetExtraLives() {
 	SigScan scanner("8b82????????0fbf8a");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching inline Entity_Player::GetExtraLives in PlayerHUD::RenderHearts at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::ESI, true);
 	ASMPatch patch;
@@ -154,12 +158,15 @@ void ASMPatchInlinedGetExtraLives() {
 		.AddRelativeJump((char*)addr + 0x4A);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+*/
 
 // Patch over the decision of whether or not to display the "?" after the extra lives count.
 void ASMPatchReviveQuestionMark() {
-	SigScan scanner("e8????????84c0ba????????b9????????8d8424");
+	SigScan scanner("e8????????84c0ba????????b9????????8d45");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching PlayerHUD::RenderHearts for revives question mark at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
@@ -179,6 +186,8 @@ void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.AddBytes("\x80\x7d\x08").AddZeroes(1)  // cmp byte ptr [ebp+8], 0
@@ -187,7 +196,7 @@ void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
 		.Push(ASMPatch::Registers::EBX)  // Push the Entity_Player
 		.AddInternalCall(RunPostTriggerPlayerDeathCheckRevivesCallback)  // Run the callback
 		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addr - 0x895);  // We go to the same place regardless of whether or not the player was revived
+		.AddRelativeJump((char*)addr - 0x920);  // We go to the same place regardless of whether or not the player was revived
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -202,6 +211,8 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching to prevent save deletion for revives at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -215,14 +226,14 @@ void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const in
 }
 
 void ASMPatchesForExtraLives() {
-	ASMPatchInlinedGetExtraLives();
+	// ASMPatchInlinedGetExtraLives();
 	ASMPatchReviveQuestionMark();
 	ASMPatchPostTriggerPlayerDeathCheckRevivesCallback();
 
 	// PauseScreen::ProcessInput
-	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????a1", 0xF, 0xA);
+	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff", 0xF, 0xA);
 	// GameState::Save
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d????????80bf????????00", 0xE, 0x297);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b3d", 0xE, 0x2B5);
 	// GameState::SaveSteamCloud
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d????????8db3", 0xE, 0x2B4);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d", 0xE, 0x2B7);
 }

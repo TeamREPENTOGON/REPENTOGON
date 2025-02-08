@@ -5,6 +5,8 @@
 
 #include "../XMLData.h"
 #include "../../LuaInit.h"
+#include "Log.h"
+#include "../../Patches/MainMenuBlock.h"
 
 /* * MC_PRE_LASER_COLLISION * *
 * There is no function you can hook that would allow you to skip a laser "collision".
@@ -38,22 +40,22 @@ bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity)
 
 // This patch injects the PRE_LASER_COLLISION callback for "sample" lasers (lasers that curve, ie have multiple sample points).
 void PatchPreSampleLaserCollision() {
-	SigScan scanner("8b4d??8b41??83f809");
+	SigScan scanner("8b48??83f90975??c780????????00000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (sample laser) at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX)
-		.AddBytes("\x8B\x45\x8C")  // mov eax,dword ptr ss:[ebp-74] (Put the laser in EAX)
-		.AddBytes("\x51\x50") // Push ECX, EAX for function inputs
+		.Push(ASMPatch::Registers::EAX) // Collider Entity
+		.AddBytes("\xFF\x75\x8C")  // push dword ptr [ebp-0x74] (Entity_Laser)
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x4B)  // Ignore collision
-		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX) (Restored overridden command)
-		.AddBytes("\x8B\x41\x28")  // mov eax,dword ptr ds:[ecx+28] (Put the entity's type in EAX) (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x30)  // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x6);  // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -64,6 +66,8 @@ void PatchPreLaserCollision() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (non-sample laser) at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
@@ -71,8 +75,8 @@ void PatchPreLaserCollision() {
 		.AddInternalCall(RunPreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x49A) // Ignore collision
-		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x494) // Ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the bytes we overwrote
 		.AddRelativeJump((char*)addr + 0x8); // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -89,15 +93,16 @@ void PatchPreLaserCollision() {
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	const int callbackid = 11;
-	if (VanillaCallbackState.test(callbackid)) {
-		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		// As pointers so we can modify them :)
-		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
-		float* damage = (float*)(ebp + 0x08);
-		int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
-		EntityRef** source = (EntityRef**)(ebp + 0x14);
-		int* damageCountdown = (int*)(ebp + 0x18);
 
+	// Obtain inputs as offsets from EBP (same way the compiled code reads them).
+	// As pointers so we can modify them :)
+	uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
+	float* damage = (float*)(ebp + 0x08);
+	int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
+	EntityRef** source = (EntityRef**)(ebp + 0x14);
+	int* damageCountdown = (int*)(ebp + 0x18);
+
+	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -197,10 +202,15 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 		}
 	}
 
+	if (isPlayer) {
+		*damage = (float)*damageHearts;
+	}
+
 	return true;
 }
 
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.AddBytes("\x58\x58\x58\x58\x58")  // Pop EAX x5 to remove the overridden function's inputs from the stack.
@@ -256,11 +266,11 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
-		float damage = *(float*)(ebp + 0x08);
-		int damageHearts = isPlayer ? *(int*)(ebp - 0x100) : 0;
+		const unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
+		const float damage = *(float*)(ebp + 0x08);
+		const int damageHearts = (int)std::round(damage);
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
-		int damageCountdown = *(int*)(ebp + 0x18);
+		const int damageCountdown = *(int*)(ebp + 0x18);
 
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
 			// The white fireplace is a unique case where the game considers the player to have taken "damage"
@@ -290,11 +300,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 };
 
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
+	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 	if (isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.
 		patch.AddBytes("\x84\xC0") // Test Al (Al?)
@@ -309,15 +320,18 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 		.Push(ASMPatch::Registers::EBP)  // Push EBP (We'll get other inputs as offsets from this)
 		.Push(ASMPatch::Registers::EDI)  // Push Entity pointer
 		.AddInternalCall(ProcessPostDamageCallback)  // Run the MC_POST_(ENTITY_)TAKE_DMG callback
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + numOverriddenBytes);
+		.RestoreRegisters(savedRegisters);
+	if (!isPlayer) {
+		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
+	}
+	patch.AddRelativeJump((char*)addr + numOverriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
 // The overridden bytes are restored by the patch.
 void PatchPostEntityTakeDamageCallbacks() {
-	SigScan entityTakeDmgScanner("f30f1147??5f5e5b8be55dc21400");
+	SigScan entityTakeDmgScanner("5f5eb0015b8be55dc21400??????????f30f1041");
 	entityTakeDmgScanner.Scan();
 	InjectPostDamageCallback(entityTakeDmgScanner.GetAddress(), false);
 
@@ -354,6 +368,8 @@ void ASMPatchPrePlayerUseBomb() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -383,9 +399,11 @@ void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bo
 }
 
 void ASMPatchPostPlayerUseBomb() {
-	SigScan scanner("8b7424??46897424??3b7424??0f8c");
+	SigScan scanner("8b7424??46897424??3b7424??0f8c????????5f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (post) at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -493,7 +511,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 }
 
 void ASMPatchTrySplit() {
-	SigScan scanner("f30f100d????????0f2f8b");
+	SigScan scanner("f30f100d????????0f2f8f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
@@ -504,7 +522,7 @@ void ASMPatchTrySplit() {
 	patch.PreserveRegisters(savedRegisters);
 	patch.AddBytes("\x0f\xb6\xc0") // MOVZX EAX,AL
 		.Push(ASMPatch::Registers::EAX)  // Push current result
-		.Push(ASMPatch::Registers::EBX)  // Push NPC
+		.Push(ASMPatch::Registers::EDI)  // Push NPC
 		.AddInternalCall(TrySplitTrampoline)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
@@ -516,10 +534,12 @@ void ASMPatchTrySplit() {
 void ASMPatchInputAction()
 {
 	const char* signatures[] = {
-		"837f??0275??833d????????0074??8d45??505351",
-		"8378??0275??833d????????00",
-		"837f??0275??833d????????0074??8d45??50536a00",
-		"837f??0275??833d????????0074??8d45??50536a01",
+		"837f??0275??833d????????0074??8d45??505351",  // Manager::GetActionValue
+		"8379??0275??833d????????00",  // Console::ProcessInput
+		"837f??0275??833d????????0074??8d45??50536a00",  // Manager::IsActionPressed
+		"837f??0275??833d????????0074??8d45??50536a01",  // Manager::IsActionTriggered
+		"8378??0275??833d????????0074??8d45??506a0e",  // Cutscene::Update (ACTION_MENUCONFIRM)
+		"8378??0275??833d????????0074??8d45??506a0f",  // Cutscene::Update (ACTION_MENUBACK)
 		NULL
 	};
 
@@ -561,7 +581,7 @@ void ASMPatchPostNightmareSceneCallback() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
+	SigScan scanner_transition("f30f108f????????0f57d20f2fca0f86");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching NightmareScene::Render at %p\n", addr);
@@ -606,11 +626,12 @@ void ASMPatchPrePickupVoided() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("e8????????8bcf46e8????????3bf00f82????????8bbd78faffff33c9");
+	SigScan scanner("E8????????8BCF46E8????????3BF072??8BBD????????33");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem VOID at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // push the pickup
@@ -651,18 +672,19 @@ void ASMPatchPrePickupVoidedBlackRune() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("e8????????83f8640f85????????8bcee8????????85c00f84????????8bcee8????????85c00f8f????????8d8768140000c6859bfdffff01");
+	SigScan scanner("e8????????83f8640f85????????8b8d");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseCard at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseCard BLACK RUNE at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
 		.AddInternalCall(RunPrePickupVoidedBlackRune)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x14c) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1b9) // jump for false
 		.AddInternalCall(((char*)addr + 0x5) + *(ptrdiff_t*)((char*)addr + 0x1)) // restore the commands we overwrote (god this is ugly)
 		.AddRelativeJump((char*)addr + 0x5);
 
@@ -696,18 +718,19 @@ void ASMPatchPrePickupVoidedAbyss() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("50e8????????508bcfe8????????8bd08bcee8????????83c4048bcf6a04e8????????8bcfe8????????c68553faffff01");
+	SigScan scanner("50e8????????508bcee8????????8bd0");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem ABYSS at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
 		.AddInternalCall(RunPrePickupVoidedAbyss)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x31) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0xAA) // jump for false
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x1)) // restore push eax
 		.AddInternalCall(((char*)addr + 0x6) + *(ptrdiff_t*)((char*)addr + 0x2)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x6);
@@ -742,11 +765,12 @@ void ASMPatchPrePickupComposted() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner("8b4028ffd0ff8570faffff8d8e981600006a0268e0010000e8????????8bc8e8????????8bcf85c075168d8538f3ffff50e8????????508bce");
+	SigScan scanner("8b40??ffd0ff85????????8d8e");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+	ZHL::Logger logger;
+	logger.Log("[REPENTOGON] Patching Entity_Player::UseActiveItem COMPOSTED at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // push the pickup
@@ -800,6 +824,8 @@ void ASMPatchPostChampionRegenCallback() {
 		scanner.Scan();
 		void* addr = scanner.GetAddress();
 
+		printf("[REPENTOGON] Patching Entity_NPC::Update for dark red champion regen callback at %p\n", addr);
+
 		patch.AddBytes("\x8B\x07")  // mov eax, dword ptr ds:[edi]
 			.AddBytes("\x8B\xCF")  // mov ecx,edi
 			.PreserveRegisters(savedRegisters)
@@ -813,11 +839,21 @@ void ASMPatchPostChampionRegenCallback() {
 	}
 }
 
-bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector* position, Box<float> scale,Vector* cropoffset) {
+// MC_PRE_PLAYERHUD_TRINKET_RENDER (1264)
+std::unordered_map<short, Vector[2]> trinketRenderCropOffsetCache;
+
+bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vector* position, float* scale) {
+	Entity_Player* player = playerHUD->_player;
+
+	Vector cropOffset(0, 0);
+
+	// This is the only thing vanilla does with CropOffset
+	if (player && playerHUD->_trinket[slot].id == TRINKET_MONKEY_PAW) {
+		cropOffset.x = (3 - player->_monkeyPawCounter) * 32.0f;
+	}
+
 	const int callbackid = 1264;
-	if (CallbackState.test(callbackid - 1000)) {
-		float new_scale;
-		new_scale = scale.Get();
+	if (player && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -827,9 +863,9 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 			.push(slot)
 			.push(slot)
 			.pushUserdataValue(*position, lua::Metatables::VECTOR)
-			.push(new_scale)
-			.push(hud->_player, lua::Metatables::ENTITY_PLAYER)
-			.pushUserdataValue(*cropoffset, lua::Metatables::VECTOR)
+			.push(*scale)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(cropOffset, lua::Metatables::VECTOR)
 			.call(1);
 		
 		if (!result) {
@@ -843,13 +879,13 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 							*(position) = *(new_pos);
 						}
 						else if (key == "CropOffset") {
-							*cropoffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							cropOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Scale") {
-							new_scale = (float)lua_tonumber(L, -1);
+							*scale = (float)lua_tonumber(L, -1);
 						}
 					}
 					lua_pop(L, 1);
@@ -862,48 +898,69 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector
 				}
 			}
 		}
-		float newx = (position->x) + (g_Game->_screenShakeOffset).x;
-		float newy = (position->y) + (g_Game->_screenShakeOffset).y;
-		__asm {
-			movd xmm2, newx
-			movd xmm3, newy
-			movd xmm4, new_scale
-		}	//updating the xmm registers
 	}
+
+	trinketRenderCropOffsetCache[playerHUD->_playerHudIndex][slot] = cropOffset;
+
 	return true;
 };
 
+// Hook that runs the callback
+HOOK_METHOD(PlayerHUD, RenderTrinket, (uint32_t slot, Vector* pos, float unused, float scale, bool unk) -> void) {
+	if (slot < 0 || slot > 1 || this->_trinket[slot].id == TRINKET_NULL || this->_trinket[slot].image == nullptr) {
+		return;
+	}
+	Vector posCopy = *pos;  // Copy this in case the callback modifies it.
+	if (RunTrinketRenderCallback(this, slot, &posCopy, &scale)) {
+		super(slot, &posCopy, unused, scale, unk);
+	}
+}
+
+// Fetches the cached CropOffset for this PlayerHUDTrinket and puts it in xmm1/xmm2
+void __stdcall GetPlayerHUDTrinketCropOffset(PlayerHUDTrinket* hudTrinket, Entity_Player* player) {
+	short playerHudIndex = 0;
+	int slot = 0;
+
+	// Slightly unfortunate, but we need to find the corresponding PlayerHUD in order to tell which slot is being rendered.
+	for (int i = 0; i < 8; i++) {
+		PlayerHUD* playerHud = g_Game->GetPlayerHUD(i);
+		if (playerHud && playerHud->_player == player) {
+			playerHudIndex = playerHud->_playerHudIndex;
+			if (&playerHud->_trinket[1] == hudTrinket) {
+				slot = 1;
+			}
+			break;
+		}
+	}
+
+	const Vector& cropOffset = trinketRenderCropOffsetCache[playerHudIndex][slot];
+
+	float x = cropOffset.x;
+	float y = cropOffset.y;
+
+	__asm {
+		movd xmm1, x
+		movd xmm2, y
+	}
+}
+
+// Patches overtop where the CropOffset is calculated to use our cached one instead.
 void ASMPatchTrinketRender() {
-	SigScan signature("8d8c24????????e8????????a1");
+	SigScan signature("75??8b45??b903000000");
 	signature.Scan();
 
 	void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
+	printf("[REPENTOGON] Patching PlayerHUDTrinket::Render at %p\n", addr);
+
 	ASMPatch patch;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::EAX | ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
-	patch
-		.Push(ASMPatch::Registers::EAX)				// manually restoring later
-		.PreserveRegisters(savedRegisters)
-		.AddBytes("\x8B\x9C\x24\x80").AddZeroes(3)	//(mov ebx,esp+0x80), playerhud aka (this)
-		.Push(ASMPatch::Registers::EAX)				//cropoffset ptr which resides in eax
-		.AddBytes("\x66\x0F\x7E\xE0")				//(movd eax,xmm4), scale
-		.Push(ASMPatch::Registers::EAX)
-		.AddBytes("\x8B\x45\x0C")					//(mov eax, ebx+0xC):
-		.Push(ASMPatch::Registers::EAX)				//	position
-		.AddBytes("\x8B\x45\x08")					//(mov eax, ebx+0x8):
-		.Push(ASMPatch::Registers::EAX)				//	slot
-		.Push(ASMPatch::Registers::EBX)				//hud from the ebx
-		.AddInternalCall(&RunTrinketRenderCallback)
-		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
-		.AddBytes("\x84\xC0") // test al, al
-		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
-		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, push edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
-		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
-		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
-		.AddBytes("\x66\x0F\x7E\x5C\x24\x34")		//movd esp+0x34, xmm3
-		.AddRelativeJump((char*)addr + 0x7);		//jump for true, continue with rendering
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::XMM_REGISTERS) & ~(ASMPatch::SavedRegisters::XMM1 | ASMPatch::SavedRegisters::XMM2), true);
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, 0x10)  // Entity_Player*
+		.Push(ASMPatch::Registers::EDX)  // PlayerHUDTrinket*
+		.AddInternalCall(GetPlayerHUDTrinketCropOffset)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x1F);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -955,7 +1012,7 @@ void ASMPatchPickupUpdatePickupGhosts() {
         .RestoreRegisters(savedRegisters)
         .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
         //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-        .AddRelativeJump((char*)addr + 0xCA);
+        .AddRelativeJump((char*)addr + 0xCC);
     sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1075,22 +1132,23 @@ void PreBirthPatch(void* addr, const bool isCambion) {
 }
 
 void ASMPatchPrePlayerGiveBirth() {
+	
 	SigScan cambionSig("818f????????000200000bc2");
 	cambionSig.Scan();
 	void* cambionAddr = cambionSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
 	PreBirthPatch(cambionAddr, true);  // Cambion
-
+	
 	SigScan immaculateSig("818f????????000200000bc6");
 	immaculateSig.Scan();
 	void* immaculateAddr = immaculateSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
+	
 }
 
-bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
+bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Player* player) {
 	const int callbackid = 1285;
-	Entity_Player* player = bed->_target->ToPlayer();
 
 		if (CallbackState.test(callbackid - 1000) && player) {
 			lua_State* L = g_LuaEngine->_state;
@@ -1098,9 +1156,8 @@ bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
 			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-				.push(bed, lua::Metatables::ENTITY_PICKUP)
+				.pushnil()
 				.push(player, lua::Metatables::ENTITY_PLAYER)
-				.push(bed, lua::Metatables::ENTITY_PICKUP)
 				.call(1);
 
 
@@ -1118,23 +1175,24 @@ void ASMPatchPreTriggerBedSleepEffect() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8bb0????????85f674??837e??0174");
+	SigScan scanner_transition("8b0ae8????????83f801");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching ItemOverlay::Update at %p for PreTriggerBedSleepEffect callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EAX) // Bed
+		.Push(ASMPatch::Registers::EDX) // Player
 		.AddInternalCall(RunPreTriggerBedSleepEffectCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x40) // Skipping hearts gain
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
-		.AddRelativeJump((char*)addr + 0x6);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x5E) // Skipping hearts gain
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edx
+		.AddInternalCall(((char*)addr + 0x7) + *(ptrdiff_t*)((char*)addr + 0x3)) // restore the function call
+		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void __stdcall RunPostTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
+void __stdcall RunPostTriggerBedSleepEffectCallback(Entity_Player* player) {
 	const int callbackid = 1286;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1143,9 +1201,8 @@ void __stdcall RunPostTriggerBedSleepEffectCallback(Entity_Pickup* bed) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.push(bed, lua::Metatables::ENTITY_PICKUP)
-			.push(bed->_target, lua::Metatables::ENTITY_PLAYER)
-			.push(bed, lua::Metatables::ENTITY_PICKUP)
+			.pushnil()
+			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
 	}
@@ -1155,16 +1212,14 @@ void ASMPatchPostTriggerBedSleepEffect() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("81c61c0300008b0e");
+	SigScan scanner_transition("8b35????????4381c6a8ba01008b46??2b06c1f8023bd80f82????????8b0d");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching ItemOverlay::Update at %p for PostBedSleep callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ESI) // Bed
-		//.Push(ASMPatch::Registers::ECX) // Player
+		.Push(ASMPatch::Registers::EDX) // Player
 		.AddInternalCall(RunPostTriggerBedSleepEffectCallback)
-		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 0x6);
@@ -1201,18 +1256,18 @@ void ASMPatchPreBedSleep() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8bcfe8????????85c07e??8bcfe8????????84c0");
+	SigScan scanner_transition("8bcae8????????83f80174??83f80274??8b8a????????8b82????????8d04");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Pickup::handle_collision at %p for PreBedSleep callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI) // Bed
-		.Push(ASMPatch::Registers::EDI) // Player
+		.Push(ASMPatch::Registers::EDX) // Player
 		.AddInternalCall(RunPreBedSleepCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x44C) // Skipping player's hearts check
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x4EA) // Skipping player's hearts check
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edi
 		.AddInternalCall(((char*)addr + 0x7) + *(ptrdiff_t*)((char*)addr + 0x3)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x7);
@@ -1221,7 +1276,7 @@ void ASMPatchPreBedSleep() {
 
 void ASMPatchesBedCallbacks() {
 	ASMPatchPreTriggerBedSleepEffect();
-	ASMPatchPostTriggerBedSleepEffect();
+	//ASMPatchPostTriggerBedSleepEffect();
 	ASMPatchPreBedSleep();
 }
 
@@ -1254,18 +1309,89 @@ void ASMPatchPrePlayerPocketItemSwap() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8dbb????????833f00");
+	SigScan scanner_transition("8d9f????????833b00");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::control_drop_pocket_items at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EBX) // Player
+		.Push(ASMPatch::Registers::EDI) // Player
 		.AddInternalCall(RunPrePlayerPocketItemSwapCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xB3) // Skipping pocket item swap
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC5) // Skipping pocket item swap
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall RunMainMenuRenderCallback(MenuManager* menuManager) {
+	const int callbackid = 1023;
+	MainMenuInputBlock::_enabled = false;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid).call(1);
+	}
+	MainMenuInputBlock::_enabled = true;
+	if ((menuManager->_state | (1 << 8)) == menuManager->_state) {
+		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
+	};
+}
+
+void ASMPatchMainMenuCallback() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+
+	SigScan scanner_transition("8b86????????f30f101d");
+	scanner_transition.Scan();
+	void* addr = scanner_transition.GetAddress();
+	printf("[REPENTOGON] Patching MenuManager::Render at %p for MainMenuRender callback\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // MenuManager
+		.AddInternalCall(RunMainMenuRenderCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Historically, MC_PRE_MOD_UNLOAD also runs during game shutdown, when the LuaEngine is being destroyed.
+// However, this happens late into the shutdown process, after Game and Manager are already destroyed,
+// so any code running on this callback at this time is very likely to crash the game.
+// Here we trigger MC_PRE_MOD_UNLOAD earlier in the shutdown process (after the game has saved, but
+// before stuff starts getting destroyed) as well as pass a boolean indicating the ongoing shutdown.
+// Separately we've also ensured that the default MC_PRE_UNLOAD_TRIGGER (_UnloadMod) does not run
+// the callback during shutdown.
+void __stdcall RunPreModUnloadCallbacks() {
+	for (const ModReference& mod : g_Mods) {
+		const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.pushluaref(mod._luaTableRef->_ref)
+			.push(true)
+			.call(1);
+	}
+}
+void ASMPatchPreModUnloadCallbackDuringShutdown() {
+	SigScan scanner("b9????????e8????????8b35????????85f674??8bcee8");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching earlier MC_PRE_MOD_UNLOAD in Isaac::Shutdown at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(RunPreModUnloadCallbacks)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the push we overwrote
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }

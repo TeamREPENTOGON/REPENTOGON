@@ -1,0 +1,5 @@
+struct PlayerHUDTrinket depends (KAGE_Graphics_ImageBase) {
+    int id : 0x0;
+    int slot : 0x4;
+    KAGE_Graphics_ImageBase* image : 0x8;
+} : 0x18;

@@ -28,7 +28,7 @@ struct REPENTOGONOptions {
 			printf("INI doesn't exist, creating\n");
 			
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
-			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
+			ini["VanillaTweaks"]["HushLaserSpeedFix"] = "1";
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
@@ -38,6 +38,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
+			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -51,14 +52,16 @@ struct REPENTOGONOptions {
 		iniFile.read(ini);
 
 		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
-		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
+		hushLaserSpeedFix = defstoi(ini["VanillaTweaks"]["HushLaserSpeedFix"],1);
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		consoleAutofillLimit = defstoi(ini["VanillaTweaks"]["ConsoleAutofillLimit"], 10);
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
-		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+//		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+		fastLasers = 0;
+		ecoMode = defstoi(ini["VanillaTweaks"]["EcoMode"], 0);
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
@@ -97,16 +100,17 @@ struct REPENTOGONOptions {
 
 	void Save() {
 		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
-		Write("VanillaTweaks", "HushPanicStateFix",    hushPanicStateFix);
+		Write("VanillaTweaks", "HushLaserSpeedFix",    hushLaserSpeedFix);
 		Write("VanillaTweaks", "KeyMasterDealChance",  keyMasterDealChance);
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
-		Write("VanillaTweaks", "FastLasers", fastLasers);
+//		Write("VanillaTweaks", "FastLasers", fastLasers);
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
+		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -117,7 +121,7 @@ struct REPENTOGONOptions {
 
 	mINI::INIStructure ini;
 	bool betterVoidGeneration;
-	bool hushPanicStateFix;
+	bool hushLaserSpeedFix;
 	bool keyMasterDealChance;
 	bool quickRoomClear;
 	bool preventModUpdates;
@@ -134,6 +138,7 @@ struct REPENTOGONOptions {
 	int consoleAutofillLimit;
 	std::string optionsPath;
 	bool renderDebugFindInRadius;
+	bool ecoMode;
 };
 
 extern REPENTOGONOptions repentogonOptions;

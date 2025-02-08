@@ -1,69 +1,12 @@
 #include "ParserCore.h"
 
-ErrorLogger::~ErrorLogger() {
-    if (_filename && !_errors.empty()) {
-        std::cerr << "In file " << *_filename << std::endl;
-    }
-    for (std::string const& err : _errors) {
-        std::cerr << "\t" << err << std::endl;
-    }
-}
+Parser::Parser(Namespace* global, TypeMap* types, std::string const& filename) : _global(global), _types(types), _currentFile(filename) {
 
-void ErrorLogger::SetFile(std::string const& filename) {
-    _filename = filename;
-}
-
-ErrorLogger& ErrorLogger::endl(ErrorLogger& logger) {
-    logger.newline();
-    return logger;
-}
-
-ErrorLogger& ErrorLogger::error(ErrorLogger& logger) {
-    logger.log_error();
-    return logger;
-}
-
-ErrorLogger& ErrorLogger::warn(ErrorLogger& logger) {
-    logger.log_warn();
-    return logger;
-}
-
-void ErrorLogger::log_error() {
-    _buf << "[ERROR] ";
-    _errored = true;
-}
-
-void ErrorLogger::log_warn() {
-    _buf << "[WARN] ";
-}
-
-ErrorLogger& ErrorLogger::operator<<(ErrorLogger& (*v)(ErrorLogger&)) {
-    return v(*this);
-}
-
-ErrorLogger& ErrorLogger::operator<<(EndToken const& token) {
-    _errors.push_back(_buf.str());
-    _buf.str("");
-    _buf.clear();
-    return *this;
-}
-
-void ErrorLogger::newline() {
-    _buf << std::endl;
-}
-
-bool ErrorLogger::IsErrored() {
-    return _errored;
-}
-
-ErrorLogger::EndToken ErrorLogger::_end;
-
-Parser::Parser(Namespace* global, std::map<std::string, Type>* types, std::string const& filename) : _global(global), _types(types) {
-    _errors.SetFile(filename);
 }
 
 std::any Parser::visitZhl(ZHLParser::ZhlContext* ctx) {
-    return visitChildren(ctx);
+    visitChildren(ctx);
+    return !_hasFatalError;
 }
 
 std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
@@ -83,8 +26,10 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
         if (convention == "__thiscall") {
             if (!_currentStruct) {
                 if (ctx->nestedName()->functionName().size() == 0) {
-                    _errors << ErrorLogger::error << "__thiscall convention applied to non member function " << fn._name << ErrorLogger::_end;
-                    // exit(-1);
+                    // _errors << ErrorLogger::error << "__thiscall convention applied to non member function " << fn._name << ErrorLogger::_end;
+                    _hasFatalError = true;
+                    ParserLogger()->Error("%s: __thiscall convention applied to non member function %s\n", _currentFile.c_str(), fn._name.c_str());
+
                 }
                 fn._convention = CallingConventions::THISCALL;
             }
@@ -107,14 +52,19 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
 
     fn._ret = std::any_cast<Type*>(visit(ctx->type()));
 
+    std::string fullNameStr = GetCurrentFunctionQualifiedName(fn._name);
+    const char* fullName = fullNameStr.c_str();
+
     if (fn.IsVirtual() && fn.IsStatic()) {
-        _errors << ErrorLogger::error << "static and qualifiers applied together to function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
-        // exit(-1);
+        ParserLogger()->Error("%s: static and virtual qualifiers applied together to function %s\n",
+            _currentFile.c_str(), fullName);
+        _hasFatalError = true;
     }
 
     if (fn.IsStatic() && fn._convention && fn._convention == CallingConventions::THISCALL) {
-        _errors << ErrorLogger::error << "__thiscall convention applied to static function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
-        // exit(-1);
+        ParserLogger()->Error("%s: __thiscall convention applied to static function %s\n",
+            _currentFile.c_str(), fullName);
+        _hasFatalError = true;
     }
 
     if (auto args = ctx->funArgs()) {
@@ -123,8 +73,11 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
         if (fn._convention) {
             for (FunctionParam const& param : fn._params) {
                 if (param._reg) {
-                    _errors << ErrorLogger::warn << "Calling convention " << CallingConventionToString(*fn._convention) << " specified on function " << GetCurrentFunctionQualifiedName(fn._name) <<
-                        ", you cannot specify a register on a parameter (specified " << RegisterToString(*param._reg) << " on parameter " << param._name << ")" << ErrorLogger::_end;
+                    ParserLogger()->Warn("%s: calling convention %s specified on function %s, you cannot specify "
+                        "a register on a parameter (specified register %s on parameter %s)\n",
+                        _currentFile.c_str(), CallingConventionToString(*fn._convention).c_str(),
+                        fullName, RegisterToString(*param._reg).c_str(),
+                        param._name.c_str());
                 }
             }
         }
@@ -167,16 +120,24 @@ std::any Parser::visitFunArgs(ZHLParser::FunArgsContext* ctx) {
     for (RegUse const& use : state) {
         if (use.first) {
             if (use.second.size() > 1) {
-                _errors << ErrorLogger::error << "Register " << RegisterToString((Registers)i) << " used on multiple parameters in function " << GetCurrentFunctionQualifiedName(_currentFunction->_name) << ErrorLogger::endl;
-                _errors << "\tInfringing parameters are ";
+                _hasFatalError = true;
+
+                std::ostringstream stream;
+
+                stream << _currentFile << ": register " << RegisterToString((Registers)i) << 
+                    " used on multiple parameters in function " << 
+                    GetCurrentFunctionQualifiedName(_currentFunction->_name) << std::endl;
+                stream << "\tInfringing parameters are ";
                 for (int paramPos : use.second) {
                     FunctionParam const& param = params[paramPos];
-                    _errors << param._name << " (param " << i << ")";
+                    stream << param._name << " (param " << i << ")";
                     if (paramPos != use.second.back()) {
-                        _errors << ", ";
+                        stream << ", ";
                     }
                 }
-                _errors << ErrorLogger::_end;
+                stream << std::endl;
+
+                ParserLogger()->Error("%s", stream.str().c_str());
             }
         }
 
@@ -195,7 +156,7 @@ std::any Parser::visitFunArg(ZHLParser::FunArgContext* ctx) {
 
     if (std::holds_alternative<Array>(name)) {
         Array& arr = std::get<Array>(name);
-        type = ArrayQualify(type, arr);
+        type = _types->MakeArray(type, arr);
         param._name = arr._name;
     }
     else {
@@ -265,7 +226,8 @@ std::any Parser::visitType(ZHLParser::TypeContext* ctx) {
 
     if (auto templateSpecCtx = ctx->templateSpec()) {
         if (!std::holds_alternative<std::string>(type->_value)) {
-            _errors << ErrorLogger::error << " Type " << type->GetFullName() << " used as base template, but already resolved" << ErrorLogger::_end;
+            ParserLogger()->Error("%s: type %s used as base template, but already resolved\n",
+                _currentFile.c_str(), type->GetFullName().c_str());
             return type;
         }
         type->_templateBase = true;
@@ -275,20 +237,20 @@ std::any Parser::visitType(ZHLParser::TypeContext* ctx) {
         s._template = true;
         s._templateParams = std::any_cast<std::vector<Type*>>(visit(templateSpecCtx));
         
-        type = GetOrCreateTypeByName(s.GetTemplateName());
+        type = _types->Get(s.GetTemplateName());
         if (type->IsEmpty()) {
             type->_value = s;
         }
     }
 
     if (base.second) {
-        type = ConstQualify(type);
+        type = _types->MakeConst(type);
     }
 
     // std::vector<PointerDecl> pointers;
     for (auto ptrCtx : ctx->pointerAttribute()) {
         PointerDecl decl = std::any_cast<PointerDecl>(visit(ptrCtx));
-        type = PointerQualify(type, decl);
+        type = _types->MakePointer(type, decl);
     }
 
     return type;
@@ -301,14 +263,15 @@ std::any Parser::visitTypeSpecifier(ZHLParser::TypeSpecifierContext* ctx) {
     bool isConst = !cstQual.empty();
 
     if (cstQual.size() == 2) {
-        _errors << ErrorLogger::warn << "const used multiple times " << GetContext() << ErrorLogger::_end;
+        ParserLogger()->Warn("%s: const specified multiple times in %s\n",
+            _currentFile.c_str(), GetContext().c_str());
     }
 
     if (auto simple = ctx->simpleType()) {
         // result._value = std::any_cast<BasicType>(visit(simple));
         BasicType basic = std::any_cast<BasicType>(visit(simple));
         // std::cout << "Found basic type " << basic.GetAbsoluteName() << std::endl;
-        result = GetOrCreateTypeByName(basic.GetAbsoluteName());
+        result = _types->Get(basic);
         result->_value = basic;
     }
     else {
@@ -318,7 +281,7 @@ std::any Parser::visitTypeSpecifier(ZHLParser::TypeSpecifierContext* ctx) {
         // result._name = target;
 
         std::vector<std::string> parts = std::any_cast<std::vector<std::string>>(visit(ctx->nestedName()));
-        result = GetOrCreateTypeByName(parts.front());
+        result = _types->Get(parts.front());
 
         if (result->IsEmpty()) {
             result->_value = parts.front();
@@ -352,7 +315,9 @@ std::any Parser::visitSimpleType(ZHLParser::SimpleTypeContext* ctx) {
 
     if (auto sign = ctx->simpleTypeSignedness()) {
         if (basic._type != BasicTypes::CHAR && basic._type != BasicTypes::INT) {
-            _errors << ErrorLogger::warn << "Cannot specify sign modifier (" << sign->getText() << ") on type " << BasicTypeToString(basic._type) << GetContext() << ErrorLogger::_end;
+            ParserLogger()->Warn("%s: cannot specify sign modified (%s) on type %s in %s\n",
+                _currentFile.c_str(), sign->getText().c_str(), BasicTypeToString(basic._type).c_str(),
+                GetContext().c_str());
         }
         else {
             basic._sign = std::any_cast<Signedness>(visit(sign));
@@ -362,7 +327,8 @@ std::any Parser::visitSimpleType(ZHLParser::SimpleTypeContext* ctx) {
     auto length = ctx->simpleTypeLength();
     if (length.size()) {
         if (basic._type != BasicTypes::DOUBLE && basic._type != BasicTypes::INT) {
-            _errors << ErrorLogger::warn << "Cannot specify length modifier on type " << BasicTypeToString(basic._type) << GetContext() << ErrorLogger::_end;
+            ParserLogger()->Warn("%s: cannot specify length modifier on type %s in %s\n",
+                _currentFile.c_str(), BasicTypeToString(basic._type).c_str(), GetContext().c_str());
         }
         else {
             if (length.size() == 1) {
@@ -373,10 +339,15 @@ std::any Parser::visitSimpleType(ZHLParser::SimpleTypeContext* ctx) {
                 Length second = std::any_cast<Length>(visit(length[1]));
 
                 if (first != second) {
-                    _errors << ErrorLogger::error << "Cannot specify short and long simultaneously on type " << BasicTypeToString(basic._type) << GetContext() << ErrorLogger::_end;
+                    _hasFatalError = true;
+                    ParserLogger()->Error("%s: cannot specify short and long simultaneously on type %s in %s\n",
+                        _currentFile.c_str(), BasicTypeToString(basic._type).c_str(),
+                        GetContext().c_str());
                 }
                 else if (first == Length::SHORT) {
-                    _errors << ErrorLogger::warn << "short specified multiple times on type " << BasicTypeToString(basic._type) << GetContext() << ErrorLogger::_end;
+                    ParserLogger()->Warn("%s: short specified multiple times on type %s in %s\n",
+                        _currentFile.c_str(), BasicTypeToString(basic._type).c_str(),
+                        GetContext().c_str());
                     basic._length = first;
                 }
                 else {
@@ -415,8 +386,8 @@ std::any Parser::visitNestedName(ZHLParser::NestedNameContext* ctx) {
     std::string typen = partsStr[0];
 
     if (partsStr.size() > 1) {
-        if (auto it = _types->find(typen); it == _types->end()) {
-            Type* type = GetOrCreateTypeByName(typen);
+        if (!_types->Get(typen, false)) {
+            Type* type = _types->New(typen);
             Struct s;
             s._name = typen;
             type->_value = s;
@@ -473,7 +444,7 @@ std::any Parser::visitGenericCode(ZHLParser::GenericCodeContext* ctx) {
 
 std::any Parser::visitClass(ZHLParser::ClassContext* ctx) {
     std::string name(ctx->Name()->getText());
-    Type* type = GetOrCreateTypeByName(name);
+    Type* type = _types->Get(name);
     type->_pending = false;
 
     Struct* st;
@@ -518,7 +489,7 @@ std::any Parser::visitDepends(ZHLParser::DependsContext* ctx) {
     for (size_t i = 0; i < names.size(); ++i) {
         std::string name(names[i]->getText());
         // Struct* st = GetStructByName(name);
-        Type* t = GetOrCreateTypeByName(name);
+        Type* t = _types->Get(name);
         if (!t->IsStruct()) {
             Struct s;
             s._name = name;
@@ -526,10 +497,12 @@ std::any Parser::visitDepends(ZHLParser::DependsContext* ctx) {
         }
 
         if (deps.find(t) != deps.end()) {
-            _errors << ErrorLogger::warn << "Specified " << name << " as dependency for " << _currentStruct->_name << " multiple times " << ErrorLogger::_end;
+            ParserLogger()->Warn("%s: specified %s as dependency for %s multiple times\n",
+                _currentFile.c_str(), name.c_str(), _currentStruct->_name.c_str());
         }
         else if (name == _currentStruct->_name) {
-            _errors << ErrorLogger::warn << "Specified " << name << " as self dependency " << ErrorLogger::_end;
+            ParserLogger()->Warn("%s: structure %s depends on itself\n",
+                _currentFile.c_str(), name.c_str());
         }
         else {
             deps.insert(t);
@@ -559,8 +532,9 @@ std::any Parser::visitClassBody(ZHLParser::ClassBodyContext* ctx) {
 
     auto vtablesCtx = ctx->vtable();
     if (vtablesCtx.size() > 1) {
-        _errors << ErrorLogger::warn << "Multiple vtable fields in structure " << _currentStruct->_name << ", keeping only the first" << ErrorLogger::endl << ErrorLogger::_end;
-        visit(vtablesCtx.front());
+        _hasFatalError = true;
+        ParserLogger()->Error("%s: multiple vtable fields in structure %s\n",
+            _currentFile.c_str(), _currentStruct->_name.c_str());
     }
     else if (vtablesCtx.size() == 1) {
         visit(vtablesCtx.front());
@@ -658,7 +632,7 @@ std::any Parser::visitClassField(ZHLParser::ClassFieldContext* ctx) {
         Variable variable;
         if (std::holds_alternative<Array>(name)) {
             Array const& arr = std::get<Array>(name);
-            copy = ArrayQualify(copy, arr);
+            copy = _types->MakeArray(copy, arr);
             variable._name = arr._name;
         }
         else {
@@ -666,7 +640,7 @@ std::any Parser::visitClassField(ZHLParser::ClassFieldContext* ctx) {
         }
 
         for (PointerDecl const& decl : decls) {
-            copy = PointerQualify(copy, decl);
+            copy = _types->MakePointer(copy, decl);
         }
 
 
@@ -729,7 +703,7 @@ std::any Parser::visitSignature(ZHLParser::SignatureContext* ctx) {
 
         if (std::get<bool>(results)) {
             std::string typen(std::get<std::string>(results));
-            Type* t = GetOrCreateTypeByName(typen);
+            Type* t = _types->Get(typen);
             if (!t->IsStruct()) {
                 Struct s;
                 s._name = typen;
@@ -766,23 +740,25 @@ std::any Parser::visitTypedef(ZHLParser::TypedefContext* ctx) {
 }
 
 std::any Parser::visitFunctionPtr(ZHLParser::FunctionPtrContext* ctx) {
-    std::tuple<FunctionPtr*, std::string> ptr;
+    std::tuple<FunctionPtr*, std::string, size_t> ptr;
     if (ctx->fptr()) {
-        ptr = std::any_cast<std::tuple<FunctionPtr*, std::string>>(visit(ctx->fptr()));
+        ptr = std::any_cast<std::tuple<FunctionPtr*, std::string, size_t>>(visit(ctx->fptr()));
     }
     else {
-        ptr = std::any_cast<std::tuple<FunctionPtr*, std::string>>(visit(ctx->memberPtr()));
+        ptr = std::any_cast<std::tuple<FunctionPtr*, std::string, size_t>>(visit(ctx->memberPtr()));
     }
 
     FunctionPtr* fun = std::get<FunctionPtr*>(ptr);
     std::string name = std::get<std::string>(ptr);
+    size_t offset = std::get<size_t>(ptr);
 
     Variable v;
     v._name = name;
 
-    Type* t = GetOrCreateTypeByName(fun->GetName());
+    Type* t = _types->Get(fun->GetName());
     t->_value = fun;
     v._type = t;
+    v._offset = offset;
 
     if (_currentStruct) {
         _currentStruct->_namespace._fields.push_back(v);
@@ -805,12 +781,13 @@ std::any Parser::visitFptr(ZHLParser::FptrContext* ctx) {
         }
     }
 
-
     if (auto argsCtx = ctx->optNamedFunArgs()) {
         ptr->_parameters = std::any_cast<std::vector<Type*>>(visit(argsCtx));
     }
 
-    return std::make_tuple(ptr, ctx->Name()->getText());
+    size_t offset = std::strtoull(ctx->Number()->getText().c_str(), NULL, 0);
+
+    return std::make_tuple(ptr, ctx->Name()->getText(), offset);
 }
 
 std::any Parser::visitMemberPtr(ZHLParser::MemberPtrContext* ctx) {
@@ -825,7 +802,7 @@ std::any Parser::visitMemberPtr(ZHLParser::MemberPtrContext* ctx) {
     }
 
     std::string className(ctx->Name().front()->getText());
-    Type* target = GetOrCreateTypeByName(className);
+    Type* target = _types->Get(className);
     if (!target->IsStruct()) {
         Struct s;
         s._name = className;
@@ -838,7 +815,9 @@ std::any Parser::visitMemberPtr(ZHLParser::MemberPtrContext* ctx) {
         ptr->_parameters = std::any_cast<std::vector<Type*>>(visit(argsCtx));
     }
 
-    return std::make_tuple(ptr, ctx->Name().back()->getText());
+    size_t offset = std::strtoull(ctx->Number()->getText().c_str(), NULL, 0);
+
+    return std::make_tuple(ptr, ctx->Name().back()->getText(), offset);
 }
 
 std::any Parser::visitInheritance(ZHLParser::InheritanceContext* ctx) {
@@ -861,13 +840,14 @@ std::any Parser::visitInheritance(ZHLParser::InheritanceContext* ctx) {
 
         std::string name(first.front());
         if (seen.find(name) != seen.end()) {
-            _errors << ErrorLogger::warn << "Structure " << _currentStruct->_name << " specifies base class " << name << " multiple times " << ErrorLogger::endl << ErrorLogger::_end;
+            ParserLogger()->Warn("%s: structure %s inherits multiple times from structure %s\n",
+                _currentFile.c_str(), _currentStruct->_name.c_str(), name.c_str());
             continue;
         }
 
         seen.insert(name);
 
-        Type* type = GetOrCreateTypeByName(name);
+        Type* type = _types->Get(name);
         if (!type->IsStruct()) {
             Struct s;
             s._name = name;
@@ -909,7 +889,9 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
         TypeInfoV info = std::any_cast<TypeInfoV>(visit(infoCtx));
         if (std::holds_alternative<Type*>(info)) {
             if (typeInfo._type) {
-                _errors << ErrorLogger::error << "Multiple synonyms specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+                _hasFatalError = true;
+                ParserLogger()->Error("%s: multiple synonyms specified for type %s\n",
+                    _currentFile.c_str(), name.c_str());
             }
             else {
                 typeInfo._type = std::get<Type*>(info);
@@ -919,7 +901,9 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
             TypeInfoData data = std::get<TypeInfoData>(info);
             if (data._tag == TypeInfoTag::SIZE) {
                 if (typeInfo._size != 0) {
-                    _errors << ErrorLogger::error << "Multiple sizes specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+                    _hasFatalError = true;
+                    ParserLogger()->Error("%s: multiple sizes specified for type %s\n",
+                        _currentFile.c_str(), name.c_str());
                 }
                 else {
                     typeInfo._size = data._data;
@@ -927,7 +911,9 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
             }
             else {
                 if (typeInfo._align != 0) {
-                    _errors << ErrorLogger::error << "Multiple alignments specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+                    _hasFatalError = true;
+                    ParserLogger()->Error("%s: multiple alignments specified for type %s\n",
+                        _currentFile.c_str(), name.c_str());
                 }
                 else {
                     typeInfo._align = data._data;
@@ -936,7 +922,7 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
         }
     }
 
-    Type* type = GetOrCreateTypeByName(name);
+    Type* type = _types->Get(name);
     if (typeInfo._type) {
         type->_synonym = *typeInfo._type;
         type->_value = name;
@@ -984,7 +970,9 @@ std::any Parser::visitExternalFunc(ZHLParser::ExternalFuncContext* ctx) {
     auto [nested, first, fn] = std::any_cast<std::tuple<bool, std::string, Function>>(visit(ctx->function()));
 
     if (!nested) {
-        _errors << ErrorLogger::error << " External function " << fn._name << " from library " << func._dll << " specified without an englobing namespace" << ErrorLogger::_end;
+        _hasFatalError = true;
+        ParserLogger()->Error("%s: external function %s from library %s lacks an englobing namespace\n",
+            _currentFile.c_str(), fn._name.c_str(), func._dll.c_str());
         return 0;
     }
 
@@ -1006,7 +994,8 @@ std::string Parser::GetCurrentFunctionQualifiedName(std::string const& name) {
 }
 
 void Parser::WarnRepeatedFunctionQualifier(std::string const& name, std::string const& qualifier) {
-    _errors << ErrorLogger::warn << "Repeated '" << qualifier << "' qualifier on function " << name << ErrorLogger::endl << ErrorLogger::_end;
+    ParserLogger()->Warn("%s: repeated '%s' qualifier on function %s\n",
+        _currentFile.c_str(), qualifier.c_str(), name.c_str());
 }
 
 std::string Parser::MergeNameParts(std::vector<std::string> const& parts) {
@@ -1050,18 +1039,6 @@ std::string Parser::GetContext() {
     return context.str();
 }
 
-Type* Parser::GetOrCreateTypeByName(std::string const& name) {
-    if (auto it = _types->find(name); it != _types->end()) {
-        return &(it->second);
-    }
-    else {
-        Type t;
-        t._name = name;
-        auto iter = _types->insert(std::make_pair(name, t));
-        return &(iter.first->second);
-    }
-}
-
 void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qualifiers, Function& fn) {
     for (antlr4::tree::TerminalNode* x : qualifiers) {
         std::string text = x->getText();
@@ -1088,10 +1065,14 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
             else if (fn._convention) {
                 CallingConventions convention = *fn._convention;
                 if (convention != CDECL) {
-                    _errors << ErrorLogger::error << "cleanup specified on non cdecl (" << CallingConventionToString(convention) << ") function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
+                    ParserLogger()->Error("%s: 'cleanup' specified on non cdecl (%s) function %s\n",
+                        _currentFile.c_str(), CallingConventionToString(convention).c_str(),
+                        GetCurrentFunctionQualifiedName(fn._name).c_str());
                 }
                 else {
-                    _errors << ErrorLogger::warn << "cleanup specified on cdecl function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
+                    ParserLogger()->Warn("%s: 'cleanup' specified on cdecl function\n",
+                        _currentFile.c_str(),
+                        GetCurrentFunctionQualifiedName(fn._name).c_str());
                 }
             }
             else {
@@ -1106,74 +1087,16 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
                 fn._qualifiers |= FunctionQualifiers::DEBUG;
             }
         }
+        else if (text == "nohook") {
+            if (!fn.CanHook()) {
+                WarnRepeatedFunctionQualifier(fn._name, text);
+            } else {
+                fn._qualifiers |= FunctionQualifiers::NOHOOK;
+            }
+        }
     }
-}
-
-Type* Parser::PointerQualify(Type const* source, PointerDecl const& decl) {
-    Type tmp = *source;
-    tmp._pointerDecl.push_back(decl);
-    std::string name(tmp.GetFullName());
-    // std::cout << "Adding pointer: " << source->GetFullName() << " => " << name << std::endl;
-    Type* qualified = GetOrCreateTypeByName(name);
-    if (!qualified->_base) {
-        qualified->_base = (Type*)source;
-        qualified->_pointerDecl.push_back(decl);
-        qualified->_name = source->_name;
-    }
-
-    return qualified;
-}
-
-Type* Parser::ArrayQualify(Type const* source, Array const& array) {
-    Type tmp = *source;
-    tmp._array = true;
-    tmp._arraySize = array._size;
-
-    std::string name(tmp.GetFullName());
-    Type* qualified = GetOrCreateTypeByName(name);
-    if (!qualified->_base) {
-        qualified->_base = (Type*)source;
-        qualified->_array = true;
-        qualified->_arraySize = array._size;
-        qualified->_name = source->_name;
-    }
-
-    return qualified;
-}
-
-Type* Parser::ConstQualify(Type const* source) {
-    Type tmp = *source;
-    tmp._const = true;
-
-    std::string name(tmp.GetFullName());
-    Type* qualified = GetOrCreateTypeByName(name);
-    if (!qualified->_base) {
-        qualified->_base = (Type*)source;
-        qualified->_name = source->_name;
-        qualified->_const = true;
-    }
-
-    return qualified;
 }
 
 std::string Parser::ReadSignature(const std::string& signature) {
     return signature.substr(1, signature.length() - 3);
-}
-
-std::vector<std::string> ErrorsHolder::_errors;
-
-void ErrorsHolder::ThrowOrLog(std::ostringstream const& str) {
-#ifdef ZHL_PARSER_THROW
-    throw std::runtime_error(str);
-#else
-    _errors.push_back(str.str());
-#endif
-}
-
-bool ErrorsHolder::HasErrors() {
-    return _errors.size() != 0;
-}
-
-std::vector<std::string> const& ErrorsHolder::GetErrors() {
-    return _errors;
 }

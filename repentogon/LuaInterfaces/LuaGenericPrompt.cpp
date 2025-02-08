@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_GenericPromptInitialize) {
 
 LUA_FUNCTION(Lua_GenericPromptShow) {
 	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
-	genericPrompt->Show();
+	genericPrompt->Show(false);
 	return 0;
 }
 

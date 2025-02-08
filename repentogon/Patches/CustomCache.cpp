@@ -145,9 +145,15 @@ float RunEvaluateFamiliarMultiplierCallback(Entity_Familiar* familiar, const flo
 
 // Take the customcache string as a copy to be extra safe that it can't get destroyed while this is running.
 void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string customcache) {
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (!playerPlus) {
+		// Aaah!
+		return;
+	}
+
 	const bool maxCoinsKeysBombs = customcache == "maxcoins" || customcache == "maxkeys" || customcache == "maxbombs";
-	
-	float initialValue = 0.0;
+
+	double initialValue = 0.0;
 
 	if (maxCoinsKeysBombs) {
 		// Only run evaluations as player 1 for global stats like this.
@@ -177,13 +183,13 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 		// familiars, indirectly triggering MC_EVALUATE_FAMILIAR_MULTIPLIER instead.
 		InvalidateCachedFamiliarMultipliers(player);
 		return;
+	} else if (customcache == "healthtype") {
+		playerPlus->disableHealthTypeModification = true;
+		initialValue = (double)player->GetHealthType();
+		playerPlus->disableHealthTypeModification = false;
 	}
-	
-	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
-	if (!playerPlus) {
-		// Aaah!
-		return;
-	}
+
+	double newValue = initialValue;
 
 	// MC_EVALUATE_CUSTOM_CACHE
 	const int callbackid = 1224;
@@ -201,25 +207,17 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 			.call(1);
 
 		if (!result && lua_isnumber(L, -1)) {
-			const double resultValue = lua_tonumber(L, -1);
-
-			playerPlus->customCacheResults[customcache] = resultValue;
-
-			if (maxCoinsKeysBombs) {
-				UpdateMaxCoinsKeysBombs(customcache, resultValue);
-			}
-
-			return;
+			newValue = lua_tonumber(L, -1);
 		}
 	}
 
-	// Callback did not run, or did not return a valid value.
+	playerPlus->customCacheResults[customcache] = newValue;
 
 	if (maxCoinsKeysBombs) {
-		UpdateMaxCoinsKeysBombs(customcache, initialValue);
+		UpdateMaxCoinsKeysBombs(customcache, newValue);
+	} else if (customcache == "healthtype") {
+		player->GetHealthType();
 	}
-
-	playerPlus->customCacheResults.erase(customcache);
 }
 
 void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& customcaches, const bool immediate) {
@@ -289,8 +287,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
 
 // Collectibles (both real and via wisps) trigger cache evaluations immediately when added or removed.
 
-HOOK_METHOD_PRIORITY(Entity_Player, AddCollectible, -1, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
-	super(type, charge, firsttime, slot, vardata);
+HOOK_METHOD_PRIORITY(Entity_Player, AddCollectible, -1, (int type, int charge, bool firsttime, int slot, int vardata, int unk) -> void) {
+	super(type, charge, firsttime, slot, vardata, unk);
 	TriggerCollectibleCustomCache(this, type, true);
 }
 
@@ -356,9 +354,11 @@ void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar, float 
 	}
 }
 void PatchFamiliarGetMultiplierCallback() {
-	SigScan scanner("5e5b8be55dc3????????????????????????????????????????????????????????558bec6aff68????????64a1????????5081ec28030000");
+	SigScan scanner("5f5e5b8be55dc3????????????????????558bec83e4f851538bd9568b75");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching end of Entity_Familiar::GetMultiplier for callback at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -379,28 +379,32 @@ const char* __stdcall GetHudCoinsStringFormat() {
 	return HUD_COINS_STR_FORMAT;
 }
 void PatchHudRenderCoins() {
-	SigScan scanner("e8????????8bb5????????85c0ba");
+	SigScan scanner("e8????????8b75??85c0ba");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching HUD::Render for max coins at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~(ASMPatch::SavedRegisters::Registers::EAX | ASMPatch::SavedRegisters::Registers::ECX), true);
 	ASMPatch patch;
 	patch.Pop(ASMPatch::Registers::EAX)  // Pop inputs to overridden FirstCollectibleOwner
 		.Pop(ASMPatch::Registers::EAX)
 		.Pop(ASMPatch::Registers::EAX)
-		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 0x6))  // Restore a thing
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 3))  // Restore a thing
 		.PreserveRegisters(savedRegisters)
 		.AddInternalCall(GetHudCoinsStringFormat)
 		.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
 		.MoveImmediate(ASMPatch::Registers::EAX, 0)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x1A);
+		.AddRelativeJump((char*)addr + 0x17);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchAddCoins() {
-	SigScan scanner("e8????????f7d8c745??00000000");
+	SigScan scanner("e8????????f7d8c745??000000008d55??1bc08d4d??2584030000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::AddCoins for max coins at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
@@ -425,6 +429,8 @@ void PatchAddKeys() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPlayer::AddKeys for max keys at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
 	ASMPatch patch;
 	patch.Push(ASMPatch::Registers::ESI)
@@ -443,9 +449,11 @@ void PatchAddKeys() {
 }
 void PatchHudRenderKeys() {
 	// wow
-	SigScan scanner("68????????6a10f30f1145??f30f1085????????f30f5885????????68????????f30f1145??e8????????83c4106a006a0083ec108bcc6affe8????????f30f1045??83ec10f30f5805????????8b8d????????c74424??0000803fc74424??0000803ff30f114424??f30f1045??f30f5805????????f30f11042468????????e8????????807d??00");
+	SigScan scanner("68????????6a1068????????e8????????83c410c785????????00000000c785????????ffff0000c785????????00000000c785????????0000803fc785????????ffffffffc785????????00000000c745??000000008d85????????c745??03000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching HUD::Render for max keys at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
@@ -463,9 +471,11 @@ const char* __stdcall GetHudBombsStringFormat() {
 	return HUD_BOMBS_STR_FORMAT;
 }
 void PatchAddBombs() {
-	SigScan scanner("c74424??6300000083f863");
+	SigScan scanner("c74424??6300000083f863894424??8d5424");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::AddBombs for max bombs at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
 	ASMPatch patch;
@@ -480,9 +490,11 @@ void PatchAddBombs() {
 }
 void PatchHudRenderBombs() {
 	// wow
-	SigScan scanner("68????????6a10f30f1145??f30f1085????????f30f5885????????68????????f30f1145??e8????????83c4106a006a0083ec108bcc6affe8????????f30f1045??83ec10f30f5805????????8b8d????????c74424??0000803fc74424??0000803ff30f114424??f30f1045??f30f5805????????f30f11042468????????e8????????f30f1045??f30f5c85????????f30f1185");
+	SigScan scanner("68????????6a1068????????e8????????83c410c785????????00000000c785????????ffff0000c785????????00000000c785????????0000803fc785????????ffffffffc785????????00000000c745??000000008d85????????c745??01000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching HUD::Render for max bombs at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
@@ -502,6 +514,7 @@ void PatchRemoveCurseMistEffect() {
 	SigScan coinScanner("6a015168a0010000");
 	coinScanner.Scan();
 	void* coinAddr = coinScanner.GetAddress();
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max coins at %p\n", coinAddr);
 	ASMPatch coinPatch;
 	coinPatch.AddBytes("\x8B\x8F\xAC\x12").AddZeroes(2)  // ECX,dword ptr [EDI + 0x12ac] (restores something that gets skipped)
 		.AddBytes("\x89\xF0")  // MOV EAX,ESI
@@ -511,11 +524,13 @@ void PatchRemoveCurseMistEffect() {
 	SigScan keyScanner("3bc80f4cc18987????????8b87????????0387????????3bc6");
 	keyScanner.Scan();
 	void* keyAddr = keyScanner.GetAddress();
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max keys at %p\n", keyAddr);
 	sASMPatcher.FlatPatch((char*)keyAddr, "\x89\xC8\x90\x90\x90", 5);  // MOV EAX, ECX
 
 	SigScan bombScanner("3bc60f4cd080bf????????00");
 	bombScanner.Scan();
 	void* bombAddr = bombScanner.GetAddress();
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max bombs at %p\n", bombAddr);
 	sASMPatcher.FlatPatch((char*)bombAddr, "\x89\xC2\x90\x90\x90", 5);  // MOV EDX, EAX
 }
 

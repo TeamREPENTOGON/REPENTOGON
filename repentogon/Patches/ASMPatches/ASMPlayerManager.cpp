@@ -5,15 +5,14 @@
 #include "ASMEntityNPC.h"
 
 void ASMPatchSpawnSelectedBaby() {
-	SigScan scanner("8b4d??83c4086aff"); // this is the first push of args for ComputeStausEffectDuration
+	SigScan scanner("8b4d??6affe8????????8bf8");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
 	ASMPatch patch;
-	patch.MoveFromMemory(ASMPatch::Registers::EBP, -0x38, ASMPatch::Registers::ECX)
-		.AddBytes("\x83\xc4\x08")
+	patch.MoveFromMemory(ASMPatch::Registers::EBP, -0x34, ASMPatch::Registers::ECX)
 		.Push(ASMPatch::Registers::EBX, 0x8) //death awaits
-		.AddRelativeJump((char*)addr + 0x8);
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

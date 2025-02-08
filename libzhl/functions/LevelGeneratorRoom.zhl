@@ -1,4 +1,4 @@
-"558bec518b45??538bd956":
+"558bec518b45??538bd956578b7d":
 __thiscall LevelGenerator_Room* LevelGenerator_Room::constructor(uint32_t column, uint32_t line, uint32_t shape);
 
 struct LevelGenerator_Room

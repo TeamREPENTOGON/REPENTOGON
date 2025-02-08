@@ -111,7 +111,7 @@ ModCallbacks.MC_POST_SLOT_CREATE_EXPLOSION_DROPS = 1124
 ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE = 1125
 ModCallbacks.MC_POST_SLOT_SET_PRIZE_COLLECTIBLE = 1126
 ModCallbacks.MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS = 1127
-
+ModCallbacks.MC_PLAYER_HEALTH_TYPE_CHANGE = 1128
 ModCallbacks.MC_POST_FORCE_ADD_PILL_EFFECT = 1129
 
 ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS = 1130
@@ -998,7 +998,7 @@ Achievement = {
 	COMPOUND_FRACTURE = 291,
 	EUTHANASIA = 292,
 	HOLY_CARD = 293,
-	CROOKED_CARD = 294,
+	CROOKED_PENNY = 294,
 	VOID = 295,
 	D1 = 296,
 	GLYPH_OF_BALANCE = 297,
@@ -1342,6 +1342,9 @@ Achievement = {
 	A_STRANGE_DOOR = 635, STRANGE_DOOR = 635, ASCENT_DOOR = 635,
 	DEATH_CERTIFICATE = 636,
 	DEAD_GOD = 637,
+	PLAYED_ONLINE = 638,
+	WON_ONLINE = 639, ONLINE_WON = 639,
+	WON_ONLINE_DAILY = 640, DAILY_ONLINE_WON = 640,
 }
 
 FollowerPriority = {
@@ -1570,7 +1573,12 @@ MainMenuType = {
 	BESTIARY = 14, 
 	MODCHALLENGES = 15, 
 	MODS = 16, 
-	SEED = 17, 
+	ONLINELOBBY = 17,
+	FRIENDLOBBIES = 18,
+	MULTIPLAYER = 19,
+	OPTIONSONLINE = 20,
+	CREATELOBBY = 21,
+	ONLINEAWARDS = 22 --sins list
 }
 
 --to-do--
@@ -2074,7 +2082,32 @@ EventCounter = {
 	BABY_PLUM_KILLS = 493,
 	BATTERY_BUMS_KILLED = 494,
 	BATTERY_BUM_COLLECTIBLE_PAYOUTS = 495, -- counts how often the battery bum paid out with a collectible item
-	NUM_EVENT_COUNTERS = 496,
+	UNKNOWN_EVENT_496 = 496, -- TODO: Currently Unknown. Maybe Daily Multiplayer run Streak?
+	ONLINE_CURRENT_STREAK = 497, -- Current Online Mode streak
+	ONLINE_BEST_STREAK = 498, -- Best streak in Online Gameplay
+	UNKNOWN_EVENT_499 = 499, -- TODO: Currently Unknown. Maybe Daily Multiplayer run Streak?
+	ONLINE_SIN_ETERNAL = 500,
+	ONLINE_SIN_HEARTLESS = 501,
+	ONLINE_SIN_ENVIOUS = 502,
+	ONLINE_SIN_DRESSED_UP = 503,
+	ONLINE_SIN_PRIDEFUL = 504,
+	ONLINE_SIN_SAVIOR = 505,
+	ONLINE_SIN_WRATHFUL = 506,
+	ONLINE_SIN_BIG_BOSS = 507,
+	ONLINE_SIN_EXPLORER = 508,
+	ONLINE_SIN_EXPRESSIVE = 509,
+	ONLINE_SIN_GLUTTONOUS = 510,
+	ONLINE_SIN_RECKLESS = 511,
+	ONLINE_SIN_ESCAPE_ARTIST = 512,
+	ONLINE_SIN_GAMBLER = 513,
+	ONLINE_SIN_GREEDY = 514,
+	ONLINE_SIN_MYSTIC = 515,
+	ONLINE_SIN_PILL_POPPER = 516,
+	ONLINE_SIN_BIG_SPENDER = 517,
+	ONLINE_SIN_JANITOR = 518,
+	ONLINE_SIN_LUSTFUL = 519,
+	ONLINE_SIN_SLOTHFUL = 520,
+	NUM_EVENT_COUNTERS = 521,
 }
 
 WispSubType = {
@@ -2821,8 +2854,21 @@ DoorMask = {
 	DOWN1 = 1 << DoorSlot.DOWN1,
 }
 
+WaterClipFlag = {
+	--UNKNOWN_UNUSED = 1 << 0,
+	DISABLE_RENDER_ABOVE_WATER = 1 << 1,  -- When set for an Entity, also enables rendering below water
+	ENABLE_RENDER_BELOW_WATER = 1 << 2,  -- Entity only, Allows the "below water" rendering to happen alongside "above water" rendering
+	DISABLE_RENDER_BELOW_WATER = 1 << 3,  -- Takes priority over other flags
+	--UNKNOWN_UNUSED = 1 << 4,
+	DISABLE_RENDER_REFLECTION = 1 << 5,  -- Entity only, GridEntities don't get reflections
+	IGNORE_WATER_RENDERING = 1 << 6,  -- Entity only, overrides other flags and renders the entity above water only, no reflection
+	FORCE_WATER_RIPPLE_WHEN_MOVING = 1 << 7,  -- Entity only, only "grounded" entities will spawn water ripples without this flag
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
 Achievement.RESERVED_HEIROPHANT = 529
 Achievement.HAEMOLACHRIA = Achievement.HAEMOLACRIA
+Achievement.CROOKED_CARD = Achievement.CROOKED_PENNY
+MainMenuType.SEED = MainMenuType.ONLINELOBBY

@@ -42,24 +42,11 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		this->AddGigaBombs(stoi(playerXML["gigabombs"]));
 	}
 	this->update_red_hearts(); 
-	this->update_golden_hearts(); 
+	this->update_golden_hearts(false); 
 	this->update_bone_hearts(); 
 }
 
-HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-
-	int orig = super();
-
-	if (!playerXML["healthtype"].empty()) {
-		int healthType = stoi(playerXML["healthtype"]);
-		if (healthType > 4 || healthType < 0) { // INVALID
-			return orig;
-		}
-		return healthType;
-	}
-	return orig;
-}
+// GetHealthType hook merged into the one in CustomCallbacks.cpp
 
 namespace PlayerStats {
 	float modCharacterSpeed = 0;
@@ -285,10 +272,11 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 		return;
 	}
 
-	int randomId = (Isaac::genrand_int32() % allowedCharacters.size());
+	unsigned int seed = Isaac::genrand_int32();
+	int randomId =  seed % allowedCharacters.size();
 	std::pair<int, EntityConfig_Player> chosenCharacter = allowedCharacters[randomId];
 	std::string name = chosenCharacter.second.GetDisplayName(nullptr);
-	logViewer.AddLog("[REPENTOGON]", "I have chosen: %d (%s, slot %d on the menu)\n", chosenCharacter.second._id, name.c_str(), chosenCharacter.first);
+	logViewer.AddLog("[REPENTOGON]", "I have chosen: %d (%s, menu slot %d, seed %d, randomId %d/%d)\n", chosenCharacter.second._id, name.c_str(), chosenCharacter.first, seed, randomId+1, allowedCharacters.size());
 	this->_chosenRandomCharacter = chosenCharacter.second._id;
 	this->_randomRotationAmount = chosenCharacter.first + this->GetNumCharacters() * 2 + this->GetNumCharacters();
 	this->_randomRotationVelocity = (360.0f / this->GetNumCharacters()) / 30.0f;

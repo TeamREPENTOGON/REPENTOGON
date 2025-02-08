@@ -67,9 +67,11 @@ bool __stdcall FixLoadingNullItemFromXml(ItemConfig_Item* newNullItem) {
 
 void ASMPatchFixLoadingNullItemsFromXml() {
 	// This is the spot in "parse_items_xml()" where a Null Item is going to be written into the ItemConfig's Null Items vector.
-	SigScan scanner("8b34??85f60f84????????8bbe????????85ff74??8d8f????????e8????????8d8f????????e8????????689801000057e8????????83c408c786????????000000008d8e????????e8????????8d4e??e8????????8d4e??e8????????8d4e??e8????????68e000000056e8????????8bbd");
+	SigScan scanner("8b34??85f674??8bcee8????????68e800000056e8????????8b4f");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching parse_items_xml to properly handle modded null items at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -80,7 +82,7 @@ void ASMPatchFixLoadingNullItemsFromXml() {
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x5) // Jump for false (no new entry was added, continue as normal)
-		.AddRelativeJump((char*)addr + 0x89);  // Jump for true (new entry was added, skip some internal code)
+		.AddRelativeJump((char*)addr + 0x2B);  // Jump for true (new entry was added, skip some internal code)
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -133,9 +135,11 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 
 void ASMPatchTieModdedCostumesToModdedNullItems() {
 	// This is the spot in parse_costumes_xml() where a new null item would be automatically generated for a MODDED null costume.
-	SigScan scanner("8b47??2b47??c1f80268e0000000");
+	SigScan scanner("8b47??2b47??c1f80268e8000000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching parse_costumes_xml to tie modded costumes to modded null items at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

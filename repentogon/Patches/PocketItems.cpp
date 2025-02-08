@@ -234,6 +234,8 @@ void PreCollectPocketItemPatch(const char* sig, void* exitAddr) {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPickup::HandleCollision for pre pocket item collection callbacks at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
@@ -256,13 +258,15 @@ void PostCollectPocketItemPatch(const char* sig) {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPickup::HandleCollision for post pocket item collection callbacks at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
 	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the overridden bytes first.
 		.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
-		.AddBytes("\xFF\x75\x84")  // push dword ptr [EBP - 0x7C] (Entity_Pickup*)
+		.AddBytes("\xFF\xB5\x48\xFF\xFF\xFF")  // push dword ptr [EBP - 0xB8] (Entity_Pickup*)
 		.AddInternalCall(RunPostCollectPocketItemCallback)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
@@ -299,6 +303,8 @@ void PatchDropPocketItem() {
 	SigScan signature("c780????????0400000083fe03");
 	signature.Scan();
 	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::DropPocketItem for catching dropped pocket items at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -362,6 +368,8 @@ void FirstPatchTriggerCollectibleRemoved() {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerCollectibleRemoved for detecting lost pocket slots at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
@@ -397,6 +405,8 @@ void SecondPatchTriggerCollectibleRemoved() {
 	signature.Scan();
 	void* addr = signature.GetAddress();
 
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerCollectibleRemoved for running dropped pocket items at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
@@ -420,6 +430,8 @@ void PatchControlPocketItem(const char* sig, const uint32_t pocketItemType) {
 	SigScan signature(sig);
 	signature.Scan();
 	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::control_pocket_item for triggering pocket item remove callbacks at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -453,6 +465,8 @@ void PatchConsumeSoulOfLazarus() {
 	SigScan signature("c783????????00000000c783????????010000008b35");
 	signature.Scan();
 	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for triggering pocket item remove callback for soul of lazarus at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;

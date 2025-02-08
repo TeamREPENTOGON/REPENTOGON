@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 LUA_FUNCTION(Lua_GameGetPauseMenuState)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	lua_pushinteger(L, game->GetPauseMenu()->status);
+	lua_pushinteger(L, game->GetPauseMenu()->state);
 
 	return 1;
 }
@@ -96,7 +96,7 @@ LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 LUA_FUNCTION(Lua_GameDevolveEnemy) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	game->DevolveEnemy(ent);
+	game->DevolveEnemy(ent, nullptr);
 
 	return 0;
 }
@@ -229,7 +229,7 @@ LUA_FUNCTION(Lua_GameGetPlayer) {
 LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
-	game->_leaderboard.Show(1, &game->_scoreSheet, false);
+	game->_leaderboard.Show(1, &game->_scoreSheet, false, 0);
 	return 0;
 }
 

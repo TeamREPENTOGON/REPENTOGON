@@ -26,7 +26,7 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 		skip; // PreUpdate
 		
         override
-        "558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
+        "558bec6aff68????????64a1????????5081ecc0000000a1????????33c58945??535657508d45??64a3????????8bf989bd":
         void Update();
 		
 		skip; // Interpolate
@@ -35,7 +35,7 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 		skip; // PostRender
 		
 		override
-		"558bec83e4f883ec7453":
+		"558bec83e4f881ec8c000000a1????????33c4898424????????538bd95657895c24??8b4b":
 		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
 		skip; // Kill
@@ -59,14 +59,15 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 		skip; // LoadEntityConfig
     };
 	
-	int _state : 0x360;
-	int _prizeType : 0x364;
-	short _shellGameAnimationIndex : 0x368;
-	short _timeout : 0x36a;
-	int _donationValue : 0x36c;
-	uint32_t _triggerTimer : 0x370;
-	short _unkShort1 : 0x374;
-	uint16_t _touch : 0x376;
-	ANM2 _prizeAnm2 : 0x378;
-	int _prizeCollectible : 0x48c;
-} : 0x490;
+	int _state : 0x408;
+	int _prizeType : 0x40c;
+	short _shellGameAnimationIndex : 0x410;
+	short _timeout : 0x412;
+	int _donationValue : 0x414;
+	uint32_t _triggerTimer : 0x418;
+	short _unkShort1 : 0x41c;
+	uint16_t _touch : 0x41e;
+	ANM2 _prizeAnm2 : 0x420;
+	int _prizeCollectible : 0x534;
+} : 0x540;
+

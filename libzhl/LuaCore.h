@@ -37,6 +37,7 @@ namespace lua {
         RNG,
         ENTITY_PLAYER,
         FONT,
+        FONTRENDERSETTINGS,
         ENTITY_PICKUP,
         COSTUME,
         ENTITY_LIST,
@@ -103,6 +104,7 @@ namespace lua {
         CONST_RNG,
         CONST_ENTITY_PLAYER,
         CONST_FONT,
+        CONST_FONTRENDERSETTINGS,
         CONST_ENTITY_PICKUP,
         CONST_COSTUME,
         CONST_ENTITY_LIST,
@@ -142,6 +144,7 @@ namespace lua {
         CONST_SFX_MANAGER,
         CONST_CARD_CONFIG_LIST,
         CONST_VECTOR,
+
         METATABLES_MAX
     };
 
@@ -341,6 +344,8 @@ namespace lua {
         LuaCaller& push(const char* s, size_t len = 0);
         LuaCaller& pushnil();
         LuaCaller& pushvalue(int idx);
+        LuaCaller& pushluaref(int t, int ref);
+        LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
         LuaCaller& pushLuabridge(void* ptr, const char* meta); 

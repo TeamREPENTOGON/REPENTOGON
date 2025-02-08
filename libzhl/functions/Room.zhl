@@ -10,13 +10,13 @@ __thiscall GridEntity* Room::GetGridEntity(uint32_t idx);
 "558bec8b41??8b40":
 __thiscall uint32_t Room::GetGridCollision(int index);
 
-"558bec6aff68????????64a1????????5083ec7ca1????????33c58945??535657508d45??64a3????????8bd9":
+"558bec6aff68????????64a1????????5081eca4000000a1????????33c58945??535657508d45??64a3????????8bd9":
 __thiscall void Room::ShopRestockFull();
 
-"558bec83ec1c53568bf1":
+"558bec83ec4453568bf157":
 __thiscall void Room::ShopRestockPartial();
 
-"558bec83ec30f30f7e05":
+"558bec83ec30f30f7e05????????8bc1":
 __thiscall int Room::GetShopItemPrice(unsigned int entVariant, unsigned int entSubType, int shopItemID);
 
 "558bec53568b75??8bd95785f6":
@@ -31,7 +31,7 @@ __thiscall void Room::RemoveGridEntityImmediate(int GridIndex, int PathTrail, bo
 "558bec83ec08538bd956578b3d":
 __thiscall void Room::TriggerClear(bool playSound);
 
-"558bec83e4f883ec2ca1????????33c4894424??53568bf1":
+"558bec83e4f883ec2ca1????????33c4894424??5356578b3d":
 __thiscall void Room::UpdateRedKey();
 
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
@@ -40,19 +40,19 @@ __thiscall bool Room::CanSpawnObstacleAtPosition(int GridIndex, bool Force);
 "558bec83e4f883ec14538bd9565783bb????????39":
 __thiscall float Room::GetLightingAlpha();
 
-"558bec83e4f881ec8000000056578bf9897c24??e8":
+"558bec83e4f081eca800000056":
 __thiscall void Room::PreRender();
 
 "558bec83ec6cf30f7e05":
 __thiscall void Room::RenderGridLight(GridEntity* grid, Vector &offset);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec50010000":
 __thiscall void Room::RenderEntityLight(Entity* ent, Vector &offset);
 
 "558bec8bc18b4d??81f9bf01000077??8b4c????85c974??8379??00":
 __thiscall bool Room::CanPickupGridEntity(int GridIndex);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec4001000056":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec400100005657a1????????33c5508d45??64a3????????8bf9897d??8b43":
 __thiscall bool Room::PickupGridEntity(int GridIndex, GridEntityDesc* Desc, ANM2* Sprite);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec40010000a1????????33c58945??5657508d45??64a3????????8bf98d8d":
@@ -61,13 +61,13 @@ __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 "558bec8b55??568bf185d2":
 __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec18080000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec20080000":
 __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 
-"558bec568bf133c03986":
+"558bec578bf933d2":
 __thiscall void Room::SetPauseTimer(int Duration);
 
-"558bec568b75??578bf98b87":
+"558becf30f101d":
 __thiscall ColorModState Room::ComputeColorModifier();
 
 "558bec83ec0c5356578b7d??8bd9895d??85ff":
@@ -85,7 +85,7 @@ __thiscall void Room::MakeDoor(int slot);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
-"558bec6aff68????????64a1????????5081ecf8000000":
+"558bec6aff68????????64a1????????5081ec0801000056":
 __thiscall void Room::SaveState();
 
 "568b35????????578bf9833e0d":
@@ -96,19 +96,21 @@ __thiscall uint32_t Room::GetBossVictoryJingle();
 __thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
 */
 
-"558bec8b55??56578b02":
+"558bec518b55??5356578b0283f801":
 __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
 "558bec83e4f883ec0c538bc1":
 __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
 
-"558bec83e4f85153568bf18b0d":
+//changed in rep+
+/*"558bec83e4f85153568bf18b0d":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
+*/
 
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
-"558bec83e4f883ec14538bd956578b43??8148??00400000":
+"558bec83e4f883ec0c538bd9568b75":
 __thiscall void Room::MamaMegaExplosion(Vector * Position);
 
 "558bec83e4f883ec1c5356578bf98b47":
@@ -117,26 +119,31 @@ __thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
 "558bec8b41??8b55":
 __thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6056":
+__thiscall KColor Room::GetFloorColorAt(Vector& pos, float radius<xmm3>);
+
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
 {{
-	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
-	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
-	inline EntityList* GetEntityList() { return (EntityList*)((char*)this + 0x1218); }
-	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1c90); } // doing this the lazy way while FXLayers isn't exposed
+	inline Camera* GetCamera() { return this->_Camera; }
+	inline bool GetRedHeartDamage() { return this->_redHeartDamage; }
+	inline EntityList* GetEntityList() { return &this->_entityList; }
+	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1b10); } // doing this the lazy way while FXLayers isn't exposed
 	inline float* GetWaterAmount() { return &this->_waterAmount; }
-	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
-	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }
+	inline KColor* GetWaterColor() { return &this->_waterColor; }
+	inline KColor* GetWaterColorMultiplier() { return &this->_waterColorMultiplier; }
 	
 	// Initially, the base water color was erroneously defined as a Color and not a KColor occupying 0x7168. Color takes more bytes in memory.
 	// Due to this, when setting the color, some arbitrary bytes ahead of the water color were being set.
 	// While the true nature of these bytes aren't yet understood, the one at 0x7178 seems to control whether water color is rendered.
+	
+	// REP+ Figure out what this is/was and update offset
 	inline int* GetUnknownWaterInt() { return (int*)((char*)this + 0x7178 ); }
 	
-	inline ColorMod* GetFloorColor() { return (ColorMod*)((char*)this + 0x7188 ); }
-	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
-    inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
-	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
-    inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
+	inline ColorMod* GetFloorColor() { return &this->_floorColor; }
+	inline TemporaryEffects* GetTemporaryEffects() {return &this->_temporaryEffects; }
+    inline Backdrop* GetBackdrop() { return &this->_backdrop; }
+	inline Vector* GetWaterCurrent() {return &this->_waterCurrent; }
+    inline RailType* GetRails() { return (RailType*)((char*)this + 0x746c); }
     inline RailType GetRailType(uint16_t gridIndex) { return GetRails()[gridIndex]; }
     inline void SetRailType(uint16_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
     static bool LIBZHL_API IsValidRailType(int rail);
@@ -154,26 +161,31 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     GridEntity* _doors[8] : 0x724;
     uint32_t _doorGridPositions[8] : 0x744;
 	int _roomClearDelay : 0x11ec;
-    Camera *_Camera : 0x11f8;
-	uint32_t _bossId : 0x1d1c;
+    Camera* _Camera : 0x11f8;
+	uint32_t _bossId : 0x1bb0;
+	Backdrop _backdrop : 0x1bc8;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
-	deque_ShopRestockDesc _shopItemDeque : 0x6f64;
-	int _slowdownDuration : 0x7120;
-	int _greedWaveTimer : 0x7130;
-	float _waterAmount : 0x7134;
-	bool _pacifist : 0x7185;
-	ColorMod _wallColor : 0x71b4;
-    TemporaryEffects _temporaryEffects : 0x71f4;
-	int _numRainSpawners : 0x7338;
-	float _rainIntensity : 0x733c;
-	RailManager _railManager : 0x734c;
-	float _lavaIntensity : 0x7624;
-	Entity_Effect* _redDoorOutlines[8] : 0x7628;
+	deque_ShopRestockDesc _shopItemDeque : 0x7070;
+	int _slowdownDuration : 0x7220;
+	int _greedWaveTimer : 0x723c;
+	float _waterAmount : 0x7240;
+	KColor _waterColor : 0x7244;
+	KColor _waterColorMultiplier : 0x7258;
+	bool _pacifist : 0x72a1;
+	ColorMod _floorColor : 0x72a4;
+	ColorMod _wallColor : 0x72d0;
+    TemporaryEffects _temporaryEffects : 0x7310;
+	int _numRainSpawners : 0x7454;
+	float _rainIntensity : 0x7458;
+	Vector _waterCurrent : 0x7460;
+	RailManager _railManager : 0x7468;
+	float _lavaIntensity : 0x7740;
+	Entity_Effect* _redDoorOutlines[8] : 0x7744;
 
-    "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
+    "558bec6aff68????????64a1????????5083ec305657a1????????33c5508d45??64a3????????8b75":
     bool save_entity(Entity* entity, EntitySaveState* data, bool unk);
 
-    "558bec83e4f883ec1c5356578b7d088bf1":
+    "558bec83e4f883ec245356578b7d??8bd9":
     void restore_entity(Entity* entity, EntitySaveState* data);
-} : 0x777c;
+} : 0x7898;

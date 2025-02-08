@@ -1,50 +1,66 @@
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ece8010000a1????????33c58945??5657508d45??64a3????????8bf9":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ece8000000a1????????33c58945??5657508d45??64a3????????8bf9c787????????8096184b":
 __thiscall void HUD::Render();
 
-"558bec515356578bf980bf????????00":
+"558bec5153568bf15780be????????0074":
 __thiscall void HUD::Update();
 
 "558bec83e4f85153568bd9":
 __thiscall void HUD::PostUpdate();
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8bf180be????????00":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec98000000a1????????33c58945??5657508d45??64a3????????8bf1":
 __thiscall void HUD::LoadGraphics();
 
-"558bec8b55??33c0391174??4081c1b006000083f80872??5dc20400":
+"558bec8b55??33c0391174??4081c1e006000083f80872??5dc20400":
 __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec48020000":
-__stdcall void HUD::ShowItemText(Entity_Player * param_1, ItemConfig_Item * param_2);
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0000000a1????????33c58945??5657508d45??64a3????????898d":
+__thiscall void HUD::ShowItemText(Entity_Player * param_1, ItemConfig_Item * param_2);
 
-"558bec83e4f883ec1c807d??00":
+/*"558bec83e4f883ec1c807d??00":
 __thiscall void HUD::ShowItemTextCustom(wchar_t * title, wchar_t * subtitle, bool isSticky, bool isCurseDisplay);
+*/
 
-"558bec81eca8010000":
+"558bec5153565733c08d91????????90803a0074??4081c2f401000083f80672??5f5e5b595dc2100069c0f4010000":
 __thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool isSticky, bool isCurseDisplay);
 
-"558bec83e4f883ec188bd1":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
+
+"558bec8b55??85d274??33c0":
+__thiscall void HUD::InvalidateCraftingItem(Entity_Player * player);
+
+// 0 = Normal
+// 1 = Jacob & Esau
+// 2 = Compact (Used for co-op players, and for P1 if there are >2 players)
+// 3 = J&E Compact (Used for J&E if they are not P1 or if there are >3 players)
+"558bec53568b35????????8bd1":
+__thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player);
 
 
 
 struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
-	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
+	inline PlayerHUD* GetPlayerHUD(int index) {
+		if (index < 0 || index > 7) {
+			return nullptr;
+		}
+		return &this->_playerHUD[index];
+	}
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
-    ANM2 _chargeBarSprite : 0xc36e8;
-    ANM2 _heartsSprite : 0xc37fc;
-    ANM2 _pickupHUDSprite : 0xc3910;
-    ANM2 _cardsPillsSprite : 0xc3a44;
-    ANM2 _streakSprite : 0xc3b58;
-    ANM2 _fortuneSprite : 0xc3c6c;
-	ANM2 _oldHUDStatsSprite : 0xc3d80;
-	float _bossHPBarFill : 0xc3ea4;
-	bool _isVisible : 0xc3eb6;
-	int _hudRefreshType : 0xc3eb8;
-	int _hudRefreshCountdown : 0xc3ec0;
-	ANM2 _coopMenuSprite : 0xc3ec4;
-	ANM2 _inventorySprite : 0xc3fd8;
-	ANM2 _craftingTableSprite : 0x0c40ec;
-	ANM2 _poopSpellsSprite : 0xc4200;
-	StatHUD _statHUD : 0xc4314;
-} : 0xc45f0;
+    ANM2 _chargeBarSprite : 0x3798;
+    ANM2 _heartsSprite : 0x38ac;
+    ANM2 _pickupHUDSprite : 0x39c0;
+    ANM2 _cardsPillsSprite : 0x3be8;
+    ANM2 _streakSprite : 0x5278;
+    ANM2 _fortuneSprite : 0x5394;
+	//ANM2 _oldHUDStatsSprite : 0xc3d80;
+	float _bossHPBarFill : 0x54b0;
+	bool _isVisible : 0x54e4;
+	int _hudRefreshType : 0x54e8;
+	int _hudRefreshCountdown : 0x54f0;
+	ANM2 _coopMenuSprite : 0x54f4;
+	ANM2 _inventorySprite : 0x5608;
+	ANM2 _craftingTableSprite : 0x571c;
+	ANM2 _poopSpellsSprite : 0x5830;
+	StatHUD _statHUD : 0x59b4;
+} : 0x5c90;

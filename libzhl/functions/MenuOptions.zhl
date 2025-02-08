@@ -15,4 +15,4 @@ struct Menu_Options depends (ANM2) {
     int HoldUpDownCounter : 0x250;
     int _someState : 0x258; /* if == 3 then save options */
     uint32_t _somethingLanguageRelated : 0x25c;
-} : 0x26c;
+} : 0x288;

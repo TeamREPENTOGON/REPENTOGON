@@ -140,6 +140,7 @@ namespace lua {
 		_metatable_idx_from_name["RNG"] = Metatables::RNG;
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
 		_metatable_idx_from_name["Font"] = Metatables::FONT;
+		_metatable_idx_from_name["FontRenderSettings"] = Metatables::FONTRENDERSETTINGS;
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
 		_metatable_idx_from_name["Costume"] = Metatables::COSTUME;
 		_metatable_idx_from_name["EntityList"] = Metatables::ENTITY_LIST;
@@ -206,6 +207,7 @@ namespace lua {
 		_metatable_idx_from_name["const RNG"] = Metatables::CONST_RNG;
 		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
 		_metatable_idx_from_name["const Font"] = Metatables::CONST_FONT;
+		_metatable_idx_from_name["const FontRenderSettings"] = Metatables::CONST_FONTRENDERSETTINGS;
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
 		_metatable_idx_from_name["const Costume"] = Metatables::CONST_COSTUME;
 		_metatable_idx_from_name["const EntityList"] = Metatables::CONST_ENTITY_LIST;
@@ -455,15 +457,15 @@ namespace lua {
 
 		namespace index {
 			static const HookSystem::ArgData* argdata = nullptr;
-			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", typeid(lua_CFunction),
-				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)&indexMetaMethod);
+			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", "", typeid(lua_CFunction),
+				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)&indexMetaMethod, true);
 		}
 
 		lua_CFunction newIndexMetaMethod;
 		namespace newIndex {
 			static const HookSystem::ArgData* argdata = nullptr;
-			static FunctionDefinition newIndexMetaMethodDef("luabridge::Namespace::ClassBase::newIndexMetaMethod", typeid(lua_CFunction),
-				"558bec53568b7508576a0156ff15????????8b1d", argdata, 1, 0, (void**)&newIndexMetaMethod);
+			static FunctionDefinition newIndexMetaMethodDef("luabridge::Namespace::ClassBase::newIndexMetaMethod", "", typeid(lua_CFunction),
+				"558bec53568b7508576a0156ff15????????8b1d", argdata, 1, 0, (void**)&newIndexMetaMethod, true);
 		}
 	}
 
@@ -596,6 +598,16 @@ namespace lua {
 		lua_pushvalue(_L, idx);
 		++_n;
 		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushluaref(int idx, int ref) {
+		lua_rawgeti(_L, idx, ref);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushluaref(int ref) {
+		return pushluaref(LUA_REGISTRYINDEX, ref);
 	}
 
 	LuaCaller& LuaCaller::push(const char* fmt, va_list va) {

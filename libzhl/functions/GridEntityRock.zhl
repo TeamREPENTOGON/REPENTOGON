@@ -1,4 +1,4 @@
-"558bec81ec64010000":
+"558bec81ec68010000":
 static cleanup void GridEntity_Rock::SpawnDrops(const Vector& pos<ecx>, int GridEntityType<edx>, int GridEntityVariant, unsigned int Seed, bool Unk, int BackdropType );
 
 "558bec83e4f881eccc00000053":
@@ -7,8 +7,8 @@ __thiscall void GridEntity_Rock::RenderTop(const Vector& pos);
 "558bec83ec1c5356578bf9f30f7e05":
 __thiscall void GridEntity_Rock::TrySpawnWorms();
 
-"558bec83ec0856578bf9837f??03":
-__thiscall void GridEntity_Rock::TrySpawnLadder();
+"558bec6aff68????????64a1????????5083ec0c535657a1????????33c5508d45??64a3????????8bc18945??8378??03":
+__thiscall bool GridEntity_Rock::TrySpawnLadder();
 
 "558bec83e4f883ec248bd18b42":
 __thiscall void GridEntity_Rock::UpdateNeighbors();
@@ -30,20 +30,23 @@ struct GridEntity_Rock : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??5657508d45??64a3????????8bf9897d??8b57":
+		"558bec6aff68????????64a1????????5081eca8000000a1????????33c58945??5657":
 		void Update();
 		
 		override
-		"558bec83e4f881ecd40000005356578d4424208bd950e8????????8b5508":
+		"558bec83e4f881ecd4000000":
 		void Render(Vector& offset);
 	
 		skip; // Hurt
 		
 		override
-        "558bec83ec40a1????????33c58945??538b1d":
-		bool Destroy(bool Immediate); 
+        "558bec83ec44a1????????33c58945??8b45":
+		bool Destroy(bool Immediate, EntityRef* Source); 
 		
-		skip; // GetWaterClipInfo
+		override
+		"558bec83ec088379??02":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

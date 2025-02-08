@@ -296,8 +296,8 @@ I(OPT_MISC_PAUSE_ON_FOCUS_LOST, u8"Pause on focus lost")
 I(OPT_REPENTOGON, u8"REPENTOGON")
 I(OPT_REPENTOGON_BETTER_VOID_GEN, u8"Better Void Generation")
 I(OPT_REPENTOGON_BETTER_VOID_GEN_MARK, u8"The Void now pulls rooms from all unlocked floors, including alt path.")
-I(OPT_REPENTOGON_HUSH_PANIC_FIX, u8"Hush AI Fixes")
-I(OPT_REPENTOGON_HUSH_PANIC_FIX_MARK, u8"Fixes vanilla bugs with Hush that cause attacks to come out and move faster than intended.")
+I(OPT_REPENTOGON_HUSH_LASER_FIX, u8"Hush Laser Speed Fix")
+I(OPT_REPENTOGON_HUSH_LASER_FIX_MARK, u8"Fixes a vanilla bug with Hush that causes lasers to move faster than intended.")
 I(OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, u8"Key Masters affect deal chances")
 I(OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES_MARK, u8"Killing Key Masters will raise the chance to spawn a deal, now consistent with killing other bums.")
 I(OPT_REPENTOGON_STAT_HUD_PLANETARIUM, u8"Planetarium Chance in Stat HUD")
@@ -320,6 +320,9 @@ I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK, u8"Sets the limit of how many item
 I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
 I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
 
+I(OPT_REPENTOGON_ECO_MODE, u8"Throttle the game while minimized")
+I(OPT_REPENTOGON_ECO_MODE_MARK, u8"This will stop the game from rendering and will apply a power usage optimization to the game while it's minimized. May affect mods that rely on render happening on every frame.")
+
 I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Extra debug render for FindInRadius")
 I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.")
 
@@ -330,6 +333,10 @@ I(OPT_EXTRA_HUD_MODES_MINI, u8"Mini")
 I(OPT_ANNOUNCER_MODES_RANDOM, u8"Random")
 I(OPT_ANNOUNCER_MODES_OFF, u8"Off")
 I(OPT_ANNOUNCER_MODES_ALWAYS_ON, u8"Always on")
+
+I(OPT_POPUP_MODES_OFF, u8"Off")
+I(OPT_POPUP_MODES_BIG, u8"BIG")
+I(OPT_POPUP_MODES_SMALL, u8"Small")
 
 I(OPT_CONSOLE_FOND_MODES_DEFAULT, u8"Default")
 I(OPT_CONSOLE_FOND_MODES_SMALL, u8"Small")

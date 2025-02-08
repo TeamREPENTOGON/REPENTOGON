@@ -19,12 +19,14 @@ int GetIsaacVersion()
 		else
 		{
 			unsigned int sz = pe->OptionalHeader.SizeOfImage;
-			if(sz == 2760704)
+			if (sz == 2760704)
 				g_Version = ISAAC_REBIRTH;
-			else if(sz == 3825664)
+			else if (sz == 3825664)
 				g_Version = ISAAC_AFTERBIRTH;
-			else if(sz == 8820440)
+			else if (sz == 8820440)
 				g_Version = ISAAC_REPENTANCE;
+			else if (sz == 8671696)
+				g_Version = ISAAC_REPENTANCEP;
 			else
 				g_Version = ISAAC_UNKNOWN;
 		}
