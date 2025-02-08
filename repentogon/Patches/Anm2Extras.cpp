@@ -159,11 +159,11 @@ CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool ch
 	const std::string path = NormalizeShaderPath(input_path);
 	auto& shader_map = champion ? custom_champion_shaders : custom_shaders;
 	if (shader_map.count(path) == 0) {
-		CustomShader customShader;
-		customShader.path = path;
-		if (!LoadCustomShader(path, &customShader.shader, champion))
+		shader_map[path].path = path;
+		if (!LoadCustomShader(path, &shader_map[path].shader, champion)) {
+			shader_map.erase(path);
 			return nullptr;
-		shader_map[path] = std::move(customShader);
+		}
 	}
 	return &shader_map[path];
 }
