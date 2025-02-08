@@ -93,14 +93,14 @@ LUA_FUNCTION(Lua_ItemConfigCard_ModdedCardFront_propget) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetInitialWeight) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	lua_pushnumber(L, config_EX->initialWeight);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetWeight) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	lua_pushnumber(L, config_EX->weight);
 	return 1;
 }
@@ -110,7 +110,7 @@ LUA_FUNCTION(Lua_ItemConfigCard_SetWeight) {
 	float weight = (float)luaL_checknumber(L, 2);
 
 	weight = max(weight, 0.0f);
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	config_EX->weight = weight;
 	config_EX->invalidateVanillaMethod = weight != 1.0f;
 
@@ -119,7 +119,7 @@ LUA_FUNCTION(Lua_ItemConfigCard_SetWeight) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetAvailabilityCondition) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, config_EX->availabilityFuncRef);
 	return 1;
@@ -127,7 +127,7 @@ LUA_FUNCTION(Lua_ItemConfigCard_GetAvailabilityCondition) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_SetAvailabilityCondition) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	config_EX->SetAvailabilityCondition(L, 2);
 	return 0;
@@ -135,7 +135,7 @@ LUA_FUNCTION(Lua_ItemConfigCard_SetAvailabilityCondition) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_ClearAvailabilityCondition) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	config_EX->ClearAvailabilityCondition(L);
 	return 0;
@@ -143,7 +143,7 @@ LUA_FUNCTION(Lua_ItemConfigCard_ClearAvailabilityCondition) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetHidden) {
 	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	lua_pushboolean(L, config_EX->hidden);
 	return 1;

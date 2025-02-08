@@ -344,6 +344,8 @@ namespace lua {
         LuaCaller& push(const char* s, size_t len = 0);
         LuaCaller& pushnil();
         LuaCaller& pushvalue(int idx);
+        LuaCaller& pushluaref(int t, int ref);
+        LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
         LuaCaller& pushLuabridge(void* ptr, const char* meta); 

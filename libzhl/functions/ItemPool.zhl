@@ -49,6 +49,9 @@ __thiscall int ItemPool::ForceAddPillEffect(int32_t ID);
 "558bec6aff68????????64a1????????5083ec0c56a1????????33c5508d45??64a3????????c745??00000000":
 __thiscall int ItemPool::GetFirstItemPoolForCollectible(int collectible);
 
+"558bec538b5d??565733f6":
+__thiscall void ItemPool::GetItemPoolsForCollectible(int collectible, std_vector_uint* result);
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }

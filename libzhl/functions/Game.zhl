@@ -164,7 +164,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	
 	inline int GetGreedModeWave() { return this->_greedModeWave; }
 	
-	inline const unsigned int* GetLevelStateFlags() { return &this->_gameStateFlags; }
+	inline const unsigned int* GetLevelStateFlags() { return &this->_levelStateFlags; }
 	
 	inline RoomConfig* GetRoomConfig() { return &this->_roomConfig; }
 	
@@ -243,7 +243,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _enterDoor : 0x1831c;
 	uint32_t _dungeonPlacementSeed : 0x1832c;
 	uint32_t _greedModeWave : 0x18334;
-	unsigned int _stateFlags : 0x1839c;
+	unsigned int _levelStateFlags : 0x1839c;
 	vector_EntitySaveState _myosotisPickups : 0x183a4;
 	uint32_t _greedModeTreasureRoomIdx : 0x18370;
 	RoomConfig _roomConfig : 0x18910;

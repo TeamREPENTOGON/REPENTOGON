@@ -1230,12 +1230,20 @@ rawset(Isaac, "RemoveCallback", function(mod, callbackID, fn)
 	RemoveAllCallbacksIf(callbackID, function(callback) return callback.Function == fn end)
 end)
 
--- Replacing _UnloadMod doesn't seem to allow this to get called, so instead
--- for now I'm calling it at the end of MC_PRE_MOD_UNLOAD.
 local function RemoveAllCallbacksForMod(mod)
 	for callbackID, callbackData in pairs(Callbacks) do
 		RemoveAllCallbacksIf(callbackID, function(callback) return callback.Mod == mod end)
 	end
+end
+
+function _UnloadMod(mod)
+	-- _UnloadMod is called late into the shutdown process where it is not safe to run a callback.
+	-- We separately trigger MC_PRE_MOD_UNLOAD earlier in the shutdown process.
+	if not Isaac.IsShuttingDown() then
+		Isaac.RunCallback(ModCallbacks.MC_PRE_MOD_UNLOAD, mod, false)
+	end
+
+	RemoveAllCallbacksForMod(mod)
 end
 
 -- Runs a single callback function and checks the results.
@@ -1267,15 +1275,6 @@ local function DefaultRunCallbackLogic(callbackID, param, ...)
 			return ret
 		end
 	end
-end
-
-local function PreModUnloadCallbackLogic(callbackID, param, mod, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
-		RunCallbackInternal(callbackID, callback,  mod, ...)
-	end
-
-	-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
-	RemoveAllCallbacksForMod(mod)
 end
 
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
@@ -1489,7 +1488,6 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 -- Defines non-default callback handling logic to be used for specific callbacks.
 -- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
 local CustomRunCallbackLogic = {
-	[ModCallbacks.MC_PRE_MOD_UNLOAD] = PreModUnloadCallbackLogic,
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,

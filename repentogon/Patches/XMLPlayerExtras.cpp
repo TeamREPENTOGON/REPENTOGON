@@ -46,20 +46,7 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 	this->update_bone_hearts(); 
 }
 
-HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-
-	int orig = super();
-
-	if (!playerXML["healthtype"].empty()) {
-		int healthType = stoi(playerXML["healthtype"]);
-		if (healthType > 4 || healthType < 0) { // INVALID
-			return orig;
-		}
-		return healthType;
-	}
-	return orig;
-}
+// GetHealthType hook merged into the one in CustomCallbacks.cpp
 
 namespace PlayerStats {
 	float modCharacterSpeed = 0;

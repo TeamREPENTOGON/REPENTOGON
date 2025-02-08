@@ -199,7 +199,8 @@ LUA_FUNCTION(Lua_AddCollectible) {
 	const bool firstTimePickingUp = (bool)lua::luaL_optboolean(L, 4, true);  // aka "addConsumables"
 	const int activeSlot = LuaCheckActiveSlot(L, 5, false);
 	const int varData = (int)luaL_optinteger(L, 6, 0);
-	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData, 0);
+	const eItemPoolType pool = (eItemPoolType)luaL_optinteger(L, 7, POOL_TREASURE);
+	player->AddCollectible(itemID, charge, firstTimePickingUp, activeSlot, varData, pool);
 	return 0;
 }
 
@@ -2616,6 +2617,91 @@ LUA_FUNCTION(Lua_PlayerSetForgottenSwapFormCooldown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetRockBottomMoveSpeed) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomMoveSpeed);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomMoveSpeed) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomMoveSpeed = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRockBottomMaxFireDelay) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomMaxFireDelay);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomMaxFireDelay) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomMaxFireDelay = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRockBottomDamage) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomDamage);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomDamage) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomDamage = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRockBottomTearRange) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomTearRange);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomTearRange) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomTearRange = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRockBottomShotSpeed) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomShotSpeed);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomShotSpeed) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomShotSpeed = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRockBottomLuck) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, plr->_rockBottomLuck);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRockBottomLuck) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	plr->_rockBottomLuck = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2850,6 +2936,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetActionHoldDrop", Lua_PlayerSetActionHoldDrop },
 		{ "GetForgottenSwapFormCooldown", Lua_PlayerGetForgottenSwapFormCooldown },
 		{ "SetForgottenSwapFormCooldown", Lua_PlayerSetForgottenSwapFormCooldown },
+		{ "GetRockBottomMoveSpeed", Lua_PlayerGetRockBottomMoveSpeed },
+		{ "SetRockBottomMoveSpeed", Lua_PlayerSetRockBottomMoveSpeed },
+		{ "GetRockBottomMaxFireDelay", Lua_PlayerGetRockBottomMaxFireDelay },
+		{ "SetRockBottomMaxFireDelay", Lua_PlayerSetRockBottomMaxFireDelay },
+		{ "GetRockBottomDamage", Lua_PlayerGetRockBottomDamage },
+		{ "SetRockBottomDamage", Lua_PlayerSetRockBottomDamage },
+		{ "GetRockBottomTearRange", Lua_PlayerGetRockBottomTearRange },
+		{ "SetRockBottomTearRange", Lua_PlayerSetRockBottomTearRange },
+		{ "GetRockBottomShotSpeed", Lua_PlayerGetRockBottomShotSpeed },
+		{ "SetRockBottomShotSpeed", Lua_PlayerSetRockBottomShotSpeed },
+		{ "GetRockBottomLuck", Lua_PlayerGetRockBottomLuck },
+		{ "SetRockBottomLuck", Lua_PlayerSetRockBottomLuck },
+
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

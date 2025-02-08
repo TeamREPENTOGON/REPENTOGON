@@ -13,6 +13,8 @@
 #include "Level.h"
 #include "../LuaInit.h"
 #include "../Patches/MainMenuBlock.h"
+#include "../Patches/XMLData.h"
+#include "../Patches/EntityPlus.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -582,14 +584,30 @@ HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk, bool retBool) -> vo
 }
 
 HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void) {	//max hearts
-	if (!CallbackState.test(1009 - 1000)) {
-		super(amount, ignoreKeeper);
-	}
-	else {
+	if (CallbackState.test(1009 - 1000)) {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
 		amount = heartcount.value_or(amount);
+	}
+
+	const int healthType = this->GetHealthType();
+	const bool noHeartContainers = healthType == 1 || healthType == 2 || healthType == 4;
+	if (noHeartContainers && amount < 0 && this->_maxHearts > 0) {
+		// If the player has heart containers somehow when they shouldn't be able to, the game won't let you remove them.
+		// This added logic allows "illegal" max hearts to be removed properly.
+		// We do enforce that health type changes convert heart containers if necessary in the GetHealthType hook, but having
+		// this logic as well allows mods to potentially convert the invalid health themselves if they want.
+		trigger_max_hearts_removed(std::min(-amount, this->_maxHearts));
+		this->_maxHearts = std::max(this->_maxHearts + amount, 0);
+		this->_redHearts = std::min(this->_redHearts, this->_maxHearts + this->_boneHearts * 2);
+		AdjustBlackHearts();
+		update_greeds_gullet();
+		update_red_hearts();
+		update_golden_hearts(false);
+		update_bone_hearts();
+	} else {
 		super(amount, ignoreKeeper);
 	}
+	
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
 	}
@@ -1433,8 +1451,47 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 	return price;
 }
 
-//PLAYER_GET_HEALTH_TYPE (id: 1067)
+// MC_PLAYER_GET_HEALTH_TYPE (1067) and MC_PRE_PLAYER_HEALTH_TYPE_CHANGE (1128)
 HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
+	int vanillaHealthType = super();
+	int defaultHealthType = vanillaHealthType;
+
+	// Check for HealthType specified in players.xml
+	XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
+	if (!playerXML["healthtype"].empty()) {
+		const int xmlHealthType = stoi(playerXML["healthtype"]);
+		if (xmlHealthType >= 0 && xmlHealthType <= 4) {
+			defaultHealthType = xmlHealthType;
+		}
+	}
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
+
+	if (!playerPlus || playerPlus->disableHealthTypeModification) {
+		return defaultHealthType;
+	} else if (playerPlus->evaluatingHealthType) {
+		// Prevent recursion.
+		return playerPlus->previousHealthType > -1 ? playerPlus->previousHealthType : defaultHealthType;
+	}
+
+	playerPlus->evaluatingHealthType = true;
+
+	int previousHealthType = vanillaHealthType;
+
+	if (playerPlus->previousHealthType > -1) {
+		previousHealthType = playerPlus->previousHealthType;
+	}
+
+	int healthType = defaultHealthType;
+
+	if (playerPlus && playerPlus->customCacheResults.find("healthtype") != playerPlus->customCacheResults.end()) {
+		const int cacheHealthType = (int)playerPlus->customCacheResults["healthtype"];
+		if (cacheHealthType >= 0 && cacheHealthType <= 4) {
+			healthType = cacheHealthType;
+		}
+	}
+
+	// MC_PLAYER_GET_HEALTH_TYPE
 	const int callbackid = 1067;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1445,15 +1502,130 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetPlayerType())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(previousHealthType)
+			.push(defaultHealthType)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+		if (!result && lua_isinteger(L, -1)) {
+			const int luaHealthType = (int)lua_tointeger(L, -1);
+			if (luaHealthType >= 0 && luaHealthType <= 4) {
+				healthType = luaHealthType;
 			}
 		}
 	}
-	return super();
+
+	// If the player's health type changes dynamically, convert their health as necessary to avoid bugs from health they should not be able to have.
+	if (healthType != previousHealthType) {
+		// Update this right away to mitigate weirdness from any recursive calls.
+		playerPlus->previousHealthType = healthType;
+
+		bool convertHeartContainers = true;
+
+		// MC_PLAYER_HEALTH_TYPE_CHANGE
+		const int callbackid = 1128;
+		if (CallbackState.test(callbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(this->GetPlayerType())
+				.push(this, lua::Metatables::ENTITY_PLAYER)
+				.push(healthType)
+				.push(previousHealthType)
+				.push(defaultHealthType)
+				.call(1);
+
+			if (!result && lua_isboolean(L, -1)) {
+				convertHeartContainers = (bool)lua_toboolean(L, -1);
+			}
+		}
+
+		if (healthType == 1) {  // Soul
+			this->_redHearts = 0;
+			this->_rottenHearts = 0;
+			if (this->_maxHearts > 0) {
+				const int oldMaxHearts = this->_maxHearts;
+				this->trigger_max_hearts_removed(oldMaxHearts);
+				this->_maxHearts = 0;
+				if (convertHeartContainers) {
+					this->_soulHearts += oldMaxHearts;
+					// Shift masks to make it seem like the heart containers were converted "in place".
+					const int shift = oldMaxHearts / 2;
+					this->_blackHearts <<= shift;
+					this->_boneHeartsMask <<= shift;
+				} else if (this->_soulHearts == 0 && this->_boneHearts == 0) {
+					this->_soulHearts = 1;
+				}
+			}
+		} else if (healthType == 2) {  // No Health
+			this->_rottenHearts = 0;
+			this->_boneHeartsMask = 0;
+			this->_boneHearts = 0;
+			this->_eternalHearts = 0;
+			this->_redHearts = 0;
+			this->_blackHearts = 0;
+			this->_soulHearts = 1;
+			if (this->_maxHearts > 0) {
+				this->trigger_max_hearts_removed(this->_maxHearts);
+				this->_maxHearts = 0;
+			}
+		} else if (healthType == 3) {  // Coin
+			this->_rottenHearts = 0;
+			this->_boneHeartsMask = 0;
+			this->_boneHearts = 0;
+			this->_soulHearts = 0;
+			this->_blackHearts = 0;
+			if (this->_maxHearts == 0) {
+				this->_maxHearts = 2;
+			}
+			if (this->_redHearts < 2) {
+				this->_redHearts = 2;
+			} else if (this->_redHearts % 2 != 0) {
+				this->_redHearts++;
+			}
+		} else if (healthType == 4 && this->_maxHearts > 0) {  // Bone
+			if (convertHeartContainers) {
+				const int convertedBoneHearts = this->_maxHearts / 2;
+				for (int i = 0; i < convertedBoneHearts; i++) {
+					// Shift masks to make it seem like the heart containers were converted "in place".
+					this->_boneHeartsMask <<= 1;
+					this->_boneHeartsMask++;
+					this->_boneHearts++;
+				}
+			} else if (this->_soulHearts == 0 && this->_boneHearts == 0) {
+				if (this->_maxHearts > 2) {
+					this->trigger_max_hearts_removed(this->_maxHearts - 2);
+				}
+				this->_boneHearts = 1;
+				this->_boneHeartsMask = 1;
+			} else {
+				this->trigger_max_hearts_removed(this->_maxHearts);
+			}
+			this->_maxHearts = 0;
+
+			const int newMax = this->_boneHearts * 2;
+			if (this->_redHearts > newMax) {
+				this->_redHearts = newMax;
+			}
+		}
+
+		this->AdjustBlackHearts();
+		this->update_greeds_gullet();
+		this->update_red_hearts();
+		this->update_bone_hearts();
+		//this->update_golden_hearts();
+	}
+
+	playerPlus->evaluatingHealthType = false;
+
+	return healthType;
+}
+
+HOOK_STATIC(LuaEngine, PostPlayerInit, (Entity_Player* player) -> void, _stdcall) {
+	player->GetHealthType();  // Trigger GetHealthType callback on init.
+	super(player);
 }
 
 //PRE_FAMILIAR_RENDER (id: 1080)
@@ -3673,7 +3845,7 @@ struct GridRenderCallback callbacks[8] = {
 
 HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
-	for (int i = 5; i < 7; i++) {
+	for (int i = 6; i < 8; i++) {
 		if (gridType == callbacks[i].type)
 		{
 			GridEntityRenderInputs inputs = { this, offset };

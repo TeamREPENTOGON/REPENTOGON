@@ -320,6 +320,9 @@ I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK, u8"Sets the limit of how many item
 I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
 I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
 
+I(OPT_REPENTOGON_ECO_MODE, u8"Throttle the game while minimized")
+I(OPT_REPENTOGON_ECO_MODE_MARK, u8"This will stop the game from rendering and will apply a power usage optimization to the game while it's minimized. May affect mods that rely on render happening on every frame.")
+
 I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Extra debug render for FindInRadius")
 I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.")
 

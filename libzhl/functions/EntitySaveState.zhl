@@ -20,8 +20,30 @@ struct EntitySaveState depends (Vector) {
 	unsigned int _dropSeed : 0x38; // 0x34
     int spawnerType : 0x3c; // 0x3C
     int spawnerVariant : 0x40; // 0x40
-	float floatStorage1 : 0x44; // 0x44
-	float floatStorage2 : 0x48; // 0x48
-	unsigned int intStorage8: 0x4c; // 0x4c
-	int8_t byteStorage : 0x50; // 0x50
-} : 0x68; // 0x68
+	float floatStorage1 : 0x50; // 0x50
+	float floatStorage2 : 0x54; // 0x54
+	unsigned int intStorage8: 0x58; // 0x58
+	int8_t byteStorage : 0x5c; // 0x5c
+
+	{{
+		struct Collectible;
+	}}
+} : 0x70; // 0x70
+
+{{
+	struct EntitySaveState::Collectible
+	{
+		static inline int* GetCharge(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; }
+		static inline int* GetPrice(EntitySaveState& saveState) { return (int*)&saveState.intStorage3; }
+		static inline bool* GetAutoUpdatePrice(EntitySaveState& saveState) { return (bool*)&saveState.byteStorage; }
+		static inline int* GetShopItemId(EntitySaveState& saveState) { return (int*)&saveState.intStorage4; }
+		static inline bool* GetTouched(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage1; }
+		static inline int* GetOptionsPickupIndex(EntitySaveState& saveState) { return (int*)&saveState._intStorage7; }
+		static inline int* GetTimeout(EntitySaveState& saveState) { return (int*)&saveState.intStorage5; }
+		static inline bool* GetIsBlind(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage2; }
+		static inline int* GetAlternatePedestal(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
+		static inline int* GetActiveVarData(EntitySaveState& saveState) { return (int*)&saveState.intStorage8; }
+		static inline int* GetSourcePoolType(EntitySaveState& saveState) { return (int*)&saveState.floatStorage1; }
+		static inline EntitySaveState* GetFlipSaveState(EntitySaveState& saveState) { return *(EntitySaveState**)((char*)&saveState + 0x68); }
+	};
+}}

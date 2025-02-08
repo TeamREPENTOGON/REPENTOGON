@@ -93,15 +93,16 @@ void PatchPreLaserCollision() {
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	const int callbackid = 11;
-	if (VanillaCallbackState.test(callbackid)) {
-		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		// As pointers so we can modify them :)
-		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
-		float* damage = (float*)(ebp + 0x08);
-		int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
-		EntityRef** source = (EntityRef**)(ebp + 0x14);
-		int* damageCountdown = (int*)(ebp + 0x18);
 
+	// Obtain inputs as offsets from EBP (same way the compiled code reads them).
+	// As pointers so we can modify them :)
+	uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
+	float* damage = (float*)(ebp + 0x08);
+	int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
+	EntityRef** source = (EntityRef**)(ebp + 0x14);
+	int* damageCountdown = (int*)(ebp + 0x18);
+
+	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -201,6 +202,10 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 		}
 	}
 
+	if (isPlayer) {
+		*damage = (float)*damageHearts;
+	}
+
 	return true;
 }
 
@@ -261,11 +266,11 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
-		float damage = *(float*)(ebp + 0x08);
-		int damageHearts = isPlayer ? *(int*)(ebp - 0x100) : 0;
+		const unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
+		const float damage = *(float*)(ebp + 0x08);
+		const int damageHearts = (int)std::round(damage);
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
-		int damageCountdown = *(int*)(ebp + 0x18);
+		const int damageCountdown = *(int*)(ebp + 0x18);
 
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
 			// The white fireplace is a unique case where the game considers the player to have taken "damage"
@@ -1351,5 +1356,42 @@ void ASMPatchMainMenuCallback() {
 		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Historically, MC_PRE_MOD_UNLOAD also runs during game shutdown, when the LuaEngine is being destroyed.
+// However, this happens late into the shutdown process, after Game and Manager are already destroyed,
+// so any code running on this callback at this time is very likely to crash the game.
+// Here we trigger MC_PRE_MOD_UNLOAD earlier in the shutdown process (after the game has saved, but
+// before stuff starts getting destroyed) as well as pass a boolean indicating the ongoing shutdown.
+// Separately we've also ensured that the default MC_PRE_UNLOAD_TRIGGER (_UnloadMod) does not run
+// the callback during shutdown.
+void __stdcall RunPreModUnloadCallbacks() {
+	for (const ModReference& mod : g_Mods) {
+		const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.pushluaref(mod._luaTableRef->_ref)
+			.push(true)
+			.call(1);
+	}
+}
+void ASMPatchPreModUnloadCallbackDuringShutdown() {
+	SigScan scanner("b9????????e8????????8b35????????85f674??8bcee8");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching earlier MC_PRE_MOD_UNLOAD in Isaac::Shutdown at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(RunPreModUnloadCallbacks)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the push we overwrote
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }

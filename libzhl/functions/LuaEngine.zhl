@@ -28,6 +28,9 @@ __thiscall void LuaEngine::RunScript(const char *path);
 "558bec83e4f88b15????????56578bf9":
 __thiscall void LuaEngine::destroy();
 
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????8965??8b15????????8b75??c745??09000000":
+static __stdcall void LuaEngine::PostPlayerInit(Entity_Player* player);
+
 "558bec6aff68????????64a1????????5083ec20535657a1????????33c5508d45??64a3????????8965??8b15????????8b75??c745??0b000000":
 __thiscall bool LuaEngine::EntityTakeDamage(Entity* entity, float damage<xmm2>, unsigned long long damageFlags, EntityRef* source, int damageCountdown);
 
@@ -80,7 +83,8 @@ struct LuaEngine depends (RunCallbackRegistry, Entity_Player) {
 
 	}}
 	
-    RunCallbackRegistry* runCallbackRegistry : 0x10; // 0x10
-    lua_State* _state : 0x18; // 0x18
-    int32_t _runCallbackRegistryKey : 0x1c; // 0x1C
-};
+    RunCallbackRegistry* runCallbackRegistry : 0x10;
+    LuaBridgeRef* _unloadModFuncRef : 0x14;
+    lua_State* _state : 0x18;
+    int32_t _runCallbackRegistryKey : 0x1c;
+} : 0x268;

@@ -237,4 +237,16 @@ namespace ASMPatches {
 		PatchResourcePath();
 		PatchPushResourcePath();
 	}
+
+	void PatchGotInvaldParameterReadingChallengesXml() {
+		SigScan scanner("5068????????6a03e8????????83c40ce9????????50");
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
+
+		printf("[REPENTOGON] Patching to suppress log warning for \"invald\" parameters in challenges.xml at % p\n", addr);
+
+		ASMPatch patch;
+		patch.AddRelativeJump((char*)addr + 0x10);
+		sASMPatcher.PatchAt(addr, &patch);
+	}
 }
