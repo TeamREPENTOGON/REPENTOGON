@@ -12,7 +12,7 @@ Same as vanilla, but much faster.
 
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
-#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, [EntityPartition](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 
 ___
@@ -124,7 +124,7 @@ ___
 
 ___
 ### GetBackdropIdByName () {: aria-label='Functions' }
-#### int GetBackdropIdByName ( ) {: .copyable aria-label='Functions' }
+#### int GetBackdropIdByName ( string BackdropName ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBossColorIdxByName () {: aria-label='Functions' }
@@ -222,7 +222,7 @@ ___
 Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
-#### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
+#### int GetNullItemIdByName ( string NullItemName ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPersistentGameData () {: aria-label='Functions' }
@@ -230,7 +230,7 @@ ___
 
 ___
 ### GetPoolIdByName () {: aria-label='Functions' }
-#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( ) {: .copyable aria-label='Functions' }
+#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( string PoolName ) {: .copyable aria-label='Functions' }
 Returns the ID of a given custom pool. Returns `-1` if the pool is not found.
 
 ___
@@ -323,7 +323,7 @@ Changes the music track for the current floor to match the input id. This change
 ___
 
 ### SetCurrentFloorName () {: aria-label='Functions' }
-#### void SetCurrentFloorMusic ( string Name ) {: .copyable aria-label='Functions' }
+#### void SetCurrentFloorName ( string Name ) {: .copyable aria-label='Functions' }
 Changes the display name for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
 
 ___

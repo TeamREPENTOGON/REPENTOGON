@@ -76,11 +76,11 @@ ___
 ## Variables
 
 ### BossDeathSeed {: aria-label='Variables' }
-#### int BossDeathSeed {: .copyable aria-label='Variables' }
+#### const int BossDeathSeed {: .copyable aria-label='Variables' }
 
 ___
 ### Doors {: aria-label='Variables' }
-#### int[] Doors {: .copyable aria-label='Variables' }
+#### const int[] Doors {: .copyable aria-label='Variables' }
 Allows you to check which level grid index each [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) in the room connects to.
 
 For example, `roomdesc.Doors[DoorSlot.UP0]` provides the level grid index that the upwards door would connect to.

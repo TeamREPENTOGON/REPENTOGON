@@ -36,7 +36,7 @@ ___
 
 ___
 ### GetItem () {: aria-label='Functions' }
-#### [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetItem ( ) {: .copyable aria-label='Functions' }
+#### [ItemConfigItem](ItemConfig_Item.md) GetItem ( ) {: .copyable aria-label='Functions' }
 Get the item config of the current glitched item.
 
 ___
@@ -57,7 +57,7 @@ ___
 
 ___
 ### GetTargetItem () {: aria-label='Functions' }
-#### [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetTargetItem ( ) {: .copyable aria-label='Functions' }
+#### [ItemConfigItem](ItemConfig_Item.md) GetTargetItem ( ) {: .copyable aria-label='Functions' }
 Returns the item config that was randomly selected by the current glitched item, or `nil` if it doesn't exist.
 
 ___

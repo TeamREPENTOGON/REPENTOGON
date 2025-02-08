@@ -29,7 +29,7 @@ ___
 
 ___
 ### GetItemConfig () {: aria-label='Functions' }
-#### [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetItemConfig ( ) {: .copyable aria-label='Functions' }
+#### [ItemConfig_Item](ItemConfig_Item.md) GetItemConfig ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlayerType () {: aria-label='Functions' }

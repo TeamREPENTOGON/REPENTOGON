@@ -197,6 +197,8 @@ ___
 ___
 ### GetSpeedMultiplier () {: aria-label='Functions' }
 #### float GetSpeedMultiplier ( ) {: .copyable aria-label='Functions' }
+???+ warning "Depreciation notice"
+    This variable is actually the Entity's time scale. A properly named replacement function will be added in a future version.
 
 ___
 ### GetType () {: aria-label='Functions' }
@@ -336,6 +338,8 @@ ___
 ___
 ### SetSpeedMultiplier () {: aria-label='Functions' }
 #### void SetSpeedMultiplier ( float Amount ) {: .copyable aria-label='Functions' }
+???+ warning "Depreciation notice"
+    This variable is actually the Entity's time scale. A properly named replacement function will be added in a future version.
 
 ___
 ### SetWeaknessCountdown () {: aria-label='Functions' }

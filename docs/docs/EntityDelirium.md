@@ -69,13 +69,13 @@ Internal [I1](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#I1) value 
 ___
 ### BossType {: aria-label='Variables' }
 [ ](#){: .const .tooltip .badge }
-#### int BossType {: .copyable aria-label='Variables' }
+#### const int BossType {: .copyable aria-label='Variables' }
 [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the boss Delirium is currently transformed as.
 
 ___
 ### BossVariant {: aria-label='Variables' }
 [ ](#){: .const .tooltip .badge }
-#### int BossVariant {: .copyable aria-label='Variables' }
+#### const int BossVariant {: .copyable aria-label='Variables' }
 Variant of the boss Delirium is currently transformed as.
 
 ___

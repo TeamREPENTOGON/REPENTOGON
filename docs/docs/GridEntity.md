@@ -17,11 +17,10 @@ ___
 
 ___
 ### HurtDamage () {: aria-label='Functions' }
-#### void HurtDamage ( [Entity](Entity.md) Entity, int Damage, int DamageFlags, float Unknown, boolean Unknown ) {: .copyable aria-label='Functions' }
+#### void HurtDamage ( [Entity](Entity.md) Entity, int PlayerDamage, int DamageFlags, float Damage, boolean ignoreGridCollision ) {: .copyable aria-label='Functions' }
 
-___
-### HurtSurroundings () {: aria-label='Functions' }
-#### void HurtSurroundings ( int Damage, int DamageFlags, float Unknown, boolean Unknown ) {: .copyable aria-label='Functions' }
+???+ bug "Bug"
+	  The value passed to the float Damage parameter (the intended damage amount to non-player entities) is currently ignored - will be fixed in a future update.
 
 ___
 ### IsBreakableRock () {: aria-label='Functions' }

@@ -204,7 +204,7 @@ Connects a Window or Popup element to another element, making said element act a
 
 ___
 ### PushNotification () {: aria-label='Functions' }
-#### void PushNotification ( const Text, [ImGuiNotificationType](enums/ImGuiNotificationType.md) notificationType = 0, int lifetime = 5000 ) {: .copyable aria-label='Functions' }        
+#### void PushNotification ( string Text, [ImGuiNotificationType](enums/ImGuiNotificationType.md) notificationType = 0, int lifetime = 5000 ) {: .copyable aria-label='Functions' }        
 Displays a pop-up message window in the style of a notification.
 ___
 ### RemoveCallback () {: aria-label='Functions' }

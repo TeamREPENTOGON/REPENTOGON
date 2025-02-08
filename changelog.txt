@@ -1,4 +1,6 @@
 v1.0.x -
+* Welcome to REPENTOGON+ !
+/newline/
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
@@ -20,14 +22,13 @@ Additions:
 * Level:
 	- Added overloads for CanPlaceRoom(AtDoor) and FindValidRoomPlacementLocations that accept a RoomShape and DoorMask instead of a RoomConfigRoom.
 * ModCallbacks:
-	[COMMENTED OUT, REVIEW!]- MC_PRE_PLAYER_POCKET_ITEM_SWAP(Player)
+	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
 		Return true to cancel pocket item swap.
-	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(Player)
+	- MC_PRE_TRIGGER_BED_SLEEP_EFFECT(EntityPlayer player)
 		Triggers if "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
 		Return true to cancel vanilla behavior.
-	[MIGHT BE AXED]- MC_POST_TRIGGER_BED_SLEEP_EFFECT(Player, Bed)
-	- MC_PRE_BED_SLEEP(Player, Bed)
+	- MC_PRE_BED_SLEEP(EntityPlayer player, EntityPickup bed)
 		Triggers on bed collision and before playing sleep sequence.
 		Return true to cancel vanilla behavior.
 	- MC_PRE_ENTITY_SET_COLOR(Entity entity, int duration, int priority, bool fadeOut, bool share)
@@ -41,10 +42,21 @@ Additions:
 		This only fires for `Entity:SetColor` and does not fire when changing the entity's color directly.
 	- MC_POST_PLAYER_TRIGGER_ROOM_CLEAR
 		Previously missing counterpart to MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
+	- MC_GET_STATUS_EFFECT_TARGET(Entity entity)
+		Fires when an Entity is about to recieve a status effect
+		Takes EntityType as its optional argument.
+		Return an Entity to apply the status effect to it instead (good for multi-segment enemies).
+	- MC_PRE/POST_STATUS_EFFECT_APPLY(StatusEffect statusID, Entity entity, EntityRef source, integer duration)
+		Triggers before/after applying a status effect
+		Takes the new StatusEffect enum as its optional argument
+		Return false on the PRE callback to cancel adding the status effect
 * New Enums:
 	- DoorMask
+* Room:
+	- GetWallColor()
 * Isaac:
 	- GetDoorMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
+* Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 Fixes:
@@ -65,6 +77,9 @@ Modified:
 * ImGui:
 	- Adding an element with the same id as an existing one will now replace the existing element instead of throwing an error.
 	- If an error is caused by a callback, imgui will now properly throw an error
+* ModCallbacks:
+	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
+		Added Count argument (how many instances of this effect were removed)
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
 Fixes:

@@ -5,7 +5,8 @@ local _ModCallbacks = ModCallbacks
 local _CollectibleType = CollectibleType
 local _MainMenuType = MainMenuType
 local _ButtonAction = ButtonAction
-local _SoundEffect = SoundEffect 
+local _SoundEffect = SoundEffect
+local _ButtonActionBitwise = ButtonActionBitwise
 
 local StatsMenuRep = {
     StatPageAngleOffsetX = -2,
@@ -191,13 +192,13 @@ local function RenderExtraStats()
             StatsMenuRep.ScheduleRefresh = false
         end
 
-        if IsActionTriggeredAll(_ButtonAction.ACTION_MENULEFT) then
+        if IsActionTriggeredAll(_ButtonAction.ACTION_MENULEFT) and MenuManager.GetInputMask() & _ButtonActionBitwise.ACTION_MENULEFT ~= 0 then
             SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
             StatsMenuRep.CurrentlyDisplayedCategoryID = (StatsMenuRep.CurrentlyDisplayedCategoryID - 1) % MaxCategoryID
             if StatsMenuRep.CurrentlyDisplayedCategoryID == 0 then
                 StatsMenuRep.CurrentlyDisplayedCategoryID = MaxCategoryID - 1
             end
-        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENURIGHT) then
+        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENURIGHT) and MenuManager.GetInputMask() & _ButtonActionBitwise.ACTION_MENURIGHT ~= 0 then
             SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
             StatsMenuRep.CurrentlyDisplayedCategoryID = math.max(
                 (StatsMenuRep.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)

@@ -31,7 +31,7 @@ Now accepts a `Force` argument to forcefully reset the charge instead of only ro
 
 ___
 ### GetCollectibleNum () {: aria-label='Modified Functions' }
-#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, bool IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
@@ -170,21 +170,13 @@ By some conditions, usually health-related, determines whether a player can use 
 
 ___
 ### CheckFamiliarEx () {: aria-label='Functions' }
-#### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+#### [EntityFamiliar](EntityFamiliar.md)[] CheckFamiliarEx ( int [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) Familiar, int TargetCount, [RNG](RNG.md) rng, [ItemConfigItem](ItemConfig_Item.md) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
-A version of [CheckFamiliar](EntityPlayer.md#checkfamiliar) that returns all familiars spawned by the function as a table.
+A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
 
 ___
 ### ClearCollectibleAnim () {: aria-label='Functions' }
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
-
-___
-### ClearItemAnimCollectible () {: aria-label='Functions' }
-#### void ClearItemAnimCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ID ) {: .copyable aria-label='Functions' }
-
-___
-### ClearItemAnimNullItems () {: aria-label='Functions' }
-#### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### ClearQueueItem () {: aria-label='Functions' }
@@ -779,8 +771,8 @@ Returns `true` if the player has the Faded Polaroid / Camo Undies effect active.
 
 ___
 ### IsItemCostumeVisible () {: aria-label='Functions' }
-#### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) Item, int PlayerSpriteLayerID ) {: .copyable aria-label='Functions' }
-#### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) Item, int PlayerSpriteLayerName ) {: .copyable aria-label='Functions' }
+#### boolean IsItemCostumeVisible ( [ItemConfig_Item](ItemConfig_Item.md) Item, int PlayerSpriteLayerID ) {: .copyable aria-label='Functions' }
+#### boolean IsItemCostumeVisible ( [ItemConfig_Item](ItemConfig_Item.md) Item, int PlayerSpriteLayerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsLocalPlayer () {: aria-label='Functions' }
@@ -964,6 +956,9 @@ ___
 ### SetFootprintColor () {: aria-label='Functions' }
 #### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, boolean RightFoot = false ) {: .copyable aria-label='Functions' }
 Sets the player's footprint color.
+
+???+ bug "Bug"
+	  This function currently crashes the game - will be fixed in a future update.
 
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }

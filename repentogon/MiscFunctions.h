@@ -76,4 +76,13 @@ namespace REPENTOGON {
 		return optionsPath.c_str();
 	}
 
+	enum GameStateSlot
+	{
+		NULL_SLOT = -1,
+		SAVE_FILE = 0,
+		GLOWING_HOURGLASS_1 = 1,
+		GLOWING_HOURGLASS_2 = 2,
+	};
+
+	GameStateSlot GetGameStateSlot(GameState* state);
 }
