@@ -290,7 +290,7 @@ Returns a table with the amount of each collectible the player has, without coun
 
 ___
 ### GetConceptionFamiliarFlags () {: aria-label='Functions' }
-#### int GetConceptionFamiliarFlags ( ) {: .copyable aria-label='Functions' }
+#### [ConceptionFamiliarFlag](enums/ConceptionFamiliarFlag.md) GetConceptionFamiliarFlags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
 
 ___
@@ -911,6 +911,8 @@ ___
 #### void SetBagOfCraftingSlot ( int SlotID, [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) PickupID ) {: .copyable aria-label='Functions' }
 Sets the specified slot in the player's Bag of Crafting to the specified pickup.
 
+If a slot is set to empty (0 - `BagOfCraftingPickup.BOC_NONE`) then all slots after it will automatically be shifted down to fill the empty space.
+
 ___
 ### SetBlackHeart () {: aria-label='Functions' }
 #### void SetBlackHeart ( int BlackHeart ) {: .copyable aria-label='Functions' }
@@ -1010,9 +1012,6 @@ ___
 ### SetFootprintColor () {: aria-label='Functions' }
 #### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, boolean RightFoot = false ) {: .copyable aria-label='Functions' }
 Sets the player's footprint color.
-
-???+ bug "Bug"
-	  This function currently crashes the game - will be fixed in a future update.
 
 ___
 ### SetForgottenSwapFormCooldown () {: aria-label='Functions' }
