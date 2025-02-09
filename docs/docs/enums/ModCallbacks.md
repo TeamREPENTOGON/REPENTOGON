@@ -989,9 +989,6 @@ Called before a GridEntity attempts to inflict damage on an entity.
 
 Return false if the entity or player should ignore the damage.
 
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
-
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
@@ -1000,9 +997,6 @@ Return false if the entity or player should ignore the damage.
 Called after a GridEntity attempts to inflict damage on an entity. Note that this does not guarantee that the entity actually took the damage (for example, if a player is currently invincible).
 
 Accepts no return parameters.
-
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1588,9 +1582,23 @@ Accepts an integer to change the minimum charge to use the active item. If the i
 ### MC_PLAYER_GET_HEALTH_TYPE {: .copyable }
 Accepts an [HealthType](HealthType.md) to change health type for the character.
 
+???+ warning "Warning"
+    Using this callback is often not the most efficient option. For players, prefer to set their `healthtype` in [players.xml](../xml/players.md). For items, effects and the like, prefer to use an [items.xml customcache](../xml/items.md).
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) CurrentHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+
+### MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable }
+Called when a player's health type changes, but before their existing health is corrected to fit their new health type.
+
+After this callback is finished, if the player's new health type does not support red heart containers, they will automatically be converted to an appropriate type (such as to soul hearts or bone hearts).
+
+You may modify the player's health differently within this callback if you so wish, such as removing the heart containers entirely. Just take care not to leave them with no health!
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1128 |MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) NewHealthType, [HealthType](HealthType.md) PreviousHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PLAYER_GET_HEART_LIMIT {: .copyable }
 Accepts an override `integer` for heart limit.

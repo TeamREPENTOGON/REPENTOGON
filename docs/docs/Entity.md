@@ -205,6 +205,11 @@ ___
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetWaterClipFlags () {: aria-label='Functions' }
+#### [WaterClipFlag](enums/WaterClipFlag.md) GetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Gets a bitset that informs some of how this entity interacts with water, primarily rendering related (reflections, etc).
+
+___
 ### GetWeaknessCountdown () {: aria-label='Functions' }
 #### int GetWeaknessCountdown ( ) {: .copyable aria-label='Functions' }
 
@@ -226,6 +231,11 @@ ___
 ### MakeGroundPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
 This function spawns two dust poof effects of subtypes 1 and 2; the second of which will be the the Child of the one returned.
+
+___
+### ResetWaterClipFlags () {: aria-label='Functions' }
+#### void ResetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Restores water rendering to the default vanilla state. See `SetWaterClipFlags()`.
 
 ___
 ### SetBaitedCountdown () {: aria-label='Functions' }
@@ -340,6 +350,15 @@ ___
 #### void SetSpeedMultiplier ( float Amount ) {: .copyable aria-label='Functions' }
 ???+ warning "Depreciation notice"
     This variable is actually the Entity's time scale. A properly named replacement function will be added in a future version.
+
+___
+### SetWaterClipFlags () {: aria-label='Functions' }
+#### void SetWaterClipFlags ( [WaterClipFlag](enums/WaterClipFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Allows modification of how this entity interacts with water, primarily rendering related behaviour such as reflections.
+
+Note that this will also override/disable any natural vanilla changes to these flags, such as the player losing their reflection with Charm of the Vampire.
+
+Vanilla state can be restored with `ResetWaterClipFlags()`.
 
 ___
 ### SetWeaknessCountdown () {: aria-label='Functions' }
