@@ -4,6 +4,10 @@ v1.0.x -
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
+* GridEntity
+	- [Get/Set/Reset]WaterClipFlags
+* Entity
+	- [Get/Set/Reset]WaterClipFlags
 * EntityPickup:
 	- GetMegaChest[Left/Right]Collectible
 	- Returns the other EntityPickup for a Mega Chest
@@ -50,8 +54,11 @@ Additions:
 		Triggers before/after applying a status effect
 		Takes the new StatusEffect enum as its optional argument
 		Return false on the PRE callback to cancel adding the status effect
+	- MC_PLAYER_HEALTH_TYPE_CHANGE
+		Runs when a player's health type changes, but before automatic health conversion
 * New Enums:
 	- DoorMask
+	- WaterClipFlag
 * Room:
 	- GetWallColor()
 * Isaac:
@@ -59,9 +66,16 @@ Additions:
 * Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
+* Added the following customcache for items.xml:
+	* "healthtype" - Re-evaluate the player's HealthType
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
+* Players can no longer get stuck with buggy heart containers when changed to soul/bone heart health types (they get converted by default).
+* EntityPlayer:
+	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
+* ItemConfig_Costume:
+	- Fixed SkinColor attribute (now provides a valid int and can be modified)
 * Level:
 	- TryPlaceRoom & related functions no longer consider a room placement valid if the only neighbor would be a secret room and "AllowSpecialNeighbors" is false.
 	- TryPlaceRoom(AtDoor) no longer automatically unlocks the door to the new room if placed adjacent to the player's current room.
@@ -80,6 +94,10 @@ Modified:
 * ModCallbacks:
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
 		Added Count argument (how many instances of this effect were removed)
+	- MC_PRE_MOD_UNLOAD(Mod, bool ShuttingDown)
+		Added boolean argument that identifies if it is running due to game shutdown
+		Now runs earlier during shutdown, so code is less likely to crash
+* reloadshaders command will now reload custom anm2 shaders
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
 Fixes:
@@ -92,6 +110,14 @@ Fixes:
 	- Many methods that did not work properly have been fixed
 	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes
 	- (EntityNPC.Pathfinder has been left unaffected for existing mod compatibility)
+* GridEntity
+	- Fixed HurtDamage crashing
+* EntityPlayer
+	- Fixed SetFootprintColor crashing
+* ModCallbacks
+	- Fixed the float DamageAmount attribute in MC(_POST)_GRID_HURT_DAMAGE
+	- Fixed MC_POST_ENTITY_TAKE_DMG sometimes providing 0 for players
+	- Fixed MC_PRE/POST_GRID_ENTITY_TELEPORTER_RENDER not running
 * Misc:
 	- Modded characters locked behind achievements no longer appear in the local co-op wheel.
 /newline/
