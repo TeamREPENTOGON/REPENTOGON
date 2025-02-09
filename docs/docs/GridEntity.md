@@ -16,15 +16,33 @@ ___
 #### [Vector](Vector.md) GetRenderPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetWaterClipFlags () {: aria-label='Functions' }
+#### [WaterClipFlag](enums/WaterClipFlag.md) GetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Gets a bitset that informs whether this GridEntity renders above or below water.
+
+Vanilla state can be restored with `ResetWaterClipFlags()`.
+
+___
 ### HurtDamage () {: aria-label='Functions' }
 #### void HurtDamage ( [Entity](Entity.md) Entity, int PlayerDamage, int DamageFlags, float Damage, boolean ignoreGridCollision ) {: .copyable aria-label='Functions' }
-
-???+ bug "Bug"
-	  The value passed to the float Damage parameter (the intended damage amount to non-player entities) is currently ignored - will be fixed in a future update.
 
 ___
 ### IsBreakableRock () {: aria-label='Functions' }
 #### void IsBreakableRock ( ) {: .copyable aria-label='Functions' }
+
+___
+### ResetWaterClipFlags () {: aria-label='Functions' }
+#### void ResetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Restores water rendering to the default vanilla state. See `SetWaterClipFlags()`.
+
+___
+### SetWaterClipFlags () {: aria-label='Functions' }
+#### void SetWaterClipFlags ( [WaterClipFlag](enums/WaterClipFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Allows modification of whether this GridEntity renders above or below water.
+
+Note that this will also disable any natural vanilla changes to these flags, such as a poop switching to rendering below water after being broken.
+
+Vanilla state can be restored with `ResetWaterClipFlags()`.
 
 ___
 ### ToDecoration () {: aria-label='Functions' }

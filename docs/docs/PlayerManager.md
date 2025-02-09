@@ -57,7 +57,7 @@ ___
 
 ___
 ### FirstTrinketOwner () {: aria-label='Functions' }
-#### [EntityPlayer](EntityPlayer.md) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, [RNG](RNG.md) RNG = nil, boolean LazSharedGlobalTag = true ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean LazSharedGlobalTag = true ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified trinket has never been picked up.
 
 ___
