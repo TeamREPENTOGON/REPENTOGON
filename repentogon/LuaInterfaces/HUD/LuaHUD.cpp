@@ -46,7 +46,36 @@ LUA_FUNCTION(Lua_HUDGetCardsPillsSprite) {
 
 LUA_FUNCTION(Lua_HUDGetStreakSprite) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_streakSprite;
+
+	ANM2* sprite = &hud->_messageMain._streakSprite;
+	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_HUDGetStackedStreakSprite) {
+	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
+	const int i = (int)luaL_optinteger(L, 2, 0);
+
+	if (i < 0 || i > 5) {
+		return luaL_error(L, "Invalid HUD streak index %d", i);;
+	}
+
+	ANM2* sprite = &hud->_messageStack[i]._streakSprite;
+	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_HUDGetPlayerStreakSprite) {
+	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
+	const int i = (int)luaL_optinteger(L, 2, 0);
+
+	if (i < 0 || i > 3) {
+		return luaL_error(L, "Invalid player HUD streak index %d", i);;
+	}
+
+	ANM2* sprite = &hud->_messagePlayerHUD[i]._streakSprite;
 	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
 	return 1;
@@ -117,6 +146,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPickupsHUDSprite", Lua_HUDGetPickupsHUDSprite },
 		{ "GetCardsPillsSprite", Lua_HUDGetCardsPillsSprite },
 		{ "GetStreakSprite", Lua_HUDGetStreakSprite },
+		{ "GetStackedStreakSprite", Lua_HUDGetStackedStreakSprite },
+		{ "GetPlayerStreakSprite", Lua_HUDGetPlayerStreakSprite },
 		{ "GetFortuneSprite", Lua_HUDGetFortuneSprite },
 		{ "GetCoopMenuSprite", Lua_HUDGetCoopMenuSprite },
 		{ "GetInventorySprite", Lua_HUDGetInventorySprite },

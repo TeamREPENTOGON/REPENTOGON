@@ -38,7 +38,7 @@ __thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player
 
 
 
-struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
+struct HUD depends (PlayerHUD, ANM2, StatHUD, HUD_Message) { {{
 	inline PlayerHUD* GetPlayerHUD(int index) {
 		if (index < 0 || index > 7) {
 			return nullptr;
@@ -48,12 +48,14 @@ struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
     ANM2 _chargeBarSprite : 0x3798;
-    ANM2 _heartsSprite : 0x38ac;
-    ANM2 _pickupHUDSprite : 0x39c0;
+    ANM2 _heartsSprite : 0x39c0;
+    ANM2 _pickupHUDSprite : 0x3ad4;
     ANM2 _cardsPillsSprite : 0x3be8;
-    ANM2 _streakSprite : 0x5278;
-    ANM2 _fortuneSprite : 0x5394;
-	//ANM2 _oldHUDStatsSprite : 0xc3d80;
+	HUD_Message _messageMain : 0x3cfc;  // Used for stage/curse text, at least
+	HUD_Message _messageStack[6] : 0x3ef0;  // Used for item text / pills / etc
+	HUD_Message _messagePlayerHUD[4] : 0x4aa8;  // Mini item text streaks displayed near player huds in co-op
+    ANM2 _fortuneSprite : 0x5278;
+	ANM2 _statsSprite : 0x5394;
 	float _bossHPBarFill : 0x54b0;
 	bool _isVisible : 0x54e4;
 	int _hudRefreshType : 0x54e8;
