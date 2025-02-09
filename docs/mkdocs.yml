@@ -197,6 +197,7 @@ nav:
     - StbType: enums/StbType.md
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - WaterClipFlag: enums/WaterClipFlag.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
     - XMLNode: enums/XMLNode.md
@@ -272,6 +273,7 @@ nav:
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
     - ItemConfig - Card: ItemConfig_Card.md
+    - ItemConfig - Costume: ItemConfig_Costume.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md
