@@ -1,10 +1,14 @@
 "558bec6aff68????????64a1????????5083ec10535657a1????????33c5508d45??64a3????????8bd9895d??8b43??85c0":
 __thiscall void RoomSet::unload();
 
+"558bec83e4f883ec145356578d45":
+__thiscall RoomConfig_VariantSet* RoomSet::GetVariantSet(uint32_t type);
+
 struct RoomSet
 {
 	std_string _filepath : 0x0;
     RoomConfig_Room* _configs : 0x18;
     unsigned int _count : 0x1c;
+    std_map_uint_VariantSetPtr variantSetMap : 0x20;
 	bool _loaded : 0x28;
 } : 0x2c;
