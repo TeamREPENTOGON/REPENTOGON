@@ -98,7 +98,8 @@ static void Lua_Color_ToString(lua_State* L, ColorMod* color) {
 	std::ostringstream s;
 	s << "[Color " << color->_tint[0] << " " << color->_tint[1] << " " << color->_tint[2] << " " << color->_tint[3] <<
 		" | Colorize " << color->_colorize[0] << " " << color->_colorize[1] << " " << color->_colorize[2] << " " << color->_colorize[3] <<
-		" | Offset " << color->_offset[0] << " " << color->_offset[1] << " " << color->_offset[2] << "]";
+		" | Offset " << color->_offset[0] << " " << color->_offset[1] << " " << color->_offset[2] <<
+		" | Tint " << color->_tint[0] << " " << color->_tint[1] << " " << color->_tint[2] << " " << color->_tint[3] << "]";
 	lua_pushstring(L, s.str().c_str());
 }
 
