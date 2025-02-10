@@ -55,7 +55,7 @@ LUA_FUNCTION(Lua_CapsuleGetPosition)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_CapsuleGetVec2)
+LUA_FUNCTION(Lua_CapsuleGetStartPoint)
 {
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
@@ -63,7 +63,7 @@ LUA_FUNCTION(Lua_CapsuleGetVec2)
 
 	return 1;
 }
-LUA_FUNCTION(Lua_CapsuleGetVec3)
+LUA_FUNCTION(Lua_CapsuleGetEndPoint)
 {
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
@@ -81,7 +81,7 @@ LUA_FUNCTION(Lua_CapsuleGetDirection)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_CapsuleGetUnkF1)
+LUA_FUNCTION(Lua_CapsuleGetSize)
 {
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	lua_pushnumber(L, capsule->_unkFloat1);
@@ -89,7 +89,7 @@ LUA_FUNCTION(Lua_CapsuleGetUnkF1)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_CapsuleGetUnkF2)
+LUA_FUNCTION(Lua_CapsuleGetSizeDifference)
 {
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	lua_pushnumber(L, capsule->_unkFloat2);
@@ -119,12 +119,19 @@ static void RegisterCapsule(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "GetPosition", Lua_CapsuleGetPosition },
-		{ "GetVec2", Lua_CapsuleGetVec2 },
-		{ "GetVec3", Lua_CapsuleGetVec3 },
+		{ "GetStartPoint", Lua_CapsuleGetStartPoint },
+		{ "GetEndPoint", Lua_CapsuleGetEndPoint },
 		{ "GetDirection", Lua_CapsuleGetDirection },
-		{ "GetF1", Lua_CapsuleGetUnkF1 },
-		{ "GetF2", Lua_CapsuleGetUnkF2 },
+		{ "GetSize", Lua_CapsuleGetSize },
+		{ "GetSizeDifference", Lua_CapsuleGetSizeDifference },
 		{ "Collide", Lua_CapsuleCollide },
+
+		// Deprecated methods
+		{ "GetVec2", Lua_CapsuleGetStartPoint },
+		{ "GetVec3", Lua_CapsuleGetEndPoint },
+		{ "GetF1", Lua_CapsuleGetSize },
+		{ "GetF2", Lua_CapsuleGetSizeDifference },
+
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::CapsuleMT, lua::metatables::CapsuleMT, functions, Lua_Capsule__gc);
