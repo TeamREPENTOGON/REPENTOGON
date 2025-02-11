@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_PlayerGetHistory)
 {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	History** toLua = (History**)lua_newuserdata(L, sizeof(History*));
 	*toLua = player->GetHistory();
 	luaL_setmetatable(L, lua::metatables::HistoryMT);

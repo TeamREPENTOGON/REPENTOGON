@@ -6,7 +6,7 @@
 #include "../REPENTOGONDelirium.h"
 
 LUA_FUNCTION(lua_EntityToDelirium) {
-	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "EntityNPC");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "EntityNPC");
 	if (entity->_type == delirium::ENTITY_DELIRIUM) {
 		Entity_NPC* npc = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 		luaL_setmetatable(L, delirium::DeliriumMetatable);
@@ -167,7 +167,7 @@ static void CreateDeliriumSetters(lua_State* L) {
 
 namespace delirium {
 	static Entity_NPC* GetDelirium(lua_State* L, int idx = 1) {
-		return lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityDelirium");
+		return lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityDelirium");
 	}
 
 	LUA_FUNCTION(Lua_Delirium_Transform) {

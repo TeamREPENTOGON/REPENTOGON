@@ -9,7 +9,7 @@ static Backdrop* GetBackdrop(lua_State* L, int idx = 1);
 // Room
 
 LUA_FUNCTION(lua_Room_GetBackdrop) {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	Backdrop** ud = (Backdrop**)lua_newuserdata(L, sizeof(Backdrop*));
 	*ud = room->GetBackdrop();
 	luaL_setmetatable(L, lua::metatables::BackdropMT);

@@ -4,7 +4,7 @@
 #include "../ImGuiFeatures/LogViewer.h"
 
 LUA_FUNCTION(Lua_GetCamera) {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	Camera** ud = (Camera**)lua_newuserdata(L, sizeof(Camera*));
 	*ud = room->GetCamera();
 	luaL_setmetatable(L, lua::metatables::CameraMT);
@@ -14,7 +14,7 @@ LUA_FUNCTION(Lua_GetCamera) {
 LUA_FUNCTION(Lua_CameraSetFocusPosition)
 {
 	Camera* camera = *lua::GetRawUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
-	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SetFocusPosition(vector);
 	//*camera->ShouldOverride() = true;
@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_CameraSetFocusPosition)
 LUA_FUNCTION(Lua_SnapToPosition)
 {
 	Camera* camera = *lua::GetRawUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
-	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SnapToPosition(*vector);
 	*camera->ShouldOverride() = true;
@@ -42,7 +42,7 @@ LUA_FUNCTION(Lua_CameraUpdate) {
 
 LUA_FUNCTION(Lua_IsPosVisible) {
 	Camera* camera = *lua::GetRawUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
-	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	lua_pushboolean(L, camera->IsPosVisible(vector));
 	return 1;
 }

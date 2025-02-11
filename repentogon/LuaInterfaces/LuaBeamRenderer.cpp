@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
 
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	int layerID = 0;
 	if (lua_type(L, 2) == LUA_TSTRING) {
@@ -61,11 +61,11 @@ LUA_FUNCTION(Lua_BeamAdd) {
 	}
 	else
 	{
-		point._pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		point._pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 		point._spritesheetCoordinate = (float)luaL_optnumber(L, 3, 0.0f);
 		point._width = (float)luaL_optnumber(L, 4, 1.f);
 		if (lua_type(L,5) == LUA_TUSERDATA) {
-			point._color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+			point._color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 		}
 		point._worldSpace = lua::luaL_optboolean(L, 6, false);
 	}
@@ -140,7 +140,7 @@ LUA_FUNCTION(Lua_BeamGetSprite) {
 
 LUA_FUNCTION(Lua_BeamSetSprite) {
 	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	
 	if (lua_gettop(L) > 2) {
 		int layerID = beam->_layer;
@@ -286,13 +286,13 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 }
 
 LUA_FUNCTION(Lua_CreatePointDummy) {
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float spritesheetCoord = (float)luaL_checknumber(L, 2);
 	float widthMod = (float)luaL_optnumber(L, 3, 1.0f);
 
 	ColorMod color;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 	}
 
 	bool worldSpace = lua::luaL_optboolean(L, 5, false);
@@ -313,7 +313,7 @@ LUA_FUNCTION(Lua_PointGetPos) {
 
 LUA_FUNCTION(Lua_PointSetPos) {
 	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	point->_pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
@@ -330,7 +330,7 @@ LUA_FUNCTION(Lua_PointGetColor)
 LUA_FUNCTION(Lua_PointSetColor)
 {
 	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	point->_color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
 }

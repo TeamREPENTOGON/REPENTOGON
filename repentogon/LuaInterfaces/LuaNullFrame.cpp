@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_SpriteGetNullFrame)
 {
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* nullLayerName = luaL_checkstring(L, 2);
 	NullFrame* toLua = sprite->GetNullFrame(nullLayerName);
 	if (toLua == nullptr) {
@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_SpriteGetNullFrame)
 
 LUA_FUNCTION(Lua_SpriteGetOverlayNullFrame)
 {
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* nullLayerName = luaL_checkstring(L, 2);
 	NullFrame* toLua = sprite->GetOverlayNullFrame(nullLayerName);
 	if (toLua == nullptr) {

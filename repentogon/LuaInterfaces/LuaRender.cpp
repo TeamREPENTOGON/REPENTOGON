@@ -69,7 +69,7 @@ LUA_FUNCTION(lua_Transformer_Render) {
 	LuaImage* image = LuaRender::GetLuaImage(L, 2);
 	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
 	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
 
 	Transformation trans;
 	trans._input = image->image;
@@ -89,10 +89,10 @@ LUA_FUNCTION(lua_Transformer_RenderEx) {
 	LuaImage* image = LuaRender::GetLuaImage(L, 2);
 	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
 	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod2 = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod3 = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod4 = *lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod2 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod3 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod4 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
 
 	Transformation trans;
 	trans._input = image->image;
@@ -222,7 +222,7 @@ LUA_FUNCTION(lua_Quad_GetBottomRight) {
 
 static void SetQuadComponent(lua_State* L, Vector* (*fn)(QuadVar const&)) {
 	Vector* component = fn(GetQuad(L));
-	*component = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*component = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 }
 
 LUA_FUNCTION(lua_Quad_SetTopLeft) {
@@ -283,7 +283,7 @@ static void RegisterQuadClasses(lua_State* L) {
 static void FillQuad(lua_State* L, void* quad) {
 	char* addr = (char*)quad;
 	for (int i = 1; i <= lua_gettop(L); ++i) {
-		*(Vector*)addr = *lua::GetUserdata<Vector*>(L, i, lua::Metatables::VECTOR, "Vector");
+		*(Vector*)addr = *lua::GetLuabridgeUserdata<Vector*>(L, i, lua::Metatables::VECTOR, "Vector");
 		addr += sizeof(Vector);
 	}
 

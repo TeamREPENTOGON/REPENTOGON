@@ -9,7 +9,7 @@
 LevelASM levelASM;
 
 LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int roomIDX = (int)luaL_checkinteger(L, 2);
 	unsigned int doorSlot = (unsigned int)luaL_checkinteger(L, 3);
 	lua_pushboolean(L, level->CanSpawnDoorOutline(roomIDX, doorSlot));
@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
 
 LUA_FUNCTION(Lua_LevelHasAbandonedMineshaft)
 {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasAbandonedMineshaft());
 
 	return 1;
@@ -26,7 +26,7 @@ LUA_FUNCTION(Lua_LevelHasAbandonedMineshaft)
 
 LUA_FUNCTION(Lua_LevelHasMirrorDimension)
 {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasMirrorDimension());
 
 	return 1;
@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_LevelHasMirrorDimension)
 
 LUA_FUNCTION(Lua_LevelHasPhotoDoor)
 {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasPhotoDoor());
 
 	return 1;
@@ -43,25 +43,25 @@ LUA_FUNCTION(Lua_LevelHasPhotoDoor)
 static std::string CustomStageName;
 
 LUA_FUNCTION(lua_LevelSetName) {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	const char* name = luaL_checkstring(L, 2);
 	CustomStageName = name;
 	return 0;
 }
 
 LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	level->_greedwavesclearedwithoutredheartdamage = (uint32_t)luaL_checkinteger(L, 2);
 	return 0;
 }
 LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushinteger(L, level->_greedwavesclearedwithoutredheartdamage);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LevelIsStageAvailable) {
-	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int levelStage = (int)luaL_checkinteger(L, 2);
 	int stageType = (int)luaL_checkinteger(L, 3);
 	lua_pushboolean(L, level->IsStageAvailable(levelStage, stageType));
@@ -69,7 +69,7 @@ LUA_FUNCTION(lua_LevelIsStageAvailable) {
 }
 
 LUA_FUNCTION(Lua_GetDimension) {
-	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Game* level = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushinteger(L, level->GetDimension());
 	return 1;
 }
@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_SetForceSpecialQuest) {
 }
 
 LUA_FUNCTION(Lua_GetMyosotisPickups) {
-	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Game* level = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
 	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
 	ud->data = (&level->_myosotisPickups);
 	return 1;
@@ -184,7 +184,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 	int doorMask = 0;
 
 	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -211,7 +211,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
-	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	const int gridIndex = (int)luaL_checkinteger(L, 3);
 	if (gridIndex < 0 || gridIndex > 168) {
 		lua_pushboolean(L, false);
@@ -240,7 +240,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 	int doorMask = 0;
 
 	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -251,7 +251,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
 	}
 
-	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, stackIdx++, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* roomDescToConnect = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, stackIdx++, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	const int doorSlot = (int)luaL_checkinteger(L, stackIdx++);
 	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
 	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
@@ -261,8 +261,8 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
-	RoomConfig_Room* roomConfigToPlace = lua::GetUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	RoomDescriptor* roomDescToConnect = lua::GetUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomConfig_Room* roomConfigToPlace = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomDescriptor* roomDescToConnect = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	if (!roomDescToConnect || !roomDescToConnect->Data) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -296,7 +296,7 @@ LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 	int doorMask = 0;
 
 	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;

@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_GameGetChallengeParams)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ChallengeParam** ud = (ChallengeParam**)lua_newuserdata(L, sizeof(ChallengeParam*));
 	*ud = game->GetChallengeParams();
 	luaL_setmetatable(L, lua::metatables::ChallengeParamMT);

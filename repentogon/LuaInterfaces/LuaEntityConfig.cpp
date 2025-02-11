@@ -7,7 +7,7 @@
 
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
-	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 
 	EntityConfig_Entity* entityConfigEntity = g_Manager->GetEntityConfig()->GetEntity(*entity->GetType(), *entity->GetVariant(), *entity->GetSubType());
 
@@ -46,7 +46,7 @@ LUA_FUNCTION(Lua_EntityConfigGetEntity)
 
 LUA_FUNCTION(Lua_PlayerGetEntityConfigPlayer)
 {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
 	EntityConfig_Player* playerConfig = g_Manager->GetEntityConfig()->GetPlayer(player->GetPlayerType());
 

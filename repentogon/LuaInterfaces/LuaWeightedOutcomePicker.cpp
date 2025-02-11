@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeWeight) {
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_PickOutcome) {
 	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 
 	uint32_t result = picker->PickOutcome(*rng);
 	lua_pushinteger(L, result);

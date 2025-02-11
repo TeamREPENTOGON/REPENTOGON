@@ -13,7 +13,7 @@ void Lua_XYToInt2(lua_State* L, XY* xy) {
 }
 
 LUA_FUNCTION(Lua_RoomGetLRoomTileDesc) {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	LRoomTileDesc desc;
 	desc = *room->GetLRoomTileDesc(&desc);
 

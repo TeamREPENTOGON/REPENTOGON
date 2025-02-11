@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_SpriteGetCurrentAnimationData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	AnimationData* animData = anm2->GetAnimationState()->GetAnimationData();
 
@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_SpriteGetCurrentAnimationData)
 
 LUA_FUNCTION(Lua_SpriteGetOverlayAnimationData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	AnimationData* animData = anm2->GetOverlayAnimationState()->GetAnimationData();
 
@@ -50,7 +50,7 @@ static AnimationData* GetAnimationDataByName(ANM2* anm2, const std_string layerN
 
 LUA_FUNCTION(Lua_SpriteGetAnimationData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	std_string layerName = luaL_checkstring(L, 2);
 	AnimationData* animData = GetAnimationDataByName(anm2, layerName);
 
@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_SpriteGetAnimationData)
 
 LUA_FUNCTION(Lua_SpriteGetAllAnimationData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	lua_newtable(L);
 	for (unsigned int i = 0; i < anm2->GetAnimationCount(); ++i) {

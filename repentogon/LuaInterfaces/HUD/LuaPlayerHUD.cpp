@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_GetPlayerHUD) {
-	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
+	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	int index = (int)luaL_optinteger(L, 2, 0);
 
 	if (index < 0 || index > 7) {
@@ -37,7 +37,7 @@ LUA_FUNCTION(Lua_PlayerHUDGetHUD) {
 LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
 	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	unsigned int activeSlot = (unsigned int)luaL_checkinteger(L, 2);
-	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	float alpha = (float)luaL_optnumber(L, 4, 1.0);
 	float size = (float)luaL_optnumber(L, 5, 1.0);
 

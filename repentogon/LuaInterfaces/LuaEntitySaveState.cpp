@@ -235,7 +235,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_SetPos) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		st.targetPosition = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		st.targetPosition = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 		return 0;
 	}

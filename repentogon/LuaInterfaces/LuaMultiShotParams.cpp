@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_GetMultiShotParams) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int weaponType = (int)luaL_optinteger(L, 2, 1);
 	Weapon_MultiShotParams* ud = (Weapon_MultiShotParams*)lua_newuserdata(L, sizeof(Weapon_MultiShotParams));
 	ud = player->GetMultiShotParams(ud, (WeaponType)weaponType);

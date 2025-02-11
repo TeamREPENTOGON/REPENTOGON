@@ -875,11 +875,11 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Position") {
-							Vector *new_pos = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							Vector *new_pos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 							*(position) = *(new_pos);
 						}
 						else if (key == "CropOffset") {
-							cropOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {

@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_RoomGetRailManager)
 {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	RailManager** ud = (RailManager**)lua_newuserdata(L, sizeof(RailManager*));
 	*ud = &room->_railManager;
 	luaL_setmetatable(L, lua::metatables::RailManagerMT);

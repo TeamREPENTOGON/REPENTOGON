@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_ColorParamsConstructor) {
 	ColorParams color;
-	color._color = *lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
+	color._color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
 	color._priority = (int)luaL_checkinteger(L, 2);
 	color._duration1 = (int)luaL_checkinteger(L, 3);
 	color._duration2 = (int)luaL_checkinteger(L, 3);
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_ColorParamsGetColorMod)
 LUA_FUNCTION(Lua_ColorParamsSetColorMod)
 {
 	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
-	color->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	color->_color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
 }

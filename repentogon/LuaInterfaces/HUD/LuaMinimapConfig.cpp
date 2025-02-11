@@ -26,7 +26,7 @@ LUA_FUNCTION(Lua_MininmapConfigGetVec1) {
 
 LUA_FUNCTION(Lua_MinimapConfigSetVec1) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_vec1 = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	config->_vec1 = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 
@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_MinimapConfigGetBorderPadding) {
 
 LUA_FUNCTION(Lua_MinimapConfigSetBorderPadding) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_borderPadding = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	config->_borderPadding = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 

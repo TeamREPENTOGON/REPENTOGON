@@ -88,7 +88,7 @@ LUA_FUNCTION(Lua_MinimapGetShakeOffset)
 LUA_FUNCTION(Lua_MinimapSetShakeOffset)
 {
 	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_shakeOffset = *lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	minimap->_shakeOffset = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 

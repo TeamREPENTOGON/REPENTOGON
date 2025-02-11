@@ -13,7 +13,7 @@
 
 LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	int layerId = (int)luaL_checkinteger(L, 2);
 
 	std::string filename = luaL_checkstring(L, 3);
@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 
 LUA_FUNCTION(Lua_SpriteIsOverlayEventTriggered)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* eventName = luaL_checkstring(L, 2);
 	lua_pushboolean(L, anm2->GetOverlayAnimationState()->IsEventTriggered(eventName));
 
@@ -40,7 +40,7 @@ LUA_FUNCTION(Lua_SpriteIsOverlayEventTriggered)
 
 LUA_FUNCTION(Lua_SpriteLoadRgonSprite)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* path = luaL_checkstring(L, 2);
 	bool loadg = lua::luaL_checkboolean(L, 3);
 	anm2->Load(REPENTOGON::GetRGONGfxAbsolutePath(path), loadg);
@@ -50,7 +50,7 @@ LUA_FUNCTION(Lua_SpriteLoadRgonSprite)
 
 LUA_FUNCTION(Lua_SpriteWasOverlayEventTriggered)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const char* eventName = luaL_checkstring(L, 2);
 	lua_pushboolean(L, anm2->GetOverlayAnimationState()->WasEventTriggered(eventName));
 
@@ -59,7 +59,7 @@ LUA_FUNCTION(Lua_SpriteWasOverlayEventTriggered)
 
 LUA_FUNCTION(Lua_SpriteGetLayer)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	LayerState* layerState = nullptr;
 	if (lua_type(L, 2) == LUA_TSTRING) {
 		const char* layerName = luaL_checkstring(L, 2);
@@ -84,7 +84,7 @@ LUA_FUNCTION(Lua_SpriteGetLayer)
 
 LUA_FUNCTION(Lua_SpriteGetAllLayers)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	lua_newtable(L);
 	LayerState* layerState = nullptr;
@@ -103,14 +103,14 @@ LUA_FUNCTION(Lua_SpriteGetAllLayers)
 
 LUA_FUNCTION(Lua_SpriteGetRenderFlags)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	lua_pushinteger(L, *anm2->GetRenderFlags());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SpriteSetRenderFlags)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	*anm2->GetRenderFlags() = (unsigned int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -118,7 +118,7 @@ LUA_FUNCTION(Lua_SpriteSetRenderFlags)
 
 LUA_FUNCTION(Lua_SpriteSetOverlayFrame)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	if (lua_type(L, 2) == LUA_TSTRING) {
 		const char* animName = luaL_checkstring(L, 2);
 		anm2->SetOverlayFrame(animName, (int)luaL_checkinteger(L, 3));
@@ -131,7 +131,7 @@ LUA_FUNCTION(Lua_SpriteSetOverlayFrame)
 
 LUA_FUNCTION(Lua_SpriteSetOverlayLayerFrame)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const int layerID = (int)luaL_checkinteger(L, 2);
 	const int frame = (int)luaL_checkinteger(L, 3);
 	if (anm2->GetOverlayAnimationState()->GetAnimationData()) {
@@ -166,7 +166,7 @@ LUALIB_API void LuaGetLayerFrameDataInternal(lua_State* L, AnimationState* animS
 
 LUA_FUNCTION(Lua_SpriteGetLayerFrameData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const int layerID = (int)luaL_checkinteger(L, 2);
 	LuaGetLayerFrameDataInternal(L, anm2->GetAnimationState(), layerID);
 	return 1;
@@ -174,7 +174,7 @@ LUA_FUNCTION(Lua_SpriteGetLayerFrameData)
 
 LUA_FUNCTION(Lua_SpriteGetOverlayLayerFrameData)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const int layerID = (int)luaL_checkinteger(L, 2);
 	LuaGetLayerFrameDataInternal(L, anm2->GetOverlayAnimationState(), layerID);
 	return 1;
@@ -182,7 +182,7 @@ LUA_FUNCTION(Lua_SpriteGetOverlayLayerFrameData)
 
 LUA_FUNCTION(Lua_SpriteStop)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	bool stopOverlay = lua::luaL_optboolean(L, 2, true);
 	anm2->GetAnimationState()->Stop();
 	if (stopOverlay) {
@@ -193,14 +193,14 @@ LUA_FUNCTION(Lua_SpriteStop)
 
 LUA_FUNCTION(Lua_SpriteStopOverlay)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	anm2->GetOverlayAnimationState()->Stop();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SpriteContinue)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	bool continueOverlay = lua::luaL_optboolean(L, 2, true);
 	anm2->GetAnimationState()->Play();
 	if (continueOverlay) {
@@ -211,14 +211,14 @@ LUA_FUNCTION(Lua_SpriteContinue)
 
 LUA_FUNCTION(Lua_SpriteContinueOverlay)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	anm2->GetOverlayAnimationState()->Play();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SpriteSetCustomShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const std::string path = luaL_checkstring(L, 2);
 	const bool success = SetCustomShader(anm2, path, /*champion=*/false);
 	if (!success) {
@@ -229,14 +229,14 @@ LUA_FUNCTION(Lua_SpriteSetCustomShader)
 
 LUA_FUNCTION(Lua_SpriteClearCustomShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	ClearCustomShader(anm2, /*champion=*/false);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SpriteHasCustomShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	const std::string path = luaL_optstring(L, 2, "");
 	bool result = false;
@@ -253,7 +253,7 @@ LUA_FUNCTION(Lua_SpriteHasCustomShader)
 
 LUA_FUNCTION(Lua_SpriteSetCustomChampionShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	const std::string path = luaL_checkstring(L, 2);
 	const bool success = SetCustomShader(anm2, path, /*champion=*/true);
 	if (!success) {
@@ -264,14 +264,14 @@ LUA_FUNCTION(Lua_SpriteSetCustomChampionShader)
 
 LUA_FUNCTION(Lua_SpriteClearCustomChampionShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	ClearCustomShader(anm2, /*champion=*/true);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 {
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	const std::string path = luaL_optstring(L, 2, "");
 	bool result = false;
@@ -415,7 +415,7 @@ LUA_FUNCTION(Lua_LayerStateGetSize)
 LUA_FUNCTION(Lua_LayerStateSetSize)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetSize() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetSize() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
@@ -448,7 +448,7 @@ LUA_FUNCTION(Lua_LayerStateGetPos)
 LUA_FUNCTION(Lua_LayerStateSetPos)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetPos() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetPos() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
@@ -465,7 +465,7 @@ LUA_FUNCTION(Lua_LayerStateGetColor)
 LUA_FUNCTION(Lua_LayerStateSetColor)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	ColorMod* color = lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	*layerState->GetColor() = *color;
 	return 0;
@@ -497,7 +497,7 @@ LUA_FUNCTION(Lua_LayerStateGetCropOffset)
 LUA_FUNCTION(Lua_LayerStateSetCropOffset)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetCropOffset() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetCropOffset() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }

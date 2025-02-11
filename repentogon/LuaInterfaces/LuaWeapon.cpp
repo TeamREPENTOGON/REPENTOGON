@@ -10,7 +10,7 @@ Weapon* WeaponData::GetWeaponFromLua(lua_State* L, int idx) {
 LUA_FUNCTION(Lua_CreateWeapon) {
 	WeaponData* ud = new (lua_newuserdata(L, sizeof(WeaponData))) WeaponData;
 	int wepType = (int)luaL_checkinteger(L, 1);
-	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	ud->weapon = Isaac::CreateWeapon((WeaponType)wepType, ent);
 	luaL_setmetatable(L, lua::metatables::WeaponMT);
 	return 1;
@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_DestoryWeapon) {
 }
 
 LUA_FUNCTION(Lua_PlayerGetWeapon) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int index = (int)luaL_checkinteger(L, 2);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_PlayerGetWeapon) {
 }
 
 LUA_FUNCTION(Lua_FanGetWeapon) {
-	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	WeaponData* ud = (WeaponData*)lua_newuserdata(L, sizeof(WeaponData));
 	ud->weapon = *fam->GetWeapon();
 	if (!ud->weapon) {
@@ -144,7 +144,7 @@ LUA_FUNCTION(Lua_WeaponPlayItemAnim) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
 	unsigned int itemID = (unsigned int)luaL_checkinteger(L, 2);
 	int anim = (int)luaL_checkinteger(L, 3);
-	const Vector* position = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	const Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	float charge = (float)luaL_checknumber(L, 5);
 	weapon->PlayItemAnim(itemID, anim, *position, charge);
 	return 0;

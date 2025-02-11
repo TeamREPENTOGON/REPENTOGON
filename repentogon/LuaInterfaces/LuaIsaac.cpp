@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = (float)luaL_checknumber(L, 2);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
@@ -192,10 +192,10 @@ LUA_FUNCTION(Lua_StartNewGame) {
 }
 
 LUA_FUNCTION(Lua_DrawLine) {
-	Vector* pos1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* pos2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	KColor* col1 = lua::GetUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
-	KColor* col2 = lua::GetUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	Vector* pos1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	KColor* col1 = lua::GetLuabridgeUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
+	KColor* col2 = lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
 	float thickness = (float)luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
 
 	g_ShapeRenderer->RenderLine(pos1, pos2, col1, col2, thickness);
@@ -204,11 +204,11 @@ LUA_FUNCTION(Lua_DrawLine) {
 }
 
 LUA_FUNCTION(Lua_DrawQuad) {
-	Vector* postl = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* postr = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* posbl = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	Vector* posbr = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
-	KColor* col = lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	Vector* postl = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* postr = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* posbl = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* posbr = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	KColor* col = lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
 	float thickness = (float)luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
 
 	DestinationQuad quad; //TODO make a constructor for this
@@ -423,7 +423,7 @@ LUA_FUNCTION(Lua_IsaacResume) {
 }
 
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	bool scale = lua::luaL_optboolean(L, 2, true);
 	
 	Vector result = Isaac::GetRenderPosition(pos, scale);
@@ -434,7 +434,7 @@ LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 }
 
 LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 
 	Vector result = Isaac::GetCollectibleSpawnPosition(pos);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
@@ -707,8 +707,8 @@ LUA_FUNCTION(Lua_SetIcon) {
 };
 
 LUA_FUNCTION(Lua_FindTargetPit) {
-	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* targetPosition = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* targetPosition = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	const int pitIndex = (int)luaL_optinteger(L, 3, -1);
 
 	lua_pushinteger(L, Entity_NPC::FindTargetPit(position, targetPosition, pitIndex));

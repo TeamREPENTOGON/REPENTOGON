@@ -259,7 +259,7 @@ namespace lua {
     LIBZHL_API void UnloadMetatables();
     LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
     LIBZHL_API void PushMetatable(lua_State* L, Metatables metatable);
-    LIBZHL_API  void* GetMetatableKey(Metatables metatable);
+    LIBZHL_API void* GetMetatableKey(Metatables metatable);
     LIBZHL_API Metatables GetMetatableIdxFromName(std::string const& name);
 
     LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
@@ -299,7 +299,7 @@ namespace lua {
      */
 
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
+    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
         return *(T*)((char*)p + 0x4);
     }
@@ -307,7 +307,7 @@ namespace lua {
     // Use this version if you need your userdata to be either the const or non const version
     // of something. Most of the time you won't need it.
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
+    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, constMt, name);
         return *(T*)((char*)p + 0x4);
     }

@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_RoomGetLRoomAreaDesc) {
-	Room * room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room * room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	LRoomAreaDesc desc;
 	desc = *room->GetLRoomAreaDesc(&desc);
 

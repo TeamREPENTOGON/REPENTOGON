@@ -5,8 +5,8 @@
 
 LUA_FUNCTION(Lua_GridEntityHurtDamage)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	int playerDamage = (int)luaL_checkinteger(L, 3);
 	uint64_t damageFlags = (uint64_t)luaL_checkinteger(L, 4);
 	float enemyDamage = (float)luaL_checknumber(L, 5);
@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_GridEntityHurtDamage)
 
 LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	float enemyDistance = (float)luaL_checknumber(L, 2);
 	float playerDistance = (float)luaL_checknumber(L, 3);
 	float enemyDamage = (float)luaL_checknumber(L, 4);
@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 
 LUA_FUNCTION(Lua_GridEntityGetRenderPosition)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	//Vector* position = lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	Vector* buffer = new Vector(0, 0);	//not sure whether new is needed here, can someone check later?
@@ -40,14 +40,14 @@ LUA_FUNCTION(Lua_GridEntityGetRenderPosition)
 
 LUA_FUNCTION(Lua_GridEntityIsBreakableRock)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	lua_pushboolean(L, gridEnt->IsBreakableRock());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GridEntityGetWaterClipFlags)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	WaterClipInfo info;
 	gridEnt->GetWaterClipInfo(&info);
 	lua_pushinteger(L, info.bitFlags);
@@ -56,7 +56,7 @@ LUA_FUNCTION(Lua_GridEntityGetWaterClipFlags)
 
 LUA_FUNCTION(Lua_GridEntitySetWaterClipFlags)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	const uint32_t flags = (uint32_t)luaL_checkinteger(L, 2);
 	GridEntityPlus* gridEntPlus = GetGridEntityPlus(gridEnt);
 	if (gridEntPlus) {
@@ -67,7 +67,7 @@ LUA_FUNCTION(Lua_GridEntitySetWaterClipFlags)
 
 LUA_FUNCTION(Lua_GridEntityResetWaterClipFlags)
 {
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	GridEntityPlus* gridEntPlus = GetGridEntityPlus(gridEnt);
 	if (gridEntPlus) {
 		gridEntPlus->waterClipInfoFlagsOverride = std::nullopt;
