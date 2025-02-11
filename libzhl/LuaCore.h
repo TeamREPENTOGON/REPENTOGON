@@ -283,6 +283,21 @@ namespace lua {
 
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	
+    /* GetUserdata rationale.
+     * 
+     * CheckUserdata will return a class derived from Userdata.
+     * The layout will be as follows (LSB to the left):
+     * +-------------+------+
+     * | vtable addr | data |
+     * +-------------+------+
+     * 0             4      N
+     *
+     * p points to byte 0 in the structure, p + 0x4 points to the content
+     * of the Userdata object underneath.
+     *
+     * The function returns data interpreted as type T.
+     */
+
     template<typename T>
     T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
@@ -438,6 +453,16 @@ namespace lua {
         return *(T*)((char*)ud + 4);
     }
 	
+    /**
+     * The structure of Userdata, UserdataValue and UserdataPtr is taken directly
+     * from the source code of LuaBridge.
+     * 
+     * Warning: Userdata does have a virtual constructor in luabridge. It is
+     * a nop in Userdata and UserdataPtr, but in the case of UserdataValue it
+     * calls the destructor of the stored pointer (if any). This behavior is
+     * not reproduced here. However, the presence of a virtual destructor
+     * creates a vtable, adding 4 bytes of data at the start of the structure.
+     */
     namespace luabridge {
         extern LIBZHL_API void* identityKey;
         extern LIBZHL_API lua_CFunction indexMetaMethod;
