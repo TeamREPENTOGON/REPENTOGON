@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 {
-	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	RoomSet* set = *lua::GetRawUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 	int idx = (int)lua_tointeger(L, 2);
 	if (idx >= 0 && idx < (int)set->_count) {
 		lua::luabridge::UserdataPtr::push(L, &set->_configs[idx], lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 
 LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 {
-	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	RoomSet* set = *lua::GetRawUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 	lua_pushinteger(L, set->_count);
 
 	return 1;

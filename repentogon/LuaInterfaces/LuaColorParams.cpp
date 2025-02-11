@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_ColorParamsConstructor) {
 
 LUA_FUNCTION(Lua_ColorParamsGetColorMod)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = color->_color;
 
@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_ColorParamsGetColorMod)
 
 LUA_FUNCTION(Lua_ColorParamsSetColorMod)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_ColorParamsSetColorMod)
 
 LUA_FUNCTION(Lua_ColorParamsGetPriority)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	lua_pushinteger(L, color->_priority);
 
 	return 1;
@@ -43,7 +43,7 @@ LUA_FUNCTION(Lua_ColorParamsGetPriority)
 
 LUA_FUNCTION(Lua_ColorParamsSetPriority)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_priority = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -51,7 +51,7 @@ LUA_FUNCTION(Lua_ColorParamsSetPriority)
 
 LUA_FUNCTION(Lua_ColorParamsGetDuration)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	lua_pushinteger(L, color->_duration1);
 
 	return 1;
@@ -59,7 +59,7 @@ LUA_FUNCTION(Lua_ColorParamsGetDuration)
 
 LUA_FUNCTION(Lua_ColorParamsSetDuration)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_duration1 = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -67,7 +67,7 @@ LUA_FUNCTION(Lua_ColorParamsSetDuration)
 
 LUA_FUNCTION(Lua_ColorParamsGetLifespan)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	lua_pushinteger(L, color->_duration2);
 
 	return 1;
@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_ColorParamsGetLifespan)
 
 LUA_FUNCTION(Lua_ColorParamsSetLifespan)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_duration2 = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -83,7 +83,7 @@ LUA_FUNCTION(Lua_ColorParamsSetLifespan)
 
 LUA_FUNCTION(Lua_ColorParamsGetFadeout)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	lua_pushboolean(L, color->_fadeout);
 
 	return 1;
@@ -91,7 +91,7 @@ LUA_FUNCTION(Lua_ColorParamsGetFadeout)
 
 LUA_FUNCTION(Lua_ColorParamsSetFadeout)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_fadeout = lua::luaL_checkboolean(L, 2);
 
 	return 0;
@@ -99,7 +99,7 @@ LUA_FUNCTION(Lua_ColorParamsSetFadeout)
 
 LUA_FUNCTION(Lua_ColorParamsGetShared)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	lua_pushboolean(L, color->_shared);
 
 	return 1;
@@ -107,7 +107,7 @@ LUA_FUNCTION(Lua_ColorParamsGetShared)
 
 LUA_FUNCTION(Lua_ColorParamsSetShared)
 {
-	ColorParams* color = lua::GetUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
+	ColorParams* color = lua::GetRawUserdata<ColorParams*>(L, 1, lua::metatables::ColorParamsMT);
 	color->_shared = lua::luaL_checkboolean(L, 2);
 
 	return 0;

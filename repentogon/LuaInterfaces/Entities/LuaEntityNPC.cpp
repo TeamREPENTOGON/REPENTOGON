@@ -199,7 +199,7 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodSplash) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
@@ -221,7 +221,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggotAtPos) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float velocity = (float)luaL_optnumber(L, 3, -8.f);
@@ -242,7 +242,7 @@ LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowStrider) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
@@ -257,7 +257,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowStrider) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
@@ -274,7 +274,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
@@ -293,11 +293,11 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
 /*
 // gonna make a minecart metatable later
 LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
-	Entity_NPC* cart = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* cart = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	if (cart->_type != 965) {
 		return luaL_error("Must be called with a minecart NPC!");
 	}
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	cart->MinecartUpdateChild(npc);
 
 	return 0;

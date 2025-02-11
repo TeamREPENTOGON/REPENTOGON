@@ -92,105 +92,105 @@ LUA_FUNCTION(Lua_EntityConfigGetMaxPlayerType)
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetType)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->id);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetVariant)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->variant);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetSubType)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->subtype);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetName)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionDamage)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->collisionDamage);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBossId)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->bossID);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionRadius)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->collisionRadius);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionRadiusMultiplier)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), entity->collisionRadiusMulti);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetMass)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->mass);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetGridCollisionPoints)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->gridCollisionPoints);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetFriction)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->friction);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBaseHP)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->baseHP);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetStageHP)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->stageHP);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetAnm2Path)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->anm2Path.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetModName)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	if (entity->modEntry == nullptr) {
 		lua_pushnil(L);
 	}
@@ -202,14 +202,14 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetModName)
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetEntityTags)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->tags);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityHasEntityTags)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	const int tags = (int)luaL_checkinteger(L, 2);
 	if (tags <= 0) {
 		lua_pushboolean(L, false);
@@ -222,49 +222,49 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasEntityTags)
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetShadowSize)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->shadowSize);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityIsBoss)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushboolean(L, entity->isBoss);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityCanBeChampion)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushboolean(L, entity->canBeChampion);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityCanShutDoors)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushboolean(L, entity->shutDoors);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetGibsAmount)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->gibsAmount);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetGibFlags)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->gibFlags);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityHasGibFlags)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	const int flags = (int)luaL_checkinteger(L, 2);
 	if (flags <= 0) {
 		lua_pushboolean(L, false);
@@ -277,84 +277,84 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasGibFlags)
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetPortraitID)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->portrait);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityCanBeRerolledInto)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushboolean(L, entity->reroll);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityHasFloorAlts)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushboolean(L, entity->hasFloorAlts);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionInterval)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushinteger(L, entity->collisionInterval);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetShieldStrength)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->shieldStrength);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryOffset)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), entity->bestiaryOffset);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryScale)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushnumber(L, entity->bestiaryScale);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryAnm2Path)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->bestiaryAnm2Path.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryAnim)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->bestiaryAnim.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryOverlay)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->bestiaryOverlay.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryFloorAlt)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->bestiaryFloorAlt.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigEntityGetCustomTags)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	const std::set<std::string>& customtags = XMLStuff.EntityData->GetCustomTags(*entity);
 
 	lua_newtable(L);
@@ -370,7 +370,7 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetCustomTags)
 
 LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
 {
-	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	const std::string tag = luaL_checkstring(L, 2);
 	lua_pushboolean(L, XMLStuff.EntityData->HasCustomTag(*entity, tag));
 	return 1;
@@ -382,140 +382,140 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetPlayerType)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_id);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetName)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetSkinPath)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_skinPath.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetNameImagePath)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_nameImagePath.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetPortraitPath)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_portraitPath.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetExtraPortraitPath)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_extraPortraitPath.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetCostumeSuffix)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_costumeSuffixName.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetCostumeID)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_costumeID);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetSkinColor)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_skinColor);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetRedHearts)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_heart);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetSoulHearts)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_armor);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetBlackHearts)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_blackHeart);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetBrokenHearts)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_brokenHeart);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetCoins)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_coins);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetBombs)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_bombs);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetKeys)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_keys);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetCard)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_card);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetPill)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_pill);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetTrinket)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_trinket);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetCollectibles)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 
 	lua_newtable(L);
 	for (unsigned int i = 0; i < player->_collectibles.size(); ++i) {
@@ -529,14 +529,14 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetCollectibles)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetPocketActive)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_pocketActiveID);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerCanShoot)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushboolean(L, player->_canShoot);
 	return 1;
 }
@@ -545,7 +545,7 @@ const std::set<int> HiddenVanillaCharacters = { 11, 12, 17, 20, 38, 39, 40 };
 
 LUA_FUNCTION(Lua_EntityConfigPlayerIsHidden)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 
 	if (player->_hidden || HiddenVanillaCharacters.find(player->_id) != HiddenVanillaCharacters.end()) {
 		lua_pushboolean(L, true);
@@ -559,21 +559,21 @@ LUA_FUNCTION(Lua_EntityConfigPlayerIsHidden)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetAchievement)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushinteger(L, player->_achievement);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetBirthrightDescription)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushstring(L, player->_birthrightDescription.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedMenuBackgroundSprite)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	if (player->_moddedMenuBackgroundANM2 == nullptr) {
 		lua_pushnil(L);
 	}
@@ -585,7 +585,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedMenuBackgroundSprite)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedPortraitSprite)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	if (player->_moddedMenuPortraitANM2 == nullptr) {
 		lua_pushnil(L);
 	}
@@ -597,7 +597,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedPortraitSprite)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedGameOverSprite)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	if (player->_moddedGameOverANM2 == nullptr) {
 		lua_pushnil(L);
 	}
@@ -609,7 +609,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedGameOverSprite)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedCoopMenuSprite)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	if (player->_moddedCoopMenuANM2 == nullptr) {
 		lua_pushnil(L);
 	}
@@ -621,7 +621,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedCoopMenuSprite)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedControlsSprite)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	if (player->_moddedControlsANM2 == nullptr) {
 		lua_pushnil(L);
 	}
@@ -633,7 +633,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedControlsSprite)
 
 LUA_FUNCTION(Lua_EntityConfigPlayerIsTainted)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 	lua_pushboolean(L, (player->_id >= 21 && player->_id <= 40) || !player->_bSkinParentName.empty());
 	return 1;
 }
@@ -684,7 +684,7 @@ std::unordered_map<int, int> TaintedMap = {
 
 LUA_FUNCTION(Lua_EntityConfigPlayerGetTaintedCounterpart)
 {
-	EntityConfig_Player* player = *lua::GetUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
+	EntityConfig_Player* player = *lua::GetRawUserdata<EntityConfig_Player**>(L, 1, lua::metatables::EntityConfigPlayerMT);
 
 	int counterpartID = -1;
 
@@ -750,28 +750,28 @@ LUA_FUNCTION(Lua_EntityConfigGetMaxBabyID)
 
 LUA_FUNCTION(Lua_EntityConfigBabyGetId)
 {
-	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	EntityConfig_Baby* baby = *lua::GetRawUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
 	lua_pushinteger(L, baby->id);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigBabyGetName)
 {
-	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	EntityConfig_Baby* baby = *lua::GetRawUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
 	lua_pushstring(L, baby->name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigBabyGetSpritesheetPath)
 {
-	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	EntityConfig_Baby* baby = *lua::GetRawUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
 	lua_pushstring(L, baby->gfx.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityConfigBabyGetAchievementID)
 {
-	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	EntityConfig_Baby* baby = *lua::GetRawUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
 	lua_pushinteger(L, baby->achievementID);
 	return 1;
 }

@@ -14,7 +14,7 @@ LUA_FUNCTION(Lua_GetFXParams) {
 
 LUA_FUNCTION(Lua_GetColorModifier)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorModState* color = params->GetColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -25,15 +25,15 @@ LUA_FUNCTION(Lua_GetColorModifier)
 
 LUA_FUNCTION(Lua_SetColorModifier)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetColorModifier() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	*params->GetColorModifier() = *lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetWaterV2)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	lua_pushboolean(L, *params->GetWaterV2());
 
 	return 1;
@@ -41,14 +41,14 @@ LUA_FUNCTION(Lua_GetWaterV2)
 
 LUA_FUNCTION(Lua_SetWaterV2)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterV2() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetWaterColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
 	*toLua = *params->GetWaterColor();
 
@@ -57,7 +57,7 @@ LUA_FUNCTION(Lua_GetWaterColor)
 
 LUA_FUNCTION(Lua_SetWaterColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
@@ -65,7 +65,7 @@ LUA_FUNCTION(Lua_SetWaterColor)
 
 LUA_FUNCTION(Lua_GetWaterColorMultiplier)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
 	*toLua = *params->GetWaterColorMultiplier();
 
@@ -74,7 +74,7 @@ LUA_FUNCTION(Lua_GetWaterColorMultiplier)
 
 LUA_FUNCTION(Lua_SetWaterColorMultiplier)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterColorMultiplier() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
@@ -82,7 +82,7 @@ LUA_FUNCTION(Lua_SetWaterColorMultiplier)
 
 LUA_FUNCTION(Lua_GetShadowAlpha)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	lua_pushnumber(L, *params->GetShadowAlpha());
 
 	return 1;
@@ -90,14 +90,14 @@ LUA_FUNCTION(Lua_GetShadowAlpha)
 
 LUA_FUNCTION(Lua_SetShadowAlpha)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetShadowAlpha() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetShadowColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
 	*toLua = *params->GetShadowColor();
 
@@ -106,7 +106,7 @@ LUA_FUNCTION(Lua_GetShadowColor)
 
 LUA_FUNCTION(Lua_SetShadowColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetShadowColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
@@ -114,7 +114,7 @@ LUA_FUNCTION(Lua_SetShadowColor)
 
 LUA_FUNCTION(Lua_GetLightColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
 	*toLua = *params->GetLightColor();
 
@@ -123,7 +123,7 @@ LUA_FUNCTION(Lua_GetLightColor)
 
 LUA_FUNCTION(Lua_SetLightColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetLightColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
@@ -132,7 +132,7 @@ LUA_FUNCTION(Lua_SetLightColor)
 
 LUA_FUNCTION(Lua_GetWaterEffectColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = *params->GetWaterEffectColor();
 
@@ -141,7 +141,7 @@ LUA_FUNCTION(Lua_GetWaterEffectColor)
 
 LUA_FUNCTION(Lua_SetWaterEffectColor)
 {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
+	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterEffectColor() = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;

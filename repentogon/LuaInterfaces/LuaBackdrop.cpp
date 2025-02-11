@@ -70,7 +70,7 @@ LUA_FUNCTION(lua_Backdrop_GetunkVec1) {
 
 LUA_FUNCTION(lua_Backdrop_SetunkVec1) {
 	Backdrop* backdrop = GetBackdrop(L);
-	backdrop->unkVec1 = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	backdrop->unkVec1 = *lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 
@@ -83,7 +83,7 @@ LUA_FUNCTION(lua_Backdrop_GetunkVec2) {
 
 LUA_FUNCTION(lua_Backdrop_SetunkVec2) {
 	Backdrop* backdrop = GetBackdrop(L);
-	backdrop->unkVec2 = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	backdrop->unkVec2 = *lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 */

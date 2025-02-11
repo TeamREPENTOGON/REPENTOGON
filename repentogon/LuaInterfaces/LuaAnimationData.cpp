@@ -84,21 +84,21 @@ LUA_FUNCTION(Lua_SpriteGetAllAnimationData)
 
 LUA_FUNCTION(Lua_AnimationDataGetName)
 {
-	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
+	AnimationData* animationData = *lua::GetRawUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushstring(L, animationData->GetName().c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationDataGetLength)
 {
-	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
+	AnimationData* animationData = *lua::GetRawUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushinteger(L, animationData->GetLength());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationDataGetLayerById)
 {
-	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
+	AnimationData* animationData = *lua::GetRawUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	int layerID = (int)luaL_checkinteger(L, 2);
 
 	if (layerID < 0) {
@@ -123,7 +123,7 @@ LUA_FUNCTION(Lua_AnimationDataGetLayerById)
 
 LUA_FUNCTION(Lua_AnimationDataGetAllLayers)
 {
-	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
+	AnimationData* animationData = *lua::GetRawUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 
 	lua_newtable(L);
 	for (int i = 0; i < animationData->GetLayerCount(); ++i) {
@@ -139,7 +139,7 @@ LUA_FUNCTION(Lua_AnimationDataGetAllLayers)
 
 LUA_FUNCTION(Lua_AnimationDataIsLoopingAnimation)
 {
-	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
+	AnimationData* animationData = *lua::GetRawUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushboolean(L, animationData->IsLoopingAnimation());
 	return 1;
 }

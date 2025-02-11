@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_GetPlayerHUD) {
 }
 
 LUA_FUNCTION(Lua_PlayerHUDGetPlayer) {
-	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	Entity_Player* player = playerHUD->GetPlayer();
 	if (!player) {
 		lua_pushnil(L);
@@ -29,13 +29,13 @@ LUA_FUNCTION(Lua_PlayerHUDGetPlayer) {
 }
 
 LUA_FUNCTION(Lua_PlayerHUDGetHUD) {
-	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	lua::luabridge::UserdataPtr::push(L, playerHUD->_HUD, lua::Metatables::HUD);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
-	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	unsigned int activeSlot = (unsigned int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	float alpha = (float)luaL_optnumber(L, 4, 1.0);
@@ -47,7 +47,7 @@ LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
 }
 
 LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
-	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	PlayerHUDHeart* hearts = playerHUD->_heart;
 
 	lua_newtable(L);
@@ -63,7 +63,7 @@ LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
 }
 
 LUA_FUNCTION(Lua_PlayerHUDGetHeartByIndex) {
-	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	int index = (int)luaL_checkinteger(L, 2);
 	if (index < 0 || index > 23) {
 		return luaL_error(L, "Invalid index: %d", index);
@@ -72,6 +72,12 @@ LUA_FUNCTION(Lua_PlayerHUDGetHeartByIndex) {
 	PlayerHUDHeart* ud = (PlayerHUDHeart*)lua_newuserdata(L, sizeof(PlayerHUDHeart));
 	*ud = hearts[index];
 	luaL_setmetatable(L, lua::metatables::PlayerHUDHeartMT);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerHUDGetIndex) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua_pushinteger(L, playerHUD->_playerHudIndex);
 	return 1;
 }
 
@@ -84,6 +90,7 @@ static void RegisterPlayerHUD(lua_State* L) {
 		{ "RenderActiveItem", Lua_PlayerHUDRenderActiveItem },
 		{ "GetHearts", Lua_PlayerHUDGetHearts},
 		{ "GetHeartByIndex", Lua_PlayerHUDGetHeartByIndex},
+		{ "GetIndex", Lua_PlayerHUDGetIndex },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PlayerHUDMT, lua::metatables::PlayerHUDMT, functions);

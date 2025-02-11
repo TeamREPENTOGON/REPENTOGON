@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 LUA_FUNCTION(Lua_GridEntityGetRenderPosition)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	//Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	//Vector* position = lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	Vector* buffer = new Vector(0, 0);	//not sure whether new is needed here, can someone check later?
 	*toLua = *gridEnt->GetRenderPosition(buffer);

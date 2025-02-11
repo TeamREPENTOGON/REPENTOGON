@@ -4,7 +4,7 @@
 #include "LuaWeapon.h"
 
 Weapon* WeaponData::GetWeaponFromLua(lua_State* L, int idx) {
-	return lua::GetUserdata<WeaponData*>(L, idx, lua::metatables::WeaponMT)->weapon;
+	return lua::GetRawUserdata<WeaponData*>(L, idx, lua::metatables::WeaponMT)->weapon;
 }
 
 LUA_FUNCTION(Lua_CreateWeapon) {
@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_CreateWeapon) {
 }
 
 LUA_FUNCTION(Lua_DestoryWeapon) {
-	WeaponData* weapon = lua::GetUserdata<WeaponData*>(L, 1, lua::metatables::WeaponMT);
+	WeaponData* weapon = lua::GetRawUserdata<WeaponData*>(L, 1, lua::metatables::WeaponMT);
 	if (std::holds_alternative<Entity_Player*>(weapon->owner)) {
 		Entity_Player* owner = std::get<Entity_Player*>(weapon->owner);
 		Isaac::DestoryWeapon(owner->GetWeapon(weapon->slot));
@@ -63,7 +63,7 @@ LUA_FUNCTION(Lua_FanGetWeapon) {
 }
 
 LUA_FUNCTION(Lua_WeaponGetOwner) {
-	WeaponData* weapon = lua::GetUserdata<WeaponData*>(L, 1, lua::metatables::WeaponMT);
+	WeaponData* weapon = lua::GetRawUserdata<WeaponData*>(L, 1, lua::metatables::WeaponMT);
 	Entity* ent = weapon->weapon->GetOwner();
 	if (!ent) {
 		lua_pushnil(L);

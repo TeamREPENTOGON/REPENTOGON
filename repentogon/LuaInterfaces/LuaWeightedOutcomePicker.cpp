@@ -8,7 +8,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_Constructor) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeWeight) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 
 	uint32_t value = (uint32_t)luaL_checkinteger(L, 2);
 	uint32_t weight = (uint32_t)luaL_checkinteger(L, 3);
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeWeight) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_PickOutcome) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 
 	uint32_t result = picker->PickOutcome(*rng);
@@ -32,7 +32,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_PickOutcome) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_RemoveOutcome) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	uint32_t value = (uint32_t)luaL_checkinteger(L, 2);
 
 	auto& outcomes = *picker->GetOutcomes();
@@ -42,7 +42,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_RemoveOutcome) {
 }
 
 LUA_FUNCTION(Lua_WeigtedOutcomePicker_GetOutcomes) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 
 	auto& outcomes = *picker->GetOutcomes();
 
@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_WeigtedOutcomePicker_GetOutcomes) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeFloat) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 
 	uint32_t value = (uint32_t)luaL_checkinteger(L, 2);
 	float weight = (float)luaL_checknumber(L, 3);
@@ -81,7 +81,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeFloat) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_ClearOutcomes) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	auto& outcomes = *picker->GetOutcomes();
 
 	outcomes.clear();
@@ -90,7 +90,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_ClearOutcomes) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_GetNumOutcomes) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	auto& outcomes = *picker->GetOutcomes();
 
 	lua_pushinteger(L, outcomes.size());
@@ -99,7 +99,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_GetNumOutcomes) {
 }
 
 LUA_FUNCTION(Lua_WeightedOutcomePicker_gc) {
-	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	WeightedOutcomePicker* picker = lua::GetRawUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	picker->~WeightedOutcomePicker();
 	return 0;
 }

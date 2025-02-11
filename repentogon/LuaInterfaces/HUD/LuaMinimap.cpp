@@ -4,7 +4,7 @@
 
 /*LUA_FUNCTION(Lua_GameGetMinimap)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Minimap** toLua = (Minimap**)lua_newuserdata(L, sizeof(Minimap*));
 	*toLua = game->GetMinimap();
 	luaL_setmetatable(L, lua::metatables::MinimapMT);

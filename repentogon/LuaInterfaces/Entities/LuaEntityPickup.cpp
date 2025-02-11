@@ -200,7 +200,7 @@ LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
 }
 
 /*LUA_FUNCTION(Lua_PickupIsChest) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetRawUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
 	lua_pushboolean(L, pickup->IsChest(variant));
 	return 1;

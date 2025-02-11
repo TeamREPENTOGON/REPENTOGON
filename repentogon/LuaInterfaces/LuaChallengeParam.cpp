@@ -13,14 +13,14 @@ LUA_FUNCTION(Lua_GameGetChallengeParams)
 
 LUA_FUNCTION(Lua_ChallengeParamGetName)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushstring(L, challengeParam->_name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ChallengeParamGetRoomSet)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	std::set<int> roomSet = (std::set<int>)challengeParam->_roomset;
 
 	lua_newtable(L);
@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetRoomSet)
 
 LUA_FUNCTION(Lua_ChallengeParamGetCollectibleList)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	std::vector<int> collectibleSet = (std::vector<int>)challengeParam->_collectibleList;
 
 	lua_newtable(L);
@@ -56,7 +56,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetCollectibleList)
 
 LUA_FUNCTION(Lua_ChallengeParamGetTrinketList)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	std::vector<int> trinketSet = (std::vector<int>)challengeParam->_trinketList;
 
 	lua_newtable(L);
@@ -74,7 +74,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetTrinketList)
 
 LUA_FUNCTION(Lua_ChallengeParamGetStartingPill)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_startingPill);
 
 	return 1;
@@ -82,7 +82,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetStartingPill)
 
 LUA_FUNCTION(Lua_ChallengeParamGetStartingCard)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_startingCard);
 
 	return 1;
@@ -90,7 +90,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetStartingCard)
 
 LUA_FUNCTION(Lua_ChallengeParamGetEndStage)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_endStage);
 
 	return 1;
@@ -98,7 +98,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetEndStage)
 
 LUA_FUNCTION(Lua_ChallengeParamGetPlayerType)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_playerType);
 
 	return 1;
@@ -106,7 +106,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetPlayerType)
 
 LUA_FUNCTION(Lua_ChallengeParamGetAchievementList)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	std::vector<int> achievementList = (std::vector<int>)challengeParam->_achievementList;
 
 	lua_newtable(L);
@@ -124,7 +124,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetAchievementList)
 
 LUA_FUNCTION(Lua_ChallengeParamGetSoulHearts)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_soulHearts);
 
 	return 1;
@@ -132,7 +132,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetSoulHearts)
 
 LUA_FUNCTION(Lua_ChallengeParamGetBlackHearts)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_blackHearts);
 
 	return 1;
@@ -140,7 +140,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetBlackHearts)
 
 LUA_FUNCTION(Lua_ChallengeParamGetHearts)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_hearts);
 
 	return 1;
@@ -148,7 +148,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetHearts)
 
 LUA_FUNCTION(Lua_ChallengeParamGetMaxHearts)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_maxHearts);
 
 	return 1;
@@ -156,7 +156,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetMaxHearts)
 
 LUA_FUNCTION(Lua_ChallengeParamGetCoins)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_coins);
 
 	return 1;
@@ -164,7 +164,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetCoins)
 
 LUA_FUNCTION(Lua_ChallengeParamGetAddDamage)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushnumber(L, challengeParam->_addDamage);
 
 	return 1;
@@ -172,7 +172,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetAddDamage)
 
 LUA_FUNCTION(Lua_ChallengeParamCanShoot)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_canShoot);
 
 	return 1;
@@ -180,7 +180,7 @@ LUA_FUNCTION(Lua_ChallengeParamCanShoot)
 
 LUA_FUNCTION(Lua_ChallengeParamIsAltPath)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_isAltPath);
 
 	return 1;
@@ -188,7 +188,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsAltPath)
 
 LUA_FUNCTION(Lua_ChallengeParamGetDifficulty)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_difficulty);
 
 	return 1;
@@ -196,7 +196,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetDifficulty)
 
 LUA_FUNCTION(Lua_ChallengeParamIsMegaSatanRun)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_isMegaSatan);
 
 	return 1;
@@ -204,7 +204,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsMegaSatanRun)
 
 LUA_FUNCTION(Lua_ChallengeParamGetMinFireRate)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushnumber(L, challengeParam->_minFireRate);
 
 	return 1;
@@ -212,7 +212,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetMinFireRate)
 
 LUA_FUNCTION(Lua_ChallengeParamIsMaxDamageEnabled)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_maxDamage);
 
 	return 1;
@@ -220,7 +220,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsMaxDamageEnabled)
 
 LUA_FUNCTION(Lua_ChallengeParamIsMinShotSpeedEnabled)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_minShotSpeed);
 
 	return 1;
@@ -228,7 +228,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsMinShotSpeedEnabled)
 
 LUA_FUNCTION(Lua_ChallengeParamIsBigRangeEnabled)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_bigRange);
 
 	return 1;
@@ -236,7 +236,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsBigRangeEnabled)
 
 LUA_FUNCTION(Lua_ChallengeParamGetCurse)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_getCurse);
 
 	return 1;
@@ -244,7 +244,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetCurse)
 
 LUA_FUNCTION(Lua_ChallengeParamGetCurseFilter)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushinteger(L, challengeParam->_curseFilter);
 
 	return 1;
@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_ChallengeParamGetCurseFilter)
 
 LUA_FUNCTION(Lua_ChallengeParamIsSecretPath)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	lua_pushboolean(L, challengeParam->_isSecretPath);
 
 	return 1;
@@ -260,7 +260,7 @@ LUA_FUNCTION(Lua_ChallengeParamIsSecretPath)
 
 LUA_FUNCTION(Lua_ChallengeParamGetCollectibleTwinList)
 {
-	ChallengeParam* challengeParam = *lua::GetUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
 	std::vector<int> collectibleList = (std::vector<int>)challengeParam->_collectibleTwinList;
 
 	lua_newtable(L);

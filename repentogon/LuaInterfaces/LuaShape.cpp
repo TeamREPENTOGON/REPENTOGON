@@ -13,26 +13,26 @@ LUA_FUNCTION(Lua_EntityGetDebugShape) {
 }
 
 LUA_FUNCTION(Lua_ShapeGetTimeout) {
-	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
+	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
 	lua_pushinteger(L, *shape->GetTimeout());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ShapeSetTimeout) {
-	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
+	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
 	*shape->GetTimeout() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ShapeCapsule) {
-	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
-	Capsule* cap1 = lua::GetUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
+	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
+	Capsule* cap1 = lua::GetRawUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
 	shape->Capsula(cap1);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ShapeCircle) {
-	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
+	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	const float size = (float)luaL_checknumber(L, 3);
 	shape->Circle(pos, size);

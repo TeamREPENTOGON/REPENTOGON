@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_SpriteGetOverlayNullFrame)
 
 LUA_FUNCTION(Lua_NullFrameGetScale)
 {
-	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *nullFrame->GetScale();
 
@@ -43,7 +43,7 @@ LUA_FUNCTION(Lua_NullFrameGetScale)
 
 LUA_FUNCTION(Lua_NullFrameIsVisible)
 {
-	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	lua_pushboolean(L, *nullFrame->IsVisible());
 
 	return 1;
@@ -51,7 +51,7 @@ LUA_FUNCTION(Lua_NullFrameIsVisible)
 
 LUA_FUNCTION(Lua_NullFrameGetPos)
 {
-	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *nullFrame->GetPos();
 
@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_NullFrameGetPos)
 
 LUA_FUNCTION(Lua_NullFrameGetColor)
 {
-	NullFrame* layerState = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	NullFrame* layerState = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = *layerState->GetColor();
 
@@ -69,7 +69,7 @@ LUA_FUNCTION(Lua_NullFrameGetColor)
 
 LUA_FUNCTION(Lua_NullFrameGetRotation)
 {
-	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	lua_pushnumber(L, *nullFrame->GetRotation());
 
 	return 1;

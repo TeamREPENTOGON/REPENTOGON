@@ -4,7 +4,7 @@
 
 /*LUA_FUNCTION(Lua_GetItemOverlay)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ItemOverlay** ud = (ItemOverlay**)lua_newuserdata(L, sizeof(ItemOverlay*));
 	*ud = game->GetItemOverlay();
 	luaL_setmetatable(L, lua::metatables::ItemOverlayMT);

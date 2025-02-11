@@ -48,7 +48,7 @@ LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 
 LUA_FUNCTION(Lua_CapsuleGetPosition)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *capsule->GetPosition();
 
@@ -57,7 +57,7 @@ LUA_FUNCTION(Lua_CapsuleGetPosition)
 
 LUA_FUNCTION(Lua_CapsuleGetStartPoint)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = capsule->_vec2;
 
@@ -65,7 +65,7 @@ LUA_FUNCTION(Lua_CapsuleGetStartPoint)
 }
 LUA_FUNCTION(Lua_CapsuleGetEndPoint)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = capsule->_vec3;
 
@@ -74,7 +74,7 @@ LUA_FUNCTION(Lua_CapsuleGetEndPoint)
 
 LUA_FUNCTION(Lua_CapsuleGetDirection)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = capsule->_direction;
 
@@ -83,7 +83,7 @@ LUA_FUNCTION(Lua_CapsuleGetDirection)
 
 LUA_FUNCTION(Lua_CapsuleGetSize)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	lua_pushnumber(L, capsule->_unkFloat1);
 
 	return 1;
@@ -91,7 +91,7 @@ LUA_FUNCTION(Lua_CapsuleGetSize)
 
 LUA_FUNCTION(Lua_CapsuleGetSizeDifference)
 {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	lua_pushnumber(L, capsule->_unkFloat2);
 
 	return 1;
@@ -99,15 +99,15 @@ LUA_FUNCTION(Lua_CapsuleGetSizeDifference)
 
 LUA_FUNCTION(Lua_CapsuleCollide)
 {
-	Capsule* cap1 = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
-	Capsule* cap2 = lua::GetUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
+	Capsule* cap1 = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* cap2 = lua::GetRawUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
 	Vector* vec = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	lua_pushboolean(L, cap1->Collide(cap1, cap2, vec));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_Capsule__gc) {
-	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	capsule->~Capsule();
 
 	return 0;

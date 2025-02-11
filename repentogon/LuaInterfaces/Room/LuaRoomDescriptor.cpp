@@ -65,19 +65,19 @@ static void _RoomDescriptorDoorsGet(lua_State* L, RoomDescriptor* descriptor) {
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsGet) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsGetConst) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoorsConst);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoorsConst);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsSet) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	RoomDescriptor* descriptor = *ptr;
 
 	int slot = (int)luaL_checkinteger(L, 2);

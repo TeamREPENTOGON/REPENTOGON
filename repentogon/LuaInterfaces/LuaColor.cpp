@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_ColorGetTint) {
 }
 
 /*LUA_FUNCTION(Lua_ConstColorGetTint) {
-	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	ColorMod* color = lua::GetRawUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
 	const char* keys[4] = { "R", "G", "B", "A" };
@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_ColorGetColorize) {
 }
 
 /*LUA_FUNCTION(Lua_ConstColorGetColorize) {
-	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	ColorMod* color = lua::GetRawUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
 	const char* keys[4] = { "R", "G", "B", "A" };
@@ -80,7 +80,7 @@ LUA_FUNCTION(Lua_ColorGetOffset) {
 }
 
 /*LUA_FUNCTION(Lua_ConstColorGetOffset) {
-	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	ColorMod* color = lua::GetRawUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
 	const char* keys[3] = { "R", "G", "B" };
@@ -109,7 +109,7 @@ LUA_FUNCTION(Lua_Color_ToString) {
 }
 
 /*LUA_FUNCTION(Lua_ConstColor_ToString) {
-	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	ColorMod* mod = lua::GetRawUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	Lua_Color_ToString(L, mod);
 	return 1;
 }*/
@@ -131,7 +131,7 @@ LUA_FUNCTION(Lua_Color_Print) {
 }
 
 /*LUA_FUNCTION(Lua_ConstColor_Print) {
-	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	ColorMod* mod = lua::GetRawUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	Lua_Color_Print(L, mod);
 	return 0;
 }*/

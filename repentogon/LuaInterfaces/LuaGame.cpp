@@ -186,7 +186,7 @@ LUA_FUNCTION(Lua_GameGetLerpColorModifier)
 LUA_FUNCTION(Lua_GameSetColorModifier)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState* pColor = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 

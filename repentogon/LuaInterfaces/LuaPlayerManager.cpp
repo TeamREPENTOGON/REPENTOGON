@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetPlayerManager) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);

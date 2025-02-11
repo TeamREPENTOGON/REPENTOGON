@@ -291,7 +291,7 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 
 LUA_FUNCTION(Lua_LayerStateSetCustomShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	const std::string path = luaL_checkstring(L, 2);
 	const bool success = SetCustomShader(layerState, path, /*champion=*/false);
 	if (!success) {
@@ -302,14 +302,14 @@ LUA_FUNCTION(Lua_LayerStateSetCustomShader)
 
 LUA_FUNCTION(Lua_LayerStateClearCustomShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	ClearCustomShader(layerState, /*champion=*/false);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_LayerStateHasCustomShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 
 	const std::string path = luaL_optstring(L, 2, "");
 	bool result = false;
@@ -326,7 +326,7 @@ LUA_FUNCTION(Lua_LayerStateHasCustomShader)
 
 LUA_FUNCTION(Lua_LayerStateSetCustomChampionShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	const std::string path = luaL_checkstring(L, 2);
 	const bool success = SetCustomShader(layerState, path, /*champion=*/true);
 	if (!success) {
@@ -337,14 +337,14 @@ LUA_FUNCTION(Lua_LayerStateSetCustomChampionShader)
 
 LUA_FUNCTION(Lua_LayerStateClearCustomChampionShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	ClearCustomShader(layerState, /*champion=*/true);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_LayerStateHasCustomChampionShader)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 
 	const std::string path = luaL_optstring(L, 2, "");
 	bool result = false;
@@ -361,35 +361,35 @@ LUA_FUNCTION(Lua_LayerStateHasCustomChampionShader)
 
 LUA_FUNCTION(Lua_LayerStateGetLayerID)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushinteger(L, layerState->GetLayerID());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LayerStateGetName)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushstring(L, layerState->GetName().c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LayerStateGetSpritesheetPath)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushstring(L, layerState->GetSpritesheetPath().c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LayerStateGetDefaultSpritesheetPath)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushstring(L, layerState->GetDefaultSpritesheetPath().c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LayerStateIsVisible)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushboolean(L, *layerState->IsVisible());
 
 	return 1;
@@ -397,7 +397,7 @@ LUA_FUNCTION(Lua_LayerStateIsVisible)
 
 LUA_FUNCTION(Lua_LayerStateSetVisible)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->IsVisible() = lua::luaL_checkboolean(L, 2);
 
 	return 0;
@@ -405,7 +405,7 @@ LUA_FUNCTION(Lua_LayerStateSetVisible)
 
 LUA_FUNCTION(Lua_LayerStateGetSize)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *layerState->GetSize();
 
@@ -414,7 +414,7 @@ LUA_FUNCTION(Lua_LayerStateGetSize)
 
 LUA_FUNCTION(Lua_LayerStateSetSize)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->GetSize() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
@@ -422,7 +422,7 @@ LUA_FUNCTION(Lua_LayerStateSetSize)
 
 LUA_FUNCTION(Lua_LayerStateGetRotation)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushnumber(L, *layerState->GetRotation());
 
 	return 1;
@@ -430,7 +430,7 @@ LUA_FUNCTION(Lua_LayerStateGetRotation)
 
 LUA_FUNCTION(Lua_LayerStateSetRotation)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->GetRotation() = (float)luaL_checknumber(L, 2);
 
 	return 0;
@@ -438,7 +438,7 @@ LUA_FUNCTION(Lua_LayerStateSetRotation)
 
 LUA_FUNCTION(Lua_LayerStateGetPos)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *layerState->GetPos();
 
@@ -447,7 +447,7 @@ LUA_FUNCTION(Lua_LayerStateGetPos)
 
 LUA_FUNCTION(Lua_LayerStateSetPos)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->GetPos() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
@@ -455,7 +455,7 @@ LUA_FUNCTION(Lua_LayerStateSetPos)
 
 LUA_FUNCTION(Lua_LayerStateGetColor)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = *layerState->GetColor();
 
@@ -464,7 +464,7 @@ LUA_FUNCTION(Lua_LayerStateGetColor)
 
 LUA_FUNCTION(Lua_LayerStateSetColor)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	*layerState->GetColor() = *color;
@@ -473,13 +473,13 @@ LUA_FUNCTION(Lua_LayerStateSetColor)
 
 LUA_FUNCTION(Lua_LayerStateGetRenderFlags)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushinteger(L, *layerState->GetRenderFlags());
 	return 1;
 }
 LUA_FUNCTION(Lua_LayerStateSetRenderFlags)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->GetRenderFlags() = (unsigned int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -487,7 +487,7 @@ LUA_FUNCTION(Lua_LayerStateSetRenderFlags)
 
 LUA_FUNCTION(Lua_LayerStateGetCropOffset)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *layerState->GetCropOffset();
 
@@ -496,14 +496,14 @@ LUA_FUNCTION(Lua_LayerStateGetCropOffset)
 
 LUA_FUNCTION(Lua_LayerStateSetCropOffset)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	*layerState->GetCropOffset() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	BlendMode** ud = (BlendMode**)lua_newuserdata(L, sizeof(BlendMode*));
 	*ud = layerState->GetBlendMode();
 	luaL_setmetatable(L, lua::metatables::BlendModeMT);
@@ -512,7 +512,7 @@ LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
 
 LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushinteger(L, layerState->_wrapSMode);
 
 	return 1;
@@ -520,7 +520,7 @@ LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
 
 LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_wrapSMode = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -528,7 +528,7 @@ LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 
 LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushinteger(L, layerState->_wrapTMode);
 
 	return 1;
@@ -536,7 +536,7 @@ LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
 
 LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_wrapTMode = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -544,7 +544,7 @@ LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
 
 LUA_FUNCTION(Lua_LayerStateGetFlipX)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushboolean(L, layerState->_flipX);
 
 	return 1;
@@ -552,7 +552,7 @@ LUA_FUNCTION(Lua_LayerStateGetFlipX)
 
 LUA_FUNCTION(Lua_LayerStateSetFlipX)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_flipX = lua::luaL_checkboolean(L, 2);
 
 	return 0;
@@ -560,7 +560,7 @@ LUA_FUNCTION(Lua_LayerStateSetFlipX)
 
 LUA_FUNCTION(Lua_LayerStateGetFlipY)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushboolean(L, layerState->_flipY);
 
 	return 1;
@@ -568,7 +568,7 @@ LUA_FUNCTION(Lua_LayerStateGetFlipY)
 
 LUA_FUNCTION(Lua_LayerStateSetFlipY)
 {
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	layerState->_flipY = lua::luaL_checkboolean(L, 2);
 
 	return 0;

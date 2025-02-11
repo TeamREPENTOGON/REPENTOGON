@@ -323,7 +323,7 @@ namespace lua {
     }
 
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, const char* mt) {
+    T GetRawUserdata(lua_State* L, int idx, const char* mt) {
         void* ud = luaL_checkudata(L, idx, mt);
         return (T)ud;
     }

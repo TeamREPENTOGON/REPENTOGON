@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 }
 
 LUA_FUNCTION(Lua_EffectCreateLootPreview) {
-	LootList* loot = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* loot = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Entity_Pickup* owner = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Effect* eff = lua::GetUserdata<Entity_Effect*>(L, 4, lua::Metatables::ENTITY_EFFECT, "EntityEffect");

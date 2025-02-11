@@ -517,7 +517,7 @@ LUA_FUNCTION(Lua_EntitySetColorParams) {
 		for (size_t i = 0; i < length; i++)
 		{
 			lua_rawgeti(L, 2, i + 1);
-			list.push_back(*lua::GetUserdata<ColorParams*>(L, -1, lua::metatables::ColorParamsMT));
+			list.push_back(*lua::GetRawUserdata<ColorParams*>(L, -1, lua::metatables::ColorParamsMT));
 			lua_pop(L, 1);
 		}
 		entity->_colorParams = list;

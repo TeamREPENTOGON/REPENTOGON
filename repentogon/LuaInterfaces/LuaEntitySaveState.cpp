@@ -8,7 +8,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	static luaL_Reg methods[];
 
 	static Lua_EntitySaveStateAPI* GetData(lua_State* L, int idx) {
-		return lua::GetUserdata<Lua_EntitySaveStateAPI*>(L, idx, lua::metatables::EntitySaveStateMT);
+		return lua::GetRawUserdata<Lua_EntitySaveStateAPI*>(L, idx, lua::metatables::EntitySaveStateMT);
 	}
 
 	LUA_FUNCTION(Lua_GetType) {
@@ -411,7 +411,7 @@ luaL_Reg Lua_EntitySaveStateAPI::methods[] = {
 
 struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 	static Lua_EntitiesSaveStateVectorAPI* GetData(lua_State* L, int idx) {
-		return lua::GetUserdata<Lua_EntitiesSaveStateVectorAPI*>(L, idx, lua::metatables::EntitiesSaveStateVectorMT);
+		return lua::GetRawUserdata<Lua_EntitiesSaveStateVectorAPI*>(L, idx, lua::metatables::EntitiesSaveStateVectorMT);
 	}
 
 	LUA_FUNCTION(Lua_Get) {
@@ -483,7 +483,7 @@ luaL_Reg Lua_EntitiesSaveStateVectorAPI::methods[] = {
 
 struct Lua_GridEntitiesSaveStateVectorAPI : Lua_GridEntitiesSaveStateVector {
 	static Lua_GridEntitiesSaveStateVectorAPI* GetData(lua_State* L, int idx) {
-		return lua::GetUserdata<Lua_GridEntitiesSaveStateVectorAPI*>(L, idx, lua::metatables::GridEntitiesSaveStateVectorMT);
+		return lua::GetRawUserdata<Lua_GridEntitiesSaveStateVectorAPI*>(L, idx, lua::metatables::GridEntitiesSaveStateVectorMT);
 	}
 
 	LUA_FUNCTION(Lua_Get) {

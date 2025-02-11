@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetProceduralItemManager) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ProceduralItemManager** ud = (ProceduralItemManager**)lua_newuserdata(L, sizeof(void*));
 	*ud = game->GetProceduralItemManager();
 	luaL_setmetatable(L, lua::metatables::ProceduralItemManagerMT);

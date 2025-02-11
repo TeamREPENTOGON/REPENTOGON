@@ -255,7 +255,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
-	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
+	Weapon_MultiShotParams* multiShotParams = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
 	if (multiShotParams->numTears < loopIndex) {
 		return luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
@@ -927,7 +927,7 @@ LUA_FUNCTION(Lua_PlayerGetWildCardItemType) {
 
 LUA_FUNCTION(Lua_PlayerSetWeapon) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	WeaponData* weaponData = lua::GetUserdata<WeaponData*>(L, 2, lua::metatables::WeaponMT);
+	WeaponData* weaponData = lua::GetRawUserdata<WeaponData*>(L, 2, lua::metatables::WeaponMT);
 	int index = (int)luaL_checkinteger(L, 3);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
@@ -1768,7 +1768,7 @@ LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 /*
 // this seems to be super hardcoded to not work outside of cantripped
 LUA_FUNCTION(Lua_PlayerAddItemCard) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
 	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
 		std::string error("Invalid collectible ID ");
@@ -1822,10 +1822,10 @@ LUA_FUNCTION(Lua_PlayerCanOverrideActiveItem) {
 /*
 // Spawns club, immediately kills it. Needs investigation
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity* parent = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		parent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		parent = lua::GetRawUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	}
 	int variant = (int)luaL_checkinteger(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
@@ -1915,8 +1915,8 @@ LUA_FUNCTION(Lua_PlayerGetEnterPosition) {
 /*
 // needs return register override support
 LUA_FUNCTION(Lua_PlayerGetExplosionRadiusMultiplier) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	BitSet128* flags = lua::GetUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	BitSet128* flags = lua::GetRawUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
 	lua_pushnumber(L, player->GetExplosionRadiusMultiplier(*flags));
 	return 1;
 }
@@ -1971,7 +1971,7 @@ LUA_FUNCTION(Lua_PlayerSetLaserColor) {
 /*
 // needs return register override support
 LUA_FUNCTION(Lua_PlayerGetSoundPitch) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushnumber(L, player->GetSoundPitch());
 
 	return 1;
@@ -1979,7 +1979,7 @@ LUA_FUNCTION(Lua_PlayerGetSoundPitch) {
 
 
 LUA_FUNCTION(Lua_PlayerGetSalvationScale) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushnumber(L, player->GetSalvationScale());
 
 	return 1;
@@ -2265,7 +2265,7 @@ LUA_FUNCTION(Lua_PlayerTryRemoveSmeltedTrinket) {
 /*
 // this seems to rely on a struct of door outline effects that doesn't exist when red key or cracked key aren't in possession
 LUA_FUNCTION(Lua_PlayerUseRedKey) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	player->UseRedKey();
 	return 0;
 }
@@ -2347,8 +2347,8 @@ LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
 /*
 // doesn't seem to work
 LUA_FUNCTION(Lua_PlayerAttachMinecart) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity_NPC* minecart = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_NPC* minecart = lua::GetRawUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	player->AttachMinecart(minecart);
 	return 0;
 }

@@ -10,7 +10,7 @@ LUA_FUNCTION(Lua_LootListConstructor) {
 }
 
 LUA_FUNCTION(Lua_LootListPushEntry) {
-	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootList = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	const unsigned int type = (unsigned int)luaL_checkinteger(L, 2);
 	const unsigned int variant = (unsigned int)luaL_checkinteger(L, 3);
 	const unsigned int subType = (unsigned int)luaL_checkinteger(L, 4);
@@ -64,7 +64,7 @@ LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
 
 LUA_FUNCTION(Lua_LootListGetEntries)
 {
-	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootList = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	auto& entries = *lootList; // Assuming lootList is a std::deque<LootListEntry>
 
 	lua_newtable(L);
@@ -81,7 +81,7 @@ LUA_FUNCTION(Lua_LootListGetEntries)
 }
 
 /*LUA_FUNCTION(Lua_LootList__gc) {
-	LootList* lootlist = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootlist = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	lootlist->~LootList();
 
 	return 0;

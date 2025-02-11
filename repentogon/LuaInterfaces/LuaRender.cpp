@@ -29,7 +29,7 @@ static constexpr bool EnableCustomRendering = false;
 // Image
 
 LuaImage* LuaRender::GetLuaImage(lua_State* L, int idx) {
-	return lua::GetUserdata<LuaImage*>(L, idx, LuaRender::ImageMT);
+	return lua::GetRawUserdata<LuaImage*>(L, idx, LuaRender::ImageMT);
 }
 
 LUA_FUNCTION(lua_Image_gc) {
@@ -49,7 +49,7 @@ static void RegisterImageClass(lua_State* L) {
 // Transformer
 
 LuaTransformer* LuaRender::GetTransformer(lua_State* L, int idx) {
-	return lua::GetUserdata<LuaTransformer*>(L, idx, LuaRender::TransformerMT);
+	return lua::GetRawUserdata<LuaTransformer*>(L, idx, LuaRender::TransformerMT);
 }
 
 LUA_FUNCTION(lua_Transformer_gc) {
@@ -524,7 +524,7 @@ namespace GL {
 
 		template<>
 		static inline GLFloat* Get<GLFloat>(lua_State* L) {
-			return lua::GetUserdata<GLFloat*>(L, 1, LuaRender::GLFloatMT);
+			return lua::GetRawUserdata<GLFloat*>(L, 1, LuaRender::GLFloatMT);
 		}
 
 		template<>
@@ -544,17 +544,17 @@ namespace GL {
 
 		template<>
 		static inline GLMat2* Get<GLMat2>(lua_State* L) {
-			return lua::GetUserdata<GLMat2*>(L, 1, LuaRender::GLMat2MT);
+			return lua::GetRawUserdata<GLMat2*>(L, 1, LuaRender::GLMat2MT);
 		}
 
 		template<>
 		static inline GLMat3* Get<GLMat3>(lua_State* L) {
-			return lua::GetUserdata<GLMat3*>(L, 1, LuaRender::GLMat3MT);
+			return lua::GetRawUserdata<GLMat3*>(L, 1, LuaRender::GLMat3MT);
 		}
 
 		template<>
 		static inline GLMat4* Get<GLMat4>(lua_State* L) {
-			return lua::GetUserdata<GLMat4*>(L, 1, LuaRender::GLMat4MT);
+			return lua::GetRawUserdata<GLMat4*>(L, 1, LuaRender::GLMat4MT);
 		}
 
 		static inline float AssertFloat(lua_State* L) {
@@ -1077,7 +1077,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_AddAttribute) {
-			VertexDescriptor* descriptor = lua::GetUserdata<VertexDescriptor*>(L, 1, LuaRender::VertexDescriptorMT);
+			VertexDescriptor* descriptor = lua::GetRawUserdata<VertexDescriptor*>(L, 1, LuaRender::VertexDescriptorMT);
 			int type = (int) luaL_checkinteger(L, 2);
 			if (type < 0 || type >= GLSLType::GLSL_MAX) {
 				return luaL_error(L, "Invalid attribute type %d", type);
@@ -1183,7 +1183,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_index) {
-			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
+			Elements** ud = lua::GetRawUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
 			Elements* elements = *ud;
 			uint32_t index = (uint32_t) luaL_checkinteger(L, 2);
 
@@ -1198,7 +1198,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_newindex) {
-			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
+			Elements** ud = lua::GetRawUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
 			Elements* elements = *ud;
 			uint32_t index = (uint32_t) luaL_checkinteger(L, 2);
 			uint32_t value = (uint32_t) luaL_checkinteger(L, 3);
@@ -1217,7 +1217,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_len) {
-			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
+			Elements** ud = lua::GetRawUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
 			lua_pushinteger(L, (*ud)->Max() + 1);
 			return 1;
 		}
@@ -1255,7 +1255,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_Dump) {
-			Vertex* vertex = lua::GetUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
+			Vertex* vertex = lua::GetRawUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
 			lua_newtable(L);
 			for (auto const& [name, data] : *vertex->_offsets) {
 				auto const& [offset, type] = data;
@@ -1269,7 +1269,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_index) {
-			Vertex* vertex = lua::GetUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
+			Vertex* vertex = lua::GetRawUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
 			const char* name = luaL_checkstring(L, 2);
 			auto [offset, type] = vertex->GetAttribute(name);
 			float* data = vertex->_data + offset;
@@ -1313,11 +1313,11 @@ namespace GL {
 
 		template<typename T>
 		static void AssignAttribute(lua_State* L, Vertex* vertex, size_t offset, const char* mt) {
-			T(vertex->_data + offset) = *lua::GetUserdata<T*>(L, 3, mt);
+			T(vertex->_data + offset) = *lua::GetRawUserdata<T*>(L, 3, mt);
 		}
 
 		LUA_FUNCTION(Lua_newindex) {
-			Vertex* vertex = lua::GetUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
+			Vertex* vertex = lua::GetRawUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
 			const char* name = luaL_checkstring(L, 2);
 
 			auto [offset, type] = vertex->GetAttribute(name);
@@ -1417,13 +1417,13 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_GetVertex) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
 			(*buffer)->GetVertex(L, (size_t) luaL_checkinteger(L, 2));
 			return 1;
 		}
 
 		LUA_FUNCTION(Lua_GetElements) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
 			Elements** ud = (Elements**)lua_newuserdata(L, sizeof(void*));
 			*ud = &(*buffer)->_elements;
 			luaL_setmetatable(L, LuaRender::ElementsArrayMT);
@@ -1431,7 +1431,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_gc) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
 			/* FILE* f = fopen("repentogon.log", "a");
 			fprintf(f, "Lua GC freeing vertex buffer at %p\n", *buffer);
 			fclose(f); */
@@ -1440,7 +1440,7 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_len) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
 			lua_pushinteger(L, (*buffer)->_nVertices + 1);
 			return 1;
 		}
@@ -1517,9 +1517,9 @@ namespace GL {
 		}
 
 		static void Lua_BindUniform(lua_State* L, const char* mt) {
-			Shader** shader = lua::GetUserdata<Shader**>(L, 1, LuaRender::ShaderMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 1, LuaRender::ShaderMT);
 			std::string name(luaL_checkstring(L, 2));
-			GLSLValue* value = lua::GetUserdata<GLSLValue*>(L, 3, mt);
+			GLSLValue* value = lua::GetRawUserdata<GLSLValue*>(L, 3, mt);
 			(*shader)->BindUniform(name, value);
 		}
 
@@ -1641,9 +1641,9 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_NewPass) {
-			Pipeline* pipeline = lua::GetUserdata<Pipeline*>(L, 1, LuaRender::PipelineMT);
+			Pipeline* pipeline = lua::GetRawUserdata<Pipeline*>(L, 1, LuaRender::PipelineMT);
 			size_t nbVertices = (size_t) luaL_checkinteger(L, 2);
-			Shader** shader = lua::GetUserdata<Shader**>(L, 3, LuaRender::ShaderMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 3, LuaRender::ShaderMT);
 			size_t nbElements = (size_t) luaL_checkinteger(L, 4);
 
 			VertexBuffer* buffer = pipeline->NewPass(nbVertices, *shader, nbElements);
@@ -1812,7 +1812,7 @@ namespace GL {
 			 * The call to the iterator function produces the values assigned to vars
 			 * Looping stops when control variable becomes nil
 			 */
-			RenderOperationContext* context = lua::GetUserdata<RenderOperationContext*>(L, 1, LuaRender::ContextMT);
+			RenderOperationContext* context = lua::GetRawUserdata<RenderOperationContext*>(L, 1, LuaRender::ContextMT);
 			lua_pushcfunction(L, Lua__pairs_iterator);
 			lua_pushlightuserdata(L, context);
 			lua_pushnil(L);
@@ -1834,8 +1834,8 @@ namespace GL {
 	class RenderSet {
 	public:
 		LUA_FUNCTION(Lua_SliceSingle) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
-			Shader** shader = lua::GetUserdata<Shader**>(L, 2, LuaRender::ShaderMT);
+			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 2, LuaRender::ShaderMT);
 			int nElements = (int) luaL_checkinteger(L, 3);
 
 			int first = (int) luaL_checkinteger(L, 4);
@@ -2217,7 +2217,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 				luaL_getmetatable(L, LuaRender::ShaderMT);
 				if (lua_rawequal(L, -1, -2)) {
 					lua_pop(L, 2);
-					GL::Shader* shader = *lua::GetUserdata<GL::Shader**>(L, -1, LuaRender::ShaderMT);
+					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::ShaderMT);
 					shader->Use();
 					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
 					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
@@ -2228,7 +2228,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 					luaL_getmetatable(L, LuaRender::PipelineMT);
 					if (lua_rawequal(L, -1, -2)) {
 						lua_pop(L, 2);
-						GL::Pipeline* pipeline = lua::GetUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
+						GL::Pipeline* pipeline = lua::GetRawUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
 						pipeline->Render();
 					}
 					else {
@@ -2304,7 +2304,7 @@ LUA_FUNCTION(lua_Renderer_StartTransformation) {
 LUA_FUNCTION(Lua_Renderer_Shader) {
 	std::string vertexShader(luaL_checkstring(L, 1));
 	std::string fragmentShader(luaL_checkstring(L, 2));
-	GL::VertexDescriptor* descriptor = lua::GetUserdata<GL::VertexDescriptor*>(L, 3, LuaRender::VertexDescriptorMT);
+	GL::VertexDescriptor* descriptor = lua::GetRawUserdata<GL::VertexDescriptor*>(L, 3, LuaRender::VertexDescriptorMT);
 
 	GL::Shader* shader;
 	try {
