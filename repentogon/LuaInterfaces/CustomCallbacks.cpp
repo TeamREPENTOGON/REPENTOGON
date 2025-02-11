@@ -2633,22 +2633,8 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 	}
 }
 
-static void TestPlayerHUD_ToLua(PlayerHUD* hud) {
-	lua_State* L = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(L);
-	if (lua_getglobal(L, "TestPlayerHUD") == LUA_TNIL) {
-		lua_pop(L, 1);
-		return;
-	}
-
-	lua::LuaCaller caller(L);
-	caller.pushLuabridge(hud, lua::metatables::PlayerHUDMT);
-	caller.call(0);
-}
-
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
 HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
-	TestPlayerHUD_ToLua(this);
 	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.

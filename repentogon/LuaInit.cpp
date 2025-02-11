@@ -284,11 +284,6 @@ LUA_FUNCTION(Lua_ToDegrees) {
 	return 1;
 }
 
-static int TestPlayerHUD_FromLua(lua_State* L) {
-	PlayerHUD* hud = lua::GetRawUserdata<PlayerHUD*>(L, 1, lua::metatables::PlayerHUDMT);
-	return 0;
-}
-
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	printf("[REPENTOGON] Registering Lua functions and metatables\n");
@@ -303,7 +298,6 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);
 	lua_register(state, "ToDegrees", Lua_ToDegrees);
-	lua_register(state, "TestPlayerHUD_FromLua", TestPlayerHUD_FromLua);
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {
