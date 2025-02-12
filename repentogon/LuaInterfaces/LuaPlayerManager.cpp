@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetPlayerManager) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
@@ -288,7 +288,7 @@ LUA_FUNCTION(Lua_SpawnSelectedBaby)
 LUA_FUNCTION(Lua_RemoveCoPlayer)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	auto* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
 
 	playerManager->RemoveCoPlayer(player, false);
 	return 0;

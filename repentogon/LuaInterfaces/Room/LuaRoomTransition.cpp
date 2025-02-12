@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetRoomTransition) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomTransition** ud = (RoomTransition**)lua_newuserdata(L, sizeof(RoomTransition*));
 	*ud = game->GetRoomTransition();
 	luaL_setmetatable(L, lua::metatables::RoomTransitionMT);

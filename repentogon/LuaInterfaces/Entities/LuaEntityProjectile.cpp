@@ -4,8 +4,8 @@
 
 LUA_FUNCTION(Lua_ProjectileDeflect)
 {
-	Entity_Projectile* projectile = lua::GetUserdata<Entity_Projectile*>(L, 1, lua::Metatables::ENTITY_PROJECTILE, "EntityProjectile");
-	Vector* vel = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity_Projectile* projectile = lua::GetLuabridgeUserdata<Entity_Projectile*>(L, 1, lua::Metatables::ENTITY_PROJECTILE, "EntityProjectile");
+	Vector* vel = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	projectile->Reflect(nullptr, vel);
 	return 0;
 }

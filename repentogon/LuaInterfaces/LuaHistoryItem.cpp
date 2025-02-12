@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_HistoryItemGetTime)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_time);
 
 	return 1;
@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_HistoryItemGetTime)
 
 LUA_FUNCTION(Lua_HistoryItemGetItemID)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_itemID);
 
 	return 1;
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_HistoryItemGetItemID)
 
 LUA_FUNCTION(Lua_HistoryItemGetLevelStage)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_levelStage);
 
 	return 1;
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_HistoryItemGetLevelStage)
 
 LUA_FUNCTION(Lua_HistoryItemGetStageType)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_stageType);
 
 	return 1;
@@ -36,7 +36,7 @@ LUA_FUNCTION(Lua_HistoryItemGetStageType)
 
 LUA_FUNCTION(Lua_HistoryItemGetRoomType)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_roomType);
 
 	return 1;
@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_HistoryItemGetRoomType)
 
 LUA_FUNCTION(Lua_HistoryItemGetItemPoolType)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushinteger(L, historyItem->_itemPoolType);
 
 	return 1;
@@ -52,7 +52,7 @@ LUA_FUNCTION(Lua_HistoryItemGetItemPoolType)
 
 LUA_FUNCTION(Lua_HistoryItemIsTrinket)
 {
-	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	History_HistoryItem* historyItem = lua::GetRawUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
 	lua_pushboolean(L, historyItem->_isTrinket);
 
 	return 1;

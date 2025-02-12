@@ -4,19 +4,19 @@
 
 
 LUA_FUNCTION(Lua_PEGetConditionType) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_pushinteger(L, pi->effectConditionType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PEGetActionType) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_pushinteger(L, pi->effectActionType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PEGetConditionProperty) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_newtable(L);
 	switch (pi->effectConditionType) {
 	case ProceduralEffect::CONDITION_ENTITY_SPAWN:
@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_PEGetConditionProperty) {
 }
 
 LUA_FUNCTION(Lua_PEGetActionProperty) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_newtable(L);
 	switch (pi->effectActionType)
 	{
@@ -80,7 +80,7 @@ LUA_FUNCTION(Lua_PEGetActionProperty) {
 
 
 LUA_FUNCTION(Lua_PEGetTriggerChance) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	float chance = pi->triggerChance;
 	//manually fix the chance from 0 ~ 1 to the actual rate.
 	switch (pi->effectConditionType)

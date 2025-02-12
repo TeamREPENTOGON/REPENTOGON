@@ -6,7 +6,7 @@
 //1
 LUA_FUNCTION(Lua_GetRGBSourceFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, mode->_rgbSourceFactor);
 
 	return 1;
@@ -14,7 +14,7 @@ LUA_FUNCTION(Lua_GetRGBSourceFactor)
 
 LUA_FUNCTION(Lua_SetRGBSourceFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	mode->_rgbSourceFactor = (unsigned int)luaL_checkinteger(L, 2);
 	return 0;
 }
@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_SetRGBSourceFactor)
 //2
 LUA_FUNCTION(Lua_GetRGBDestinationFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, mode->_rgbDestFactor);
 
 	return 1;
@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_GetRGBDestinationFactor)
 
 LUA_FUNCTION(Lua_SetRGBDestinationFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	mode->_rgbDestFactor = (unsigned int)luaL_checkinteger(L, 2);
 	return 0;
 }
@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_SetRGBDestinationFactor)
 //3
 LUA_FUNCTION(Lua_GetAlphaSourceFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, mode->_alphaSourceFactor);
 
 	return 1;
@@ -46,7 +46,7 @@ LUA_FUNCTION(Lua_GetAlphaSourceFactor)
 
 LUA_FUNCTION(Lua_SetAlphaSourceFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	mode->_alphaSourceFactor = (unsigned int)luaL_checkinteger(L, 2);
 	return 0;
 }
@@ -54,7 +54,7 @@ LUA_FUNCTION(Lua_SetAlphaSourceFactor)
 //4
 LUA_FUNCTION(Lua_GetAlphaDestinationFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, mode->_alphaDestFactor);
 
 	return 1;
@@ -62,7 +62,7 @@ LUA_FUNCTION(Lua_GetAlphaDestinationFactor)
 
 LUA_FUNCTION(Lua_SetAlphaDestinationFactor)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	mode->_alphaDestFactor = (unsigned int)luaL_checkinteger(L, 2);
 	return 0;
 }
@@ -77,7 +77,7 @@ const BlendMode modes[5] = {
 
 LUA_FUNCTION(Lua_SetMode)
 {
-	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	if (lua_gettop(L) > 2) {
 		mode->_rgbSourceFactor = (int)luaL_optnumber(L, 2, mode->_rgbSourceFactor);
 		mode->_rgbDestFactor = (int)luaL_optnumber(L, 3, mode->_rgbDestFactor);

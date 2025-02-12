@@ -47,19 +47,19 @@ LUA_FUNCTION(Lua_VectorUD_metamul) {
 
 	if (t1 == LUA_TNUMBER) {
 		float mult = (float) luaL_checknumber(L, 1);
-		Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t2 == LUA_TNUMBER) {
 		float mult = (float) luaL_checknumber(L, 2);
-		Vector* vector = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t1 == t2 && t1 == LUA_TUSERDATA) {
-		Vector* a = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-		Vector* b = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* a = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* b = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(a->x * b->x, a->y * b->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
@@ -82,13 +82,13 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}
-		Vector* vector = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(vector->x / div, vector->y / div);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t1 == t2 && t1 == LUA_TUSERDATA) {
-		Vector* a = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-		Vector* b = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* a = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+		Vector* b = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 
 		if (b->x == 0 || b->y == 0) {
 			return luaL_error(L, "Divide by zero");
@@ -104,8 +104,8 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 }
 
 LUA_FUNCTION(Lua_VectorUD_metaadd) {
-	Vector* v1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-	Vector* v2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 
 	Vector result(v1->x + v2->x, v1->y + v2->y);
 	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
@@ -113,8 +113,8 @@ LUA_FUNCTION(Lua_VectorUD_metaadd) {
 }
 
 LUA_FUNCTION(Lua_VectorUD_metasub) {
-	Vector* v1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-	Vector* v2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 
 	Vector result(v1->x - v2->x, v1->y - v2->y);
 	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);

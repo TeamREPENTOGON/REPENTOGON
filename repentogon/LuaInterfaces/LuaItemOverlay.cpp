@@ -4,7 +4,7 @@
 
 /*LUA_FUNCTION(Lua_GetItemOverlay)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ItemOverlay** ud = (ItemOverlay**)lua_newuserdata(L, sizeof(ItemOverlay*));
 	*ud = game->GetItemOverlay();
 	luaL_setmetatable(L, lua::metatables::ItemOverlayMT);
@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_ItemOverlayShow)
 	int delay = (int)luaL_optinteger(L, 2, 0);
 	Entity_Player* player = NULL;
 	if (lua_gettop(L) == 4 && !lua_isnil(L, 3)) {
-		player = lua::GetUserdata<Entity_Player*>(L, 3, lua::Metatables::ENTITY, "Entity_Player");
+		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 3, lua::Metatables::ENTITY, "Entity_Player");
 	}
 	itemOverlay->Show(overlayID, delay, player);
 	return 0;

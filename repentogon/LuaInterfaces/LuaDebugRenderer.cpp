@@ -4,7 +4,7 @@
 
 /*LUA_FUNCTION(Lua_GetDebugRenderer)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	DebugRenderer** ud = (DebugRenderer**)lua_newuserdata(L, sizeof(DebugRenderer*));
 	*ud = game->GetDebugRenderer();
 	luaL_setmetatable(L, lua::metatables::DebugRendererMT);
