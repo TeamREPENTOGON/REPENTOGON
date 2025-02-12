@@ -4,17 +4,6 @@
 #include "Log.h"
 #include "imgui.h"
 
-// Key Master affects Devil Deal chance
-HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFlags, EntityRef* Source, int DamageCountdown) -> bool) {
-	bool result = super(Damage, DamageFlags, Source, DamageCountdown);
-
-
-	if (result && repentogonOptions.keyMasterDealChance) {
-		if (g_Game->GetDailyChallenge()._id == 0 && _variant == 7) //KEY_MASTER
-			g_Game->_levelStateFlags |= 1;
-	}
-	return result;
-}
 
 // Allow Void to have its own rooms. 
 // By default, the void path is "rooms/01.Basement.xml" which is not ideal!
