@@ -38,18 +38,6 @@ LUA_FUNCTION(Lua_Options_SetHushFix) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_Options_GetKeyMasterDealChance) {
-	lua_pushboolean(L, repentogonOptions.keyMasterDealChance);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
-	bool value = lua::luaL_checkboolean(L, 1);
-	repentogonOptions.keyMasterDealChance = value;
-	//repentogonOptions.Write("VanillaTweaks", "KeyMasterDealChance", value);
-	return 0;
-}
-
 LUA_FUNCTION(Lua_Options_GetStatHUDPlanetarium) {
 	lua_pushboolean(L, repentogonOptions.statHUDPlanetarium);
 	return 1;
@@ -97,7 +85,6 @@ LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 static void RegisterLuaOptions(lua_State* L) {
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "BetterVoidGeneration", Lua_Options_GetVoidGeneration, Lua_Options_SetVoidGeneration);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "HushPanicStateFix", Lua_Options_GetHushFix, Lua_Options_SetHushFix);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "KeyMasterDealChance", Lua_Options_GetKeyMasterDealChance, Lua_Options_SetKeyMasterDealChance);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StatHUDPlanetarium", Lua_Options_GetStatHUDPlanetarium, Lua_Options_SetStatHUDPlanetarium);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "QuickRoomClear", Lua_Options_GetQuickRoomClear, Lua_Options_SetQuickRoomClear);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "PreventModUpdates", Lua_Options_GetPreventModUpdates, Lua_Options_SetPreventModUpdates);

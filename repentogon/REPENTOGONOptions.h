@@ -29,7 +29,6 @@ struct REPENTOGONOptions {
 			
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
 			ini["VanillaTweaks"]["HushLaserSpeedFix"] = "1";
-			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
 			ini["VanillaTweaks"]["SkipIntro"] = "0";
@@ -53,7 +52,6 @@ struct REPENTOGONOptions {
 
 		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
 		hushLaserSpeedFix = defstoi(ini["VanillaTweaks"]["HushLaserSpeedFix"],1);
-		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		consoleAutofillLimit = defstoi(ini["VanillaTweaks"]["ConsoleAutofillLimit"], 10);
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
@@ -101,7 +99,6 @@ struct REPENTOGONOptions {
 	void Save() {
 		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
 		Write("VanillaTweaks", "HushLaserSpeedFix",    hushLaserSpeedFix);
-		Write("VanillaTweaks", "KeyMasterDealChance",  keyMasterDealChance);
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
@@ -122,7 +119,6 @@ struct REPENTOGONOptions {
 	mINI::INIStructure ini;
 	bool betterVoidGeneration;
 	bool hushLaserSpeedFix;
-	bool keyMasterDealChance;
 	bool quickRoomClear;
 	bool preventModUpdates;
 	bool enableUnifont;

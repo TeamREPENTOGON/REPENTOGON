@@ -295,11 +295,6 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_HUSH_LASER_FIX_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.hushLaserSpeedFix, true);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, &repentogonOptions.keyMasterDealChance);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.keyMasterDealChance, false);
-                        AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM, &repentogonOptions.statHUDPlanetarium);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM_MARK);
