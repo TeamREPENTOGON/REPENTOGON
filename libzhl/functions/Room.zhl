@@ -103,7 +103,7 @@ __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
 
 //changed in rep+
-/*"558bec83e4f85153568bf18b0d":
+/*"558bec83e4f85153568bf18b0d????????5783b9????????027c":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 */
 
@@ -119,7 +119,7 @@ __thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
 "558bec8b41??8b55":
 __thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6056":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec605657a1????????33c5508d45??64a3????????f30f115d":
 __thiscall KColor Room::GetFloorColorAt(Vector& pos, float radius<xmm3>);
 
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
