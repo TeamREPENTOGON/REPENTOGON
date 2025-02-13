@@ -325,18 +325,18 @@ void PatchOverrideDataHandling() {
 }
 
 // https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
-void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls() {
-	SigScan scanner("898424????????898c24????????898424????????898c24????????898424????????898c24????????898424????????898c24????????898424");
+void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls(const char* sig, const char* reg) {
+	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
 
 	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 		void* subAddr = (char*)addr + ((7 * i) + 1);
 		ASMPatch patch;
-		patch.AddBytes((i % 2 == 0) ? "\x8C" : "\x84");
+		patch.AddBytes(reg);
 		sASMPatcher.FlatPatch(subAddr, &patch);
 	}
 }
@@ -358,6 +358,7 @@ void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchLevelGeneratorTryResizeEndroom() {
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls();
+	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898c24????????898c24????????898c24????????898c24????????898c24????????898c24????????8b4c24", "\x84");  // Replace ECX with EAX
+	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898424????????898424????????898424????????898424????????898424", "\x8C");  // Replace EAX with ECX
 	PatchTryResizeEndroomMissingLongThinRoomDoorSlot();
 }
