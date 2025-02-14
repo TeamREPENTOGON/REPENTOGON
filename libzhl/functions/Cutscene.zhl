@@ -23,4 +23,5 @@ struct Cutscene depends (Vector, CutsceneEntry) {
     int _state : 0x0;
     CutsceneEntry _cutscenes[27] : 0x4;
     int _queuedCutscene : 0x808;
-} : 0x81c;
+    bool _startCutscene : 0x840;
+} : 0x850;
