@@ -79,25 +79,9 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
-void ASMPatchShaderLogSpam() {
-	SigScan scanner("ff34??68????????6a02");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	printf("[REPENTOGON] Patching to remove custom shader log spam at %p\n", addr);
-
-	ASMPatch patch;
-	patch.AddRelativeJump((char*)addr + 0x12);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
-
-	// REP+, probably temporary, see https://github.com/epfly6/RepentanceAPIIssueTracker/issues/591
-	// I do not want this crap filling logs while we're working on/testing REPENTOGON+ with mods
-	ASMPatchShaderLogSpam();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();
