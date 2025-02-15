@@ -13,7 +13,7 @@ local diffOffsetFrameNum = 0
 
 local ScheduleRefresh = true
 
-local StreakSheet = Sprite()
+--local StreakSheet = Sprite()
 local TotalSheet = Sprite()
 --local GoalDestinationIcon = Sprite()
 --local HardModeIcon = Sprite()
@@ -21,7 +21,7 @@ local TotalSheet = Sprite()
 local LeaderboardSprite = Sprite()
 
 local StreakPos = Vector(428, 110) + Vector(36, 24)
-StreakSheet.Offset = Vector(-36, -24)
+--StreakSheet.Offset = Vector(-36, -24)
 
 local TotalStreakText = "Total Runs: 0"
 local TextLen = 38
@@ -61,9 +61,9 @@ local function GetGoalDestination(stage, altPath)
 end
 
 local function LoadAssets()
-    if #StreakSheet:GetDefaultAnimation() <= 0 then
-        StreakSheet:Load("gfx/ui/main menu/winstreakwidget.anm2", true)
-        StreakSheet:SetFrame("Idle", 0)
+    if #TotalSheet:GetDefaultAnimation() <= 0 then
+        --StreakSheet:Load("gfx/ui/main menu/winstreakwidget.anm2", true)
+        --StreakSheet:SetFrame("Idle", 0)
 
         TotalSheet:Load("gfx/ui/main menu/seedselectionwidget.anm2", true)
         TotalSheet:SetFrame("Eggs", 0)
@@ -83,7 +83,7 @@ local function LoadAssets()
     if not font:IsLoaded() then
         font:Load("font/teammeatex/teammeatex10.fnt")
     end
-    if font:IsLoaded() and #(StreakSheet:GetDefaultAnimation()) > 0 then
+    if font:IsLoaded() and #(TotalSheet:GetDefaultAnimation()) > 0 then
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2
         Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
     end
@@ -100,13 +100,13 @@ local function RenderDailyStats()
         GetStageGoal = challengeParam:GetEndStage()
         isAltPath = challengeParam:IsAltPath()
 
-        if WinStreak > 0 then
+        --[[if WinStreak > 0 then
             StreakSheet:SetFrame("Good", 0)
         elseif WinStreak < 0 then
             StreakSheet:SetFrame("Bad", 0)
         else
             StreakSheet:SetFrame("Idle", 0)
-        end
+        end]]
         TotalStreakText = "Total Runs: " .. TotalDailies
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2
         --StageGoalText = "Goal Stage: "..GetStageGoal
@@ -118,9 +118,9 @@ local function RenderDailyStats()
         return
     end
     local pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, StreakPos)
-    StreakSheet:Render(pos)
+    --StreakSheet:Render(pos)
     font:DrawString(WinStreak, pos.X, pos.Y, fontcolor, 0, false)
-    pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(470, 205))
+    pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(160, 230))
     TotalSheet:RenderLayer(0, pos)
     
     local goalPosition = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(258, 80))
