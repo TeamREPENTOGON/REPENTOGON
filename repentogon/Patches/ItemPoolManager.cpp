@@ -461,6 +461,7 @@ static inline void load_xml_pool_data(ItemPoolManager::ItemPool* itemPool) noexc
 	if (it == childNodes.end())
 	{
 		ZHL::Log("[ItemPoolManager] [WARN] - " __FUNCTION__ " - itempool \"%s\" has no items\n", name.c_str());
+		return;
 	}
 
 	auto* pool = itemPool->GetPoolData();
