@@ -1344,7 +1344,7 @@ void ASMPatchMainMenuCallback() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8b86????????f30f101d");
+	SigScan scanner_transition("8b86????????f30f101d????????83f801");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching MenuManager::Render at %p for MainMenuRender callback\n", addr);

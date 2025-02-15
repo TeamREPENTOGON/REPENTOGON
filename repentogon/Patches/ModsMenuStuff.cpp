@@ -228,7 +228,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 				issearching = true;
 				lastKeyPressTimeMap[opensearchkey] = currentTime;
 			}
-			else if ((g_MenuManager->_selectedMenuID == 16) && (((g_MenuManager->_controllerIndex <= 0) && (IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase.IsActionTriggered(undomodchangesbtn, -1,0))) {
+			else if ((g_MenuManager->_selectedMenuID == 16) && (((g_MenuControllerIndex <= 0) && (IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuControllerIndex > 0) && g_InputManagerBase.IsActionTriggered(undomodchangesbtn, -1,0))) {
 				RestoreEnabledStates();
 				this->State = 0; //resets the change tracker
 			}
@@ -295,7 +295,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			undopop.Load(dir, true);
 			undopop.LoadGraphics(true);
 		}
-		if (g_MenuManager->_controllerIndex > 0) {
+		if (g_MenuControllerIndex > 0) {
 			undopop.SetFrame(&string("UndoPop"), 1);
 			undopop.Update();
 		}
@@ -337,11 +337,11 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		for (int c = 0; c < 11; c++) { 
 			this->ModsMenuSprite.GetLayer(c)->_visible = false;
 		}
-		if (g_MenuManager->_controllerIndex > 0) {
+		if (g_MenuControllerIndex > 0) {
 			this->ModsMenuSprite.GetLayer(13)->_visible = false;
 		}
 		super(); //sorry!
-		if (g_MenuManager->_controllerIndex > 0) {
+		if (g_MenuControllerIndex > 0) {
 			g_Manager->_buttonsSprite.SetFrame(&string("XboxOne"), 3);//you cant be fucking serious, i keep forgetting frame is a fucking float!
 			g_Manager->_buttonsSprite.SetLayerFrame(0, 3);
 			g_Manager->_buttonsSprite.Update();
