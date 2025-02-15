@@ -194,7 +194,7 @@ LUA_FUNCTION(Lua_FirstPlayerByType)
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
 	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
 	
-	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 
 	return 1;
 }
@@ -216,7 +216,7 @@ LUA_FUNCTION(Lua_FirstBirthrightOwner)
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
 
-	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 
 	return 1;
 }
@@ -294,6 +294,40 @@ LUA_FUNCTION(Lua_RemoveCoPlayer)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetRandomCollectibleOwner)
+{
+	auto* PlayerManager = g_Game->GetPlayerManager();
+
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 1);
+	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+
+	RNG* rng = nullptr;
+
+	auto* player = PlayerManager->RandomCollectibleOwner(collectibleType, seed, &rng);
+
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, rng, lua::GetMetatableKey(lua::Metatables::RNG));
+	return 2;
+
+}
+
+LUA_FUNCTION(Lua_GetRandomTrinketOwner)
+{
+	auto* PlayerManager = g_Game->GetPlayerManager();
+
+	TrinketType trinketType = (TrinketType)luaL_checkinteger(L, 1);
+	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+
+	RNG* rng = nullptr;
+
+	auto* player = PlayerManager->RandomTrinketOwner(trinketType, seed, &rng);
+
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, rng, lua::GetMetatableKey(lua::Metatables::RNG));
+	return 2;
+
+}
+
 
 static void RegisterPlayerManager(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
@@ -317,6 +351,8 @@ static void RegisterPlayerManager(lua_State* L) {
 		lua::TableAssoc(L, "AnyPlayerTypeHasCollectible", Lua_AnyPlayerTypeHasCollectible);
 		lua::TableAssoc(L, "SpawnSelectedBaby", Lua_SpawnSelectedBaby);
 		lua::TableAssoc(L, "RemoveCoPlayer", Lua_RemoveCoPlayer);
+		lua::TableAssoc(L, "GetRandomCollectibleOwner", Lua_GetRandomCollectibleOwner);
+		lua::TableAssoc(L, "GetRandomTrinketOwner", Lua_GetRandomTrinketOwner);
 
 		lua_setglobal(L, "PlayerManager");
 }

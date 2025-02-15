@@ -7,6 +7,9 @@ __thiscall Entity_Player* PlayerManager::SpawnCoPlayer2(int unk); //big baby
 "558bec83e4f883ec0c538b5d??56578bf98b0d":
 __thiscall Entity_Player* PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID,RNG **rng, bool lazSharedGlobalTag);
 
+"558bec83ec28f30f1005":
+__thiscall Entity_Player* PlayerManager::RandomCollectibleOwner(CollectibleType collectibleID, unsigned int seed, RNG** returnRNG);
+
 "558bec518b01538b59??2bd8":
 __thiscall bool PlayerManager::IsCoopPlay();
 
@@ -15,6 +18,9 @@ __thiscall int PlayerManager::GetNumCollectibles(CollectibleType type);
 
 "558bec83ec08a1????????538b5d??568b90????????8b80????????578bf92bc28bcbc1f80281e1ff7f0000897d??3bc87d??8b04??85c0":
 __thiscall bool PlayerManager::AnyoneHasTrinket(TrinketType trinketType);
+
+"558bec83ec20f30f1005":
+__thiscall Entity_Player* PlayerManager::RandomTrinketOwner(TrinketType trinketType, unsigned int seed, RNG** returnRNG);
 
 "558bec8b018b49":
 __thiscall Entity_Player* PlayerManager::FirstPlayerByType(unsigned int type);

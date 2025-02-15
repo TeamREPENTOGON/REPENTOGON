@@ -25,6 +25,9 @@ Additions:
 	- SetLilDelirium
 * Level:
 	- Added overloads for CanPlaceRoom(AtDoor) and FindValidRoomPlacementLocations that accept a RoomShape and DoorMask instead of a RoomConfigRoom.
+* PlayerManager:
+	- GetRandomCollectibleOwner
+	- GetRandomTrinketOwner
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
