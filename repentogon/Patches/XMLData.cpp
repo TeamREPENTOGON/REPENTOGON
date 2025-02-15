@@ -849,7 +849,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
-	uint32_t unk;
+	bool unk;
 	string middleman = stringlower(node->name());
 	const char* nodename = middleman.c_str(); 
 	if (!initedxmlenums) {

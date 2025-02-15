@@ -646,7 +646,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             auto GetStr = [&](const char* key, const char* postfix = "") {
                                 char buff[256];
-                                uint32_t unk;
+                                bool unk;
                                 const char* en = stringTable->GetString("Stages", 0, key, &unk);
                                 if (language) {
                                     const char* tr = stringTable->GetString("Stages", language, key, &unk);
@@ -876,7 +876,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                     std::string name = node.second["name"];
                                     auto& untranslated_name = node.second["untranslatedname"];
                                     if (language && untranslated_name.length() != 0 && untranslated_name[0] == '#') {
-                                        uint32_t unk;
+                                        bool unk;
                                         name = name + " " + stringTable->GetString(std::get<2>(XMLPair), language, untranslated_name.substr(1).c_str(), &unk);
                                     }
                                     entries.insert(AutocompleteEntry(std::get<1>(XMLPair)+ std::to_string(id), name));

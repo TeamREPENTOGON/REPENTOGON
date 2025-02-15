@@ -1,5 +1,5 @@
 "558bec83ec145356578bf133d28b4d??6a006a01":
-__thiscall char* StringTable::GetString(const char* category, int language, const char* key, void* unk);
+__thiscall char* StringTable::GetString(const char* category, int language, const char* key, bool* retBool);
 
 //it's now using fileName for stringtable.sta and stringtable_pc.sta
 "558bec53578bd9":

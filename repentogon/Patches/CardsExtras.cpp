@@ -27,7 +27,7 @@ static inline const char* get_localized_pocket_item_name(const std::string& rawN
     {
         return rawName.c_str();
     }
-    uint32_t unk;
+    bool unk;
     const char* translatedString = g_Manager->GetStringTable()->GetString("PocketItems", 0, rawName.substr(1, rawName.length()).c_str(), &unk);
     if (strcmp(translatedString, "StringTable::InvalidKey") == 0)
     {
