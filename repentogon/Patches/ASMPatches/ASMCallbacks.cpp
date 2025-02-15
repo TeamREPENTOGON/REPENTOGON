@@ -1175,20 +1175,19 @@ void ASMPatchPreTriggerBedSleepEffect() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8b0ae8????????83f801");
+	SigScan scanner_transition("8b0883b9????????28");
 	scanner_transition.Scan();
 	void* addr = scanner_transition.GetAddress();
 	printf("[REPENTOGON] Patching ItemOverlay::Update at %p for PreTriggerBedSleepEffect callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EDX) // Player
+		.Push(ASMPatch::Registers::EAX) // Player
 		.AddInternalCall(RunPreTriggerBedSleepEffectCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x5E) // Skipping hearts gain
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x6B) // Skipping hearts gain
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edx
-		.AddInternalCall(((char*)addr + 0x7) + *(ptrdiff_t*)((char*)addr + 0x3)) // restore the function call
-		.AddRelativeJump((char*)addr + 0x7);
+		.AddRelativeJump((char*)addr + 0x2);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
