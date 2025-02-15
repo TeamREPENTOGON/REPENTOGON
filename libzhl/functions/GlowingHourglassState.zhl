@@ -1,4 +1,4 @@
 struct GlowingHourglassState depends (GameState){
     bool _isUsable : 0x0;
     GameState _gameState: 0x4;
-} : 0x20594;
+} : 0x2059c;

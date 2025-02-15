@@ -32,4 +32,4 @@ struct GameState depends (RoomDescriptor, GameStatePlayer, GameStateItemPool, Se
     std_string _cloudGameStatePath : 0x1fd30;
     std_string _cloudRerunStatePath : 0x1fd48;
     GameStateIO* _saveFile : 0x1fd60;
-} : 0x1fd64;
+} : 0x1fd6C;
