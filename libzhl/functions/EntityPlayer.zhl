@@ -717,6 +717,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	std_vector_int _voidedCollectibles : 0x173c;
 	uint32_t _actionHoldDrop : 0x17a8;
 	int _playerForms[15] : 0x17c4;
+	bool _canShoot : 0x1809;
 	ColorMod _footprintColor1 : 0x180c;
 	ColorMod _footprintColor2 : 0x1838;
 	int _ponyCharge : 0x186c;
@@ -740,6 +741,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	float _d8FireDelayModifier : 0x192c;
 	int _goldenHearts : 0x1930;
 	int _babySkin : 0x1ad0;
+	uint32_t _urnSouls: 0x1cf0;
 	//std_vector_int _wispStorage : 0x1cfc;
 	vector_EntitySaveState _movingBoxContents : 0x1d60;
 	int _boneHearts : 0x1d6c;
@@ -752,20 +754,18 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _redStewBonusDuration : 0x1e50;
-	float _rockBottomMoveSpeed : 0x1e88, _rockBottomMaxFireDelay : 0x1e8c, _rockBottomDamage : 0x1e90, _rockBottomTearRange : 0x1e94, _rockBottomShotSpeed : 0x1e98, _rockBottomLuck : 0x1e9c;
-	int _maggySwingCooldown : 0x1ebc;
-	char _bagOfCraftingContent[8]: 0x1f14;
-	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f1c;
-	char _poopSpellQueue[6] : 0x1f24;
-	int _eveSumptoriumCharge : 0x1f48;
-	std_map_int_int _itemWispsList : 0x1f50;
-	int _keepersSackBonus : 0x1eb4;
-	ConsumableData _consumablesBackup : 0x2008;
-	uint8_t _wildCardItemType : 0x2058;
-	int _wildCardItem : 0x205c;
-	bool _isCoopGhost : 0x2070;
-	bool _canShoot : 0x1809;
-	uint32_t _urnSouls: 0x1cf0;
+	float _rockBottomMoveSpeed : 0x1e8c, _rockBottomMaxFireDelay : 0x1e90, _rockBottomDamage : 0x1e94, _rockBottomTearRange : 0x1e98, _rockBottomShotSpeed : 0x1e9c, _rockBottomLuck : 0x1ea0;
+	int _keepersSackBonus : 0x1eb8;
+	int _maggySwingCooldown : 0x1ec0;
+	char _bagOfCraftingContent[8]: 0x1f18;
+	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f20;
+	char _poopSpellQueue[6] : 0x1f28;
+	int _eveSumptoriumCharge : 0x1f4c;
+	std_map_int_int _itemWispsList : 0x1f54;
+	ConsumableData _consumablesBackup : 0x200c;
+	uint8_t _wildCardItemType : 0x205c;
+	int _wildCardItem : 0x2060;
+	bool _isCoopGhost : 0x2074;
 } : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":
