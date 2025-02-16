@@ -23,6 +23,8 @@ LUA_FUNCTION(Lua_RoomTransitionStartBossIntro) {
 	int bossID1 = (int)luaL_checkinteger(L, 1);
 	int bossID2 = (int)luaL_optinteger(L, 2, 0);
 
+	roomTransition->_roomIndex = g_Game->_startingRoomIdx; // safety measure to prevent crashes if current transition's roomIndex is invalid
+
 	roomTransition->StartBossIntro(bossID1, bossID2);
 	return 0;
 }

@@ -82,6 +82,8 @@ Fixes:
 * Level:
 	- TryPlaceRoom & related functions no longer consider a room placement valid if the only neighbor would be a secret room and "AllowSpecialNeighbors" is false.
 	- TryPlaceRoom(AtDoor) no longer automatically unlocks the door to the new room if placed adjacent to the player's current room.
+* RoomTransition:
+	- Fixed StartBossIntro crash on call if room index for room transition is invalid.
 /newline/
 Modified:
 * EntityFamiliar:
