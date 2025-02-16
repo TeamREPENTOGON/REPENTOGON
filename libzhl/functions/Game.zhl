@@ -256,12 +256,12 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	Leaderboard _leaderboard : 0x1d5f8;
 	HUD _hud : 0x1da64;
 	PauseScreen _pauseScreen : 0x236f4;
-	Minimap _minimap : 0x254f8;
-	int _frameCount : 0x25b24;
-	Vector _screenShakeOffset : 0x25b38;
-	bool  _triggerWindowResize : 0x25b60;
-	unsigned int _debugFlags : 0x25b70;
-	unsigned int _gameStateFlags : 0x25b78;
+	Minimap _minimap : 0x254fc;
+	int _frameCount : 0x25b28;
+	Vector _screenShakeOffset : 0x25b3c;
+	bool  _triggerWindowResize : 0x25b64;
+	unsigned int _debugFlags : 0x25b74;
+	uint64_t _gameStateFlags : 0x25b78;
 	int _lastDevilRoomStage : 0x25b84;
 	int _treasureRoomsVisited : 0x25b88;
 	int _planetariumsVisited : 0x25b8c;
