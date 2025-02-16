@@ -1,4 +1,7 @@
 struct GlowingHourglassState depends (GameState){
     bool _isUsable : 0x0;
     GameState _gameState: 0x4;
+    int _leaveDoor : 0x1fd68;
+    uint32_t _timeCounter : 0x1fd6c;
+    int _eventCounters[523] : 0x1fd70;
 } : 0x2059c;
