@@ -182,22 +182,26 @@ void ASMPatchReviveQuestionMark() {
 
 // Patch into EntityPlayer::TriggerDeath, right after all of the vanilla revive effects have been evaluated but none revived the player
 void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
-	SigScan scanner("807d??000f84????????32c0");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	SigScan patchScanner("807d??000f84????????32c0");
+	patchScanner.Scan();
+	void* patchAddr = patchScanner.GetAddress();
 
-	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", addr);
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", patchAddr);
+
+	SigScan exitScanner("a1????????3b05????????74??8b08");
+	exitScanner.Scan();
+	void* exitAddr = exitScanner.GetAddress();
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\x80\x7d\x08").AddZeroes(1)  // cmp byte ptr [ebp+8], 0
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xA)  // This run is checkOnly, don't run the callback
+	patch.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 4))  // cmp byte ptr [ebp+?], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)patchAddr + 0xA)  // This run is checkOnly, don't run the callback
 		.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::EBX)  // Push the Entity_Player
 		.AddInternalCall(RunPostTriggerPlayerDeathCheckRevivesCallback)  // Run the callback
 		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addr - 0x920);  // We go to the same place regardless of whether or not the player was revived
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddRelativeJump(exitAddr);  // We go to the same place regardless of whether or not the player was revived
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 // Returns true to prevent save deletion if the player has any revive item, including hidden ones.
