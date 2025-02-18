@@ -353,7 +353,7 @@ void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
 		.AddBytes("\x83\xfa\x0d")  // cmp edx, 13
 		.AddBytes("\x0f\x85\x01").AddZeroes(3)  // jne (skips the next command if edx != 13)
 		.AddBytes("\x4a")  // dec edx (skipped if the jump happened)
-		.AddBytes("\x8B\x94\x94\xE0").AddZeroes(3)  // mov edx, dword ptr [esp + edx*0x4 + 0xe0]
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // mov edx, dword ptr [esp + edx*0x4 + 0x??]
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
