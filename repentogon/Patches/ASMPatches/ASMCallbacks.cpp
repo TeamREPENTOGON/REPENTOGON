@@ -1186,8 +1186,8 @@ void ASMPatchPreTriggerBedSleepEffect() {
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x6B) // Skipping hearts gain
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edx
-		.AddRelativeJump((char*)addr + 0x2);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9))  // Restore instructions that we overwrote
+		.AddRelativeJump((char*)addr + 0x9);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
