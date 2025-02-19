@@ -112,8 +112,8 @@ LUA_FUNCTION(lua_Entity_GetType) {
 
 LUA_FUNCTION(lua_Entity_GetPosVel) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* pos = (Vector*)((char*)entity + 0x294);
-	Vector* vel = (Vector*)((char*)entity + 0x2B8);
+	Vector* pos = &entity->_pos;
+	Vector* vel = &entity->_velocity;
 
 	PosVel posVel = PosVel(*pos, *vel);
 
