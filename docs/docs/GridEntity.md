@@ -55,9 +55,9 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridE
 	
 ___
 ### ToLock () {: aria-label='Functions' }
-#### [GridLock](GridLock.md) ToLock ( ) {: .copyable aria-label='Functions' }
+#### [GridEntityLock](GridEntityLock.md) ToLock ( ) {: .copyable aria-label='Functions' }
 
-Used to cast a [GridEntity](GridEntity.md) object to a [GridLock](GridLock.md) object.
+Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityLock](GridEntityLock.md) object.
 
 ???+ note "Return behavior"
     If the conversion is not successful, this function returns `nil`.
@@ -81,8 +81,8 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEn
 	
 ___
 ### ToTeleporter () {: aria-label='Functions' }
-#### [GridTeleporter](GridTeleporter.md) ToTeleporter ( ) {: .copyable aria-label='Functions' }   
-Used to cast a [GridEntity](GridEntity.md) object to a [GridTeleporter](GridTeleporter.md) object.
+#### [GridEntityTeleporter](GridEntityTeleporter.md) ToTeleporter ( ) {: .copyable aria-label='Functions' }   
+Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTeleporter](GridEntityTeleporter.md) object.
 
 ???+ note "Return behavior"
     If the conversion is not successful, this function returns `nil`.

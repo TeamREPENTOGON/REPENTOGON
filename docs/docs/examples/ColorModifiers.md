@@ -1,7 +1,7 @@
 # Color Modifier Example
 The [ColorModifier](../ColorModifier.md) class allows us to alter the color correction applied onto the game. This is used by items such as Astral Projection.
 
-You can use [Game:SetColorModifier()](../Game.md#setcolormodifier---aria-labelfunctions) to apply a modifier, and [Room:UpdateColorModifier()](../Room.md#updatecolormodifier---aria-labelfunctions) to set the color modifier back to what is defined in the room's [FXParams](../FXParams.md), which are the values defined in [fxlayers.xml](https://wofsauge.github.io/IsaacDocs/rep/xml/fxlayers.html) by default.
+You can use [Game:SetColorModifier()](../Game.md#setcolormodifier) to apply a modifier, and [Room:UpdateColorModifier()](../Room.md#updatecolormodifier) to set the color modifier back to what is defined in the room's [FXParams](../FXParams.md), which are the values defined in [fxlayers.xml](https://wofsauge.github.io/IsaacDocs/rep/xml/fxlayers.html) by default.
 
 ## Code
 

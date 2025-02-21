@@ -127,6 +127,7 @@ nav:
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
     - CameraStyle: enums/CameraStyle.md
     - CompletionType: enums/CompletionType.md
+    - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
     - DeliriumCallbacks: enums/DeliriumCallbacks.md
@@ -349,7 +350,8 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
-- Blog: blog/index.md
+- Blog:
+  - blog/index.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
