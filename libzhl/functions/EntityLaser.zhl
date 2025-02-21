@@ -17,22 +17,29 @@ __thiscall void Entity_Laser::ClearLaserSamples();
 __thiscall void Entity_Laser::Constructor();
 
 struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
-	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x4cc); }
-	inline float* GetScale() { return (float*)((char*)this + 0x4d8); }
+	inline uint32_t* GetHomingType() { return &this->_homingType; }
+	inline float* GetScale() { return &this->_scale; }
 	
-	inline int* GetTimeout() { return (int*)((char*)this + 0x450); }
-	inline bool* GetShrink() { return (bool*)((char*)this + 0x456); }
-	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x4dc); }
-	inline bool* GetOneHit() { return (bool*)((char*)this + 0x50d); }
-	inline std_vector_uint* GetHitList() { return (std_vector_uint*)((char*)this + 0x518); }
+	inline int* GetTimeout() { return &this->_timeout; }
+	inline bool* GetShrink() { return &this->_shrink; }
+	inline bool* GetDisableFollowParent() { return &this->_disableFollowParent; }
+	inline bool* GetOneHit() { return &this->_oneHit; }
+	inline std_vector_uint* GetHitList() { return &this->_hitList; }
 
 }} 
 	BitSet128 _tearFlags : 0x420;
+	int _timeout : 0x450;
 	bool _sampleLaser : 0x455;
+	bool _shrink : 0x456;
 	HomingLaser _homingLaser : 0x45c;
+	uint32_t _homingType : 0x4cc;
+	float _scale : 0x4d8;
+	bool _disableFollowParent : 0x4dc;
 	bool _multidimensionalTouched: 0x4f8;
 	bool _prismTouched: 0x50c;
+	bool _oneHit: 0x50d;
 	float _damageMultiplier : 0x514;
+	std_vector_uint _hitList : 0x518;
 
 	__vtable {
 		skip; // Free
