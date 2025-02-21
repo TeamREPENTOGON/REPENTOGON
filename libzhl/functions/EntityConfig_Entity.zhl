@@ -1,4 +1,4 @@
-struct EntityConfig_Entity depends (Vector, ModEntry) {
+struct EntityConfig_Entity depends (Vector, ModEntry, Devolve) {
 	int id : 0x0;
 	int variant : 0x4;
 	int subtype : 0x8;
@@ -20,6 +20,7 @@ struct EntityConfig_Entity depends (Vector, ModEntry) {
 	unsigned int gibFlags : 0x60;
 	int portrait : 0x64;  // Defaults to -1
 	std_string anm2Path : 0x74;
+	vector_Devolve devolve : 0xa4;
 	std_string gridCollisionClassString : 0xB4;  // Why is this a string
 	bool reroll : 0xCC;
 	bool hasFloorAlts : 0xCD;

@@ -81,6 +81,7 @@ typedef std::vector<BossPool_Entry> vector_BossPoolEntry;
 typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
 typedef std::vector<float> std_vector_float;
 typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
+typedef std::vector<Devolve> vector_Devolve;
 
 struct PoolItem {
 	uint32_t _itemID = 0;

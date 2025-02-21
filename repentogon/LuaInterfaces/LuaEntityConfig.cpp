@@ -376,6 +376,28 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityConfigEntityGetDevolvedEntity)
+{
+	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+
+	EntityConfig_Entity* devolvedEntity = nullptr;
+	if (!entity->devolve.empty()) {
+		// The game only uses the first one.
+		const Devolve& devolve = entity->devolve.front();
+		devolvedEntity = g_Manager->GetEntityConfig()->GetEntity(devolve.type, devolve.variant, devolve.subtype);
+	}
+
+	if (devolvedEntity) {
+		EntityConfig_Entity** toLua = (EntityConfig_Entity**)lua_newuserdata(L, sizeof(EntityConfig_Entity*));
+		*toLua = devolvedEntity;
+		luaL_setmetatable(L, lua::metatables::EntityConfigEntityMT);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 /*
 * EntityConfigPlayer Functions
 */
@@ -829,6 +851,7 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts },
 		{ "GetCustomTags", Lua_EntityConfigEntityGetCustomTags },
 		{ "HasCustomTag", Lua_EntityConfigEntityHasCustomTag },
+		{ "GetDevolvedEntity", Lua_EntityConfigEntityGetDevolvedEntity},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);

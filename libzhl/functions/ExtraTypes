@@ -254,3 +254,8 @@ TypeInfo std_map_uint_VariantSetPtr {
     Size 8;
     Align 4;
 };
+
+TypeInfo vector_Devolve {
+    Size 12;
+    Align 4;
+};
