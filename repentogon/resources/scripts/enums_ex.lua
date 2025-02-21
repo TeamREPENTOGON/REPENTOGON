@@ -2865,6 +2865,13 @@ WaterClipFlag = {
 	FORCE_WATER_RIPPLE_WHEN_MOVING = 1 << 7,  -- Entity only, only "grounded" entities will spawn water ripples without this flag
 }
 
+PlayerHUDLayout = {
+	NORMAL = 0,
+	JACOB_AND_ESAU = 1,
+	COMPACT = 2,  -- Used for co-op players, and for P1 if there are >2 players
+	COMPACT_JACOB_AND_ESAU = 3,  -- Used for J&E if they are not P1 or if there are >3 players
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

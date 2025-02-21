@@ -2711,9 +2711,15 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector 
 HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
+	Vector posToSend = pos;
+
+	// Fix the render position sent to the callback for the compact esau layout.
+	if (this->_playerHudIndex > 3 && playerHudLayout == 3) {
+		posToSend.y += 34;
+	}
+
 	const int callbackid1 = 1118;
 	if (CallbackState.test(callbackid1 - 1000)) {
-
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -2722,7 +2728,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 			.pushnil()
 			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -2742,11 +2748,12 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
 			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);

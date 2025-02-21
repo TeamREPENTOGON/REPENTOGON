@@ -81,6 +81,12 @@ LUA_FUNCTION(Lua_PlayerHUDGetIndex) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerHUDGetLayout) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua_pushinteger(L, g_Game->GetHUD()->GetPlayerHUDLayout(playerHUD->_playerHudIndex, playerHUD->_player));
+	return 1;
+}
+
 static void RegisterPlayerHUD(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::HUD, "GetPlayerHUD", Lua_GetPlayerHUD);
 
@@ -91,6 +97,7 @@ static void RegisterPlayerHUD(lua_State* L) {
 		{ "GetHearts", Lua_PlayerHUDGetHearts},
 		{ "GetHeartByIndex", Lua_PlayerHUDGetHeartByIndex},
 		{ "GetIndex", Lua_PlayerHUDGetIndex },
+		{ "GetLayout", Lua_PlayerHUDGetLayout},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PlayerHUDMT, lua::metatables::PlayerHUDMT, functions);

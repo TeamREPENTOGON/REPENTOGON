@@ -2701,6 +2701,32 @@ LUA_FUNCTION(Lua_PlayerSetRockBottomLuck) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPlayerHUD) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	PlayerHUD* playerhud = player->_playerHUD;  // Strawman etc have this
+
+	if (!playerhud) {
+		for (int i = 0; i < 8; i++) {
+			PlayerHUD* phudi = g_Game->GetHUD()->GetPlayerHUD(i);
+			if (phudi && phudi->GetPlayer() == player) {
+				playerhud = phudi;
+				break;
+			}
+		}
+	}
+	
+	if (playerhud) {
+		PlayerHUD** ud = (PlayerHUD**)lua_newuserdata(L, sizeof(PlayerHUD*));
+		*ud = playerhud;
+		luaL_setmetatable(L, lua::metatables::PlayerHUDMT);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -2948,6 +2974,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRockBottomShotSpeed", Lua_PlayerSetRockBottomShotSpeed },
 		{ "GetRockBottomLuck", Lua_PlayerGetRockBottomLuck },
 		{ "SetRockBottomLuck", Lua_PlayerSetRockBottomLuck },
+		{ "GetPlayerHUD", Lua_PlayerGetPlayerHUD },
 
 		{ NULL, NULL }
 	};

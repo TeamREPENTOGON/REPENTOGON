@@ -766,6 +766,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	uint8_t _wildCardItemType : 0x205c;
 	int _wildCardItem : 0x2060;
 	bool _isCoopGhost : 0x2074;
+	PlayerHUD* _playerHUD : 0x20a0;
 } : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":
