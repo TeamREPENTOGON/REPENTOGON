@@ -1586,7 +1586,7 @@ Accepts an integer to change the minimum charge to use the active item. If the i
 Accepts an [HealthType](HealthType.md) to change health type for the character.
 
 ???+ warning "Warning"
-    Using this callback is often not the most efficient option. For players, prefer to set their `healthtype` in [players.xml](../xml/players.md). For items, effects and the like, prefer to use an [items.xml customcache](../xml/items.md).
+    Using this callback is often not the most efficient option. For setting a players' default health type, prefer to set their `healthtype` in [players.xml](../xml/players.md). For items, effects and the like, prefer to use the ["healthtype" items.xml customcache](../xml/items.md).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
