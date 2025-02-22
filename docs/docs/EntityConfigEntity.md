@@ -87,6 +87,13 @@ ___
 Returns a table containing all the strings specified in the entity's `customtags` attribute in [entities2.xml](xml/entities.md). Tags are always provided in all lowercase. See [entities2.xml](xml/entities.md) for more information on `customtags`.
 
 ___
+### GetDevolvedEntity () {: aria-label='Functions' }
+#### [EntityConfigEntity](EntityConfigEntity.md) GetDevolvedEntity ( ) {: .copyable aria-label='Functions' }
+Returns the [EntityConfigEntity](EntityConfigEntity.md) that this entity would "devolve" into when D10 is used.
+
+Returns nil if the entity has no devolution and would die instead.
+
+___
 ### GetEntityTags () {: aria-label='Functions' }
 #### int GetEntityTags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask of [EntityTag](enums/EntityTag.md)s for this entity.

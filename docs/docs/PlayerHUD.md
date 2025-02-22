@@ -29,7 +29,14 @@ ___
 #### [HUD](HUD.md) GetHUD ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetIndex () {: aria-label='Functions' }
+#### int GetIndex ( ) {: .copyable aria-label='Functions' }
 
+___
+### GetLayout () {: aria-label='Functions' }
+#### [PlayerHUDLayout](enums/PlayerHUDLayout.md) GetLayout ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetPlayer () {: aria-label='Functions' }
 #### [EntityPlayer](EntityPlayer.md) GetPlayer ( ) {: .copyable aria-label='Functions' }
 

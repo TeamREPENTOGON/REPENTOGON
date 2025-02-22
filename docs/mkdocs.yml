@@ -176,6 +176,7 @@ nav:
     - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
+    - PlayerHUDLayout: enums/PlayerHUDLayout.md
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
