@@ -300,6 +300,7 @@ LUA_FUNCTION(Lua_GetRandomCollectibleOwner)
 
 	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 1);
 	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+	if (seed == 0) seed = 1;
 
 	RNG* rng = nullptr;
 
@@ -317,6 +318,7 @@ LUA_FUNCTION(Lua_GetRandomTrinketOwner)
 
 	TrinketType trinketType = (TrinketType)luaL_checkinteger(L, 1);
 	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+	if (seed == 0) seed = 1;
 
 	RNG* rng = nullptr;
 
