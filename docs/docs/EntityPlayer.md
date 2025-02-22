@@ -598,6 +598,10 @@ ___
 Returns the amount of collectibles the player has tied to the specified transformation.
 
 ___
+### GetPlayerHUD () {: aria-label='Functions' }
+#### [PlayerHUD](PlayerHUD.md) GetPlayerHUD ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetPlayerIndex () {: aria-label='Functions' }
 #### int GetPlayerIndex ( ) {: .copyable aria-label='Functions' }
 
@@ -615,6 +619,30 @@ ___
 ### GetRedStewBonusDuration () {: aria-label='Functions' }
 #### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }
 Returns the frames left until the damage bonus from Red Stew expires.
+
+___
+### GetRockBottomMoveSpeed () {: aria-label='Functions' }
+#### float GetRockBottomMoveSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomMaxFireDelay () {: aria-label='Functions' }
+#### float GetRockBottomMaxFireDelay ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomDamage () {: aria-label='Functions' }
+#### float GetRockBottomDamage ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomTearRange () {: aria-label='Functions' }
+#### float GetRockBottomTearRange ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomShotSpeed () {: aria-label='Functions' }
+#### float GetRockBottomShotSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomLuck () {: aria-label='Functions' }
+#### float GetRockBottomLuck ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetShotSpeedModifier () {: aria-label='Functions' }
@@ -1111,6 +1139,30 @@ ___
 ### SetRedStewBonusDuration () {: aria-label='Functions' }
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
 Sets the duration of the damage bonus given by the Red Stew collectible to the specified amount of frames. Setting the duration above 0 will activate the effect if it wasn't active already.
+
+___
+### SetRockBottomMoveSpeed () {: aria-label='Functions' }
+#### void SetRockBottomMoveSpeed ( float MoveSpeed ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomMaxFireDelay () {: aria-label='Functions' }
+#### void SetRockBottomMaxFireDelay ( float MaxFireDelay ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomDamage () {: aria-label='Functions' }
+#### void SetRockBottomDamage ( float Damage ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomTearRange () {: aria-label='Functions' }
+#### void SetRockBottomTearRange ( float TearRange ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomShotSpeed () {: aria-label='Functions' }
+#### void SetRockBottomShotSpeed ( float ShotSpeed ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomLuck () {: aria-label='Functions' }
+#### void SetRockBottomLuck ( float Luck ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetShotSpeedModifier () {: aria-label='Functions' }
