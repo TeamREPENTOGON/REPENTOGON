@@ -20,14 +20,23 @@ Additions:
 	- [Get/Set]RockBottomTearRange
 	- [Get/Set]RockBottomShotSpeed
 	- [Get/Set]RockBottomLuck
+	- GetPlayerHUD
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
+* EntityConfigEntity:
+	- GetDevolvedEntity
 * Level:
 	- Added overloads for CanPlaceRoom(AtDoor) and FindValidRoomPlacementLocations that accept a RoomShape and DoorMask instead of a RoomConfigRoom.
 * PlayerManager:
 	- GetRandomCollectibleOwner
 	- GetRandomTrinketOwner
+* HUD:
+	- GetStackedStreakSprite
+	- GetPlayerStreakSprite
+* PlayerHUD:
+	- GetIndex
+	- GetLayout
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
@@ -62,10 +71,11 @@ Additions:
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
+	- PlayerHUDLayout
 * Room:
 	- GetWallColor()
 * Isaac:
-	- GetDoorMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
+	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
 * Added content and resources support for stringtable.sta, allowing for custom translation strings and categories. This also allows adding custom fortunes.
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
@@ -123,6 +133,7 @@ Fixes:
 	- Fixed the float DamageAmount attribute in MC(_POST)_GRID_HURT_DAMAGE
 	- Fixed MC_POST_ENTITY_TAKE_DMG sometimes providing 0 for players
 	- Fixed MC_PRE/POST_GRID_ENTITY_TELEPORTER_RENDER not running
+	- Fixed the position passed by MC_PRE/POST_PLAYERHUD_RENDER_HEARTS for co-op Esaus in REP+
 * Misc:
 	- Modded characters locked behind achievements no longer appear in the local co-op wheel.
 /newline/
