@@ -48,6 +48,7 @@ private:
 	bool m_ItemPoolInitialized = false;
 	std::vector<std::unique_ptr<ItemPool>> m_ItemPools;
 	std::map<size_t, ItemPool*> m_PoolByName;
+	RNG m_RNG = RNG();
 
 public:
 	static ItemPoolManager& Get()
@@ -70,6 +71,7 @@ public:
 	static void __SaveToDisk(const std::string& fileName, bool isRerun) noexcept;
 	static void __LoadFromDisk(const std::string& fileName, bool isRerun) noexcept;
 	static ItemPool* GetItemPool(uint32_t id) noexcept;
+	static RNG& GetRNG() noexcept { return Get().m_RNG; }
 	static const std::vector<std::unique_ptr<ItemPool>>& GetItemPools() noexcept { return Get().m_ItemPools; }
 	static size_t GetNumItemPools() noexcept { return Get().m_ItemPools.size(); }
 	static int GetPoolIdByName(const std::string& name) noexcept;
@@ -124,6 +126,8 @@ protected:
 	PoolItem* m_StaticPoolList[3] = { 0 }; // A manually created "vector" that ends at start of append (this is only used for ASMPatches)
 
 protected:
+	void reset() noexcept;
+	virtual RNG& get_global_rng() noexcept { return g_Game->_itemPool._itemPoolRNG; }
 	virtual void load_pool() noexcept;
 	void shuffle_pool(MTRNG& rng) noexcept;
 	void finalize_pool() noexcept;
@@ -171,6 +175,7 @@ private:
 	uint16_t m_RemainingGenesisItems = 0;
 
 private:
+	virtual RNG& get_global_rng() noexcept override { return ItemPoolManager::GetRNG(); }
 	virtual void load_pool() noexcept override;
 	virtual uint16_t& get_remaining_genesis_items() noexcept override;
 	virtual void store_state(size_t saveSlot) noexcept override;

@@ -605,6 +605,8 @@ void ItemPoolManager::add_modded_pools() noexcept
 			continue;
 		}
 
+		assert(g_Manager->GetOptions()->ModsEnabled());
+
 		mod->GetContentPath(&xmlPath, &xmlName);
 		if (file_exists(xmlPath))
 		{
@@ -625,15 +627,15 @@ void ItemPoolManager::__Init() noexcept
 
 #pragma region Data Load
 
-static inline void reset_pool(ItemPool_Item* pool) noexcept
+void ItemPoolManager::ItemPool::reset() noexcept
 {
-	auto& itemPool = g_Game->_itemPool;
+	ItemPool_Item* poolData = this->GetPoolData();
 
-	pool->_totalWeight = 0.0f;
-	pool->_poolList.clear();
-	pool->_rng1.SetSeed(itemPool._itemPoolRNG.Next(), 35);
-	pool->_rng2.SetSeed(itemPool._itemPoolRNG.Next(), 35);
-	pool->_bibleUpgrade = 0;
+	poolData->_totalWeight = 0.0f;
+	poolData->_poolList.clear();
+	poolData->_rng1.SetSeed(2853650767, 35);
+	poolData->_rng2.SetSeed(2853650767, 35);
+	poolData->_bibleUpgrade = 0;
 }
 
 PoolItem ItemPoolManager::PoolItemDesc::BuildPoolItem() const noexcept
@@ -664,9 +666,12 @@ void ItemPoolManager::ItemPool::load_pool() noexcept
 
 void ItemPoolManager::CustomItemPool::load_pool() noexcept
 {
-	auto* pool = this->GetPoolData();
+	auto* poolData = this->GetPoolData();
+	RNG& rng = this->get_global_rng();
 
-	reset_pool(pool);
+	this->reset();
+	poolData->_rng1.SetSeed(rng.Next(), 35);
+	poolData->_rng2.SetSeed(rng.Next(), 35);
 	load_xml_pool_data(this);
 
 	this->ItemPool::load_pool();
@@ -716,6 +721,7 @@ void ItemPoolManager::__LoadPools() noexcept
 {
 	auto& instance = ItemPoolManager::Get();
 
+	instance.m_RNG = g_Game->_itemPool._itemPoolRNG; // make a copy of the rng so as to not affect it
 	instance.m_AppendMode = true;
 	instance.m_ItemPoolInitialized = true;
 
