@@ -600,7 +600,7 @@ void ItemPoolManager::add_modded_pools() noexcept
 
 	for (auto* mod : modManager->_mods)
 	{
-		if (!mod->IsEnabled())
+		if (!mod->_loaded)
 		{
 			continue;
 		}
