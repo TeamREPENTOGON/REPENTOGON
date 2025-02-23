@@ -49,7 +49,7 @@ struct PersistentGameData { {{
 	}
 }}
 	bool achievements[641] : 0x38;
-	int eventCounter[521] : 0x2bc;
+	int eventCounter[523] : 0x2bc;
 	bool itemsCollection[733] : 0xae8;
 	bool bosses[104] : 0xe07;
 	bool challenges[45] : 0xe6f;

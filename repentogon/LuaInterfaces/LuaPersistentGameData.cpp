@@ -5,7 +5,7 @@
 #include "../Patches/ChallengesStuff.h"
 #include "../Patches/AchievementsStuff.h"
 
-static const unsigned int PGD_COUNTER_MAX = 521;
+static const unsigned int PGD_COUNTER_MAX = 522;
 static const unsigned int COLLECTIBLE_MAX = 732;
 static const unsigned int CHALLENGE_MAX = 45;
 
