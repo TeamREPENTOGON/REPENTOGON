@@ -259,3 +259,13 @@ TypeInfo vector_Devolve {
     Size 12;
     Align 4;
 };
+
+TypeInfo DoorsBitSet {
+    Size 4;
+    Align 4;
+};
+
+TypeInfo RoomConfigFlags {
+    Size 4;
+    Align 4;
+};
