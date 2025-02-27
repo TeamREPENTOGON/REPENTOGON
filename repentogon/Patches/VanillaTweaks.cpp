@@ -14,8 +14,8 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 	super(Stage, Mode);
 }
 
-// Force achievements to be unlockable (expect outside of game mode)
-HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+// Force achievements to be unlockable (expect outside of game mode) [moved to ASMTweaks.cpp]
+/*HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 	ModManager* modman = g_Manager->GetModManager();
 	auto loadedMod = std::find_if(modman->_mods.begin(), modman->_mods.end(), [](ModEntry* mod) { return mod->_loaded; });
 
@@ -27,6 +27,7 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 
 	return false;
 }
+*/
 
 // I'm putting this here bc I don't want to burden REPENTOGONOptions.h with the whole hooking system
 HOOK_METHOD(OptionsConfig, Save, () -> void) {

@@ -209,4 +209,8 @@ void PerformASMPatches() {
 
 	ASMPatches::NativeRepentogonResources();
 	ASMPatches::PatchGotInvaldParameterReadingChallengesXml();
+
+	if (!ASMPatches::SkipWombAchievementBlock()) {
+		ZHL::Log("[ERROR] Error while skipping womb achievement block\n");
+	}
 }
