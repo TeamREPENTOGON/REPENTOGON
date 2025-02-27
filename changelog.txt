@@ -68,6 +68,10 @@ Additions:
 		Return false on the PRE callback to cancel adding the status effect
 	- MC_PLAYER_HEALTH_TYPE_CHANGE
 		Runs when a player's health type changes, but before automatic health conversion
+	- MC_POST_START_AMBUSH_WAVE(boolean BossAmbush)
+		Fires at the start of challenge/boss rush room wave
+	- MC_POST_START_GREED_WAVE
+		(add description later)
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
