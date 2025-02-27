@@ -163,7 +163,7 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 // eco mode stuff end
 
 //clearing kerning pairs from parsed font
-HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
+/*HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
 	super(path, unusedIsLoading);
 
 	auto& kernPair = _kerningPairs;
@@ -173,3 +173,4 @@ HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
 	}
 
 }
+*/
