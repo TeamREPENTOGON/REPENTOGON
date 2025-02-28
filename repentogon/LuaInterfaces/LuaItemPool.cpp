@@ -35,6 +35,37 @@ static inline bool isCollectibleBlacklisted(ItemPool* itemPool, uint32_t collect
 	return blacklistedCollectibles[collectibleID];
 }
 
+LUA_FUNCTION(Lua_AddRoomBlacklist)
+{
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	unsigned int item = (unsigned int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		return 0;
+	}
+
+	g_Game->_itemPool.AddRoomBlacklist(item);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetTrinket)
+{
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	bool dontAdvanceRNG = lua_isnoneornil(L, 2) ? false : lua::luaL_checkboolean(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushinteger(L, TRINKET_NULL);
+		return 1;
+	}
+
+	lua_pushinteger(L, itemPool->GetTrinket(dontAdvanceRNG));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
@@ -318,6 +349,13 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int collectibleID = (int)luaL_checkinteger(L, 2);
 
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
 
@@ -448,6 +486,13 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const unsigned int trinketID = (int)luaL_checkinteger(L, 2);
 
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
 	std::vector<ItemConfig_Item*>& trinketList = *g_Manager->GetItemConfig()->GetTrinkets();
 	std::vector<TrinketPoolItem>& poolTrinketItems = itemPool->_trinketPoolItems;
 
@@ -466,6 +511,13 @@ LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int id = (int)luaL_checkinteger(L, 2);
 	bool unkFlag = lua::luaL_checkboolean(L, 3);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
 	if (item == nullptr) {
@@ -547,6 +599,12 @@ LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int collectible = (int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		return 0;
+	}
 
 	if (collectible < COLLECTIBLE_NULL || collectible >= (int)g_Manager->GetItemConfig()->GetCollectibles()->size()) {
 		return luaL_argerror(L, 2, "Invalid Collectible");
@@ -715,6 +773,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "GetCollectible", Lua_ItemPoolGetCollectibleEx },
 		{ "AddBibleUpgrade", Lua_ItemPoolAddBibleUpgrade },
+		{ "AddRoomBlacklist", Lua_AddRoomBlacklist },
+		{ "GetTrinket", Lua_GetTrinket },
 
 		{ "GetCardEx", Lua_ItemPoolGetCardEx },
 		{ "GetRandomPool", Lua_ItemPoolGetRandomPool },

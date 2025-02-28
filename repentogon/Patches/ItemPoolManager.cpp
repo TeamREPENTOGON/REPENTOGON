@@ -2095,11 +2095,19 @@ HOOK_METHOD(ItemPool, shuffle_pools, () -> void)
 	ItemPoolManager::__FinalizePools();
 }
 
-HOOK_METHOD(Game, End, (int EndingID) -> void)
+HOOK_METHOD(Game, Exit, (bool ShouldSave) -> void)
 {
-	super(EndingID);
-	ItemPoolManager::__End();
+	super(ShouldSave);
+	ItemPoolManager::__MarkItemPoolNotInitialized();
 }
+
+HOOK_METHOD(Game, NextVictoryLap, () -> void)
+{
+	ItemPoolManager::__MarkItemPoolNotInitialized();
+	super();
+}
+
+// TriggerRKey doesn't actually reset the itemPool so we don't need to worry about it
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
