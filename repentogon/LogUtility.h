@@ -26,6 +26,7 @@ namespace LogUtility
     class LogContext
     {
         std::vector<std::string> m_Context;
+		std::string m_ContextCache;
 		std::array<uint32_t, 3> m_LoggedMessagesCount = { 0 };
     private:
         const char* get_log_type_string(eLogType logType)
@@ -61,21 +62,25 @@ namespace LogUtility
         inline void push_back(const std::string& message)
         {
             m_Context.push_back(message);
+			m_ContextCache += m_Context.back();
         }
 
         inline void emplace_back(std::string&& message)
         {
             m_Context.emplace_back(std::move(message));
+			m_ContextCache += m_Context.back();
         }
 
         inline void pop_back()
         {
+			const std::string& last = m_Context.back();
+			m_ContextCache.erase(m_ContextCache.size() - last.size(), last.size());
             m_Context.pop_back();
         }
 
         inline void LogMessage(eLogType logType, const char* message)
         {
-            ZHL::Log("[%s] %s%s\n", get_log_type_string(logType), build_context_string().c_str(), message);
+            ZHL::Log("[%s] %s%s\n", get_log_type_string(logType), m_ContextCache.c_str(), message);
             m_LoggedMessagesCount[(size_t)logType]++;
         }
 
@@ -87,6 +92,25 @@ namespace LogUtility
 
     namespace Lua
     {
+		static std::string GetStackLevelInfo(lua_State* L, int level) noexcept
+		{
+			lua_Debug ar;
+			if (!lua_getstack(L, level, &ar))
+			{
+				return "";
+			}
+
+			lua_getinfo(L, "Sln", &ar);
+			if (ar.currentline <= 0)
+			{
+				return REPENTOGON::StringFormat("%s: in %s", ar.short_src, REPENTOGON::Lua::GetFunctionName(L, &ar).c_str());
+			}
+			else
+			{
+				return REPENTOGON::StringFormat("%s:%d: in %s", ar.short_src, ar.currentline, REPENTOGON::Lua::GetFunctionName(L, &ar).c_str());
+			}
+		}
+
 		static inline void LogInvalidArg(LogContext& logContext, const char* error, const char* fieldName = nullptr) noexcept
 		{
 			assert(error);

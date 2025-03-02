@@ -70,6 +70,7 @@ public:
 	static void __ClearSaveState(uint32_t slot) noexcept;
 	static void __SaveToDisk(const std::string& fileName, bool isRerun) noexcept;
 	static void __LoadFromDisk(const std::string& fileName, bool isRerun) noexcept;
+	static void __DeleteGameState(const std::string& fileName) noexcept;
 	static bool IsItemPoolInitialized() noexcept { return Get().m_ItemPoolInitialized; }
 	static ItemPool* GetItemPool(uint32_t id) noexcept;
 	static RNG& GetRNG() noexcept { return Get().m_RNG; }

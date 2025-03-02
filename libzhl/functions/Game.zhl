@@ -198,6 +198,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline ScoreSheet* GetScoreSheet() { return &this->_scoreSheet; }
 	
 	inline int GetDifficulty() {return this->_difficulty; }
+
+	inline int GetMode() { return this->IsGreedMode() ? 1 : 0; }
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return &this->_proceduralItemManager; }
     
