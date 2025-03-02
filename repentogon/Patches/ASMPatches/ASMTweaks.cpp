@@ -8,6 +8,7 @@
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
 	static bool __stdcall __IsLeadeboardEntryInvalid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
+	static bool __stdcall __DisallowAchievements();
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -248,5 +249,33 @@ namespace ASMPatches {
 		ASMPatch patch;
 		patch.AddRelativeJump((char*)addr + 0x10);
 		sASMPatcher.PatchAt(addr, &patch);
+	}
+
+	static bool __stdcall __DisallowAchievements() {
+		if (((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug()))) {
+			return true;
+		}
+		return false;
+	}
+
+	 bool SkipWombAchievementBlock() {
+		ASMPatch patch;
+
+		SigScan signature("807e??0075??837e??0275??a1");
+		if (!signature.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		printf("[REPENTOGON] Patching Manager::AchievementUnlocksDisallowed at %p\n", addr);
+
+		patch.AddInternalCall(__DisallowAchievements)
+			.AddBytes("\x84\xC0") // test al, al
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x27)
+			.AddRelativeJump((char*)addr + 0x31);
+		
+		sASMPatcher.PatchAt(addr, &patch);
+
+		return true;
 	}
 }

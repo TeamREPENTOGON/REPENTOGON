@@ -69,26 +69,6 @@ size_t RoomConfigUtility::RoomIdentifier::hash() const noexcept
 
 #pragma region Asserts and Validations
 
-static inline bool is_valid_stage_id(int stageId) noexcept
-{
-	return STB_SPECIAL_ROOMS <= stageId && stageId < NUM_STB;
-}
-
-static inline bool is_valid_mode(int mode) noexcept
-{
-	return 0 <= mode && mode <= 1;
-}
-
-static inline bool is_valid_room_type(int roomType) noexcept
-{
-	return ROOM_DEFAULT <= roomType && roomType < NUM_ROOMTYPES;
-}
-
-static inline bool is_valid_room_shape(int roomShape) noexcept
-{
-	return ROOMSHAPE_NULL < roomShape && roomShape < NUM_ROOMSHAPES;
-}
-
 static inline bool are_room_dimensions_valid(int width, int height, int shape) noexcept
 {
 	auto& shapeDimensions = RoomConfigUtility::GetShapeDimensions(shape);
@@ -155,10 +135,10 @@ void RoomConfigUtility::AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, cons
 void RoomConfigUtility::AssertRoomValidity(const RoomConfig_Room& room) noexcept
 {
 #ifndef NDEBUG
-	assert(is_valid_stage_id(room.StageId));
-	assert(is_valid_mode(room.Mode));
-	assert(is_valid_room_type(room.Type));
-	assert(is_valid_room_shape(room.Shape));
+	assert(IsStageValid(room.StageId));
+	assert(IsModeValid(room.Mode));
+	assert(IsRoomTypeValid(room.Type));
+	assert(IsShapeValid(room.Shape));
 	assert(are_room_dimensions_valid(room.Width, room.Height, room.Shape));
 	assert(room.InitialWeight >= 0.0f);
 	assert(room.Weight >= 0.0f);
@@ -189,9 +169,9 @@ void RoomConfigUtility::FinalizeRoom(RoomConfig_Room& room, uint32_t stageId, in
 		mode = g_Game->IsGreedMode() ? 1 : 0;
 	}
 
-	assert(is_valid_stage_id(stageId));
-	assert(is_valid_mode(mode));
-	assert(is_valid_room_type(room.Type));
+	assert(IsStageValid(stageId));
+	assert(IsModeValid(mode));
+	assert(IsRoomTypeValid(room.Type));
 
 	room.StageId = stageId;
 	room.Mode = mode;
@@ -226,6 +206,21 @@ void RoomConfigUtility::FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomS
 	}
 }
 
+bool RoomConfigUtility::RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType) noexcept
+{
+	if ((room.Type == roomType) &&
+		(roomShape == NUM_ROOMSHAPES || room.Shape == roomShape) &&
+		(minVariant <= room.Variant && room.Variant <= maxVariant) &&
+		(minDifficulty <= room.Difficulty && room.Difficulty <= maxDifficulty) &&
+		((room.Doors & doors) == doors) &&
+		(subType == -1 || room.Subtype == subType))
+	{
+		return !g_Game->_seedEffects.HasSeedEffect(SEED_G_FUEL) || !room.Flags.test(FLAG_HAS_CLEAR_PLATE);
+	}
+
+	return false;
+}
+
 #pragma endregion
 
 #pragma region Lua
@@ -239,22 +234,21 @@ std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L,
 		return std::nullopt;
 	}
 
-	auto type = LogUtility::Lua::ReadIntegerField<int>(L, absIndex, "TYPE", logContext, false);
-	if (!type)
-	{
-		return std::nullopt;
-	}
+	auto type = LogUtility::Lua::ReadIntegerField<int>(L, absIndex, "TYPE", logContext, false); if (!type) { return std::nullopt; }
+	auto variant = LogUtility::Lua::ReadIntegerField<uint32_t>(L, absIndex, "VARIANT", logContext, false); if (!variant) { return std::nullopt; }
+	auto name = LogUtility::Lua::ReadStringField(L, absIndex, "NAME", logContext, false); if (!name) { return std::nullopt; }
+	auto shape = LogUtility::Lua::ReadIntegerField<int8_t>(L, absIndex, "SHAPE", logContext, false); if (!shape) { return std::nullopt; }
 
-	if (!is_valid_room_type(type.value()))
+	if (!IsRoomTypeValid(type.value()))
 	{
 		LogUtility::Lua::LogInvalidArg(logContext, REPENTOGON::StringFormat("invalid argument for \"TYPE\" (invalid room type %d)", type.value()).c_str(), "TYPE");
 		type = ROOM_DEFAULT;
 	}
 
-	auto variant = LogUtility::Lua::ReadIntegerField<uint32_t>(L, absIndex, "VARIANT", logContext, false);
-	if (!variant)
+	if (!IsShapeValid(shape.value()))
 	{
-		return std::nullopt;
+		logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for \"SHAPE\" (invalid room shape %d) ", shape.value()).c_str());
+		shape = ROOMSHAPE_1x1;
 	}
 
 	RoomConfig_Room room;
@@ -265,7 +259,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L,
 
 	room.Subtype = LogUtility::Lua::ReadIntegerField<int>(L, absIndex, "SUBTYPE", logContext).value_or(0);
 	room.Difficulty = LogUtility::Lua::ReadIntegerField<int>(L, absIndex, "DIFFICULTY", logContext).value_or(1);
-	room.Name = LogUtility::Lua::ReadStringField(L, absIndex, "NAME", logContext).value_or("");
+	room.Name = name.value();
 
 	room.Weight = LogUtility::Lua::ReadNumberField<float>(L, absIndex, "WEIGHT", logContext).value_or(0.0f);
 	if (room.Weight < 0.0f)
@@ -275,12 +269,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L,
 	}
 	room.InitialWeight = room.Weight;
 
-	room.Shape = LogUtility::Lua::ReadIntegerField<int8_t>(L, absIndex, "SHAPE", logContext).value_or(ROOMSHAPE_1x1);
-	if (!is_valid_room_shape(room.Shape))
-	{
-		logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for \"SHAPE\" (invalid room shape %d) ", room.Shape).c_str());
-		room.Shape = ROOMSHAPE_1x1;
-	}
+	room.Shape = shape.value();
 	auto& shapeDimensions = RoomConfigUtility::GetShapeDimensions(room.Shape); // Let's just use the correct ones, rather than reading from the table
 	room.Width = shapeDimensions.first;
 	room.Height = shapeDimensions.second;
@@ -636,7 +625,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 
 	auto stageId = LogUtility::Json::ReadIntegerMember<int>(roomNode, "StageId", logContext, false); if (!stageId) { return std::nullopt; }
 
-	if (!is_valid_stage_id(stageId.value()))
+	if (!IsStageValid(stageId.value()))
 	{
 		LogUtility::Json::LogInvalidArg(logContext, REPENTOGON::StringFormat("invalid stage id: %d", stageId.value()).c_str(), "StageId");
 		return std::nullopt;
@@ -644,7 +633,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 
 	auto mode = LogUtility::Json::ReadIntegerMember<int>(roomNode, "Mode", logContext, false); if (!mode) { return std::nullopt; }
 
-	if (!is_valid_mode(mode.value()))
+	if (!IsModeValid(mode.value()))
 	{
 		LogUtility::Json::LogInvalidArg(logContext, REPENTOGON::StringFormat("invalid mode: %d", mode.value()).c_str(), "Mode");
 		return std::nullopt;
@@ -657,7 +646,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 
 	room.Type = LogUtility::Json::ReadIntegerMember<int>(roomNode, "Type", logContext, false).value_or(ROOM_DEFAULT);
 
-	if (!is_valid_room_type(room.Type))
+	if (!IsRoomTypeValid(room.Type))
 	{
 		LogUtility::Json::LogInvalidArg(logContext, REPENTOGON::StringFormat("invalid room type: %d", room.Type).c_str(), "Mode");
 		room.Type = ROOM_DEFAULT;
@@ -678,7 +667,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 
 	room.Shape = LogUtility::Json::ReadIntegerMember<int>(roomNode, "Shape", logContext, false).value_or(ROOMSHAPE_1x1);
 
-	if (!is_valid_room_shape(room.Shape))
+	if (!IsShapeValid(room.Shape))
 	{
 		LogUtility::Json::LogInvalidArg(logContext, REPENTOGON::StringFormat("invalid room shape: %d", room.Shape).c_str(), "Shape");
 		room.Shape = ROOMSHAPE_1x1;

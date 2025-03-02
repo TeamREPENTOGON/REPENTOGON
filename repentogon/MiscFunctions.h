@@ -131,18 +131,57 @@ namespace REPENTOGON {
 		return optionsPath.c_str();
 	}
 
-	enum GameStateSlot
-	{
-		NULL_SLOT = -1,
-		SAVE_FILE = 0,
-		GLOWING_HOURGLASS_1 = 1,
-		GLOWING_HOURGLASS_2 = 2,
-	};
-
-	GameStateSlot GetGameStateSlot(GameState* state);
-
 	namespace Lua
 	{
+		static std::string GetFunctionName(lua_State* L, lua_Debug* ar) noexcept
+		{
+			if (*ar->namewhat != '\0')
+			{
+				return StringFormat("function '%s'", ar->name);
+			}
+			if (*ar->what == 'm')
+			{
+				return "main chunk";
+			}
+
+			return StringFormat("function at line %d", ar->linedefined);
+		}
+
+		static std::string CleanTraceback(lua_State* L, int level) noexcept
+		{
+			lua_Debug ar;
+			std::string stackTraceback = "Stack Traceback:\n";
+
+			while (lua_getstack(L, level++, &ar))
+			{
+				lua_getinfo(L, "Sln", &ar);
+				if (*ar.what == 'C')
+				{
+					if (std::strcmp(ar.name, "xpcall") == 0)
+					{
+						break;
+					}
+
+					stackTraceback += StringFormat("\n in method '%s'", ar.name);
+				}
+				else
+				{
+					if (ar.currentline <= 0)
+					{
+						stackTraceback += StringFormat("\n  %s: in ", ar.short_src);
+					}
+					else
+					{
+						stackTraceback += StringFormat("\n  %s:%d: in ", ar.short_src, ar.currentline);
+					}
+
+					stackTraceback += GetFunctionName(L, &ar);
+				}
+			}
+
+			return stackTraceback;
+		}
+
 		static std::string GenerateInvalidTypeMessage(lua_State* L, int idx, const char* expectedType) noexcept
 		{
 			return StringFormat("%s expected, got %s", expectedType, lua_typename(L, lua_type(L, idx)));

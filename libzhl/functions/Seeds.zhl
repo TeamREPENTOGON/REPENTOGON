@@ -10,6 +10,9 @@ __thiscall void Seeds::set_start_seed(unsigned int seed);
 "558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf18975??f30f7e05":
 __thiscall void Seeds::construct_from_copy(Seeds* right);
 
+"558bec83ec0c568b71":
+__thiscall bool Seeds::HasSeedEffect(uint32_t seedEffect);
+
 // sorry for the mess, this is a direct ghidra export :(
 struct Seeds depends (RNG,ANM2){
     bool _isCustomRun : 0x0;

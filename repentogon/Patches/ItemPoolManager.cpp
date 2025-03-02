@@ -7,6 +7,7 @@
 #include "../MiscFunctions.h"
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
+#include "GameStateManagerment.h"
 
 #include "rapidxml.hpp"
 #include "writer.h" // rapidjson
@@ -874,11 +875,11 @@ void ItemPoolManager::__RestoreState(uint32_t slot) noexcept
 
 	switch (slot)
 	{
-	case REPENTOGON::GameStateSlot::GLOWING_HOURGLASS_1:
-		instance.invalidate_state_slot(REPENTOGON::GameStateSlot::GLOWING_HOURGLASS_2);
+	case GameStateSlot::GLOWING_HOURGLASS_1:
+		instance.invalidate_state_slot(GameStateSlot::GLOWING_HOURGLASS_2);
 		break;
-	case REPENTOGON::GameStateSlot::GLOWING_HOURGLASS_2:
-		instance.invalidate_state_slot(REPENTOGON::GameStateSlot::GLOWING_HOURGLASS_1);
+	case GameStateSlot::GLOWING_HOURGLASS_2:
+		instance.invalidate_state_slot(GameStateSlot::GLOWING_HOURGLASS_1);
 		break;
 	}
 }
@@ -888,22 +889,6 @@ void ItemPoolManager::__RestoreState(uint32_t slot) noexcept
 #pragma region Serialization
 
 constexpr uint32_t GAMESTATE_VERSION = 1;
-
-static inline bool is_cloud_save(GameState* gameState) noexcept
-{
-	return !(gameState->_cloudGameStatePath.empty() || gameState->_cloudRerunStatePath.empty());
-}
-
-static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun) noexcept
-{
-	return (is_cloud_save(gameState) ? "cloud" : "local") + std::string("_") + (isRerun ? "rep+rerunstate" : "gamestate") + std::to_string(saveSlot);
-}
-
-static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io) noexcept
-{
-	std::filesystem::path filePath(io->GetFilePath());
-	return (is_cloud_save(gameState) ? "cloud" : "local") + std::string("_") + filePath.stem().string();
-}
 
 static inline std::string get_state_file_path(const std::string& fileName) noexcept
 {
@@ -1346,7 +1331,7 @@ rapidjson::Document ItemPoolManager::serialize_game_state(bool isRerun) noexcept
 	for (const auto& itemPool : m_ItemPools)
 	{
 		rapidjson::Value poolData(rapidjson::kObjectType);
-		itemPool->m_SaveStates[REPENTOGON::GameStateSlot::SAVE_FILE]->serialize(poolData, doc.GetAllocator());
+		itemPool->m_SaveStates[GameStateSlot::SAVE_FILE]->serialize(poolData, doc.GetAllocator());
 		poolsData.PushBack(poolData, doc.GetAllocator());
 	}
 
@@ -1444,7 +1429,7 @@ bool ItemPoolManager::deserialize_game_state(const rapidjson::Document& gameStat
 			continue;
 		}
 
-		pool->m_SaveStates[REPENTOGON::GameStateSlot::SAVE_FILE]->deserialize(jsonPoolData[i], warnings);
+		pool->m_SaveStates[GameStateSlot::SAVE_FILE]->deserialize(jsonPoolData[i], warnings);
 		if (!warnings.empty())
 		{
 			ZHL::Log("[ItemPoolManager] [WARN] - " __FUNCTION__ " - something went wrong while deserializing save state for pool \"%s\" from %s\n", pool->GetName().c_str(), fileName.c_str());
@@ -1539,7 +1524,7 @@ void ItemPoolManager::__LoadFromDisk(const std::string& fileName, bool isRerun) 
 	ItemPoolManager::fix_original_game_state(poolIdRemap, isRerun);
 }
 
-static void delete_game_state(const std::string& fileName, bool isRerun) noexcept
+void ItemPoolManager::__DeleteGameState(const std::string& fileName) noexcept
 {
 	std::filesystem::path filePath = get_state_file_path(fileName);
 
@@ -2095,151 +2080,19 @@ HOOK_METHOD(ItemPool, shuffle_pools, () -> void)
 	ItemPoolManager::__FinalizePools();
 }
 
-HOOK_METHOD(Game, End, (int EndingID) -> void)
+HOOK_METHOD(Game, Exit, (bool ShouldSave) -> void)
 {
-	super(EndingID);
-	ItemPoolManager::__End();
+	super(ShouldSave);
+	ItemPoolManager::__MarkItemPoolNotInitialized();
 }
 
-HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
+HOOK_METHOD(Game, NextVictoryLap, () -> void)
 {
-	super(state);
-
-	auto slot = REPENTOGON::GetGameStateSlot(state);
-	if (slot == REPENTOGON::GameStateSlot::NULL_SLOT)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - Game::SaveState Hook - could not determine Game State slot, skipping saving.\n");
-		return;
-	}
-
-	ItemPoolManager::__SaveState(slot);
-}
-
-HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
-{
-	super(state, startGame);
-
-	auto slot = REPENTOGON::GetGameStateSlot(state);
-	if (slot == REPENTOGON::GameStateSlot::NULL_SLOT)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - Game::RestoreState Hook - could not determine Game State slot, skipping restore.\n");
-		return;
-	}
-
-	ItemPoolManager::__RestoreState(slot);
-}
-
-HOOK_METHOD(GameState, Clear, () -> void)
-{
+	ItemPoolManager::__MarkItemPoolNotInitialized();
 	super();
-
-	auto slot = REPENTOGON::GetGameStateSlot(this);
-	if (slot == REPENTOGON::GameStateSlot::NULL_SLOT)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::Clear Hook - could not determine Game State slot, skipping clear.\n");
-		return;
-	}
-
-	ItemPoolManager::__ClearSaveState(slot);
 }
 
-HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
-{
-	if (!super(io))
-	{
-		return false;
-	}
-
-	if (REPENTOGON::GetGameStateSlot(this) != REPENTOGON::GameStateSlot::SAVE_FILE) // This can occur when (presumably) the save state is being sent to online players joining mid-run
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::write Hook - writing non save file GameState, skipping save.\n");
-		return true;
-	}
-
-	auto fileName = get_state_file_name(this, *io);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::write Hook - Unknown file name \"%s\", skipping save.\n", fileName.c_str());
-		return true;
-	}
-
-	ItemPoolManager::__SaveToDisk(fileName, false);
-	return true;
-}
-
-HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
-{
-	if (!super(io))
-	{
-		return false;
-	}
-
-	auto fileName = get_state_file_name(this, *io);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::write_rerun Hook - Unknown file name \"%s\", skipping save.\n", fileName.c_str());
-		return true;
-	}
-
-	ItemPoolManager::__SaveToDisk(fileName, true);
-	return true;
-}
-
-HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
-{
-	if (!super(io, isLocalRun))
-	{
-		return false;
-	}
-
-	if (!isLocalRun) // This occurs when loading a game state upon joining an already existing match.
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::read Hook - reading non save file GameState, skipping load.\n");
-		return true;
-	}
-
-	auto fileName = get_state_file_name(this, *io);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::read Hook - Unknown file name \"%s\", skipping load.\n", fileName.c_str());
-		return true;
-	}
-
-	ItemPoolManager::__LoadFromDisk(fileName, false);
-	return true;
-}
-
-HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
-{
-	if (!super(io))
-	{
-		return false;
-	}
-
-	auto fileName = get_state_file_name(this, *io);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
-	{
-		ZHL::Log("[ItemPoolManager] [INFO] - GameState::read_rerun Hook - Unknown file name \"%s\", skipping load.\n", fileName.c_str());
-		return true;
-	}
-
-	ItemPoolManager::__LoadFromDisk(fileName, true);
-	return true;
-}
-
-HOOK_METHOD(GameState, Delete, () -> void)
-{
-	super();
-	auto fileName = get_state_file_name(this, g_Manager->_currentSaveSlot, false);
-	delete_game_state(fileName, false);
-}
-
-HOOK_METHOD(GameState, DeleteRerun, () -> void)
-{
-	super();
-	auto fileName = get_state_file_name(this, g_Manager->_currentSaveSlot, true);
-	delete_game_state(fileName, true);
-}
+// TriggerRKey doesn't actually reset the itemPool so we don't need to worry about it
 
 HOOK_METHOD(ItemPool, get_chaos_pool, (RNG* rng) -> int)
 {

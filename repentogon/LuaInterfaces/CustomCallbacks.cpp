@@ -5128,3 +5128,44 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.call(1);
 	}
 }
+
+//POST_START_AMBUSH_WAVE (1488)
+void ProcessPostStartAmbushWaveCallback(bool bossAmbush) {
+	const int callbackid = 1488;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(bossAmbush)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(Ambush, SpawnWave, () -> void) {
+	super();
+	ProcessPostStartAmbushWaveCallback(false);
+}
+
+HOOK_METHOD(Ambush, SpawnBossrushWave, () -> void) {
+	super();
+	ProcessPostStartAmbushWaveCallback(true);
+}
+
+//POST_START_GREED_WAVE (1489)
+HOOK_METHOD(Room, SpawnGreedModeWave, (bool unusedBool) -> void) {
+	super(unusedBool);
+
+	const int callbackid = 1489;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);
+	}
+}

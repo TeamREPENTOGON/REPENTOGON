@@ -45,7 +45,9 @@ ___
 ___
 ### GetRandomPickupVelocity () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](Vector.md) Position, [RNG](RNG.md) RNG = nil, int VelocityType = 0 ) {: .copyable aria-label='Functions' }
-`VelocityType` seems to only affect pickups in Challenge Rooms, causing them to have a weaker velocity.
+`VelocityType` 0 will shoot pickups in a random direction around the wanted position.
+`VelocityType` 1 will shoot pickups in a cone pointing down, mostly used for Beggar payouts.
+`VelocityType` also seems to affect pickups in Challenge Rooms, causing them to have a weaker velocity.
 
 ???+ warning "Warning"
     This is a static function and must be called via `EntityPickup.GetRandomPickupVelocity(Position, RNG, VelocityType)`.

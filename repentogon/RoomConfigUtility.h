@@ -43,6 +43,12 @@ namespace RoomConfigUtility
 
 	void FinalizeRoom(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept;
 	void FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomSpawn& roomSpawn, RoomEntry& spawnEntry) noexcept;
+	bool RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType) noexcept;
+
+	inline bool IsStageValid(uint32_t stageId) noexcept { return STB_SPECIAL_ROOMS <= stageId && stageId < NUM_STB; }
+	inline bool IsModeValid(int mode) noexcept { return 0 <= mode && mode <= 1; }
+	inline bool IsRoomTypeValid(uint32_t roomType) noexcept { return ROOM_DEFAULT <= roomType && roomType < NUM_ROOMTYPES; }
+	inline bool IsShapeValid(uint32_t roomShape) noexcept { return ROOMSHAPE_NULL < roomShape && roomShape < NUM_ROOMSHAPES; }
 
 	void AssertRoomValidity(const RoomConfig_Room& room) noexcept;
 	void AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, const RoomConfig_Room* room = nullptr) noexcept;

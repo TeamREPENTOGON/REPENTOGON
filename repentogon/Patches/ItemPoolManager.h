@@ -59,7 +59,7 @@ public:
 
 	static void __Init() noexcept;
 	static void __LoadPools() noexcept;
-	static void __End() noexcept { Get().m_ItemPoolInitialized = false; }
+	static void __MarkItemPoolNotInitialized() noexcept { Get().m_ItemPoolInitialized = false; }
 	static void __FinalizePools() noexcept;
 	static void __ResetCollectible(int collectible) noexcept;
 	static void __AddBibleUpgrade(uint32_t poolId, int amount) noexcept;
@@ -70,6 +70,8 @@ public:
 	static void __ClearSaveState(uint32_t slot) noexcept;
 	static void __SaveToDisk(const std::string& fileName, bool isRerun) noexcept;
 	static void __LoadFromDisk(const std::string& fileName, bool isRerun) noexcept;
+	static void __DeleteGameState(const std::string& fileName) noexcept;
+	static bool IsItemPoolInitialized() noexcept { return Get().m_ItemPoolInitialized; }
 	static ItemPool* GetItemPool(uint32_t id) noexcept;
 	static RNG& GetRNG() noexcept { return Get().m_RNG; }
 	static const std::vector<std::unique_ptr<ItemPool>>& GetItemPools() noexcept { return Get().m_ItemPools; }
