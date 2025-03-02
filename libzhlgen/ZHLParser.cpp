@@ -1,5 +1,5 @@
 
-// Generated from ZHLParser.g4 by ANTLR 4.12.0
+// Generated from ZHLParser.g4 by ANTLR 4.13.2
 
 
 #include "ZHLParserListener.h"
@@ -38,10 +38,19 @@ struct ZHLParserStaticData final {
 };
 
 ::antlr4::internal::OnceFlag zhlparserParserOnceFlag;
-ZHLParserStaticData *zhlparserParserStaticData = nullptr;
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+static thread_local
+#endif
+std::unique_ptr<ZHLParserStaticData> zhlparserParserStaticData = nullptr;
 
 void zhlparserParserInitialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  if (zhlparserParserStaticData != nullptr) {
+    return;
+  }
+#else
   assert(zhlparserParserStaticData == nullptr);
+#endif
   auto staticData = std::make_unique<ZHLParserStaticData>(
     std::vector<std::string>{
       "zhl", "externalFunc", "typeInfo", "typeInfoDef", "function", "reference", 
@@ -255,7 +264,7 @@ void zhlparserParserInitialize() {
   for (size_t i = 0; i < count; i++) { 
     staticData->decisionToDFA.emplace_back(staticData->atn->getDecisionState(i), i);
   }
-  zhlparserParserStaticData = staticData.release();
+  zhlparserParserStaticData = std::move(staticData);
 }
 
 }
@@ -4498,5 +4507,9 @@ ZHLParser::MemberPtrContext* ZHLParser::memberPtr() {
 }
 
 void ZHLParser::initialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  zhlparserParserInitialize();
+#else
   ::antlr4::internal::call_once(zhlparserParserOnceFlag, zhlparserParserInitialize);
+#endif
 }

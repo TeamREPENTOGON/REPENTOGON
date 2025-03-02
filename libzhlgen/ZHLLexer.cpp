@@ -1,5 +1,5 @@
 
-// Generated from ZHLLexer.g4 by ANTLR 4.12.0
+// Generated from ZHLLexer.g4 by ANTLR 4.13.2
 
 
 #include "ZHLLexer.h"
@@ -42,10 +42,19 @@ struct ZHLLexerStaticData final {
 };
 
 ::antlr4::internal::OnceFlag zhllexerLexerOnceFlag;
-ZHLLexerStaticData *zhllexerLexerStaticData = nullptr;
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+static thread_local
+#endif
+std::unique_ptr<ZHLLexerStaticData> zhllexerLexerStaticData = nullptr;
 
 void zhllexerLexerInitialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  if (zhllexerLexerStaticData != nullptr) {
+    return;
+  }
+#else
   assert(zhllexerLexerStaticData == nullptr);
+#endif
   auto staticData = std::make_unique<ZHLLexerStaticData>(
     std::vector<std::string>{
       "DoubleQuote", "Colon", "Semi", "Qualifier", "Cleanup", "Static", 
@@ -368,7 +377,7 @@ void zhllexerLexerInitialize() {
   for (size_t i = 0; i < count; i++) { 
     staticData->decisionToDFA.emplace_back(staticData->atn->getDecisionState(i), i);
   }
-  zhllexerLexerStaticData = staticData.release();
+  zhllexerLexerStaticData = std::move(staticData);
 }
 
 }
@@ -414,5 +423,9 @@ const atn::ATN& ZHLLexer::getATN() const {
 
 
 void ZHLLexer::initialize() {
+#if ANTLR4_USE_THREAD_LOCAL_CACHE
+  zhllexerLexerInitialize();
+#else
   ::antlr4::internal::call_once(zhllexerLexerOnceFlag, zhllexerLexerInitialize);
+#endif
 }
