@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
     
     
       
@@ -7303,6 +7303,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cards-pill-effects" class="md-nav__link">
     <span class="md-ellipsis">
       Cards &amp; Pill Effects
@@ -7596,6 +7605,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cards
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cards-pill-effects" class="md-nav__link">
     <span class="md-ellipsis">
       Cards &amp; Pill Effects
@@ -7636,6 +7654,29 @@
 <h1 id="file-pocketitemsxml">File "pocketitems.xml"<a class="headerlink" href="#file-pocketitemsxml" title="Permanent link">⚓︎</a></h1>
 <p><strong class="xmlInfo red">Resource-Folder</strong>: Using this file in a resource folder of a mod will replace the original file.</p>
 <p><strong class="xmlInfo green">Content-Folder</strong>: Using this file in a content folder will add new pocketitems.</p>
+<h2 id="cards">Cards<a class="headerlink" href="#cards" title="Permanent link">⚓︎</a></h2>
+<p>With REPENTOGON, the following xml attributes have been added for cards: </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Variable-Name</th>
+<th style="text-align: left;">Possible Values</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">hidden</td>
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;"><code>Optional</code> <code>Default = false</code><br />Prevents the card from being randomly chosen by the game or when using the <a href="https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html?h=getcard#getcard">ItemPool:GetCard()</a> and <a href="https://repentogon.com/ItemPool.html?h=card+ex#getcardex">ItemPool:GetCardEx()</a> functions.</td>
+</tr>
+<tr>
+<td style="text-align: left;">weight</td>
+<td style="text-align: left;">float</td>
+<td style="text-align: left;"><code>Optional</code> <code>Default = 1.0</code><br />Relative "likelihood" for this card to be chosen over others of the same <a href="https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Card.html?h=itemconfi#cardtype">card type</a> pool.<br />Does not alter the chance for the specific card type pool to be chosen.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="cards-pill-effects">Cards &amp; Pill Effects<a class="headerlink" href="#cards-pill-effects" title="Permanent link">⚓︎</a></h2>
 <p>With REPENTOGON, the following xml attributes have changed functionality for regular cards and pills: </p>
 <table>
@@ -7650,7 +7691,7 @@
 <tr>
 <td style="text-align: left;">achievement</td>
 <td style="text-align: left;">int or string</td>
-<td style="text-align: left;">Ties the card/pill-effect to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already).</td>
+<td style="text-align: left;">Ties the card/pill-effect to be unlocked by an achievement. For modded ones, use the provided achievement name xml attribute(define one if it doesn't have one already).</td>
 </tr>
 </tbody>
 </table>
