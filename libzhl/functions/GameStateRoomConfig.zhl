@@ -4,9 +4,12 @@ struct GameStateRoomConfig {
     uint32_t _variant : 0x8;
 
     {{
-        static constexpr uint32_t UNK_ROOM_FLAG = 0x20;
-        static constexpr uint32_t MIRRORED_ROOM_FLAG = 0x40;
-        static constexpr uint32_t MERGED_ROOM_FLAG = 0x80;
+        static constexpr uint32_t UNK_ROOM_FLAG = 1 << 5;
+        static constexpr uint32_t MIRRORED_ROOM_FLAG = 1 << 6;
+        static constexpr uint32_t MERGED_ROOM_FLAG = 1 << 7;
+
+        // Custom Flags
+        static constexpr uint32_t VIRTUAL_ROOM_FLAG = 1 << 0;
 
         int GetStageID()
         {
@@ -21,6 +24,21 @@ struct GameStateRoomConfig {
         uint32_t GetFlags()
         {
             return (_compactData >> 24) & 0xFF;
+        }
+
+        void SetStageID(int stage)
+        {
+            _compactData = (_compactData & ~0xFFFF) | (stage & 0xFFFF);
+        }
+
+        void SetMode(int mode)
+        {
+            _compactData = (_compactData & ~(0xFF << 16)) | ((mode & 0xFF) << 16);
+        }
+
+        void SetFlags(uint32_t flags)
+        {
+            _compactData = (_compactData & ~(0xFF << 24)) | ((flags & 0xFF) << 24);
         }
     }}
 } : 0xc;
