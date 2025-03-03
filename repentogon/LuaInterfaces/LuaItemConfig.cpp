@@ -149,16 +149,27 @@ LUA_FUNCTION(Lua_ItemConfigCard_GetHidden) {
 	return 1;
 }
 
-void RegisterCardFunctions(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetAvailabilityCondition", Lua_ItemConfigCard_GetAvailabilityCondition },
-		{ "SetAvailabilityCondition", Lua_ItemConfigCard_SetAvailabilityCondition },
-		{ "ClearAvailabilityCondition", Lua_ItemConfigCard_ClearAvailabilityCondition },
-		{ NULL, NULL }
-	};
+template <bool Const>
+static inline void RegisterCardFields(lua_State* L) {
+	constexpr auto mt = Const ? lua::Metatables::CONST_CARD : lua::Metatables::CARD;
 
-	lua::RegisterFunctions(L, lua::Metatables::CARD, functions);
-	lua::RegisterFunctions(L, lua::Metatables::CONST_CARD, functions);
+	lua::RegisterVariableGetter(L, mt, "ModdedCardFront", Lua_ItemConfigCard_ModdedCardFront_propget);
+	lua::RegisterVariableGetter(L, mt, "Hidden", Lua_ItemConfigCard_GetHidden);
+	lua::RegisterVariableGetter(L, mt, "InitialWeight", Lua_ItemConfigCard_GetInitialWeight);
+	lua::RegisterVariableGetter(L, mt, "Weight", Lua_ItemConfigCard_GetWeight);
+
+	if constexpr (!Const)
+	{
+		lua::RegisterVariableSetter(L, mt, "Weight", Lua_ItemConfigCard_SetWeight);
+	}
+
+	lua::RegisterFunction(L, mt, "GetAvailabilityCondition", Lua_ItemConfigCard_GetAvailabilityCondition);
+
+	if constexpr (!Const)
+	{
+		lua::RegisterFunction(L, mt, "SetAvailabilityCondition", Lua_ItemConfigCard_SetAvailabilityCondition);
+		lua::RegisterFunction(L, mt, "ClearAvailabilityCondition", Lua_ItemConfigCard_ClearAvailabilityCondition);
+	}
 }
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
@@ -231,13 +242,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 
-	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "ModdedCardFront",Lua_ItemConfigCard_ModdedCardFront_propget);
-	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "Hidden", Lua_ItemConfigCard_GetHidden);
-	lua::RegisterVariableGetter(_state, lua::Metatables::CARD, "InitialWeight", Lua_ItemConfigCard_GetInitialWeight);
-	lua::RegisterVariable(_state, lua::Metatables::CARD, "Weight", Lua_ItemConfigCard_GetWeight, Lua_ItemConfigCard_SetWeight);
-	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_CARD, "Hidden", Lua_ItemConfigCard_GetHidden);
-	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_CARD, "InitialWeight", Lua_ItemConfigCard_GetInitialWeight);
-	RegisterCardFunctions(_state);
+	RegisterCardFields<false>(_state);
+	RegisterCardFields<true>(_state);
 
 	FixItemConfigPillEffects(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
