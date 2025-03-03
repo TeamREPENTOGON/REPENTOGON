@@ -1,0 +1,11 @@
+struct BackwardsStageDesc depends (RoomDescriptor, GameStateRoomConfig)
+{
+    RoomDescriptor _bossRooms[2] : 0x0;
+    GameStateRoomConfig _bossRoomConfigs[2] : 0x170;
+    RoomDescriptor _treasureRooms[2] : 0x188;
+    GameStateRoomConfig _treasureRoomConfigs[2] : 0x2f8;
+    uint32_t _bossRoomsCount : 0x310;
+    uint32_t _treasureRoomsCount : 0x314;
+    uint32_t _stageType : 0x318;
+    bool _isXL : 0x31c;
+} : 0x320;
