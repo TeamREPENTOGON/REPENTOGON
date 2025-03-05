@@ -82,7 +82,7 @@ const GridEntitySpawnPatchInfo patches[23] = {
 	"TrySpawnLadder", 0, GRID_STAIRS, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0x24, ASMPatch::Registers::EAX, 0, 0xa2, NO_COND_JMP},
 
 	{"8985????????8b85????????85c078",
-	"Room::Init #1 (random decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EBP, -0x500, ASMPatch::Registers::EAX, 0, 0xd2, NO_COND_JMP},
+	"Room::Init #1 (random decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EBP, -0x518, ASMPatch::Registers::EAX, 0, 0xd2, NO_COND_JMP},
 
 	{"8985????????85f678??81fec00100007c??68????????6a03e8????????83c4088b85",
 	"Room::Init #2 (crawlspace gravity)", 0, GRID_GRAVITY, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0xa9, NO_COND_JMP},
