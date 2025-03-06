@@ -654,6 +654,11 @@ LUA_FUNCTION(Lua_GetRGON_Changelog) {
 	return 1;
 };
 
+namespace {
+	std::string currentIconPath = "";
+	HANDLE currentIcon = NULL;
+}
+
 LUA_FUNCTION(Lua_SetIcon) {
 //	int iconsize = luaL_optinteger(L, 2, ICON_SMALL);
 	int resolution=16;
@@ -697,12 +702,22 @@ LUA_FUNCTION(Lua_SetIcon) {
 	std::string modpath = str;
 	std::string fullpath;
 	g_Manager->GetModManager()->TryRedirectPath(&fullpath,&modpath);
-	HANDLE icon=LoadImageA(nullptr, fullpath.c_str(), IMAGE_ICON, resolution, resolution, LR_LOADFROMFILE | LR_SHARED);
-	if (!icon) {
-		return luaL_error(L, "Icon has failed to load!");
-	};
-	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
-	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon);
+
+	if (currentIcon == NULL || currentIconPath.empty() || currentIconPath != fullpath) {
+		HANDLE newIcon = LoadImageA(nullptr, fullpath.c_str(), IMAGE_ICON, resolution, resolution, LR_LOADFROMFILE);
+		if (newIcon == NULL) {
+			return luaL_error(L, "Icon has failed to load!");
+		}
+		if (currentIcon != NULL) {
+			DestroyIcon((HICON)currentIcon);
+		}
+		currentIcon = newIcon;
+		currentIconPath = fullpath;
+	}
+
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)currentIcon);
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)currentIcon);
+
 	return 0;
 };
 
