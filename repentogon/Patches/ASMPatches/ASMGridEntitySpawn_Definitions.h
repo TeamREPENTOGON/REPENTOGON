@@ -88,7 +88,7 @@ const GridEntitySpawnPatchInfo patches[23] = {
 	"Room::Init #2 (crawlspace gravity)", 0, GRID_GRAVITY, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0xa9, NO_COND_JMP},
 
 	{"85d278??81fac00100007c",
-	"Room::Init #3 (random greed decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EDX, 0, ASMPatch::Registers::ESI, 0, 0xc0, NO_COND_JMP},
+	"Room::Init #3 (random greed decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 10, ASMPatch::Registers::EDX, 0, ASMPatch::Registers::ESI, 0, 0xc0, NO_COND_JMP},
 
 	{"8945??85f678??81fec0010000",
 	"TrySpawnSecretShop", 0, GRID_STAIRS, NO_VARIANT_REG, 2, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0x93, NO_COND_JMP},
