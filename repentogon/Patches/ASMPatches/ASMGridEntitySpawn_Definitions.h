@@ -59,7 +59,7 @@ const GridEntitySpawnPatchInfo patches[23] = {
 	"make_wall (crawlspace gravity)", 0, GRID_GRAVITY, NO_VARIANT_REG, 0, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0, 0x9a, NO_COND_JMP},
 
 	{"8b80????????8945??85ff",
-	"update_card_against_humanity", 0, GRID_POOP, ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::ESI, 0, 0x152, NO_COND_JMP},
+	"update_card_against_humanity", 0, GRID_POOP, ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EDX, 0, 0x152, NO_COND_JMP},
 
 	// we jmp to a place that sets al to 0 if SpawnGridEntity fails
 	{"8b75??85f678??81fec0010000",
