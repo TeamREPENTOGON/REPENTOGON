@@ -125,6 +125,9 @@ __thiscall KColor Room::GetFloorColorAt(Vector& pos, float radius<xmm3>);
 "558bec6aff68????????64a1????????5081ecc8000000a1????????33c58945??53":
 __thiscall void Room::SpawnGreedModeWave(bool unusedBool);
 
+"558bec83e4f851538b5d??56578bf9":
+__thiscall void Room::TriggerOutput(unsigned int outputGroupdIdx);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }

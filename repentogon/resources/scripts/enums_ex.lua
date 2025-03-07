@@ -2876,6 +2876,14 @@ PlayerHUDLayout = {
 	COMPACT_JACOB_AND_ESAU = 3,  -- Used for J&E if they are not P1 or if there are >3 players
 }
 
+RoomEventOutput = {
+	GROUP_0 = 0,
+	GROUP_1 = 1,
+	GROUP_2 = 2,
+	GROUP_3 = 3,
+	GROUP_ROOM_CLEAR = 9,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

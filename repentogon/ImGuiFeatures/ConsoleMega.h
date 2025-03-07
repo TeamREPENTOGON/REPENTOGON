@@ -615,6 +615,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(27, "secretexit"),
                                 std::pair<int, std::string>(28, "blue"),
                                 std::pair<int, std::string>(29, "ultrasecret"),
+                                std::pair<int, std::string>(30, "deathmatch"),
                             };
 
                             for (unsigned int i = 1; i < set->_count; ++i) {
