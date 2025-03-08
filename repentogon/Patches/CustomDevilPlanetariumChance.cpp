@@ -153,17 +153,9 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         }
     }
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
-
-    if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true))
-        chance = 66.6f; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
      
-    if (!this->GetTemporaryEffects()->_disabled) {
-        for (TemporaryEffect effect : this->GetTemporaryEffects()->_effects) {
-            int type = effect._item->type;
-            if ((type == 1 || type == 3 || type == 4) && effect._item->id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
-                chance = 66.6f;
-        }
-    }
+    if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true) || this->GetTemporaryEffects()->HasCollectibleEffect(COLLECTIBLE_GOAT_HEAD))
+        chance = 66.6f; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
 
     if (manager->FirstCollectibleOwner(COLLECTIBLE_EUCHARIST, &rng, true))
         chance = 1;
