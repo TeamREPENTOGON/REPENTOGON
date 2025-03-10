@@ -108,6 +108,7 @@ void PerformASMPatches() {
 	ASMPatchPrePlayerPocketItemSwap();
 	ASMPatchMainMenuCallback();
 	ASMPatchPreModUnloadCallbackDuringShutdown();
+	ASMPatchPostRoomRenderEntitiesCallback();
 
 	// Delirium
 	delirium::AddTransformationCallback();

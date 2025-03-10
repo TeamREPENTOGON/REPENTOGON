@@ -70,6 +70,9 @@ Additions:
 		Return false on the PRE callback to cancel adding the status effect
 	- MC_PLAYER_HEALTH_TYPE_CHANGE
 		Runs when a player's health type changes, but before automatic health conversion
+	- MC_POST_ROOM_RENDER_ENTITIES
+		Runs after all entities & grid entities in the room have been rendered, but BEFORE effects like overlays, shockwaves, and the mirror world effect are applied.
+		Rendering done on this callback is also preserved in room transition animations.
 	- MC_POST_START_AMBUSH_WAVE(boolean BossAmbush)
 		Fires at the start of challenge/boss rush room wave
 	- MC_POST_START_GREED_WAVE
@@ -91,6 +94,7 @@ Additions:
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
+* Fixed Isaac.SetIcon sometimes failing after being called too many times.
 * Players can no longer get stuck with buggy heart containers when changed to soul/bone heart health types (they get converted by default).
 * EntityPlayer:
 	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
