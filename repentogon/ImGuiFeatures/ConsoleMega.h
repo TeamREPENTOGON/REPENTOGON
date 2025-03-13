@@ -125,6 +125,8 @@ struct ConsoleMega : ImGuiWindowObject {
     bool reclaimFocus = false;
     bool focused = false;
     bool commandNeedScrollChange = false;
+    const ConsoleCommand* prev_command = nullptr;
+    std::set<AutocompleteEntry> entries;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -543,7 +545,13 @@ struct ConsoleMega : ImGuiWindowObject {
                     const ConsoleCommand* command = GetCommandByName(commandName);
                     if (command == nullptr) return 0;
 
-                    std::set<AutocompleteEntry> entries;
+                    if (command == prev_command) {
+                        goto end_of_autocompl_switchcase;   //yeeees, i knoooow, goto bad blah blah blah
+                    }
+                    else {
+                        entries.clear();    //clear the entries queue before working with it
+                        prev_command = command;
+                    };
 
                     switch (command->autocompleteType) {
                         case ENTITY: {
@@ -1187,7 +1195,7 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                     }
-
+                    end_of_autocompl_switchcase:
                     for (AutocompleteEntry entry : entries) {
                         entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
 
