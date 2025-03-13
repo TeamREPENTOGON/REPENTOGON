@@ -264,42 +264,42 @@ namespace LogUtility
 			}
 		}
 
-		static inline bool ValidateArray(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static inline bool ValidateArray(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			if (!jsonValue.IsArray())
 			{
-				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Array").c_str(), fieldName);
+				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Array").c_str(), memberName);
 				return false;
 			}
 
 			return true;
 		}
 
-		static inline bool ValidateObject(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static inline bool ValidateObject(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			if (!jsonValue.IsObject())
 			{
-				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Object").c_str(), fieldName);
+				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Object").c_str(), memberName);
 				return false;
 			}
 
 			return true;
 		}
 
-		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadBool(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -307,14 +307,14 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadInteger<T>(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -322,19 +322,19 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadNumber<T>(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, LogContext& logContext, const char* fieldName = nullptr) noexcept
+		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadString(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
@@ -346,7 +346,7 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadBoolMember(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
@@ -360,7 +360,7 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadIntegerMember<T>(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
@@ -374,7 +374,7 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadNumberMember<T>(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
@@ -386,10 +386,56 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadStringMember(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logContext, error.value().c_str(), memberName);
 			}
 
 			return result;
+		}
+
+		static inline std::optional<const rapidjson::Value*> GetArrayMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		{
+			assert(jsonValue.IsObject());
+			assert(memberName);
+
+			auto it = jsonValue.FindMember(memberName);
+			if (it == jsonValue.MemberEnd())
+			{
+				if (!optional)
+				{
+					LogInvalidArg(logContext, "member does not exist", memberName);
+				}
+				return std::nullopt;
+			}
+
+			if (!ValidateArray(it->value, logContext, memberName))
+			{
+				return std::nullopt;
+			}
+
+			return &it->value;
+		}
+
+		static inline std::optional<const rapidjson::Value*> GetObjectMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		{
+			assert(jsonValue.IsObject());
+			assert(memberName);
+
+			auto it = jsonValue.FindMember(memberName);
+			if (it == jsonValue.MemberEnd())
+			{
+				if (!optional)
+				{
+					LogInvalidArg(logContext, "member does not exist", memberName);
+				}
+				return std::nullopt;
+			}
+
+			if (!ValidateObject(it->value, logContext, memberName))
+			{
+				return std::nullopt;
+			}
+
+			return &it->value;
 		}
 	}
 }

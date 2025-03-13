@@ -451,7 +451,7 @@ namespace REPENTOGON {
 			{
 				if (!optional)
 				{
-					error = StringFormat("member does not exist", memberName);
+					error = "member does not exist";
 				}
 				return std::nullopt;
 			}
@@ -473,7 +473,7 @@ namespace REPENTOGON {
 			{
 				if (!optional)
 				{
-					error = StringFormat("member does not exist", memberName);
+					error = "member does not exist";
 				}
 				return std::nullopt;
 			}
@@ -495,7 +495,7 @@ namespace REPENTOGON {
 			{
 				if (!optional)
 				{
-					error = StringFormat("member does not exist", memberName);
+					error = "member does not exist";
 				}
 				return std::nullopt;
 			}
@@ -515,7 +515,7 @@ namespace REPENTOGON {
 			{
 				if (!optional)
 				{
-					error = StringFormat("member does not exist", memberName);
+					error = "member does not exist";
 				}
 				return std::nullopt;
 			}
