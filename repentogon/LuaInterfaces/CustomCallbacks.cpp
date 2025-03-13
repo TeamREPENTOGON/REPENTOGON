@@ -1529,17 +1529,13 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 
 			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			lua::LuaCaller(L).push(callbackid)
 				.push(this->GetPlayerType())
 				.push(this, lua::Metatables::ENTITY_PLAYER)
 				.push(healthType)
 				.push(previousHealthType)
 				.push(defaultHealthType)
 				.call(1);
-
-			if (!result && lua_isboolean(L, -1)) {
-				convertHeartContainers = (bool)lua_toboolean(L, -1);
-			}
 		}
 
 		if (healthType == 1) {  // Soul

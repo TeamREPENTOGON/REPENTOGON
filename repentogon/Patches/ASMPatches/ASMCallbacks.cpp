@@ -1363,22 +1363,23 @@ void ASMPatchMainMenuCallback() {
 // so any code running on this callback at this time is very likely to crash the game.
 // Here we trigger MC_PRE_MOD_UNLOAD earlier in the shutdown process (after the game has saved, but
 // before stuff starts getting destroyed) as well as pass a boolean indicating the ongoing shutdown.
-// Separately we've also ensured that the default MC_PRE_UNLOAD_TRIGGER (_UnloadMod) does not run
+// Separately we've also ensured that the default MC_PRE_UNLOAD trigger (_UnloadMod) does not run
 // the callback during shutdown.
 void __stdcall RunPreModUnloadCallbacks() {
-	for (const ModReference& mod : g_Mods) {
-		const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+	const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+	if (VanillaCallbackState.test(callbackid)) {
+		for (const ModReference& mod : g_Mods) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.pushluaref(mod._luaTableRef->_ref)
-			.push(true)
-			.call(1);
+			lua::LuaCaller(L).push(callbackid)
+				.pushnil()
+				.pushluaref(mod._luaTableRef->_ref)
+				.push(true)
+				.call(1);
+		}
 	}
 }
 void ASMPatchPreModUnloadCallbackDuringShutdown() {
@@ -1388,9 +1389,40 @@ void ASMPatchPreModUnloadCallbackDuringShutdown() {
 
 	printf("[REPENTOGON] Patching earlier MC_PRE_MOD_UNLOAD in Isaac::Shutdown at %p\n", addr);
 
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddInternalCall(RunPreModUnloadCallbacks)
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(RunPreModUnloadCallbacks)
+		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the push we overwrote
 		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall RunPostRoomRenderEntitiesCallback() {
+	const int callbackid = 1044;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);
+	}
+}
+void ASMPatchPostRoomRenderEntitiesCallback() {
+	SigScan scanner("33f68d87????????39b0????????76??8bbd????????6690");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching MC_POST_ROOM_RENDER_ENTITIES into Room::Render at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(RunPostRoomRenderEntitiesCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x8);
 	sASMPatcher.PatchAt(addr, &patch);
 }

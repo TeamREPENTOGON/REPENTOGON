@@ -41,7 +41,7 @@ namespace RoomConfigUtility
 	// Returns a pair of Width and Height of the shape
 	const std::pair<const int, const int>& GetShapeDimensions(size_t shape) noexcept;
 
-	void FinalizeRoom(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept;
+	void PostRoomInsert(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept;
 	void FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomSpawn& roomSpawn, RoomEntry& spawnEntry) noexcept;
 	bool RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType) noexcept;
 
