@@ -24,6 +24,7 @@ Additions:
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
+	- GetRandomWisp
 * EntityConfigEntity:
 	- GetDevolvedEntity
 * Level:
