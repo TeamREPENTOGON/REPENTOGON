@@ -1,0 +1,9 @@
+"558bec51568bf157807e??0075":
+__thiscall void* KAGE_Filesys_SaveManager::OpenSaveFileForReading(int param_1);
+
+
+struct KAGE_Filesys_SaveManager  {
+};
+
+"b9(????????)57e8????????8bd8":
+reference KAGE_Filesys_SaveManager g_SaveManager;

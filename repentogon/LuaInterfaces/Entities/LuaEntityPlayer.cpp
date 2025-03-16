@@ -2120,28 +2120,42 @@ int ValidatePool(lua_State* L, unsigned int pos)
 	return ret;
 }
 
+static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pickup, int pool, RNG* rng) noexcept
+{
+	rng = rng ? rng : &pickup._dropRNG;
+	player.SalvageCollectible(pickup.GetPosition(), pickup._subtype, rng->Next(), pool);
+
+	pickup.TryRemoveCollectible();
+	g_Game->Spawn(ENTITY_EFFECT, 15, *pickup.GetPosition() + Vector(0, 10), Vector(0, 0), nullptr, 0, Random(), 0);
+	pickup._timeout = 2;
+}
+
+static void salvage_collectible(Entity_Player& player, int subType, int pool, Vector* position, RNG* rng) noexcept
+{
+	position = position ? position : player.GetPosition();
+	rng = rng ? rng : &player._dropRNG;
+
+	player.SalvageCollectible(position, subType, rng->Next(), pool);
+}
+
 LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* pos = nullptr;
 	RNG* rng = nullptr;
-	unsigned int subtype, seed;
+	unsigned int subtype;
 	int pool = -1;
 
 	// pickup override
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-		subtype = pickup->_subtype;
-		pos = pickup->GetPosition();
+
 		if (lua_type(L, 3) == LUA_TUSERDATA) {
 			rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 		}
-		else
-		{
-			rng = &pickup->_dropRNG;
-		}
+
 		pool = ValidatePool(L, 4);
 
-		pickup->Remove();
+		salvage_collectible_entity(*player, *pickup, pool, rng);
 	}
 	// CollectibleType override
 	else {
@@ -2149,22 +2163,15 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 		if (lua_type(L, 3) == LUA_TUSERDATA) {
 			pos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 		}
-		else
-		{
-			pos = player->GetPosition();
-		}
+
 		if (lua_type(L, 4) == LUA_TUSERDATA) {
 			rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
 		}
-		else
-		{
-			rng = &player->_dropRNG;
-		}
-		pool = ValidatePool(L, 5);
-	}
-	seed = rng->Next();
 
-	player->SalvageCollectible(pos, subtype, seed, pool);
+		pool = ValidatePool(L, 5);
+
+		salvage_collectible(*player, subtype, pool, pos, rng);
+	}
 	return 0;
 }
 
