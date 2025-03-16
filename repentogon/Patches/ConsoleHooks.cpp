@@ -6,6 +6,7 @@
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
 #include "Anm2Extras.h"
+#include "SaveImport.h"
 
 #include <filesystem>
 #include <iostream>
@@ -83,6 +84,8 @@ void PrintToConsole(Console* console, std::string* out) {
 
 }
 
+SaveImportHelper saveimport;
+
 HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Player* player) -> void) {
 
     // Normally, the console explicitly expects a player to run any command, and will actively try to find one (and will crash otherwise)
@@ -144,6 +147,31 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         REPENTOGONFileMap::map_init = false;
         REPENTOGONFileMap::GenerateMap();
         return super(in,out,player);
+    };
+
+    if ((in == "forceimport") || (in.rfind("forceimport ", 0) == 0)) {
+        std::vector<std::string> cmdlets = ParseCommand(in, 2);
+        unsigned int slot = 0;
+        if (cmdlets.size() > 1) {
+            slot = stoi(cmdlets[1]);
+        };
+        SaveImportHelper::FORCEIMPORT_ERRORCODE code=saveimport.ForceImport(slot);
+        if (code == SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_MENU) {
+            this->PrintError("Not on the save select screen!");
+            return;
+        };
+        if (code == SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_SLOT) {
+            this->PrintError("Invalid save slot id!");
+            return;
+        };
+        std::string output = "Performed forced import of save file "+to_string(slot)+" from previous DLC\n";  //todo: actual dlc name
+        res.append(output);
+        if (out == nullptr)
+            this->Print(res.c_str(), Console::Color::WHITE, 0x96U);
+        else
+            out->append(res);
+        g_MenuManager->GetMenuSave()->reload_graphics_i_guess();
+        return;
     };
 
     if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {

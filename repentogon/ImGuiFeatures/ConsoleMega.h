@@ -242,6 +242,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("stage", LANG.CONSOLE_STAGE_DESC, LANG.CONSOLE_STAGE_HELP, false, STAGE);
         RegisterCommand("time", LANG.CONSOLE_TIME_DESC, LANG.CONSOLE_TIME_HELP, false);
         RegisterCommand("testbosspool", LANG.CONSOLE_TESTBOSSPOOL_DESC, LANG.CONSOLE_TESTBOSSPOOL_HELP, false);
+        RegisterCommand("forceimport", LANG.CONSOLE_FORCEIMPORT_DESC, LANG.CONSOLE_FORCEIMPORT_HELP, true);
     }
 
     const ConsoleCommand* GetCommandByName(std::string& commandName) {
