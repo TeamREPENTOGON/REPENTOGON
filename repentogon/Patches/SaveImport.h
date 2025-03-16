@@ -5,7 +5,8 @@ public:
     enum FORCEIMPORT_ERRORCODE {
         SUCCESS,
         BAD_SLOT,
-        BAD_MENU
+        BAD_MENU,
+        STEAMCLOUD_UNSUPPORTED
     };
 
     FORCEIMPORT_ERRORCODE ForceImport(unsigned int slot_id);

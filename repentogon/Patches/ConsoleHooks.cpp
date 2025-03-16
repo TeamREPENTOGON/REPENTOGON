@@ -156,12 +156,20 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             slot = stoi(cmdlets[1]);
         };
         SaveImportHelper::FORCEIMPORT_ERRORCODE code=saveimport.ForceImport(slot);
-        if (code == SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_MENU) {
-            this->PrintError("Not on the save select screen!");
-            return;
+        const char* error_text = "";
+        switch (code) {
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_MENU:
+            error_text = "Not on the save select screen!";
+            break;
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_SLOT:
+            error_text = "Invalid save slot id!";
+            break;
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::STEAMCLOUD_UNSUPPORTED:
+            error_text = "Steam Cloud saves are not *yet* supported, sorry...";
+            break;
         };
-        if (code == SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_SLOT) {
-            this->PrintError("Invalid save slot id!");
+        if (code != SaveImportHelper::FORCEIMPORT_ERRORCODE::SUCCESS) {
+            this->PrintError(error_text);
             return;
         };
         std::string output = "Performed forced import of save file "+to_string(slot)+" from previous DLC\n";  //todo: actual dlc name
