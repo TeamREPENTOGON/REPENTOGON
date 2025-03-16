@@ -1472,10 +1472,10 @@ bool RunPreItemTextDisplayCallbackUTF16(wchar_t* title, wchar_t* subtitle, bool 
 
 // Only called for the stage name popup, and cards/pills/etc in co-op (as of Rep+ v1.9.7.10).
 // Seems to be some inlining involved in other cases.
-HOOK_METHOD(HUD_Message, Show, (char* title, char* subtitle, bool autoDisappear, bool isCurseDisplay) -> void) {
-	const bool isSticky = !autoDisappear;  // What was once the "isSticky" boolean now has the opposite meaning in REP+
+HOOK_METHOD(HUD_Message, Show, (const char* title, const char* subtitle, bool autoHide, bool isCurseDisplay) -> void) {
+	const bool isSticky = !autoHide;  // What was once the "isSticky" boolean now has the opposite meaning in REP+
 	if (RunPreItemTextDisplayCallback(title, subtitle, isSticky, isCurseDisplay)) {
-		super(title, subtitle, autoDisappear, isCurseDisplay);
+		super(title, subtitle, autoHide, isCurseDisplay);
 	}
 }
 
@@ -1486,7 +1486,7 @@ HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF8, (char* title, char* subtitle, bo
 	}
 }
 
-// Called from HUD::ShowItemText outside co-op, and some other thing in Room::Init.
+// Called from HUD::ShowItemText outside co-op, and in Room::Init (for miniboss names?).
 HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF16, (wchar_t* title, wchar_t* subtitle, bool unused1, bool unused2) -> void) {
 	if (RunPreItemTextDisplayCallbackUTF16(title, subtitle, false, false)) {
 		super(title, subtitle, unused1, unused2);
