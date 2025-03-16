@@ -109,6 +109,7 @@ void PerformASMPatches() {
 	ASMPatchMainMenuCallback();
 	ASMPatchPreModUnloadCallbackDuringShutdown();
 	ASMPatchPostRoomRenderEntitiesCallback();
+	ASMPatchPreItemTextDisplayCallback();
 
 	// Delirium
 	delirium::AddTransformationCallback();

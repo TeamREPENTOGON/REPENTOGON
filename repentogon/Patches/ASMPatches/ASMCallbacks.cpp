@@ -1434,3 +1434,98 @@ void ASMPatchPostRoomRenderEntitiesCallback() {
 		.AddRelativeJump((char*)addr + 0x8);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+// MC_PRE_ITEM_TEXT_DISPLAY
+bool RunPreItemTextDisplayCallback(const char* title, const char* subtitle, bool isSticky, bool isCurseDisplay) {
+	const int callbackId = 1484;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(title)
+			.push(subtitle)
+			.push(isSticky)
+			.push(isCurseDisplay)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1)) {
+			return (bool)lua_toboolean(L, -1);
+		}
+	}
+	return true;
+}
+bool RunPreItemTextDisplayCallbackUTF16(wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) {
+	int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &title[0], wcslen(title), NULL, 0, NULL, NULL);
+	std::string strTitle(sizeNeededTitle, 0);
+	WideCharToMultiByte(CP_UTF8, 0, title, wcslen(title), &strTitle[0], sizeNeededTitle, NULL, NULL);
+
+	int sizeNeededSubtitle = WideCharToMultiByte(CP_UTF8, 0, &subtitle[0], wcslen(subtitle), NULL, 0, NULL, NULL);
+	std::string strSubtitle(sizeNeededSubtitle, 0);
+	WideCharToMultiByte(CP_UTF8, 0, subtitle, wcslen(subtitle), &strSubtitle[0], sizeNeededSubtitle, NULL, NULL);
+
+	return RunPreItemTextDisplayCallback(strTitle.c_str(), strSubtitle.c_str(), isSticky, isCurseDisplay);
+}
+
+// Only called for the stage name popup, and cards/pills/etc in co-op (as of Rep+ v1.9.7.10).
+// Seems to be some inlining involved in other cases.
+HOOK_METHOD(HUD_Message, Show, (char* title, char* subtitle, bool autoDisappear, bool isCurseDisplay) -> void) {
+	const bool isSticky = !autoDisappear;  // What was once the "isSticky" boolean now has the opposite meaning in REP+
+	if (RunPreItemTextDisplayCallback(title, subtitle, isSticky, isCurseDisplay)) {
+		super(title, subtitle, autoDisappear, isCurseDisplay);
+	}
+}
+
+// Called for custom lua text, transformations, and cards/pills outside of co-op.
+HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF8, (char* title, char* subtitle, bool unused, bool isCurseDisplay) -> void) {
+	if (RunPreItemTextDisplayCallback(title, subtitle, false, isCurseDisplay)) {
+		super(title, subtitle, unused, isCurseDisplay);
+	}
+}
+
+// Called from HUD::ShowItemText outside co-op, and some other thing in Room::Init.
+HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF16, (wchar_t* title, wchar_t* subtitle, bool unused1, bool unused2) -> void) {
+	if (RunPreItemTextDisplayCallbackUTF16(title, subtitle, false, false)) {
+		super(title, subtitle, unused1, unused2);
+	}
+}
+
+// Patch to trigger the callback for HUD::ShowItemText in co-op, as it seems to use some inlined code.
+bool __stdcall PreItemTextDisplayTrampoline(HUD_Message* message, wchar_t* title, wchar_t* subtitle) {
+	if (RunPreItemTextDisplayCallbackUTF16(title, subtitle, false, false)) {
+		message->text_out();  // Function call overridden by the patch.
+		return true;
+	}
+	return false;
+}
+void ASMPatchPreItemTextDisplayCallback() {
+	SigScan patchScanner("e8????????6a00ffb5????????8bcfe8????????85f6");
+	patchScanner.Scan();
+	void* patchAddr = patchScanner.GetAddress();
+
+	SigScan cancelScanner("ffb5????????e8????????83c40456");
+	if (!cancelScanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature for MC_PRE_ITEM_TEXT_DISPLAY patch's cancel jump\n");
+		return;
+	}
+	void* cancelAddr = cancelScanner.GetAddress();
+
+	printf("[REPENTOGON] Patching MC_PRE_ITEM_TEXT_DISPLAY into HUD::ShowItemText at %p\n", patchAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // (subtitle)
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr + 0x7, 0x6))  // PUSH dword ptr [EBP + ?] (title)
+		.Push(ASMPatch::Registers::ECX)  // HUD_Message
+		.AddInternalCall(PreItemTextDisplayTrampoline)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, cancelAddr)  // Jump for false (cancel the text) 
+		.AddRelativeJump((char*)patchAddr + 0x5);  // Jump for true (continue normally)
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+

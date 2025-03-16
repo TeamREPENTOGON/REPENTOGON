@@ -13,15 +13,21 @@ __thiscall void HUD::LoadGraphics();
 "558bec8b55??33c0391174??4081c1e006000083f80872??5dc20400":
 __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 
+// Will use possibly-inlined code to show mini text on the player's hud in co-op (as of Rep+ v1.9.7.10), otherwise calls ShowStackedItemTextCustomUTF16.
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0000000a1????????33c58945??5657508d45??64a3????????898d":
-__thiscall void HUD::ShowItemText(Entity_Player * param_1, ItemConfig_Item * param_2);
+__thiscall void HUD::ShowItemText(Entity_Player* player, ItemConfig_Item* item);
 
-/*"558bec83e4f883ec1c807d??00":
-__thiscall void HUD::ShowItemTextCustom(wchar_t * title, wchar_t * subtitle, bool isSticky, bool isCurseDisplay);
-*/
+// Will call HUD_Message::Show to show mini text on the player's hud in co-op, otherwise calls ShowStackedItemTextCustomUTF8.
+"558bec51568b35????????578bf98d8e":
+__thiscall void HUD::ShowItemTextCustomUTF8(Entity_Player* player, char* title, char* subtitle);
 
+// Shows on the "stacked" messages only. The booleans are currently unused and ignored (as of Rep+ v1.9.7.10).
+"558bec5153565733c08d91????????90803a0074??4081c2f401000083f80672??5f5e5b595dc210008b75":
+__thiscall void HUD::ShowStackedItemTextCustomUTF16(wchar_t* title, wchar_t* subtitle, bool unused1, bool unused2);
+
+// Shows on the "stacked" messages only. The first boolean is currently unused and ignored (as of Rep+ v1.9.7.10).
 "558bec5153565733c08d91????????90803a0074??4081c2f401000083f80672??5f5e5b595dc2100069c0f4010000":
-__thiscall void HUD::ShowItemTextCustomUTF8(char * title, char * subtitle, bool isSticky, bool isCurseDisplay);
+__thiscall void HUD::ShowStackedItemTextCustomUTF8(char* title, char* subtitle, bool unused, bool isCurseDisplay);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
