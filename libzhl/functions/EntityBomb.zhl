@@ -51,7 +51,7 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	float _rocketSpeed : 0x424;
 	float _scale : 0x42c;
 	bool _prismTouched : 0x454;
-	bool _loadCostumes : 0x45a;
+	bool _loadCostumes : 0x45b;
 	ANM2 _bombCostumesSprites[5] : 0x45c;
 	std_vector_uint _hitList : 0x9c0;
 } : 0x9d0;

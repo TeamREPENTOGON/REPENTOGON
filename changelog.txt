@@ -24,6 +24,7 @@ Additions:
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
+	- GetRandomWisp
 * EntityConfigEntity:
 	- GetDevolvedEntity
 * Level:
@@ -105,6 +106,8 @@ Fixes:
 	- TryPlaceRoom(AtDoor) no longer automatically unlocks the door to the new room if placed adjacent to the player's current room.
 * RoomTransition:
 	- Fixed StartBossIntro crash on call if room index for room transition is invalid.
+* ModCallbacks:
+	- Fixed returning false on MC_PRE_PLAYER_ADD_CARD/PILL not preventing the card/pill being added as intended.
 /newline/
 Modified:
 * EntityFamiliar:

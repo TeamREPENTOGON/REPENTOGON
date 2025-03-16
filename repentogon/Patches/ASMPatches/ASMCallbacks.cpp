@@ -364,11 +364,19 @@ bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
 }
 
 void ASMPatchPrePlayerUseBomb() {
-	SigScan scanner("6a0068050200008bcf");
+	// Address of the conditional jump before the player places a bomb.
+	SigScan scanner("0f8f????????6a0068050200008bcfe8");
 	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* jumpAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", addr);
+	// Get the address we should jump to if we want to cancel the player's bomb placement.
+	// Pull the jump offset from the existing conditional jump.
+	void* cancelAddr = (char*)jumpAddr + 0x6 + *(int*)ByteBuffer().AddAny((char*)jumpAddr + 0x2, 4).GetData();
+
+	// Address that we want to patch at, immediately after the existing conditional jump.
+	void* patchAddr = (char*)jumpAddr + 0x6;
+
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", patchAddr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -377,10 +385,10 @@ void ASMPatchPrePlayerUseBomb() {
 		.AddInternalCall(ProcessPrePlayerUseBombCallback)  // Run MC_PRE_PLAYER_USE_BOMB
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x7C5) // Jump for false (negate the bomb placement)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the 7 bytes we overwrote
-		.AddRelativeJump((char*)addr + 0x7);  // Jump for true (allow the bomb placement)
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, cancelAddr) // Jump for false (cancel the bomb placement)
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x7))  // Restore the 7 bytes we overwrote
+		.AddRelativeJump((char*)patchAddr + 0x7);  // Jump for true (allow the bomb placement)
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 // MC_POST_PLAYER_USE_BOMB

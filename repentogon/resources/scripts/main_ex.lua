@@ -1335,7 +1335,7 @@ local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ..
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
 		if type(ret) == "boolean" and ret == false then
-			return
+			return false
 		elseif type(ret) == "number" and ret > 0 then
 			pillCard = ret
 		end

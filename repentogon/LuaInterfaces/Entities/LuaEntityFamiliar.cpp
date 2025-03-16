@@ -201,6 +201,12 @@ LUA_FUNCTION(Lua_SetLilDelirium) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetRandomWisp) {
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, "RNG");
+	lua_pushinteger(L, Entity_Familiar::GetRandomWisp(*rng));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -228,8 +234,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMultiplier", Lua_FamiliarGetMultiplier },
 		{ "IsLilDelirium", Lua_FamiliarIsLilDelirium },
 		{ "SetLilDelirium", Lua_SetLilDelirium },
+		{ "GetRandomWisp", Lua_GetRandomWisp },
 		{ NULL, NULL }
 	};
 
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_FAMILIAR, functions);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetRandomWisp", Lua_GetRandomWisp);
 }
