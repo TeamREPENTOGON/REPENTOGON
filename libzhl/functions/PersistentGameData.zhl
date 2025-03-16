@@ -31,6 +31,9 @@ __thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
 "558bec515356578bf9837f??00":
 __thiscall void PersistentGameData::Save();
 
+"558bec83e4f88b15????????83ec088b82":
+__thiscall void PersistentGameData::SaveToSteamCloud();
+
 "558bec8079??008b45":
 __thiscall void PersistentGameData::AddChallenge(int challengeID);
 

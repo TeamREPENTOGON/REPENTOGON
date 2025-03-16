@@ -1,9 +1,17 @@
 #include "SaveImport.h"
 #include "HookSystem.h"
 bool SaveImportHelper::IsForcedImportHijack = false;
+SaveImportHelper saveimport;
+
+bool IsSteamHijack = false;
 SaveImportHelper::FORCEIMPORT_ERRORCODE SaveImportHelper::ForceImport(unsigned int slot_id) {
     if (g_Manager->GetOptions()->_enableSteamCloud) {
-        return FORCEIMPORT_ERRORCODE::STEAMCLOUD_UNSUPPORTED;
+  //      return FORCEIMPORT_ERRORCODE::STEAMCLOUD_UNSUPPORTED;
+        g_Manager->SetSaveSlot(0);
+        IsSteamHijack = true;
+        g_Manager->SetSaveSlot(slot_id);
+        g_MenuManager->GetMenuCharacter()->Reset();
+        return FORCEIMPORT_ERRORCODE::SUCCESS;
     };
     if (Isaac::IsInGame() || (g_MenuManager==nullptr) || (g_MenuManager->_selectedMenuID != 2)) {
         return FORCEIMPORT_ERRORCODE::BAD_MENU;
@@ -28,4 +36,14 @@ HOOK_METHOD(KAGE_Filesys_SaveManager, OpenSaveFileForReading, (int param_1)->voi
         return 0x0;
     };
     return super(param_1);
+};
+
+HOOK_METHOD(SteamCloudFile, ReadPGD, (void)->void*) {
+    if (IsSteamHijack) {
+        IsSteamHijack = false;
+        SteamCloudFile::ReadABPGD();
+        g_Manager->GetPersistentGameData()->SaveToSteamCloud();
+        return (char*)this + 0xf8c; //idk?
+    };
+    return super();
 };

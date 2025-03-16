@@ -84,8 +84,6 @@ void PrintToConsole(Console* console, std::string* out) {
 
 }
 
-SaveImportHelper saveimport;
-
 HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Player* player) -> void) {
 
     // Normally, the console explicitly expects a player to run any command, and will actively try to find one (and will crash otherwise)

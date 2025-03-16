@@ -12,3 +12,4 @@ public:
     FORCEIMPORT_ERRORCODE ForceImport(unsigned int slot_id);
     static bool IsForcedImportHijack;
 };
+extern SaveImportHelper saveimport;
