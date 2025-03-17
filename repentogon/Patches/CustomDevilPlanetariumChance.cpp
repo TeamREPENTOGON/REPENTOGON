@@ -75,7 +75,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_REVELATIONS, &rng, true))
             chance += 0.175f;
 
-        if ((flags & 1) != 0) //Beggar killed, haven't identified the right enum yet
+        if (((flags >> STATE_BUM_KILLED) & 1) != 0)
             chance += 0.35f;
 
         if (desc && desc->ListIndex == g_Game->GetLastBossRoomListIdx() && room->GetRedHeartDamage()) {
@@ -85,14 +85,14 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         else
             chance += 0.35f;
 
-        if ((flags & 4) != 0) { // Took red heart damage (excluding sac rooms and such)
+        if (((flags >> STATE_REDHEART_DAMAGED) & 1) != 0) {
             if (hasActOfContrition)
                 chance += 0.4f;
         }
         else
             chance += 0.99f;
 
-        if ((flags & 0x40) != 0) // Shopkeeper crushkilled
+        if (((flags >> STATE_SHOPKEEPER_KILLED_LVL) & 1) != 0)
             chance += 0.1f;
 
         if (manager->AnyoneHasTrinket(TRINKET_NUMBER_MAGNET))
