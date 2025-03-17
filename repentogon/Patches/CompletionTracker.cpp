@@ -914,8 +914,17 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 		array marks = GetMarksForPlayer(playertype, anm,true);
 		if (!hidemarks) {
-			cmpl->CharacterId = playertype;
-			cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
+			// Vanilla conditions to hide the completion widget for a character in the pause menu only
+			// Basically, hide if that character has no completion marks, or if achievements are disabled (challenge, easter egg seed)
+			if (!std::all_of(marks.begin(), marks.end(), [](int i) {return i == 0;}) &&
+				!g_Game->_seedEffects._isCustomRun &&
+				!g_Game->_seedEffects.AchievementUnlocksDisallowed() &&
+				this->mainsprite._animState._animData != 0x0 &&
+				mainsprite._animState.GetNullFrameByID(0) != 0x0)
+			{
+				cmpl->CharacterId = playertype;
+				cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
+			}
 		}
 		// PauseScreen class doesn't seem to handle this in REP+? Uncertain
 		//if (this->notinfocus){
