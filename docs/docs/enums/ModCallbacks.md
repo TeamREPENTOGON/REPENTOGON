@@ -1176,7 +1176,7 @@ Same as MC_INPUT_ACTION, but only works in the main menu.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](InputHook.md), <br>[ButtonAction](ButtonAction.md))|[InputHook](InputHook.md) | boolean or float |
+|1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html), <br>[ButtonAction](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html))|[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html) | boolean or float |
 
 ### MC_POST_MODS_LOADED {: .copyable }
 Called after all Lua scripts have been loaded. Ideal for running code that is expected to run after all mods are initialized, but without the need for load order idiocy!
@@ -1300,7 +1300,7 @@ Runs right after a dark red champion regenerates out of the goo form.
 |1223 |MC_POST_NPC_DARK_RED_CHAMPION_REGEN {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_EVALUATE_CUSTOM_CACHE {: .copyable }
-Called when a custom cache is evaluated (see [items.xml](xml/items.md)). Return a number to modify the value. Modified values are passed onto the next callback.
+Called when a custom cache is evaluated (see [items.xml](../xml/items.md)). Return a number to modify the value. Modified values are passed onto the next callback.
 
 The initial value is always 0. The most recent result can be obtained at any time using `player:GetCustomCacheValue("mycustomcache")`
 
@@ -1313,7 +1313,7 @@ Called when a familiar's cached multiplier needs to be re-evaluated. Return a nu
 
 Effects such as BFFs or Hive Mind have already been applied at this point.
 
-Note that the result of this callback is cached, so the callback only runs when needed. It will be triggered if an item with the `familiarmultiplier` "customcache" is added/removed (see [items.xml](xml/items.md)) or if `familiar:InvalidateCachedMultiplier()` is called.
+Note that the result of this callback is cached, so the callback only runs when needed. It will be triggered if an item with the `familiarmultiplier` "customcache" is added/removed (see [items.xml](../xml/items.md)) or if `familiar:InvalidateCachedMultiplier()` is called.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -2012,7 +2012,7 @@ Return `false` to cancel it."
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType]([https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
+|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
 
 ### MC_POST_PLAYER_REVIVE {: .copyable }
 Called after the player revives, assuming it wasn't cancelled.

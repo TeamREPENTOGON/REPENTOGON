@@ -7,7 +7,7 @@ tags:
 ???+ info
     You can get this class by using the following functions:
 
-    * [Room:GetLRoomTileDesc()](Room.md#getlroomTiledesc)
+    * [Room:GetLRoomTileDesc()](Room.md#getlroomtiledesc)
 
     ???+ example "Example Code"
         ```lua

@@ -1,7 +1,7 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b80c010100":
 __thiscall void Cutscene::Init(char *xmlresourcespath);
 
-"558bec83ec205356578b7d??8bf1":
+"558bec83ec20538b5d??568bf18975":
 __thiscall void Cutscene::Show(int cutsceneid);
 
 "568bf168000000ff":
@@ -23,4 +23,5 @@ struct Cutscene depends (Vector, CutsceneEntry) {
     int _state : 0x0;
     CutsceneEntry _cutscenes[27] : 0x4;
     int _queuedCutscene : 0x808;
-} : 0x81c;
+    bool _startCutscene : 0x840;
+} : 0x850;

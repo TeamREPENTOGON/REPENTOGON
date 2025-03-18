@@ -1,4 +1,4 @@
-"558bec81ec68010000":
+"558bec81ec70010000":
 static cleanup void GridEntity_Rock::SpawnDrops(const Vector& pos<ecx>, int GridEntityType<edx>, int GridEntityVariant, unsigned int Seed, bool Unk, int BackdropType );
 
 "558bec83e4f881eccc00000053":

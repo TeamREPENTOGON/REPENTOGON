@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_GridEntityDoor_GetExtraSprite)
 {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	ANM2* anm2 = &gridEnt->_extraSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -12,34 +12,34 @@ LUA_FUNCTION(Lua_GridEntityDoor_GetExtraSprite)
 }
 
 LUA_FUNCTION(Lua_GridEntityDoor_GetPreviousState) {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	lua_pushinteger(L, gridEnt->_previousState);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GridEntityDoor_SetPreviousState) {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	gridEnt->_previousState = (unsigned int)luaL_checkinteger(L, 2);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GridEntityDoor_GetPreviousVarinat) {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	lua_pushinteger(L, gridEnt->_previousVariant);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GridEntityDoor_SetPreviousVariant) {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	gridEnt->_previousVariant = (unsigned int)luaL_checkinteger(L, 2);
 	
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GridEntityDoor_PlayAnimation) {
-	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	gridEnt->play_animation();
 	return 0;
 }

@@ -1,13 +1,13 @@
 "558bec6aff68????????64a1????????5083ec74535657a1????????33c5508d45??64a3????????8bf9": 
 __thiscall void Entity_Pickup::Morph(int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers);
 
-"558bec6aff68????????64a1????????5083ec5c535657a1????????33c5508d45??64a3????????8bd9895d":
+"558bec6aff68????????64a1????????5083ec54535657a1????????33c5508d45??64a3????????8bd9":
 __thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Player* player, int spentMoney);
 
 "558bec83e4c083ec3453568bf15780be????????000f84????????80be????????000f84????????83be????????00":
 __thiscall void Entity_Pickup::Render(Vector *offset);
 
-"558bec83e4f883ec145356578bf9837f??64":
+"558bec83e4f883ec145356578bf9837f??640f85????????8b5d":
 __thiscall void Entity_Pickup::SetAlternatePedestal(int pedestalType);
 
 "568bf18b46??83f864":
@@ -59,9 +59,9 @@ __thiscall void Entity_Pickup::TriggerTheresOptionsPickup();
 static cleanup bool Entity_Pickup::IsChest(uint32_t variant<ecx>);
 
 struct Entity_Pickup depends (ANM2) : public Entity { {{
-	inline bool IsBlind() { return *(bool*)((char*)this + 0x526); }
-	inline int* GetDropDelay() { return (int*)((char*)this + 0x54c); }
-	inline int* GetVarData() { return (int*)((char*)this + 0x598); }
+	inline bool IsBlind() { return this->_isForceBlind; }
+	inline int* GetDropDelay() { return &this->_dropDelay; }
+	inline int* GetVarData() { return &this->_varData; }
 }} 
 
 	__vtable {
@@ -73,7 +73,7 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 		skip; // PreUpdate
 		
 		override
-		"558bec6aff68????????64a1????????5081ec00020000a1????????33c58945??5657508d45??64a3????????8bf9":
+		"558bec6aff68????????64a1????????5081ecf8010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b87":
 		void Update();
 		
 		skip; // Interpolate
@@ -104,10 +104,13 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 	};
 
 	ANM2 _priceANM2 : 0x408;
+	bool _isForceBlind : 0x526;
 	int _timeout : 0x538;
-	Entity_Pickup * _megaChestCollectible[2]: 0x590;
-	unsigned int _cycleCollectibleList[8] : 0x59c;
-	Entity_Effect* _pickupGhost : 0x58c;
-	unsigned int _cycleCollectibleCount : 0x5bc;
+	int _dropDelay : 0x54c;
+	Entity_Effect* _pickupGhost : 0x588;
+	Entity_Pickup * _megaChestCollectible[2]: 0x58c;
+	int _varData : 0x594;
+	unsigned int _cycleCollectibleList[8] : 0x598;
+	unsigned int _cycleCollectibleCount : 0x5b8;
 	
 } : 0x6e8;

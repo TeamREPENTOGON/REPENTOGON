@@ -5,7 +5,7 @@
 #include "../ImGuiFeatures/ConsoleMega.h"
 
 /*LUA_FUNCTION(Lua_GetConsole) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Console** ud = (Console**)lua_newuserdata(L, sizeof(Console*));
 	*ud = game->GetConsole();
 	luaL_setmetatable(L, lua::metatables::ConsoleMT);

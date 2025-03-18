@@ -30,7 +30,7 @@ ___
 #### table GetOffset ( ) {: .copyable aria-label='Functions' }
 Returns a table corresponding to the color's current Offset values: `{R, G, B}`
 
-While the [Color](Color.md) class does already contain [.RO](Color.md#ro), [.GO](Color.md#go) and [.BO](Color.md#bo) variables for this, GetOffset() has been measured to be ~30% faster in cases where access to all three values is necessary and is recommended in that scenario as a result. Performance is near identical when accessing two variables, and worse when accessing one. In cases where only one or two offset values are needed, stick with the variables.
+While the [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) class does already contain [.RO](https://wofsauge.github.io/IsaacDocs/rep/Color.html#ro), [.GO](https://wofsauge.github.io/IsaacDocs/rep/Color.html#go) and [.BO](https://wofsauge.github.io/IsaacDocs/rep/Color.html#bo) variables for this, GetOffset() has been measured to be ~30% faster in cases where access to all three values is necessary and is recommended in that scenario as a result. Performance is near identical when accessing two variables, and worse when accessing one. In cases where only one or two offset values are needed, stick with the variables.
 
 ___
 ### GetTint () {: aria-label='Functions' }

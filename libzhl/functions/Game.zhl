@@ -68,7 +68,7 @@ __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Pla
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec20020000":
 __thiscall void Game::Render();
 
-"558bec8b0d????????8b55??81c1705b0200":
+"558bec8b0d????????8b55??81c1745b0200":
 __thiscall void Game::ToggleDebugFlag(unsigned int flag);
 
 "558bec8b55??b801000000568bf18bca83e11fc1ea05d3e08584":
@@ -83,7 +83,7 @@ static void Game::DevolveEnemy(Entity* ent, int* unk);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ece0000000a1????????33c58945??5657508d45??64a3????????8b43":
 __thiscall void Game::NetStart(void *unk, int challenge, Seeds seed, unsigned int difficulty, GameState *state);
 
-"558bec83ec3c538b1d":
+"558bec83ec3c5356578b3d":
 static void Game::ProcessInput();
 
 "558bec6aff68????????64a1????????5081eca4000000a1????????33c58945??535657508d45??64a3????????c745??00000000":
@@ -91,6 +91,9 @@ __thiscall void Game::Start(int playertype,int challenge,Seeds seeds,unsigned in
 
 "558bec6aff68????????64a1????????5083ec48a1????????33c58945??535657508d45??64a3????????8b1d":
 __thiscall void Game::StartDailyChallenge(DailyChallenge * daily);
+
+"558bec6aff68????????64a1????????5083ec54a1????????33c58945??535657508d45??64a3????????8bf9":
+__thiscall void Game::NextVictoryLap();
 
 "558bec51807d??000f28fb":
 __thiscall void Game::SetColorModifier(ColorModState* color, bool lerp, float rate<xmm3>);
@@ -195,6 +198,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline ScoreSheet* GetScoreSheet() { return &this->_scoreSheet; }
 	
 	inline int GetDifficulty() {return this->_difficulty; }
+
+	inline int GetMode() { return this->IsGreedMode() ? 1 : 0; }
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return &this->_proceduralItemManager; }
     
@@ -213,12 +218,10 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline GenericPrompt* GetGenericPrompt() { return &this->_genericPrompt; }
 
 	inline GameOver* GetGameOver() { return &this->_gameOver; }
-	
-	
-	// Wack
-	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x66c08); }
-	inline ColorModState* GetTargetColorModifier() { return (ColorModState*)((char*)this + 0x66c20); }
-	inline ColorModState* GetLerpColorModifier() { return (ColorModState*)((char*)this + 0x66c38); }
+
+	inline ColorModState* GetCurrentColorModifier() { return &this->_currentColorModifier; }
+	inline ColorModState* GetTargetColorModifier() { return &this->_targetColorModifier; }
+	inline ColorModState* GetLerpColorModifier() { return &this->_lerpColorModifier; }
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
@@ -253,24 +256,29 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	StageTransition _stageTransition : 0x1ba78;
 	PlayerManager _playerManager : 0x1baa8;
 	Seeds _seedEffects : 0x1bb84;
-	Console _console : 0x682bc;
 	ItemOverlay _itemOverlay : 0x1c034;
 	GameOver _gameOver : 0x1d4c8;
 	Leaderboard _leaderboard : 0x1d5f8;
 	HUD _hud : 0x1da64;
 	PauseScreen _pauseScreen : 0x236f4;
-	Minimap _minimap : 0x254f8;
-	int _frameCount : 0x25b24;
-	Vector _screenShakeOffset : 0x25b38;
+	Minimap _minimap : 0x254fc;
+	int _frameCount : 0x25b28;
+	Vector _screenShakeOffset : 0x25b3c;
+	bool  _triggerWindowResize : 0x25b64;
+	unsigned int _debugFlags : 0x25b74;
+	uint64_t _gameStateFlags : 0x25b78;
+	int _lastDevilRoomStage : 0x25b84;
 	int _treasureRoomsVisited : 0x25b88;
 	int _planetariumsVisited : 0x25b8c;
+	int _donationModGreed : 0x25b9c;
+	int _donationModAngel : 0x25ba0;
+	int _shopVisits : 0x25ba4;
+	EntityFactory* _entityFactory : 0x25bb0;
+	unsigned int _challenge : 0x25bb4;
 	bool _isRerun : 0x25bb8;
 	bool _isDebug : 0x25bb9;
 	Ambush _ambush : 0x25bf8;
-	unsigned int _challenge : 0x25bb4;
 	DailyChallenge _dailyChallenge: 0x25c60;
-	int _shopVisits : 0x25ba4;
-	EntityFactory* _entityFactory : 0x25bb0;
 	ScoreSheet _scoreSheet : 0x25d14;
 	GenericPrompt _genericPrompt : 0x25e60;
 	int _lastLevelWithoutHalfHp : 0x260a8;
@@ -279,19 +287,17 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	bool _isStoringGlowingHourglassState : 0x260d2;
 	bool _isRestoringGlowingHourglassState : 0x260d3;
 	GlowingHourglassState _glowingHourglassStates[2] : 0x260d4;
-	int _currentGlowingHourglassSlot : 0x66bfc;
-	bool _shouldLerpColorModState : 0x66c04;
-	ProceduralItemManager _proceduralItemManager : 0x66ca4;
-	vector_ErasedEntities _erasedEntities : 0x66c98; 
-	bool  _triggerWindowResize : 0x25b60;
-	unsigned int _debugFlags : 0x25b70;
-	unsigned int _gameStateFlags : 0x25b78;
-	int _lastDevilRoomStage : 0x25b84;
-	int _donationModGreed : 0x25b9c;
-	int _donationModAngel : 0x25ba0;
-	DebugRenderer _debugRenderer : 0x66c7c;
-	float _lightningIntensity : 0x66c84;
-	float _dizzyIntensity : 0x66c88;
-	float _dizzyTargetIntensity : 0x66c8c;
-	float _dizzyIntensityChangeSpeed : 0x66c90;
-} : 0x683d0;
+	int _currentGlowingHourglassSlot : 0x66c0c;
+	bool _shouldLerpColorModState : 0x66c14;
+	ColorModState _currentColorModifier : 0x66c18;
+	ColorModState _targetColorModifier : 0x66c30;
+	ColorModState _lerpColorModifier : 0x66c48;
+	DebugRenderer _debugRenderer : 0x66c8c;
+	float _lightningIntensity : 0x66c94;
+	float _dizzyIntensity : 0x66c98;
+	float _dizzyTargetIntensity : 0x66c9c;
+	float _dizzyIntensityChangeSpeed : 0x66ca0;
+	vector_ErasedEntities _erasedEntities : 0x66ca8; 
+	ProceduralItemManager _proceduralItemManager : 0x66cb4;
+	Console _console : 0x682cc;
+} : 0x683e0;

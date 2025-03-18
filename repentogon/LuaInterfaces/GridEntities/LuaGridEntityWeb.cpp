@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_GridToGridWeb) {
-	GridEntity* grid = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* grid = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	if (grid->GetDesc()->_type == 10) { //TODO: enum
 		GridEntity_Web* newGrid = lua::UserdataToData<GridEntity_Web*>(lua_touserdata(L, 1));
 

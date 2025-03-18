@@ -176,7 +176,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			sLogger->Info("dsound: Update checking done\n");
 		}
 
-		if (version != "1.9.7.8.J181") {
+		if (version != "1.9.7.10.J212") {
 			sLogger->Info("This Version of Isaac is not compatible!!\n");
 			return TRUE;
 		}

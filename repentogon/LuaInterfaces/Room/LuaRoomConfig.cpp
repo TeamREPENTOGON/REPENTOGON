@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GameGetRoomConfig) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomConfig** ud = (RoomConfig**)lua_newuserdata(L, sizeof(RoomConfig*));
 	*ud = game->GetRoomConfig();
 	luaL_setmetatable(L, lua::metatables::RoomConfigMT);

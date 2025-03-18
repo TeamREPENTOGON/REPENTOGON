@@ -32,7 +32,7 @@ ModCallbacks.MC_PRE_ENTITY_THROW = 1040
 ModCallbacks.MC_POST_ENTITY_THROW = 1041
 ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS = 1042
 ModCallbacks.MC_PRE_ROOM_EXIT = 1043
-
+ModCallbacks.MC_POST_ROOM_RENDER_ENTITIES = 1044
 ModCallbacks.MC_POST_RENDER_PLAYER_HEAD = 1045
 ModCallbacks.MC_POST_RENDER_PLAYER_BODY = 1046
 ModCallbacks.MC_COMPLETION_MARK_GET = 1047
@@ -346,6 +346,8 @@ ModCallbacks.MC_PRE_ITEM_TEXT_DISPLAY = 1484
 ModCallbacks.MC_GET_STATUS_EFFECT_TARGET = 1485
 ModCallbacks.MC_PRE_ENTITY_SET_COLOR = 1486
 ModCallbacks.MC_POST_ENTITY_SET_COLOR = 1487
+ModCallbacks.MC_POST_START_AMBUSH_WAVE = 1488
+ModCallbacks.MC_POST_START_GREED_WAVE = 1489
 
 AddHealthType = {
 	NONE	=	0,
@@ -2107,7 +2109,9 @@ EventCounter = {
 	ONLINE_SIN_JANITOR = 518,
 	ONLINE_SIN_LUSTFUL = 519,
 	ONLINE_SIN_SLOTHFUL = 520,
-	NUM_EVENT_COUNTERS = 521,
+	DAILYS_BEST_STREAK = 521,
+	DAILYS_NEGATIVE_STREAK = 522, NEGATIVE_DAILYS_STREAK_COUNTER = 522,
+	NUM_EVENT_COUNTERS = 523,
 }
 
 WispSubType = {
@@ -2863,6 +2867,21 @@ WaterClipFlag = {
 	DISABLE_RENDER_REFLECTION = 1 << 5,  -- Entity only, GridEntities don't get reflections
 	IGNORE_WATER_RENDERING = 1 << 6,  -- Entity only, overrides other flags and renders the entity above water only, no reflection
 	FORCE_WATER_RIPPLE_WHEN_MOVING = 1 << 7,  -- Entity only, only "grounded" entities will spawn water ripples without this flag
+}
+
+PlayerHUDLayout = {
+	NORMAL = 0,
+	JACOB_AND_ESAU = 1,
+	COMPACT = 2,  -- Used for co-op players, and for P1 if there are >2 players
+	COMPACT_JACOB_AND_ESAU = 3,  -- Used for J&E if they are not P1 or if there are >3 players
+}
+
+RoomEventOutput = {
+	GROUP_0 = 0,
+	GROUP_1 = 1,
+	GROUP_2 = 2,
+	GROUP_3 = 3,
+	GROUP_ROOM_CLEAR = 9,
 }
 
 --deprecated enums

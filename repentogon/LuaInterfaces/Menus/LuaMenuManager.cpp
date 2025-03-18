@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_WorldToMenuPosition)
 			return luaL_error(L, "Expected two parameters(MenuId,WorldPosition) got %d\n", n);
 		}
 		eMainMenuType menuid = (eMainMenuType)luaL_checkinteger(L, 1);
-		Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 		Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
 		Vector posbase = *ref + Vector(39, 15);
 		ref = &posbase;
@@ -143,7 +143,7 @@ LUA_FUNCTION(Lua_MenuSetColorModifier)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;
-	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* pColor = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	bool lerp = lua::luaL_optboolean(L, 2, true);
 	float rate = (float)luaL_optnumber(L, 3, 0.015);
 
@@ -167,7 +167,7 @@ LUA_FUNCTION(Lua_MenuSetViewPosition)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_ViewPosition = *lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	menuManager->_ViewPosition = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }

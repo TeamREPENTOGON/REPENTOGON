@@ -1,8 +1,101 @@
-struct RoomSpawn
+struct RoomSpawn depends (RoomEntry)
 {
     uint16_t X : 0x0; // 0x0
     uint16_t Y : 0x2; // 0x2
     RoomEntry* Entries : 0x4;
     uint16_t CountEntries : 0x8; // 0x8
     float SumWeights : 0xC; // 0xC
+
+    {{
+    private:
+        void copy(const RoomSpawn& other) noexcept
+        {
+            assert(this != &other);
+
+            X = other.X;
+            Y = other.Y;
+            Entries = nullptr;
+            CountEntries = other.CountEntries;
+            SumWeights = other.SumWeights;
+
+            if (CountEntries > 0)
+            {
+                Entries = new RoomEntry[CountEntries];
+
+                for (size_t i = 0; i < CountEntries; ++i)
+                {
+                    Entries[i] = other.Entries[i];
+                }
+            }
+        }
+
+        void move(RoomSpawn&& other) noexcept
+        {
+            assert(this != &other);
+
+            X = other.X;
+            Y = other.Y;
+            Entries = other.Entries;
+            CountEntries = other.CountEntries;
+            SumWeights = other.SumWeights;
+
+            other.Entries = nullptr;
+            other.CountEntries = 0;
+        }
+
+        void free()
+        {
+            if (CountEntries > 0)
+            {
+                delete[] Entries;
+            }
+        }
+
+    public:
+        RoomSpawn()
+        {
+            X = 0;
+            Y = 0;
+            Entries = nullptr;
+            CountEntries = 0;
+            SumWeights = 0.0f;
+        }
+
+        RoomSpawn(const RoomSpawn& other) noexcept
+        {
+            this->copy(other);
+        }
+
+        RoomSpawn(RoomSpawn&& other) noexcept
+        {
+            this->move(std::move(other));
+        }
+
+        RoomSpawn& operator=(const RoomSpawn& other) noexcept
+        {
+            if (this != &other)
+            {
+                this->free();
+                this->copy(other);
+            }
+
+            return *this;
+        }
+
+        RoomSpawn& operator=(RoomSpawn&& other) noexcept
+        {
+            if (this != &other)
+            {
+                this->free();
+                this->move(std::move(other));
+            }
+
+            return *this;
+        }
+
+        ~RoomSpawn()
+        {
+            this->free();
+        }
+    }}
 } : 0x10; // 0x10 (absolutely sure)

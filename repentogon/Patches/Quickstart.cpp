@@ -43,7 +43,7 @@ HOOK_STATIC(Manager, Update, (bool unk)->void, _stdcall) {
 		g_Manager->_startingFromRerun = false;
 		g_Manager->GetDailyChallenge()->_id = 0;
 		g_Manager->_starting = true;
-		g_Manager->_startCutscene = false;
+		g_Manager->_cutsceneManager._startCutscene = false;
 	};
 	super(unk);
 };

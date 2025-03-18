@@ -9,17 +9,149 @@ struct RoomConfig_Room depends (RoomSpawn)
     int32_t Difficulty : 0x2c; // 0x2C
     float InitialWeight : 0x30; // 0x30
     float Weight : 0x34; // 0x34
-    int32_t Doors : 0x38; // 0x38
-    int32_t unk7 : 0x3c; // 0x3C
+    uint32_t Doors : 0x38; // 0x38
+    DoorsBitSet QuestDoors : 0x3c; // 0x3C
     RoomSpawn* Spawns : 0x40; // 0x40
     uint16_t SpawnCount : 0x44; // 0x44
     int8_t Width : 0x46; // 0x46
     int8_t Height : 0x47; // 0x47
     int32_t Shape : 0x48; // 0x48
-    int32_t unkFlags : 0x4c; // 0x4C
-    int32_t unk10 : 0x50; // 0x50
-    int32_t unk11 : 0x54; // 0x54
-    int32_t originalVariant : 0x58; // 0x58
+    RoomConfigFlags Flags : 0x4c; // 0x4C
+    RoomConfig_Room* MergedData[2] : 0x50; // 0x50
+    uint32_t originalVariant : 0x58; // 0x58
+
+    {{
+    private:
+        void copy(const RoomConfig_Room& other) noexcept
+        {
+            StageId = other.StageId;
+            Mode = other.Mode;
+            Type = other.Type;
+            Variant = other.Variant;
+            Subtype = other.Subtype;
+            Name = other.Name;
+            Difficulty = other.Difficulty;
+            InitialWeight = other.InitialWeight;
+            Weight = other.Weight;
+            Doors = other.Doors;
+            QuestDoors = other.QuestDoors;
+            SpawnCount = other.SpawnCount;
+            Width = other.Width;
+            Height = other.Height;
+            Shape = other.Shape;
+            Flags = other.Flags;
+            MergedData[0] = other.MergedData[0];
+            MergedData[1] = other.MergedData[1];
+            originalVariant = other.originalVariant;
+
+            Spawns = nullptr;
+            if (SpawnCount > 0)
+            {
+                Spawns = new RoomSpawn[SpawnCount];
+
+                for (size_t i = 0; i < SpawnCount; ++i)
+                {
+                    Spawns[i] = other.Spawns[i];
+                }
+            }
+        }
+
+        void move(RoomConfig_Room&& other) noexcept
+        {
+            StageId = other.StageId;
+            Mode = other.Mode;
+            Type = other.Type;
+            Variant = other.Variant;
+            Subtype = other.Subtype;
+            Name = std::move(other.Name);
+            Difficulty = other.Difficulty;
+            InitialWeight = other.InitialWeight;
+            Weight = other.Weight;
+            Doors = other.Doors;
+            QuestDoors = other.QuestDoors;
+            Spawns = other.Spawns;
+            SpawnCount = other.SpawnCount;
+            Width = other.Width;
+            Height = other.Height;
+            Shape = other.Shape;
+            Flags = other.Flags;
+            MergedData[0] = other.MergedData[0];
+            MergedData[1] = other.MergedData[1];
+            originalVariant = other.originalVariant;
+
+            other.Spawns = nullptr;
+            other.SpawnCount = 0;
+        }
+
+        void free()
+        {
+            if (SpawnCount > 0)
+            {
+                delete[] Spawns;
+            }
+        }
+
+    public:
+        RoomConfig_Room()
+        {
+            StageId = 0;
+            Mode = 0;
+            Type = 0;
+            Variant = 0;
+            Subtype = 0;
+            Difficulty = 0;
+            InitialWeight = 0.0f;
+            Weight = 0.0f;
+            Doors = 0;
+            QuestDoors = 0;
+            Spawns = nullptr;
+            SpawnCount = 0;
+            Width = 13;
+            Height = 7;
+            Shape = 1;
+            Flags = 0;
+            MergedData[0] = nullptr;
+            MergedData[1] = nullptr;
+            originalVariant = 0;
+        }
+
+        RoomConfig_Room(const RoomConfig_Room& other) noexcept
+        {
+            this->copy(other);
+        }
+
+        RoomConfig_Room(RoomConfig_Room&& other) noexcept
+        {
+            this->move(std::move(other));
+        }
+
+        RoomConfig_Room& operator=(const RoomConfig_Room& other) noexcept
+        {
+            if (this != &other)
+            {
+                this->free();
+                this->copy(other);
+            }
+
+            return *this;
+        }
+
+        RoomConfig_Room& operator=(RoomConfig_Room&& other) noexcept
+        {
+            if (this != &other)
+            {
+                this->free();
+                this->move(std::move(other));
+            }
+
+            return *this;
+        }
+
+        ~RoomConfig_Room()
+        {
+            this->free();
+        }
+    }}
 
     {{
     bool LIBZHL_API IsValidGridIndex(int index, bool includeWalls = true) const;

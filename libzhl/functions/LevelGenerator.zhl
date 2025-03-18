@@ -36,7 +36,7 @@ static cleanup XY* LevelGenerator::get_door_source_position(XY* ret<ecx>, XY* po
 static cleanup XY* LevelGenerator::get_door_target_position(XY* ret<ecx>, XY* position<edx>, int shape, int doorSlot, bool unk);
 
 "558bec833ccd????????01":
-static cleanup bool LevelGenerator::has_shape_slot(int shape, int doorSlot, bool unk);
+static cleanup bool LevelGenerator::has_shape_slot(int shape<ecx>, int doorSlot<edx>, bool ignoreThinShapesRestrictions);
 
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{

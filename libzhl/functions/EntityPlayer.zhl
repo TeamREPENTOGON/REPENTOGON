@@ -8,7 +8,7 @@ __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *pa
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec085657a1????????33c5508d45??64a3????????8bf9":
 __thiscall void Entity_Player::constructor();
 
-"558bec83e4f8a1????????83ec0c83b8????????02":
+"558bec83e4f8a1????????83ec1483b8????????02":
 __thiscall void Entity_Player::update_red_hearts();
 
 "558beca1????????535657":
@@ -73,10 +73,10 @@ __thiscall Entity_Player* Entity_Player::InitTwin(int playerType); //replace wit
 "558bec83e4f881ec540100008bd1":
 __thiscall Entity* Entity_Player::ThrowHeldEntity(Vector* Velocity);
 
-"558bec6aff68????????64a1????????5081ece4000000a1????????33c58945??535657508d45??64a3????????8bd9":
+"558bec6aff68????????64a1????????5081ece8000000a1????????33c58945??53":
 __thiscall void Entity_Player::InitPostLevelInitStats();
 
-"558bec83e4f881ec3c010000":
+"558bec83e4f081ec5801000056":
 __thiscall void Entity_Player::TriggerRoomExit(bool unk);
 
 "558bec83e4f883ec7ca1????????33c4894424??538bd9":
@@ -100,7 +100,7 @@ __thiscall int Entity_Player::GetExtraLives();
 "558bec568bf1e8????????8b45??8986":
 __thiscall void Entity_Player::SetItemState(CollectibleType collectible);
 
-"558bec6aff68????????64a1????????5081ecac040000":
+"558bec6aff68????????64a1????????5081ecd4040000":
 __thiscall void Entity_Player::UseCard(int cardType, unsigned int useFlag);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec78010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b0d":
@@ -188,7 +188,7 @@ __thiscall int Entity_Player::AddActiveCharge(int charge, int slot, bool flashHU
 "558bec83e4f85153568b75??8bd95785f6":
 __thiscall bool Entity_Player::FullCharge(int slot, bool force);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec78a1????????33c58945??5657508d45??64a3????????8bf9897d??8b4b":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec68a1????????33c58945??5657508d45??64a3????????8bf9897d??8b4b":
 __thiscall void Entity_Player::DischargeActiveItem(unsigned int slot, bool unk);
 
 "558bec83e4f883ec0c5356578b7d??8bd1":
@@ -227,7 +227,7 @@ __thiscall void Entity_Player::IncrementPlayerFormCounter(int ePlayerForm, int n
 "558bec83ec34a1????????33c58945??5356576a20":
 __thiscall void Entity_Player::TriggerNewRoom_TemporaryEffects();
 
-"558bec6aff68????????64a1????????5081ecc800000053":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd00000005657a1????????33c5508d45??64a3????????8bf9897d??8a43":
 __thiscall void Entity_Player::TriggerNewStage(bool unk);
 
 "558bec83e4f851568bf18b86????????0386":
@@ -248,10 +248,10 @@ __thiscall int Entity_Player::GetCollectibleNum(int collectibleID, bool OnlyCoun
 "558bec83e4f8a1????????83ec1c83b8????????02":
 __thiscall void Entity_Player::TriggerCollectibleRemoved(unsigned int collectibleID);
 
-"558bec5153568bf157837e??000f85":
+"558bec83e4f85153568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool firstTimePickingUp);
 
-"558bec83ec1053568bf157":
+"558bec83e4f883ec1453568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketRemoved(unsigned int trinketID);
 
 "558bec83e4f883ec0c5356576a0068????????8bf1":
@@ -292,7 +292,7 @@ __thiscall void Entity_Player::ShuffleCostumes(int seed);
 "558bec83ec2ca1????????33c58945??538b5d":
 __thiscall void Entity_Player::RemoveCollectible(unsigned int CollectibleType, bool IgnoreModifiers, unsigned int ActiveSlot, bool RemoveFromPlayerForm);
 
-"558bec6aff68????????64a1????????50b8fc180000":
+"558bec6aff68????????64a1????????50b8f0170000":
 __thiscall void Entity_Player::UpdateEffects();
 
 "558bec6aff68????????64a1????????5083ec6ca1????????33c58945??5657508d45??64a3????????8bf1807d??00":
@@ -316,7 +316,7 @@ __thiscall void Entity_Player::AddNullCostume(int costumeid);
 "53568bf15783be????????0074":
 __thiscall void Entity_Player::ClearDeadEyeCharge();
 
-"558bec83e4c081ecb4000000a1????????33c4898424????????5356578bf9897c24??8b8f":
+"558bec83e4f081ecc8000000a1????????33c4898424????????56":
 __thiscall bool Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 
 "558bec83e4f081ec480100008b55":
@@ -548,7 +548,7 @@ __thiscall void Entity_Player::TriggerEffectRemoved(ItemConfig_Item* item, int u
 "558bec515356576a00":
 __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 
-"558bec83e4f881ecb4000000a1????????33c4898424????????53":
+"558bec83e4f881eca4000000a1????????33c4898424????????5356":
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
@@ -616,7 +616,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 		skip; // PreUpdate
 		
         override
-        "558bec6aff68????????64a1????????5081ecf8010000":
+        "558bec6aff68????????64a1????????5081ecf8010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????33c0":
         void Update();
 		
 		skip; // Interpolate
@@ -717,6 +717,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	std_vector_int _voidedCollectibles : 0x173c;
 	uint32_t _actionHoldDrop : 0x17a8;
 	int _playerForms[15] : 0x17c4;
+	bool _canShoot : 0x1809;
 	ColorMod _footprintColor1 : 0x180c;
 	ColorMod _footprintColor2 : 0x1838;
 	int _ponyCharge : 0x186c;
@@ -740,6 +741,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	float _d8FireDelayModifier : 0x192c;
 	int _goldenHearts : 0x1930;
 	int _babySkin : 0x1ad0;
+	uint32_t _urnSouls: 0x1cf0;
 	//std_vector_int _wispStorage : 0x1cfc;
 	vector_EntitySaveState _movingBoxContents : 0x1d60;
 	int _boneHearts : 0x1d6c;
@@ -752,20 +754,19 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _redStewBonusDuration : 0x1e50;
-	float _rockBottomMoveSpeed : 0x1e88, _rockBottomMaxFireDelay : 0x1e8c, _rockBottomDamage : 0x1e90, _rockBottomTearRange : 0x1e94, _rockBottomShotSpeed : 0x1e98, _rockBottomLuck : 0x1e9c;
-	int _maggySwingCooldown : 0x1ebc;
-	char _bagOfCraftingContent[8]: 0x1f14;
-	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f1c;
-	char _poopSpellQueue[6] : 0x1f24;
-	int _eveSumptoriumCharge : 0x1f48;
-	std_map_int_int _itemWispsList : 0x1f50;
-	int _keepersSackBonus : 0x1eb4;
-	ConsumableData _consumablesBackup : 0x2008;
-	uint8_t _wildCardItemType : 0x2058;
-	int _wildCardItem : 0x205c;
-	bool _isCoopGhost : 0x2070;
-	bool _canShoot : 0x1809;
-	uint32_t _urnSouls: 0x1cf0;
+	float _rockBottomMoveSpeed : 0x1e8c, _rockBottomMaxFireDelay : 0x1e90, _rockBottomDamage : 0x1e94, _rockBottomTearRange : 0x1e98, _rockBottomShotSpeed : 0x1e9c, _rockBottomLuck : 0x1ea0;
+	int _keepersSackBonus : 0x1eb8;
+	int _maggySwingCooldown : 0x1ec0;
+	char _bagOfCraftingContent[8]: 0x1f18;
+	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f20;
+	char _poopSpellQueue[6] : 0x1f28;
+	int _eveSumptoriumCharge : 0x1f4c;
+	std_map_int_int _itemWispsList : 0x1f54;
+	ConsumableData _consumablesBackup : 0x200c;
+	uint8_t _wildCardItemType : 0x205c;
+	int _wildCardItem : 0x2060;
+	bool _isCoopGhost : 0x2074;
+	PlayerHUD* _playerHUD : 0x20a0;
 } : 0x2e98;
 
 "68(????????)68????????f30f59c16a00":

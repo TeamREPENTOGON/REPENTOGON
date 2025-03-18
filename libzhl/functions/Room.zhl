@@ -61,7 +61,7 @@ __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 "558bec8b55??568bf185d2":
 __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec20080000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec28080000":
 __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 
 "558bec578bf933d2":
@@ -103,7 +103,7 @@ __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDesc);
 
 //changed in rep+
-/*"558bec83e4f85153568bf18b0d":
+/*"558bec83e4f85153568bf18b0d????????5783b9????????027c":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 */
 
@@ -119,8 +119,14 @@ __thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
 "558bec8b41??8b55":
 __thiscall LRoomTileDesc * Room::GetLRoomTileDesc(LRoomTileDesc * buffer);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec6056":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec605657a1????????33c5508d45??64a3????????f30f115d":
 __thiscall KColor Room::GetFloorColorAt(Vector& pos, float radius<xmm3>);
+
+"558bec6aff68????????64a1????????5081ecc8000000a1????????33c58945??53":
+__thiscall void Room::SpawnGreedModeWave(bool unusedBool);
+
+"558bec83e4f851538b5d??56578bf9":
+__thiscall void Room::TriggerOutput(unsigned int outputGroupdIdx);
 
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
 {{

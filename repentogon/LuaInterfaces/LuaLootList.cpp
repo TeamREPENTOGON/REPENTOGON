@@ -10,7 +10,7 @@ LUA_FUNCTION(Lua_LootListConstructor) {
 }
 
 LUA_FUNCTION(Lua_LootListPushEntry) {
-	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootList = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	const unsigned int type = (unsigned int)luaL_checkinteger(L, 2);
 	const unsigned int variant = (unsigned int)luaL_checkinteger(L, 3);
 	const unsigned int subType = (unsigned int)luaL_checkinteger(L, 4);
@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 	RNG* rng = nullptr;
 
 	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		rng = lua::GetUserdata<RNG*>(L, 6, lua::Metatables::RNG, "RNG");
+		rng = lua::GetLuabridgeUserdata<RNG*>(L, 6, lua::Metatables::RNG, "RNG");
 	}
 
 	lootList->push_back({ type, variant, subType, seed, rng });
@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 }
 
 LUA_FUNCTION(Lua_PickupGetLootList) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
 	LootList loot = pickup->GetLootList(shouldAdvance, nullptr);
@@ -39,7 +39,7 @@ LUA_FUNCTION(Lua_PickupGetLootList) {
 }
 
 LUA_FUNCTION(Lua_NPCGetFireplaceLoot) {
-	auto* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	auto* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
 	LootList loot = npc->fireplace_get_loot(shouldAdvance);
@@ -51,7 +51,7 @@ LUA_FUNCTION(Lua_NPCGetFireplaceLoot) {
 }
 
 LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
-	auto* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	auto* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
 	LootList loot = npc->shopkeeper_get_loot(shouldAdvance);
@@ -64,7 +64,7 @@ LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
 
 LUA_FUNCTION(Lua_LootListGetEntries)
 {
-	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootList = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	auto& entries = *lootList; // Assuming lootList is a std::deque<LootListEntry>
 
 	lua_newtable(L);
@@ -81,7 +81,7 @@ LUA_FUNCTION(Lua_LootListGetEntries)
 }
 
 /*LUA_FUNCTION(Lua_LootList__gc) {
-	LootList* lootlist = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* lootlist = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	lootlist->~LootList();
 
 	return 0;

@@ -9,7 +9,7 @@ LUA_FUNCTION(Lua_GenericPromptConstructor) {
 }
 
 LUA_FUNCTION(Lua_GenericPromptInitialize) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	const bool smallPrompt = lua::luaL_optboolean(L, 2, false);
 
 	genericPrompt->Initialize(smallPrompt);
@@ -17,38 +17,38 @@ LUA_FUNCTION(Lua_GenericPromptInitialize) {
 }
 
 LUA_FUNCTION(Lua_GenericPromptShow) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	genericPrompt->Show(false);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GenericPromptIsActive) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	lua_pushboolean(L, genericPrompt->IsActive());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GenericPromptSetImageToVictoryRun) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	genericPrompt->SetImageToVictoryRun(nullptr);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GenericPromptUpdate) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	bool processInput = lua_toboolean(L, 2);
 	genericPrompt->Update(processInput);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GenericPromptRender) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	genericPrompt->Render();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GenericPromptSetText) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	const char* param_1 = luaL_optstring(L, 2, "");
 	const char* param_2 = luaL_optstring(L, 3, "");
 	const char* param_3 = luaL_optstring(L, 4, "");
@@ -59,25 +59,25 @@ LUA_FUNCTION(Lua_GenericPromptSetText) {
 }
 
 LUA_FUNCTION(Lua_GenericPromptDisappear) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	genericPrompt->Disappear(&genericPrompt->_anm2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GenericPromptGetSprite) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	lua::luabridge::UserdataPtr::push(L, &genericPrompt->_anm2, lua::Metatables::SPRITE);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GenericPromptGetCurrentSelection) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	lua_pushinteger(L, genericPrompt->_currentSelection);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GenericPromptGetSubmittedSelection) {
-	auto* genericPrompt = lua::GetUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
+	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
 	lua_pushinteger(L, genericPrompt->_submittedSelection);
 	return 1;
 }

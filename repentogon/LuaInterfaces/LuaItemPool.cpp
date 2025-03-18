@@ -35,9 +35,40 @@ static inline bool isCollectibleBlacklisted(ItemPool* itemPool, uint32_t collect
 	return blacklistedCollectibles[collectibleID];
 }
 
+LUA_FUNCTION(Lua_AddRoomBlacklist)
+{
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	unsigned int item = (unsigned int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		return 0;
+	}
+
+	g_Game->_itemPool.AddRoomBlacklist(item);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetTrinket)
+{
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	bool dontAdvanceRNG = lua_isnoneornil(L, 2) ? false : lua::luaL_checkboolean(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushinteger(L, TRINKET_NULL);
+		return 1;
+	}
+
+	lua_pushinteger(L, itemPool->GetTrinket(dontAdvanceRNG));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
 	int specialChance = (int)luaL_checkinteger(L, 3);
 	int runeChance = (int)luaL_checkinteger(L, 4);
@@ -50,7 +81,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 	bool decrease = lua::luaL_optboolean(L, 3, false);
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 4, Isaac::genrand_int32());
@@ -106,8 +137,8 @@ inline int GetChaosPoolEx(ItemPool* itemPool, RNG* rng, std::unordered_map<int, 
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetRandomPool) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 	bool advancedSearch = lua::luaL_optboolean(L, 3, false);
 
 	EnsureValidSeed(rng->_seed);
@@ -141,13 +172,13 @@ LUA_FUNCTION(Lua_ItemPoolGetRandomPool) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 	bool decrease = lua::luaL_optboolean(L, 3, false);
 
 	RNG* rng = nullptr;
 	if (!Lua_NotPassedOrNil(L, 4)) {
-		rng = lua::GetUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+		rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
 	}
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 5, 0);
 
@@ -213,7 +244,7 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	if (!lua_istable(L, 2))
 	{
 		return luaL_error(L, "Expected a table as second argument");
@@ -253,9 +284,9 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
 
@@ -283,7 +314,7 @@ LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	uint32_t seed = (uint32_t)luaL_optinteger(L, 2, Isaac::genrand_int32());
 	
 	EnsureValidSeed(seed);
@@ -292,9 +323,9 @@ LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolTryRosaryMorph) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
 
@@ -315,8 +346,15 @@ LUA_FUNCTION(Lua_ItemPoolTryRosaryMorph) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int collectibleID = (int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
@@ -353,7 +391,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 
 	lua_newtable(L);
@@ -366,7 +404,7 @@ LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetRoomBlacklistedCollectibles) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	std::vector<bool>& blacklistedCollectibles = *itemPool->GetRoomBlacklistedCollectibles();
 
 	lua_newtable(L);
@@ -379,7 +417,7 @@ LUA_FUNCTION(Lua_ItemPoolGetRoomBlacklistedCollectibles) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int itemPoolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(itemPoolType);
@@ -430,7 +468,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolSetLastPool) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
@@ -445,8 +483,15 @@ LUA_FUNCTION(Lua_ItemPoolSetLastPool) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const unsigned int trinketID = (int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	std::vector<ItemConfig_Item*>& trinketList = *g_Manager->GetItemConfig()->GetTrinkets();
 	std::vector<TrinketPoolItem>& poolTrinketItems = itemPool->_trinketPoolItems;
@@ -463,9 +508,16 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 
 // this is a rewrite of an existing function with error checking so invalid ids don't crash
 LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int id = (int)luaL_checkinteger(L, 2);
 	bool unkFlag = lua::luaL_checkboolean(L, 3);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		lua_pushboolean(L, false);
+		return 1;
+	}
 
 	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
 	if (item == nullptr) {
@@ -484,14 +536,14 @@ LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	lua_pushinteger(L, itemPool->_numAvailableTrinkets);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemPoolUnidentifyPill) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int pillColor = ((int)luaL_checkinteger(L, 2)) & 0x7ff;
 	if (pillColor >= 0 && pillColor <= 14) {
 		itemPool->_idendifiedPillEffects[pillColor] = false;
@@ -501,7 +553,7 @@ LUA_FUNCTION(Lua_ItemPoolUnidentifyPill) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int pillEffect = (int)luaL_checkinteger(L, 2);
 
 	for (int i = 0; i < 15; i++) {
@@ -516,7 +568,7 @@ LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolAddBibleUpgrade) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int add = (int)luaL_checkinteger(L, 2);
 	const int poolType = (int)luaL_checkinteger(L, 3);
 
@@ -530,7 +582,7 @@ LUA_FUNCTION(Lua_ItemPoolAddBibleUpgrade) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int poolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
@@ -545,8 +597,14 @@ LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int collectible = (int)luaL_checkinteger(L, 2);
+
+	if (!ItemPoolManager::IsItemPoolInitialized())
+	{
+		// Stack TraceBack
+		return 0;
+	}
 
 	if (collectible < COLLECTIBLE_NULL || collectible >= (int)g_Manager->GetItemConfig()->GetCollectibles()->size()) {
 		return luaL_argerror(L, 2, "Invalid Collectible");
@@ -558,7 +616,7 @@ LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolGetNumItemPools) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 
 	lua_pushinteger(L, ItemPoolManager::GetNumItemPools());
 
@@ -608,7 +666,7 @@ static std::vector<ItemPoolManager::PoolItemDesc> create_lua_pool_items(lua_Stat
 }
 
 LUA_FUNCTION(Lua_ItemPoolAddCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
@@ -638,7 +696,7 @@ LUA_FUNCTION(Lua_ItemPoolAddCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolAddTemporaryCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
@@ -673,7 +731,7 @@ LUA_FUNCTION(Lua_ItemPoolAddTemporaryCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemPoolRemoveTemporaryCollectible) {
-	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
@@ -715,6 +773,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "GetCollectible", Lua_ItemPoolGetCollectibleEx },
 		{ "AddBibleUpgrade", Lua_ItemPoolAddBibleUpgrade },
+		{ "AddRoomBlacklist", Lua_AddRoomBlacklist },
+		{ "GetTrinket", Lua_GetTrinket },
 
 		{ "GetCardEx", Lua_ItemPoolGetCardEx },
 		{ "GetRandomPool", Lua_ItemPoolGetRandomPool },

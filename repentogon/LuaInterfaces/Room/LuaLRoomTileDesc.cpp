@@ -13,7 +13,7 @@ void Lua_XYToInt2(lua_State* L, XY* xy) {
 }
 
 LUA_FUNCTION(Lua_RoomGetLRoomTileDesc) {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	LRoomTileDesc desc;
 	desc = *room->GetLRoomTileDesc(&desc);
 
@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_RoomGetLRoomTileDesc) {
 }
 
 LUA_FUNCTION(Lua_LRoomTileDesc_GetRandomTile) {
-	LRoomTileDesc* desc = lua::GetUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
+	LRoomTileDesc* desc = lua::GetRawUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
 	if (seed == 0)
 		return luaL_argerror(L, 2, "Seed must be non-zero!");
@@ -39,14 +39,14 @@ LUA_FUNCTION(Lua_LRoomTileDesc_GetRandomTile) {
 
 // high
 LUA_FUNCTION(Lua_LRoomTileDesc_GetHighTopLeft) {
-	LRoomTileDesc* desc = lua::GetUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
+	LRoomTileDesc* desc = lua::GetRawUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
 	Lua_XYToInt2(L, &desc->_high[0]);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LRoomTileDesc_GetHighBottomRight) {
-	LRoomTileDesc* desc = lua::GetUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
+	LRoomTileDesc* desc = lua::GetRawUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
 	Lua_XYToInt2(L, &desc->_high[1]);
 
 	return 1;
@@ -54,14 +54,14 @@ LUA_FUNCTION(Lua_LRoomTileDesc_GetHighBottomRight) {
 
 // low
 LUA_FUNCTION(Lua_LRoomTileDesc_GetLowTopLeft) {
-	LRoomTileDesc* desc = lua::GetUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
+	LRoomTileDesc* desc = lua::GetRawUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
 	Lua_XYToInt2(L, &desc->_low[0]);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LRoomTileDesc_GetLowBottomRight) {
-	LRoomTileDesc* desc = lua::GetUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
+	LRoomTileDesc* desc = lua::GetRawUserdata<LRoomTileDesc*>(L, 1, lua::metatables::LRoomTileDescMT);
 	Lua_XYToInt2(L, &desc->_low[1]);
 
 	return 1;

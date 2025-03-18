@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs)
 {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	std::vector<CostumeSpriteDesc>& spriteDescs = player->_costumeSpriteDescs;
 
 	lua_newtable(L);
@@ -20,74 +20,74 @@ LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs)
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetSprite) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua::luabridge::UserdataPtr::push(L, &costumeSprDesc->_sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetItemConfig) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	ItemConfig_Item* config = costumeSprDesc->_item;
 	lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::ITEM));
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetPriority) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushinteger(L, costumeSprDesc->_priority);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_IsItemAnimPlaying) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_itemAnimPlay);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_IsFlying) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_isFlying);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_HasOverlay) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_hasOverlay);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_HasSkinAlt) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_hasSkinAlt);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetHeadColor) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushinteger(L, costumeSprDesc->_headColor);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetBodyColor) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushinteger(L, costumeSprDesc->_bodyColor);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_CanOverwriteColor) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_overwriteColor);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_IsItemStateOnly) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushboolean(L, costumeSprDesc->_itemStateOnly);
 	return 1;
 }
 
 LUA_FUNCTION(CostumeSprDesc_GetPlayerType) {
-	CostumeSpriteDesc* costumeSprDesc = *lua::GetUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
+	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	lua_pushinteger(L, costumeSprDesc->_playerType);
 	return 1;
 }

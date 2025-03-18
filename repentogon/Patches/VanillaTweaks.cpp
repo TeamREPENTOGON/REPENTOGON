@@ -4,17 +4,6 @@
 #include "Log.h"
 #include "imgui.h"
 
-// Key Master affects Devil Deal chance
-HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFlags, EntityRef* Source, int DamageCountdown) -> bool) {
-	bool result = super(Damage, DamageFlags, Source, DamageCountdown);
-
-
-	if (result && repentogonOptions.keyMasterDealChance) {
-		if (g_Game->GetDailyChallenge()._id == 0 && _variant == 7) //KEY_MASTER
-			g_Game->_levelStateFlags |= 1;
-	}
-	return result;
-}
 
 // Allow Void to have its own rooms. 
 // By default, the void path is "rooms/01.Basement.xml" which is not ideal!
@@ -25,8 +14,8 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 	super(Stage, Mode);
 }
 
-// Force achievements to be unlockable (expect outside of game mode)
-HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+// Force achievements to be unlockable (expect outside of game mode) [moved to ASMTweaks.cpp]
+/*HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 	ModManager* modman = g_Manager->GetModManager();
 	auto loadedMod = std::find_if(modman->_mods.begin(), modman->_mods.end(), [](ModEntry* mod) { return mod->_loaded; });
 
@@ -38,6 +27,7 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 
 	return false;
 }
+*/
 
 // I'm putting this here bc I don't want to burden REPENTOGONOptions.h with the whole hooking system
 HOOK_METHOD(OptionsConfig, Save, () -> void) {
@@ -173,7 +163,7 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 // eco mode stuff end
 
 //clearing kerning pairs from parsed font
-HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
+/*HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
 	super(path, unusedIsLoading);
 
 	auto& kernPair = _kerningPairs;
@@ -183,3 +173,4 @@ HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
 	}
 
 }
+*/

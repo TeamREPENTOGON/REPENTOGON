@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_ColorModifier_Constructor) {
 // R
 LUA_FUNCTION(Lua_GetR)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetR());
 
 	return 1;
@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_GetR)
 
 LUA_FUNCTION(Lua_SetR)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetR() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_SetR)
 // G
 LUA_FUNCTION(Lua_GetG)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetG());
 
 	return 1;
@@ -43,7 +43,7 @@ LUA_FUNCTION(Lua_GetG)
 
 LUA_FUNCTION(Lua_SetG)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetG() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
@@ -51,7 +51,7 @@ LUA_FUNCTION(Lua_SetG)
 // B
 LUA_FUNCTION(Lua_GetB)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetB());
 
 	return 1;
@@ -59,7 +59,7 @@ LUA_FUNCTION(Lua_GetB)
 
 LUA_FUNCTION(Lua_SetB)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetB() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
@@ -67,7 +67,7 @@ LUA_FUNCTION(Lua_SetB)
 // A
 LUA_FUNCTION(Lua_GetA)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetA());
 
 	return 1;
@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_GetA)
 
 LUA_FUNCTION(Lua_SetA)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetA() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
@@ -83,7 +83,7 @@ LUA_FUNCTION(Lua_SetA)
 // Brightness
 LUA_FUNCTION(Lua_GetBrightness)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetBrightness());
 
 	return 1;
@@ -91,7 +91,7 @@ LUA_FUNCTION(Lua_GetBrightness)
 
 LUA_FUNCTION(Lua_SetBrightness)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetBrightness() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
@@ -99,7 +99,7 @@ LUA_FUNCTION(Lua_SetBrightness)
 // Contrast
 LUA_FUNCTION(Lua_GetContrast)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	lua_pushnumber(L, *color->GetContrast());
 
 	return 1;
@@ -107,15 +107,15 @@ LUA_FUNCTION(Lua_GetContrast)
 
 LUA_FUNCTION(Lua_SetContrast)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	*color->GetContrast() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ColorModState__eq)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 
 	lua_pushboolean(L, (*color == *other));
 
@@ -124,8 +124,8 @@ LUA_FUNCTION(Lua_ColorModState__eq)
 
 LUA_FUNCTION(Lua_ColorModState__add)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 	ColorModState result = *color + *other;
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -136,8 +136,8 @@ LUA_FUNCTION(Lua_ColorModState__add)
 
 LUA_FUNCTION(Lua_ColorModState__sub)
 {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 	ColorModState result = *color - *other;
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -154,7 +154,7 @@ LUA_FUNCTION(Lua_ColorModState__mul) {
 		return luaL_error(L, "Cannot left multiply a ColorModifier with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+		ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 		ColorModState result = *color * (float)luaL_checknumber(L, 2);
 		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -176,7 +176,7 @@ LUA_FUNCTION(Lua_ColorModState__div) {
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}
-		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+		ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 		ColorModState result = *color / div;
 		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -187,7 +187,7 @@ LUA_FUNCTION(Lua_ColorModState__div) {
 }
 
 LUA_FUNCTION(Lua_ColorModState__gc) {
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* color = lua::GetRawUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
 	color->~ColorModState();
 
 	return 0;

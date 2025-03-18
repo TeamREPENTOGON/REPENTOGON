@@ -17,4 +17,4 @@ struct FXParams depends (KColor, ColorMod, ColorModState) { {{
 	float shadowAlpha : 0x48;
 	KColor shadowColor : 0x4c, lightColor : 0x60;
 	ColorMod waterEffectColor : 0x74;
-} : 0xa0; //0xa0
+} : 0xa0;

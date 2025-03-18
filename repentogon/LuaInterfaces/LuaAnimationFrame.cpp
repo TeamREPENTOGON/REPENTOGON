@@ -4,84 +4,84 @@
 
 LUA_FUNCTION(Lua_AnimationFrameGetCrop)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->crop);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetWidth)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushnumber(L, animationFrame->width);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetHeight)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushnumber(L, animationFrame->height);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetPos)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->pos);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetScale)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->scale);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetPivot)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->pivot);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameIsVisible)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushboolean(L, animationFrame->visible);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetRotation)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushnumber(L, animationFrame->rotation);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameIsInterpolated)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushboolean(L, animationFrame->interpolated);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetColor)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua::luabridge::UserdataValue<ColorMod>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_COLOR), animationFrame->color);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetStartFrame)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushinteger(L, animationFrame->startFrame);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetEndFrame)
 {
-	AnimationFrame* animationFrame = *lua::GetUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
+	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
 	lua_pushinteger(L, animationFrame->endFrame);
 	return 1;
 }

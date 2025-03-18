@@ -128,14 +128,11 @@ namespace SigCache {
 				entry._address = ((size_t)addr + (size_t)baseaddr);
 				_entries.push_back(entry);
 			};
-			if (_entries.size() == 0) {
-				printf("[ZHL::SigCache] Signature cache not found or is invalid. Expect longer load time...\n");
-				ResetSigFile();
-			}
 			siglist.close();
 		};
 
 		if (_entries.size() == 0) {
+			printf("[ZHL::SigCache] Signature cache not found or is invalid. Expect longer load time...\n");
 			ResetSigFile();
 		}
 
@@ -165,7 +162,7 @@ SigScan::SigScan(const char *sig) : m_scanResult(nullptr)
 	m_bStartFromLastAddress = false;
 	m_bNoReturnSeek = false;
 	m_dist = 0;
-	m_sighash = std::hash<std::string_view>{} (sig);
+	m_sighash = 0x0;	//init
 	if (!SigCache::IsLoaded) {
 		SigCache::LoadCache();
 	}
@@ -262,6 +259,8 @@ SigScan::SigScan(const char *sig) : m_scanResult(nullptr)
 		}
 		++i;
 	}
+	std::string_view sview = std::string_view((char*)m_sig, m_iLength);
+	m_sighash = std::hash<std::string_view>{} (sview);
 }
 
 //=====================================================================
@@ -316,7 +315,17 @@ bool SigScan::Scan(bool useCache, bool allowRepetitions, Callback callback)
 		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash)
 		{
 //			SigCache::ResetSigFile();
-			printf("[ZHL::SigCache] Invalid signature %x instead of %x! Expect longer load time...\n", SigCache::_entries[s_sigCounter]._sighash,m_sighash);
+			printf("[ZHL::SigCache] Invalid signature %x instead of %x! Expect longer load time...\n---\nMismatch sig: ", SigCache::_entries[s_sigCounter]._sighash,m_sighash);
+			const unsigned char* sig_print_iter = m_sig;
+			
+			for(size_t i=0;i<m_iLength;i++) {
+				if (*(m_mask + i) == '\0') {
+					printf("??");
+					continue;
+				};
+				printf("%02x",*(m_sig+i));
+			};
+			printf("\n---\n");
 			SigCache::InvalidateCache(s_sigCounter);
 			readfromcache = false;
 		}
@@ -406,7 +415,9 @@ bool SigScan::Scan(bool useCache, bool allowRepetitions, Callback callback)
 	}
 
 	s_pLastAddress = s_pBase;
-
+	if ((!allowRepetitions || !found) && useCache && !readfromcache) {	//not sure about allowrepetitions
+		SigCache::WriteCacheEntry(m_sighash, (size_t)s_pBase);	//handling for cases when address was not found
+	};
 	return allowRepetitions ? found : false;
 }
 

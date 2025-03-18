@@ -477,7 +477,7 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 			.call(1);
 
 		if (!lua_result && lua_isuserdata(L, -1)) {
-			return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+			return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
 		}
 	}
 
@@ -759,7 +759,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 
 	if (!results) {
 		if (lua_isuserdata(L, -1)) {
-			Velocity = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			Velocity = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
@@ -1529,17 +1529,13 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 
 			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			lua::LuaCaller(L).push(callbackid)
 				.push(this->GetPlayerType())
 				.push(this, lua::Metatables::ENTITY_PLAYER)
 				.push(healthType)
 				.push(previousHealthType)
 				.push(defaultHealthType)
 				.call(1);
-
-			if (!result && lua_isboolean(L, -1)) {
-				convertHeartContainers = (bool)lua_toboolean(L, -1);
-			}
 		}
 
 		if (healthType == 1) {  // Soul
@@ -1650,7 +1646,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1679,7 +1675,7 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1708,7 +1704,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1737,7 +1733,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1766,7 +1762,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1795,7 +1791,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1824,7 +1820,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1853,7 +1849,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1882,7 +1878,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1912,7 +1908,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1963,7 +1959,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				seed = ProtectedCallbackIntAssign(L, seed, 4);
 			}
 			else if (lua_isuserdata(L, -1)) {
-				GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
 			}
@@ -1998,7 +1994,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 			}
 			else if (lua_istable(L, -1)) {
 				int type = (GridEntityType)ProtectedCallbackIntAssign(L, desc->_type, 1);
@@ -2069,7 +2065,7 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				Vector* p = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 				super(p);
 				postrenderbodyhead(1045, this, p);
 				return;
@@ -2102,7 +2098,7 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				Vector* p = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 				super(p);
 				postrenderbodyhead(1046, this, p);
 				return;
@@ -2711,9 +2707,15 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector 
 HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
+	Vector posToSend = pos;
+
+	// Fix the render position sent to the callback for the compact esau layout.
+	if (this->_playerHudIndex > 3 && playerHudLayout == 3) {
+		posToSend.y += 34;
+	}
+
 	const int callbackid1 = 1118;
 	if (CallbackState.test(callbackid1 - 1000)) {
-
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -2722,7 +2724,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 			.pushnil()
 			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -2742,11 +2744,12 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
 			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -2796,7 +2799,7 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -2825,7 +2828,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3485,7 +3488,7 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 			.call(1);
 
 		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::GetUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
+			auto opt = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
 
 			if (!opt) {
 				KAGE::LogMessage(2, "Invalid userdata returned in MC_POST_GET_MULTI_SHOT_PARAMS");
@@ -3780,7 +3783,7 @@ PreGridEntityResult ProcessPreGridRenderCallback(const GridEntityRenderInputs& i
 				result.skip_internal_code = true;
 			}
 			else if (lua_isuserdata(L, -1)) {
-				result.renderOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				result.renderOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -4184,7 +4187,7 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 			.call(1);
 
 		if (!result && lua_isuserdata(L, -1)) {
-			return *lua::GetUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+			return *lua::GetRawUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
 		}
 	}
 	return list;
@@ -4285,45 +4288,6 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 
 	super(param_1);
 }
-
-// MC_PRE_ITEM_TEXT_DISPLAY (1484) //prev: ShowItemTextCustom buw ShowItemTextCustom should work?
-/*HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
-	const int callbackId = 1484;
-	if (CallbackState.test(callbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &title[0], wcslen(title), NULL, 0, NULL, NULL);
-		std::string strTitle(sizeNeededTitle, 0);
-		WideCharToMultiByte(CP_UTF8, 0, title, wcslen(title), &strTitle[0], sizeNeededTitle, NULL, NULL);
-		 
-		int sizeNeededSubtitle = WideCharToMultiByte(CP_UTF8, 0, &subtitle[0], wcslen(subtitle), NULL, 0, NULL, NULL);
-		std::string strSubtitle(sizeNeededSubtitle, 0);
-		WideCharToMultiByte(CP_UTF8, 0, subtitle, wcslen(subtitle), &strSubtitle[0], sizeNeededSubtitle, NULL, NULL);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
-			.pushnil()
-			.push(strTitle.c_str())
-			.push(strSubtitle.c_str())
-			.push(isSticky)
-			.push(isCurseDisplay)
-			.call(1);
-		 
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					return;
-				}
-			} 
-		} 
-	}
-
-	super(title, subtitle, isSticky, isCurseDisplay);
-}
-*/
-
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
 HOOK_METHOD(RoomTransition, StartBossIntro, (unsigned int bossID1, unsigned int bossID2) -> void) {
@@ -4597,7 +4561,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 			}
 			else if (lua_isuserdata(L, -1)) {
 				// We need to copy the returned color in case the Lua stack is cleaned up in order to avoid unexpected behavior.
-				ColorMod* returnedColor = lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+				ColorMod* returnedColor = lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
 				colorCopy = *returnedColor;
 				color = &colorCopy;
 			}
@@ -4652,7 +4616,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				auto* retItem = lua::GetUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
+				auto* retItem = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
 				if (retItem) {
 					item = retItem;
 				}
@@ -4802,7 +4766,7 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 
 		if (!results) {
 			if (lua_isuserdata(L, -1)) {
-				return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+				return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
 			}
 		}
 	}
@@ -5013,7 +4977,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 				if (len > 1) {
 					lua_pushinteger(L, 2);
 					lua_gettable(L, -2);
-					pushVector = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+					pushVector = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 					lua_pop(L, 1);
 				}
 				if (len > 2)
@@ -5082,7 +5046,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 				if (len > 2) {
 					lua_pushinteger(L, 3);
 					lua_gettable(L, -2);
-					color = *lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+					color = *lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
 					lua_pop(L, 1);
 				}
 				if (len > 3)
@@ -5118,6 +5082,47 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push(amount)
 			.push(&color, lua::Metatables::COLOR)
 			.push(ignoreBossStatusCooldown)
+			.call(1);
+	}
+}
+
+//POST_START_AMBUSH_WAVE (1488)
+void ProcessPostStartAmbushWaveCallback(bool bossAmbush) {
+	const int callbackid = 1488;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(bossAmbush)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(Ambush, SpawnWave, () -> void) {
+	super();
+	ProcessPostStartAmbushWaveCallback(false);
+}
+
+HOOK_METHOD(Ambush, SpawnBossrushWave, () -> void) {
+	super();
+	ProcessPostStartAmbushWaveCallback(true);
+}
+
+//POST_START_GREED_WAVE (1489)
+HOOK_METHOD(Room, SpawnGreedModeWave, (bool unusedBool) -> void) {
+	super(unusedBool);
+
+	const int callbackid = 1489;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
 			.call(1);
 	}
 }

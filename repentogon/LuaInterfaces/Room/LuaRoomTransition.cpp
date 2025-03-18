@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetRoomTransition) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomTransition** ud = (RoomTransition**)lua_newuserdata(L, sizeof(RoomTransition*));
 	*ud = game->GetRoomTransition();
 	luaL_setmetatable(L, lua::metatables::RoomTransitionMT);
@@ -22,6 +22,8 @@ LUA_FUNCTION(Lua_RoomTransitionStartBossIntro) {
 	RoomTransition* roomTransition = g_Game->GetRoomTransition();
 	int bossID1 = (int)luaL_checkinteger(L, 1);
 	int bossID2 = (int)luaL_optinteger(L, 2, 0);
+
+	roomTransition->_roomIndex = g_Game->_startingRoomIdx; // safety measure to prevent crashes if current transition's roomIndex is invalid
 
 	roomTransition->StartBossIntro(bossID1, bossID2);
 	return 0;

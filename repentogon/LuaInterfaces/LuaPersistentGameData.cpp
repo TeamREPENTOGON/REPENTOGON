@@ -5,7 +5,7 @@
 #include "../Patches/ChallengesStuff.h"
 #include "../Patches/AchievementsStuff.h"
 
-static const unsigned int PGD_COUNTER_MAX = 521;
+static const unsigned int PGD_COUNTER_MAX = 522;
 static const unsigned int COLLECTIBLE_MAX = 732;
 static const unsigned int CHALLENGE_MAX = 45;
 
@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_GetPersistentGameData) {
 
 LUA_FUNCTION(Lua_PGDTryUnlock)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int unlock = (int)luaL_checkinteger(L, 2);
 	if (lua_isboolean(L, 3) && lua_toboolean(L, 3)) {
 		nextSkipAchiev = unlock;
@@ -37,7 +37,7 @@ LUA_FUNCTION(Lua_PGDTryUnlock)
 
 LUA_FUNCTION(Lua_PGDUnlocked)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int unlock = (int)luaL_checkinteger(L, 2);
 
 	bool unlocked = pgd->Unlocked(unlock);
@@ -47,7 +47,7 @@ LUA_FUNCTION(Lua_PGDUnlocked)
 
 LUA_FUNCTION(Lua_PGDIncreaseEventCounter)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
@@ -62,7 +62,7 @@ LUA_FUNCTION(Lua_PGDIncreaseEventCounter)
 
 LUA_FUNCTION(Lua_PGDGetEventCounter)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_PGDGetEventCounter)
 }
 
 LUA_FUNCTION(Lua_PGDIsItemInCollection) {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int collectID = (int)luaL_checkinteger(L, 2);
 
 	if (collectID > COLLECTIBLE_MAX)
@@ -87,7 +87,7 @@ LUA_FUNCTION(Lua_PGDIsItemInCollection) {
 }
 
 LUA_FUNCTION(Lua_PGDIsChallengeCompleted) {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int challengeID = (int)luaL_checkinteger(L, 2);
 
 	if (challengeID <= CHALLENGE_MAX) {
@@ -103,7 +103,7 @@ LUA_FUNCTION(Lua_PGDIsChallengeCompleted) {
 
 LUA_FUNCTION(Lua_PGDGetBestiaryKillCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryKillCount(entType, entVariant));
@@ -112,7 +112,7 @@ LUA_FUNCTION(Lua_PGDGetBestiaryKillCount)
 
 LUA_FUNCTION(Lua_PGDGetBestiaryDeathCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryDeathCount(entType, entVariant));
@@ -121,7 +121,7 @@ LUA_FUNCTION(Lua_PGDGetBestiaryDeathCount)
 
 LUA_FUNCTION(Lua_PGDGetBestiaryEncounterCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryEncounterCount(entType, entVariant));
@@ -130,7 +130,7 @@ LUA_FUNCTION(Lua_PGDGetBestiaryEncounterCount)
 
 LUA_FUNCTION(Lua_PGDAddBestiaryKill)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	const int entType = (int)luaL_checkinteger(L, 2);
 	const int entVariant = (int)luaL_optinteger(L, 3, 0);
 	lua_pushboolean(L, pgd->AddBestiaryKill(entType, entVariant));
@@ -140,7 +140,7 @@ LUA_FUNCTION(Lua_PGDAddBestiaryKill)
 
 LUA_FUNCTION(Lua_PGDAddBossKilled)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	const int bossID = (int)luaL_checkinteger(L, 2);
 	if (bossID > 103 || bossID < 1)
 		luaL_error(L, "bad argument #2 to 'AddBossKilled' (expected BossType between 1 and 103 inclusive, got %d)", bossID);
@@ -152,7 +152,7 @@ LUA_FUNCTION(Lua_PGDAddBossKilled)
 
 LUA_FUNCTION(Lua_PGDIsBossKilled)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	const int bossID = (int)luaL_checkinteger(L, 2);
 	if (bossID > 103 || bossID < 1)
 		luaL_error(L, "bad argument #2 to 'IsBossKilled' (expected BossType between 1 and 103 inclusive, got %d)", bossID);

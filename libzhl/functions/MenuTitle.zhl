@@ -1,7 +1,7 @@
 "558bec6aff68????????64a1????????5081ec8400000053":
 __thiscall void Menu_Title::Update();
 
-"558bec83e4f081ecc8000000a1": //this is just menu_fucking_game::Render !!
+"558bec83e4f081ecc8000000a1????????33c4898424????????a1": //this is just menu_fucking_game::Render !!
 __thiscall void Menu_Title::Render();
 
 struct Menu_Title depends (ANM2) {
@@ -11,5 +11,4 @@ struct Menu_Title depends (ANM2) {
     float PositionX : 0x0;
     float PositionY : 0x4;
     ANM2 TitleScreenSprite : 0x8;
-    int unusedVariable : 0x11c;
-} : 0x120;
+} : 0x124;

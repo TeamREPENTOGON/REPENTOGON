@@ -125,6 +125,8 @@ struct ConsoleMega : ImGuiWindowObject {
     bool reclaimFocus = false;
     bool focused = false;
     bool commandNeedScrollChange = false;
+    const ConsoleCommand* prev_command = nullptr;
+    std::set<AutocompleteEntry> entries;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -240,6 +242,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("stage", LANG.CONSOLE_STAGE_DESC, LANG.CONSOLE_STAGE_HELP, false, STAGE);
         RegisterCommand("time", LANG.CONSOLE_TIME_DESC, LANG.CONSOLE_TIME_HELP, false);
         RegisterCommand("testbosspool", LANG.CONSOLE_TESTBOSSPOOL_DESC, LANG.CONSOLE_TESTBOSSPOOL_HELP, false);
+        RegisterCommand("forceimport", LANG.CONSOLE_FORCEIMPORT_DESC, LANG.CONSOLE_FORCEIMPORT_HELP, true);
     }
 
     const ConsoleCommand* GetCommandByName(std::string& commandName) {
@@ -543,7 +546,13 @@ struct ConsoleMega : ImGuiWindowObject {
                     const ConsoleCommand* command = GetCommandByName(commandName);
                     if (command == nullptr) return 0;
 
-                    std::set<AutocompleteEntry> entries;
+                    if (command == prev_command) {
+                        goto end_of_autocompl_switchcase;   //yeeees, i knoooow, goto bad blah blah blah
+                    }
+                    else {
+                        entries.clear();    //clear the entries queue before working with it
+                        prev_command = command;
+                    };
 
                     switch (command->autocompleteType) {
                         case ENTITY: {
@@ -615,6 +624,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(27, "secretexit"),
                                 std::pair<int, std::string>(28, "blue"),
                                 std::pair<int, std::string>(29, "ultrasecret"),
+                                std::pair<int, std::string>(30, "deathmatch"),
                             };
 
                             for (unsigned int i = 1; i < set->_count; ++i) {
@@ -646,7 +656,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             auto GetStr = [&](const char* key, const char* postfix = "") {
                                 char buff[256];
-                                uint32_t unk;
+                                bool unk;
                                 const char* en = stringTable->GetString("Stages", 0, key, &unk);
                                 if (language) {
                                     const char* tr = stringTable->GetString("Stages", language, key, &unk);
@@ -876,7 +886,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                     std::string name = node.second["name"];
                                     auto& untranslated_name = node.second["untranslatedname"];
                                     if (language && untranslated_name.length() != 0 && untranslated_name[0] == '#') {
-                                        uint32_t unk;
+                                        bool unk;
                                         name = name + " " + stringTable->GetString(std::get<2>(XMLPair), language, untranslated_name.substr(1).c_str(), &unk);
                                     }
                                     entries.insert(AutocompleteEntry(std::get<1>(XMLPair)+ std::to_string(id), name));
@@ -1186,7 +1196,7 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                     }
-
+                    end_of_autocompl_switchcase:
                     for (AutocompleteEntry entry : entries) {
                         entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
 

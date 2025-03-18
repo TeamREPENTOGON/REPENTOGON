@@ -182,46 +182,52 @@ void ASMPatchReviveQuestionMark() {
 
 // Patch into EntityPlayer::TriggerDeath, right after all of the vanilla revive effects have been evaluated but none revived the player
 void ASMPatchPostTriggerPlayerDeathCheckRevivesCallback() {
-	SigScan scanner("807d??000f84????????32c0");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	SigScan patchScanner("807d??000f84????????32c0");
+	patchScanner.Scan();
+	void* patchAddr = patchScanner.GetAddress();
 
-	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", addr);
+	printf("[REPENTOGON] Patching EntityPlayer::TriggerDeath for custom revives at %p\n", patchAddr);
+
+	SigScan exitScanner("a1????????3b05????????74??8b08");
+	exitScanner.Scan();
+	void* exitAddr = exitScanner.GetAddress();
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\x80\x7d\x08").AddZeroes(1)  // cmp byte ptr [ebp+8], 0
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xA)  // This run is checkOnly, don't run the callback
+	patch.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 4))  // cmp byte ptr [ebp+?], 0
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)patchAddr + 0xA)  // This run is checkOnly, don't run the callback
 		.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::EBX)  // Push the Entity_Player
 		.AddInternalCall(RunPostTriggerPlayerDeathCheckRevivesCallback)  // Run the callback
 		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addr - 0x920);  // We go to the same place regardless of whether or not the player was revived
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddRelativeJump(exitAddr);  // We go to the same place regardless of whether or not the player was revived
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
-// Returns true to prevent save deletion if the player has any revive item, including hidden ones.
-bool __stdcall PlayerHasAnyReviveItem(Entity_Player* player) {
-	return player->GetExtraLives() > 0 || GetCustomReviveCount(player, /*includeHidden=*/true) > 0;
+// Returns 1 to prevent save deletion if the player has any revive item, including hidden ones which don't normally get counted.
+// The actual number of lives is not needed for where this gets called, >0 prevents save deletion.
+int __stdcall PlayerHasAnyReviveItem(Entity_Player* player) {
+	if (player->GetExtraLives() > 0 || GetCustomReviveCount(player, /*includeHidden=*/true) > 0) {
+		return 1;
+	}
+	return 0;
 }
 
 // Patch for multiple locations to prevent save deletion if the player has a custom revive item.
-void ASMPatchPreventSaveDeletion(const char* sig, const int reviveJump, const int deleteJump) {
+void ASMPatchPreventSaveDeletion(const char* sig) {
 	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching to prevent save deletion for revives at %p\n", addr);
 
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::ECX)  // Push the Entity_Player
 		.AddInternalCall(PlayerHasAnyReviveItem)
-		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + reviveJump)  // Jump for true (prevent save from being deleted)
-		.AddRelativeJump((char*)addr + deleteJump);  // Jump for false (allow save to be deleted)
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -231,9 +237,9 @@ void ASMPatchesForExtraLives() {
 	ASMPatchPostTriggerPlayerDeathCheckRevivesCallback();
 
 	// PauseScreen::ProcessInput
-	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff", 0xF, 0xA);
+	ASMPatchPreventSaveDeletion("e8????????83f8017d??e8????????68000000ff");
 	// GameState::Save
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b3d", 0xE, 0x2B5);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b3d");
 	// GameState::SaveSteamCloud
-	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d", 0xE, 0x2B7);
+	ASMPatchPreventSaveDeletion("e8????????83f8010f8c????????8b0d");
 }

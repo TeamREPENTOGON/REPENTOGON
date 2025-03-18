@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_GameAchievementUnlocksDisallowed)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->AchievementUnlocksDisallowed());
 
 	return 1;
@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_GameAchievementUnlocksDisallowed)
 
 LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsPauseMenuOpen());
 
 	return 1;
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 
 LUA_FUNCTION(Lua_GameGetPauseMenuState)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetPauseMenu()->state);
 
 	return 1;
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_GameGetPauseMenuState)
 
 LUA_FUNCTION(Lua_GameGetPlanetariumsVisited)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetPlanetariumsVisited());
 
 	return 1;
@@ -36,7 +36,7 @@ LUA_FUNCTION(Lua_GameGetPlanetariumsVisited)
 
 LUA_FUNCTION(Lua_GameIsHardMode)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsHardMode());
 
 	return 1;
@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_GameIsHardMode)
 
 LUA_FUNCTION(Lua_GameGetLastDevilRoomStageFix)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastDevilRoomStage());
 
 	return 1;
@@ -52,7 +52,7 @@ LUA_FUNCTION(Lua_GameGetLastDevilRoomStageFix)
 
 LUA_FUNCTION(Lua_GetLastLevelWithDamageFix)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastLevelWithDamage());
 
 	return 1;
@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_GetLastLevelWithDamageFix)
 
 LUA_FUNCTION(Lua_GetLastLevelWithoutHalfHpFix)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastLevelWithoutHalfHp());
 
 	return 1;
@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_GetLastLevelWithoutHalfHpFix)
 
 LUA_FUNCTION(Lua_GameGetDebugFlags)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, *game->GetDebugFlags());
 
 	return 1;
@@ -76,15 +76,15 @@ LUA_FUNCTION(Lua_GameGetDebugFlags)
 
 LUA_FUNCTION(Lua_GameAddDebugFlags)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	unsigned int flags = (unsigned int)luaL_checkinteger(L, 2);
 	*game->GetDebugFlags() |= flags;
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GameSpawnBombCrater) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	const float radius = (const float)luaL_optnumber(L, 3, 1.0f);
 	Entity* crater = game->SpawnBombCrater(pos, radius);
 
@@ -94,20 +94,20 @@ LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 }
 
 LUA_FUNCTION(Lua_GameDevolveEnemy) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	game->DevolveEnemy(ent, nullptr);
 
 	return 0;
 }
 
 LUA_FUNCTION(lua_GameStartStageTransition) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	bool sameStage = lua::luaL_checkboolean(L, 2);
 	int transition = (int)luaL_checkinteger(L, 3);
 	Entity_Player* player = nullptr;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
 	}
 
 	game->StartStageTransition(sameStage, transition, player);
@@ -116,7 +116,7 @@ LUA_FUNCTION(lua_GameStartStageTransition) {
 
 LUA_FUNCTION(Lua_GameIsGreedBoss)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsGreedBoss());
 
 	return 1;
@@ -124,16 +124,16 @@ LUA_FUNCTION(Lua_GameIsGreedBoss)
 
 LUA_FUNCTION(Lua_GameIsGreedFinalBoss)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsGreedFinalBoss());
 
 	return 1;
 }
 
 LUA_FUNCTION(lua_GameIsErased) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
 		bool wasErased = game->IsErased(entity->_type, entity->_variant, entity->_subtype);
 		lua_pushboolean(L, wasErased);
@@ -152,7 +152,7 @@ LUA_FUNCTION(lua_GameIsErased) {
 
 LUA_FUNCTION(Lua_GameGetCurrentColorModifier)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ColorModState* color = game->GetCurrentColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -163,7 +163,7 @@ LUA_FUNCTION(Lua_GameGetCurrentColorModifier)
 
 LUA_FUNCTION(Lua_GameGetTargetColorModifier)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ColorModState* color = game->GetTargetColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -174,7 +174,7 @@ LUA_FUNCTION(Lua_GameGetTargetColorModifier)
 
 LUA_FUNCTION(Lua_GameGetLerpColorModifier)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ColorModState* color = game->GetLerpColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
@@ -185,8 +185,8 @@ LUA_FUNCTION(Lua_GameGetLerpColorModifier)
 
 LUA_FUNCTION(Lua_GameSetColorModifier)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	ColorModState* pColor = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
@@ -196,14 +196,14 @@ LUA_FUNCTION(Lua_GameSetColorModifier)
 }
 
 LUA_FUNCTION(Lua_GameIsRerun) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->_isRerun);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GameGetPlayer) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	int idx = (int)luaL_optinteger(L, 2, 0);
 
 	if (!g_Game || g_Game->_playerManager._playerList.size() == 0) {
@@ -227,7 +227,7 @@ LUA_FUNCTION(Lua_GameGetPlayer) {
 }
 
 LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
 	game->_leaderboard.Show(1, &game->_scoreSheet, false, 0);
 	return 0;
@@ -236,7 +236,7 @@ LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
 // Reimplementation
 // Fix for original MoveToRandomRoom function, that prevents crashes caused by a seed = 0
 LUA_FUNCTION(Lua_MoveToRandomRoom) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	bool iAmErrorRoom = lua_toboolean(L, 2);
 	int seed = (int)luaL_checkinteger(L, 3);
 	if (seed == 0)
@@ -246,7 +246,7 @@ LUA_FUNCTION(Lua_MoveToRandomRoom) {
 
 	Entity_Player* player = nullptr;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
 	}
 
 	game->MoveToRandomRoom(iAmErrorRoom, seed, player);
@@ -254,21 +254,21 @@ LUA_FUNCTION(Lua_MoveToRandomRoom) {
 }
 
 LUA_FUNCTION(Lua_SetDonationModAngel) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
 	game->_donationModAngel = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SetDonationModGreed) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 
 	game->_donationModGreed = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_SetBloom) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	const int time = (int)luaL_checkinteger(L, 2);
 	const float strength = (float)luaL_checknumber(L, 3);
 	game->SetBloom(time, strength);
@@ -278,7 +278,7 @@ LUA_FUNCTION(Lua_SetBloom) {
 
 LUA_FUNCTION(Lua_SetDizzyAmount)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	float targetIntensity = (float)luaL_checknumber(L, 2);
 	float currentIntensity = (float)luaL_optnumber(L, 3, game->_dizzyIntensity);
 
@@ -290,14 +290,14 @@ LUA_FUNCTION(Lua_SetDizzyAmount)
 
 LUA_FUNCTION(Lua_GetDizzyAmount)
 {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushnumber(L, game->_dizzyIntensity);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GameAddShopVisits) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	int visitCount = (int)luaL_checkinteger(L, 2);
 	game->_shopVisits += visitCount;
 
@@ -308,21 +308,21 @@ LUA_FUNCTION(Lua_GameAddShopVisits) {
 }
 
 LUA_FUNCTION(Lua_GameGetShopVisits) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->_shopVisits);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ClearErasedEnemies) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	game->_erasedEntities.clear();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_RecordPlayerCompletion) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	int event = (int)luaL_checkinteger(L, 2);
 	if (event < 0 || event > 17) {
 		return luaL_error(L, "Bad CompletionType %d (valid range is 0-17)", event);
@@ -333,7 +333,7 @@ LUA_FUNCTION(Lua_RecordPlayerCompletion) {
 }
 
 LUA_FUNCTION(Lua_GetGenericPrompt) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	auto* toLua = (GenericPrompt*)lua_newuserdata(L, sizeof(GenericPrompt));
 	*toLua = *game->GetGenericPrompt(); //
 	luaL_setmetatable(L, lua::metatables::GenericPromptMT);

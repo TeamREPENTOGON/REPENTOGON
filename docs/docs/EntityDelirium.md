@@ -25,7 +25,7 @@ ___
 Enable or disable red mode according to the parameter `on`. 
 
 ???+ info "About red mode"
-    Please refer to the note in the documentation of [IsRedMode](EntityDelirium.md#IsRedMode) for an explanation of red mode.
+    Please refer to the note in the documentation of [IsRedMode](EntityDelirium.md#isredmode) for an explanation of red mode.
     
 ___
 ### SetTeleportationTimer () {: aria-label='Functions' }
@@ -82,7 +82,7 @@ ___
 ### Cycle {: aria-label='Variables' }
 #### int Cycle {: .copyable aria-label='Variables' }
 Internal [I2](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#I2) value used by Delirium to identify whether red mode is activated and the amount of time before a teleportation.
-You should not use this variable directly and instead rely on the [GetTeleportationTimer](EntityDelirium.md#GetTeleportationTimer), [SetTeleportationTimer](EntityDelirium.md#SetTeleportationTimer), [IsRedMode](EntityDelirium.md#IsRedMode) and [SetRedMode](EntityDelirium.md#SetRedMode) functions instead.
+You should not use this variable directly and instead rely on the [GetTeleportationTimer](EntityDelirium.md#getteleportationtimer), [SetTeleportationTimer](EntityDelirium.md#setteleportationtimer), [IsRedMode](EntityDelirium.md#isredmode) and [SetRedMode](EntityDelirium.md#setredmode) functions instead.
 The only reason to use this variable directly is if you want to freeze it to a certain value that you know will do exactly what you want (for instance disable red mode and prevent teleportation).
 
 ???+ info "Format of the variable"
@@ -99,7 +99,7 @@ Number of attacks remaining before Delirium transforms into another boss.
 ???+ info "About remaining attacks" 
     This variable is Nicalis answer to prevent Delirium from performing too many attacks as a single boss before transforming.
     Under certain conditions, the game will decrement this value by 1. If it reaches 0, Delirium transforms regardless of the transformation timer.
-    The conditions that must be met (simultaneously) are: the [StateFrame](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#StateFrame) variable must be 1 during the current frame, and the [State](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.md#State) variable must be set to any of the attack states.
+    The conditions that must be met (simultaneously) are: the [StateFrame](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#stateframe) variable must be 1 during the current frame, and the [State](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.md#state) variable must be set to any of the attack states.
     This is the reason why Delirium will sometimes initiate an attack as a boss and immediately transform. 
     You can refer to the [complete breakdown of bosses AI configurations](https://wofsauge.github.io/IsaacDocs/rep/customData/bosses.xlsx) to see the AI configuration of each attack.
 ___
@@ -113,7 +113,7 @@ ___
 Get or set the amount of time before Delirium transforms into another boss.
 
 ???+ warn "On transformations" 
-    Delirium can transform in two situations: either this value reaches 0, or the value of [RemainingAttacks](EntityDelirium.md#RemainingAttacks) reaches 0. 
-    Refer to the documentation of [RemainingAttacks](EntityDelirium.md#RemainingAttacks) for a more detailed explanation of that mechanic.
+    Delirium can transform in two situations: either this value reaches 0, or the value of [RemainingAttacks](EntityDelirium.md#remainingattacks) reaches 0. 
+    Refer to the documentation of [RemainingAttacks](EntityDelirium.md#remainingattacks) for a more detailed explanation of that mechanic.
     
 ___

@@ -3,4 +3,4 @@ struct TemporaryEffect
     ItemConfig_Item *_item : 0x0;
     int _count : 0x4;
     int _cooldown : 0x8;
-} : 0xc;
+} : 0x10;

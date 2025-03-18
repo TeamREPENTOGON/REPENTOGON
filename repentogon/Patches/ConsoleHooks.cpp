@@ -6,6 +6,7 @@
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
 #include "Anm2Extras.h"
+#include "SaveImport.h"
 
 #include <filesystem>
 #include <iostream>
@@ -144,6 +145,39 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         REPENTOGONFileMap::map_init = false;
         REPENTOGONFileMap::GenerateMap();
         return super(in,out,player);
+    };
+
+    if ((in == "forceimport") || (in.rfind("forceimport ", 0) == 0)) {
+        std::vector<std::string> cmdlets = ParseCommand(in, 2);
+        unsigned int slot = 0;
+        if (cmdlets.size() > 1) {
+            slot = stoi(cmdlets[1]);
+        };
+        SaveImportHelper::FORCEIMPORT_ERRORCODE code=saveimport.ForceImport(slot);
+        const char* error_text = "";
+        switch (code) {
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_MENU:
+            error_text = "Not on the save select screen!";
+            break;
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::BAD_SLOT:
+            error_text = "Invalid save slot id!";
+            break;
+        case SaveImportHelper::FORCEIMPORT_ERRORCODE::STEAMCLOUD_UNSUPPORTED:
+            error_text = "Steam Cloud saves are not *yet* supported, sorry...";
+            break;
+        };
+        if (code != SaveImportHelper::FORCEIMPORT_ERRORCODE::SUCCESS) {
+            this->PrintError(error_text);
+            return;
+        };
+        std::string output = "Performed forced import of save file "+to_string(slot)+" from previous DLC\n";  //todo: actual dlc name
+        res.append(output);
+        if (out == nullptr)
+            this->Print(res.c_str(), Console::Color::WHITE, 0x96U);
+        else
+            out->append(res);
+        g_MenuManager->GetMenuSave()->reload_graphics_i_guess();
+        return;
     };
 
     if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {

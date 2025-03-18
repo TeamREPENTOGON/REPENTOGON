@@ -1,0 +1,31 @@
+"558bec51538bd95657895d??8b33":
+__thiscall bool RoomConfig_VariantSet::Add(uint32_t variant);
+
+{{
+    struct DisjointedSet
+    {
+        uint32_t lowerBound;
+        uint32_t upperBound;
+        DisjointedSet* next;
+    };
+}}
+
+struct RoomConfig_VariantSet
+{
+    DisjointedSet* _set : 0x0;
+
+    // The following function was inlined in the game
+    {{
+        inline uint32_t AddUnique(uint32_t variant)
+        {
+            bool isUnique = this->Add(variant);
+            if (!isUnique)
+            {
+                variant = this->_set->upperBound + 1;
+                this->Add(variant);
+            }
+
+            return variant;
+        }
+    }}
+} : 0x4;

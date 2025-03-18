@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
 
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	int layerID = 0;
 	if (lua_type(L, 2) == LUA_TSTRING) {
@@ -53,19 +53,19 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 }
 
 LUA_FUNCTION(Lua_BeamAdd) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Point point;
 
 	if (lua_gettop(L) == 2) {
-		point = *lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
+		point = *lua::GetRawUserdata<Point*>(L, 2, lua::metatables::PointMT);
 	}
 	else
 	{
-		point._pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		point._pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 		point._spritesheetCoordinate = (float)luaL_optnumber(L, 3, 0.0f);
 		point._width = (float)luaL_optnumber(L, 4, 1.f);
 		if (lua_type(L,5) == LUA_TUSERDATA) {
-			point._color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+			point._color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 		}
 		point._worldSpace = lua::luaL_optboolean(L, 6, false);
 	}
@@ -76,7 +76,7 @@ LUA_FUNCTION(Lua_BeamAdd) {
 }
 
 LUA_FUNCTION(Lua_BeamRender) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	int8_t error = -1;
 	bool clearPoints = lua::luaL_optboolean(L, 2, true);
 
@@ -129,7 +129,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 }
 
 LUA_FUNCTION(Lua_BeamGetSprite) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	ANM2* anm2 = beam->GetANM2();
 	if (anm2 == nullptr) {
 		return luaL_error(L, "Beam Sprite is NULL!");
@@ -139,8 +139,8 @@ LUA_FUNCTION(Lua_BeamGetSprite) {
 }
 
 LUA_FUNCTION(Lua_BeamSetSprite) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	
 	if (lua_gettop(L) > 2) {
 		int layerID = beam->_layer;
@@ -175,14 +175,14 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 
 LUA_FUNCTION(Lua_BeamGetLayer)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushinteger(L, *beam->GetLayer());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetLayer)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	int layerID = -1;
 	if (lua_type(L, 2) == LUA_TSTRING) {
 		const char* layerName = luaL_checkstring(L, 2);
@@ -210,34 +210,34 @@ LUA_FUNCTION(Lua_BeamSetLayer)
 
 LUA_FUNCTION(Lua_BeamGetUseOverlay)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushboolean(L, *beam->GetUseOverlay());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetUseOverlay)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	*beam->GetUseOverlay() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BeamGetUnkBool)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushboolean(L, *beam->GetUnkBool());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetUnkBool)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	*beam->GetUnkBool() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	beam->_anm2.destructor();
 	beam->~BeamRenderer();
 	return 0;
@@ -245,7 +245,7 @@ LUA_FUNCTION(Lua_BeamRenderer__gc) {
 
 // Point
 LUA_FUNCTION(Lua_BeamGetPoints) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_newtable(L);
 	for (size_t i = 0; i < beam->_points.size(); ++i) {
 		lua_pushinteger(L, i + 1);
@@ -259,7 +259,7 @@ LUA_FUNCTION(Lua_BeamGetPoints) {
 }
 
 LUA_FUNCTION(Lua_BeamSetPoints) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	if (!lua_istable(L, 2))
 	{
 		return luaL_argerror(L, 2, "Expected a table as second argument");
@@ -276,7 +276,7 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 		for (size_t i = 0; i < length; i++)
 		{
 			lua_rawgeti(L, 2, i + 1);
-			list.push_back(*lua::GetUserdata<Point*>(L, -1, lua::metatables::PointMT));
+			list.push_back(*lua::GetRawUserdata<Point*>(L, -1, lua::metatables::PointMT));
 			lua_pop(L, 1);
 		}
 		beam->_points = list;
@@ -286,13 +286,13 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 }
 
 LUA_FUNCTION(Lua_CreatePointDummy) {
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float spritesheetCoord = (float)luaL_checknumber(L, 2);
 	float widthMod = (float)luaL_optnumber(L, 3, 1.0f);
 
 	ColorMod color;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 	}
 
 	bool worldSpace = lua::luaL_optboolean(L, 5, false);
@@ -304,7 +304,7 @@ LUA_FUNCTION(Lua_CreatePointDummy) {
 }
 
 LUA_FUNCTION(Lua_PointGetPos) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = point->_pos;
 
@@ -312,15 +312,15 @@ LUA_FUNCTION(Lua_PointGetPos) {
 }
 
 LUA_FUNCTION(Lua_PointSetPos) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointGetColor)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = point->_color;
 
@@ -329,15 +329,15 @@ LUA_FUNCTION(Lua_PointGetColor)
 
 LUA_FUNCTION(Lua_PointSetColor)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointGetWidth)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	lua_pushnumber(L, point->_width);
 
 	return 1;
@@ -345,7 +345,7 @@ LUA_FUNCTION(Lua_PointGetWidth)
 
 LUA_FUNCTION(Lua_PointSetWidth)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	point->_width = (float)lua_tonumber(L, 2);
 
 	return 0;
@@ -353,7 +353,7 @@ LUA_FUNCTION(Lua_PointSetWidth)
 
 LUA_FUNCTION(Lua_PointGetSpritesheetCoordinate)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	lua_pushnumber(L, point->_spritesheetCoordinate);
 
 	return 1;
@@ -361,7 +361,7 @@ LUA_FUNCTION(Lua_PointGetSpritesheetCoordinate)
 
 LUA_FUNCTION(Lua_PointSetSpritesheetCoordinate)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	point->_spritesheetCoordinate = (float)lua_tonumber(L, 2);
 
 	return 0;
@@ -369,7 +369,7 @@ LUA_FUNCTION(Lua_PointSetSpritesheetCoordinate)
 
 LUA_FUNCTION(Lua_PointGetIsWorldSpace)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	lua_pushboolean(L, point->_worldSpace);
 
 	return 1;
@@ -377,7 +377,7 @@ LUA_FUNCTION(Lua_PointGetIsWorldSpace)
 
 LUA_FUNCTION(Lua_PointSetIsWorldSpace)
 {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = lua::GetRawUserdata<Point*>(L, 1, lua::metatables::PointMT);
 	point->_worldSpace = lua::luaL_checkboolean(L, 2);
 
 	return 0;

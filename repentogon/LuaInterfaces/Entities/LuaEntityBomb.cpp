@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_BombGetHitList) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	std::vector<unsigned int> hitList = bomb->_hitList;
 
 	lua_newtable(L);
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_BombGetHitList) {
 
 LUA_FUNCTION(Lua_BombUpdateDirtColor)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	bomb->UpdateDirtColor();
 	return 0;
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_BombUpdateDirtColor)
 
 LUA_FUNCTION(Lua_BombGetScale)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	lua_pushnumber(L, bomb->_scale);
 	return 1;
@@ -36,7 +36,7 @@ LUA_FUNCTION(Lua_BombGetScale)
 
 LUA_FUNCTION(Lua_BombSetScale)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	bomb->_scale = (float)luaL_checknumber(L, 2);
 	return 0;
@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_BombSetScale)
 
 LUA_FUNCTION(Lua_BombGetExplosionCountdown)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	lua_pushinteger(L, *bomb->GetExplosionCountdown());
 	return 1;
@@ -52,7 +52,7 @@ LUA_FUNCTION(Lua_BombGetExplosionCountdown)
 
 LUA_FUNCTION(Lua_BombGetHeight)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	lua_pushnumber(L, bomb->_height);
 	return 1;
@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_BombGetHeight)
 
 LUA_FUNCTION(Lua_BombSetHeight)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	bomb->_height = (float)luaL_checknumber(L, 2);
 	return 0;
@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_BombSetHeight)
 
 LUA_FUNCTION(Lua_BombGetFallingSpeed)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	lua_pushnumber(L, bomb->_fallingSpeed);
 	return 1;
@@ -76,14 +76,14 @@ LUA_FUNCTION(Lua_BombGetFallingSpeed)
 
 LUA_FUNCTION(Lua_BombSetFallingSpeed)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	bomb->_fallingSpeed = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BombIsLoadingCostumes) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	lua_pushboolean(L, bomb->_loadCostumes);
 	return 1;
@@ -91,16 +91,16 @@ LUA_FUNCTION(Lua_BombIsLoadingCostumes) {
 
 LUA_FUNCTION(Lua_BombSetLoadCostumes)
 {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
 	bomb->_loadCostumes = lua::luaL_optboolean(L, 2, true);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	const int index = (int)luaL_checkinteger(L, 2);
-	if (index >= 0 && index <= 5) {
+	if (index >= 0 && index < 5) {
 		lua::luabridge::UserdataPtr::push(L, &bomb->_bombCostumesSprites[index], lua::Metatables::SPRITE);
 	}
 	else {
@@ -111,37 +111,37 @@ LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
 }
 
 LUA_FUNCTION(Lua_BombGetRocketAngle) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	lua_pushnumber(L, bomb->_rocketAngle);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BombSetRocketAngle) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	bomb->_rocketAngle = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BombGetRocketSpeed) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	lua_pushnumber(L, bomb->_rocketSpeed);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BombSetRocketSpeed) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	bomb->_rocketSpeed = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BombIsPrismTouched) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	lua_pushboolean(L, bomb->_prismTouched);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BombSetPrismTouched) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	bomb->_prismTouched = lua::luaL_checkboolean(L, 2);
 	return 0;
 }

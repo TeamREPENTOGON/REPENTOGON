@@ -21,6 +21,9 @@ __thiscall RoomConfig_Room* RoomConfig::GetRandomRoom(unsigned int seed, bool re
 "558bec6aff68????????64a1000000005083ec18535657a1????????33c5508d45f464a3000000008b7d0c8b553069f7c4000000":
 RoomConfigRoomPtrVector RoomConfig::GetRooms(int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode);
 
+"558bec83c8ff":
+static cleanup int RoomConfig::get_door_from_position(int16_t posX<ecx>, int16_t posY<edx>, int shape);
+
 "558bec518b55??8b45":
 __thiscall void RoomConfig::ResetRoomWeights(unsigned int Stage, int Mode);
 

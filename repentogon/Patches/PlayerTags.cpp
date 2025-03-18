@@ -77,20 +77,24 @@ void ASMPatchPlayerItemNoMetronome() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan signature("81ffe80100000f84????????");
-	signature.Scan();
+	SigScan patchSignature("81ffe80100000f84????????");
+	patchSignature.Scan();
 
-	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching Player::UseActiveItem for nometronome tag at %p\n", addr);
+	void* patchAddr = patchSignature.GetAddress();
+	printf("[REPENTOGON] Patching Player::UseActiveItem for nometronome tag at %p\n", patchAddr);
+
+	SigScan exitSignature("8bbd????????85ff0f8f");
+	exitSignature.Scan();
+	void* exitAddr = exitSignature.GetAddress();
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // playerType
 		.AddInternalCall(PlayerItemNoMetronome)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
-		.AddRelativeJump((char*)addr + 0x11E);
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)patchAddr + 0x42) // jump for true
+		.AddRelativeJump(exitAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 bool __stdcall PlayerItemNoExpansionPack(int itemID) {
@@ -105,20 +109,24 @@ void ASMPatchPlayerItemNoExpansionPack() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan signature("81f9e9010000");
-	signature.Scan();
+	SigScan patchSignature("81f9e9010000");
+	patchSignature.Scan();
 
-	void* addr = signature.GetAddress();
-	printf("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", addr);
+	void* patchAddr = patchSignature.GetAddress();
+	printf("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", patchAddr);
+
+	SigScan exitSignature("8b45??ff45??8b55??8b88????????8b80????????2bc1c1f8023bd00f82????????8b8f????????81c1500b0000");
+	exitSignature.Scan();
+	void* exitAddr = exitSignature.GetAddress();
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // itemId
 		.AddInternalCall(PlayerItemNoExpansionPack)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x20) // jump for true
-		.AddRelativeJump((char*)addr + 0x7b);
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)patchAddr + 0x20) // jump for true
+		.AddRelativeJump(exitAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 void ASMPatchesForPlayerCustomTags() {
