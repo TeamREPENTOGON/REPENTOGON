@@ -84,6 +84,7 @@ typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
 typedef std::vector<Devolve> vector_Devolve;
 typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
+typedef std::bitset<13> RoomShapeBitset;
 
 struct PoolItem {
 	uint32_t _itemID = 0;

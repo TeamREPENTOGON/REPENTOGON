@@ -269,3 +269,8 @@ TypeInfo RoomConfigFlags {
     Size 4;
     Align 4;
 };
+
+TypeInfo RoomShapeBitset {
+    Size 4;
+    Align 4;
+};
