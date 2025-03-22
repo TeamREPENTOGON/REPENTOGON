@@ -40,6 +40,9 @@ Additions:
 	- GetLayout
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
+* CharacterMenu
+	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
+		Tainted boolean defaults to current menu if unspecified.
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).

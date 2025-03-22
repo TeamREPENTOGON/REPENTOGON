@@ -71,3 +71,10 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     ANM2 _PageSwapWidgetSprite : 0xdb8;
     ANM2 _TaintedMenuBGDecoSprite : 0xecc;
 } : 0xfe8;
+
+struct Menu_Character_Entry {
+	int playerType : 0x4;
+} : 0x18;
+
+"b8(????????)895424??33f6":
+reference Menu_Character_Entry g_MenuCharacterEntries;
