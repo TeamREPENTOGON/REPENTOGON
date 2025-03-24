@@ -21,6 +21,10 @@ Additions:
 	- [Get/Set]RockBottomShotSpeed
 	- [Get/Set]RockBottomLuck
 	- GetPlayerHUD
+	- [Get/Set]SuplexState
+	- [Get/Set]SuplexAimCountdown
+	- [Get/Set]SuplexTargetPosition
+	- [Get/Set]SuplexLandPosition
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium

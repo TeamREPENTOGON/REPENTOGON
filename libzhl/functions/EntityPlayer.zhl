@@ -552,7 +552,7 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
+struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -757,6 +757,10 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	float _rockBottomMoveSpeed : 0x1e8c, _rockBottomMaxFireDelay : 0x1e90, _rockBottomDamage : 0x1e94, _rockBottomTearRange : 0x1e98, _rockBottomShotSpeed : 0x1e9c, _rockBottomLuck : 0x1ea0;
 	int _keepersSackBonus : 0x1eb8;
 	int _maggySwingCooldown : 0x1ec0;
+	int _suplexState : 0x1f00;
+	int _suplexAimCountdown : 0x1f04;
+	Vector _suplexTargetPos : 0x1f08;
+	Vector _suplexLandPos : 0x1f10;
 	char _bagOfCraftingContent[8]: 0x1f18;
 	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f20;
 	char _poopSpellQueue[6] : 0x1f28;
