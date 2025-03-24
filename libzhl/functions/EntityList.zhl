@@ -44,4 +44,4 @@ struct EntityList depends (Entity, EntityList_EL) {
 
 	EntityList_EL _wispEL : 0x90;
 
-} : 0x580;
+} : 0x400;

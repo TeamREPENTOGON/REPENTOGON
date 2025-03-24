@@ -100,7 +100,7 @@ LUA_FUNCTION(Lua_BombSetLoadCostumes)
 LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	const int index = (int)luaL_checkinteger(L, 2);
-	if (index >= 0 && index <= 5) {
+	if (index >= 0 && index < 5) {
 		lua::luabridge::UserdataPtr::push(L, &bomb->_bombCostumesSprites[index], lua::Metatables::SPRITE);
 	}
 	else {

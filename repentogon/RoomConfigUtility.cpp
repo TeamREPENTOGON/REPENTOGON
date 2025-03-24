@@ -162,7 +162,7 @@ const std::pair<const int, const int>& RoomConfigUtility::GetShapeDimensions(siz
 	return s_ShapeDimensions[shape];
 }
 
-void RoomConfigUtility::FinalizeRoom(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept
+void RoomConfigUtility::PostRoomInsert(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept
 {
 	if (mode == -1)
 	{

@@ -32,7 +32,7 @@ ModCallbacks.MC_PRE_ENTITY_THROW = 1040
 ModCallbacks.MC_POST_ENTITY_THROW = 1041
 ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS = 1042
 ModCallbacks.MC_PRE_ROOM_EXIT = 1043
-
+ModCallbacks.MC_POST_ROOM_RENDER_ENTITIES = 1044
 ModCallbacks.MC_POST_RENDER_PLAYER_HEAD = 1045
 ModCallbacks.MC_POST_RENDER_PLAYER_BODY = 1046
 ModCallbacks.MC_COMPLETION_MARK_GET = 1047
@@ -2874,6 +2874,14 @@ PlayerHUDLayout = {
 	JACOB_AND_ESAU = 1,
 	COMPACT = 2,  -- Used for co-op players, and for P1 if there are >2 players
 	COMPACT_JACOB_AND_ESAU = 3,  -- Used for J&E if they are not P1 or if there are >3 players
+}
+
+RoomEventOutput = {
+	GROUP_0 = 0,
+	GROUP_1 = 1,
+	GROUP_2 = 2,
+	GROUP_3 = 3,
+	GROUP_ROOM_CLEAR = 9,
 }
 
 --deprecated enums

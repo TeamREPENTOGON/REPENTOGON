@@ -59,7 +59,7 @@ const GridEntitySpawnPatchInfo patches[23] = {
 	"make_wall (crawlspace gravity)", 0, GRID_GRAVITY, NO_VARIANT_REG, 0, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0, 0x9a, NO_COND_JMP},
 
 	{"8b80????????8945??85ff",
-	"update_card_against_humanity", 0, GRID_POOP, ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::ESI, 0, 0x152, NO_COND_JMP},
+	"update_card_against_humanity", 0, GRID_POOP, ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EDX, 0, 0x152, NO_COND_JMP},
 
 	// we jmp to a place that sets al to 0 if SpawnGridEntity fails
 	{"8b75??85f678??81fec0010000",
@@ -82,13 +82,13 @@ const GridEntitySpawnPatchInfo patches[23] = {
 	"TrySpawnLadder", 0, GRID_STAIRS, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0x24, ASMPatch::Registers::EAX, 0, 0xa2, NO_COND_JMP},
 
 	{"8985????????8b85????????85c078",
-	"Room::Init #1 (random decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EBP, -0x500, ASMPatch::Registers::EAX, 0, 0xd2, NO_COND_JMP},
+	"Room::Init #1 (random decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EBP, -0x518, ASMPatch::Registers::EAX, 0, 0xd2, NO_COND_JMP},
 
 	{"8985????????85f678??81fec00100007c??68????????6a03e8????????83c4088b85",
 	"Room::Init #2 (crawlspace gravity)", 0, GRID_GRAVITY, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0xa9, NO_COND_JMP},
 
 	{"85d278??81fac00100007c",
-	"Room::Init #3 (random greed decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 0, ASMPatch::Registers::EDX, 0, ASMPatch::Registers::ESI, 0, 0xc0, NO_COND_JMP},
+	"Room::Init #3 (random greed decorations)", 0, GRID_DECORATION, NO_VARIANT_REG, 10, ASMPatch::Registers::EDX, 0, ASMPatch::Registers::ESI, 0, 0xc0, NO_COND_JMP},
 
 	{"8945??85f678??81fec0010000",
 	"TrySpawnSecretShop", 0, GRID_STAIRS, NO_VARIANT_REG, 2, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0x93, NO_COND_JMP},

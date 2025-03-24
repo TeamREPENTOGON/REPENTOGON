@@ -507,6 +507,18 @@ LUA_FUNCTION(Lua_RoomGetWallColor) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomTriggerOutput) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	const unsigned int output = (unsigned int)luaL_checkinteger(L, 2);
+
+	if (output < 0 || output > 9) {
+		return luaL_argerror(L, 2, "Invalid output index");
+	}
+
+	room->TriggerOutput(output);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -556,6 +568,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
 		{ "SetItemPool", Lua_RoomSetItemPool },
 		{ "GetItemPool", Lua_RoomGetItemPool },
+		{ "TriggerOutput", Lua_RoomTriggerOutput },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

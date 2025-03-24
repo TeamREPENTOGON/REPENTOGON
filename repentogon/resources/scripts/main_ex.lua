@@ -1277,6 +1277,13 @@ local function DefaultRunCallbackLogic(callbackID, param, ...)
 	end
 end
 
+-- For callbacks with no return values that don't want to allow mods to terminate them early.
+local function RunNoReturnCallback(callbackID, param, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		RunCallbackInternal(callbackID, callback, ...)
+	end
+end
+
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
 -- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
 local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
@@ -1328,7 +1335,7 @@ local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ..
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
 		if type(ret) == "boolean" and ret == false then
-			return
+			return false
 		elseif type(ret) == "number" and ret > 0 then
 			pillCard = ret
 		end
@@ -1506,6 +1513,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
 	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = RunPreStatusEffectApplyCallback,
+	[ModCallbacks.MC_PLAYER_HEALTH_TYPE_CHANGE] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

@@ -25,3 +25,5 @@ void ASMPatchesBedCallbacks();
 void ASMPatchPrePlayerPocketItemSwap();
 void ASMPatchMainMenuCallback();
 void ASMPatchPreModUnloadCallbackDuringShutdown();
+void ASMPatchPostRoomRenderEntitiesCallback();
+void ASMPatchPreItemTextDisplayCallback();

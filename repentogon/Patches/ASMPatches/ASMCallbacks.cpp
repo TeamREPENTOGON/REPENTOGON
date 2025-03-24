@@ -364,11 +364,19 @@ bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
 }
 
 void ASMPatchPrePlayerUseBomb() {
-	SigScan scanner("6a0068050200008bcf");
+	// Address of the conditional jump before the player places a bomb.
+	SigScan scanner("0f8f????????6a0068050200008bcfe8");
 	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* jumpAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", addr);
+	// Get the address we should jump to if we want to cancel the player's bomb placement.
+	// Pull the jump offset from the existing conditional jump.
+	void* cancelAddr = (char*)jumpAddr + 0x6 + *(int*)ByteBuffer().AddAny((char*)jumpAddr + 0x2, 4).GetData();
+
+	// Address that we want to patch at, immediately after the existing conditional jump.
+	void* patchAddr = (char*)jumpAddr + 0x6;
+
+	printf("[REPENTOGON] Patching Entity_Player::control_bombs (pre) at %p\n", patchAddr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -377,10 +385,10 @@ void ASMPatchPrePlayerUseBomb() {
 		.AddInternalCall(ProcessPrePlayerUseBombCallback)  // Run MC_PRE_PLAYER_USE_BOMB
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x7C5) // Jump for false (negate the bomb placement)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the 7 bytes we overwrote
-		.AddRelativeJump((char*)addr + 0x7);  // Jump for true (allow the bomb placement)
-	sASMPatcher.PatchAt(addr, &patch);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, cancelAddr) // Jump for false (cancel the bomb placement)
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x7))  // Restore the 7 bytes we overwrote
+		.AddRelativeJump((char*)patchAddr + 0x7);  // Jump for true (allow the bomb placement)
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
 // MC_POST_PLAYER_USE_BOMB
@@ -1363,22 +1371,23 @@ void ASMPatchMainMenuCallback() {
 // so any code running on this callback at this time is very likely to crash the game.
 // Here we trigger MC_PRE_MOD_UNLOAD earlier in the shutdown process (after the game has saved, but
 // before stuff starts getting destroyed) as well as pass a boolean indicating the ongoing shutdown.
-// Separately we've also ensured that the default MC_PRE_UNLOAD_TRIGGER (_UnloadMod) does not run
+// Separately we've also ensured that the default MC_PRE_UNLOAD trigger (_UnloadMod) does not run
 // the callback during shutdown.
 void __stdcall RunPreModUnloadCallbacks() {
-	for (const ModReference& mod : g_Mods) {
-		const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+	const int callbackid = 73;  // MC_PRE_MOD_UNLOAD
+	if (VanillaCallbackState.test(callbackid)) {
+		for (const ModReference& mod : g_Mods) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.pushluaref(mod._luaTableRef->_ref)
-			.push(true)
-			.call(1);
+			lua::LuaCaller(L).push(callbackid)
+				.pushnil()
+				.pushluaref(mod._luaTableRef->_ref)
+				.push(true)
+				.call(1);
+		}
 	}
 }
 void ASMPatchPreModUnloadCallbackDuringShutdown() {
@@ -1388,9 +1397,135 @@ void ASMPatchPreModUnloadCallbackDuringShutdown() {
 
 	printf("[REPENTOGON] Patching earlier MC_PRE_MOD_UNLOAD in Isaac::Shutdown at %p\n", addr);
 
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddInternalCall(RunPreModUnloadCallbacks)
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(RunPreModUnloadCallbacks)
+		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the push we overwrote
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+void __stdcall RunPostRoomRenderEntitiesCallback() {
+	const int callbackid = 1044;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);
+	}
+}
+void ASMPatchPostRoomRenderEntitiesCallback() {
+	SigScan scanner("33f68d87????????39b0????????76??8bbd????????6690");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching MC_POST_ROOM_RENDER_ENTITIES into Room::Render at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(RunPostRoomRenderEntitiesCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_PRE_ITEM_TEXT_DISPLAY
+bool RunPreItemTextDisplayCallback(const char* title, const char* subtitle, bool isSticky, bool isCurseDisplay) {
+	const int callbackId = 1484;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(title)
+			.push(subtitle)
+			.push(isSticky)
+			.push(isCurseDisplay)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1)) {
+			return (bool)lua_toboolean(L, -1);
+		}
+	}
+	return true;
+}
+bool RunPreItemTextDisplayCallbackUTF16(wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) {
+	int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &title[0], wcslen(title), NULL, 0, NULL, NULL);
+	std::string strTitle(sizeNeededTitle, 0);
+	WideCharToMultiByte(CP_UTF8, 0, title, wcslen(title), &strTitle[0], sizeNeededTitle, NULL, NULL);
+
+	int sizeNeededSubtitle = WideCharToMultiByte(CP_UTF8, 0, &subtitle[0], wcslen(subtitle), NULL, 0, NULL, NULL);
+	std::string strSubtitle(sizeNeededSubtitle, 0);
+	WideCharToMultiByte(CP_UTF8, 0, subtitle, wcslen(subtitle), &strSubtitle[0], sizeNeededSubtitle, NULL, NULL);
+
+	return RunPreItemTextDisplayCallback(strTitle.c_str(), strSubtitle.c_str(), isSticky, isCurseDisplay);
+}
+
+// Only called for the stage name popup, and cards/pills/etc in co-op (as of Rep+ v1.9.7.10).
+// Seems to be some inlining involved in other cases.
+HOOK_METHOD(HUD_Message, Show, (const char* title, const char* subtitle, bool autoHide, bool isCurseDisplay) -> void) {
+	const bool isSticky = !autoHide;  // What was once the "isSticky" boolean now has the opposite meaning in REP+
+	if (RunPreItemTextDisplayCallback(title, subtitle, isSticky, isCurseDisplay)) {
+		super(title, subtitle, autoHide, isCurseDisplay);
+	}
+}
+
+// Called for custom lua text, transformations, and cards/pills outside of co-op.
+HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF8, (char* title, char* subtitle, bool unused, bool isCurseDisplay) -> void) {
+	if (RunPreItemTextDisplayCallback(title, subtitle, false, isCurseDisplay)) {
+		super(title, subtitle, unused, isCurseDisplay);
+	}
+}
+
+// Called from HUD::ShowItemText outside co-op, and in Room::Init (for miniboss names?).
+HOOK_METHOD(HUD, ShowStackedItemTextCustomUTF16, (wchar_t* title, wchar_t* subtitle, bool unused1, bool unused2) -> void) {
+	if (RunPreItemTextDisplayCallbackUTF16(title, subtitle, false, false)) {
+		super(title, subtitle, unused1, unused2);
+	}
+}
+
+// Patch to trigger the callback for HUD::ShowItemText in co-op, as it seems to use some inlined code.
+bool __stdcall PreItemTextDisplayTrampoline(HUD_Message* message, wchar_t* title, wchar_t* subtitle) {
+	if (RunPreItemTextDisplayCallbackUTF16(title, subtitle, false, false)) {
+		message->text_out();  // Function call overridden by the patch.
+		return true;
+	}
+	return false;
+}
+void ASMPatchPreItemTextDisplayCallback() {
+	SigScan patchScanner("e8????????6a00ffb5????????8bcfe8????????85f6");
+	patchScanner.Scan();
+	void* patchAddr = patchScanner.GetAddress();
+
+	SigScan cancelScanner("ffb5????????e8????????83c40456");
+	if (!cancelScanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature for MC_PRE_ITEM_TEXT_DISPLAY patch's cancel jump\n");
+		return;
+	}
+	void* cancelAddr = cancelScanner.GetAddress();
+
+	printf("[REPENTOGON] Patching MC_PRE_ITEM_TEXT_DISPLAY into HUD::ShowItemText at %p\n", patchAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // (subtitle)
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr + 0x7, 0x6))  // PUSH dword ptr [EBP + ?] (title)
+		.Push(ASMPatch::Registers::ECX)  // HUD_Message
+		.AddInternalCall(PreItemTextDisplayTrampoline)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, cancelAddr)  // Jump for false (cancel the text) 
+		.AddRelativeJump((char*)patchAddr + 0x5);  // Jump for true (continue normally)
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+

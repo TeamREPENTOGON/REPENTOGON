@@ -206,6 +206,7 @@ namespace lua {
         extern LIBZHL_API const char* GridWebMT;
         extern LIBZHL_API const char* HistoryMT;
         extern LIBZHL_API const char* HistoryItemMT;
+        extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* KeyConfigMenuMT;

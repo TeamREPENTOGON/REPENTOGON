@@ -218,6 +218,9 @@ I(CONSOLE_TIME_HELP, u8"Prints the total amount of time passed on the run.")
 I(CONSOLE_TESTBOSSPOOL_DESC, u8"Print list of bosses for current floor")
 I(CONSOLE_TESTBOSSPOOL_HELP, u8"Prints a list of boss names and percentage chance (100%=10000) for current floor.")
 
+I(CONSOLE_FORCEIMPORT_DESC, u8"[EXPERIMENTAL] Forces an import of a save slot file from a previous DLC.")
+I(CONSOLE_FORCEIMPORT_HELP, u8"Takes a save slot ID as an argument.")
+
 I(CONSOLE_STAGE_BLUE_WOMB, u8"??? / Blue Womb")
 I(CONSOLE_STAGE_HOME_DAY, u8"Home (day)")
 I(CONSOLE_STAGE_HOME_NIGHT, u8"Home (night)")

@@ -75,7 +75,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_REVELATIONS, &rng, true))
             chance += 0.175f;
 
-        if ((flags & 1) != 0) //Beggar killed, haven't identified the right enum yet
+        if (((flags >> STATE_BUM_KILLED) & 1) != 0)
             chance += 0.35f;
 
         if (desc && desc->ListIndex == g_Game->GetLastBossRoomListIdx() && room->GetRedHeartDamage()) {
@@ -85,14 +85,14 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         else
             chance += 0.35f;
 
-        if ((flags & 4) != 0) { // Took red heart damage (excluding sac rooms and such)
+        if (((flags >> STATE_REDHEART_DAMAGED) & 1) != 0) {
             if (hasActOfContrition)
                 chance += 0.4f;
         }
         else
             chance += 0.99f;
 
-        if ((flags & 0x40) != 0) // Shopkeeper crushkilled
+        if (((flags >> STATE_SHOPKEEPER_KILLED_LVL) & 1) != 0)
             chance += 0.1f;
 
         if (manager->AnyoneHasTrinket(TRINKET_NUMBER_MAGNET))
@@ -153,17 +153,9 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         }
     }
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
-
-    if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true))
-        chance = 66.6f; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
      
-    if (!this->GetTemporaryEffects()->_disabled) {
-        for (TemporaryEffect effect : this->GetTemporaryEffects()->_effects) {
-            int type = effect._item->type;
-            if ((type == 1 || type == 3 || type == 4) && effect._item->id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
-                chance = 66.6f;
-        }
-    }
+    if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true) || this->GetTemporaryEffects()->HasCollectibleEffect(COLLECTIBLE_GOAT_HEAD))
+        chance = 66.6f; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
 
     if (manager->FirstCollectibleOwner(COLLECTIBLE_EUCHARIST, &rng, true))
         chance = 1;
