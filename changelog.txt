@@ -25,6 +25,7 @@ Additions:
 	- [Get/Set]SuplexAimCountdown
 	- [Get/Set]SuplexTargetPosition
 	- [Get/Set]SuplexLandPosition
+	- CreateAfterimage
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
