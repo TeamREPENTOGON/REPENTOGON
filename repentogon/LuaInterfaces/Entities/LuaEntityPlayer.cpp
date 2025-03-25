@@ -2745,7 +2745,7 @@ LUA_FUNCTION(Lua_PlayerGetSuplexState) {
 LUA_FUNCTION(Lua_PlayerSetSuplexState) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	player->_suplexState = luaL_checkinteger(L, 2);
+	player->_suplexState = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -2761,7 +2761,7 @@ LUA_FUNCTION(Lua_PlayerGetSuplexAimCountdown) {
 LUA_FUNCTION(Lua_PlayerSetSuplexAimCountdown) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	player->_suplexAimCountdown = luaL_checkinteger(L, 2);
+	player->_suplexAimCountdown = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -2794,6 +2794,17 @@ LUA_FUNCTION(Lua_PlayerSetSuplexLandPosition) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
 	player->_suplexLandPos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerCreateAfterimage) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	const int duration = (int)luaL_checkinteger(L, 2);
+	const Vector pos = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+
+	player->_afterImageFrames.push_back({ duration, pos });
 
 	return 0;
 }
@@ -3053,6 +3064,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetSuplexTargetPosition", Lua_PlayerSetSuplexTargetPosition },
 		{ "GetSuplexLandPosition", Lua_PlayerGetSuplexLandPosition },
 		{ "SetSuplexLandPosition", Lua_PlayerSetSuplexLandPosition },
+		{ "CreateAfterimage", Lua_PlayerCreateAfterimage },
 
 		{ NULL, NULL }
 	};

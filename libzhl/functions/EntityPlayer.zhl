@@ -751,6 +751,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _rottenHearts : 0x1d88;
 	int _numGigaBombs : 0x1db8;
 	History _history : 0x1dd0;
+	deque_afterImageFrames _afterImageFrames : 0x1e30;
 	Entity_Player* _twinPlayer : 0x1e44;
 	Entity_Player* _backupPlayer : 0x1e48;
 	int _redStewBonusDuration : 0x1e50;

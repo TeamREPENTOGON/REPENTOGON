@@ -86,6 +86,7 @@ typedef std::vector<Devolve> vector_Devolve;
 typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
 typedef std::bitset<13> RoomShapeBitset;
+typedef std::deque<AfterImageFrame> deque_afterImageFrames;
 
 struct PoolItem {
 	uint32_t _itemID = 0;

@@ -279,3 +279,8 @@ TypeInfo RoomShapeBitset {
     Size 4;
     Align 4;
 };
+
+TypeInfo deque_afterImageFrames {
+    Size 20;
+    Align 4;
+};

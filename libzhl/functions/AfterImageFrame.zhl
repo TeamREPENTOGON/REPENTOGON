@@ -1,0 +1,4 @@
+struct AfterImageFrame depends (Vector) {
+	int _duration : 0x0;
+	Vector _position : 0x4 ;
+} : 0xC;
