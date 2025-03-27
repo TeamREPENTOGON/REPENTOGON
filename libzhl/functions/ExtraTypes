@@ -284,3 +284,8 @@ TypeInfo deque_afterImageFrames {
     Size 20;
     Align 4;
 };
+
+TypeInfo std_deque_RoomConfigRoom {
+    Size 20;
+    Align 4;
+};

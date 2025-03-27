@@ -87,6 +87,7 @@ typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
 typedef std::bitset<13> RoomShapeBitset;
 typedef std::deque<AfterImageFrame> deque_afterImageFrames;
+typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
 
 struct PoolItem {
 	uint32_t _itemID = 0;
