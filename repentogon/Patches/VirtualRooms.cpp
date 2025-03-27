@@ -2,13 +2,37 @@
 
 #include "../RoomConfigUtility.h"
 #include "HookSystem.h"
+#include "GameStateManagerment.h"
+#include "writer.h" // rapidjson
+#include "stringbuffer.h" // rapidjson
 #include <map>
+#include <fstream>
 
 #undef ERROR
 
+typedef std::optional<std::string> Error;
+typedef LogUtility::LogContext LogContext;
+
 #pragma region Asserts and Checks
 
-std::vector<std::vector<const RoomConfig_Room*>> VirtualRoomManager::__store_room_set_pointers_pre_insertion(std::vector<RoomSetInsertionData>& roomSetInsertionData) const noexcept
+static_assert(std::extent<decltype(GameState::_rooms)>::value == std::extent<decltype(Game::_gridRooms)>::value + std::extent<decltype(Game::_negativeGridRooms)>::value, "GameState room count does not match Game room count");
+static_assert(std::extent<decltype(GameState::_rooms)>::value == std::extent<decltype(GameState::_roomConfigs)>::value, "GameState room count does not match roomConfig count");
+static_assert(std::extent<decltype(GameState::_rooms)>::value == MAX_ROOMS, "GameState room count does not match MAX_ROOMS enum value");
+static_assert(std::extent<decltype(GameState::_backwardsStages)>::value == NUM_BACKWARDS_STAGES, "GameState backwards stage count does not match NUM_BACKWARDS_STAGES enum value");
+
+size_t VirtualRoomManager::RoomSet::__calc_size() const noexcept
+{
+	size_t size = 0;
+
+	for (auto& roomArray : m_Rooms)
+	{
+		size += roomArray.size();
+	}
+
+	return size;
+}
+
+std::vector<std::vector<const RoomConfig_Room*>> VirtualRoomManager::__store_room_set_pointers_pre_insertion(std::vector<RoomSetInsertionData>& roomSetInsertionData, bool isRestoringRooms) const noexcept
 {
 #ifdef NDEBUG
 	return {};
@@ -19,7 +43,7 @@ std::vector<std::vector<const RoomConfig_Room*>> VirtualRoomManager::__store_roo
 	for (const auto& roomSetData : roomSetInsertionData)
 	{
 		auto& roomSetPtrs = roomSetPtrsContainer.emplace_back();
-		auto& roomSet = m_Stages[roomSetData.stageId].m_RoomSets[roomSetData.mode];
+		auto& roomSet = this->get_room_set(roomSetData.stageId, roomSetData.mode, isRestoringRooms);
 
 		roomSetPtrs.reserve(roomSet.m_Rooms.size());
 		for (auto& roomsArray : roomSet.m_Rooms)
@@ -32,16 +56,17 @@ std::vector<std::vector<const RoomConfig_Room*>> VirtualRoomManager::__store_roo
 #endif // !NDEBUG
 }
 
-void VirtualRoomManager::__assert_valid_state_post_insertion(const InsertionData& insertionData, const std::vector<std::vector<const RoomConfig_Room*>>& roomSetPtrsContainer, bool isRestoringRooms) const noexcept
+void VirtualRoomManager::__assert_valid_state_post_insertion(const InsertionData& insertionData, const std::vector<std::vector<const RoomConfig_Room*>>& roomSetPtrsContainer, bool isRestoringRooms, bool isOptional) const noexcept
 {
 #ifndef NDEBUG
+	size_t roomsToInsert = 0;
+
 	for (size_t i = 0; i < insertionData.roomSetData.size(); i++)
 	{
 		auto& roomSetData = insertionData.roomSetData[i];
-		assert(roomSetData.remainingRooms == 0); // All rooms should have been inserted
 
 		auto& roomSetPtrs = roomSetPtrsContainer[i];
-		auto& roomSet = m_Stages[roomSetData.stageId].m_RoomSets[roomSetData.mode];
+		auto& roomSet = this->get_room_set(roomSetData.stageId, roomSetData.mode, isRestoringRooms);
 
 		auto it = roomSet.m_Rooms.begin();
 		for (auto* roomPtr : roomSetPtrs)
@@ -49,23 +74,37 @@ void VirtualRoomManager::__assert_valid_state_post_insertion(const InsertionData
 			assert(roomPtr == it->data()); // Make sure no reallocation occurred
 			it++;
 		}
+
+		assert(roomSet.m_Size == roomSet.__calc_size());
+
+		for (size_t i = 0; i < roomSetData.roomData.size(); i++)
+		{
+			const auto& roomData = roomSetData.roomData[i];
+
+			assert(!roomData.mapEntry.IsInInvalidState());
+			assert(roomData.mapEntry.inserted || isRestoringRooms); // Make sure all rooms have their map entry marked as inserted unless we are restoring rooms
+			assert(insertionData.outInsertedRooms[roomData.outputVectorIndex] != nullptr); // Make sure all rooms have a reference to the inserted room
+		}
+
+		roomsToInsert += roomSetData.roomData.size();
 	}
 
-	for (size_t i = 0; i < insertionData.roomsData.size(); i++)
+	if (isOptional && !isRestoringRooms)
 	{
-		const auto& roomData = insertionData.roomsData[i];
+		size_t numInsertedRooms = 0;
+		for (RoomConfig_Room* room : insertionData.outInsertedRooms)
+		{
+			numInsertedRooms += room != nullptr;
+		}
 
-		assert(!roomData.mapEntry.IsInInvalidState());
-		assert(roomData.mapEntry.inserted || isRestoringRooms); // Make sure all rooms have their map entry marked as inserted unless we are restoring rooms
-		assert(roomData.insertedRoom != nullptr); // Make sure all rooms have a reference to the inserted room
-		assert(&roomData.insertedRoom == &insertionData.outInsertedRooms[i]); // The Indexes of the two vectors should be synchronized
+		assert(numInsertedRooms == roomsToInsert);
 	}
 #endif // !NDEBUG
 }
 
 #pragma endregion
 
-#pragma region RoomSet Iterator
+#pragma region RoomSet Iteration
 
 void VirtualRoomManager::RoomSet::iterator::try_move_to_next_array() noexcept
 {
@@ -124,22 +163,117 @@ bool VirtualRoomManager::RoomSet::iterator::operator!=(const iterator& other) co
 	return !(*this == other);
 }
 
+const RoomConfig_Room& VirtualRoomManager::RoomSet::at_index(size_t index) const noexcept
+{
+	assert(index < m_Size);
+	assert(this->__calc_size() == m_Size);
+
+	for (const auto& roomArray : m_Rooms)
+	{
+		if (index < roomArray.size())
+		{
+			return roomArray[index];
+		}
+		index -= roomArray.size();
+	}
+
+	throw std::runtime_error(__FUNCTION__ ": index out of bounds"); // this is only useful when using a debugger as noexcept forces std::terminate
+}
+
+const RoomConfig_Room& VirtualRoomManager::RoomSet::operator[](size_t index) const noexcept
+{
+	return this->at_index(index);
+}
+
+RoomConfig_Room& VirtualRoomManager::RoomSet::operator[](size_t index) noexcept
+{
+	return const_cast<RoomConfig_Room&>(this->at_index(index));
+}
+
 #pragma endregion
 
-#pragma region Init
+#pragma region General Data Management
+
+void VirtualRoomManager::RoomSet::reset() noexcept
+{
+	m_Rooms.clear();
+	m_Size = 0;
+}
+
+void VirtualRoomManager::clear() noexcept
+{
+	m_RoomMap.clear();
+	m_Stages.clear();
+	m_RestoredRooms.reset();
+	m_SavedRooms.clear();
+
+	m_Stages.resize(NUM_STB);
+}
 
 void VirtualRoomManager::reset() noexcept
 {
-	m_Stages.clear();
-	m_RoomMap.clear();
+	for (auto& stage : m_Stages)
+	{
+		stage.reset_weights();
+	}
+}
 
-	m_Stages.resize(NUM_STB);
+void VirtualRoomManager::reset_weights(uint32_t stageId, int mode) noexcept
+{
+	this->get_room_set(stageId, mode, false).reset_weights();
+}
+
+void VirtualRoomManager::Stage::reset_weights() noexcept
+{
+	for (auto& roomSet : m_RoomSets)
+	{
+		roomSet.reset_weights();
+	}
+}
+
+void VirtualRoomManager::RoomSet::reset_weights() noexcept
+{
+	for (auto& room : *this)
+	{
+		room.Weight = room.InitialWeight;
+	}
+}
+
+void VirtualRoomManager::reprocess_rooms(uint32_t stageId, int mode) noexcept
+{
+	this->get_room_set(stageId, mode, false).reprocess_rooms();
+}
+
+void VirtualRoomManager::RoomSet::reprocess_rooms() noexcept
+{
+	for (auto& room : *this)
+	{
+		RoomConfigUtility::PostRoomInsert(room, room.StageId, room.Mode);
+	}
 }
 
 void VirtualRoomManager::__Init() noexcept
 {
 	auto& instance = VirtualRoomManager::Get();
+	instance.clear();
+}
+
+void VirtualRoomManager::__Reset() noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
 	instance.reset();
+}
+
+void VirtualRoomManager::__ResetWeights(uint32_t stageId, int mode) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	instance.reset_weights(stageId, mode);
+}
+
+void VirtualRoomManager::__RefinalizeRooms(uint32_t stageId, int mode) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	instance.reprocess_rooms(stageId, mode);
 }
 
 #pragma endregion
@@ -148,15 +282,7 @@ void VirtualRoomManager::__Init() noexcept
 
 RoomConfig_Room* VirtualRoomManager::get_room(uint32_t stageId, int type, uint32_t variant, int mode) noexcept
 {
-	if (mode == -1)
-	{
-		mode = g_Game->GetMode();
-	}
-
-	assert(stageId < m_Stages.size());
-	assert(0 <= mode && mode <= 1);
-
-	auto& roomSet = m_Stages[stageId].m_RoomSets[mode];
+	auto& roomSet = this->get_room_set(stageId, mode, false);
 	for (auto& room : roomSet)
 	{
 		if (room.Type == type && room.Variant == variant)
@@ -170,15 +296,7 @@ RoomConfig_Room* VirtualRoomManager::get_room(uint32_t stageId, int type, uint32
 
 void VirtualRoomManager::get_rooms(std::vector<RoomConfig_Room*>& result, uint32_t stageId, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType, int mode) noexcept
 {
-	if (mode == -1)
-	{
-		mode = g_Game->GetMode();
-	}
-
-	assert(stageId < m_Stages.size());
-	assert(0 <= mode && mode <= 1);
-
-	auto& roomSet = m_Stages[stageId].m_RoomSets[mode];
+	auto& roomSet = this->get_room_set(stageId, mode, false);
 	for (auto& room : roomSet)
 	{
 		if (RoomConfigUtility::RoomPassesFilter(room, roomType, roomShape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subType))
@@ -200,117 +318,751 @@ void VirtualRoomManager::__GetRooms(std::vector<RoomConfig_Room*>& result, uint3
 
 #pragma endregion
 
-#pragma region Insertion
+#pragma region Room Insertion
 
 static constexpr size_t MIN_ARRAY_SIZE = 20; // Set a reasonable min size so that if someone adds small groups we don't have small vectors
 
-std::vector<RoomConfig_Room>& VirtualRoomManager::RoomSet::create_new_array(size_t roomsCount) noexcept
+std::vector<RoomConfig_Room>& VirtualRoomManager::RoomSet::__create_new_array(size_t roomsCount) noexcept
 {
 	assert(m_Rooms.empty() || m_Rooms.back().size() == m_Rooms.back().capacity()); // There is no reason to create a new vector
 	m_Rooms.emplace_back().reserve(std::max(roomsCount, MIN_ARRAY_SIZE));
 	return m_Rooms.back();
 }
 
-bool VirtualRoomManager::RoomSet::insert_room(RoomInsertionData& roomData, bool isRestoringRooms) noexcept
+RoomConfig_Room& VirtualRoomManager::RoomSet::__emplace_back(RoomConfig_Room&& room, size_t remainingRooms) noexcept
 {
-	assert(!roomData.mapEntry.IsInInvalidState());
-	assert(roomData.room.StageId == roomData.roomSetData.stageId && roomData.room.Mode == roomData.roomSetData.mode);
-
-	if (isRestoringRooms && !roomData.mapEntry.IsFree())
-	{
-		roomData.insertedRoom = roomData.mapEntry.reference;
-		return false;
-	}
-
-	if (roomData.mapEntry.IsRestoredRoom())
-	{
-		roomData.room.Variant = roomData.mapEntry.reference->Variant;
-		*roomData.mapEntry.reference = std::move(roomData.room);
-		roomData.mapEntry.inserted = true;
-
-		roomData.insertedRoom = roomData.mapEntry.reference;
-		return false;
-	}
-
 	if (m_Rooms.empty())
 	{
-		this->create_new_array(roomData.roomSetData.remainingRooms);
+		this->__create_new_array(remainingRooms);
 	}
 
 	std::vector<RoomConfig_Room>* array = &m_Rooms.back();
 	if (array->size() == array->capacity())
 	{
-		array = &this->create_new_array(roomData.roomSetData.remainingRooms);
+		array = &this->__create_new_array(remainingRooms);
 	}
 
-	auto& insertedRoom = array->emplace_back(std::move(roomData.room));
-	RoomConfigUtility::FinalizeRoom(insertedRoom, roomData.roomSetData.stageId, roomData.roomSetData.mode);
+	auto& insertedRoom = array->emplace_back(std::move(room));
+	m_Size++;
+	assert(m_Size == this->__calc_size());
 
-	if (roomData.mapEntry.IsFree())
+	return insertedRoom;
+}
+
+void VirtualRoomManager::RoomSet::__post_room_insert(RoomConfig_Room& insertedRoom, RoomInsertionData& roomData, bool isRestoringRooms) const noexcept
+{
+	if (isRestoringRooms)
+	{
+		insertedRoom.Variant = m_Size - 1;
+	}
+	else
+	{
+		RoomConfigUtility::PostRoomInsert(insertedRoom, insertedRoom.StageId, insertedRoom.Mode);
+	}
+
+	if (roomData.mapEntry.IsFree() || (roomData.mapEntry.IsRestoredRoom() && !isRestoringRooms))
 	{
 		roomData.mapEntry.reference = &insertedRoom;
 		roomData.mapEntry.inserted = !isRestoringRooms;
 	}
-
-	assert(roomData.roomSetData.remainingRooms != 0); // A room was inserted when no rooms were supposed to be inserted
-	roomData.roomSetData.remainingRooms--;
-	roomData.insertedRoom = &insertedRoom;
-	return true;
 }
 
-VirtualRoomManager::InsertionData VirtualRoomManager::prepare_insertion_data(std::vector<RoomConfig_Room>& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+void VirtualRoomManager::RoomSet::insert_rooms(RoomSetInsertionData& roomSet, InsertionData& insertionData, bool isRestoringRooms) noexcept
 {
+	for (size_t i = 0; i < roomSet.roomData.size(); i++)
+	{
+		auto& roomData = roomSet.roomData[i];
+
+		assert(!roomData.mapEntry.IsInInvalidState());
+		assert(this == &VirtualRoomManager::Get().get_room_set(roomData.room.StageId, roomData.room.Mode, isRestoringRooms)); // the room set this room is being inserted into is the correct one
+		assert((isRestoringRooms && roomData.mapEntry.IsFree()) || !isRestoringRooms);
+
+		size_t remainingRooms = roomSet.roomData.size() - i;
+		auto& insertedRoom = this->__emplace_back(std::move(roomData.room), remainingRooms);
+		this->__post_room_insert(insertedRoom, roomData, isRestoringRooms);
+
+		assert(m_Size == this->__calc_size());
+		insertionData.outInsertedRooms[roomData.outputVectorIndex] = &insertedRoom;
+	}
+}
+
+const VirtualRoomManager::RoomSet& VirtualRoomManager::get_room_set(uint32_t stageId, int mode, bool isRestoringRooms) const noexcept
+{
+	if (isRestoringRooms)
+	{
+		return this->m_RestoredRooms;
+	}
+
+	if (mode == -1)
+	{
+		mode = g_Game->GetMode();
+	}
+
+	assert(stageId < this->m_Stages.size());
+	assert(0 <= mode && mode < std::tuple_size<decltype(Stage::m_RoomSets)>::value);
+
+	return this->m_Stages[stageId].m_RoomSets[mode];
+}
+
+VirtualRoomManager::RoomSet& VirtualRoomManager::get_room_set(uint32_t stageId, int mode, bool isRestoringRooms) noexcept
+{
+	return const_cast<RoomSet&>(std::as_const(*this).get_room_set(stageId, mode, isRestoringRooms));
+}
+
+void VirtualRoomManager::prepare_room_for_insertion(RoomConfig_Room& room, InsertionData& insertionData, std::map<std::pair<uint32_t, int>, uint32_t>& roomSetMap, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	RoomConfigUtility::RoomIdentifier identifier(room);
+	auto& mapEntry = m_RoomMap[identifier];
+
+	if (isRestoringRooms && !mapEntry.IsFree())
+	{
+		insertionData.outInsertedRooms.emplace_back(mapEntry.reference);
+		return;
+	}
+
+	std::pair<uint32_t, int> roomSetKey = isRestoringRooms ? std::make_pair(-1, -1) : std::make_pair(room.StageId, room.Mode);
+	auto [it, inserted] = roomSetMap.emplace(roomSetKey, -1);
+	if (inserted)
+	{
+		insertionData.roomSetData.emplace_back(room.StageId, room.Mode);
+		it->second = insertionData.roomSetData.size() - 1;
+	}
+
+	uint32_t roomSetDataIndex = it->second;
+	assert(roomSetDataIndex != -1);
+	RoomSetInsertionData& roomSetData = insertionData.roomSetData[roomSetDataIndex];
+	RoomConfig_Room*& outInsertedRoom = insertionData.outInsertedRooms.emplace_back(nullptr);
+
+	assert(!(mapEntry.reference != nullptr && isRestoringRooms)); // We should not place a room when restoring, if the map entry has a reference
+	insertionData.roomSetData[roomSetDataIndex].roomData.emplace_back(std::move(room), mapEntry, insertionData.outInsertedRooms.size() - 1);
+
+	if (mapEntry.inserted && !isRestoringRooms)
+	{
+		logContext.LogMessage(LogUtility::eLogType::WARN, REPENTOGON::StringFormat("A room with stage: %u, mode: %d, type: %d, variant: %u, shape: %d and name: \"%s\" already exists, room cannot be restored on continue", identifier.stageId, identifier.mode, identifier.type, identifier.variant, identifier.shape, identifier.name.c_str()).c_str());
+	}
+}
+
+template<typename RoomsContainer>
+VirtualRoomManager::InsertionData VirtualRoomManager::__prepare_insertion_data_implemenetation(RoomsContainer& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	static_assert(std::is_same_v<std::decay_t<RoomsContainer>, std::vector<RoomConfig_Room>> || std::is_same_v<std::decay_t<RoomsContainer>, std::vector<std::optional<RoomConfig_Room>>>, "Invalid RoomContainer for add_rooms implementation");
+	constexpr bool isOptional = std::is_same_v<std::decay_t<RoomsContainer>, std::vector<std::optional<RoomConfig_Room>>>;
+
 	InsertionData insertionData;
-	insertionData.roomsData.reserve(rooms.size());
 	insertionData.outInsertedRooms.reserve(rooms.size());
-	std::map<std::pair<uint32_t, int>, RoomSetInsertionData*> roomSetMap;
+	std::map<std::pair<uint32_t, int>, uint32_t> roomSetMap;
 
 	for (auto& room : rooms)
 	{
-		std::pair<uint32_t, int> roomSetKey = std::make_pair(room.StageId, room.Mode);
-		auto [it, inserted] = roomSetMap.emplace(roomSetKey, nullptr);
-		if (inserted)
+		if constexpr (isOptional)
 		{
-			insertionData.roomSetData.emplace_back(room.StageId, room.Mode);
-			it->second = &insertionData.roomSetData.back();
+			if (!room)
+			{
+				insertionData.outInsertedRooms.emplace_back(nullptr);
+				continue;
+			}
+
+			this->prepare_room_for_insertion(std::move(room.value()), insertionData, roomSetMap, logContext, isRestoringRooms);
 		}
-
-		assert(it->second != nullptr);
-		it->second->remainingRooms++;
-
-		RoomConfigUtility::RoomIdentifier identifier(room);
-		auto& mapEntry = m_RoomMap[identifier];
-		RoomConfig_Room*& outInsertedRoom = insertionData.outInsertedRooms.emplace_back(nullptr);
-		insertionData.roomsData.emplace_back(std::move(room), mapEntry, *it->second, outInsertedRoom);
-
-		if (mapEntry.inserted && !isRestoringRooms)
+		else
 		{
-			logContext.LogMessage(LogUtility::eLogType::WARN, REPENTOGON::StringFormat("A room with stage: %u, mode: %d, type: %d, variant: %u, shape: %d and name: \"%s\" already exists, room cannot be restored on continue", identifier.stageId, identifier.mode, identifier.type, identifier.variant, identifier.shape, identifier.name.c_str()).c_str());
+			this->prepare_room_for_insertion(std::move(room), insertionData, roomSetMap, logContext, isRestoringRooms);
 		}
 	}
 
 	return insertionData;
 }
 
-std::vector<RoomConfig_Room*> VirtualRoomManager::add_rooms(std::vector<RoomConfig_Room>&& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+template<typename RoomsContainer>
+inline std::vector<RoomConfig_Room*> VirtualRoomManager::__add_rooms_implementation(RoomsContainer&& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
 {
+	static_assert(std::is_same_v<std::decay_t<RoomsContainer>, std::vector<RoomConfig_Room>> || std::is_same_v<std::decay_t<RoomsContainer>, std::vector<std::optional<RoomConfig_Room>>>, "Invalid RoomContainer for add_rooms implementation");
+	constexpr bool isOptional = std::is_same_v<std::decay_t<RoomsContainer>, std::vector<std::optional<RoomConfig_Room>>>;
+
 	auto insertionData = this->prepare_insertion_data(rooms, logContext, isRestoringRooms);
 
 #ifndef NDEBUG
-	auto roomSetPtrsContainer = this->__store_room_set_pointers_pre_insertion(insertionData.roomSetData);
+	auto roomSetPtrsContainer = this->__store_room_set_pointers_pre_insertion(insertionData.roomSetData, isRestoringRooms);
 #endif // !NDEBUG
 
-	for (auto& roomData : insertionData.roomsData)
+	for (auto& roomSetData : insertionData.roomSetData)
 	{
-		auto& roomSet = this->m_Stages[roomData.roomSetData.stageId].m_RoomSets[roomData.roomSetData.mode];
-		roomSet.insert_room(roomData, isRestoringRooms);
+		auto& roomSet = this->get_room_set(roomSetData.stageId, roomSetData.mode, isRestoringRooms);
+		roomSet.insert_rooms(roomSetData, insertionData, isRestoringRooms);
 	}
 
 #ifndef NDEBUG
-	this->__assert_valid_state_post_insertion(insertionData, roomSetPtrsContainer, isRestoringRooms);
+	this->__assert_valid_state_post_insertion(insertionData, roomSetPtrsContainer, isRestoringRooms, isOptional);
 #endif // !NDEBUG
 
 	return std::move(insertionData.outInsertedRooms);
+}
+
+VirtualRoomManager::InsertionData VirtualRoomManager::prepare_insertion_data(std::vector<RoomConfig_Room>& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	return this->__prepare_insertion_data_implemenetation<std::vector<RoomConfig_Room>>(rooms, logContext, isRestoringRooms);
+}
+
+VirtualRoomManager::InsertionData VirtualRoomManager::prepare_insertion_data(std::vector<std::optional<RoomConfig_Room>>& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	return this->__prepare_insertion_data_implemenetation<std::vector<std::optional<RoomConfig_Room>>>(rooms, logContext, isRestoringRooms);
+}
+
+std::vector<RoomConfig_Room*> VirtualRoomManager::add_rooms(std::vector<RoomConfig_Room>&& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	return this->__add_rooms_implementation<std::vector<RoomConfig_Room>>(std::move(rooms), logContext, isRestoringRooms);
+}
+
+std::vector<RoomConfig_Room*> VirtualRoomManager::add_rooms(std::vector<std::optional<RoomConfig_Room>>&& rooms, LogUtility::LogContext& logContext, bool isRestoringRooms) noexcept
+{
+	return this->__add_rooms_implementation<std::vector<std::optional<RoomConfig_Room>>>(std::move(rooms), logContext, isRestoringRooms);
+}
+
+#pragma endregion
+
+#pragma region Save Data
+
+constexpr uint32_t GAMESTATE_VERSION = 1;
+
+static std::string get_save_data_path(const std::string& fileName) noexcept
+{
+	std::string rawString = REPENTOGON::StringFormat("%s/VirtualRoomManager/%s.json", REPENTOGON::GetRepentogonDataPath(), fileName.c_str());
+	std::error_code errorCode;
+	auto path = std::filesystem::absolute(rawString, errorCode);
+	if (errorCode)
+	{
+		return rawString;
+	}
+
+	return path.string();
+}
+
+#pragma region GameStateRoomConfig Management
+
+static std::vector<GameStateRoomConfig*> get_game_state_rooms(GameState& gameState) noexcept
+{
+	constexpr size_t MAX_BACKWARDS_ROOMS = 4 * NUM_BACKWARDS_STAGES;
+	std::vector<GameStateRoomConfig*> gameStateRooms;
+	gameStateRooms.reserve(gameState._roomCount + NUM_OFF_GRID_ROOMS + MAX_BACKWARDS_ROOMS);
+
+	for (size_t i = 0; i < gameState._roomCount; i++)
+	{
+		gameStateRooms.emplace_back(&gameState._roomConfigs[i]);
+	}
+
+	for (size_t i = MAX_GRID_ROOMS; i < MAX_ROOMS; i++) // Offgrid rooms
+	{
+		gameStateRooms.emplace_back(&gameState._roomConfigs[i]);
+	}
+
+	for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+	{
+		auto& backwardsStage = gameState._backwardsStages[i];
+
+		for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
+		{
+			gameStateRooms.emplace_back(&backwardsStage._bossRoomConfigs[i]);
+		}
+
+		for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
+		{
+			gameStateRooms.emplace_back(&backwardsStage._treasureRoomConfigs[i]);
+		}
+	}
+
+	return gameStateRooms;
+}
+
+static RoomConfig_Room* get_room_from_set(VirtualRoomManager::RoomSet& roomSet, size_t index) noexcept
+{
+	return roomSet.size() <= index ? nullptr : &roomSet[index];
+}
+
+static void assert_valid_restored_room(RoomConfig_Room* restoredRoom, GameStateRoomConfig& gameStateRoom)
+{
+#ifndef NDEBUG
+	uint32_t flags = gameStateRoom.GetFlags();
+	if ((flags & GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG) != 0)
+	{
+		return; // Rooms belonging to the RestoredSet are restored on Level::read_room_config
+	}
+
+	auto* room = g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(gameStateRoom.GetStageID(), gameStateRoom._type, gameStateRoom._variant, gameStateRoom.GetMode());
+	assert(restoredRoom == room); // the room identifier is correct and exists
+#endif
+}
+
+bool VirtualRoomManager::is_restored_virtual_room(RoomConfig_Room& roomConfig) noexcept
+{
+	auto& roomSet = this->get_room_set(0, 0, true);
+	return &roomConfig == get_room_from_set(roomSet, roomConfig.Variant);
+}
+
+bool VirtualRoomManager::normalize_game_state_room(GameStateRoomConfig& gameStateRoom, std::vector<RoomConfig_Room*>& restoredRooms) noexcept
+{
+	uint32_t flags = gameStateRoom.GetFlags();
+	if ((flags & GameStateRoomConfig::VIRTUAL_ROOM_FLAG) == 0)
+	{
+		return true; // Already in it's normal form (at least when concerning virtual rooms)
+	}
+
+	size_t index = gameStateRoom._variant;
+	if (index >= restoredRooms.size())
+	{
+		return false;
+	}
+
+	auto* restoredRoom = restoredRooms[index];
+	if (!restoredRoom)
+	{
+		return false;
+	}
+
+	flags &= ~GameStateRoomConfig::VIRTUAL_ROOM_FLAG;
+	if (this->is_restored_virtual_room(*restoredRoom))
+	{
+		flags |= GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG;
+	}
+	gameStateRoom.SetFlags(flags);
+
+	gameStateRoom.SetStageID(restoredRoom->StageId);
+	gameStateRoom.SetMode(restoredRoom->Mode);
+	gameStateRoom._variant = restoredRoom->Variant;
+	gameStateRoom._type = restoredRoom->Type;
+
+	assert_valid_restored_room(restoredRoom, gameStateRoom);
+	return true;
+}
+
+void VirtualRoomManager::write_restored_virtual_room(RoomConfig_Room& roomConfig, GameStateRoomConfig& gameStateRoom) noexcept
+{
+	assert(&roomConfig == &this->m_RestoredRooms[roomConfig.Variant]);
+
+	uint32_t flags = gameStateRoom.GetFlags();
+	flags |= GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG;
+	gameStateRoom.SetFlags(flags);
+	gameStateRoom._variant = roomConfig.Variant;
+
+	gameStateRoom.SetStageID(0);
+	gameStateRoom.SetMode(0);
+	gameStateRoom._type = 0;
+}
+
+RoomConfig_Room* VirtualRoomManager::read_restored_virtual_room(GameStateRoomConfig& gameStateRoom) noexcept
+{
+	assert(gameStateRoom.GetFlags() & GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG);
+
+	auto& roomSet = this->get_room_set(0, 0, true);
+	return get_room_from_set(roomSet, gameStateRoom._variant);
+}
+
+#pragma endregion
+
+#pragma region GameState Management
+
+uint32_t VirtualRoomManager::save_room(RoomConfig_Room* room, std::map<RoomConfigUtility::RoomIdentifier, uint32_t>& savedRoomsMap) noexcept
+{
+	RoomConfigUtility::RoomIdentifier identifier(*room);
+	auto [it, inserted] = savedRoomsMap.emplace(identifier, m_SavedRooms.size());
+
+	if (inserted)
+	{
+		auto& mapEntry = m_RoomMap[identifier];
+		assert(mapEntry.reference); // The saved room was not properly inserted in the map as a virtual room (This could be caused by it not being a virtual room at all)
+		m_SavedRooms.emplace_back(room);
+	}
+
+	return it->second;
+}
+
+void VirtualRoomManager::try_save_room(GameStateRoomConfig& saveState, std::map<RoomConfigUtility::RoomIdentifier, uint32_t>& savedRoomsMap) noexcept
+{
+	uint32_t flags = saveState.GetFlags();
+	if ((flags & ~GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG) != 0) // Only the Restored Virtual Rooms or rooms with no flag are allowed
+	{
+		return;
+	}
+
+	RoomConfig_Room* room = nullptr;
+	if (flags & GameStateRoomConfig::RESTORED_VIRTUAL_ROOM_FLAG)
+	{
+		room = this->read_restored_virtual_room(saveState);
+	}
+	else
+	{
+		room = this->get_room(saveState.GetStageID(), saveState._type, saveState._variant, saveState.GetMode());
+	}
+
+	if (!room) // The room is not a virtual room
+	{
+		return;
+	}
+
+	uint32_t savedRoomIndex = this->save_room(room, savedRoomsMap);
+	saveState.SetFlags(GameStateRoomConfig::VIRTUAL_ROOM_FLAG);
+	saveState._variant = savedRoomIndex;
+	saveState._type = 0;
+}
+
+void VirtualRoomManager::save_game_state(uint32_t slot) noexcept
+{
+	if (slot != GameStateSlot::SAVE_FILE)
+	{
+		return;
+	}
+
+	m_SavedRooms.clear();
+	std::map<RoomConfigUtility::RoomIdentifier, uint32_t> savedRoomsMap;
+	auto& gameState = g_Manager->_gamestate;
+	auto gameStateRooms = get_game_state_rooms(gameState);
+
+	for (auto* gameStateRoom : gameStateRooms)
+	{
+		this->try_save_room(*gameStateRoom, savedRoomsMap);
+	}
+}
+
+void VirtualRoomManager::delete_save(const std::string& fileName, bool isRerun) noexcept
+{
+	if (isRerun)
+	{
+		return;
+	}
+
+	std::filesystem::path filePath = get_save_data_path(fileName);
+	std::error_code errorCode;
+
+	if (!std::filesystem::exists(filePath, errorCode))
+	{
+		return;
+	}
+
+	LogContext logContext;
+	logContext.emplace_back(REPENTOGON::StringFormat("[VirtualRoomManager] deleting \"%s\": ", fileName.c_str()));
+
+	bool status = std::filesystem::remove(filePath, errorCode);
+	if (!status || errorCode)
+	{
+		if (errorCode)
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("unable to delete file at \"%s\": %s", filePath.string().c_str(), errorCode.message().c_str()).c_str());
+		}
+		else
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("unable to delete file at \"%s\"", filePath.string().c_str()).c_str());
+		}
+	}
+	else
+	{
+		logContext.LogMessage(LogUtility::eLogType::INFO, REPENTOGON::StringFormat("successfully deleted file at \"%s\"", filePath.string().c_str()).c_str());
+	}
+}
+
+#pragma endregion
+
+#pragma region Serialization
+
+static std::optional<std::ofstream> open_game_state_file(std::filesystem::path filePath, Error& error) noexcept
+{
+	std::filesystem::path directory = filePath.parent_path();
+	error.reset();
+
+	std::error_code errorCode;
+	if (!directory.empty() && !std::filesystem::exists(directory, errorCode))
+	{
+		if (errorCode)
+		{
+			error = REPENTOGON::StringFormat("failed to check existence of game state directory: \"%s\"", errorCode.message().c_str());
+			return std::nullopt;
+		}
+
+		std::filesystem::create_directories(directory, errorCode);
+		if (errorCode)
+		{
+			error = REPENTOGON::StringFormat("failed to create game state directory: \"%s\"", errorCode.message().c_str());
+			return std::nullopt;
+		}
+	}
+
+	std::ofstream file(filePath);
+	if (!file)
+	{
+		error = REPENTOGON::StringFormat("failed to open file for writing: \"%s\"", filePath.string().c_str());
+		return file;
+	}
+
+	return file;
+}
+
+rapidjson::Value VirtualRoomManager::serialize_rooms(rapidjson::Document::AllocatorType& allocator) noexcept
+{
+	rapidjson::Value rooms(rapidjson::kArrayType);
+
+	for (auto* room : m_SavedRooms)
+	{
+		assert(room); // Each saved room should never be nullptr
+		rooms.PushBack(RoomConfigUtility::SerializeRoom(*room, allocator), allocator);
+	}
+
+	return rooms;
+}
+
+rapidjson::Document VirtualRoomManager::seralize_save() noexcept
+{
+	rapidjson::Document doc;
+	auto& save = doc.SetObject();
+	auto& allocator = doc.GetAllocator();
+	uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+
+	save.AddMember("Version", GAMESTATE_VERSION, allocator);
+	save.AddMember("Checksum", gameChecksum, allocator);
+	save.AddMember("Rooms", this->serialize_rooms(allocator), allocator);
+
+	return doc;
+}
+
+bool VirtualRoomManager::write_save(const std::string& fileName, bool isRerun) noexcept
+{
+	if (isRerun)
+	{
+		return true;
+	}
+
+	LogContext logContext;
+	logContext.emplace_back(REPENTOGON::StringFormat("[VirtualRoomManager] writing save \"%s\": ", fileName.c_str()));
+
+	std::string filePath = get_save_data_path(fileName);
+	Error error;
+
+	auto file = open_game_state_file(filePath, error);
+	if (error)
+	{
+		logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("unable to write save: %s", error.value().c_str()).c_str());
+		return true;
+	}
+
+	rapidjson::Document doc = this->seralize_save();
+
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	doc.Accept(writer);
+
+	file.value() << buffer.GetString() << std::endl;
+
+	logContext.LogMessage(LogUtility::eLogType::INFO, REPENTOGON::StringFormat("successfully saved to \"%s\"", filePath.c_str()).c_str());
+	return true;
+}
+
+#pragma endregion
+
+#pragma region Deserialization
+
+static inline rapidjson::Document get_json_document(const std::string& filePath, Error& error) noexcept
+{
+	error.reset();
+	rapidjson::Document doc;
+
+	std::ifstream stream(filePath);
+	if (!stream.is_open())
+	{
+		error = REPENTOGON::StringFormat("Failed to open file \"%s\"", filePath.c_str());
+		return doc;
+	}
+
+	std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
+	doc.Parse(content.c_str());
+
+	if (doc.HasParseError())
+	{
+		error = REPENTOGON::StringFormat("Failed to parse json file \"%s\"", filePath.c_str());
+		return doc;
+	}
+
+	return doc;
+}
+
+std::vector<std::optional<RoomConfig_Room>> VirtualRoomManager::deserialize_rooms(const rapidjson::Value& rooms, LogUtility::LogContext& logContext) noexcept
+{
+	std::vector<std::optional<RoomConfig_Room>> builtRooms;
+
+	if (!LogUtility::Json::ValidateArray(rooms, logContext))
+	{
+		return builtRooms;
+	}
+
+	const auto& roomsArray = rooms.GetArray();
+	builtRooms.reserve(roomsArray.Size());
+
+	for (size_t i = 0; i < roomsArray.Size(); i++)
+	{
+		auto& room = roomsArray[i];
+		logContext.emplace_back(REPENTOGON::StringFormat("room #%u -> ", i));
+
+		builtRooms.emplace_back(RoomConfigUtility::DeserializeRoom(room, logContext));
+		if (!builtRooms.back().has_value())
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, "unable to build room.");
+		}
+
+		logContext.pop_back();
+	}
+
+	return builtRooms;
+}
+
+std::optional<VirtualRoomManager::SaveData> VirtualRoomManager::deserialize_save(const std::string& filePath, LogContext& logContext) noexcept
+{
+	uint32_t gameChecksum = g_Manager->_gamestate._checksum; // We should never enter this when loading a rerun so we don't handle that case
+
+	Error error;
+	auto doc = get_json_document(filePath, error);
+	if (error)
+	{
+		logContext.LogMessage(LogUtility::eLogType::ERROR, error.value().c_str());
+		return std::nullopt;
+	}
+
+	if (!LogUtility::Json::ValidateObject(doc, logContext))
+	{
+		return std::nullopt;
+	}
+
+	auto& version = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Version", logContext, false); if (!version) { return std::nullopt; }
+	if (version.value() != GAMESTATE_VERSION)
+	{
+		logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("gamestate version mismatch (current: %u, game state: %u)", GAMESTATE_VERSION, version.value()).c_str());
+		return std::nullopt;
+	}
+
+	auto& checksum = LogUtility::Json::ReadIntegerMember<uint32_t>(doc, "Checksum", logContext, false); if (!checksum) { return std::nullopt; }
+	if (checksum.value() != gameChecksum)
+	{
+		logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("checksum mismatch (current: 0x%X, game state: 0x%X)", gameChecksum, checksum.value()).c_str());
+		return std::nullopt;
+	}
+
+	auto& rooms = LogUtility::Json::GetArrayMember(doc, "Rooms", logContext, false); if (!rooms) { return std::nullopt; }
+
+	SaveData saveData;
+
+	auto deserializedRooms = this->deserialize_rooms(*rooms.value(), logContext);
+	saveData.virtualRooms = this->add_rooms(std::move(deserializedRooms), logContext, true);
+
+	return saveData;
+}
+
+bool VirtualRoomManager::normalize_game_state(GameState& gameState, std::vector<RoomConfig_Room*>& restoredRooms, LogContext& logContext) noexcept
+{
+	auto gameStateRooms = get_game_state_rooms(gameState);
+	for (auto* gameStateRoom : gameStateRooms)
+	{
+		if (!this->normalize_game_state_room(*gameStateRoom, restoredRooms))
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, "unable to normalize game state room.");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool VirtualRoomManager::read_save(const std::string& fileName, bool isRerun) noexcept
+{
+	if (isRerun)
+	{
+		return true;
+	}
+
+	std::error_code error;
+	std::string filePath = get_save_data_path(fileName);
+
+	LogContext logContext;
+	logContext.emplace_back(REPENTOGON::StringFormat("[VirtualRoomManager] reading save \"%s\": ", fileName.c_str()));
+
+	SaveData saveData;
+
+	if (!std::filesystem::exists(filePath, error))
+	{
+		if (error)
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, error.message().c_str());
+		}
+		else
+		{
+			logContext.LogMessage(LogUtility::eLogType::INFO, "save not found, skipping read.");
+		}
+	}
+	else
+	{
+		auto deserializedSave = this->deserialize_save(filePath, logContext);
+		if (!deserializedSave)
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, "failed to deserialize save.");
+		}
+		else
+		{
+			saveData = std::move(deserializedSave.value());
+			if (logContext.GetLoggedMessagesCount(LogUtility::eLogType::ERROR) + logContext.GetLoggedMessagesCount(LogUtility::eLogType::WARN) > 0)
+			{
+				logContext.LogMessage(LogUtility::eLogType::WARN, "successfully deserialized save, but something went wrong along the way.");
+			}
+			else
+			{
+				logContext.LogMessage(LogUtility::eLogType::INFO, "successfully deserialized save.");
+			}
+		}
+	}
+
+	bool success = this->normalize_game_state(g_Manager->_gamestate, saveData.virtualRooms, logContext);
+	if (!success)
+	{
+		logContext.LogMessage(LogUtility::eLogType::ERROR, "unable to normalize game state. cannot continue save");
+	}
+
+	return success;
+}
+
+#pragma endregion
+
+void VirtualRoomManager::__SaveGameState(uint32_t slot) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	instance.save_game_state(slot);
+}
+
+bool VirtualRoomManager::__WriteSave(const std::string& fileName, bool isRerun) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	return instance.write_save(fileName, isRerun);
+}
+
+bool VirtualRoomManager::__ReadSave(const std::string& fileName, bool isRerun) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	return instance.read_save(fileName, isRerun);
+}
+
+void VirtualRoomManager::__DeleteSave(const std::string& fileName, bool isRerun) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	return instance.delete_save(fileName, isRerun);
+}
+
+bool VirtualRoomManager::__TryWriteRestoredVirtualRoom(RoomConfig_Room& roomConfig, GameStateRoomConfig& gameStateRoom) noexcept
+{
+	auto& instance = VirtualRoomManager::Get();
+	if (!instance.is_restored_virtual_room(roomConfig))
+	{
+		return false;
+	}
+
+	instance.write_restored_virtual_room(roomConfig, gameStateRoom);
+	return true;
+}
+
+RoomConfig_Room* VirtualRoomManager::__ReadRestoredVirtualRoom(GameStateRoomConfig& gameStateRoom) noexcept
+{
+	return VirtualRoomManager::Get().read_restored_virtual_room(gameStateRoom);
 }
 
 #pragma endregion
@@ -333,9 +1085,43 @@ std::vector<RoomConfig_Room*> VirtualRoomManager::AddRooms(std::vector<RoomConfi
 	return VirtualRoomManager::Get().add_rooms(std::move(rooms), logContext, false);
 }
 
+VirtualRoomManager::RoomSet& VirtualRoomManager::GetRoomSet(uint32_t stageId, int mode) noexcept
+{
+	if (mode == -1)
+	{
+		mode = g_Game->GetMode();
+	}
+
+	return VirtualRoomManager::Get().get_room_set(stageId, mode, false);
+}
+
 #pragma endregion
 
 #pragma region Hooks
+
+HOOK_METHOD(ModManager, LoadConfigs, () -> void)
+{
+	VirtualRoomManager::__Init();
+	super();
+}
+
+HOOK_METHOD(Game, Exit, (bool ShouldSave) -> void)
+{
+	super(ShouldSave);
+	VirtualRoomManager::__Reset();
+}
+
+HOOK_METHOD(RoomConfig, ResetRoomWeights, (uint32_t Stage, int Mode) -> void)
+{
+	super(Stage, Mode);
+	VirtualRoomManager::__ResetWeights(Stage, Mode);
+}
+
+HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void)
+{
+	super(Stage, Mode);
+	VirtualRoomManager::__RefinalizeRooms(Stage, Mode);
+}
 
 HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsigned int type, unsigned int variant, int mode) -> RoomConfig_Room*)
 {
@@ -361,13 +1147,36 @@ HOOK_METHOD(RoomConfig, GetRooms, (int stage, int type, int shape, int minVarian
 	return rooms;
 }
 
+HOOK_STATIC(Level, write_room_config, (RoomConfig_Room* roomConfig, GameStateRoomConfig* gameStateRoom, std_deque_RoomConfigRoom* deque) -> void, __stdcall)
+{
+	if (VirtualRoomManager::__TryWriteRestoredVirtualRoom(*roomConfig, *gameStateRoom))
+	{
+		return;
+	}
+
+	super(roomConfig, gameStateRoom, deque);
+}
+
+HOOK_STATIC(Level, read_room_config, (GameStateRoomConfig* room, std_deque_RoomConfigRoom* deque) -> RoomConfig_Room*, __stdcall)
+{
+	if (room->GetFlags() & GameStateRoomConfig::VIRTUAL_ROOM_FLAG)
+	{
+		auto* restoredRoom = VirtualRoomManager::__ReadRestoredVirtualRoom(*room);
+		if (!restoredRoom)
+		{
+			ZHL::Log("[ASSERT] [VirtualRoomManager] - Level::read_room_config_room Hook - unable to resolve restored virtual room.\n");
+		}
+		return restoredRoom;
+	}
+
+	return super(room, deque);
+}
+
 #pragma endregion
 
 #ifndef NDEBUG
 
 #pragma region Unit Tests
-
-#include <fstream>
 
 static std::pair<std::vector<RoomConfig_Room>, std::set<size_t>> debug_build_rooms(lua_State* L, int index, LogUtility::LogContext& logContext)
 {
@@ -442,7 +1251,7 @@ LUA_FUNCTION(Lua_Debug_AddRooms)
 	auto placedRoomsIt = placedRooms.begin();
 
 	size_t size = (size_t)lua_rawlen(L, 3);
-	assert(placedRooms.size() + rooms.second.size() == size);
+	assert(placedRooms.size() + rooms.second.size() == size); // placed rooms + failed rooms must be equal to size of the table
 
 	for (size_t i = 1; i <= size; i++)
 	{
@@ -462,7 +1271,7 @@ LUA_FUNCTION(Lua_Debug_AddRooms)
 	return 1;
 }
 
-static void RegisterRoomConfigUtilityUnitTests(lua_State* L)
+static void RegisterVirtualRoomsUnitTests(lua_State* L)
 {
 	lua_getglobal(L, "UnitTests");
 	if (!lua_istable(L, -1))
@@ -485,7 +1294,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
-	RegisterRoomConfigUtilityUnitTests(_state);
+	RegisterVirtualRoomsUnitTests(_state);
 }
 
 #pragma endregion
