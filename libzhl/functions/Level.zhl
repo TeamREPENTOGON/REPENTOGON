@@ -58,6 +58,12 @@ __thiscall void Level::generate_dungeon(RNG * RNG);
 "558bec83e4f883ec0c568bf18b86":
 __thiscall void Level::StartMamaMega(Vector * Position, Entity_Player* player);
 
+"558bec83e4f883ec0c5356578b7d??894c24":
+static RoomConfig_Room* Level::read_room_config(GameStateRoomConfig* room, std_deque_RoomConfigRoom* deque);
+
+"558bec83e4f883ec148b55":
+static void Level::write_room_config(RoomConfig_Room* roomConfig, GameStateRoomConfig* gameStateRoom, std_deque_RoomConfigRoom* deque);
+
 struct Level {
 	uint32_t _stage : 0x0;
 	uint32_t _stageType : 0x4;

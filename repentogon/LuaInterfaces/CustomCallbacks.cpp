@@ -2770,7 +2770,7 @@ HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
 			.push(originalAlpha)
 			.call(1);
 
-		if (!result) {
+		if (!result && lua_isnumber(L,-1)) {
 			return (float)lua_tonumber(L, -1);
 		}
 	}
