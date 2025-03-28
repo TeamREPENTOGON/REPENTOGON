@@ -163,6 +163,12 @@ bool VirtualRoomManager::RoomSet::iterator::operator!=(const iterator& other) co
 	return !(*this == other);
 }
 
+size_t VirtualRoomManager::RoomSet::absolute_size() const noexcept
+{
+	size_t vanillaSize = g_Game->GetRoomConfig()->_stages[m_StageId]._rooms[m_Mode]._count;
+	return vanillaSize + m_Size;
+}
+
 const RoomConfig_Room& VirtualRoomManager::RoomSet::at_index(size_t index) const noexcept
 {
 	assert(index < m_Size);
@@ -178,6 +184,22 @@ const RoomConfig_Room& VirtualRoomManager::RoomSet::at_index(size_t index) const
 	}
 
 	throw std::runtime_error(__FUNCTION__ ": index out of bounds"); // this is only useful when using a debugger as noexcept forces std::terminate
+}
+
+const RoomConfig_Room& VirtualRoomManager::RoomSet::at_absolute_index(size_t index) const noexcept
+{
+	auto& roomSet = g_Game->GetRoomConfig()->_stages[m_StageId]._rooms[m_Mode];
+	if (index < roomSet._count)
+	{
+		return roomSet._configs[index];
+	}
+
+	return this->at_index(index - roomSet._count);
+}
+
+RoomConfig_Room& VirtualRoomManager::RoomSet::at_absolute_index(size_t index) noexcept
+{
+	return const_cast<RoomConfig_Room&>(std::as_const(*this).at_absolute_index(index));
 }
 
 const RoomConfig_Room& VirtualRoomManager::RoomSet::operator[](size_t index) const noexcept
@@ -207,7 +229,10 @@ void VirtualRoomManager::clear() noexcept
 	m_RestoredRooms.reset();
 	m_SavedRooms.clear();
 
-	m_Stages.resize(NUM_STB);
+	for (size_t i = 0; i < NUM_STB; i++)
+	{
+		m_Stages.emplace_back(i);
+	}
 }
 
 void VirtualRoomManager::reset() noexcept
@@ -1085,6 +1110,25 @@ std::vector<RoomConfig_Room*> VirtualRoomManager::AddRooms(std::vector<RoomConfi
 	return VirtualRoomManager::Get().add_rooms(std::move(rooms), logContext, false);
 }
 
+std::vector<RoomConfig_Room*> VirtualRoomManager::AddRooms(uint32_t stageId, int mode, std::vector<std::optional<RoomConfig_Room>>&& rooms, LogUtility::LogContext& logContext) noexcept
+{
+	for (auto& room : rooms)
+	{
+		if (room)
+		{
+			room.value().StageId = stageId;
+			room.value().Mode = mode;
+		}
+	}
+
+	return VirtualRoomManager::Get().add_rooms(std::move(rooms), logContext, false);
+}
+
+std::vector<RoomConfig_Room*> VirtualRoomManager::AddRooms(std::vector<std::optional<RoomConfig_Room>>&& rooms, LogUtility::LogContext& logContext) noexcept
+{
+	return VirtualRoomManager::Get().add_rooms(std::move(rooms), logContext, false);
+}
+
 VirtualRoomManager::RoomSet& VirtualRoomManager::GetRoomSet(uint32_t stageId, int mode) noexcept
 {
 	if (mode == -1)
@@ -1176,17 +1220,14 @@ HOOK_STATIC(Level, read_room_config, (GameStateRoomConfig* room, std_deque_RoomC
 
 #ifndef NDEBUG
 
-#pragma region Unit Tests
-
-static std::pair<std::vector<RoomConfig_Room>, std::set<size_t>> debug_build_rooms(lua_State* L, int index, LogUtility::LogContext& logContext)
+static std::vector<std::optional<RoomConfig_Room>> build_rooms(lua_State* L, int index, LogUtility::LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
 	assert(lua_istable(L, absIndex));
 
 	size_t size = (size_t)lua_rawlen(L, absIndex);
 
-	std::vector<RoomConfig_Room> rooms;
-	std::set<size_t> failedRooms;
+	std::vector<std::optional<RoomConfig_Room>> rooms;
 	rooms.reserve(size);
 
 	for (size_t i = 1; i <= size; i++)
@@ -1198,18 +1239,64 @@ static std::pair<std::vector<RoomConfig_Room>, std::set<size_t>> debug_build_roo
 		if (!room)
 		{
 			logContext.LogMessage(LogUtility::eLogType::ERROR, "unable to build room.");
-			failedRooms.insert(i);
 		}
-		else
-		{
-			rooms.emplace_back(std::move(room.value()));
-		}
+		rooms.emplace_back(std::move(room));
+
 		lua_pop(L, 1);
 		logContext.pop_back();
 	}
 
-	return { rooms, failedRooms };
+	return rooms;
 }
+
+static void build_lua_return_table(lua_State* L, int index, std::vector<RoomConfig_Room*>& placedRooms)
+{
+	int absIndex = lua_absindex(L, index);
+	size_t size = (size_t)lua_rawlen(L, absIndex);
+	assert(placedRooms.size() == size); // placed rooms's size must be equal to size of the table
+
+	lua_newtable(L);
+
+	for (size_t i = 1; i <= size; i++)
+	{
+		auto* room = placedRooms[i - 1];
+		if (!room)
+		{
+			lua_pushnil(L);
+		}
+		else
+		{
+			lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+		}
+
+		lua_rawseti(L, -2, i);
+	}
+}
+
+void VirtualRoomManager::__AddLuaRooms(lua_State* L, uint32_t stageId, int mode, int tableIndex) noexcept
+{
+	int absTableIndex = lua_absindex(L, tableIndex);
+	assert(lua_istable(L, absTableIndex));
+
+	if (mode == -1)
+	{
+		mode = g_Game->GetMode();
+	}
+
+	LogUtility::LogContext logContext;
+	logContext.emplace_back(REPENTOGON::StringFormat("[LUA] Add Rooms to set (%u, %i): ", stageId, mode));
+	std::string luaCaller = LogUtility::Lua::GetStackLevelInfo(L, 1);
+	if (!luaCaller.empty())
+	{
+		logContext.emplace_back(luaCaller + " -> ");
+	}
+
+	auto rooms = build_rooms(L, absTableIndex, logContext);
+	auto placedRooms = VirtualRoomManager::AddRooms(stageId, mode, std::move(rooms), logContext);
+	build_lua_return_table(L, absTableIndex, placedRooms);
+}
+
+#pragma region UnitTests
 
 LUA_FUNCTION(Lua_Debug_AddRooms)
 {
@@ -1244,29 +1331,9 @@ LUA_FUNCTION(Lua_Debug_AddRooms)
 		logContext.emplace_back(luaCaller + " -> ");
 	}
 
-	auto rooms = debug_build_rooms(L, 3, logContext);
-	auto placedRooms = VirtualRoomManager::AddRooms(stageId, mode, std::move(rooms.first), logContext);
-
-	lua_newtable(L);
-	auto placedRoomsIt = placedRooms.begin();
-
-	size_t size = (size_t)lua_rawlen(L, 3);
-	assert(placedRooms.size() + rooms.second.size() == size); // placed rooms + failed rooms must be equal to size of the table
-
-	for (size_t i = 1; i <= size; i++)
-	{
-		if (rooms.second.find(i) != rooms.second.end())
-		{
-			lua_pushnil(L);
-		}
-		else
-		{
-			lua::luabridge::UserdataPtr::push(L, *placedRoomsIt, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
-			placedRoomsIt++;
-		}
-
-		lua_rawseti(L, -2, i);
-	}
+	auto rooms = build_rooms(L, 3, logContext);
+	auto placedRooms = VirtualRoomManager::AddRooms(stageId, mode, std::move(rooms), logContext);
+	build_lua_return_table(L, 3, placedRooms);
 
 	return 1;
 }

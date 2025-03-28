@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "../RoomConfigUtility.h"
 #include "../LogUtility.h"
+#include "LuaCore.h"
 
 #include <string>
 #include <vector>
@@ -79,6 +80,8 @@ public:
 			bool operator!=(const iterator& other) const noexcept;
 		};
 	private:
+		const uint32_t m_StageId = STB_SPECIAL_ROOMS;
+		const uint32_t m_Mode = 0;
 		std::list<std::vector<RoomConfig_Room>> m_Rooms;
 		size_t m_Size = 0;
 
@@ -96,10 +99,16 @@ public:
 		inline iterator begin() { return iterator(m_Rooms.begin(), m_Rooms.end()); }
 		inline iterator end() { return iterator(m_Rooms.end(), m_Rooms.end()); }
 		inline size_t size() const noexcept { return m_Size; }
-		RoomConfig_Room& operator[](size_t index) noexcept;
+		size_t absolute_size() const noexcept;
+		const RoomConfig_Room& at_absolute_index(size_t index) const noexcept;
+		RoomConfig_Room& at_absolute_index(size_t index) noexcept;
 		const RoomConfig_Room& operator[](size_t index) const noexcept;
+		RoomConfig_Room& operator[](size_t index) noexcept;
+		size_t GetStageId() const noexcept { return m_StageId; }
+		size_t GetMode() const noexcept { return m_Mode; }
 
-		RoomSet() = default;
+		RoomSet(uint32_t stageId = STB_SPECIAL_ROOMS, uint32_t mode = 0)
+			: m_StageId(stageId), m_Mode(mode), m_Size(0) {}
 		friend class Stage;
 		friend class VirtualRoomManager;
 	};
@@ -111,6 +120,9 @@ private:
 		std::array<RoomSet, 2> m_RoomSets;
 		void reset_weights() noexcept;
 
+	public:
+		Stage(uint32_t stageId = STB_SPECIAL_ROOMS)
+			: m_RoomSets{RoomSet(stageId, 0), RoomSet(stageId, 1)} {}
 		friend class VirtualRoomManager;
 	};
 
@@ -168,6 +180,7 @@ public:
 	static RoomConfig_Room* __GetRoom(uint32_t stageId, int type, uint32_t variant, int mode) noexcept;
 	static void __GetRooms(std::vector<RoomConfig_Room*>& result, uint32_t stageId, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType, int mode) noexcept;
 	static bool __TryWriteRestoredVirtualRoom(RoomConfig_Room& roomConfig, GameStateRoomConfig& gameStateRoom) noexcept;
+	static void __AddLuaRooms(lua_State* L, uint32_t stageId, int mode, int tableIndex) noexcept;
 	static RoomConfig_Room* __ReadRestoredVirtualRoom(GameStateRoomConfig& gameStateRoom) noexcept;
 
 private:

@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/VirtualRooms.h"
 
 LUA_FUNCTION(Lua_RoomConfigStageGetBackdrop)
 {
@@ -47,8 +48,13 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 		return luaL_error(L, "Invalid RoomSet mode %d", mode);
 	}
 	
-	RoomSet** ud = (RoomSet**)lua_newuserdata(L, sizeof(RoomSet*));
-	*ud = &stage->_rooms[mode];
+	auto& roomSet = stage->_rooms[mode];
+	if (!roomSet._loaded)
+	{
+		g_Game->GetRoomConfig()->LoadStageBinary(stage->_id, mode);
+	}
+	VirtualRoomManager::RoomSet** ud = (VirtualRoomManager::RoomSet**)lua_newuserdata(L, sizeof(VirtualRoomManager::RoomSet*));
+	*ud = &VirtualRoomManager::GetRoomSet(stage->_id, mode);
 	luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
 
 	return 1;
