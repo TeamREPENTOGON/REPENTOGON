@@ -90,6 +90,24 @@ namespace LogUtility
         }
     };
 
+	static uint32_t GetLogTypeConsoleColor(eLogType logType)
+	{
+		switch (logType)
+		{
+		case eLogType::WARN:
+			return 0xFFFCCA03;
+		case eLogType::ERROR:
+			return 0xFFF08080;
+		default:
+			return 0xFFD3D3D3;
+		}
+	}
+
+	static void PrintConsole(eLogType logType, const std::string& message)
+	{
+		g_Game->GetConsole()->Print(message, GetLogTypeConsoleColor(logType), 0x96u);
+	}
+
     namespace Lua
     {
 		static std::string GetStackLevelInfo(lua_State* L, int level) noexcept
