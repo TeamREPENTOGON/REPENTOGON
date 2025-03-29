@@ -1,0 +1,24 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec305657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void FXLayers::AddPoopFx(ColorMod* color);
+
+struct FXLayers depends (Vector, ColorMod, ANM2, FXParams) {
+	//Vector _averagePlayerPos : 0x0;
+	bool _loaded : 0x8;
+	//eLevelStage _levelStage : 0xc;
+	//eStageType _stageType : 0x10;
+	//eBackdropType _backdropType : 0x14;
+	//OLD_vector<FX> _fxLayers : 0x18;
+	//OLD_vector<RayGroup> _rayGroups : 0x24;
+	int _poopFxCountdown : 0x34;
+	//SP_ImageBase _pooCloudImage? : 0x3c;
+	//int _pooPointer : 0x44;
+	//int _poopFXRelated? : 0x50;
+	//float[4] _poopFXFloats : 0x54;
+	ColorMod _poopFxColor : 0x84;
+	//Vector _bottomRight? : 0xb0;
+	//Vector _topLeft? : 0xb8;
+	//OLD_Vein[10] _veins : 0xc0;
+	//ANM2[2] _veinANM2 : 0x2c8;
+	//Vector _veinPosRelated : 0x4f0;
+	FXParams _fxParams : 0x4f8;
+} : 0x598;

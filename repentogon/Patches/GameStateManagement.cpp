@@ -35,7 +35,8 @@ static GameStateSlot get_game_state_slot(GameState* state) noexcept
 
 static inline bool is_remote_save(GameState* gameState) noexcept
 {
-	return !(gameState->_cloudGameStatePath.empty() || gameState->_cloudRerunStatePath.empty());
+	auto gameStateIOPtr = reinterpret_cast<void**>(gameState->_saveFile);
+	return *gameStateIOPtr == &SteamCloudFile_vftable;
 }
 
 static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun) noexcept

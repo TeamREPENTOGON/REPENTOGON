@@ -45,6 +45,8 @@ Additions:
 	- GetLayout
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
+*FXLayers:
+	- AddPoopFx(ColorMod Color)
 * CharacterMenu
 	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
 		Tainted boolean defaults to current menu if unspecified.
