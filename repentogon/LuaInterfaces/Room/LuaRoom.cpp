@@ -98,6 +98,7 @@ LUA_FUNCTION(Lua_RoomGetFloorColor)
 	return 1;
 }
 
+//[get/set] not actual color
 LUA_FUNCTION(Lua_RoomGetWaterColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -112,12 +113,13 @@ LUA_FUNCTION(Lua_RoomSetWaterColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetUnknownWaterInt() = 1; // See Room.zhl for more info
-	*room->GetWaterColor() = *color;
+	*room->GetWaterLerpColorMultiplier() = 1; // See Room.zhl for more info
+	room->_waterLerpTargetColor = *color;
 
 	return 0;
 }
 
+//[get/set] not actual color mult
 LUA_FUNCTION(Lua_RoomGetWaterColorMultiplier)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -132,8 +134,8 @@ LUA_FUNCTION(Lua_RoomSetWaterColorMultiplier)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetUnknownWaterInt() = 1;
-	*room->GetWaterColorMultiplier() = *color;
+	*room->GetWaterLerpColorMultiplier() = 1;
+	room->_waterLerpTargetColorMult = *color;
 
 	return 0;
 }

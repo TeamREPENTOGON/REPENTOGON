@@ -137,13 +137,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	inline float* GetWaterAmount() { return &this->_waterAmount; }
 	inline KColor* GetWaterColor() { return &this->_waterColor; }
 	inline KColor* GetWaterColorMultiplier() { return &this->_waterColorMultiplier; }
-	
-	// Initially, the base water color was erroneously defined as a Color and not a KColor occupying 0x7168. Color takes more bytes in memory.
-	// Due to this, when setting the color, some arbitrary bytes ahead of the water color were being set.
-	// While the true nature of these bytes aren't yet understood, the one at 0x7178 seems to control whether water color is rendered.
-	
-	// REP+ Figure out what this is/was and update offset
-	inline int* GetUnknownWaterInt() { return (int*)((char*)this + 0x7178 ); }
+	inline int* GetWaterLerpColorMultiplier() { return &this->_waterLerpColorDuration; }
 	
 	inline ColorMod* GetFloorColor() { return &this->_floorColor; }
 	inline TemporaryEffects* GetTemporaryEffects() {return &this->_temporaryEffects; }
@@ -178,6 +172,10 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	float _waterAmount : 0x7240;
 	KColor _waterColor : 0x7244;
 	KColor _waterColorMultiplier : 0x7258;
+	KColor _waterLerpTargetColor : 0x726c;
+	KColor _waterLerpTargetColorMult : 0x7280;
+	int _waterLerpColorDuration: 0x7294;
+	int _waterLerpColorCountdown: 0x7298;
 	bool _pacifist : 0x72a1;
 	ColorMod _floorColor : 0x72a4;
 	ColorMod _wallColor : 0x72d0;
