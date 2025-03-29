@@ -20,6 +20,9 @@ __thiscall void LevelGenerator::get_neighbor_candidates(vector_LevelGenRoom* nei
 "558bec83e4f883ec0c5356578bf98b87700300008d9f70030000":
 __thiscall void LevelGenerator::calc_required_doors();
 
+"558bec83e4f85153568bf1578b86":
+__thiscall bool LevelGenerator::is_pos_free(const XY* position, uint32_t shape);
+
 "558bec83e4f883ec2453568b750c33db578b7d08894c240c":
 __thiscall bool LevelGenerator::is_placement_valid(uint32_t* position, uint32_t shape);
 
@@ -38,10 +41,58 @@ static cleanup XY* LevelGenerator::get_door_target_position(XY* ret<ecx>, XY* po
 "558bec833ccd????????01":
 static cleanup bool LevelGenerator::has_shape_slot(int shape<ecx>, int doorSlot<edx>, bool ignoreThinShapesRestrictions);
 
-struct LevelGenerator depends (LevelGenerator_Room) {
+struct LevelGenerator depends (LevelGenerator_Room, XY, RNG) {
+    RNG _rng : 0x0;
+    RoomShapeBitset _allowedShapes : 0x10;
+    int _roomMap[169] : 0x14; // -1 if "empty"
+    bool _blockedPositions[169] : 0x2b8;
+    vector_LevelGenRoom _rooms : 0x364;
+    std_vector_uint _deadEnds : 0x370;
+    std_vector_uint _nonDeadEnds : 0x37c;
+    int _nextBossRoomIdx : 0x388; // An auxiliary variable used by GetNewBossRoom to hold the result of determine_boss_room and the newly created extra boss room for XL floors
+    uint32_t _numBossRooms : 0x38c;
+    bool _isXL : 0x390;
+    bool _isChapter6 : 0x391;
+    bool _isStageVoid : 0x392;
 {{
     inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
     inline std::vector<LevelGenerator_Room>* GetAllRooms() { return (std::vector<LevelGenerator_Room>*)((char*)this + 0x364); }
     inline std::vector<int>* GetDeadEnds() { return (std::vector<int>*)((char*)this + 0x370); }
     inline std::vector<int>* GetNonDeadEnds() { return (std::vector<int>*)((char*)this + 0x37C); }
-}} };
+}} } : 0x394;
+
+{{
+    static inline bool LevelGenerator::IsPositionInBounds(int gridIdx) noexcept
+    {
+        return 0 <= gridIdx && gridIdx < 169;
+    }
+
+    static inline bool LevelGenerator::IsPositionInBounds(const XY& position) noexcept
+    {
+        return (0 <= position.x && position.x < 13) && (0 <= position.y && position.y < 13);
+    }
+
+    inline void LevelGenerator::BlockPosition(int gridIdx) noexcept
+    {
+        if (IsPositionInBounds(gridIdx))
+        {
+            _blockedPositions[gridIdx] = true;
+        }
+    }
+
+    inline void LevelGenerator::BlockPosition(const XY& position) noexcept
+    {
+        this->BlockPosition(position.ToGridIdx());
+    }
+
+    inline bool LevelGenerator::CanPlaceShapeAtPosition(XY& position, uint32_t shape) noexcept
+    {
+        return is_pos_free(&position, shape) && is_placement_valid((uint32_t*)&position, shape);
+    }
+
+    inline bool LevelGenerator::CanPlaceShapeAtPosition(int gridIdx, uint32_t shape) noexcept
+    {
+        XY position = XY::NewFromGridIdx(gridIdx);
+        return CanPlaceShapeAtPosition(position, shape);
+    }
+}}

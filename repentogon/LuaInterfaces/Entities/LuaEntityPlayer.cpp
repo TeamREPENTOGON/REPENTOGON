@@ -2734,6 +2734,80 @@ LUA_FUNCTION(Lua_PlayerGetPlayerHUD) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetSuplexState) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_pushinteger(L, player->_suplexState);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSuplexState) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	player->_suplexState = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSuplexAimCountdown) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_pushinteger(L, player->_suplexAimCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSuplexAimCountdown) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	player->_suplexAimCountdown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSuplexTargetPosition) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), player ->_suplexTargetPos);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSuplexTargetPosition) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	player->_suplexTargetPos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSuplexLandPosition) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), player->_suplexLandPos);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSuplexLandPosition) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	player->_suplexLandPos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerCreateAfterimage) {
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	const int duration = (int)luaL_checkinteger(L, 2);
+	const Vector pos = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+
+	player->_afterImageFrames.push_back({ duration, pos });
+
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -2982,6 +3056,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetRockBottomLuck", Lua_PlayerGetRockBottomLuck },
 		{ "SetRockBottomLuck", Lua_PlayerSetRockBottomLuck },
 		{ "GetPlayerHUD", Lua_PlayerGetPlayerHUD },
+		{ "GetSuplexState", Lua_PlayerGetSuplexState },
+		{ "SetSuplexState", Lua_PlayerSetSuplexState },
+		{ "GetSuplexAimCountdown", Lua_PlayerGetSuplexAimCountdown },
+		{ "SetSuplexAimCountdown", Lua_PlayerSetSuplexAimCountdown },
+		{ "GetSuplexTargetPosition", Lua_PlayerGetSuplexTargetPosition },
+		{ "SetSuplexTargetPosition", Lua_PlayerSetSuplexTargetPosition },
+		{ "GetSuplexLandPosition", Lua_PlayerGetSuplexLandPosition },
+		{ "SetSuplexLandPosition", Lua_PlayerSetSuplexLandPosition },
+		{ "CreateAfterimage", Lua_PlayerCreateAfterimage },
 
 		{ NULL, NULL }
 	};

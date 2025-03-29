@@ -13,3 +13,25 @@ struct XY { {{
 	int x : 0x0;
 	int y : 0x4;
 } : 0x8;
+
+{{
+	static inline XY XY::NewFromGridIdx(int gridIdx) noexcept
+	{
+		if (!(0 <= gridIdx && gridIdx < 169))
+		{
+			return XY(-1, -1);
+		}
+
+		return XY(gridIdx % 13, gridIdx / 13);
+	}
+
+	inline int XY::ToGridIdx() const noexcept
+	{
+		if (!(0 <= x && x < 13) || !(0 <= y && y < 13))
+		{
+			return -1;
+		}
+
+		return y * 13 + x;
+	}
+}}

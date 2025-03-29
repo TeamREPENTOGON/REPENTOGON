@@ -164,6 +164,11 @@ TypeInfo vector_ModEntryPointer {
     Align 4;
 };
 
+TypeInfo vector_ModManager_CharacterMap {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_list_ModReference {
     Size 8;
     Align 4;
@@ -267,5 +272,20 @@ TypeInfo DoorsBitSet {
 
 TypeInfo RoomConfigFlags {
     Size 4;
+    Align 4;
+};
+
+TypeInfo RoomShapeBitset {
+    Size 4;
+    Align 4;
+};
+
+TypeInfo deque_afterImageFrames {
+    Size 20;
+    Align 4;
+};
+
+TypeInfo std_deque_RoomConfigRoom {
+    Size 20;
     Align 4;
 };

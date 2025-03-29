@@ -192,6 +192,7 @@ namespace lua {
         extern LIBZHL_API const char* EntityConfigBabyMT;
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
+        extern LIBZHL_API const char* FXLayersMT;
         extern LIBZHL_API const char* FXParamsMT;
         extern LIBZHL_API const char* GridDecorationMT;
         extern LIBZHL_API const char* GridFireMT;
@@ -206,6 +207,7 @@ namespace lua {
         extern LIBZHL_API const char* GridWebMT;
         extern LIBZHL_API const char* HistoryMT;
         extern LIBZHL_API const char* HistoryItemMT;
+        extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* KeyConfigMenuMT;

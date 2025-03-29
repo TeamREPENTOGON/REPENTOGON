@@ -61,6 +61,7 @@ typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
+typedef std::vector<ModManager_CharacterMap> vector_ModManager_CharacterMap;
 typedef std::list<ModReference> std_list_ModReference;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
@@ -84,6 +85,9 @@ typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
 typedef std::vector<Devolve> vector_Devolve;
 typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
+typedef std::bitset<13> RoomShapeBitset;
+typedef std::deque<AfterImageFrame> deque_afterImageFrames;
+typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
 
 struct PoolItem {
 	uint32_t _itemID = 0;
@@ -2397,6 +2401,14 @@ enum eSeedEffect {
     SEED_RETRO_VISION = 78,
     SEED_G_FUEL = 79,
     NUM_SEEDS = 80
+};
+
+enum SuplexState {
+	INACTIVE = 0,	
+	DASHING = 1,
+	AIMING = 2,
+	ASCENDING = 3,	
+	DESCENDING = 4
 };
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed

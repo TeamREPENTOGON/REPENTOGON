@@ -511,27 +511,38 @@ void PatchHudRenderBombs() {
 // The patches overwrite cmov's that would conditionally write the pickup limit instead of the actual value, and makes the actual value always written.
 // If a higher amount than should normally be allowed is restored, we'll fix it on customcache evaluation anyway.
 void PatchRemoveCurseMistEffect() {
-	SigScan coinScanner("6a015168a0010000");
-	coinScanner.Scan();
-	void* coinAddr = coinScanner.GetAddress();
-	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max coins at %p\n", coinAddr);
+	// Coins
+	SigScan coinPatchScanner("6a015168a0010000e8????????8b8f????????f7d8");
+	coinPatchScanner.Scan();
+	void* coinPatchAddr = coinPatchScanner.GetAddress();
+
+	SigScan coinExitScanner("038f????????8903");
+	if (!coinExitScanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find exit signature in RemoveCurseMistEffect for max coins\n");
+		return;
+	}
+	void* coinExitAddr = coinExitScanner.GetAddress();
+
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max coins at %p\n", coinPatchAddr);
 	ASMPatch coinPatch;
-	coinPatch.AddBytes("\x8B\x8F\xAC\x12").AddZeroes(2)  // ECX,dword ptr [EDI + 0x12ac] (restores something that gets skipped)
+	coinPatch.AddBytes(ByteBuffer().AddAny((char*)coinPatchAddr + 13, 0x6)) // ECX,dword ptr [EDI+?] (restores something that gets skipped)
 		.AddBytes("\x89\xF0")  // MOV EAX,ESI
-		.AddRelativeJump((char*)coinAddr + 0x24);
-	sASMPatcher.PatchAt((char*)coinAddr, &coinPatch);
+		.AddRelativeJump((char*)coinExitAddr);
+	sASMPatcher.PatchAt((char*)coinPatchAddr, &coinPatch);
 
-	SigScan keyScanner("3bc80f4cc18987????????8b87????????0387????????3bc6");
-	keyScanner.Scan();
-	void* keyAddr = keyScanner.GetAddress();
-	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max keys at %p\n", keyAddr);
-	sASMPatcher.FlatPatch((char*)keyAddr, "\x89\xC8\x90\x90\x90", 5);  // MOV EAX, ECX
+	// Keys
+	SigScan keyPatchScanner("3bc80f4cc18987????????8b87????????0387????????3bc6");
+	keyPatchScanner.Scan();
+	void* keyPatchAddr = keyPatchScanner.GetAddress();
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max keys at %p\n", keyPatchAddr);
+	sASMPatcher.FlatPatch((char*)keyPatchAddr, "\x89\xC8\x90\x90\x90", 5);  // MOV EAX, ECX
 
-	SigScan bombScanner("3bc60f4cd080bf????????00");
-	bombScanner.Scan();
-	void* bombAddr = bombScanner.GetAddress();
-	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max bombs at %p\n", bombAddr);
-	sASMPatcher.FlatPatch((char*)bombAddr, "\x89\xC2\x90\x90\x90", 5);  // MOV EDX, EAX
+	// Bombs
+	SigScan bombPatchScanner("3bc60f4cd080bf????????00");
+	bombPatchScanner.Scan();
+	void* bombPatchAddr = bombPatchScanner.GetAddress();
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max bombs at %p\n", bombPatchAddr);
+	sASMPatcher.FlatPatch((char*)bombPatchAddr, "\x89\xC2\x90\x90\x90", 5);  // MOV EDX, EAX
 }
 
 

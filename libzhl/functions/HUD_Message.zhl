@@ -1,12 +1,25 @@
 // Note (as of Rep+ v1.9.7.10) that this, or similar functions, are inlined into the various ShowItemText functions.
 // This function is called only for the stage name popup, and for cards/pills/etc in co-op.
-// Also, the "autoDisappear" boolean is the opposite of the original "isSticky" boolean.
+// Also, the "autoHide" boolean is the opposite of the original "isSticky" boolean.
 "558bec515356578bf98b4d":
-__thiscall void HUD_Message::Show(char* title, char* subtitle, bool autoDisappear, bool isCurseDisplay);
+__thiscall void HUD_Message::Show(const char* title, const char* subtitle, bool autoHide, bool isCurseDisplay);
+
+"558bec8b45??56578d3c":
+__thiscall void HUD_Message::LoadText(const wchar_t* str, bool asSubText);
+
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf1807e??00":
+__thiscall void HUD_Message::UpdateTextImage();
 
 "568bf1807e??0074??837e??00":
 __thiscall void HUD_Message::text_out();
 
-struct HUD_Message depends (ANM2) {
+struct HUD_Message depends (ANM2, KColor) {
+	wchar_t* _text : 0x0;
+	wchar_t* _subtext : 0x4;
+	bool _showing : 0x8;
+	bool _autoHide : 0x9;  // Opposite of former "Sticky" concept.
+	bool _isCurseDisplay : 0xa;
 	ANM2 _streakSprite : 0x20;
+	KColor _color1 : 0x134;
+	KColor _color2 : 0x148;
 } : 0x1f4;
