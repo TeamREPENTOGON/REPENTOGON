@@ -1218,8 +1218,6 @@ HOOK_STATIC(Level, read_room_config, (GameStateRoomConfig* room, std_deque_RoomC
 
 #pragma endregion
 
-#ifndef NDEBUG
-
 static std::vector<std::optional<RoomConfig_Room>> build_rooms(lua_State* L, int index, LogUtility::LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
@@ -1293,8 +1291,17 @@ void VirtualRoomManager::__AddLuaRooms(lua_State* L, uint32_t stageId, int mode,
 
 	auto rooms = build_rooms(L, absTableIndex, logContext);
 	auto placedRooms = VirtualRoomManager::AddRooms(stageId, mode, std::move(rooms), logContext);
+
+	if (logContext.GetLoggedMessagesCount(LogUtility::eLogType::ERROR) + logContext.GetLoggedMessagesCount(LogUtility::eLogType::WARN) > 0)
+	{
+		LogUtility::eLogType logType = logContext.GetLoggedMessagesCount(LogUtility::eLogType::ERROR) > 0 ? LogUtility::eLogType::ERROR : LogUtility::eLogType::WARN;
+		LogUtility::PrintConsole(logType, luaCaller + ": Something went wrong whilst adding rooms to a room set. Check repentogon.log for more details.");
+	}
+
 	build_lua_return_table(L, absTableIndex, placedRooms);
 }
+
+#ifndef NDEBUG
 
 #pragma region UnitTests
 
