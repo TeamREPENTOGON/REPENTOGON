@@ -128,12 +128,12 @@ __thiscall void Room::SpawnGreedModeWave(bool unusedBool);
 "558bec83e4f851538b5d??56578bf9":
 __thiscall void Room::TriggerOutput(unsigned int outputGroupdIdx);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }
 	inline bool GetRedHeartDamage() { return this->_redHeartDamage; }
 	inline EntityList* GetEntityList() { return &this->_entityList; }
-	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1b10); } // doing this the lazy way while FXLayers isn't exposed
+	inline FXParams* GetFXParams() { return &this->_fxLayers._fxParams; }
 	inline float* GetWaterAmount() { return &this->_waterAmount; }
 	inline KColor* GetWaterColor() { return &this->_waterColor; }
 	inline KColor* GetWaterColorMultiplier() { return &this->_waterColorMultiplier; }
@@ -166,6 +166,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	Backdrop _backdrop : 0x1bc8;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
+	FXLayers _fxLayers: 0x1618;
 	deque_ShopRestockDesc _shopItemDeque : 0x7070;
 	int _slowdownDuration : 0x7220;
 	int _greedWaveTimer : 0x723c;

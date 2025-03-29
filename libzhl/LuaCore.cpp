@@ -766,6 +766,7 @@ namespace lua {
 		const char* EntityConfigBabyMT = "EntityConfigBaby";
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
+		const char* FXLayersMT = "FXLayers";
 		const char* FXParamsMT = "FXParams";
 		const char* GridDecorationMT = "GridEntityDecoration";
 		const char* GridFireMT = "GridEntityFire";
