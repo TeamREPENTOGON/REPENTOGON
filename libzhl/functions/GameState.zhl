@@ -31,6 +31,8 @@ struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, 
     BackwardsStageDesc _backwardsStages[7] : 0x1e6f0;
     uint32_t _checksum : 0x1fce0;
     uint32_t _rerunChecksum : 0x1fce4;
+    std_string _localGameStatePath : 0x1fce8;
+    std_string _localRerunStatePath : 0x1fd00;
     std_string _cloudGameStatePath : 0x1fd30;
     std_string _cloudRerunStatePath : 0x1fd48;
     GameStateIO* _saveFile : 0x1fd60;
