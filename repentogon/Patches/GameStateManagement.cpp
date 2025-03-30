@@ -45,7 +45,12 @@ static inline std::string get_state_file_name(GameState* gameState, uint32_t sav
 
 static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun) noexcept
 {
-	const char* filePath = io->GetFilePath();
+	const char* filePath = nullptr;
+	if (io)
+	{
+		filePath = io->GetFilePath();
+	}
+
 	if (!filePath)
 	{
 		if (isRerun)
