@@ -92,9 +92,9 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
 	Vector _viewPositionSet[23] : 0xf7c4;
 	bool _shouldLerpColorModState : 0xf87c;
 	ColorModState _currentColorModState : 0xf880;
-	ColorModState _targetColorModState : 0xf898;
-	ColorModState _lerpColorModState : 0xf8b0;
-	float _scrollinterpolationX : 0xf8c8;
-	float _scrollinterpolationY : 0xf8cc;
-	ANM2 _flySprite : 0xf8d8;
-} : 0xf9ec;
+	ColorModState _targetColorModState : 0xf89c;
+	ColorModState _lerpColorModState : 0xf8b8;
+	float _scrollinterpolationX : 0xf8d4;
+	float _scrollinterpolationY : 0xf8d8;
+	ANM2 _flySprite : 0xf8dc;
+} : 0xf9f0;

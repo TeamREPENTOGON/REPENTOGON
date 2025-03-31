@@ -290,8 +290,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	int _currentGlowingHourglassSlot : 0x66c0c;
 	bool _shouldLerpColorModState : 0x66c14;
 	ColorModState _currentColorModifier : 0x66c18;
-	ColorModState _targetColorModifier : 0x66c30;
-	ColorModState _lerpColorModifier : 0x66c48;
+	ColorModState _targetColorModifier : 0x66c34;
+	ColorModState _lerpColorModifier : 0x66c50;
 	DebugRenderer _debugRenderer : 0x66c8c;
 	float _lightningIntensity : 0x66c94;
 	float _dizzyIntensity : 0x66c98;
