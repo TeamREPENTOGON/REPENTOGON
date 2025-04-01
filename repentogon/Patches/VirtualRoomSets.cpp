@@ -1,4 +1,4 @@
-#include "VirtualRooms.h"
+#include "VirtualRoomSets.h"
 
 #include "../RoomConfigUtility.h"
 #include "HookSystem.h"

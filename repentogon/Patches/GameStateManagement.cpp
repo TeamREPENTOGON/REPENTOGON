@@ -5,7 +5,7 @@
 
 #include <filesystem>
 #include "ItemPoolManager.h"
-#include "VirtualRooms.h"
+#include "VirtualRoomSets.h"
 
 #pragma region Helpers
 
