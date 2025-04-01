@@ -147,7 +147,7 @@ LUA_FUNCTION(Lua_RoomConfig_AddRooms)
 		return luaL_argerror(L, 3, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 3, "table").c_str());
 	}
 
-	VirtualRoomManager::__AddLuaRooms(L, stageId, mode, 3);
+	VirtualRoomSetManager::__AddLuaRooms(L, stageId, mode, 3);
 	return 1;
 }
 

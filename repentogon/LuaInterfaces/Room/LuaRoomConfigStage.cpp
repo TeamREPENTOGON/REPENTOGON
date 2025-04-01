@@ -53,8 +53,8 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 	{
 		g_Game->GetRoomConfig()->LoadStageBinary(stage->_id, mode);
 	}
-	VirtualRoomManager::RoomSet** ud = (VirtualRoomManager::RoomSet**)lua_newuserdata(L, sizeof(VirtualRoomManager::RoomSet*));
-	*ud = &VirtualRoomManager::GetRoomSet(stage->_id, mode);
+	VirtualRoomSetManager::RoomSet** ud = (VirtualRoomSetManager::RoomSet**)lua_newuserdata(L, sizeof(VirtualRoomSetManager::RoomSet*));
+	*ud = &VirtualRoomSetManager::GetRoomSet(stage->_id, mode);
 	luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
 
 	return 1;

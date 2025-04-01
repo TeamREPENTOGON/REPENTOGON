@@ -89,7 +89,7 @@ static inline std::string get_state_file_name(GameState* gameState, GameStateIO*
 static inline void save_game_state(uint32_t slot) noexcept
 {
 	ItemPoolManager::__SaveState(slot);
-	VirtualRoomManager::__SaveGameState(slot);
+	VirtualRoomSetManager::__SaveGameState(slot);
 }
 
 static inline void restore_game_state(uint32_t slot, bool startGame) noexcept
@@ -105,14 +105,14 @@ static inline void clear_game_state(uint32_t slot) noexcept
 static inline bool write_save(const std::string& fileName, bool isRerun) noexcept
 {
 	ItemPoolManager::__SaveToDisk(fileName, isRerun);
-	VirtualRoomManager::__WriteSave(fileName, isRerun);
+	VirtualRoomSetManager::__WriteSave(fileName, isRerun);
 	return true;
 }
 
 // Return false to invalidate the game state
 static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
 {
-	if (!VirtualRoomManager::__ReadSave(fileName, isRerun))
+	if (!VirtualRoomSetManager::__ReadSave(fileName, isRerun))
 	{
 		return false;
 	}
@@ -124,7 +124,7 @@ static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
 static inline void delete_save(const std::string& fileName, bool isRerun) noexcept
 {
 	ItemPoolManager::__DeleteGameState(fileName);
-	VirtualRoomManager::__DeleteSave(fileName, isRerun);
+	VirtualRoomSetManager::__DeleteSave(fileName, isRerun);
 }
 
 #pragma region Hooks

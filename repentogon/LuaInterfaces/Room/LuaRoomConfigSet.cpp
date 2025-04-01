@@ -5,7 +5,7 @@
 
 LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 {
-	VirtualRoomManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 	int idx = (int)lua_tointeger(L, 2);
 	if (idx >= 0 && (uint32_t)idx < set->absolute_size()) {
 		lua::luabridge::UserdataPtr::push(L, &set->at_absolute_index(idx), lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 
 LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 {
-	VirtualRoomManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 	lua_pushinteger(L, set->absolute_size());
 
 	return 1;
@@ -28,14 +28,14 @@ LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 
 LUA_FUNCTION(Lua_RoomConfigSetAddRooms)
 {
-	VirtualRoomManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 
 	if (!lua_istable(L, 2))
 	{
 		return luaL_argerror(L, 2, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 2, "table").c_str());
 	}
 
-	VirtualRoomManager::__AddLuaRooms(L, set->GetStageId(), set->GetMode(), 2);
+	VirtualRoomSetManager::__AddLuaRooms(L, set->GetStageId(), set->GetMode(), 2);
 	return 1;
 }
 
