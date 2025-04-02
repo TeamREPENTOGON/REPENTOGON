@@ -1,13 +1,14 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/VirtualRoomSets.h"
 
 LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 {
-	RoomSet* set = *lua::GetRawUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
 	int idx = (int)lua_tointeger(L, 2);
-	if (idx >= 0 && idx < (int)set->_count) {
-		lua::luabridge::UserdataPtr::push(L, &set->_configs[idx], lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+	if (idx >= 0 && (uint32_t)idx < set->absolute_size()) {
+		lua::luabridge::UserdataPtr::push(L, &set->at_absolute_index(idx), lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
 	}
 	else
 	{
@@ -19,9 +20,22 @@ LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 
 LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 {
-	RoomSet* set = *lua::GetRawUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
-	lua_pushinteger(L, set->_count);
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	lua_pushinteger(L, set->absolute_size());
 
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfigSetAddRooms)
+{
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+
+	if (!lua_istable(L, 2))
+	{
+		return luaL_argerror(L, 2, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 2, "table").c_str());
+	}
+
+	VirtualRoomSetManager::__AddLuaRooms(L, set->GetStageId(), set->GetMode(), 2);
 	return 1;
 }
 
@@ -51,6 +65,7 @@ static void RegisterRoomConfigSet(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "Get", Lua_RoomConfigSetGetRoom },
 		{ "__len", Lua_RoomConfigSetGetSize },
+		{ "AddRooms", Lua_RoomConfigSetAddRooms },
 		{ NULL, NULL }
 	};
 
