@@ -59,7 +59,7 @@ __thiscall int ItemPool::GetFirstItemPoolForCollectible(int collectible);
 __thiscall void ItemPool::GetItemPoolsForCollectible(int collectible, std_vector_uint* result);
 
 "558bec83e4f853568ada":
-static cleanup int ItemPool::GetSeededCollectible(uint32_t seed, bool noDecrease, RoomDescriptor* roomDesc);
+static cleanup int ItemPool::GetSeededCollectible(uint32_t seed<ecx>, bool noDecrease<edx>, RoomDescriptor* roomDesc);
 
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
