@@ -58,6 +58,9 @@ __thiscall int ItemPool::GetFirstItemPoolForCollectible(int collectible);
 "558bec538b5d??565733f6":
 __thiscall void ItemPool::GetItemPoolsForCollectible(int collectible, std_vector_uint* result);
 
+"558bec83e4f853568ada":
+static cleanup int ItemPool::GetSeededCollectible(uint32_t seed, bool noDecrease, RoomDescriptor* roomDesc);
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }
