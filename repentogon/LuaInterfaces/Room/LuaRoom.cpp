@@ -272,15 +272,20 @@ LUA_FUNCTION(Lua_RoomColorModifierUpdate)
 	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
-	ColorModState* pColor;
+	ColorModState pColor;
 	if (process) {
-		pColor = &room->ComputeColorModifier();
+		pColor = room->ComputeColorModifier();
+		
 	}
 	else {
-		pColor = room->GetFXParams()->GetColorModifier();
+		// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+		// This logic provides backwards compatability.
+		FXParams* fx = room->GetFXParams();
+		KColor* c = &fx->roomColor;
+		pColor = ColorModState(c->_red, c->_green, c->_blue, fx->roomColor._alpha, fx->brightness, fx->contrast);
 	}
 
-	g_Game->SetColorModifier(pColor, lerp, rate);
+	g_Game->SetColorModifier(&pColor, lerp, rate);
 	return 0;
 }
 
