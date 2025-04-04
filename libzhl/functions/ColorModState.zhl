@@ -1,5 +1,5 @@
 struct ColorModState {
-    float r : 0x0, g : 0x4, b : 0x8, a : 0xc, brightness : 0x14, contrast : 0x18;
+    float r : 0x0, g : 0x4, b : 0x8, a : 0xc, brightness : 0x10, contrast : 0x14;
 	
 	{{
 	ColorModState() : r(1.0f), g(1.0f), b(1.0f), a(0.0f), brightness(0.0f), contrast(1.0f) {}
@@ -96,4 +96,4 @@ struct ColorModState {
 	inline float* GetBrightness() { return &this->brightness; }
 	inline float* GetContrast() { return &this->contrast; }
 	}}
-}; // 0x1c
+}; // 0x18
