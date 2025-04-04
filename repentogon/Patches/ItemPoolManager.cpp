@@ -1915,11 +1915,6 @@ void ItemPoolManager::ItemPool::EmplaceItem( size_t position, const ItemPoolMana
 	auto* poolData = this->GetPoolData();
 	auto& poolList = poolData->_poolList;
 
-	if (poolList.empty())
-	{
-		return;
-	}
-
 	position = std::min(position, poolList.size());
 
 	poolList.emplace(poolList.begin() + position, poolItem.BuildPoolItem());
