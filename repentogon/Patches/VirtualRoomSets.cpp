@@ -587,12 +587,12 @@ static std::vector<GameStateRoomConfig*> get_game_state_rooms(GameState& gameSta
 
 		for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
 		{
-			gameStateRooms.emplace_back(&backwardsStage._bossRoomConfigs[i]);
+			gameStateRooms.emplace_back(&backwardsStage._bossRoomConfigs[j]);
 		}
 
 		for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
 		{
-			gameStateRooms.emplace_back(&backwardsStage._treasureRoomConfigs[i]);
+			gameStateRooms.emplace_back(&backwardsStage._treasureRoomConfigs[j]);
 		}
 	}
 
