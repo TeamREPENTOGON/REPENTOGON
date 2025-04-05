@@ -282,7 +282,7 @@ LUA_FUNCTION(Lua_RoomColorModifierUpdate)
 		// This logic provides backwards compatability.
 		FXParams* fx = room->GetFXParams();
 		KColor* c = &fx->roomColor;
-		pColor = ColorModState(c->_red, c->_green, c->_blue, fx->roomColor._alpha, fx->brightness, fx->contrast);
+		pColor = ColorModState(c->_red, c->_green, c->_blue, c->_alpha, fx->brightness, fx->contrast);
 	}
 
 	g_Game->SetColorModifier(&pColor, lerp, rate);

@@ -15,15 +15,12 @@ LUA_FUNCTION(Lua_GetFXParams) {
 LUA_FUNCTION(Lua_GetColorModifier)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	// TODO: NOTE: THIS IS STILL FUCKED, ITS NOT A COLORMODSTATE
-	// In rep+ we discovered that FXParams does not contain a ColorModState, it contains a KColor followed by brightness/contrast floats.
-	// Since KColor gained 4 bytes in rep+ (and ColorModState did not) our existing exposure of a "ColorModState" from FXParams is now messed up,
-	// as "brightness" reads the new unknown value (always 0) and "contrast" actually reads the brightness.
-	// Either need to figure out some hacky solution for this, or deprecate this function and require mods to migrate to new ones to fix the brightness/contrast.
-	ColorModState* color = (ColorModState*)(&params->roomColor);
+	// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+	// This logic provides backwards compatability.
+	ColorModState color(params->roomColor._red, params->roomColor._green, params->roomColor._blue, params->roomColor._alpha, params->brightness, params->contrast);
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, color, sizeof(ColorModState));
+	memcpy(toLua, &color, sizeof(ColorModState));
 
 	return 1;
 }
@@ -37,6 +34,7 @@ LUA_FUNCTION(Lua_SetColorModifier)
 	params->roomColor._red = luacolor.r;
 	params->roomColor._green = luacolor.g;
 	params->roomColor._blue = luacolor.b;
+	params->roomColor._alpha = luacolor.a;
 	params->brightness = luacolor.brightness;
 	params->contrast = luacolor.contrast;
 
