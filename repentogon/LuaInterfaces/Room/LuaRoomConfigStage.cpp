@@ -164,14 +164,6 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSetLoaded)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_RoomConfigStageUnload)
-{
-	RoomConfig_Stage* stage = *lua::GetRawUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	stage->unload();
-
-	return 0;
-}
-
 static void RegisterRoomConfigStage(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetBackdrop", Lua_RoomConfigStageGetBackdrop },
@@ -191,7 +183,6 @@ static void RegisterRoomConfigStage(lua_State* L) {
 		{ "GetXMLName", Lua_RoomConfigStageGetXMLName },
 		{ "SetXMLName", Lua_RoomConfigStageSetXMLName },
 		{ "IsLoaded", Lua_RoomConfigStageGetRoomSetLoaded },
-		{ "Unload", Lua_RoomConfigStageUnload },
 		{ NULL, NULL }
 	};
 
