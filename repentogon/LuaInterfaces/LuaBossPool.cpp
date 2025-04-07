@@ -38,12 +38,16 @@ LUA_FUNCTION(Lua_PoolGetEntries) {
 		lua_pushinteger(L, entry._id);
 		lua_rawset(L, -3);
 
+		lua_pushstring(L, "initialWeight");
+		lua_pushnumber(L, entry._initialWeight);
+		lua_rawset(L, -3);
+
 		lua_pushstring(L, "weight");
-		lua_pushnumber(L, entry._weight1);
+		lua_pushnumber(L, entry._weight);
 		lua_rawset(L, -3);
 
 		lua_pushstring(L, "weightAlt");
-		lua_pushnumber(L, entry._weight2);
+		lua_pushnumber(L, entry._weight);
 		lua_rawset(L, -3);
 
 		lua_pushstring(L, "achievementID");
@@ -57,9 +61,9 @@ LUA_FUNCTION(Lua_PoolGetEntries) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PoolGetWeight) {
+LUA_FUNCTION(Lua_PoolGetTotalWeight) {
 	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
-	lua_pushnumber(L, pool->_weight);
+	lua_pushnumber(L, pool->_totalWeight);
 	return 1;
 }
 
@@ -69,9 +73,9 @@ LUA_FUNCTION(Lua_PoolGetRNG) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PoolGetDoubleTroubleRoomID) {
+LUA_FUNCTION(Lua_PoolGetDoubleTroubleRoomVariantStart) {
 	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
-	lua_pushinteger(L, pool->_doubleTroubleRoomID);
+	lua_pushinteger(L, pool->_doubleTroubleRoomVariantStart);
 	return 1;
 }
 
@@ -80,9 +84,10 @@ static void RegisterBossPoolPool(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetName", Lua_PoolGetName },
 		{ "GetEntries", Lua_PoolGetEntries },
-		{ "GetWeight", Lua_PoolGetWeight },
+		{ "GetWeight", Lua_PoolGetTotalWeight },
 		{ "GetRNG", Lua_PoolGetRNG },
-		{ "GetDoubleTroubleRoomID", Lua_PoolGetDoubleTroubleRoomID },
+		{ "GetDoubleTroubleRoomVariantStart", Lua_PoolGetDoubleTroubleRoomVariantStart },
+		{ "GetDoubleTroubleRoomID", Lua_PoolGetDoubleTroubleRoomVariantStart },
 		{ NULL, NULL }
 	};
 
@@ -103,8 +108,8 @@ LUA_FUNCTION(Lua_BossPoolGetRemovedBosses) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_BossPoolGetRemovedSpecialBosses) {
-	auto& bossesEntries = g_Game->_bossPool._removedSpecialBosses;
+LUA_FUNCTION(Lua_BossPoolGetLevelBlacklist) {
+	auto& bossesEntries = g_Game->_bossPool._levelBlacklist;
 
 	lua_newtable(L);
 
@@ -122,7 +127,8 @@ static void RegisterBossPool(lua_State* L) {
 
 	lua::TableAssoc(L, "GetPool", Lua_BossPoolGetPool);
 	lua::TableAssoc(L, "GetRemovedBosses", Lua_BossPoolGetRemovedBosses);
-	lua::TableAssoc(L, "GetRemovedSpecialBosses", Lua_BossPoolGetRemovedSpecialBosses);
+	lua::TableAssoc(L, "GetLevelBlacklist", Lua_BossPoolGetLevelBlacklist);
+	lua::TableAssoc(L, "GetRemovedSpecialBosses", Lua_BossPoolGetLevelBlacklist);
 	
 	lua_setglobal(L, "BossPoolManager");
 }

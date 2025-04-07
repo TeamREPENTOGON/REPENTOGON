@@ -1,7 +1,7 @@
 struct BossPool_Pool depends (RNG) {
 	std_string _name : 0x0;
 	vector_BossPoolEntry _entries : 0x18;
-	float _weight : 0x24;
+	float _totalWeight : 0x24;
 	RNG _rng: 0x28;
-	int _doubleTroubleRoomID : 0x38;
+	int _doubleTroubleRoomVariantStart : 0x38; // when double trouble is triggered, boss rooms that are in the [value, value + 49] variant range are picked.
 } : 0x3c;

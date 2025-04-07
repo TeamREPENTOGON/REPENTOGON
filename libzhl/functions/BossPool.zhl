@@ -4,5 +4,12 @@ __thiscall int BossPool::GetBossId(int leveltype, int levelvariant, RNG* rng);
 struct BossPool depends (BossPool_Pool) {
 	BossPool_Pool _pool[37] : 0x0;
 	vector_bool _removedBosses: 0x8ac;
-	vector_bool _removedSpecialBosses: 0x8bc;
+	vector_bool _levelBlacklist: 0x8bc;
 } : 0x8cc;
+
+{{
+	inline bool BossPool::WasBossRemoved(uint32_t bossId) noexcept
+	{
+		return _removedBosses[bossId] || _levelBlacklist[bossId];
+	}
+}}

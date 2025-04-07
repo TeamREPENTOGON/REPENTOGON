@@ -19,7 +19,7 @@ __thiscall void GameState::Delete();
 "538b1d????????56578b3d????????8bf168????????ffd7":
 __thiscall void GameState::DeleteRerun();
 
-struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, GameStateItemPool, Seeds, BackwardsStageDesc) {
+struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, GameStateItemPool, GameStateBossPool, Seeds, BackwardsStageDesc) {
     uint32_t _roomCount : 0x260;
     RoomDescriptor _rooms[527] : 0x264;
     GameStateRoomConfig _roomConfigs[527] : 0x17d2c;
@@ -27,6 +27,7 @@ struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, 
     GameStatePlayer _players[8] : 0x19e38;
     GameStatePlayer _esauJrStates[4] : 0x1cc18;
     GameStateItemPool _itemPool : 0x1e308;
+    GameStateBossPool _bossPool : 0x1e5bc;
     Seeds _seeds : 0x1e660;
     BackwardsStageDesc _backwardsStages[7] : 0x1e6f0;
     uint32_t _checksum : 0x1fce0;
