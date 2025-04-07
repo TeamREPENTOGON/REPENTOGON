@@ -37,6 +37,10 @@ Additions:
 * PlayerManager:
 	- GetRandomCollectibleOwner
 	- GetRandomTrinketOwner
+* ItemPool:
+	- AddCollectible
+	- AddTemporaryCollectible
+	- RemoveTemporaryCollectible
 * HUD:
 	- GetStackedStreakSprite
 	- GetPlayerStreakSprite
@@ -45,6 +49,10 @@ Additions:
 	- GetLayout
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
+* RoomConfig:
+	- AddRooms
+* RoomConfigSet:
+	- AddRooms
 *FXLayers:
 	- AddPoopFx(ColorMod Color)
 * CharacterMenu
