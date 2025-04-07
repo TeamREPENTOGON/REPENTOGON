@@ -105,3 +105,8 @@ ___
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetRandomWisp () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+
+___
