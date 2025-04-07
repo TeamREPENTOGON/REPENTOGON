@@ -162,6 +162,11 @@ ___
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
 
 ___
+### SaveState () {: aria-label='Functions' }
+#### void SaveState ( ) {: .copyable aria-label='Functions' }
+Saves the current state of the room
+
+___
 ### SetBackdropType () {: aria-label='Functions' }
 #### void SetBackdropType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html), int Unknown ) {: .copyable aria-label='Functions' }
 This function will not work if the Unknown integer is passed as `0`.
