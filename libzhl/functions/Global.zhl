@@ -80,6 +80,8 @@ typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 typedef std::vector<WeightedOutcomePicker_Outcome> vector_Outcome;
 typedef std::vector<BossPool_Entry> vector_BossPoolEntry;
 typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
+typedef std::vector<EntityConfig_Boss> vector_EntityConfig_Boss;
+typedef std::vector<EntityConfig_Boss_Alt> vector_EntityConfig_Boss_Alt;
 typedef std::vector<float> std_vector_float;
 typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
 typedef std::vector<Devolve> vector_Devolve;
@@ -2301,7 +2303,9 @@ enum eBossId {
     BOSS_BEAST = 100,
     BOSS_HORNY_BOYS = 101,
     BOSS_CLUTCH = 102,
-    BOSS_CADAVRA = 103
+    BOSS_CADAVRA = 103,
+
+    NUM_BOSSES,
 };
 
 enum eMainMenuType {

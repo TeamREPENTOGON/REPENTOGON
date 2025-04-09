@@ -289,3 +289,13 @@ TypeInfo std_deque_RoomConfigRoom {
     Size 20;
     Align 4;
 };
+
+TypeInfo vector_EntityConfig_Boss {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo vector_EntityConfig_Boss_Alt {
+    Size 12;
+    Align 4;
+};

@@ -24,6 +24,8 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
 	        }
             return &this->GetBabies()->at(id);
         }
-        inline std::vector<EntityConfig_Boss>* GetBosses() { return (std::vector<EntityConfig_Boss>*)((char*)this + 0x20); }
+        inline std::vector<EntityConfig_Boss>* GetBosses() { return &this->_bosses; }
     }}
+
+    vector_EntityConfig_Boss _bosses : 0x20;
 } : 0x50;
