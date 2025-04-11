@@ -126,6 +126,8 @@ Fixes:
 	- Fixed StartBossIntro crash on call if room index for room transition is invalid.
 * ModCallbacks:
 	- Fixed returning false on MC_PRE_PLAYER_ADD_CARD/PILL not preventing the card/pill being added as intended.
+* XMLData:
+	- Fixed an isue with ModData not displaying the extra REPENTOGON attributes (enabled/fulldirectory/etc)
 /newline/
 Modified:
 * EntityFamiliar:

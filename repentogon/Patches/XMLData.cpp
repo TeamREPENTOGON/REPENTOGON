@@ -2329,6 +2329,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 99: //name for mod metadata
+	if (!XMLStuff.ModData->nodes.empty()) { break; }
 	if (node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		daddy = node->parent();
 		XMLAttributes mod;
