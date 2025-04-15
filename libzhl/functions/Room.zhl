@@ -107,6 +107,9 @@ __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDes
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 */
 
+"558bec83ec288b45??538b5a":
+static cleanup int Room::GetItemPool(uint32_t seed<ecx>, RoomDescriptor* roomDesc<edx>, int boss);
+
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 

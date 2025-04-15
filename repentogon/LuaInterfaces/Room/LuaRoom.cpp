@@ -425,65 +425,20 @@ LUA_FUNCTION(Lua_RoomSetItemPool) {
 	return 0;
 }
 
-inline int TrySpecialPool(Room* room) {
-	const uint32_t roomType = room->_roomType;
-
-	if (room->_bossId == BOSS_FALLEN) {
-		return ROOM_DEVIL;
-	}
-
-	if (roomType == ROOM_BOSS) {
-		if (*g_Game->GetLevelStateFlags() & (1 << 17)) {
-			return ROOM_DEVIL;
-		}
-		return roomType;
-	}
-
-	if (roomType == ROOM_TREASURE) {
-		if (g_Game->IsGreedMode() && (room->_descriptor->GridIndex != g_Game->_greedModeTreasureRoomIdx)) {
-			return ROOM_BOSS;
-		}
-		if (room->_descriptor->Flags & (1 << 11)) {
-			return ROOM_DEVIL;
-		}
-		return roomType;
-	}
-
-	if (roomType == ROOM_CHALLENGE && (room->_descriptor->Data->Subtype == 1)) {
-		return ROOM_BOSS;
-	}
-
-	return roomType;
-}
-
 LUA_FUNCTION(Lua_RoomGetItemPool) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
 	seed = seed != 0 ? seed : 1;
 	bool raw = lua::luaL_optboolean(L, 3, false);
 
-	const RoomConfig_Room* roomData = room->_descriptor->Data;
-	if (g_Manager->_starting || roomData == nullptr)
+	if (raw)
 	{
-		lua_pushinteger(L, POOL_NULL);
-		return 1;
-	}
-
-	if (roomASM.ItemPool != POOL_NULL || raw) {
 		lua_pushinteger(L, roomASM.ItemPool);
 		return 1;
 	}
 
-	if ((roomData->Type == ROOM_DEFAULT) && (roomData->StageId == STB_HOME) && roomData->Subtype == 2) {
-		lua_pushinteger(L, POOL_MOMS_CHEST);
-		return 1;
-	}
-
-	uint32_t roomType = TrySpecialPool(room);
-	int poolType = g_Game->_itemPool.GetPoolForRoom(roomType, seed);
-	poolType = poolType != POOL_NULL ? poolType : POOL_TREASURE;
-
-	lua_pushinteger(L, poolType);
+	int itemPool = Room::GetItemPool(seed, room->_descriptor, 0);
+	lua_pushinteger(L, itemPool);
 	return 1;
 }
 
@@ -500,11 +455,11 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	}
 }
 
-HOOK_STATIC(ItemPool, GetSeededCollectible, (uint32_t seed, bool noDecrease, RoomDescriptor* roomDesc) -> int) {
+HOOK_STATIC(Room, GetItemPool, (uint32_t seed, RoomDescriptor* roomDesc, int bossId) -> int, __cdecl) {
 	if (roomASM.ItemPool != POOL_NULL) {
-		return g_Game->_itemPool.GetCollectible(roomASM.ItemPool, seed, noDecrease, COLLECTIBLE_NULL);
+		return roomASM.ItemPool;
 	}
-	return super(seed, noDecrease, roomDesc);
+	return super(seed, roomDesc, bossId);
 }
 
 LUA_FUNCTION(Lua_RoomGetWallColor) {
