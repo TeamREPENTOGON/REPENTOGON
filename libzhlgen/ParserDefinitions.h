@@ -43,15 +43,73 @@ enum BasicTypes {
     BOOL,
     VOID,
     FLOAT,
-    DOUBLE
+    DOUBLE,
+    BT_INVALID
 };
 
 std::string BasicTypeToString(BasicTypes type);
 
+
+enum CallingConventions {
+    CDECL,
+    STDCALL,
+    FASTCALL,
+    THISCALL,
+    X86_64,
+    X86_64_OUTPUT // With implicit output
+};
+
+CallingConventions StringToConvention(std::string const& name);
+
+enum NamespaceKind {
+    GLOBAL,
+    CLASS
+};
+
+enum FunctionKind {
+    FUNCTION,
+    METHOD
+};
+
+enum Registers {
+    // Written in x86 order : eax = 0, edx = 3 etc.
+    EAX,
+    ECX,
+    EDX,
+    EBX,
+    ESP,
+    EBP,
+    ESI,
+    EDI,
+
+    XMM0,
+    XMM1,
+    XMM2,
+    XMM3,
+    XMM4,
+    XMM5,
+    XMM6,
+    XMM7,
+    MAX
+};
+
+std::string RegisterToString(Registers reg);
+
+enum FunctionQualifiers {
+    STATIC = 1 << 0,
+    VIRTUAL = 1 << 1,
+    CLEANUP = 1 << 2,
+    PURE = 1 << 3,
+    DEBUG = 1 << 4,
+    NOHOOK = 1 << 5
+};
+
+std::string CallingConventionToString(CallingConventions convention);
+
 struct BasicType {
     std::optional<Signedness> _sign;
     std::optional<Length> _length;
-    BasicTypes _type;
+    BasicTypes _type = BT_INVALID;
 
     std::string ToString() const;
     std::string GetAbsoluteName() const;
@@ -88,12 +146,65 @@ struct Type;
 struct VirtualFunction;
 struct Skip { };
 
+struct FunctionParam {
+    Type* _type;
+    std::string _name;
+    std::optional<Registers> _reg;
+
+    std::string ToString() const;
+
+    bool operator==(const FunctionParam& other) const;
+    bool operator!=(const FunctionParam& other) const;
+
+    bool IsX8664Valid(size_t position) const;
+};
+
+struct Function {
+    uint32_t _qualifiers = 0;
+    FunctionKind _kind;
+    std::optional<CallingConventions> _convention;
+    Type* _ret;
+    std::string _name;
+    std::vector<FunctionParam> _params;
+    bool _canHook;
+
+    bool IsVirtual() const;
+    bool IsCleanup() const;
+    bool IsStatic() const;
+    bool IsPure() const;
+    bool IsDebug() const;
+    bool CanHook() const;
+    std::string ToString() const;
+
+    bool operator==(const Function& other) const;
+    bool operator!=(const Function& other) const;
+};
+
+struct Signature {
+    std::string _sig;
+    Function _function;
+
+    bool operator==(Signature const& other) const;
+};
+
+typedef std::variant<Signature, Skip, Function /* Pure virtual */> VTableEntry;
+
+inline Function const* VTableEntryToFunction(VTableEntry const& entry) {
+    if (std::holds_alternative<Signature>(entry)) {
+        return &std::get<Signature>(entry)._function;
+    } else if (std::holds_alternative<Function>(entry)) {
+        return &std::get<Function>(entry);
+    } else {
+        return nullptr;
+    }
+}
+
 struct Struct {
     Namespace _namespace;
     std::string _name;
     std::set<Type*> _deps;
     std::vector<std::tuple<Type*, Visibility>> _parents;
-    std::vector<std::variant<Signature, Skip, Function /* Pure virtual */>> _virtualFunctions;
+    std::vector<VTableEntry> _virtualFunctions;
     std::vector<Signature> _overridenVirtualFunctions;
     std::optional<size_t> _size;
 
@@ -160,7 +271,13 @@ struct Type {
     bool IsBasic() const;
     bool IsFunctionPointer() const;
 
-    Struct const& GetStruct() const;
+    inline Struct& GetStruct() {
+        return std::get<Struct>(_value);
+    }
+
+    inline Struct const& GetStruct() const {
+        return std::get<Struct>(_value);
+    }
 
     std::string ToString(bool full) const;
     size_t size() const;
@@ -174,17 +291,6 @@ struct Type {
     bool operator!=(const Type& other) const;
 };
 
-enum CallingConventions {
-    CDECL,
-    STDCALL,
-    FASTCALL,
-    THISCALL,
-    X86_64,
-    X86_64_OUTPUT // With implicit output
-};
-
-CallingConventions StringToConvention(std::string const& name);
-
 struct FunctionPtr {
     Type* _ret;
     std::optional<CallingConventions> _convention;
@@ -193,83 +299,6 @@ struct FunctionPtr {
 
     std::string GetName() const;
     std::string ToString() const;
-};
-
-enum NamespaceKind {
-    GLOBAL,
-    CLASS
-};
-
-enum FunctionKind {
-    FUNCTION,
-    METHOD
-};
-
-enum Registers {
-    // Written in x86 order : eax = 0, edx = 3 etc.
-    EAX,
-    ECX,
-    EDX,
-    EBX,
-    ESP,
-    EBP,
-    ESI,
-    EDI,
-
-    XMM0,
-    XMM1,
-    XMM2,
-    XMM3,
-    XMM4,
-    XMM5,
-    XMM6,
-    XMM7,
-    MAX
-};
-
-std::string RegisterToString(Registers reg);
-
-enum FunctionQualifiers {
-    STATIC = 1 << 0,
-    VIRTUAL = 1 << 1,
-    CLEANUP = 1 << 2,
-    PURE = 1 << 3,
-    DEBUG = 1 << 4
-};
-
-std::string CallingConventionToString(CallingConventions convention);
-
-
-struct FunctionParam {
-    Type* _type;
-    std::string _name;
-    std::optional<Registers> _reg;
-
-    std::string ToString() const;
-
-    bool operator==(const FunctionParam& other) const;
-    bool operator!=(const FunctionParam& other) const;
-
-    bool IsX8664Valid(size_t position) const;
-};
-
-struct Function {
-    uint32_t _qualifiers = 0;
-    FunctionKind _kind;
-    std::optional<CallingConventions> _convention;
-    Type* _ret;
-    std::string _name;
-    std::vector<FunctionParam> _params;
-
-    bool IsVirtual() const;
-    bool IsCleanup() const;
-    bool IsStatic() const;
-    bool IsPure() const;
-    bool IsDebug() const;
-    std::string ToString() const;
-
-    bool operator==(const Function& other) const;
-    bool operator!=(const Function& other) const;
 };
 
 struct ExternalFunction {
@@ -281,18 +310,11 @@ struct ExternalFunction {
 };
 
 struct Variable {
-    Type* _type;
+    Type* _type = nullptr;
     std::string _name;
     std::optional<size_t> _offset;
 
     bool operator<(Variable const& rhs) const;
-};
-
-struct Signature {
-    std::string _sig;
-    Function _function;
-
-    bool operator==(Signature const& other) const;
 };
 
 struct VirtualFunction {

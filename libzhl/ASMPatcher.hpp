@@ -70,13 +70,16 @@ public:
 	static ASMPatcher& instance();
 
 	void* AttemptPatchFunction(const char* beginSig, const char* endSig, const char* patchSig, const char* with);
-	void* PatchFromSig(const char* sig, const char* with);
+	void* PatchAt(const char* signature, const char* name, ASMPatch* with);
+	void* PatchAt(const char* signature, const char* name, const char* with, size_t len = 0);
 	void* PatchAt(void* at, const char* with, size_t len = 0);
 	void* PatchAt(void* at, ASMPatch* with);
 	void* Patch(void* at, void* page, const char* with, size_t len);
 
 	void FlatPatch(void* at, ASMPatch* with, bool nopRest = false);
 	void FlatPatch(void* at, const char* with, size_t len = 0, bool nopRest = false);
+	bool FlatPatch(const char* signature, const char* name, ASMPatch* with, bool nopRest = false);
+	bool FlatPatch(const char* signature, const char* name, const char* with, size_t len = 0, bool nopRest = false);
 
 	static ptrdiff_t JumpOffset(const void* next, const void* target);
 	static std::unique_ptr<char[]> EncodeJump(const void* at, const void* target);

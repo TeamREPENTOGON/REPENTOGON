@@ -22,7 +22,7 @@ static AnimationFrame* FindAnimationFrame(AnimationLayer* animationLayer, const 
 
 LUA_FUNCTION(Lua_AnimationLayerGetFrame)
 {
-	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
+	AnimationLayer* animationLayer = *lua::GetRawUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 
 	if (animationLayer->GetFrameCount() == 0) {
 		lua_pushnil(L);
@@ -52,14 +52,14 @@ LUA_FUNCTION(Lua_AnimationLayerGetFrame)
 
 LUA_FUNCTION(Lua_AnimationLayerGetLayerId)
 {
-	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
+	AnimationLayer* animationLayer = *lua::GetRawUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 	lua_pushinteger(L, animationLayer->GetLayerID());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationLayerIsVisible)
 {
-	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
+	AnimationLayer* animationLayer = *lua::GetRawUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 	lua_pushboolean(L, animationLayer->IsVisible());
 	return 1;
 }

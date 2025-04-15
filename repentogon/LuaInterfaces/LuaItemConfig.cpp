@@ -15,7 +15,7 @@ XMLItem* GetItemXML(const ItemConfig_Item* config) {
 }
 
 LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
-	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 
 	lua_newtable(L);
 
@@ -34,14 +34,14 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
 
 LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag)
 {
-	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 	const std::string tag = luaL_checkstring(L, 2);
 	lua_pushboolean(L, GetItemXML(config)->HasCustomTag(config->id, tag));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
-	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 
 	lua_newtable(L);
 
@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
 
 LUA_FUNCTION(Lua_ItemConfigItem_HasCustomCacheTag)
 {
-	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 	const std::string tag = luaL_checkstring(L, 2);
 	lua_pushboolean(L, GetItemXML(config)->HasCustomCache(config->id, tag));
 	return 1;
@@ -80,37 +80,37 @@ void RegisterItemFunctions(lua_State* L) {
 }
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectClass_propget) {
-	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
+	ItemConfig_Pill* config = lua::GetLuabridgeUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectClass);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_ModdedCardFront_propget) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
 	lua::luabridge::UserdataPtr::push(L, config->moddedCardFront, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetInitialWeight) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	lua_pushnumber(L, config_EX->initialWeight);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetWeight) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	lua_pushnumber(L, config_EX->weight);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_SetWeight) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
 	float weight = (float)luaL_checknumber(L, 2);
 
 	weight = max(weight, 0.0f);
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 	config_EX->weight = weight;
 	config_EX->invalidateVanillaMethod = weight != 1.0f;
 
@@ -118,32 +118,32 @@ LUA_FUNCTION(Lua_ItemConfigCard_SetWeight) {
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetAvailabilityCondition) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, config_EX->availabilityFuncRef);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_SetAvailabilityCondition) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	config_EX->SetAvailabilityCondition(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_ClearAvailabilityCondition) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	config_EX->ClearAvailabilityCondition(L);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ItemConfigCard_GetHidden) {
-	ItemConfig_Card* config = lua::GetUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	ItemConfig_Card_EX* config_EX = Cards_EX::GetCardConfigEX(config);
+	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
+	ItemConfig_Card_EX* config_EX = CardsEX::GetCardConfigEX(config);
 
 	lua_pushboolean(L, config_EX->hidden);
 	return 1;
@@ -162,7 +162,7 @@ void RegisterCardFunctions(lua_State* L) {
 }
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
-	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
+	ItemConfig_Pill* config = lua::GetLuabridgeUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectSubClass);
 	return 1;
 }
@@ -174,7 +174,7 @@ LUA_FUNCTION(Lua_ItemConfig_CanRerollCollectible) {
 }
 
 LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
-	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "ItemConfig");
+	ItemConfig* config = lua::GetLuabridgeUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "ItemConfig");
 	unsigned int tags = (unsigned int)luaL_checkinteger(L, 2);
 
 	std::vector<ItemConfig_Item*>& itemPtrs = config->GetTaggedItems(tags);
@@ -189,19 +189,31 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
-	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
+/*LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
+	ItemConfig* config = lua::GetRawUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
 	const unsigned int trinketType = (const unsigned int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, ItemConfig::IsValidTrinket(trinketType));
 
 	return 1;
-}
+}*/
 
 static void FixItemConfigPillEffects(lua_State* L) {
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
+}
+
+LUA_FUNCTION(Lua_ItemConfigCostume_GetSkinColor) {
+	ItemConfig_Costume* costume = lua::GetLuabridgeUserdata<ItemConfig_Costume*>(L, 1, lua::Metatables::CONST_COSTUME, "Costume");
+	lua_pushinteger(L, costume->skinColor);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigCostume_SetSkinColor) {
+	ItemConfig_Costume* costume = lua::GetLuabridgeUserdata<ItemConfig_Costume*>(L, 1, lua::Metatables::CONST_COSTUME, "Costume");
+	costume->skinColor = (int)luaL_checkinteger(L, 2);
+	return 1;
 }
 
 
@@ -231,4 +243,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);
 	//lua::RegisterGlobalClassFunction(_state, "Config", "IsValidTrinket", Lua_ItemConfig_IsValidTrinket);
+
+	lua::RegisterVariable(_state, lua::Metatables::COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor, Lua_ItemConfigCostume_SetSkinColor);
+	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor);
 }

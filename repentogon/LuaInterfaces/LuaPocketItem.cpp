@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PlayerGetPocketItem) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int slotID = (int)luaL_checkinteger(L, 2);
 	PocketItem** ud = (PocketItem**)lua_newuserdata(L, sizeof(PocketItem*));
 	*ud = player->GetPocketItem(slotID);
@@ -12,13 +12,13 @@ LUA_FUNCTION(Lua_PlayerGetPocketItem) {
 }
 
 LUA_FUNCTION(Lua_PocketItemGetSlot) {
-	PocketItem* pocketItem = *lua::GetUserdata<PocketItem**>(L, 1, lua::metatables::PocketItemMT);
+	PocketItem* pocketItem = *lua::GetRawUserdata<PocketItem**>(L, 1, lua::metatables::PocketItemMT);
 	lua_pushinteger(L, pocketItem->_id);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PocketItemGetType) {
-	PocketItem* pocketItem = *lua::GetUserdata<PocketItem**>(L, 1, lua::metatables::PocketItemMT);
+	PocketItem* pocketItem = *lua::GetRawUserdata<PocketItem**>(L, 1, lua::metatables::PocketItemMT);
 	lua_pushinteger(L, pocketItem->_type);
 	return 1;
 }

@@ -1,4 +1,4 @@
-"568bf18b0d????????85c9":
+"568b35????????578bf985f6":
 __thiscall bool ItemConfig_Card::IsAvailable();
 
 struct ItemConfig_Card depends (ANM2, ModEntry)

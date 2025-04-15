@@ -16,7 +16,7 @@ inline int CeilIntegerDivision(int dividend, int divisor) //The same as performi
 }
 
 LUA_FUNCTION(Lua_RNGSetSeed) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
 	unsigned int shiftidx = (unsigned int)luaL_optinteger(L, 3, 35);
@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_RNGSetSeed) {
 }
 
 LUA_FUNCTION(Lua_RNG_GetShiftIdx) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
 	for (int shift_idx = 0; shift_idx < NUM_SHIFT_INDEXES; shift_idx++) {
 		uint32_t* shifts = GetShifts(shift_idx);
@@ -51,7 +51,7 @@ LUA_FUNCTION(Lua_RNG_GetShiftIdx) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomNext) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	uint32_t original_seed = rng->_seed;
 
 	lua_pushinteger(L, rng->Next());
@@ -92,7 +92,7 @@ inline uint32_t DoPrevious(RNG* rng) {
 }
 
 LUA_FUNCTION(Lua_RNG_Previous) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
 	rng->_seed = DoPrevious(rng);
 	lua_pushinteger(L, rng->_seed);
@@ -100,7 +100,7 @@ LUA_FUNCTION(Lua_RNG_Previous) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomPrevious) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
 	lua_pushinteger(L, DoPrevious(rng));
 	return 1;
@@ -132,7 +132,7 @@ static void DoRandomInt(lua_State* L, RNG* rng, int& result, bool& negative) {
 }
 
 LUA_FUNCTION(Lua_RNG_RandomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	bool negative = true;
 	int result = 0;
 	DoRandomInt(L, rng, result, negative);
@@ -146,7 +146,7 @@ LUA_FUNCTION(Lua_RNG_RandomInt) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
 	bool negative = true;
@@ -162,7 +162,7 @@ LUA_FUNCTION(Lua_RNG_PhantomInt) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomFloat) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
 
@@ -182,13 +182,13 @@ void DoRandomVector(lua_State* L, RNG* rng, bool phantom) {
 }
 
 LUA_FUNCTION(Lua_RNG_RandomVector) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	DoRandomVector(L, rng, false);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomVector) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	DoRandomVector(L, rng, true);
 	return 1;
 }

@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_RoomConfigRoomGetMode)
 {
-	RoomConfig_Room* roomConfig = lua::GetUserdata<RoomConfig_Room*>(L, 1, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfigRoom");
+	RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 1, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfigRoom");
 	lua_pushinteger(L, roomConfig->Mode);
 
 	return 1;

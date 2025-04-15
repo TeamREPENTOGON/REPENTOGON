@@ -3,43 +3,43 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PlayerHUDHeartIsVisible) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushboolean(L, heart->_visibility);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartIsEternalHeartOverlayVisible) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushboolean(L, heart->_eternalHeartVisibility);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartIsGoldenHeartOverlayVisible) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushboolean(L, heart->_goldenHeartVisibility);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartIsFadingHeart) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushboolean(L, heart->_fadeHeart);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartGetFlashType) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushinteger(L, heart->_flashType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartGetHeartAnim) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushstring(L, heart->_spriteAnim);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerHUDHeartGetHeartOverlayAnim) {
-	PlayerHUDHeart* heart = lua::GetUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
+	PlayerHUDHeart* heart = lua::GetRawUserdata<PlayerHUDHeart*>(L, 1, lua::metatables::PlayerHUDHeartMT);
 	lua_pushstring(L, heart->_spriteOverlayAnim);
 	return 1;
 }

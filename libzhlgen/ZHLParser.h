@@ -20,15 +20,15 @@ public:
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
     Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Debug = 45, 
-    Visibility = 46, Public = 47, Private = 48, Protected = 49, Register = 50, 
-    GeneralPurposeRegister = 51, Eax = 52, Ebx = 53, Ecx = 54, Edx = 55, 
-    Esi = 56, Edi = 57, Esp = 58, Ebp = 59, SSERegister = 60, Xmm0 = 61, 
-    Xmm1 = 62, Xmm2 = 63, Xmm3 = 64, Xmm4 = 65, Xmm5 = 66, Xmm6 = 67, Xmm7 = 68, 
-    CallingConvention = 69, Stdcall = 70, Cdecl = 71, Fastcall = 72, Thiscall = 73, 
-    X8664 = 74, X8664_Output = 75, Signature = 76, ReferenceSignature = 77, 
-    Operator = 78, OpSymbol = 79, Name = 80, Number = 81, HexNumber = 82, 
-    DecNumber = 83, GenericCode = 84, Whitespace = 85, Newline = 86, BlockComment = 87, 
-    LineComment = 88, Any = 89
+    NoHook = 46, Visibility = 47, Public = 48, Private = 49, Protected = 50, 
+    Register = 51, GeneralPurposeRegister = 52, Eax = 53, Ebx = 54, Ecx = 55, 
+    Edx = 56, Esi = 57, Edi = 58, Esp = 59, Ebp = 60, SSERegister = 61, 
+    Xmm0 = 62, Xmm1 = 63, Xmm2 = 64, Xmm3 = 65, Xmm4 = 66, Xmm5 = 67, Xmm6 = 68, 
+    Xmm7 = 69, CallingConvention = 70, Stdcall = 71, Cdecl = 72, Fastcall = 73, 
+    Thiscall = 74, X8664 = 75, X8664_Output = 76, Signature = 77, ReferenceSignature = 78, 
+    Operator = 79, OpSymbol = 80, Name = 81, Number = 82, HexNumber = 83, 
+    DecNumber = 84, GenericCode = 85, Whitespace = 86, Newline = 87, BlockComment = 88, 
+    LineComment = 89, Any = 90
   };
 
   enum {
@@ -858,6 +858,8 @@ public:
     antlr4::tree::TerminalNode *Name();
     std::vector<antlr4::tree::TerminalNode *> RightParen();
     antlr4::tree::TerminalNode* RightParen(size_t i);
+    antlr4::tree::TerminalNode *Colon();
+    antlr4::tree::TerminalNode *Number();
     antlr4::tree::TerminalNode *Semi();
     antlr4::tree::TerminalNode *CallingConvention();
     std::vector<antlr4::tree::TerminalNode *> Star();
@@ -886,6 +888,7 @@ public:
     antlr4::tree::TerminalNode* Colon(size_t i);
     std::vector<antlr4::tree::TerminalNode *> RightParen();
     antlr4::tree::TerminalNode* RightParen(size_t i);
+    antlr4::tree::TerminalNode *Number();
     antlr4::tree::TerminalNode *Semi();
     antlr4::tree::TerminalNode *CallingConvention();
     std::vector<antlr4::tree::TerminalNode *> Star();

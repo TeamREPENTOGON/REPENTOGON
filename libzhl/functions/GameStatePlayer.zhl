@@ -1,0 +1,6 @@
+struct GameStatePlayer depends (History, BagOfCraftingOutput) {
+    int _playerType : 0x0;
+    vector_EntitySaveState _movingBoxContents : 0x1d4;
+    History _history : 0x3b0;
+    BagOfCraftingOutput _bagOfCraftingOutput : 0x4c4;
+} : 0x5bc;

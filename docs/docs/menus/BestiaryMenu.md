@@ -33,20 +33,19 @@ ___
 #### int GetSelectedPage ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetLastEnemyPageID () {: aria-label='Functions' }
-#### int GetLastEnemyPageID ( ) {: .copyable aria-label='Functions' }
-Gets the id of the last page enemies are displayed. Pages afterwards are reserved for bosses.
-___
 ### GetNumBossPages () {: aria-label='Functions' }
 #### int GetNumBossPages ( ) {: .copyable aria-label='Functions' }
+Returns the number of bestiary pages used for bosses. The boss pages come after the monster pages.
 
 ___
 ### GetNumMonsterPages () {: aria-label='Functions' }
 #### int GetNumMonsterPages ( ) {: .copyable aria-label='Functions' }
+Returns the number of bestiary pages used for enemies. Enemy pages come first, the pages afterwards are reserved for bosses.
 
 ___
 ### GetNumPages () {: aria-label='Functions' }
 #### int GetNumPages ( ) {: .copyable aria-label='Functions' }
+Returns the total number of pages currently in the bestiary, with both monster and boss pages included.
 
 ___
 ### GetSelectedElement () {: aria-label='Functions' }

@@ -5,10 +5,10 @@ __fastcall GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
 __thiscall void GridEntity::Init(unsigned int Seed);
 
 "558bec83ec488a55":
-__thiscall void GridEntity::hurt_func(Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4);
+__thiscall void GridEntity::hurt_func(Entity* ent, float DamageAmount<xmm2>, int PlayerDamage, uint64_t DamageFlags, bool IgnoreGridCollisionClass);
 
 "558bec83ec148bd1f30f115d":
-__thiscall void GridEntity::hurt_surroundings(int Damage, unsigned long long DamageFlags, float unk3, bool unk4);
+__thiscall void GridEntity::hurt_surroundings(float Distance<xmm1>, float PlayerDistance<xmm2>, float DamageAmount<xmm3>, int PlayerDamage, uint64_t DamageFlags, bool IgnoreGridCollisionClass);
 
 "558bec83ec088b41":
 __thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);
@@ -16,13 +16,17 @@ __thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);
 "8b41??83f80274??83f80374??83f80474??83f80574??83f80674??83f81674??83f81874??83f81974??83f81a74??83f81b74??32c0":
 __thiscall bool GridEntity::IsBreakableRock();
 
-struct GridEntity depends (GridEntityDesc) {
+struct GridEntity depends (GridEntityDesc, RNG, ANM2) {
 {{
-	inline GridEntityDesc* GetDesc() {return (GridEntityDesc*)((char*)this + 0x4); }
-	inline int GetType() {return *(int*)((char*)this + 0x4); }
-	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
-	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
+	inline GridEntityDesc* GetDesc() { return &this->_desc; }
+	inline int GetType() { return this->_desc._type; }
 }} 
+	GridEntityDesc _desc : 0x4;
+	unsigned int _gridIndex : 0x24;
+	unsigned int _spawnFrame : 0x28;
+	RNG _rng : 0x2c;
+	int _collisionClass : 0x3c;
+	ANM2 _sprite : 0x40;
 	
 	__vtable {
 		skip; // Free
@@ -34,10 +38,12 @@ struct GridEntity depends (GridEntityDesc) {
 		
 		skip; // Hurt
 		
-		"8b016a048b40":
-		bool Destroy(bool Immediate);
+		"8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??8b01ff60??????????????56":
+		bool Destroy(bool Immediate, EntityRef* Source);
 		
-		skip; // GetWaterClipInfo
+		"558bec8b45??c70039000000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches

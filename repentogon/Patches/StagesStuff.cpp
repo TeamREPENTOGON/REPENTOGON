@@ -34,7 +34,7 @@ int bckbbackdrop = -1;
 
 int bcknstage = -1;
 string bcknname;
-HOOK_METHOD(Level, Init, ()-> void) {
+HOOK_METHOD(Level, Init, (bool unk)-> void) {
 	if (bckmmusic > -1) {
 		g_Game->_roomConfig._stages[bckmstage]._musicId = bckmmusic;
 		bckmstage = -1;
@@ -49,7 +49,7 @@ HOOK_METHOD(Level, Init, ()-> void) {
 		g_Game->_roomConfig._stages[bcknstage]._displayName = bcknname;
 		bcknstage = -1;
 	}
-	super();
+	super(unk);
 }
 
 void SetCurrentFloorMusic(int etype) {

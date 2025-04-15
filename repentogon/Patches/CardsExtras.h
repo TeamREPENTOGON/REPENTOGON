@@ -19,9 +19,9 @@ private:
 public:
     CardChance(int chance);
     CardChance(float chance);
-    bool Check(RNG& rng);
-    inline bool IsZero() {return this->chance.intChance == 0;} //Float an int representation of 0 is the same
-    bool IsGuaranteed();
+    bool Check(RNG& rng) const;
+    inline bool IsZero() const {return this->chance.intChance == 0;} // float and int representation of 0 is the same
+    bool IsGuaranteed() const;
 };
 
 struct ItemConfig_Card_EX
@@ -56,20 +56,20 @@ struct CardPool
     void AddCandidate(int cardId);
     void AddCard(ItemConfig_Card* cardConfig);
     void AddCard(int cardId, float weight);
-    int PickCard(RNG& rng);
+    int PickCard(RNG& rng) const;
 
     void BuildPool();
     void BuildSpecialPool(bool allowNonCards);
 };
 
-extern std::vector<ItemConfig_Card_EX> cardList_EX;
-extern CardPool cardPools[NUM_CARDPOOLS];
-
-namespace Cards_EX
+namespace CardsEX
 {
+    extern std::vector<ItemConfig_Card_EX> g_CardConfigsEX;
+    extern CardPool g_CardPools[NUM_CARDPOOLS];
+
     inline ItemConfig_Card_EX* GetCardConfigEX(ItemConfig_Card* cardConfig)
     {
-        return &cardList_EX[cardConfig->id];
+        return &g_CardConfigsEX[cardConfig->id];
     }
 }
 

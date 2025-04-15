@@ -55,8 +55,48 @@ extern "C" {
 			return 1;
 		}
 
+		FunctionDefinition::UpdateHooksStateFromJSON("hooks.json");
 		ASMPatch::_Init();
 		ASMPatch::SavedRegisters::_Init();
+
+		return 0;
+	}
+
+	__declspec(dllexport) int OfflineScan(void*) {
+		char filename[4096];
+		time_t now = time(nullptr);
+		tm* nowtm = localtime(&now);
+		strftime(filename, 4096, "offline_scanning_%Y-%m-%d_%H-%M-%S.log", nowtm);
+		FILE* f = fopen(filename, "w");
+		if (!f) {
+			char buffer[4096];
+			sprintf(buffer, "Unable to open log file %s", filename);
+			MessageBoxA(0, buffer, "Fatal error", MB_ICONERROR);
+			return -1;
+		}
+
+		std::vector<SigScanEntry> entries;
+		Definition::OfflineInit(entries);
+
+		for (SigScanEntry const& entry : entries) {
+			size_t nMatches = entry.locations.size();
+
+			fprintf(f, "%s %s, signature %s, %u matches: ",
+				entry.isFunction ? "Function" : "Variable",
+				entry.name.c_str(),
+				entry.signature.c_str(),
+				nMatches);
+
+			if (nMatches) {
+				for (void* addr : entry.locations) {
+					fprintf(f, "%p ", addr);
+				}
+			}
+
+			fprintf(f, "\n");
+		}
+
+		fclose(f);
 
 		return 0;
 	}

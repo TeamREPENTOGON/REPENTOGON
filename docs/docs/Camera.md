@@ -27,7 +27,7 @@ Sets the camera's current focus position, causing it to shift towards the specif
 
 The camera will only move if the current room size is larger than 1x1. If the room size is 1x1 or smaller, the camera will remain stationary and this function will do nothing. 
 
-This function must be called on every game update, otherwise the game will override the camera's position.
+This function must be called inside an update callback such as `ModCallbacks.MC_POST_UPDATE`, otherwise the game will override the camera's position.
 
 ___
 ### SnapToPosition () {: aria-label='Functions' }
@@ -36,7 +36,7 @@ Sets the camera's position instantly to the specified position.
 
 The camera will only move if the current room size is larger than 1x1. If the room size is 1x1 or smaller, the camera will remain stationary and this function will do nothing.
 
-This function must be called on every game update, otherwise the game will override the camera's position.
+This function must be called inside a render callback such as `ModCallbacks.MC_POST_RENDER`, otherwise the game will override the camera's position.
 
 ???+ bug "Bug"
 	This function seems to only work when Active Camera is off.

@@ -1,4 +1,4 @@
-"558bec83e4f88b45??83e800":
+"558bec8b45??83e80074??83e80174??83e8018bc1":
 __thiscall void BlendMode::SetMode(unsigned int mode);
 
 struct BlendMode { {{

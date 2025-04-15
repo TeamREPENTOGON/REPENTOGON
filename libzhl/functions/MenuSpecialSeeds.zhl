@@ -7,7 +7,8 @@ struct Menu_SpecialSeeds depends (ANM2) {
     int HoldInputTimer : 0x8;
     float PositionX : 0xc;
     float PositionY : 0x10;
-    ANM2 SpecialSeedsSprite : 0x14;
-    std_string _seedUnlockedString : 0x128;
-    std_string _seedEnabledString : 0x140;
-} : 0x164;
+    ANM2 SpecialSeedsSprite : 0x1c;
+    // Lost in REP+, but might still be here?
+    //std_string _seedUnlockedString : 0x??;
+    //std_string _seedEnabledString : 0x??;
+} : 0x16C;

@@ -1,7 +1,7 @@
 "558bec83e4f881ece000000056":
 __thiscall void Entity_Knife::Render(Vector *offset);
 
-"558bec83e4f081ece8000000a1????????33c4898424????????56":
+"558bec83e4f081ecd8000000a1":
 __thiscall bool Entity_Knife::HandleCollision(Entity* collider, bool low);
 
 "80b9????????0074??0f1f8000000000":
@@ -11,10 +11,10 @@ __thiscall std_vector_uint * Entity_Knife::GetHitEntities();
 __thiscall void Entity_Knife::Constructor();
 
 struct Entity_Knife : public Entity { 
-	bool _isSwinging : 0x3b5;	
-	bool _prismApplied : 0x435;
-	bool _multidimensionalApplied : 0x436;
-	bool _isSpinAttack : 0x43a;
+	bool _isSwinging : 0x45d;
+	bool _prismApplied : 0x4dd;
+	bool _multidimensionalApplied : 0x4de;
+	bool _isSpinAttack : 0x4e2;
 
 	__vtable {
 		skip; // Free
@@ -22,7 +22,7 @@ struct Entity_Knife : public Entity {
 		skip; // PreUpdate
 		
 		override
-		"558bec6aff68????????64a1????????5081ec90010000":
+		"558bec6aff68????????64a1????????5081eca8010000":
 		void Update();
 		
 		skip; // Interpolate

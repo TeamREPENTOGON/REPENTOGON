@@ -1,0 +1,11 @@
+// List contains mod references created by RegisterMod calls only.
+"a1(????????)83c40c8b30":
+reference std_list_ModReference g_Mods;
+
+struct ModReference {
+	std_string _mainLuaPath : 0x0;
+	std_string _dataDirectory : 0x18;
+	std_string _name : 0x30;
+	LuaBridgeRef* _luaTableRef : 0x48;
+	int _apiVersion : 0x4c;
+} : 0x50;

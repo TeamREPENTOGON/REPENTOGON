@@ -1,0 +1,19 @@
+"558bec6aff68????????64a1????????5083ec0c535657a1????????33c5508d45??64a3????????8bf9897d??8b75":
+__thiscall void KAGE_Filesys_ContentManager::AddMountPoint(const char* mountPoint);
+
+struct KAGE_Filesys_ContentManager {
+    __vtable {
+        skip; // Initialize
+        skip; // Shutdown
+        skip; // ApplicationMountPoint
+
+        "558bec53568b75??5785f674":
+        const char* GetMountedFilePath(const char* filePath);
+
+        skip; // notify_mount_point_destroy
+        skip; // get_directory_entries
+    };
+};
+
+"b9(????????)5789bd????????e8????????8bf0":
+reference KAGE_Filesys_ContentManager g_ContentManager;

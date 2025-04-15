@@ -229,16 +229,10 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	int sel = this->SelectedElement;
 	float targetyoffset = 0;
 	ANM2* s = &g_MenuManager->GetMenuChallenge()->ChallengeMenuSprite;
-	DrawStringScaledEntry entry = DrawStringScaledEntry();
-	entry._boxWidth = 0;
-	entry._center = false;
-	entry._scaleX = 0.8f;
-	entry._scaleY = 1;
-	entry._color._blue = 0.14f;
-	entry._color._green = 0.15f;
-	entry._color._red = 0.21f;
-	entry._color._alpha = 1.f;
-
+	FontSettings settings;
+	settings._align = 0;  // DrawStringAlignment.TOP_LEFT
+	KColor color(0.14f, 0.15f, 0.21f, 1.f);
+	Vector scale(0.8f, 1.f);
 
 	super();
 	if (!Streak._loaded) {
@@ -260,27 +254,25 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		string order = to_string(count) + ".";
 		string challengesrt = (order + node["name"]);
 		pos.y += 25;
-		entry._text = challengesrt.c_str();
-		entry._x = pos.x;
-		entry._y = pos.y - 20;
-		entry._color._alpha = 1;
+		const char* text = challengesrt.c_str();
+		Vector renderPos(pos.x, pos.y - 20);
+		color._alpha = 1;
 		if (lockedchallenges[i]) {
 			string locked = order + lockedchalstr;
 			if ((node.find("lockeddesc") != node.end())) {
 				locked = order + node["lockeddesc"];
 			}
-			entry._color._alpha = 0.5;
-			entry._text = locked.c_str();
-			g_Manager->_font8_TeamMeat_12.DrawStringScaled(entry);
+			color._alpha = 0.5;
+			g_Manager->_font2_TeamMeatEx12.DrawString(locked.c_str(), renderPos, scale, &color, &settings);
 		}
 		else {
-			g_Manager->_font8_TeamMeat_12.DrawStringScaled(entry);
+			g_Manager->_font2_TeamMeatEx12.DrawString(challengesrt.c_str(), renderPos, scale, &color, &settings);
 			if (Challenges[node["name"] + node["sourceid"]] > 0) {
 				srand(i-40);
 				Streak.SetFrame(&string("Idle"), (float)(rand() % 6));
 				Streak.Update();
-				Streak._scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
-				Streak._offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
+				Streak._scale.x =  (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(node["name"].c_str()) / 294.0);
+				Streak._offset.x = (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(order.c_str()) - 10);
 				Streak.Render(&pos, &z, &z);
 			}
 		}

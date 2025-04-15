@@ -552,3 +552,4 @@ include/IsaacRepentance.h
 libzhl/IsaacRepentance.cpp
 updater/updater.rc
 updater_rsrc
+include/hooks.json

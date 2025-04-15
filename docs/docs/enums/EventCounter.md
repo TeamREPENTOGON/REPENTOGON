@@ -502,4 +502,29 @@ tags:
 |493 |BABY_PLUM_KILLS {: .copyable } |  |
 |494 |BATTERY_BUMS_KILLED {: .copyable } |  |
 |495 |BATTERY_BUM_COLLECTIBLE_PAYOUTS {: .copyable } | counts how often the battery bum paid out with a collectible item |
-|496 |NUM_EVENT_COUNTERS {: .copyable } |  |
+|496 |UNKNOWN_EVENT_496 {: .copyable } | TODO: Currently Unknown. Maybe Daily Multiplayer run Streak? |
+|497 |ONLINE_CURRENT_STREAK {: .copyable } | Current Online Mode streak |
+|498 |ONLINE_BEST_STREAK {: .copyable } | Best streak in Online Gameplay |
+|499 |UNKNOWN_EVENT_499 {: .copyable } | TODO: Currently Unknown. Maybe Daily Multiplayer run Streak? |
+|500 |ONLINE_SIN_ETERNAL {: .copyable } |  |
+|501 |ONLINE_SIN_HEARTLESS {: .copyable } |  |
+|502 |ONLINE_SIN_ENVIOUS {: .copyable } |  |
+|503 |ONLINE_SIN_DRESSED_UP {: .copyable } |  |
+|504 |ONLINE_SIN_PRIDEFUL {: .copyable } |  |
+|505 |ONLINE_SIN_SAVIOR {: .copyable } |  |
+|506 |ONLINE_SIN_WRATHFUL {: .copyable } |  |
+|507 |ONLINE_SIN_BIG_BOSS {: .copyable } |  |
+|508 |ONLINE_SIN_EXPLORER {: .copyable } |  |
+|509 |ONLINE_SIN_EXPRESSIVE {: .copyable } |  |
+|510 |ONLINE_SIN_GLUTTONOUS {: .copyable } |  |
+|511 |ONLINE_SIN_RECKLESS {: .copyable } |  |
+|512 |ONLINE_SIN_ESCAPE_ARTIST {: .copyable } |  |
+|513 |ONLINE_SIN_GAMBLER {: .copyable } |  |
+|514 |ONLINE_SIN_GREEDY {: .copyable } |  |
+|515 |ONLINE_SIN_MYSTIC {: .copyable } |  |
+|516 |ONLINE_SIN_PILL_POPPER {: .copyable } |  |
+|517 |ONLINE_SIN_BIG_SPENDER {: .copyable } |  |
+|518 |ONLINE_SIN_JANITOR {: .copyable } |  |
+|519 |ONLINE_SIN_LUSTFUL {: .copyable } |  |
+|520 |ONLINE_SIN_SLOTHFUL {: .copyable } |  |
+|521 |NUM_EVENT_COUNTERS {: .copyable } |  |

@@ -160,7 +160,7 @@ void SigScan::FlushCache() {
 	SigCache::FlushCache();
 };
 
-SigScan::SigScan(const char *sig) : m_pAddress(0)
+SigScan::SigScan(const char *sig) : m_scanResult(nullptr)
 {
 	m_bStartFromLastAddress = false;
 	m_bNoReturnSeek = false;
@@ -274,12 +274,27 @@ SigScan::~SigScan()
 		delete[] m_mask;
 }
 
-bool SigScan::Scan(Callback callback)
+void* SigScan::GetAddress() const
+{
+	if (std::holds_alternative<void*>(m_scanResult))
+		return std::get<void*>(m_scanResult);
+	else
+	{
+		std::vector<void*> const& results =
+			std::get<std::vector<void*>>(m_scanResult);
+		if (results.size() == 0)
+			return nullptr;
+		else
+			return results.front();
+	}
+}
+
+bool SigScan::Scan(bool useCache, bool allowRepetitions, Callback callback)
 {
 	const unsigned char *usig = m_sig;
-	if(!m_iLength)
+	if (!m_iLength)
 	{
-		m_pAddress = s_pLastStartAddress;
+		m_scanResult = s_pLastStartAddress;
 		return true;
 	}
 
@@ -287,26 +302,30 @@ bool SigScan::Scan(Callback callback)
 
 	unsigned char *pStart = s_pBase;
 	s_sigCounter++;
-	bool readfromcache = (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
-	if (SigCache::IsIndirectMode) {
+	bool readfromcache = useCache && (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
+	if (useCache && SigCache::IsIndirectMode)
+	{
 		readfromcache = false;
 		size_t address = SigCache::FindCacheEntryBySig(m_sighash);
-		if (address != 0) {
+		if (address != 0)
 			pStart = (unsigned char*)address;
-		};
-	};
-	if (readfromcache){
-		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash) {
+	}
+
+	if (readfromcache)
+	{
+		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash)
+		{
 //			SigCache::ResetSigFile();
 			printf("[ZHL::SigCache] Invalid signature %x instead of %x! Expect longer load time...\n", SigCache::_entries[s_sigCounter]._sighash,m_sighash);
 			SigCache::InvalidateCache(s_sigCounter);
 			readfromcache = false;
 		}
-		else {
+		else
 			pStart = (unsigned char*)SigCache::_entries[s_sigCounter]._address;
-		};
-	};
+	}
+
 	unsigned char *pEnd = s_pBase + s_iBaseLen - m_iLength;
+	bool found = false;
 
 	if(m_bStartFromLastAddress)
 		pStart = (unsigned char*)s_pLastAddress;
@@ -318,7 +337,7 @@ bool SigScan::Scan(Callback callback)
 		const unsigned char *m = m_mask;
 		size_t i;
 
-		for(i=0 ; i<m_iLength ; ++i, ++p, ++s, ++m)
+		for(i=0 ; i<m_iLength && p < pEnd; ++i, ++p, ++s, ++m)
 			if(*m && *s != *p) break;
 
 		if(i == m_iLength)
@@ -328,12 +347,10 @@ bool SigScan::Scan(Callback callback)
 			else
 				m_dist = pStart-s_pBase;
 
-			m_pAddress = pStart;
-
 			// Find out where the function ends
 			s_pLastStartAddress = pStart;
 
-			s_pLastAddress = pStart;
+			unsigned char* address = pStart;
 			
 			if(m_bNoReturnSeek)
 			{
@@ -358,20 +375,51 @@ bool SigScan::Scan(Callback callback)
 			}
 
 			for(auto it = m_matches.begin() ; it != m_matches.end() ; ++it)
-				it->address = m_pAddress + it->begin;
+				it->address = address + it->begin;
 
 			s_lastMatches = m_matches;
 			if(callback) callback(this);
-			if (!readfromcache) {
-				SigCache::WriteCacheEntry(m_sighash, (size_t)m_pAddress);
+			if (useCache && !readfromcache) {
+				SigCache::WriteCacheEntry(m_sighash, (size_t)address);
 			};
 
-			return true;
+			if (allowRepetitions)
+			{
+				if (!found)
+				{
+					std::vector<void*> matches;
+					matches.push_back(address);
+					m_scanResult = std::move(matches);
+					found = true;
+				}
+				else
+				{
+					std::get<std::vector<void*>>(m_scanResult).push_back(address);
+				}
+			} 
+			else
+			{
+				m_scanResult = pStart;
+				return true;
+			}
 		}
 	}
 
 	s_pLastAddress = s_pBase;
-	return false;
+
+	return allowRepetitions ? found : false;
+}
+
+std::vector<void*> SigScan::GetAddresses() const
+{
+	if (std::holds_alternative<void*>(m_scanResult))
+	{
+		std::vector<void*> result;
+		result.push_back(std::get<void*>(m_scanResult));
+		return result;
+	} 
+	else
+		return std::get<std::vector<void*>>(m_scanResult);
 }
 
 //=====================================================================

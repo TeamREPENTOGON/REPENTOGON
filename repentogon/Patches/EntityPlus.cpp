@@ -135,6 +135,19 @@ HOOK_METHOD(Entity, IsFlying, ()->bool) {
 
 
 // ----------------------------------------------------------------------------------------------------
+// -- WaterClipInfo
+
+HOOK_METHOD(Entity, GetWaterClipInfo, (WaterClipInfo* out) -> WaterClipInfo*) {
+	super(out);
+	EntityPlus* entityPlus = GetEntityPlus(this);
+	if (entityPlus && entityPlus->waterClipInfoFlagsOverride) {
+		out->bitFlags = *entityPlus->waterClipInfoFlagsOverride;
+	}
+	return out;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
 // -- ASM Patches
 
 namespace {
@@ -155,6 +168,8 @@ void PatchRecalculateLaserSamples(const char* sig, const int numOverriddenBytes)
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching for triggering laser sample recalculation at %p\n", addr);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -170,5 +185,5 @@ void PatchRecalculateLaserSamples(const char* sig, const int numOverriddenBytes)
 
 void ASMPatchesForEntityPlus() {
 	PatchRecalculateLaserSamples("f30f108f????????0f2e8f", 8);  // update_laser
-	PatchRecalculateLaserSamples("8b97????????8d8f????????f30f1055", 6);  // update_circle_laser
+	PatchRecalculateLaserSamples("8b97????????8d8f????????52", 6);  // update_circle_laser
 }

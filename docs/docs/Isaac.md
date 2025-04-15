@@ -12,7 +12,7 @@ Same as vanilla, but much faster.
 
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
-#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, [EntityPartition](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 
 ___
@@ -192,6 +192,11 @@ ___
 Gets the Cutscene ID By Name.
 
 ___
+### GetAllowedDoorsMaskForRoomShape () {: aria-label='Functions' }
+#### [DoorMask](enums/DoorMask.md) GetAllowedDoorsMaskForRoomShape ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape ) {: .copyable aria-label='Functions' }
+Returns a [DoorMask](enums/DoorMask.md) representing all [DoorSlots](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) allowed for the given [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html).
+
+___
 ### GetDwmWindowAttribute () {: aria-label='Functions' }
 #### [DwmWindowAttribute](enums/DwmWindowAttribute.md) GetDwmWindowAttribute ( ) {: .copyable aria-label='Functions' }
 
@@ -230,7 +235,7 @@ ___
 
 ___
 ### GetPoolIdByName () {: aria-label='Functions' }
-#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( string PoolName ) {: .copyable aria-label='Functions' }
+#### [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) GetPoolIdByName ( string PoolName ) {: .copyable aria-label='Functions' }
 Returns the ID of a given custom pool. Returns `-1` if the pool is not found.
 
 ___
@@ -285,7 +290,7 @@ Sets a completion mark of a character to match a specific value from `0` to `2` 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
 #### void SetCompletionMarks ( table Marks ) {: .copyable aria-label='Functions' }
-Sets the completion marks of a character to match an input table. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#GetCompletionMarks) is advised for convenience.
+Sets the completion marks of a character to match an input table. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#getcompletionmarks) is advised for convenience.
 
 ???- info "Table structure & usage"
 	- The table needs the following fields: 
@@ -355,7 +360,7 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
 ### StartNewGame () {: aria-label='Functions' }
-#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](enums/Difficulty.md) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random ) {: .copyable aria-label='Functions' }
+#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random ) {: .copyable aria-label='Functions' }
 Starts a new game using the specified arguments. Can be used from the main menu.
 
 ___

@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "CodeEmitter.h"
 #include "ParserDefinitions.h"
 
 #include "ZHLLexer.h"
@@ -9,56 +10,9 @@
 #include "ZHLParserBaseListener.h"
 #include "ZHLParserBaseVisitor.h"
 
-class ErrorLogger { //: public std::ostringstream {
-public:
-    struct EndToken { };
-    static EndToken _end;
-
-    ~ErrorLogger();
-
-    template<typename T>
-    ErrorLogger& operator<<(T const& t) {
-        _buf << t;
-        return *this;
-    }
-
-    static ErrorLogger& endl(ErrorLogger& logger);
-    static ErrorLogger& error(ErrorLogger& logger);
-    static ErrorLogger& warn(ErrorLogger& logger);
-
-    void log_error();
-    void log_warn();
-
-    ErrorLogger& operator<<(ErrorLogger& (*v)(ErrorLogger&));
-    ErrorLogger& operator<<(EndToken const& token);
-
-    void newline();
-
-    bool IsErrored();
-
-    void SetFile(std::string const& filename);
-
-private:
-    std::vector<std::string> _errors;
-    std::ostringstream _buf;
-    bool _errored = false;
-    std::optional<std::string> _filename;
-};
-
-class ErrorsHolder {
-public:
-    static void ThrowOrLog(std::ostringstream const& str);
-    static bool HasErrors();
-    static std::vector<std::string> const& GetErrors();
-
-private:
-    static std::vector<std::string> _errors;
-};
-
-
 class Parser : public ZHLParserBaseVisitor {
 public:
-    Parser(Namespace* global, std::map<std::string, Type>* types, std::string const& filename);
+    Parser(Namespace* global, TypeMap* types, std::string const& filename);
     virtual std::any visitZhl(ZHLParser::ZhlContext* ctx);
     virtual std::any visitFunction(ZHLParser::FunctionContext* ctx);
     virtual std::any visitReference(ZHLParser::ReferenceContext* ctx);
@@ -103,9 +57,10 @@ public:
     virtual std::any visitExternalFunc(ZHLParser::ExternalFuncContext* ctx);
     virtual std::any visitFunctionName(ZHLParser::FunctionNameContext* ctx);
 
+    inline bool HasFatalError() const { return _hasFatalError; }
+
 private:
     Namespace* _global;
-    // std::vector<Struct*> _structs;
     std::string _currentFile;
     Struct* _currentStruct = nullptr;
     Variable* _currentVariable = nullptr;
@@ -113,24 +68,14 @@ private:
     FunctionParam* _currentParam = nullptr;
     Signature* _currentSignature = nullptr;
     VariableSignature* _currentReference = nullptr;
-    ErrorLogger _errors;
-    std::map<std::string, Type>* _types;
+    TypeMap* _types;
 
     std::string GetCurrentFunctionQualifiedName(std::string const& name);
-
     void WarnRepeatedFunctionQualifier(std::string const& name, std::string const& qualifier);
-
     std::string MergeNameParts(std::vector<std::string> const& parts);
-
     std::string GetContext();
-
-    Type* GetOrCreateTypeByName(std::string const& name);
-
     void ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qualifiers, Function& fn);
-
-    Type* PointerQualify(Type const* source, PointerDecl const& decl);
-    Type* ArrayQualify(Type const* source, Array const& array);
-    Type* ConstQualify(Type const* source);
-
     std::string ReadSignature(std::string const& sig);
+
+    bool _hasFatalError = false;
 };

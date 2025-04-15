@@ -285,7 +285,7 @@ void PatchDealRoomVariant(char * signature, char* message) {
 
 void ASMPatchDealRoomVariants()
 {
-	PatchDealRoomVariant("E825040D008BCF894310E82BFCFFFF", "InitializeDevilAngelRoom");
+	PatchDealRoomVariant("e8????????8bcf8943", "InitializeDevilAngelRoom");
 	PatchDealRoomVariant("e8????????85c075??68????????6a00", "MakeRedRoomDoor call #1");
 	PatchDealRoomVariant("e8????????85c00f85????????83fe01", "MakeRedRoomDoor call #2");
 	PatchDealRoomVariant("e8????????85c00f85????????6aff", "MakeRedRoomDoor call #3");
@@ -293,7 +293,7 @@ void ASMPatchDealRoomVariants()
 
 // eliminates the checks that replaces the current OverrideData if it's not a miniboss RoomConfig_Room
 void PatchOverrideDataHandling() {
-	const char* signature[2] = { "74??83380075", "8945??85c974??833900" };
+	const char* signature[2] = { "74??83380075??8378??06", "8945??85c974??833900" };
 	SigScan scanner(signature[0]); // jz 0x0061bcb2
 	if (!scanner.Scan()) {
 		ZHL::Log("[ERROR] Unable to find signature to patch OverrideData handling\n");
@@ -325,18 +325,18 @@ void PatchOverrideDataHandling() {
 }
 
 // https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
-void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls() {
-	SigScan scanner("898424????????898c24????????898424????????898c24????????898424????????898c24????????898424????????898c24????????898424");
+void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls(const char* sig, const char* reg) {
+	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
 	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
 
 	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 5; i++) {
 		void* subAddr = (char*)addr + ((7 * i) + 1);
 		ASMPatch patch;
-		patch.AddBytes((i % 2 == 0) ? "\x8C" : "\x84");
+		patch.AddBytes(reg);
 		sASMPatcher.FlatPatch(subAddr, &patch);
 	}
 }
@@ -353,11 +353,12 @@ void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
 		.AddBytes("\x83\xfa\x0d")  // cmp edx, 13
 		.AddBytes("\x0f\x85\x01").AddZeroes(3)  // jne (skips the next command if edx != 13)
 		.AddBytes("\x4a")  // dec edx (skipped if the jump happened)
-		.AddBytes("\x8B\x94\x94\xE0").AddZeroes(3)  // mov edx, dword ptr [esp + edx*0x4 + 0xe0]
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // mov edx, dword ptr [esp + edx*0x4 + 0x??]
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchLevelGeneratorTryResizeEndroom() {
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls();
+	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898c24????????898c24????????898c24????????898c24????????898c24????????898c24????????8b4c24", "\x84");  // Replace ECX with EAX
+	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898424????????898424????????898424????????898424????????898424", "\x8C");  // Replace EAX with ECX
 	PatchTryResizeEndroomMissingLongThinRoomDoorSlot();
 }

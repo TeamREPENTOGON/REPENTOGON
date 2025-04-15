@@ -5,6 +5,7 @@
 #include "IsaacRepentance.h"
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
+#include "Anm2Extras.h"
 
 // Normalizes input shader paths for use as keys and for identification.
 // Converts to lowercase and strips excess slashes, ie `shaders\\MyShader` -> `shaders/myshader`
@@ -13,11 +14,6 @@ std::string NormalizeShaderPath(const std::string& input_path) {
 	std::transform(path.begin(), path.end(), path.begin(), [](unsigned char c) { return std::tolower(c); });
 	return path;
 }
-
-struct CustomShader {
-	std::string path;  // Relative path starting from `.../resources/`, without the file extensions, ie `shaders/myshader`
-	KAGE_Graphics_Shader shader;
-};
 
 // Layer-specific extra data.
 struct Anm2LayerExtras {
@@ -145,24 +141,29 @@ std::string FindShaderFullPath(const std::string& path) {
 	return "";
 }
 
+// Abstracted shader loading (for reloading shaders via console)
+bool LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion) {
+	const std::string fullpath = FindShaderFullPath(path);
+	if (fullpath.empty())
+		return false;
+	KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
+	KAGE_Graphics_Manager_GL::LoadShader(shader, desc, fullpath.c_str());
+	return true;
+}
+
 // Returns the custom shader corresponding to the relative path.
 // Initializes the shader if necessary.
 CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool champion) {
-	if (input_path.empty()) {
+	if (input_path.empty())
 		return nullptr;
-	}
 	const std::string path = NormalizeShaderPath(input_path);
 	auto& shader_map = champion ? custom_champion_shaders : custom_shaders;
 	if (shader_map.count(path) == 0) {
-		const std::string fullpath = FindShaderFullPath(path);
-		if (fullpath.empty()) {
+		shader_map[path].path = path;
+		if (!LoadCustomShader(path, &shader_map[path].shader, champion)) {
+			shader_map.erase(path);
 			return nullptr;
 		}
-
-		// Initialize the CustomShaderInfo object and contained KAGE_Graphics_Shader.
-		custom_shaders[path].path = path;
-		KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
-		KAGE_Graphics_Manager_GL::LoadShader(&shader_map[path].shader, desc, fullpath.c_str());
 	}
 	return &shader_map[path];
 }
@@ -263,11 +264,13 @@ void ASMPatchCustomAnm2ShaderHook(const char* sig, const bool isChampion) {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Patching AnimationLayer::RenderFrame for custom shaders at %p\n", addr);
+
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.Push(isChampion)
-		.Push(ASMPatch::Registers::EDI)  // Push the LayerState
+		.Push(ASMPatch::Registers::ESI)  // Push the LayerState
 		.AddInternalCall(CustomAnm2ShaderHook)
 		.RestoreRegisters(reg)
 		.AddRelativeJump((char*)addr + 0x5);
@@ -299,7 +302,7 @@ void ASMPatchCustomAnm2ShaderOverride(const char* sig, const int jmp) {
 }*/
 
 constexpr char kNormalShaderSig[] = "a1????????a3????????8d85";
-constexpr char kChampionShaderSig[] = "a1????????8bcfa3";
+constexpr char kChampionShaderSig[] = "a1????????8bcea3";
 //constexpr char kGoldShaderSig[] = "a1????????a3????????f6c14074??a1????????8b80????????992bc2d1f8eb??a1????????8b80????????25ff00008079??480d00ffffff40660f6ec08bcf0f5bc08d85????????50f30f5905????????f30f1185????????e8????????c745??06000000";
 //constexpr char kDogmaShaderSig[] = "a1????????a3????????f6c14074??a1????????8b80????????992bc2d1f8eb??a1????????8b80????????25ff00008079??480d00ffffff40660f6ec08bcf0f5bc08d85????????50f30f5905????????f30f1185????????e8????????c745??05000000";
 

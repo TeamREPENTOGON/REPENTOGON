@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetRoomTransition) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomTransition** ud = (RoomTransition**)lua_newuserdata(L, sizeof(RoomTransition*));
 	*ud = game->GetRoomTransition();
 	luaL_setmetatable(L, lua::metatables::RoomTransitionMT);
@@ -23,6 +23,8 @@ LUA_FUNCTION(Lua_RoomTransitionStartBossIntro) {
 	int bossID1 = (int)luaL_checkinteger(L, 1);
 	int bossID2 = (int)luaL_optinteger(L, 2, 0);
 
+	roomTransition->_roomIndex = g_Game->_startingRoomIdx; // safety measure to prevent crashes if current transition's roomIndex is invalid
+
 	roomTransition->StartBossIntro(bossID1, bossID2);
 	return 0;
 }
@@ -41,20 +43,25 @@ LUA_FUNCTION(Lua_RoomTransitionIsRenderingBossIntro) {
 
 LUA_FUNCTION(Lua_RoomTransitionGetPlayerExtraPortraitSprite) {
 	RoomTransition* roomTransition = g_Game->GetRoomTransition();
-	ANM2* sprite = &roomTransition->_playerExtraPortraitANM2;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	// Previously, RoomTransition contained a single sprite for the first player's "extra portrait" (ie tainted eden's glitchy effect)
+	// In REP+, with online co-op showing all players in the versus screen, this was replaced with an std::map of layer (int) to ANM2
+	// For backward compatability's sake, this function returns the sprite for layer 5 (player 1's portrait).
+	auto& map = *roomTransition->GetExtraLayerANM2s();
+	if (map.count(5) == 0) {
+		lua_pushnil(L);
+	} else {
+		lua::luabridge::UserdataPtr::push(L, &map[5], lua::GetMetatableKey(lua::Metatables::SPRITE));
+	}
 	return 1;
 }
 
 static void RegistertRoomTransition(lua_State* L) {
-	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomTransition", Lua_GetRoomTransition);
 	lua_newtable(L);
-		lua::TableAssoc(L, "GetVersusScreenSprite", Lua_RoomTransitionGetVersusScreenSprite );
-		lua::TableAssoc(L, "StartBossIntro", Lua_RoomTransitionStartBossIntro );
-		lua::TableAssoc(L, "GetTransitionMode", Lua_RoomTransitionGetTransitionMode );
-		lua::TableAssoc(L, "IsRenderingBossIntro", Lua_RoomTransitionIsRenderingBossIntro );
-		lua::TableAssoc(L, "GetPlayerExtraPortraitSprite", Lua_RoomTransitionGetPlayerExtraPortraitSprite );
-	//lua::RegisterNewClass(L, lua::metatables::RoomTransitionMT, lua::metatables::RoomTransitionMT, functions);
+	lua::TableAssoc(L, "GetVersusScreenSprite", Lua_RoomTransitionGetVersusScreenSprite );
+	lua::TableAssoc(L, "StartBossIntro", Lua_RoomTransitionStartBossIntro );
+	lua::TableAssoc(L, "GetTransitionMode", Lua_RoomTransitionGetTransitionMode );
+	lua::TableAssoc(L, "IsRenderingBossIntro", Lua_RoomTransitionIsRenderingBossIntro );
+	lua::TableAssoc(L, "GetPlayerExtraPortraitSprite", Lua_RoomTransitionGetPlayerExtraPortraitSprite );
 	lua_setglobal(L, "RoomTransition");
 }
 

@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_MusicManager_Play) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
 
@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_MusicManager_Play) {
 }
 
 LUA_FUNCTION(Lua_MusicManager_Crossfade) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
 
@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_MusicManager_Crossfade) {
 }
 
 LUA_FUNCTION(Lua_MusicManager_Fadein) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	unsigned int musicId = (unsigned int)luaL_checkinteger(L, 2);
 	int max;
 
@@ -46,7 +46,7 @@ LUA_FUNCTION(Lua_MusicManager_Fadein) {
 }
 
 LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int duration = (int)luaL_optinteger(L, 3, 140);
 	if (duration < 0)
@@ -60,20 +60,20 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 }
 
 LUA_FUNCTION(Lua_MusicManager_StopJingle) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	music->StopJingle();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MusicManager_GetCurrentPitch) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	lua_pushnumber(L, music->_pitch);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MusicManager_SetCurrentPitch) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	music->_pitch = (float)luaL_checknumber(L, 2);
 	return 0;
 }

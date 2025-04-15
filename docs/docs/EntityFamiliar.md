@@ -50,7 +50,12 @@ Returns the amount in frames that the familiar's movements are delayed from the 
 ___
 ### GetMultiplier () {: aria-label='Functions' }
 #### float GetMultiplier ( ) {: .copyable aria-label='Functions' }
-Returns the "multiplier" for the familiar, from effects such as BFFs or Hive Mind. Typically used to multiply things such as familiar damage.
+Returns the "multiplier" for the familiar, from effects such as **BFFS!** or **Hive Mind**. Typically used to multiply things such as familiar damage.
+
+???- info "Multipliers"
+    - **BFFS!** and **Hive Mind**: x2.0
+    - **Tainted Bethany**: x0.75
+    - **Tainted Lazarus Birthright**: x0.25
 
 ___
 ### GetPathfinder () {: aria-label='Functions' }
@@ -98,5 +103,10 @@ Returns `nil` if unsuccessful.
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRandomWisp () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
 
 ___

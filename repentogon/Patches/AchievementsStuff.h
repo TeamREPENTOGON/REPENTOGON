@@ -705,7 +705,7 @@ inline void InitAchievs() {
 	AchievementListeners.clear();
 	Conditionals.clear();
 	int condid = 0;
-	for (int i = 638; i <= XMLStuff.AchievementData->maxid; i++)
+	for (int i = 641; i <= XMLStuff.AchievementData->maxid; i++)
 	{
 		XMLAttributes node = XMLStuff.AchievementData->GetNodeById(i);
 		if (node["name"].length() > 0) {

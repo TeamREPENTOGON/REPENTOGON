@@ -128,6 +128,7 @@ nav:
     - CameraStyle: enums/CameraStyle.md
     - CharacterMenuStatus: enums/CharacterMenuStatus.md
     - CompletionType: enums/CompletionType.md
+    - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
     - DeliriumCallbacks: enums/DeliriumCallbacks.md
@@ -171,6 +172,7 @@ nav:
     - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
+    - PlayerHUDLayout: enums/PlayerHUDLayout.md
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
@@ -192,6 +194,7 @@ nav:
     - StbType: enums/StbType.md
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - WaterClipFlag: enums/WaterClipFlag.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
     - XMLNode: enums/XMLNode.md
@@ -267,6 +270,7 @@ nav:
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
     - ItemConfig - Card: ItemConfig_Card.md
+    - ItemConfig - Costume: ItemConfig_Costume.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md
@@ -355,7 +359,8 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
-- Blog: blog/index.md
+- Blog:
+  - blog/index.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md

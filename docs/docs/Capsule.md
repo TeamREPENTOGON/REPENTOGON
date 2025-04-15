@@ -29,6 +29,7 @@ ___
 ___
 ### GetF1 () {: aria-label='Functions' }
 #### float GetF1 ( ) {: .copyable aria-label='Functions' }
+Returns the size of the capsule *(consistent with `size` in both constructors)*
 
 ___
 ### GetF2 () {: aria-label='Functions' }
@@ -41,9 +42,11 @@ ___
 ___
 ### GetVec2 () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetVec2 ( ) {: .copyable aria-label='Functions' }
+Returns the starting position of the capsule *(can be set with `position`)*
 
 ___
 ### GetVec3 () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetVec3 ( ) {: .copyable aria-label='Functions' }
+Returns the ending position of the capsule *(can be set with `targetposition`)*
 
 ___

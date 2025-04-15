@@ -1,10 +1,11 @@
 struct ActiveItemDesc
 {
     int _item : 0x0;
-    int _charge : 0x4;
-    int _batteryCharge : 0x8;
-    int _subCharge : 0xC;
-    int _timeRechargeCooldown : 0x10;
-    int _partialCharge : 0x14;
-    int _varData : 0x18;
-} : 0x1C;
+    int _unk : 0x4;  // Added in REP+
+    int _charge : 0x8;
+    int _batteryCharge : 0xC;
+    int _subCharge : 0x10;
+    int _timeRechargeCooldown : 0x14;
+    int _partialCharge : 0x18;
+    int _varData : 0x1C;
+} : 0x20;

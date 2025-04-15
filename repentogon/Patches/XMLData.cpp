@@ -849,7 +849,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
-	uint32_t unk;
+	bool unk;
 	string middleman = stringlower(node->name());
 	const char* nodename = middleman.c_str(); 
 	if (!initedxmlenums) {
@@ -2653,7 +2653,7 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 
 LUA_FUNCTION(Lua_GetFromEntity)
 {
-	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (entity == NULL) { return luaL_error(L, "Expected entity as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int etype = *entity->GetType();
 	int evar = *entity->GetVariant();
@@ -3660,9 +3660,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		iscontent = iscontentax;
 		mclear(a);
 
-		//unsigned int lang = g_Manager->_stringTable.language;
-		g_Manager->_stringTable.load_ascii_data("stringtable.sta");
-		//g_Manager->_stringTable.language = lang;
+		//g_Manager->_stringTable.load_ascii_data("stringtable.sta"); //diabled due to mem corruption (ToDo)
 	}
 
 	super();
@@ -3786,11 +3784,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
-		}
-		else if (charfind(xmldata, "<stringtab", 50)) {			
-			char * notxmldata = new char[strlen(xmldata) + 1];
-			strcpy(notxmldata, xmldata);
-			super(BuildModdedXML(notxmldata, "stringtable.sta", true));
+		//}
+		//else if (charfind(xmldata, "<stringtab", 50)) {		//disableddue to mem corruption 
+			//char * notxmldata = new char[strlen(xmldata) + 1];
+			//strcpy(notxmldata, xmldata);
+			//super(BuildModdedXML(notxmldata, "stringtable.sta", true));
 		}else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");

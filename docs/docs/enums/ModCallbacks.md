@@ -989,9 +989,6 @@ Called before a GridEntity attempts to inflict damage on an entity.
 
 Return false if the entity or player should ignore the damage.
 
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
-
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
@@ -1000,9 +997,6 @@ Return false if the entity or player should ignore the damage.
 Called after a GridEntity attempts to inflict damage on an entity. Note that this does not guarantee that the entity actually took the damage (for example, if a player is currently invincible).
 
 Accepts no return parameters.
-
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1176,7 +1170,7 @@ Same as MC_INPUT_ACTION, but only works in the main menu.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](InputHook.md), <br>[ButtonAction](ButtonAction.md)) | [InputHook](InputHook.md) | boolean or float |
+|1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html), <br>[ButtonAction](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html))|[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html) | boolean or float |
 
 ### MC_PRE_STATUS_EFFECT_APPLY {: .copyable }
 Triggers before applying a status effect to an Entity.
@@ -1316,7 +1310,7 @@ Runs right after a dark red champion regenerates out of the goo form.
 |1223 |MC_POST_NPC_DARK_RED_CHAMPION_REGEN {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_EVALUATE_CUSTOM_CACHE {: .copyable }
-Called when a custom cache is evaluated (see [items.xml](xml/items.md)). Return a number to modify the value. Modified values are passed onto the next callback.
+Called when a custom cache is evaluated (see [items.xml](../xml/items.md)). Return a number to modify the value. Modified values are passed onto the next callback.
 
 The initial value is always 0. The most recent result can be obtained at any time using `player:GetCustomCacheValue("mycustomcache")`
 
@@ -1329,7 +1323,7 @@ Called when a familiar's cached multiplier needs to be re-evaluated. Return a nu
 
 Effects such as BFFs or Hive Mind have already been applied at this point.
 
-Note that the result of this callback is cached, so the callback only runs when needed. It will be triggered if an item with the `familiarmultiplier` "customcache" is added/removed (see [items.xml](xml/items.md)) or if `familiar:InvalidateCachedMultiplier()` is called.
+Note that the result of this callback is cached, so the callback only runs when needed. It will be triggered if an item with the `familiarmultiplier` "customcache" is added/removed (see [items.xml](../xml/items.md)) or if `familiar:InvalidateCachedMultiplier()` is called.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1536,13 +1530,13 @@ Return `true` to cancel hearts HUD rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1118 |MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float Unknown, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+|1118 |MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset, <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float SpriteScale, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
 
 ### MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float Unknown, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | void |
+|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset, <br>[Sprite](../Sprite.md) HeartsSprite, <br>[Vector](../Vector.md) Position, <br>float SpriteScale, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | void |
 
 ### MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable }
 
@@ -1588,9 +1582,23 @@ Accepts an integer to change the minimum charge to use the active item. If the i
 ### MC_PLAYER_GET_HEALTH_TYPE {: .copyable }
 Accepts an [HealthType](HealthType.md) to change health type for the character.
 
+???+ warning "Warning"
+    Using this callback is often not the most efficient option. For setting a players' default health type, prefer to set their `healthtype` in [players.xml](../xml/players.md). For items, effects and the like, prefer to use the ["healthtype" items.xml customcache](../xml/items.md).
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) CurrentHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+
+### MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable }
+Called when a player's health type changes, but before their existing health is corrected to fit their new health type.
+
+After this callback is finished, if the player's new health type does not support red heart containers, they will automatically be converted to an appropriate type (such as to soul hearts or bone hearts).
+
+You may modify the player's health differently within this callback if you so wish, such as removing the heart containers entirely. Just take care not to leave them with no health!
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1128 |MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) NewHealthType, [HealthType](HealthType.md) PreviousHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PLAYER_GET_HEART_LIMIT {: .copyable }
 Accepts an override `integer` for heart limit.
@@ -2034,7 +2042,7 @@ Return `false` to cancel it."
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType]([https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
+|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
 
 ### MC_POST_PLAYER_REVIVE {: .copyable }
 Called after the player revives, assuming it wasn't cancelled.

@@ -39,7 +39,7 @@ LUA_FUNCTION(Lua_IsaacGetString)
 	if (*translateString == '#') {
 		++translateString;
 	}
-	uint32_t unk;
+	bool unk;
 
 	const char* retStr = stringTable->GetString(category, stringTable->language, translateString, &unk);
 	lua_pushstring(L, retStr);
@@ -57,7 +57,7 @@ LUA_FUNCTION(Lua_IsaacGetLocalizedString) {
 		++translateString;
 	}
 	uint32_t language;
-	uint32_t unk;
+	bool unk;
 
 	if ((lua_type(L, 3) == LUA_TSTRING)) {
 		std::string langCode = luaL_checkstring(L, 3);

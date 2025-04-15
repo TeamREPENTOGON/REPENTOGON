@@ -11,13 +11,14 @@
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 #include "EntityPlus.h"
-#include "CustomItemPools.h"
+#include "ItemPoolManager.h"
 #include "CardsExtras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
 #include "ASMPatches/ASMEntityNPC.h"
-#include "ASMPatches/ASMGridEntity.h"
+#include "ASMPatches/ASMGridEntityCollision.h"
+#include "ASMPatches/ASMGridEntitySpawn.h"
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
@@ -26,7 +27,8 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
-#include "ASMPatches/ASMXMLItem.h"
+#include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMFixes.h"
 
 #include "ASMPatcher.hpp"
 
@@ -66,7 +68,7 @@ void ASMPatchLogMessage() {
 *  We just skip over the check by replacing the conditional JMP with an unconditional one.
 */
 void ASMPatchConsoleRunCommand() {
-	SigScan scanner("75??8b0d????????5781c140ba0100");
+	SigScan scanner("75??8b0d????????5781c1a8ba0100");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -77,35 +79,9 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
-const char* repentogonResources = "resources-repentogon";
-
-void ASMBuildResoucesRepentogon() {
-	SigScan scanner("8d4424??50e8????????50e8");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	SigScan addFilepath("558bec6aff68????????64a1????????5083ec70a1????????33c58945??5657508d45??64a3????????8bf9");
-	addFilepath.Scan();
-
-	void* addFilepathAddr = addFilepath.GetAddress();
-
-	void* stringPtr = &repentogonResources;
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.AddBytes("\x8B\x0D").AddBytes(ByteBuffer().AddAny((char*)&stringPtr, 4))
-		.AddInternalCall(addFilepathAddr)
-		.RestoreRegisters(reg)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-		.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
-	ASMBuildResoucesRepentogon();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();
@@ -130,6 +106,8 @@ void PerformASMPatches() {
 	ASMPatchPrePlayerGiveBirth();
 	ASMPatchesBedCallbacks();
 	ASMPatchPrePlayerPocketItemSwap();
+	ASMPatchMainMenuCallback();
+	ASMPatchPreModUnloadCallbackDuringShutdown();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -139,23 +117,24 @@ void PerformASMPatches() {
 	ASMPatchHushBug();
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
-	ASMPatchAddWeakness();
-	//ASMPatchApplyFrozenEnemyDeathEffects();
+	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
 
 	// GridEntity
-	PatchGridCallbackShit();
+	PatchGridCollisionCallback();
+	PatchGridSpawnCallback();
 
 	// Level
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
-	//PatchOverrideDataHandling();
+	//PatchOverrideDataHandling();  // This was disabled prior to rep+, ignore it!
 	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
 	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
+	ASMPatchOnlineMenu();
 
 	// Room
 	ASMPatchAmbushWaveCount();
@@ -175,9 +154,10 @@ void PerformASMPatches() {
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
+	ASMPatchAddWeakness();
 
 	// Render
-	LuaRender::PatchglDrawElements();
+	//LuaRender::PatchglDrawElements();  // Related to unfinished features, not required for rep+ update
 	PatchStatHudPlanetariumChance();
 
 	//PlayerManager
@@ -191,10 +171,10 @@ void PerformASMPatches() {
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
-	ASMPatchesForCustomItemPools();
-	ExtraASMPatchesForCustomItemPools();
+	ASMPatches::__ItemPoolManager();
+	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
-	ASMPatchesForXMLItem();
+	ASMFixes();
 	HookImGui();
 
 	// Sprite
@@ -209,10 +189,6 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
 
-	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
-		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
-	}
-
 	if (!ASMPatches::SkipArchiveChecksums()) {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
@@ -221,10 +197,16 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
 	};
 
+//	the patch is disabled because it does not do the actual heavylifting and results in a desync ;p
+//
+//	ASMPatches::AllowConsoleInOnline();
+
 	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
 
 	//if (!ASMPatches::FixHushFXVeins()) {
 	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
 	//}
-	
+
+	ASMPatches::NativeRepentogonResources();
+	ASMPatches::PatchGotInvaldParameterReadingChallengesXml();
 }

@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_GridToGridTNT) {
-	GridEntity* grid = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	GridEntity* grid = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	if (grid->GetDesc()->_type == 12) { //TODO: enum
 		GridEntity_TNT* newGrid = lua::UserdataToData<GridEntity_TNT*>(lua_touserdata(L, 1));
 

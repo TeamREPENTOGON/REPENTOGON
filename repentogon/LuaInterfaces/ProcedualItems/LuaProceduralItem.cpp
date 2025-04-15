@@ -3,13 +3,13 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PIGetItem) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua::luabridge::UserdataPtr::push(L, pi->item, lua::Metatables::CONST_ITEM);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIGetTargetItem) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	if (pi->targetItem) {
 		lua::luabridge::UserdataPtr::push(L, pi->targetItem, lua::Metatables::CONST_ITEM);
 	}
@@ -20,51 +20,51 @@ LUA_FUNCTION(Lua_PIGetTargetItem) {
 }
 
 LUA_FUNCTION(Lua_PIGetID) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushinteger(L, pi->_id);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIGetDamage) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->damage);
 	return 1;
 }
 LUA_FUNCTION(Lua_PIGetFireDelay) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->firedelay);
 	return 1;
 }
 LUA_FUNCTION(Lua_PIGetSpeed) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->speed);
 	return 1;
 }
 LUA_FUNCTION(Lua_PIGetRange) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->range);
 	return 1;
 }
 LUA_FUNCTION(Lua_PIGetShotSpeed) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->shotspeed);
 	return 1;
 }
 LUA_FUNCTION(Lua_PIGetLuck) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	lua_pushnumber(L, pi->luck);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIGetEffectCount) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	std::vector<ProceduralEffect*>* effect = pi->GetEffects();
 	lua_pushinteger(L, effect->size());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIGetEffect) {
-	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
+	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	std::vector<ProceduralEffect*>* effect = pi->GetEffects();
 	int index = (int)luaL_checkinteger(L, 2);
 	if (index >= 0 && (unsigned int)index < effect->size()) {

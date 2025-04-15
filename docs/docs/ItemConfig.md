@@ -22,3 +22,6 @@ Returns a table of [ItemConfig_Item](ItemConfig_Item.md) objects with the given 
     Calling this function with will crash the game. This will be fixed in the next update.
 
 ___
+### IsValidTrinket () {: aria-label='Functions' }
+#### boolean IsValidTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) TrinketType ) {: .copyable aria-label='Functions' }
+

@@ -1,4 +1,4 @@
-"558bec56578bf933d28b4d086a006a00e87b2300008bf083c40885f67447":
+"558bec56578bf933d2":
 bool KAGE_File::OpenFileRB(const char* name);
 
 // This isn't really "accurate" but LibZHL can't hook static globals

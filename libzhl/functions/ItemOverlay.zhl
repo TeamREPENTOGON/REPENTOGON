@@ -1,7 +1,7 @@
-"558bec83ec1853568b75088bd9895dfc5783fe2e0f87????????":
+"558bec83ec1053568b75??8bd9":
 __thiscall void ItemOverlay::Show(int eOverlayID, int delay, Entity_Player *player);
 
-"558bec6aff68????????64a1000000005083ec20535657a1????????33c5508d45f464a3000000008bf98b0783f80175??":
+"558bec83ec085356578bf98b07":
 __thiscall void ItemOverlay::Update(bool unk);
 
 struct ItemOverlay depends (ANM2) {

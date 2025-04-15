@@ -61,13 +61,28 @@ ___
 #### [PlayerHUD](PlayerHUD.md) GetPlayerHUD ( int Index = 0 ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPlayerStreakSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetPlayerStreakSprite ( int Index = 0 ) {: .copyable aria-label='Functions' }
+A set of 4 Sprite objects used for the "mini" Repentance+ item text streaks that get displayed near the players' individual HUDs. Valid indexes are 0~3.
+
+Used in place of the sprites provided by [GetStackedStreakSprite](HUD.md#getstackedstreaksprite) during co-op.
+
+___
 ### GetPoopSpellSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPoopSpellSprite ( ) {: .copyable aria-label='Functions' }
 Tainted blue baby poop spell sprite
 ___
 ### GetStreakSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetStreakSprite ( ) {: .copyable aria-label='Functions' }
-Sprite object used for text streak popups. For example: picking up items, displaying floor name, etc.
+Sprite object used for text streak popups. As of Repentance+, this seems to only be used for the floor name popup, as item-related popups use the Sprites from either [GetStackedStreakSprite](HUD.md#getstackedstreaksprite) or [GetPlayerStreakSprite](HUD.md#getplayerstreaksprite).
+
+___
+### GetStackedStreakSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetStackedStreakSprite ( int Index = 0 ) {: .copyable aria-label='Functions' }
+Provides access to the Sprite objects used for the new "stacked" Repentance+ item text streaks. Valid indexes are 0~5.
+
+During co-op, the Sprites provided by [GetPlayerStreakSprite](HUD.md#getplayerstreaksprite) are used instead.
+
 ___
 ### SetBossHPBarFill () {: aria-label='Functions' }
 #### void SetBossHPBarFill ( float percent ) {: .copyable aria-label='Functions' }

@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetStatsSprite)
 LUA_FUNCTION(Lua_PauseMenu_GetState)
 {
 	PauseScreen* menu = g_Game->GetPauseMenu();
-	lua_pushinteger(L, menu->status);
+	lua_pushinteger(L, menu->state);
 
 	return 1;
 }
@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetState)
 LUA_FUNCTION(Lua_PauseMenu_SetState)
 {
 	PauseScreen* menu = g_Game->GetPauseMenu();
-	menu->status = (int)luaL_checkinteger(L, 1);
+	menu->state = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

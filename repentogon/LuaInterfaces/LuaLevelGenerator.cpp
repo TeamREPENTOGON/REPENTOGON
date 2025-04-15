@@ -186,7 +186,7 @@ LuaLevelGeneratorRoom* CreateLGR(lua_State* L) {
 }
 
 void ExtractRooms(lua_State* L, bool deadEnds) {
-	LevelGenerator* generator = GetLevelGenerator(L); // lua::GetUserdata<LevelGenerator*>(L, 1, lua::metatables::LevelGeneratorMT);
+	LevelGenerator* generator = GetLevelGenerator(L); // lua::GetRawUserdata<LevelGenerator*>(L, 1, lua::metatables::LevelGeneratorMT);
 	lua_newtable(L);
 	int i = 1;
 	std::vector<int>* target;
@@ -213,11 +213,11 @@ void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Roo
 }
 
 LevelGenerator* GetLevelGenerator(lua_State* L, int idx) {
-	return *lua::GetUserdata<LevelGenerator**>(L, idx, lua::metatables::LevelGeneratorMT);
+	return *lua::GetRawUserdata<LevelGenerator**>(L, idx, lua::metatables::LevelGeneratorMT);
 }
 
 LuaLevelGeneratorRoom* GetLGR(lua_State* L, int idx) {
-	return lua::GetUserdata<LuaLevelGeneratorRoom*>(L, idx, lua::metatables::LevelGeneratorRoomMT);
+	return lua::GetRawUserdata<LuaLevelGeneratorRoom*>(L, idx, lua::metatables::LevelGeneratorRoomMT);
 }
 
 std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source, LevelGenerator_Room const& target) {

@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetPlayerManager) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
@@ -31,8 +31,7 @@ LUA_FUNCTION(Lua_AnyoneHasCollectible)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
-	RNG* rng = new RNG();
-	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, true);
 	if (!player) {
 		lua_pushboolean(L, false);
 	}
@@ -80,22 +79,60 @@ LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 	return 1;
 }
 
+// FirstTrinketOwner was changed to just return a boolean in rep+ (meaning it was actually replaced by AnyoneHasTrinket).
+// This was a reasonable refactor for nicalis to do considering it doesn't seem like anything in the game ever used the returned player.
+// I mean honestly, who specifically and only wants the arbitrarily FIRST player with the trinket?
+// But the other similar functions like FirstCollectibleOwner were kept so, uh, erm
+// Well, in any case joke's on us, we exposed this as an API function, we can't get rid of it! Someone out there is using it!!
+// So, anyway, here's a reimplementation.
 LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	int trinket = (int)luaL_checkinteger(L, 1);
-	RNG* rng = nullptr;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	const int trinket = (int)luaL_checkinteger(L, 1);
+
+	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetTrinket(trinket);
+
+	if (!item) {
+		lua_pushnil(L);
+		return 1;
 	}
 
-	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 3, true);
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
-	if (!player) {
+	// Sorry for this weird backwards compatability thing, I want to pretend that the rng param never existed.
+	// Everything below should work as expected. I even wrote unit tests!!
+	// - FirstTrinketOwner(t, nil, bool) <- backwards compat
+	// - FirstTrinketOwner(t, rng, bool) <- backwards compat
+	// - FirstTrinketOwner(t, bool) <- new!
+	// - FirstTrinketOwner(t) <- still fine
+	bool lazSharedGlobalTag = true;
+
+	const bool hasLegacyRngParam = lua_type(L, 2) == LUA_TUSERDATA && lua::TestUserdata(L, 2, lua::Metatables::RNG) != nullptr;
+	const bool hasNil = lua_type(L, 2) == LUA_TNIL;
+	if (!hasLegacyRngParam && !hasNil) {
+		lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+	} else if (lua_gettop(L) > 2 && lua_type(L, 3) == LUA_TBOOLEAN) {
+		lazSharedGlobalTag = lua::luaL_checkboolean(L, 3);
+	}
+	
+	const bool checkBackupPlayer = lazSharedGlobalTag ? ((item->tags & 0x80000000) != 0) : false;
+
+	Entity_Player* firstTrinketOwner = nullptr;
+
+	for (Entity_Player* player : playerManager->_playerList) {
+		if (player->GetTrinketMultiplier(trinket) > 0) {
+			firstTrinketOwner = player;
+			break;
+		}
+		if (checkBackupPlayer && player->_backupPlayer && player->_backupPlayer->GetTrinketMultiplier(trinket) > 0) {
+			firstTrinketOwner = player->_backupPlayer;
+			break;
+		}
+	}
+
+	if (!firstTrinketOwner) {
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+		lua::luabridge::UserdataPtr::push(L, firstTrinketOwner, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 	}
 	return 1;
 }
@@ -111,15 +148,8 @@ LUA_FUNCTION(Lua_TriggerRoomClear)
 LUA_FUNCTION(Lua_AnyoneHasTrinket)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	int trinket = (int)luaL_checkinteger(L, 1);
-	RNG* rng = new RNG();
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
-	if (!player) {
-		lua_pushboolean(L, false);
-	}
-	else {
-		lua_pushboolean(L, true);
-	}
+	const int trinket = (int)luaL_checkinteger(L, 1);
+	lua_pushboolean(L, playerManager->AnyoneHasTrinket((TrinketType)trinket));
 	return 1;
 }
 
@@ -164,7 +194,7 @@ LUA_FUNCTION(Lua_FirstPlayerByType)
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
 	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
 	
-	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 
 	return 1;
 }
@@ -186,7 +216,7 @@ LUA_FUNCTION(Lua_FirstBirthrightOwner)
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
 
-	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 
 	return 1;
 }
@@ -258,10 +288,44 @@ LUA_FUNCTION(Lua_SpawnSelectedBaby)
 LUA_FUNCTION(Lua_RemoveCoPlayer)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	auto* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
+	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
 
 	playerManager->RemoveCoPlayer(player, false);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_GetRandomCollectibleOwner)
+{
+	auto* PlayerManager = g_Game->GetPlayerManager();
+
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 1);
+	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+
+	RNG* rng = nullptr;
+
+	auto* player = PlayerManager->RandomCollectibleOwner(collectibleType, seed, &rng);
+
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, rng, lua::GetMetatableKey(lua::Metatables::RNG));
+	return 2;
+
+}
+
+LUA_FUNCTION(Lua_GetRandomTrinketOwner)
+{
+	auto* PlayerManager = g_Game->GetPlayerManager();
+
+	TrinketType trinketType = (TrinketType)luaL_checkinteger(L, 1);
+	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
+
+	RNG* rng = nullptr;
+
+	auto* player = PlayerManager->RandomTrinketOwner(trinketType, seed, &rng);
+
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, rng, lua::GetMetatableKey(lua::Metatables::RNG));
+	return 2;
+
 }
 
 
@@ -287,6 +351,8 @@ static void RegisterPlayerManager(lua_State* L) {
 		lua::TableAssoc(L, "AnyPlayerTypeHasCollectible", Lua_AnyPlayerTypeHasCollectible);
 		lua::TableAssoc(L, "SpawnSelectedBaby", Lua_SpawnSelectedBaby);
 		lua::TableAssoc(L, "RemoveCoPlayer", Lua_RemoveCoPlayer);
+		lua::TableAssoc(L, "GetRandomCollectibleOwner", Lua_GetRandomCollectibleOwner);
+		lua::TableAssoc(L, "GetRandomTrinketOwner", Lua_GetRandomTrinketOwner);
 
 		lua_setglobal(L, "PlayerManager");
 }

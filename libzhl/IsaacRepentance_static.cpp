@@ -500,8 +500,7 @@ float Room::GetChampionBossChance() const {
 			chance = 0.6f;
 		}
 
-		Entity_Player* player = g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_PURPLE_HEART, NULL, true);
-		if (player) {
+		if (g_Game->GetPlayerManager()->AnyoneHasTrinket(TRINKET_PURPLE_HEART)) {
 			int mult = g_Game->GetPlayerManager()->GetTrinketMultiplier(TRINKET_PURPLE_HEART);
 			chance *= (mult * 2);
 		}
@@ -600,4 +599,33 @@ bool Music::ValidateMusicID(int id, int& max) {
 	max = _entries.size();
 
 	return id >= 0 && id < max;
+}
+
+Vector Entity::GetPredictedTargetPosition(Entity* target, float multiplier) {
+    Vector diff = target->_pos - _pos;
+    float len = sqrtf(diff.x * diff.x + diff.y * diff.y);
+    return Vector(target->_pos.x + target->_velocity.x * len * multiplier, target->_pos.y + target->_velocity.y * len * multiplier);
+}
+
+void Entity_Bomb::UpdateDirtColor() {
+    KColor floorColor = g_Game->GetCurrentRoom()->GetFloorColorAt(_pos, _size);
+
+    for (size_t i = 0; i < _sprite._layerCount; i++) {
+        LayerState& layer = _sprite._layerState[i];
+        if (layer._layerData->name == "Hole") {
+            layer._color._tint[0] = floorColor._red * 2.0f;
+            layer._color._tint[1] = floorColor._green * 2.0f;
+            layer._color._tint[2] = floorColor._blue * 2.0f;
+            layer._color._tint[3] = 1.0f;
+            
+            layer._color._colorize[0] = 0.0f;
+            layer._color._colorize[1] = 0.0f;
+            layer._color._colorize[2] = 0.0f;
+            layer._color._colorize[3] = 0.0f;
+
+            layer._color._offset[0] = 0.0f;
+            layer._color._offset[1] = 0.0f;
+            layer._color._offset[2] = 0.0f;
+        }
+    }
 }

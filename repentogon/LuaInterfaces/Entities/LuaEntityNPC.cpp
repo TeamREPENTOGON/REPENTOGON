@@ -8,7 +8,7 @@
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool lerp = lua::luaL_checkboolean(L, 2);
 
 	npc->UpdateDirtColor(lerp);
@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 
 LUA_FUNCTION(Lua_EntityNPC_GetDirtColor)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	*toLua = *npc->GetDirtColor();
@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetDirtColor)
 
 LUA_FUNCTION(Lua_EntityNPC_GetControllerId)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	lua_pushnumber(L, *npc->GetControllerId());
 
@@ -36,7 +36,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetControllerId)
 
 LUA_FUNCTION(Lua_EntityNPC_SetControllerId)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int unk = (int)luaL_checknumber(L, 2);
 
 	npc->SetControllerId(unk);
@@ -44,8 +44,8 @@ LUA_FUNCTION(Lua_EntityNPC_SetControllerId)
 }
 
 LUA_FUNCTION(Lua_EntityNPC_TryForceTarget) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity* target = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	int duration = (int)luaL_checkinteger(L, 3);
 
 	lua_pushboolean(L, npc->TryForceTarget(target, duration));
@@ -65,16 +65,16 @@ static void ProjectileStorageToLua(lua_State* L, std::vector<Entity_Projectile*>
 }
 
 LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* velocity = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	uint32_t mode = (uint32_t)luaL_checkinteger(L, 4);
 
 	if (mode > 9) {
 		return luaL_error(L, "Invalid projectile mode %u\n", mode);
 	}
 
-	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
 	npc->FireProjectiles(position, velocity, mode, params);
@@ -84,16 +84,16 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int numProjectiles = (int)luaL_checkinteger(L, 2);
 
 	if (numProjectiles <= 0) {
 		return luaL_error(L, "Invalid amount of projectiles %d\n", numProjectiles);
 	}
 
-	Vector* targetPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* targetPos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	float trajectoryModifier = (float)luaL_checknumber(L, 4);
-	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
 	npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params);
@@ -103,7 +103,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetHitList) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	std::vector<unsigned int> hitList = npc->GetHitList();
 
 	lua_newtable(L);
@@ -120,7 +120,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetHitList) {
 
 LUA_FUNCTION(Lua_EntityNPC_GetShieldStrength)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	lua_pushnumber(L, *npc->GetShieldStrength());
 
@@ -129,7 +129,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetShieldStrength)
 
 LUA_FUNCTION(Lua_EntityNPC_SetShieldStrength)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	*npc->GetShieldStrength() = (float)luaL_checknumber(L, 2);
 
@@ -138,7 +138,7 @@ LUA_FUNCTION(Lua_EntityNPC_SetShieldStrength)
 
 LUA_FUNCTION(Lua_EntityNPC_PlaySound)
 {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int id = (int)luaL_checkinteger(L, 2);
 	float volume = (float)luaL_optnumber(L, 3, 1.0);
 	int framedelay = (int)luaL_optinteger(L, 4, 2);
@@ -151,22 +151,22 @@ LUA_FUNCTION(Lua_EntityNPC_PlaySound)
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetV1) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	lua::luabridge::UserdataPtr::push(L, &npc->_v1, lua::Metatables::VECTOR);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetV2) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	lua::luabridge::UserdataPtr::push(L, &npc->_v2, lua::Metatables::VECTOR);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
-	GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-	Vector* velocity = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+	Vector* velocity = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	int backdrop = min((int)luaL_optinteger(L, 5, g_Game->_room->GetBackdrop()->backdropId), 1);
 
 	lua::luabridge::UserdataPtr::push(L, npc->FireGridEntity(sprite, desc, velocity, backdrop), lua::Metatables::ENTITY_PROJECTILE);
@@ -175,15 +175,15 @@ LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector pos = *npc->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	}
 
 	ColorMod color;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
 
 	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodCloud(&pos, &color), lua::Metatables::ENTITY_EFFECT);
@@ -192,16 +192,16 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_MakeBloodSplash) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	npc->MakeBloodSplash();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
 	float fallSpeed = (float)luaL_optnumber(L, 4, -8.0f);
 
@@ -211,8 +211,8 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowMaggotAtPos) {
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float yOffset = (float)luaL_optnumber(L, 3, -8.0f);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggotAtPos(origin, target, yOffset), lua::Metatables::ENTITY_NPC);
@@ -221,9 +221,9 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggotAtPos) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float velocity = (float)luaL_optnumber(L, 3, -8.f);
 	float yOffset = (float)luaL_optnumber(L, 4, -24.f);
 
@@ -233,23 +233,23 @@ LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	Vector* dir = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	const float force = (float)luaL_checknumber(L, 4);
 	lua_pushboolean(L, npc->TryThrow(*ref, dir, force));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowStrider) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	}
 
-	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowStrider(origin, entity, target), lua::Metatables::ENTITY_NPC);
 
@@ -257,14 +257,14 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowStrider) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	}
 
-	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	const int variant = (int)luaL_optinteger(L, 4, 0);
 	const float yPosOffset = (float)luaL_optnumber(L, 5, -10.0f);
 
@@ -274,14 +274,14 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
-	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	//Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Entity* entity = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	}
 
-	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	const float yPosOffset = (float)luaL_optnumber(L, 4, -10.0f);
 	bool big = lua::luaL_optboolean(L, 5, false);
 
@@ -293,11 +293,11 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
 /*
 // gonna make a minecart metatable later
 LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
-	Entity_NPC* cart = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* cart = lua::GetRawUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	if (cart->_type != 965) {
 		return luaL_error("Must be called with a minecart NPC!");
 	}
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetRawUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	cart->MinecartUpdateChild(npc);
 
 	return 0;
@@ -305,7 +305,7 @@ LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
 
 
 LUA_FUNCTION(Lua_IsBossColor) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	//lua_pushnumber(L, npc->_bosscoloridx);
 	std::tuple idx = { npc->_type,npc->_variant };
 	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
@@ -320,13 +320,13 @@ LUA_FUNCTION(Lua_IsBossColor) {
 }
 
 LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	lua_pushinteger(L, npc->_championRegenTimer);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	if (npc->_type == 904) {
 		Entity_Player* player = npc->_sirenPlayerEntity;
@@ -340,7 +340,7 @@ LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetFlyingOverride) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	EntityPlus* entityPlus = GetEntityPlus(npc);
 	if (entityPlus && entityPlus->isFlyingOverride.has_value()) {
 		lua_pushboolean(L, *entityPlus->isFlyingOverride);
@@ -352,7 +352,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetFlyingOverride) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_SetFlyingOverride) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	EntityPlus* entityPlus = GetEntityPlus(npc);
 	if (entityPlus) {
 		entityPlus->isFlyingOverride = lua::luaL_checkboolean(L, 2);
@@ -361,7 +361,7 @@ LUA_FUNCTION(Lua_EntityNPC_SetFlyingOverride) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	EntityPlus* entityPlus = GetEntityPlus(npc);
 	if (entityPlus) {
 		entityPlus->isFlyingOverride = std::nullopt;
@@ -370,9 +370,9 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	const float defaultDamage = (float)luaL_checknumber(L, 2);
-	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	auto* source  = lua::GetLuabridgeUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
 	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
 
 	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
@@ -381,7 +381,7 @@ LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	const int layerId = (int)luaL_checkinteger(L, 2);
 	std::string newSpriteSheet = luaL_checkstring(L, 3);
 	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
@@ -398,7 +398,7 @@ LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	NPCAI_Pathfinder* pathfinder = &npc->_pathfinder;
 	lua::luabridge::UserdataPtr::push(L, pathfinder, lua::GetMetatableKey(lua::Metatables::PATHFINDER));

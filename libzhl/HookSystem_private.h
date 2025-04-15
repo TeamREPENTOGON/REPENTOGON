@@ -4,6 +4,7 @@
 #include <variant>
 #include <vector>
 
+#include "SigScan.h"
 #include "HookSystem.h"
 #include "mologie_detours.h"
 
@@ -60,23 +61,37 @@ namespace HookSystem {
 		bool IsGPRegister() const;
 		bool IsXMMRegister() const;
 	};
+
+	static constexpr size_t FUNCTION_INTERNAL_NAME_MAX_LEN = 16;
 }
 
 class LIBZHL_API Definition
 {
 public:
 	static bool Init();
+	/* Does not error if a signature is not found, or if there are multiple 
+	 * matches. Used for debugging signatures during version changes.
+	 */
+	static void OfflineInit(std::vector<SigScanEntry>& result);
 	static const char *GetLastError();
 	static Definition *Find(const char *name);
 	static const std::vector<std::tuple<bool, const char*>>& GetMissing();
 
+	Definition(const char* sig);
+
 protected:
-	static void Add(const char *name, Definition *def);
+	static void Add(const char *name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		Definition *def);
+	const char* _sig;
 
 public:
 	virtual int Load() = 0;
 	virtual const char* GetName() const = 0;
 	virtual bool IsFunction() const = 0;
+	inline const char* GetSignature() const
+	{
+		return _sig;
+	}
 };
 
 //=================================================================================================
@@ -87,20 +102,26 @@ private:
 	char _shortName[128];
 	char _name[256];
 
-	const char *_sig;
 	const HookSystem::ArgData *_argdata;
 	int _nArgs;
 	void **_outFunc;
 	void *_address;
 
 	unsigned int _flags;
+	bool _canHook;
 
 private:
 	void SetName(const char *name, const char *type);
 
 public:
-	FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc);
-	FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc);
+	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		const type_info& type, const char* sig, const HookSystem::ArgData* argdata, 
+		int nArgs, unsigned int flags, void** outfunc, bool canHook);
+	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
+		const type_info& type, void* addr, const HookSystem::ArgData* argdata,
+		int nArgs, unsigned int flags, void** outfunc, bool canHook);
+
+	static FunctionDefinition* FindByInternalName(const char* internalName);
 
 	virtual int Load();
 	const char* GetName() const override;
@@ -114,6 +135,10 @@ public:
 	const HookSystem::ArgData *GetArgData() const {return _argdata;}
 	int GetArgCount() const {return _nArgs;}
 	void *GetAddress() const {return _address;}
+	inline bool CanHook() { return _canHook; }
+	inline void SetCanHook(bool canHook) { _canHook = canHook; }
+
+	static void UpdateHooksStateFromJSON(const char* json);
 };
 
 //=================================================================================================
@@ -123,13 +148,12 @@ class LIBZHL_API VariableDefinition : public Definition
 private:
 	void *_outVar;
 	const char *_name;
-	const char *_sig;
 
 public:
 	VariableDefinition(const char *name, const char *sig, void *outvar);
 
-	virtual int Load();
-	virtual const char* GetName() const override;
+	int Load();
+	const char* GetName() const override;
 	bool IsFunction() const override;
 };
 

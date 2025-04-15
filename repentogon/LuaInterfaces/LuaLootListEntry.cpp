@@ -3,31 +3,31 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_LootListEntryGetType) {
-	LootListEntry* entry = *lua::GetUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
+	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
 	lua_pushinteger(L, entry->_type);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LootListEntryGetVariant) {
-	LootListEntry* entry = *lua::GetUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
+	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
 	lua_pushinteger(L, entry->_variant);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LootListEntryGetSubType) {
-	LootListEntry* entry = *lua::GetUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
+	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
 	lua_pushinteger(L, entry->_subType);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LootListEntryGetSeed) {
-	LootListEntry* entry = *lua::GetUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
+	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
 	lua_pushinteger(L, entry->_seed);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LootListEntryGetRNG) {
-	LootListEntry* entry = *lua::GetUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
+	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
 	RNG* rng = entry->_rng;
 
 	if (rng == nullptr) {

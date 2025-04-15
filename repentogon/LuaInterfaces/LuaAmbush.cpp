@@ -6,7 +6,7 @@ int ambushWaves = 3;
 int bossAmbushWaves = 2;
 
 /*LUA_FUNCTION(Lua_GetAmbush) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Ambush** ud = (Ambush**)lua_newuserdata(L, sizeof(Ambush*));
 	*ud = game->GetAmbush();
 	luaL_setmetatable(L, lua::metatables::AmbushMT);

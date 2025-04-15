@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "CodeEmitter.h"
 #include "ParserDefinitions.h"
 
 std::string PointerKindToString(PointerKind kind) {
@@ -288,10 +289,6 @@ bool Type::IsFunctionPointer() const {
     return std::holds_alternative<FunctionPtr*>(_value);
 }
 
-Struct const& Type::GetStruct() const {
-    return std::get<Struct>(_value);
-}
-
 Type* Type::GetTrueType() {
     if (!_synonym) {
         return this;
@@ -395,6 +392,8 @@ std::string Type::ToString(bool full) const {
 
 class InvalidTypeSizeException : public std::exception {
 public:
+    InvalidTypeSizeException() { }
+
     virtual const char* what() const override {
         return _str.str().c_str();
     }
@@ -414,7 +413,7 @@ size_t Type::size() const {
     }
 
     // Pointer overrides everything else
-    if (_pointerDecl.size() > 0) {
+    if (!_pointerDecl.empty()) {
         return 4;
     }
 
@@ -503,7 +502,7 @@ size_t Type::alignment() const {
                 return maxAlign;
         }
 
-        return maxAlign;
+        return maxAlign == 0 ? 1 : maxAlign;
     }
     else if (_array) {
         return _base->alignment();
@@ -533,12 +532,11 @@ std::string Struct::ToString(bool full) const {
 }
 
 size_t Struct::size() const {
-    if (_size)
-        return *_size;
+    if (!_size) {
+        ParserLogger()->Abort("Structure %s has no size defined\n", _name.c_str());
+    }
 
-    size_t s = 0;
-    std::for_each(_namespace._fields.begin(), _namespace._fields.end(), [&s](Variable const& var) -> void { s += var._type->size();  });
-    return s;
+    return *_size;
 }
 
 std::string Struct::GetTemplateName() const {
@@ -668,12 +666,12 @@ std::tuple<Struct*, Signature*> Struct::GetVirtualFunctionSource(Function const&
         throw std::runtime_error("Multiple inheritance not supported");
     }
 
-    std::cout << "GetVirtualFunctionSource " << _name << "::" << fn._name << std::endl;
+    ParserLogger()->Trace("GetVirtualFunctionSource %s::%s\n", _name.c_str(), fn._name.c_str());
     Struct* resStruct = nullptr;
     Signature* resSignature = nullptr;
     if (_parents.size() == 1) {
         Struct const& parent = std::get<Type*>(_parents.front())->GetStruct();
-        std::cout << "GetVirtualFunctionSource " << _name << "::" << fn._name << ", going for parent " << parent._name << std::endl;
+        ParserLogger()->Trace("GetVirtualFunctionSource %s::%s: going for parent\n", _name.c_str(), fn._name.c_str());
         std::tie(resStruct, resSignature) = parent.GetVirtualFunctionSource(fn);
     }
 
@@ -798,6 +796,10 @@ bool Function::IsPure() const {
 
 bool Function::IsDebug() const {
     return _qualifiers & DEBUG;
+}
+
+bool Function::CanHook() const {
+    return !(_qualifiers & NOHOOK);
 }
 
 std::string Function::ToString() const {

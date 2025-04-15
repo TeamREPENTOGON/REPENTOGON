@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_RoomGetLRoomAreaDesc) {
-	Room * room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Room * room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	LRoomAreaDesc desc;
 	desc = *room->GetLRoomAreaDesc(&desc);
 
@@ -16,7 +16,7 @@ LUA_FUNCTION(Lua_RoomGetLRoomAreaDesc) {
 
 // high
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighTopLeft) {
-	LRoomAreaDesc* desc = lua::GetUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
+	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
 	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*ud = desc->_high[0];
 
@@ -24,7 +24,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighTopLeft) {
 }
 
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighBottomRight) {
-	LRoomAreaDesc* desc = lua::GetUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
+	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
 	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*ud = desc->_high[1];
 
@@ -33,7 +33,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighBottomRight) {
 
 // low
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowTopLeft) {
-	LRoomAreaDesc* desc = lua::GetUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
+	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
 	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*ud = desc->_low[0];
 
@@ -41,7 +41,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowTopLeft) {
 }
 
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowBottomRight) {
-	LRoomAreaDesc* desc = lua::GetUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
+	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
 	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*ud = desc->_low[1];
 

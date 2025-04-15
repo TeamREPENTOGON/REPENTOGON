@@ -1,4 +1,4 @@
-struct RailManager depends (Room, ANM2) { {{
+struct RailManager depends (ANM2) { {{
 	
 }} 
 

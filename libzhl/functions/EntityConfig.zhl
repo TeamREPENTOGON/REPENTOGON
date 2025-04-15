@@ -26,4 +26,4 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
         }
         inline std::vector<EntityConfig_Boss>* GetBosses() { return (std::vector<EntityConfig_Boss>*)((char*)this + 0x20); }
     }}
-} : 0x2C;  // Full size unconfirmed.
+} : 0x50;

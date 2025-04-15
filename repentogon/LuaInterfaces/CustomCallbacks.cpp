@@ -13,6 +13,8 @@
 #include "Level.h"
 #include "../LuaInit.h"
 #include "../Patches/MainMenuBlock.h"
+#include "../Patches/XMLData.h"
+#include "../Patches/EntityPlus.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -47,7 +49,7 @@ void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, i
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
+HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata, int unk) -> void) {
 	const int callbackid = 1004; 
 	if (CallbackState.test(callbackid - 1000)) {
 
@@ -76,7 +78,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 					result[i - 1] = (int)lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
 					lua_pop(L, 1);
 				}
-				super(result[0], result[1], result[2], result[3], result[4]);
+				super(result[0], result[1], result[2], result[3], result[4], unk);
 				ProcessPostAddCollectible(result[0], result[1], result[2], result[3], result[4], this);
 				return;
 			}
@@ -88,14 +90,14 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			}
 			else if (lua_isinteger(L, -1))
 			{
-				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, unk);
 				ProcessPostAddCollectible((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, this);
 				return;
 			}
 		}
 	}
 
-	super(type, charge, firsttime, slot, vardata);
+	super(type, charge, firsttime, slot, vardata, unk);
 	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 }
 
@@ -160,8 +162,9 @@ HOOK_METHOD(HUD, Render, () -> void) {
 //(POST_)HUD_RENDER callbacks end
 
 
-//Character menu render Callback(id:1023)
-HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
+//Character menu render Callback(id:1023
+//Moved to ASMCallbacks
+/*HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
 	MainMenuInputBlock::_enabled = false;
@@ -176,7 +179,7 @@ HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	if ((this->_state | (1 << 8)) == this->_state) {
 		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
 	};
-}
+}*/
 
 //Character menu render Callback end
 
@@ -474,7 +477,7 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 			.call(1);
 
 		if (!lua_result && lua_isuserdata(L, -1)) {
-			return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+			return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
 		}
 	}
 
@@ -565,14 +568,14 @@ void PostAddHeartsCallbacks(Entity_Player* player, int hearts, int heartcallback
 	return;
 }
 
-HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
+HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk, bool retBool) -> void) {	//red hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 	else{
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 1<<0, std::nullopt);	//do not pass unk
 		hearts = heartcount.value_or(hearts);
-		super(hearts, unk);
+		super(hearts, unk, retBool);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {
@@ -581,34 +584,50 @@ HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
 }
 
 HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void) {	//max hearts
-	if (!CallbackState.test(1009 - 1000)) {
-		super(amount, ignoreKeeper);
-	}
-	else {
+	if (CallbackState.test(1009 - 1000)) {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
 		amount = heartcount.value_or(amount);
+	}
+
+	const int healthType = this->GetHealthType();
+	const bool noHeartContainers = healthType == 1 || healthType == 2 || healthType == 4;
+	if (noHeartContainers && amount < 0 && this->_maxHearts > 0) {
+		// If the player has heart containers somehow when they shouldn't be able to, the game won't let you remove them.
+		// This added logic allows "illegal" max hearts to be removed properly.
+		// We do enforce that health type changes convert heart containers if necessary in the GetHealthType hook, but having
+		// this logic as well allows mods to potentially convert the invalid health themselves if they want.
+		trigger_max_hearts_removed(std::min(-amount, this->_maxHearts));
+		this->_maxHearts = std::max(this->_maxHearts + amount, 0);
+		this->_redHearts = std::min(this->_redHearts, this->_maxHearts + this->_boneHearts * 2);
+		AdjustBlackHearts();
+		update_greeds_gullet();
+		update_red_hearts();
+		update_golden_hearts(false);
+		update_bone_hearts();
+	} else {
 		super(amount, ignoreKeeper);
 	}
+	
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soul hp
+HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount, bool unk) -> void) {	//soul hp
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, unk);
 	}
 
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, unk);
 	}
 
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 2, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 
@@ -640,21 +659,21 @@ HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
+HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount, bool retBool) -> void) {	//golden
 	if (!CallbackState.test(1009 - 1000)) {
-		super(amount);
+		super(amount, retBool);
 	}
 	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 		amount = heartcount.value_or(amount);
-		super(amount);
+		super(amount, retBool);
 	}
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 	}
 }
 
-HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bone
+HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> void) {	//bone
 	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
@@ -666,16 +685,19 @@ HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bo
 	if (CallbackState.test(1010 - 1000)) {
 		PostAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
 	}
-	return this;
+	return;
 }
 
 HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
-	if (!CallbackState.test(1009 - 1000)) {
-		super(amount, unk);
-	}
-	else {
+	if (CallbackState.test(1009 - 1000)) {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 7, std::nullopt);	//do not pass unk
 		amount = heartcount.value_or(amount);
+	}
+
+	// Fix a vanilla oversight where _rottenHearts can be set to a negative value.
+	if (amount < -this->_rottenHearts) {
+		super(-this->_rottenHearts, unk);
+	} else {
 		super(amount, unk);
 	}
 
@@ -722,7 +744,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 		return super(Velocity);
 	}
 	lua_State* L = g_LuaEngine->_state;
-	Entity** heldEntity = this->GetHeldEntity();
+	Entity* heldEntity = this->GetHeldEntity();
 	lua::LuaStackProtector protector(L);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -731,13 +753,13 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 		//.push((*heldEntity)->GetType())
 		.pushnil()
 		.push(this, lua::Metatables::ENTITY_PLAYER)
-		.push(*heldEntity, lua::Metatables::ENTITY)
+		.push(heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
 		.call(1);
 
 	if (!results) {
 		if (lua_isuserdata(L, -1)) {
-			Velocity = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			Velocity = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
@@ -930,7 +952,7 @@ HOOK_METHOD(Music, DisableLayer, (int id) -> void) {
 }
 
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
-HOOK_METHOD(Level, Init, () -> void) {
+HOOK_METHOD(Level, Init, (bool unk) -> void) {
 	levelASM.ForceSpecialQuest = 0;
 
 	const int callbackid = 1060;
@@ -943,7 +965,7 @@ HOOK_METHOD(Level, Init, () -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.call(1);
 	}
-	super();
+	super(unk);
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 
@@ -1429,8 +1451,47 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 	return price;
 }
 
-//PLAYER_GET_HEALTH_TYPE (id: 1067)
+// MC_PLAYER_GET_HEALTH_TYPE (1067) and MC_PRE_PLAYER_HEALTH_TYPE_CHANGE (1128)
 HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
+	int vanillaHealthType = super();
+	int defaultHealthType = vanillaHealthType;
+
+	// Check for HealthType specified in players.xml
+	XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
+	if (!playerXML["healthtype"].empty()) {
+		const int xmlHealthType = stoi(playerXML["healthtype"]);
+		if (xmlHealthType >= 0 && xmlHealthType <= 4) {
+			defaultHealthType = xmlHealthType;
+		}
+	}
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
+
+	if (!playerPlus || playerPlus->disableHealthTypeModification) {
+		return defaultHealthType;
+	} else if (playerPlus->evaluatingHealthType) {
+		// Prevent recursion.
+		return playerPlus->previousHealthType > -1 ? playerPlus->previousHealthType : defaultHealthType;
+	}
+
+	playerPlus->evaluatingHealthType = true;
+
+	int previousHealthType = vanillaHealthType;
+
+	if (playerPlus->previousHealthType > -1) {
+		previousHealthType = playerPlus->previousHealthType;
+	}
+
+	int healthType = defaultHealthType;
+
+	if (playerPlus && playerPlus->customCacheResults.find("healthtype") != playerPlus->customCacheResults.end()) {
+		const int cacheHealthType = (int)playerPlus->customCacheResults["healthtype"];
+		if (cacheHealthType >= 0 && cacheHealthType <= 4) {
+			healthType = cacheHealthType;
+		}
+	}
+
+	// MC_PLAYER_GET_HEALTH_TYPE
 	const int callbackid = 1067;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1441,15 +1502,130 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetPlayerType())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(previousHealthType)
+			.push(defaultHealthType)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+		if (!result && lua_isinteger(L, -1)) {
+			const int luaHealthType = (int)lua_tointeger(L, -1);
+			if (luaHealthType >= 0 && luaHealthType <= 4) {
+				healthType = luaHealthType;
 			}
 		}
 	}
-	return super();
+
+	// If the player's health type changes dynamically, convert their health as necessary to avoid bugs from health they should not be able to have.
+	if (healthType != previousHealthType) {
+		// Update this right away to mitigate weirdness from any recursive calls.
+		playerPlus->previousHealthType = healthType;
+
+		bool convertHeartContainers = true;
+
+		// MC_PLAYER_HEALTH_TYPE_CHANGE
+		const int callbackid = 1128;
+		if (CallbackState.test(callbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(this->GetPlayerType())
+				.push(this, lua::Metatables::ENTITY_PLAYER)
+				.push(healthType)
+				.push(previousHealthType)
+				.push(defaultHealthType)
+				.call(1);
+
+			if (!result && lua_isboolean(L, -1)) {
+				convertHeartContainers = (bool)lua_toboolean(L, -1);
+			}
+		}
+
+		if (healthType == 1) {  // Soul
+			this->_redHearts = 0;
+			this->_rottenHearts = 0;
+			if (this->_maxHearts > 0) {
+				const int oldMaxHearts = this->_maxHearts;
+				this->trigger_max_hearts_removed(oldMaxHearts);
+				this->_maxHearts = 0;
+				if (convertHeartContainers) {
+					this->_soulHearts += oldMaxHearts;
+					// Shift masks to make it seem like the heart containers were converted "in place".
+					const int shift = oldMaxHearts / 2;
+					this->_blackHearts <<= shift;
+					this->_boneHeartsMask <<= shift;
+				} else if (this->_soulHearts == 0 && this->_boneHearts == 0) {
+					this->_soulHearts = 1;
+				}
+			}
+		} else if (healthType == 2) {  // No Health
+			this->_rottenHearts = 0;
+			this->_boneHeartsMask = 0;
+			this->_boneHearts = 0;
+			this->_eternalHearts = 0;
+			this->_redHearts = 0;
+			this->_blackHearts = 0;
+			this->_soulHearts = 1;
+			if (this->_maxHearts > 0) {
+				this->trigger_max_hearts_removed(this->_maxHearts);
+				this->_maxHearts = 0;
+			}
+		} else if (healthType == 3) {  // Coin
+			this->_rottenHearts = 0;
+			this->_boneHeartsMask = 0;
+			this->_boneHearts = 0;
+			this->_soulHearts = 0;
+			this->_blackHearts = 0;
+			if (this->_maxHearts == 0) {
+				this->_maxHearts = 2;
+			}
+			if (this->_redHearts < 2) {
+				this->_redHearts = 2;
+			} else if (this->_redHearts % 2 != 0) {
+				this->_redHearts++;
+			}
+		} else if (healthType == 4 && this->_maxHearts > 0) {  // Bone
+			if (convertHeartContainers) {
+				const int convertedBoneHearts = this->_maxHearts / 2;
+				for (int i = 0; i < convertedBoneHearts; i++) {
+					// Shift masks to make it seem like the heart containers were converted "in place".
+					this->_boneHeartsMask <<= 1;
+					this->_boneHeartsMask++;
+					this->_boneHearts++;
+				}
+			} else if (this->_soulHearts == 0 && this->_boneHearts == 0) {
+				if (this->_maxHearts > 2) {
+					this->trigger_max_hearts_removed(this->_maxHearts - 2);
+				}
+				this->_boneHearts = 1;
+				this->_boneHeartsMask = 1;
+			} else {
+				this->trigger_max_hearts_removed(this->_maxHearts);
+			}
+			this->_maxHearts = 0;
+
+			const int newMax = this->_boneHearts * 2;
+			if (this->_redHearts > newMax) {
+				this->_redHearts = newMax;
+			}
+		}
+
+		this->AdjustBlackHearts();
+		this->update_greeds_gullet();
+		this->update_red_hearts();
+		this->update_bone_hearts();
+		//this->update_golden_hearts();
+	}
+
+	playerPlus->evaluatingHealthType = false;
+
+	return healthType;
+}
+
+HOOK_STATIC(LuaEngine, PostPlayerInit, (Entity_Player* player) -> void, _stdcall) {
+	player->GetHealthType();  // Trigger GetHealthType callback on init.
+	super(player);
 }
 
 //PRE_FAMILIAR_RENDER (id: 1080)
@@ -1474,7 +1650,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1503,7 +1679,7 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1532,7 +1708,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1561,7 +1737,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1590,7 +1766,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1619,7 +1795,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1648,7 +1824,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1677,7 +1853,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1706,7 +1882,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1736,7 +1912,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -1787,7 +1963,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				seed = ProtectedCallbackIntAssign(L, seed, 4);
 			}
 			else if (lua_isuserdata(L, -1)) {
-				GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
 			}
@@ -1822,7 +1998,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 			}
 			else if (lua_istable(L, -1)) {
 				int type = (GridEntityType)ProtectedCallbackIntAssign(L, desc->_type, 1);
@@ -1844,7 +2020,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 }
 
 //POST_GRID_ENTITY_SPAWN (id: 1101)
-//there's another call in ASMPatches
+//GridEntity::Init doesn't appear to be inlined anymore, so it doesn't have to be patched in
 HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 	super(Seed);
 
@@ -1893,7 +2069,7 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				Vector* p = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 				super(p);
 				postrenderbodyhead(1045, this, p);
 				return;
@@ -1926,7 +2102,7 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				Vector* p = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 				super(p);
 				postrenderbodyhead(1046, this, p);
 				return;
@@ -2028,11 +2204,11 @@ HOOK_METHOD(Entity_Player, AddActiveCharge, (int charge, int slot, bool flashHUD
 	return result;
 }
 
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
 	cacheMaxChargeCallback = true;
 	cachedMaxCharge.clear();
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	cacheMaxChargeCallback = false;
 	cachedMaxCharge.clear();
@@ -2458,8 +2634,8 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
-	const bool isSchoolbagSlot = (slot == 1);
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector &pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
+	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
 	// The game does this inside RenderActiveItem.
@@ -2473,16 +2649,17 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 	Vector itemPos = pos;
 	Vector chargeBarPos = pos;
 
-	// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
-	if (this->_playerHudIndex < 4) {
+	// Player 1's esau gets different charge bar offsets.
+	const bool playerOneEsau = this->_playerHudIndex == 4 && playerHudLayout == 1;
+
+	if (!playerOneEsau) {
 		chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
-	}
-	else if (isSchoolbagSlot) {
+	} else if (isSchoolbagSlot) {
 		chargeBarPos.x += 38 * actualSize;
 	}
 	chargeBarPos.y += 17 * actualSize;
 
-	if (this->_activeItem[slot].bookImage != nullptr) {
+	if (this->_activeItem[activeSlot].bookImage != nullptr) {
 		// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
 		// Update the offsets we're sending through the callbacks to match where the corresponding sprites were actually rendered.
 		itemPos.y -= 4;
@@ -2498,7 +2675,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2510,7 +2687,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		}
 	}
 
-	super(slot, pos, alpha, unk, size);
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	const int postcallbackid = 1079;
 	if (CallbackState.test(postcallbackid - 1000)) {
@@ -2521,7 +2698,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 		lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
-			.push(slot)
+			.push(activeSlot)
 			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
 			.push(actualSize)
@@ -2531,22 +2708,28 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 }
 
 //PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
-HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &pos, float unk2) -> void) {
+HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
 	lua_State* L = g_LuaEngine->_state;
+
+	Vector posToSend = pos;
+
+	// Fix the render position sent to the callback for the compact esau layout.
+	if (this->_playerHudIndex > 3 && playerHudLayout == 3) {
+		posToSend.y += 34;
+	}
 
 	const int callbackid1 = 1118;
 	if (CallbackState.test(callbackid1 - 1000)) {
-
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -2558,19 +2741,20 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			}
 		}
 	}
-	super(unk1, sprite, pos, unk2);
+	super(unk, sprite, playerHudLayout, scale, pos);
 
 	const int callbackid2 = 1091;
 	if (CallbackState.test(callbackid2 - 1000)) {
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
-			.push(unk1, lua::Metatables::VECTOR)
+			.push(unk, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
-			.push(unk2)
+			.pushUserdataValue(posToSend, lua::Metatables::VECTOR)
+			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
@@ -2619,7 +2803,7 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -2648,7 +2832,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -2866,7 +3050,7 @@ HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolat
 }
 
 //POST_GRID_ROCK_DESTROY (1011)
-void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type) {
+void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, EntityRef* Source, int type) {
 	const int callbackid = 1011;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2879,22 +3063,23 @@ void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type)
 			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
 			.push(type)
 			.push(Immediate)
+			.push(Source, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
 }
 
 
-HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate) -> bool) {
-	bool result = super(Immediate);
+HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> bool) {
+	bool result = super(Immediate, Source);
 	GridEntity_Rock* gridRock = (GridEntity_Rock*)this;
 	int gridType = gridRock->GetDesc()->_type;
-	if (result) ProcessGridRockDestroy(gridRock,Immediate, gridType);
+	if (result) ProcessGridRockDestroy(gridRock,Immediate, Source, gridType);
 	return result;
 	
 }
 
 //(POST_)GRID_HURT_DAMAGE (1012/1013)
-void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) {
+void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int damage, uint64_t damageFlags, float enemyDamage, bool ignoreGridCol) {
 	const int callbackid = 1013;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2906,17 +3091,17 @@ void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int D
 			.push(type)
 			.push(gridEnt, lua::Metatables::GRID_ENTITY)
 			.push(ent, lua::Metatables::ENTITY)
-			.push(Damage)
-			.push(DamageFlags)
-			.push(unk3)
-			.push(unk4)
+			.push(damage)
+			.push(damageFlags)
+			.push(enemyDamage)
+			.push(ignoreGridCol)
 			.call(1);
 	}
 }
 
-HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) -> void) {
+HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, float enemyDamage, int playerDamage, uint64_t damageFlags, bool ignoreGridCol) -> void) {
 	const int callbackid = 1012;
-	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, Damage, DamageFlags, unk3, unk4); return; }
+	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, enemyDamage, playerDamage, damageFlags, ignoreGridCol); return; }
 	int gridType = this->GetDesc()->_type;
 
 	lua_State* L = g_LuaEngine->_state;
@@ -2928,10 +3113,10 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 		.push(gridType)
 		.push(this, lua::Metatables::GRID_ENTITY)
 		.push(ent, lua::Metatables::ENTITY)
-		.push(Damage)
-		.push(DamageFlags)
-		.push(unk3)
-		.push(unk4)
+		.push(playerDamage)
+		.push(damageFlags)
+		.push(enemyDamage)
+		.push(ignoreGridCol)
 		.call(1);
 
 	if (!result) {
@@ -2941,8 +3126,8 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 			}
 		}
 		else {
-			super(ent, Damage, DamageFlags, unk3, unk4);
-			ProcessPostGridHurtDamage(this, gridType, ent, Damage, DamageFlags, unk3, unk4);
+			super(ent, enemyDamage, playerDamage, damageFlags, ignoreGridCol);
+			ProcessPostGridHurtDamage(this, gridType, ent, playerDamage, damageFlags, enemyDamage, ignoreGridCol);
 		}
 	}
 }
@@ -3307,7 +3492,7 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 			.call(1);
 
 		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::GetUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
+			auto opt = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
 
 			if (!opt) {
 				KAGE::LogMessage(2, "Invalid userdata returned in MC_POST_GET_MULTI_SHOT_PARAMS");
@@ -3602,7 +3787,7 @@ PreGridEntityResult ProcessPreGridRenderCallback(const GridEntityRenderInputs& i
 				result.skip_internal_code = true;
 			}
 			else if (lua_isuserdata(L, -1)) {
-				result.renderOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				result.renderOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3667,7 +3852,7 @@ struct GridRenderCallback callbacks[8] = {
 
 HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
-	for (int i = 5; i < 7; i++) {
+	for (int i = 6; i < 8; i++) {
 		if (gridType == callbacks[i].type)
 		{
 			GridEntityRenderInputs inputs = { this, offset };
@@ -3946,52 +4131,6 @@ HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> boo
 	return deed;
 }
 
-//HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
-//	const int callbackid = 1264;
-//	if (CallbackState.test(callbackid - 1000)) {
-//		lua_State* L = g_LuaEngine->_state;
-//		lua::LuaStackProtector protector(L);
-//
-//		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-//
-//		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-//			.push(slot)
-//			.push(slot)
-//			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-//			.push(scale)
-//			.push(_player, lua::Metatables::ENTITY_PLAYER)
-//			.call(1);
-//
-//		if (!result) {
-//			if (lua_istable(L, -1)) {
-//				lua_pushnil(L);
-//				while (lua_next(L, -2) != 0) {
-//					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
-//						const std::string key = lua_tostring(L, -2);
-//						if (key == "Position") {
-//							*pos = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-//						}
-//					}
-//					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
-//						const std::string key = lua_tostring(L, -2);
-//						if (key == "Scale") {
-//							scale = (float)lua_tonumber(L, -1);
-//						}
-//					}
-//					lua_pop(L, 1);
-//				}
-//			}
-//			else if (lua_isboolean(L, -1))
-//			{
-//				if (lua_toboolean(L, -1)) {
-//					return;
-//				}
-//			}
-//		}
-//	}
-//	super(slot, pos, scale);
-//}
-
 //MC_PRE/POST_MINIMAP_UPDATE (1477/1478)
 HOOK_METHOD(Minimap, Update, () -> void) {
 	const int precallbackid = 1477;
@@ -4035,8 +4174,8 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 }
 
 //MC_PRE_PICKUP_GET_LOOT_LIST (1334)
-HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
-	LootList list = super(shouldAdvance);
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
+	LootList list = super(shouldAdvance, player);
 
 	const int callbackid = 1334;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -4052,15 +4191,15 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
 			.call(1);
 
 		if (!result && lua_isuserdata(L, -1)) {
-			return *lua::GetUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+			return *lua::GetRawUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
 		}
 	}
 	return list;
 }
 
 //MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (1268)
-HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> void) {
-	super(item, unused);
+HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int count) -> void) {
+	super(item, count);
 	const int callbackid = 1268;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4070,6 +4209,7 @@ HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int unu
 			.pushnil()
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(item, lua::Metatables::ITEM)
+			.push(count)
 			.call(1);
 	}
 }
@@ -4153,8 +4293,8 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 	super(param_1);
 }
 
-// MC_PRE_ITEM_TEXT_DISPLAY (1484)
-HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+// MC_PRE_ITEM_TEXT_DISPLAY (1484) //prev: ShowItemTextCustom buw ShowItemTextCustom should work?
+/*HOOK_METHOD(HUD, ShowItemText, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
 	const int callbackId = 1484;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -4189,6 +4329,8 @@ HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool is
 
 	super(title, subtitle, isSticky, isCurseDisplay);
 }
+*/
+
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
 HOOK_METHOD(RoomTransition, StartBossIntro, (unsigned int bossID1, unsigned int bossID2) -> void) {
@@ -4462,7 +4604,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 			}
 			else if (lua_isuserdata(L, -1)) {
 				// We need to copy the returned color in case the Lua stack is cleaned up in order to avoid unexpected behavior.
-				ColorMod* returnedColor = lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+				ColorMod* returnedColor = lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
 				colorCopy = *returnedColor;
 				color = &colorCopy;
 			}
@@ -4517,7 +4659,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				auto* retItem = lua::GetUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
+				auto* retItem = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
 				if (retItem) {
 					item = retItem;
 				}
@@ -4667,7 +4809,7 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 
 		if (!results) {
 			if (lua_isuserdata(L, -1)) {
-				return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+				return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
 			}
 		}
 	}
@@ -4675,14 +4817,14 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 }
 
 // PRE/POST_STATUS_EFFECT_APPLY (1465/1466)
-struct TimedOnlyStatusEffectApplyInputs {
+struct StatusEffectApplyInputs {
 	Entity* entity;
 	EntityRef source;
 	int duration;
+	bool ignoreBossStatusCooldown;
 };
 
-void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int)> super)
-{
+void HandleStatusApplyCallback(int statusId, StatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, bool)> super) {
 	const int preCallbackId = 1465;
 	
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4696,10 +4838,18 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
-			if (lua_isinteger(L, -1)) {
+			if (lua_istable(L, -1)) {
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					inputs.duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					inputs.ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 2);
+			}
+			else if (lua_isinteger(L, -1)) {
 				inputs.duration = (int)lua_tointeger(L, -1);
 			}
 			else if (lua_isboolean(L, -1))
@@ -4711,7 +4861,7 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 		}
 	}
 
-	super(inputs.source, inputs.duration);
+	super(inputs.source, inputs.duration, inputs.ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -4726,15 +4876,23 @@ void HandleTimedOnlyStatusApplyCallback(int statusId, TimedOnlyStatusEffectApply
 			.push(inputs.entity, lua::Metatables::ENTITY)
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 	}
 }
 
-#define _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration) { return super(ref, duration); }
-#define HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(_method, statusId) \
+#define _APPLY_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration, ignoreBossStatusCooldown); }
+#define HOOK_STATUS_APPLY_CALLBACKS(_method, statusId) \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) -> void) { \
+	StatusEffectApplyInputs inputs = {this, ref, duration, ignoreBossStatusCooldown}; \
+	HandleStatusApplyCallback(statusId, inputs, _APPLY_STATUS_EFFECT_LAMBDA()); \
+}
+
+#define _APPLY_NOBOOL_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration); }
+#define HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(_method, statusId) \
 HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration) -> void) { \
-	TimedOnlyStatusEffectApplyInputs inputs = {this, ref, duration}; \
-	HandleTimedOnlyStatusApplyCallback(statusId, inputs, _APPLY_TIMED_ONLY_STATUS_EFFECT_LAMBDA()); \
+	StatusEffectApplyInputs inputs = {this, ref, duration, false}; \
+	HandleStatusApplyCallback(statusId, inputs, _APPLY_NOBOOL_STATUS_EFFECT_LAMBDA()); \
 }
 
 struct DamageStatusEffectApplyInputs {
@@ -4742,10 +4900,10 @@ struct DamageStatusEffectApplyInputs {
 	EntityRef source;
 	int duration;
 	float damage;
+	bool ignoreBossStatusCooldown;
 };
 
-void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, float)> super)
-{
+void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs& inputs, std::function<void(const EntityRef&, int, float, bool)> super) {
 	const int preCallbackId = 1465;
 
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4760,12 +4918,18 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
 			.push(inputs.damage)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				inputs.duration = lua::callbacks::ToInteger(L, 1);
-				inputs.damage = (float)lua::callbacks::ToNumber(L, 2);
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					inputs.duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					inputs.damage = (float)lua::callbacks::ToNumber(L, 2);
+				if (len > 2)
+					inputs.ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 3);
 			}
 			else if (lua_isinteger(L, -1)) {
 				inputs.duration = (int)lua_tointeger(L, -1);
@@ -4779,7 +4943,7 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 		}
 	}
 
-	super(inputs.source, inputs.duration, inputs.damage);
+	super(inputs.source, inputs.duration, inputs.damage, inputs.ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -4795,86 +4959,37 @@ void HandleDamageStatusApplyCallback(int statusId, DamageStatusEffectApplyInputs
 			.push(&(inputs.source), lua::Metatables::ENTITY_REF)
 			.push(inputs.duration)
 			.push(inputs.damage)
+			.push(inputs.ignoreBossStatusCooldown)
 			.call(1);
 	}
 }
 
-#define _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, float damage) { return super(ref, duration, damage); }
+#define _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown) { return super(ref, duration, damage, ignoreBossStatusCooldown); }
 #define HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(_method, statusId) \
-HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage) -> void) { \
-	DamageStatusEffectApplyInputs inputs = {this, ref, duration, damage}; \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown) -> void) { \
+	DamageStatusEffectApplyInputs inputs = {this, ref, duration, damage, ignoreBossStatusCooldown}; \
 	HandleDamageStatusApplyCallback(statusId, inputs, _APPLY_DAMAGE_STATUS_EFFECT_LAMBDA()); \
 }
 
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBaited, 0);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFear, 6);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddIce, 8);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddShrink, 13);
-HOOK_TIMED_ONLY_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
+// As of rep+, these all take a "ignoreBossStatusCooldown" boolean.
+HOOK_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
+HOOK_STATUS_APPLY_CALLBACKS(AddConfusion, 5);
+HOOK_STATUS_APPLY_CALLBACKS(AddFear, 6);
+HOOK_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
+HOOK_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
+HOOK_STATUS_APPLY_CALLBACKS(AddShrink, 13);
+
+// These ones take a boolean parameter but it is unused.
+HOOK_STATUS_APPLY_CALLBACKS(AddBaited, 0);
+HOOK_STATUS_APPLY_CALLBACKS(AddBleeding, 1);
+HOOK_STATUS_APPLY_CALLBACKS(AddMagnetized, 10);
+
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddBrimstoneMark, 2);
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddIce, 8);
+HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(AddWeakness, 15);
 
 HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddBurn, 3);
 HOOK_DAMAGE_STATUS_APPLY_CALLBACKS(AddPoison, 12);
-
-HOOK_METHOD(Entity, AddConfusion, (const EntityRef& ref, int duration, bool ignoreBosses) -> void) {
-	const int preCallbackId = 1465;
-	const int statusId = 5;
-
-	if (CallbackState.test(preCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
-			.push(statusId)
-			.push(statusId)
-			.push(this, lua::Metatables::ENTITY)
-			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(ignoreBosses)
-			.call(1);
-
-		if (!results) {
-			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-				ignoreBosses = lua::callbacks::ToBoolean(L, 2);
-			}
-			else if (lua_isinteger(L, -1)) {
-				duration = (int)lua_tointeger(L, -1);
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (!lua_toboolean(L, -1)) {
-					return;
-				}
-			}
-		}
-	}
-
-	super(ref, duration, ignoreBosses);
-
-	const int postCallbackId = 1466;
-
-	if (CallbackState.test(postCallbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result =  lua::LuaCaller(L).push(postCallbackId)
-			.push(statusId)
-			.push(statusId)
-			.push(this, lua::Metatables::ENTITY)
-			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
-			.push(duration)
-			.push(ignoreBosses)
-			.call(1);
-	}
-}
 
 HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
 	Vector pushVector(pushDirection);
@@ -4899,14 +5014,17 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-
-				lua_pushinteger(L, 2);
-				lua_gettable(L, -2);
-				pushVector = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-				lua_pop(L, 1);
-
-				takeImpactDamage = lua::callbacks::ToBoolean(L, 3);
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1) {
+					lua_pushinteger(L, 2);
+					lua_gettable(L, -2);
+					pushVector = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+					lua_pop(L, 1);
+				}
+				if (len > 2)
+					takeImpactDamage = lua::callbacks::ToBoolean(L, 3);
 			}
 			else if (lua_isinteger(L, -1)) {
 				duration = (int)lua_tointeger(L, -1);
@@ -4941,7 +5059,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 	}
 }
 
-HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amount, ColorMod color) -> void) {
+HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amount, ColorMod color, bool ignoreBossStatusCooldown) -> void) {
 	const int preCallbackId = 1465;
 	const int statusId = 14;
 
@@ -4958,18 +5076,24 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push(duration)
 			.push(amount)
 			.push(&color, lua::Metatables::COLOR)
+			.push(ignoreBossStatusCooldown)
 			.call(1);
 
 		if (!results) {
 			if (lua_istable(L, -1)) {
-				duration = lua::callbacks::ToInteger(L, 1);
-				amount = (float)lua::callbacks::ToNumber(L, 1);
-
-				lua_pushinteger(L, 3);
-				lua_gettable(L, -2);
-				color = *lua::GetUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
-				lua_pop(L, 1);
-
+				const uint32_t len = (uint32_t)lua_rawlen(L, -1);
+				if (len > 0)
+					duration = lua::callbacks::ToInteger(L, 1);
+				if (len > 1)
+					amount = (float)lua::callbacks::ToNumber(L, 2);
+				if (len > 2) {
+					lua_pushinteger(L, 3);
+					lua_gettable(L, -2);
+					color = *lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+					lua_pop(L, 1);
+				}
+				if (len > 3)
+					ignoreBossStatusCooldown = (bool)lua::callbacks::ToBoolean(L, 4);
 			}
 			else if (lua_isinteger(L, -1)) {
 				duration = (int)lua_tointeger(L, -1);
@@ -4983,7 +5107,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 		}
 	}
 
-	super(ref, duration, amount, color);
+	super(ref, duration, amount, color, ignoreBossStatusCooldown);
 
 	const int postCallbackId = 1466;
 
@@ -5000,6 +5124,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push(duration)
 			.push(amount)
 			.push(&color, lua::Metatables::COLOR)
+			.push(ignoreBossStatusCooldown)
 			.call(1);
 	}
 }

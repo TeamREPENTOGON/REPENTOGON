@@ -1,6 +1,5 @@
 ---
 date: 2023-12-31
-links: welcome.md
 ---
 # Welcome to the new era of Isaac modding!
 

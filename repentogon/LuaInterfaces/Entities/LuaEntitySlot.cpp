@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_EntityToEntitySlot) {
-	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (*entity->GetType() == 6) { //TODO: enum
 		Entity_Slot* ud = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 

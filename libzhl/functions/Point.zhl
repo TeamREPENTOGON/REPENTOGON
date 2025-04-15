@@ -10,4 +10,4 @@ struct Point depends (Vector, ColorMod) {
 	float _width : 0x8, _spritesheetCoordinate : 0xc;
 	ColorMod _color : 0x10;
 	bool _worldSpace : 0x3c;
-} : 0x3d;
+} : 0x40;

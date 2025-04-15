@@ -1,1 +1,2 @@
 void PatchInlinedGetStatusEffectTarget();
+void ASMPatchAddWeakness();

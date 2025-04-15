@@ -11,27 +11,27 @@ struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector
     ReferenceCounter_ImageBase nlfloorGfx : 0x34; // 0x34
     ANM2 floorANM2 : 0x3C; // 0x3C
     uint32_t backdropId : 0x150; // 0x150
-    BackdropConfig configurations[61] : 0x154; // 0x154
-    Vector unkVec1 : 0x4ca0;
-    Vector unkVec2 : 0x4ca8;
-    RNG rng : 0x4cb0; // 0x4cb0;
-    uint32_t seed : 0x4cc0;
-    ANM2 _wallDetailANM2 : 0x4cc4;
-    ANM2 _controlsANM2 : 0x4dd8;
-    ANM2 _controlsButtonsANM2 : 0x4eec;
-};
+    BackdropConfig configurations[63] : 0x154; // 0x154
+    Vector unkVec1 : 0x4f18;
+    Vector unkVec2 : 0x4f20;
+    RNG rng : 0x4f28;
+    uint32_t seed : 0x4f38;
+    ANM2 _wallDetailANM2 : 0x4f3c;
+    ANM2 _controlsANM2 : 0x5050;
+    ANM2 _controlsButtonsANM2 : 0x5164;
+} : 0x5278;
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":
 __thiscall void Backdrop::LoadConfig(char *xmlpath);
 
-"558bec83e4f081eca80000000f1005????????565783ec10":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81eca8000000":
 void Backdrop::RenderWater(Vector const& offset);
 
-"558bec83e4f081ec08010000568b7508578bf9837f2c00740656e8a11a00008b875001000083f812":
+"558bec83e4f081ecf800000056":
 void Backdrop::RenderWalls(Vector const& renderOffset, ColorMod color);
 
-"558bec83e4f081eca80000000f1005????????568bf1578b7d08897c242883be500100001c0f11442430":
+"558bec83e4f081ece80000000f1005":
 void Backdrop::RenderFloor(Vector const& renderOffset, ColorMod color);
 
-"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ece0040000a1????????33c58945ec5657508d45f464a3000000008bf989bd74feffff":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecc8040000a1????????33c58945??5657508d45??64a3????????8bf989bd":
 void Backdrop::pre_render_walls();

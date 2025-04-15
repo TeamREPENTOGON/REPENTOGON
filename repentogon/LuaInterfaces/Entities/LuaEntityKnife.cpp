@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_KnifeGetHitList) {
-	Entity_Knife * knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife * knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	std::vector<unsigned int> hitList = *knife->GetHitEntities();
 
 	lua_newtable(L);
@@ -19,49 +19,49 @@ LUA_FUNCTION(Lua_KnifeGetHitList) {
 }
 
 LUA_FUNCTION(Lua_GetIsSwinging) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	lua_pushboolean(L, knife->_isSwinging);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetIsSwinging) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	knife->_isSwinging = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetIsSpinAttack) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	lua_pushboolean(L, knife->_isSpinAttack);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetIsSpinAttack) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	knife->_isSpinAttack = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_IsMultidimensionalTouched) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	lua_pushboolean(L, knife->_multidimensionalApplied);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetMultidimensionalTouched) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	knife->_multidimensionalApplied = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_IsPrismTouched) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	lua_pushboolean(L, knife->_prismApplied);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetPrismTouched) {
-	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
 	knife->_prismApplied = lua::luaL_checkboolean(L, 2);
 	return 0;
 }

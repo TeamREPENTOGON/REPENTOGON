@@ -1,0 +1,3 @@
+struct HUD_Message depends (ANM2) {
+	ANM2 _streakSprite : 0x20;
+} : 0x1f4;

@@ -1,19 +1,25 @@
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8040000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????5053b8d0100000":
 __thiscall void PlayerHUD::Update();
 
-"558bec83e4f081ecc8020000":
-__thiscall void PlayerHUD::RenderActiveItem(unsigned int slot, const Vector& pos, float alpha, float unk, float size<xmm3>);
+// playerHudLayout:
+// 0 = Normal
+// 1 = Jacob & Esau
+// 2 = Compact (Used for co-op players, and for P1 if there are >2 players)
+// 3 = J&E Compact (Used for J&E if they are not P1 or if there are >3 players)
 
-"558bec83e4f881ec24020000":
-__thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec80020000":
+__thiscall void PlayerHUD::RenderActiveItem(unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec00020000a1????????33c58945??5657508d45??64a3????????8bf9897d":
+__thiscall void PlayerHUD::RenderHearts(Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos);
 
 "558bec83ec388b45":
 __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entity_Player* player); 
 
-"558bec83e4f081ecc80000008b11":
-__thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float scale<xmm3>);
+"558bec83ec40538b19":
+__thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float unused, float scale, bool unk);
 
-struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem) { {{
+struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem, PlayerHUDTrinket) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 }} 
     Entity_Player* _player : 0x0;
@@ -21,4 +27,5 @@ struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem) { {{
     short _playerHudIndex : 0x8;
     PlayerHUDHeart _heart[24] : 0x10;
     PlayerHUDActiveItem _activeItem[4] : 0x190;
-} : 0x6b0;
+    PlayerHUDTrinket _trinket[2] : 0x200;
+} : 0x6e0;

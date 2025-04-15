@@ -133,7 +133,7 @@ functionPtr:
     fptr | memberPtr;
     
 fptr:
-    type LeftParen CallingConvention? Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Semi;
+    type LeftParen CallingConvention? Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Colon Number Semi;
     
 memberPtr:
-    type LeftParen CallingConvention? Name Colon Colon (Name Colon Colon)* Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Semi;
+    type LeftParen CallingConvention? Name Colon Colon (Name Colon Colon)* Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Colon Number Semi;

@@ -5,7 +5,7 @@ Colon: ':';
 Semi: ';';
 
 Qualifier: 
-    Cleanup | Static | Virtual | Declspec | Debug;
+    Cleanup | Static | Virtual | Declspec | Debug | NoHook;
 
 Cleanup: 'cleanup';
 Static: 'static';
@@ -48,6 +48,7 @@ Skip: 'skip';
 Pure: 'pure';
 Override: 'override';
 Debug: 'debug';
+NoHook: 'nohook';
 
 Visibility: Public | Private | Protected;
 Public: 'public';

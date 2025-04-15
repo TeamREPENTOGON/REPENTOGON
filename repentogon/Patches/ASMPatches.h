@@ -11,7 +11,6 @@
 extern std::bitset<500> CallbackState;
 extern std::bitset<75> VanillaCallbackState;
 extern int ambushWaves, bossAmbushWaves;
-extern bool overrideMegaSatanEnding;
 
 extern void HookImGui();
 

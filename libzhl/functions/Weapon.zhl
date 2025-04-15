@@ -3,8 +3,8 @@ __thiscall void Weapon::PlayItemAnim(unsigned int collectibleID, int itemAnim, c
 
 "558bec8b51??5685d2":
 __thiscall void Weapon::SetBlinkTime(int Delay);
-
-"558bec83e4f081ec88020000":
+ 
+"558bec83e4f081ec98020000":
 __thiscall void Weapon::TriggerTearFired(const Vector& pos, int FireAmount);
 
 "558bec83e4f851568b71??85f674??8b46??83f80174??83f80375??8b86":
@@ -25,15 +25,15 @@ static cleanup Entity_Laser* Weapon::FireBrimstone(Entity* entity<ecx>, const Ve
 "558bec83e4f881ec90000000a1????????33c4898424????????8b45??5657":
 __thiscall Entity_Knife* Weapon::FireSword(Entity * param_1, unsigned int param_2, float param_3<xmm3>, bool param_4, bool param_5, unsigned int param_6, Entity * param_7);
 
-struct Weapon { {{
-	inline Entity* GetOwner() { return *(Entity**)((char*)this + 0x4); }
-	inline float* GetFireDelay() { return (float*)((char*)this + 0xC); }
-	inline float GetMaxFireDelay() { return *(float*)((char*)this + 0x10); }
-	inline float* GetCharge() { return (float*)((char*)this + 0x14); }
-	inline Vector* GetDirection() {return (Vector*)((char*)this + 0x1c); }
-	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
+struct Weapon depends (Vector) { {{
+	inline Entity* GetOwner() { return this->_owner; }
+	inline float* GetFireDelay() { return &this->_fireDelay; }
+	inline float GetMaxFireDelay() { return this->_maxFireDelay; }
+	inline float* GetCharge() { return &this->_charge; }
+	inline Vector* GetDirection() { return &this->_direction; }
+	inline int GetWeaponType() { return this->_weaponType; }
 	inline uint32_t* GetModifiers() { return &this->_modifiers; }
-	inline int GetNumFired() { return *(int*)((char*)this + 0x34); }
+	inline int GetNumFired() { return this->_numFired; }
 }}
     __vtable {
 		skip; // Free
@@ -58,7 +58,14 @@ struct Weapon { {{
 		skip; // CanOverrideForgottenThrow
     };
 	
-	uint32_t _modifiers : 0x30;
+	Entity* _owner : 0x4;
+	float _fireDelay : 0xc;
+	float _maxFireDelay : 0x10;
+	float _charge : 0x14;
+	Vector _direction : 0x20;
+	int _weaponType : 0x30;
+	uint32_t _modifiers : 0x34;
+	int _numFired : 0x38;
 } : 0x40;
 
 /* For convenience's sake:

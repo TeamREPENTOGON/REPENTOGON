@@ -37,6 +37,7 @@ namespace lua {
         RNG,
         ENTITY_PLAYER,
         FONT,
+        FONTRENDERSETTINGS,
         ENTITY_PICKUP,
         COSTUME,
         ENTITY_LIST,
@@ -103,6 +104,7 @@ namespace lua {
         CONST_RNG,
         CONST_ENTITY_PLAYER,
         CONST_FONT,
+        CONST_FONTRENDERSETTINGS,
         CONST_ENTITY_PICKUP,
         CONST_COSTUME,
         CONST_ENTITY_LIST,
@@ -142,6 +144,7 @@ namespace lua {
         CONST_SFX_MANAGER,
         CONST_CARD_CONFIG_LIST,
         CONST_VECTOR,
+
         METATABLES_MAX
     };
 
@@ -256,7 +259,7 @@ namespace lua {
     LIBZHL_API void UnloadMetatables();
     LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
     LIBZHL_API void PushMetatable(lua_State* L, Metatables metatable);
-    LIBZHL_API  void* GetMetatableKey(Metatables metatable);
+    LIBZHL_API void* GetMetatableKey(Metatables metatable);
     LIBZHL_API Metatables GetMetatableIdxFromName(std::string const& name);
 
     LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
@@ -280,8 +283,23 @@ namespace lua {
 
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	
+    /* GetUserdata rationale.
+     * 
+     * CheckUserdata will return a class derived from Userdata.
+     * The layout will be as follows (LSB to the left):
+     * +-------------+------+
+     * | vtable addr | data |
+     * +-------------+------+
+     * 0             4      N
+     *
+     * p points to byte 0 in the structure, p + 0x4 points to the content
+     * of the Userdata object underneath.
+     *
+     * The function returns data interpreted as type T.
+     */
+
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
+    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
         return *(T*)((char*)p + 0x4);
     }
@@ -289,7 +307,7 @@ namespace lua {
     // Use this version if you need your userdata to be either the const or non const version
     // of something. Most of the time you won't need it.
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
+    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, constMt, name);
         return *(T*)((char*)p + 0x4);
     }
@@ -305,7 +323,7 @@ namespace lua {
     }
 
     template<typename T>
-    T GetUserdata(lua_State* L, int idx, const char* mt) {
+    T GetRawUserdata(lua_State* L, int idx, const char* mt) {
         void* ud = luaL_checkudata(L, idx, mt);
         return (T)ud;
     }
@@ -341,6 +359,8 @@ namespace lua {
         LuaCaller& push(const char* s, size_t len = 0);
         LuaCaller& pushnil();
         LuaCaller& pushvalue(int idx);
+        LuaCaller& pushluaref(int t, int ref);
+        LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
         LuaCaller& pushLuabridge(void* ptr, const char* meta); 
@@ -433,6 +453,16 @@ namespace lua {
         return *(T*)((char*)ud + 4);
     }
 	
+    /**
+     * The structure of Userdata, UserdataValue and UserdataPtr is taken directly
+     * from the source code of LuaBridge.
+     * 
+     * Warning: Userdata does have a virtual constructor in luabridge. It is
+     * a nop in Userdata and UserdataPtr, but in the case of UserdataValue it
+     * calls the destructor of the stored pointer (if any). This behavior is
+     * not reproduced here. However, the presence of a virtual destructor
+     * creates a vtable, adding 4 bytes of data at the start of the structure.
+     */
     namespace luabridge {
         extern LIBZHL_API void* identityKey;
         extern LIBZHL_API lua_CFunction indexMetaMethod;

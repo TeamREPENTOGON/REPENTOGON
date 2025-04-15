@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <fstream>
+#include <variant>
 
 #include "libzhl.h"
 
@@ -26,6 +27,15 @@ namespace SigCache {
 	extern bool IsLoaded;
 	extern bool IsIndirectMode;
 };
+
+struct LIBZHL_API SigScanEntry
+{
+	std::string name;
+	std::string signature;
+	bool isFunction = false;
+	std::vector<void*> locations;
+};
+
 class LIBZHL_API SigScan
 {
 public:
@@ -35,7 +45,7 @@ public:
 		Match(short b, short n) : address(0), begin(b), length(n) {}
 		~Match() {}
 
-		unsigned char *address;
+		void *address;
 		short begin;
 		short length;
 	};
@@ -60,7 +70,7 @@ private:
 	bool m_bNoReturnSeek;
 	bool m_bStartFromLastAddress;
 
-	unsigned char *m_pAddress;
+	std::variant<void*, std::vector<void*>> m_scanResult;
 	int m_dist;
 
 public:
@@ -68,13 +78,17 @@ public:
 	~SigScan();
 
 	static void FlushCache();
-	bool Scan(Callback callback = NULL);
+	bool Scan(bool useCache = true, bool allowRepetitions = false,
+		Callback callback = NULL);
 
-	void *GetAddress() const {return m_pAddress;}
+	void* GetAddress() const;
+	std::vector<void*> GetAddresses() const;
+
 	template <class T> T GetAddress() const
 	{
-		return reinterpret_cast<T>(m_pAddress);
+		return reinterpret_cast<T>(GetAddress());
 	}
+
 	int GetDistance() const {return m_dist;}
 
 	int GetMatchCount() const {return m_matches.size();}

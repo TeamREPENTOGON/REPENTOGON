@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_PlayerGetHistory)
 {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	History** toLua = (History**)lua_newuserdata(L, sizeof(History*));
 	*toLua = player->GetHistory();
 	luaL_setmetatable(L, lua::metatables::HistoryMT);
@@ -13,7 +13,7 @@ LUA_FUNCTION(Lua_PlayerGetHistory)
 
 LUA_FUNCTION(Lua_HistoryRemoveHistoryItemByIndex)
 {
-	History* history = *lua::GetUserdata<History**>(L, 1, lua::metatables::HistoryMT);
+	History* history = *lua::GetRawUserdata<History**>(L, 1, lua::metatables::HistoryMT);
 	int index = (int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, history->RemoveHistoryItemByIndex(index));
 	return 1;
@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_HistoryRemoveHistoryItemByIndex)
 
 LUA_FUNCTION(Lua_HistoryGetCollectiblesHistory)
 {
-	History* history = *lua::GetUserdata<History**>(L, 1, lua::metatables::HistoryMT);
+	History* history = *lua::GetRawUserdata<History**>(L, 1, lua::metatables::HistoryMT);
 	std::vector<History_HistoryItem> historyItems = history->_historyItems;
 
 	lua_newtable(L);

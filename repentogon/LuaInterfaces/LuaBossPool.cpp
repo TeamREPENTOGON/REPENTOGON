@@ -19,13 +19,13 @@ LUA_FUNCTION(Lua_BossPoolGetPool) {
 }
 
 LUA_FUNCTION(Lua_PoolGetName) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
+	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushstring(L, pool->_name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetEntries) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
+	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	auto& entrys = pool->_entries;
 
 	lua_newtable(L);
@@ -58,19 +58,19 @@ LUA_FUNCTION(Lua_PoolGetEntries) {
 }
 
 LUA_FUNCTION(Lua_PoolGetWeight) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
+	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushnumber(L, pool->_weight);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetRNG) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
+	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua::luabridge::UserdataPtr::push(L, &pool->_rng, lua::GetMetatableKey(lua::Metatables::RNG));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetDoubleTroubleRoomID) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
+	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushinteger(L, pool->_doubleTroubleRoomID);
 	return 1;
 }

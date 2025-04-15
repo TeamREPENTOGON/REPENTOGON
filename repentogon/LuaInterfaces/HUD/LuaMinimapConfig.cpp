@@ -13,91 +13,91 @@ LUA_FUNCTION(Lua_MinimapGetConfig)
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetSprite) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua::luabridge::UserdataValue<ANM2>::push(L, lua::GetMetatableKey(lua::Metatables::SPRITE), config->_mapSprite);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MininmapConfigGetVec1) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_vec1);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetVec1) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_vec1 = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	config->_vec1 = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetBorderPadding) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_borderPadding);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetBorderPadding) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_borderPadding = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	config->_borderPadding = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetPosOffsetX) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua_pushnumber(L, config->_posOffsetX);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetPosOffsetX) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	config->_posOffsetX = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetBorderScale) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua_pushnumber(L, config->_borderScale);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetBorderScale) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	config->_borderScale = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetI1) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua_pushinteger(L, config->_i1);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetI1) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	config->_i1 = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetI2) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua_pushinteger(L, config->_i2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetI2) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	config->_i2 = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetIconNum) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	lua_pushinteger(L, config->_minimapIconNum);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetIconNum) {
-	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
 	config->_minimapIconNum = (int)luaL_checkinteger(L, 2);
 	return 0;
 }

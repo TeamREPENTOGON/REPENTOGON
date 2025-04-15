@@ -13,19 +13,19 @@ static void RoomDescriptorGetAllowedDoors(lua_State* L, RoomDescriptor* descript
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorGetAllowedDoors) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptorGetAllowedDoors(L, descriptor);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorGetAllowedDoorsConst) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
 	RoomDescriptorGetAllowedDoors(L, descriptor);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorSetAllowedDoors) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	int doors = (int)luaL_checkinteger(L, 2);
 	descriptor->AllowedDoors = doors;
 	return 0;
@@ -43,13 +43,13 @@ static void RoomDescriptorGetDoors(lua_State* L, RoomDescriptor* descriptor, boo
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorGetDoors) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptorGetDoors(L, descriptor, true);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorGetDoorsConst) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
 	RoomDescriptorGetDoors(L, descriptor, false);
 	return 1;
 }
@@ -65,19 +65,19 @@ static void _RoomDescriptorDoorsGet(lua_State* L, RoomDescriptor* descriptor) {
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsGet) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsGetConst) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoorsConst);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoorsConst);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorDoorsSet) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
+	RoomDescriptor** ptr = lua::GetRawUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	RoomDescriptor* descriptor = *ptr;
 
 	int slot = (int)luaL_checkinteger(L, 2);
@@ -168,21 +168,21 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 }
 
 LUA_FUNCTION(Lua_GetEntitiesSaveState) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
 	ud->data = &(descriptor->SavedEntities);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetDecoSaveState) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
 	ud->data = &(descriptor->SavedEntities2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetRestrictedGridIndexes) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	std::set<int>& gridIndexes = descriptor->RestrictedGridIndexes;
 	lua_newtable(L);
 	int idx = 1;
@@ -197,7 +197,7 @@ LUA_FUNCTION(Lua_GetRestrictedGridIndexes) {
 }
 
 LUA_FUNCTION(Lua_AddRestrictedGridIndex) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	const int gridIdx = (int)luaL_checkinteger(L, 2);
 	std::set<int>& ents = descriptor->RestrictedGridIndexes;
 	
@@ -207,34 +207,34 @@ LUA_FUNCTION(Lua_AddRestrictedGridIndex) {
 }
 
 LUA_FUNCTION(Lua_GetGridEntitiesSaveState) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	Lua_GridEntitiesSaveStateVector* ud = lua::place<Lua_GridEntitiesSaveStateVector>(L, lua::metatables::GridEntitiesSaveStateVectorMT);
 	ud->data = &(descriptor->SavedGridEntities);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetBossDeathSeed) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	lua_pushinteger(L, descriptor->BossDeathSeed);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_InitSeeds) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	// rng userdata
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 	descriptor->InitSeeds(rng);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetDimension) {
-	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	lua_pushinteger(L, descriptor->Dimension);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetNeighboringRooms) {
-	RoomDescriptor* roomDesc = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 
 	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(roomDesc->GridIndex, roomDesc->Data->Shape, roomDesc->Dimension);
 

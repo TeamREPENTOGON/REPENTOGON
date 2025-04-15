@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	int pedestalType = (int)luaL_checkinteger(L, 2);
 
 	pickup->SetAlternatePedestal(pedestalType);
@@ -12,14 +12,14 @@ LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
 }
 
 LUA_FUNCTION(Lua_PickupTryRemoveCollectible) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushboolean(L, pickup->TryRemoveCollectible());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupSetForceBlind) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool setBlind = lua::luaL_checkboolean(L, 2);
 
 	pickup->SetForceBlind(setBlind);
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_PickupSetForceBlind) {
 }
 
 LUA_FUNCTION(Lua_PickupIsBlind) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, true); // wish I implemented that method properly before...
 
 	bool isBlind = false;
@@ -47,28 +47,28 @@ LUA_FUNCTION(Lua_PickupIsBlind) {
 }
 
 LUA_FUNCTION(Lua_PickupGetVarData) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushinteger(L, *pickup->GetVarData());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupSetVarData) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	*pickup->GetVarData() = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PickupSetNewOptionsPickupIndex) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushinteger(L, pickup->SetNewOptionsPickupIndex());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupTryInitOptionCycle) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	int numCycle = (int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, pickup->TryInitOptionCycle(numCycle));
 
@@ -77,7 +77,7 @@ LUA_FUNCTION(Lua_PickupTryInitOptionCycle) {
 
 LUA_FUNCTION(Lua_PickupGetDropDelay)
 {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushinteger(L, *pickup->GetDropDelay());
 
 	return 1;
@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_PickupGetDropDelay)
 
 LUA_FUNCTION(Lua_PickupSetDropDelay)
 {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	*pickup->GetDropDelay() = (int)luaL_checkinteger(L, 2);
 
 	return 0;
@@ -93,17 +93,17 @@ LUA_FUNCTION(Lua_PickupSetDropDelay)
 
 LUA_FUNCTION(Lua_PickupCanReroll)
 {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushboolean(L, pickup->CanReroll());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	RNG* rng = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+		lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 	}
 	int velType = (int)luaL_optinteger(L, 3, 0);
 
@@ -115,7 +115,7 @@ LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 }
 
 LUA_FUNCTION(Lua_PickupMakeShopItem) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	int shopItemID = (int)luaL_checkinteger(L, 2);
 
 	pickup->MakeShopItem(shopItemID);
@@ -125,7 +125,7 @@ LUA_FUNCTION(Lua_PickupMakeShopItem) {
 
 // reimplementation with error checking
 LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	int id = (int)luaL_checkinteger(L, 2);
 
 	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
@@ -146,25 +146,25 @@ LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
 }
 
 LUA_FUNCTION(Lua_PickupTryFlip) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushboolean(L, pickup->TryFlip(nullptr, 0));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupGetPriceSprite) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua::luabridge::UserdataPtr::push(L, &pickup->_priceANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupGetAlternatePedestal) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushinteger(L, pickup->GetAlternatePedestal());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 
 	lua_newtable(L);
 
@@ -177,7 +177,7 @@ LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
 }
 
 LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	for (int i = 0; i < 7; i++) {
 		pickup->_cycleCollectibleList[i] = 0; 
 	}
@@ -186,7 +186,7 @@ LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
 	return 0;
 }
 LUA_FUNCTION(Lua_PickupGetPickupGhost) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Effect* pickupGhost = pickup->_pickupGhost;
 	lua::luabridge::UserdataPtr::push(L, pickupGhost, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 	
@@ -194,13 +194,13 @@ LUA_FUNCTION(Lua_PickupGetPickupGhost) {
 }
 
 LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	pickup->UpdatePickupGhosts();
 	return 0;
 }
 
 /*LUA_FUNCTION(Lua_PickupIsChest) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetRawUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
 	lua_pushboolean(L, pickup->IsChest(variant));
 	return 1;
@@ -209,13 +209,13 @@ LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
 
 
 LUA_FUNCTION(Lua_PickupTriggerTheresOptionsPickup) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	pickup->TriggerTheresOptionsPickup();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PickupGetMegaChestLeftCollectible) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Pickup* collectible = pickup->_megaChestCollectible[0];
 	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
 
@@ -223,7 +223,7 @@ LUA_FUNCTION(Lua_PickupGetMegaChestLeftCollectible) {
 }
 
 LUA_FUNCTION(Lua_PickupGetMegaChestRightCollectible) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Pickup* collectible = pickup->_megaChestCollectible[1];
 	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
 
@@ -231,7 +231,7 @@ LUA_FUNCTION(Lua_PickupGetMegaChestRightCollectible) {
 }
 
 LUA_FUNCTION(Lua_PickupGetMegaChestOtherCollectible) {
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	if (pickup->_megaChestCollectible[0] != nullptr) {
 		lua::luabridge::UserdataPtr::push(L, pickup->_megaChestCollectible[0], lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
 		lua_pushboolean(L, false);

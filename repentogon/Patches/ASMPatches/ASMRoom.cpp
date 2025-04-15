@@ -26,7 +26,7 @@ void ASMPatchAmbushWaveCount() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-/* This function overrides the call to GetRandomRoom in spawn_wave.
+/* This function overrides the call to GetRandomRoom in spawn_wave in order to avoid a crash when no difficulty 15 wave exists.
  * spawn_wave is thiscall. stdcall will mirror the stack cleaning
  * convention, and, as we don't need to preserve ecx under thiscall, nothing
  * more is required.
@@ -79,18 +79,14 @@ void PatchBossWaveDifficulty() {
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
-/* Mega Satan has a seeded 50% chance to end the game forcefully.
-*  Historically, this means mods that want to skip to the Void 100% of the time have to do so manually. This stops achievements from registering.
-*  Mods can work around that with our completion mark API, but that doesn't help in the case of Steam achievements!
-*  We hook the function responsible for this right when it calls RNG::RandomInt() to determine if the game should end or spawn a Void portal.
-*  The stack is already set up to call RandomInt with the right seed and values and whatnot.
-*  We use a trampoline to call a Lua callback, check if it's true or false, force a Void portal if it's true, or call RNG::RandomInt() if it's false to preserve vanilla behavior.
+/* Mega Satan used to have a 50% chance to end the game instantly instead of spawning an ending chest + void portal.
+* The MC_PRE_MEGA_SATAN_ENDING callback was created as a way to suppress this forced ending if desired, so that achievements could still register properly.
+* As of REP+, this is no longer random - Mega Satan will not end the run as long as the Void is unlocked.
+* However, the callback also allowed you to bypass the two other conditions (void being unlocked, and some other thing) so it's probably okay to keep the callback as it could be useful.
+* Though doing this also spawns a void portal even if void isn't unlocked...
+* If we wanted, we could separately prevent the void portal from spawning after this if void isn't unlocked yet.
 */
-
-bool overrideMegaSatanEnding = false;
-void __stdcall MegaSatanCallbackTrampoline() {
-	overrideMegaSatanEnding = false;
-
+bool __stdcall MegaSatanCallbackTrampoline() {
 	const int callbackid = 1201;
 	if (CallbackState.test(callbackid - 1000)) {
 
@@ -107,43 +103,38 @@ void __stdcall MegaSatanCallbackTrampoline() {
 		if (!res) {
 			if (lua_isboolean(L, -1)) {
 				if (lua_toboolean(L, -1)) {
-					overrideMegaSatanEnding = true;
+					return true;
 				}
 			}
 		}
 	}
+
+	return false;
 }
 
 void ASMPatchMegaSatanEnding() {
-	SigScan scanner("e8????????85c00f85????????3845??0f84????????3845??0f84????????a1");
+	SigScan scanner("807d??0074??807d??0074??a1");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	SigScan randomIntScanner("558bec568bf18b16");
-	randomIntScanner.Scan();
-	void* randomIntAddr = randomIntScanner.GetAddress();
-
-	printf("[REPENTOGON] Patching hardcoded Mega Satan game ending at %p\n", addr);
-
-	void* ptr = &overrideMegaSatanEnding;
+	printf("[REPENTOGON] Patching MC_PRE_MEGA_SATAN_ENDING into Room:SpawnClearAward at %p\n", addr);
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.AddInternalCall(MegaSatanCallbackTrampoline) // call MegaSatanCallbackTrampoline()
+		.AddInternalCall(MegaSatanCallbackTrampoline)
+		.AddBytes("\x84\xC0")  // test al, al
 		.RestoreRegisters(reg)
-		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
-		.AddBytes("\x84\xC0") // test al, al
-		.AddBytes("\x75\x0A") // jne (current addr + 0xA)
-		.AddInternalCall(randomIntAddr) // call RNG::RandomInt()
-		.AddRelativeJump((char*)addr + 0x5) // jmp isaac-ng.XXXXXXXX
-		.AddBytes("\x83\xC4\x04")
-		.AddRelativeJump((char*)addr + 0x1F);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xC)  // Callback returned true, suppress the ending.
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x4))  // Callback did not return true. Restore a boolean check that was overidden.
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x45)  // Overidden jump to potentially trigger the ending.
+		.AddRelativeJump((char*)addr + 0x6);  // Continue as normal.
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// Used for Better Void Generation to mark when a downpour/dross room shouldn't have water, since we add it manually
 void ASMPatchWaterDisabler() {
-	SigScan scanner("c685ebfaff????8b");
+	SigScan scanner("c685????????018b47??8148??00100000");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* boolPtr = &roomASM.WaterDisabled;
@@ -154,6 +145,11 @@ void ASMPatchWaterDisabler() {
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+/*
+ * Quick Room Clear
+ * reduces the delay in frames between the last enemy killed and the room being cleared
+*/
 
 void __stdcall SetRoomClearDelay(Room* room) {
 	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 3 : 10;
@@ -200,7 +196,7 @@ void ASMPatchDeepGaperClearCheck(void* addr) {
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EAX, 0x18190) // push Room
+		.Push(ASMPatch::Registers::EAX, 0x18300) // push Room
 		.AddInternalCall(CheckDeepGaperClearDelay) // call CheckDeepGaperClearDelay()
 		.AddBytes("\x84\xc0") // TEST AL, AL
 		.RestoreRegisters(reg)
@@ -210,7 +206,7 @@ void ASMPatchDeepGaperClearCheck(void* addr) {
 }
 
 void PatchRoomClearDelay() {
-	SigScan scanner1("c787????????0a00000075??8b469"); // Room::Update
+	SigScan scanner1("c787????????0a00000075??8b46"); // Room::Update
 	SigScan scanner2("8b86????????4883f807"); // Room::SaveState
 	SigScan scanner3("8b80????????83b8????????09"); // ai_deep_gaper
 	scanner1.Scan();
@@ -225,11 +221,11 @@ void PatchRoomClearDelay() {
 
 // this changes the function to check Game's time counter instead of frame counter, in parity with TrySpawnBossRushDoor
 void ASMPatchTrySpawnBlueWombDoor() {
-	SigScan scanner("83f8087c??8b83");
+	SigScan scanner("83f8087c??8b87");
 	scanner.Scan();
 	void* addr = (char*)scanner.GetAddress() + 7;
 	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
 	ASMPatch patch;
-	patch.AddBytes("\xE0");
+	patch.AddBytes("\x28"); // 025b24 - > 025b28
 	sASMPatcher.FlatPatch(addr, &patch);
 }

@@ -1,0 +1,4 @@
+"558bec8b0133d28b49":
+__thiscall bool NetplayManager::IsIdxLocalPlayer(uint32_t idx);
+
+struct NetplayManager {};

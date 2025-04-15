@@ -3,7 +3,7 @@ struct GridEntity_Poop : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f881ec94000000a1????????33c4898424????????538bd9":
+		"558bec83e4f081ec08020000":
         void Update();
 		
 		override
@@ -12,7 +12,11 @@ struct GridEntity_Poop : public GridEntity {
 		
 		skip; // Hurt
 		skip; // Destroy
-		skip; // GetWaterClipInfo
+		
+		override
+		"558bec83ec088179??e8030000":
+		WaterClipInfo* GetWaterClipInfo(WaterClipInfo* out);
+		
 		skip; // CanTakeDamageFromTearEffects
 		skip; // BeginBatches
 		skip; // EndBatches
