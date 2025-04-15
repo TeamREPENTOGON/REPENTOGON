@@ -41,6 +41,11 @@ ___
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
+### ClearBossHazards () {: aria-label='Functions' }
+#### void ClearBossHazards ( boolean IgnoreNPCs = true, [Entity](Entity.md) Source = nil ) {: .copyable aria-label='Functions' }
+Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if `IgnoreNPCs` is false.
+
+___
 ### DoLightningStrike () {: aria-label='Functions' }
 #### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
 Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
