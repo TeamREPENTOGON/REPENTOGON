@@ -527,13 +527,13 @@ LUA_FUNCTION(Lua_RoomTriggerOutput) {
 
 LUA_FUNCTION(Lua_RoomClearBossHazards) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Entity_NPC* entity = nullptr;
+	Entity* source = nullptr;
 	const bool excludeNPCs = lua::luaL_optboolean(L, 2, true);
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		entity = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 3, lua::Metatables::ENTITY_NPC, "EntityNPC");
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
 	}
 	// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
-	entity->ClearBossHazards(excludeNPCs);
+	source->ClearBossHazards(excludeNPCs);
 	return 0;
 }
 
