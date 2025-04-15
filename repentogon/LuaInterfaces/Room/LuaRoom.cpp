@@ -532,6 +532,7 @@ LUA_FUNCTION(Lua_RoomClearBossHazards) {
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
 		entity = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 3, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	}
+	// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
 	entity->ClearBossHazards(excludeNPCs);
 	return 0;
 }
