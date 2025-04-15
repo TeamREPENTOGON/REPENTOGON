@@ -1004,10 +1004,6 @@ ___
 #### void SetForgottenSwapFormCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
-### SetForgottenSwapFormCooldown () {: aria-label='Functions' }
-#### void SetForgottenSwapFormCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
-
-___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
 
