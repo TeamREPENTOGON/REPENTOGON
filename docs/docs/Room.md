@@ -41,11 +41,6 @@ ___
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
-### ClearBossHazards () {: aria-label='Functions' }
-#### void ClearBossHazards ( boolean IgnoreNPCs = true, [Entity](Entity.md) Source = nil ) {: .copyable aria-label='Functions' }
-Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if `IgnoreNPCs` is false.
-
-___
 ### DoLightningStrike () {: aria-label='Functions' }
 #### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
 Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
@@ -92,8 +87,13 @@ ___
 
 ___
 ### GetItemPool () {: aria-label='Functions' }
+<<<<<<< HEAD
+#### [ItemPoolType](ItemPoolType.md) GetItemPool ( int Seed = Random(), boolean Raw = false ) {: .copyable aria-label='Functions' }
+Retrieves the [ItemPoolType](ItemPoolType.md) the game would use to generate random collectibles in the current room. Unlike [ItemPool.GetPoolForRoom()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getpoolforroom), this takes into account the pool set using [SetItemPool()](Room.md#setitempool), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
+=======
 #### [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType GetItemPool ( int Seed = Random(), boolean Raw = false ) {: .copyable aria-label='Functions' }
 Retrieves the [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) the game would use to generate random collectibles in the current room. Unlike [ItemPool.GetPoolForRoom()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getpoolforroom), this takes into account the pool set using [SetItemPool()](Room.md#setitempool), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
+>>>>>>> 8ae1d41acb62423670502dcf5381c7695e01a63a
 
 If `Raw` is set to `true` and the pool is set to `POOL_NULL` then `POOL_NULL` will be returned, instead of running the game's pool selection code.
 
