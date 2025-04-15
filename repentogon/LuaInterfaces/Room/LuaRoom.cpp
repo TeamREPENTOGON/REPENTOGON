@@ -525,6 +525,17 @@ LUA_FUNCTION(Lua_RoomTriggerOutput) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomClearBossHazards) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Entity_NPC* entity = nullptr;
+	const bool excludeNPCs = lua::luaL_optboolean(L, 2, true);
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		entity = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 3, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	}
+	entity->ClearBossHazards(excludeNPCs);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -575,6 +586,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetItemPool", Lua_RoomSetItemPool },
 		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ "TriggerOutput", Lua_RoomTriggerOutput },
+		{ "ClearBossHazards", Lua_RoomClearBossHazards },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

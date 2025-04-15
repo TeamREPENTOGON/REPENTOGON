@@ -106,6 +106,9 @@ __thiscall void Entity_NPC::MinecartBreak();
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
 */
 
+"558bec83ec30a1????????53":
+__thiscall void Entity_NPC::ClearBossHazards(bool excludeNPCs);
+
 struct Entity_NPC depends (Vector, NPCAI_Pathfinder) : public Entity {
 {{
     inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xCA4); }
