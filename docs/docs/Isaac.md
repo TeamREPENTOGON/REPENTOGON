@@ -59,11 +59,6 @@ Moves the windows mouse cursor to the center of the game's window. This is incre
     Take in mind the screen center is NOT the center of the room necessarily, it's just the center of the game's window(center of the actual screen if you are on fullscreen).
 
 ___
-### ClearBossHazards () {: aria-label='Functions' }
-#### void ClearBossHazards ( boolean IgnoreNPCs = false ) {: .copyable aria-label='Functions' }
-Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if `IgnoreNPCs` is false.
-
-___
 ### ClearChallenge () {: aria-label='Functions' }
 #### void ClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
 Sets the challenge of the corresponding `challengeid` to completed.
