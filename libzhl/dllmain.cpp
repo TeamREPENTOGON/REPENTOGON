@@ -21,12 +21,12 @@ void __stdcall SanityCheckInitZHL() {
 	ZHL::Log("SanityCheckInitZHL: patch should be okay\n");
 }
 
-/* Because ZHL is not initialized when we enter InitZHL, we cannot hook
- * anything, so we need to ASM patch instead.
+/* Because ZHL is not initialized inside libzhl, we cannot use HOOK_GLOBAL here,
+ * because the static constructor would be invoked before ZHL is ready.
  */
 void HookMain() {
-	SigScan scan("32d2b9????????e84cd51000");
-	if (!scan.Scan()) {
+	FunctionDefinition* definition = FunctionDefinition::Find("IsaacMain", typeid(int (*)(int, char**)));
+	if (!definition) {
 		ZHL::Log("[CRITICAL][HookMain] main was not found in the executable\n");
 		return;
 	}
@@ -35,12 +35,14 @@ void HookMain() {
 		ZHL::Log("[CRITICAL][HookMain] No termination hook given\n");
 	}
 
-	void* addr = scan.GetAddress();
-	char* movOffsetAddr = (char*)addr + 0x3;
-	void* movOffsetValue;
-	memcpy(&movOffsetValue, movOffsetAddr, 0x4);
-	ZHL::Log("Found KAGE::EngineStartup call address %p\n", addr);
-	ZHL::Log("Dumping ASM: ");
+	void* addr = definition->GetAddress();
+	char* patchAddr = (char*)addr + 0x3; /* Patch immediately after ebp and esp are setup. */
+	char brokenBytes[7]; /* Backup all bytes that will be broken by the patch. */
+	static_assert (sizeof(char) == 1);
+	memcpy(brokenBytes, patchAddr, sizeof(brokenBytes));
+
+	ZHL::Log("[INFO][HookMain] Found main at address %p\n", addr);
+	ZHL::Log("[INFO][HookMain] Dumping 32 bytes of ASM for log sanity: ");
 	ZHL::DumpMemory(addr, 0x20, false, true);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
@@ -48,18 +50,20 @@ void HookMain() {
 	patch.AddInternalCall(SanityCheckInitZHL);
 	patch.AddInternalCall(loaderFinish);
 	patch.RestoreRegisters(registers);
-	ByteBuffer buffer;
-	buffer.AddString("\x32\xd2\xb9");
-	buffer.AddPointer(movOffsetValue);
-	patch.AddBytes(buffer);
-	patch.AddRelativeJump((char*)addr + 0x7);
-	size_t patchLen = 0;
-	void* patchedAddr = sASMPatcher.PatchAt(addr, &patch, &patchLen);
 
-	ZHL::Log("Dumping ASM of the call to KAGE::Engine post patch: ");
+	/* At the end of the patch, add the instructions that are broken by the
+	 * jump towards the patch, then jump to the next instruction that should
+	 * have been executed originally.
+	 */
+	ByteBuffer buffer;
+	buffer.AddAny(brokenBytes, sizeof(brokenBytes));
+	patch.AddBytes(buffer);
+	patch.AddRelativeJump((char*)patchAddr + 0x7);
+	size_t patchLen = 0;
+	void* patchedAddr = sASMPatcher.PatchAt(patchAddr, &patch, &patchLen);
+
+	ZHL::Log("[INFO][HookMain] Dumping 32 bytes of ASM for log sanity: ");
 	ZHL::DumpMemory(addr, 0x20, false, true);
-	ZHL::Log("Dumping ASM of the patch: ");
-	ZHL::DumpMemory(patchedAddr, patchLen, false, true);
 }
 
 extern "C" {
