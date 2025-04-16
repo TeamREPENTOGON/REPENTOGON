@@ -2257,7 +2257,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1032 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
+|1033 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
 
 ### MC_POST_BOSS_INTRO_SHOW {: .copyable }
 Accepts no return parameters.
