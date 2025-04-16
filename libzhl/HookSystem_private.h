@@ -69,7 +69,7 @@ class LIBZHL_API Definition
 {
 public:
 	static bool Init();
-	/* Does not error if a signature is not found, or if there are multiple 
+	/* Does not error if a signature is not found, or if there are multiple
 	 * matches. Used for debugging signatures during version changes.
 	 */
 	static void OfflineInit(std::vector<SigScanEntry>& result);
@@ -115,12 +115,13 @@ private:
 
 public:
 	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
-		const type_info& type, const char* sig, const HookSystem::ArgData* argdata, 
+		const type_info& type, const char* sig, const HookSystem::ArgData* argdata,
 		int nArgs, unsigned int flags, void** outfunc, bool canHook);
 	FunctionDefinition(const char* name, char internalName[HookSystem::FUNCTION_INTERNAL_NAME_MAX_LEN],
 		const type_info& type, void* addr, const HookSystem::ArgData* argdata,
 		int nArgs, unsigned int flags, void** outfunc, bool canHook);
 
+	static FunctionDefinition* Find(const char* name, const type_info& type);
 	static FunctionDefinition* FindByInternalName(const char* internalName);
 
 	virtual int Load();
@@ -135,7 +136,7 @@ public:
 	const HookSystem::ArgData *GetArgData() const {return _argdata;}
 	int GetArgCount() const {return _nArgs;}
 	void *GetAddress() const {return _address;}
-	inline bool CanHook() { return _canHook; }
+	inline bool CanHook() const { return _canHook; }
 	inline void SetCanHook(bool canHook) { _canHook = canHook; }
 
 	static void UpdateHooksStateFromJSON(const char* json);
@@ -177,7 +178,7 @@ protected:
 	int _priority;
 
 	MologieDetours::Detour<void*> *_detour = nullptr;
-	
+
 public:
 	static int Init();
 	static const char *GetLastError();
