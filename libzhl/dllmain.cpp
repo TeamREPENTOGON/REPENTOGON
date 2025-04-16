@@ -27,8 +27,14 @@ void __stdcall SanityCheckInitZHL() {
  */
 void HookMain() {
 	SigScan scan("32d2b9????????e84cd51000");
-	if (!scan.Scan() || !loaderFinish)
+	if (!scan.Scan()) {
+		ZHL::Log("[CRITICAL][HookMain] main was not found in the executable\n");
 		return;
+	}
+
+	if (!loaderFinish) {
+		ZHL::Log("[CRITICAL][HookMain] No termination hook given\n");
+	}
 
 	void* addr = scan.GetAddress();
 	char* movOffsetAddr = (char*)addr + 0x3;
