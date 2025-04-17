@@ -12,6 +12,8 @@
 #include "REPENTOGONOptions.h"
 #include "Patches/ASMPatches.h"
 #include "LuaInterfaces/LuaRender.h"
+#include <UserEnv.h>
+#pragma comment(lib, "userenv.lib")
 
 /********************************************************************************
 HOOKING
@@ -111,6 +113,25 @@ static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_
 	memcpy(ar->short_src, debug.short_src, LUA_IDSIZE);
 	ar->i_ci = debug.i_ci;
 	return result;
+}
+
+std::string GetUserPath() {
+	HANDLE token = nullptr;
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) {
+		return {};
+	}
+
+	DWORD size = MAX_PATH;
+	std::string path(size, '\0'); // Reserve space
+	if (!GetUserProfileDirectoryA(token, &path[0], &size)) {
+		CloseHandle(token);
+		return {};
+	}
+
+	CloseHandle(token);
+	path.resize(strlen(path.c_str())); // Trim nulls
+
+	return path;
 }
 
 static void FixLuaDump()
