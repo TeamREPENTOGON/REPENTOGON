@@ -11,9 +11,11 @@
 #include <optional>
 #include "document.h" // rapidjson
 
+extern std::string GetUserPath();
+
 namespace REPENTOGON {
 	static auto gameStartTime = std::chrono::high_resolution_clock::now();
-	static std::string optionsPath(std::string((char*)&g_SaveDataPath) + "Repentogon/");
+	static std::string optionsPath(GetUserPath() + "/Documents/My Games/Binding of Isaac Repentance+/Repentogon/");
 	extern char stocktitle[256];
 	extern char moddedtitle[256];
 
