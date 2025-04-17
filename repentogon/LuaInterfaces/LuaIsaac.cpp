@@ -443,15 +443,6 @@ LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_IsaacClearBossHazards) {
-	if (g_Game == nullptr || g_Game->_room == nullptr) {
-		return luaL_error(L, "Must be in a room to use this!");
-	}
-	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);
-	Isaac::ClearBossHazards(ignoreNPCs);
-	return 0;
-}
-
 LUA_FUNCTION(Lua_IsaacFindInCapsule)
 {
 	Room* room = g_Game->GetCurrentRoom();
@@ -776,7 +767,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	// new functions
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearBossHazards", Lua_IsaacClearBossHazards);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawQuad", Lua_DrawQuad);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawLine", Lua_DrawLine);

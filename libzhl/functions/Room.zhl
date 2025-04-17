@@ -107,6 +107,9 @@ __thiscall void Room::TriggerRedRoomCreated(int param_1, RoomDescriptor* RoomDes
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 */
 
+"558bec83ec288b45??538b5a":
+static cleanup int Room::GetItemPool(uint32_t seed<ecx>, RoomDescriptor* roomDesc<edx>, int boss);
+
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
@@ -128,22 +131,16 @@ __thiscall void Room::SpawnGreedModeWave(bool unusedBool);
 "558bec83e4f851538b5d??56578bf9":
 __thiscall void Room::TriggerOutput(unsigned int outputGroupdIdx);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, KColor, ColorMod, Backdrop, Vector) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }
 	inline bool GetRedHeartDamage() { return this->_redHeartDamage; }
 	inline EntityList* GetEntityList() { return &this->_entityList; }
-	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1b10); } // doing this the lazy way while FXLayers isn't exposed
+	inline FXParams* GetFXParams() { return &this->_fxLayers._fxParams; }
 	inline float* GetWaterAmount() { return &this->_waterAmount; }
 	inline KColor* GetWaterColor() { return &this->_waterColor; }
 	inline KColor* GetWaterColorMultiplier() { return &this->_waterColorMultiplier; }
-	
-	// Initially, the base water color was erroneously defined as a Color and not a KColor occupying 0x7168. Color takes more bytes in memory.
-	// Due to this, when setting the color, some arbitrary bytes ahead of the water color were being set.
-	// While the true nature of these bytes aren't yet understood, the one at 0x7178 seems to control whether water color is rendered.
-	
-	// REP+ Figure out what this is/was and update offset
-	inline int* GetUnknownWaterInt() { return (int*)((char*)this + 0x7178 ); }
+	inline int* GetWaterLerpColorMultiplier() { return &this->_waterLerpColorDuration; }
 	
 	inline ColorMod* GetFloorColor() { return &this->_floorColor; }
 	inline TemporaryEffects* GetTemporaryEffects() {return &this->_temporaryEffects; }
@@ -172,12 +169,17 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	Backdrop _backdrop : 0x1bc8;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
+	FXLayers _fxLayers: 0x1618;
 	deque_ShopRestockDesc _shopItemDeque : 0x7070;
 	int _slowdownDuration : 0x7220;
 	int _greedWaveTimer : 0x723c;
 	float _waterAmount : 0x7240;
 	KColor _waterColor : 0x7244;
 	KColor _waterColorMultiplier : 0x7258;
+	KColor _waterLerpTargetColor : 0x726c;
+	KColor _waterLerpTargetColorMult : 0x7280;
+	int _waterLerpColorDuration: 0x7294;
+	int _waterLerpColorCountdown: 0x7298;
 	bool _pacifist : 0x72a1;
 	ColorMod _floorColor : 0x72a4;
 	ColorMod _wallColor : 0x72d0;

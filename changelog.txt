@@ -21,6 +21,11 @@ Additions:
 	- [Get/Set]RockBottomShotSpeed
 	- [Get/Set]RockBottomLuck
 	- GetPlayerHUD
+	- [Get/Set]SuplexState
+	- [Get/Set]SuplexAimCountdown
+	- [Get/Set]SuplexTargetPosition
+	- [Get/Set]SuplexLandPosition
+	- CreateAfterimage
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -32,6 +37,10 @@ Additions:
 * PlayerManager:
 	- GetRandomCollectibleOwner
 	- GetRandomTrinketOwner
+* ItemPool:
+	- AddCollectible
+	- AddTemporaryCollectible
+	- RemoveTemporaryCollectible
 * HUD:
 	- GetStackedStreakSprite
 	- GetPlayerStreakSprite
@@ -40,6 +49,15 @@ Additions:
 	- GetLayout
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
+* RoomConfig:
+	- AddRooms
+* RoomConfigSet:
+	- AddRooms
+*FXLayers:
+	- AddPoopFx(ColorMod Color)
+* CharacterMenu
+	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
+		Tainted boolean defaults to current menu if unspecified.
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
@@ -108,6 +126,8 @@ Fixes:
 	- Fixed StartBossIntro crash on call if room index for room transition is invalid.
 * ModCallbacks:
 	- Fixed returning false on MC_PRE_PLAYER_ADD_CARD/PILL not preventing the card/pill being added as intended.
+* XMLData:
+	- Fixed an isue with ModData not displaying the extra REPENTOGON attributes (enabled/fulldirectory/etc)
 /newline/
 Modified:
 * EntityFamiliar:

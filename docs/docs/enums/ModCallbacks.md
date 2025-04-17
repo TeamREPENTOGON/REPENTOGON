@@ -2257,7 +2257,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1032 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
+|1033 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
 
 ### MC_POST_BOSS_INTRO_SHOW {: .copyable }
 Accepts no return parameters.
@@ -2416,7 +2416,7 @@ Return an integer to override the target room index.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1290 |MC_PRE_FORTUNE_DISPLAY {: .copyable } | (int RoomIndex, bool IAmErrorRoom, int Seed) | - | int |
+|1290 |MC_PRE_GET_RANDOM_ROOM_INDEX {: .copyable } | (int RoomIndex, bool IAmErrorRoom, int Seed) | - | int |
 
 ### MC_PRE_GLOWING_HOURGLASS_SAVE {: .copyable }
 Called after the Glowing Hourglass state is saved.

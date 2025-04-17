@@ -213,6 +213,30 @@ LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterID)
 	return 0;
 }
 
+LUA_FUNCTION(lua_CharMenu_GetPlayerTypeFromCharacterMenuID)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
+	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
+
+	const int menuID = (int)luaL_checkinteger(L, 1);
+	const bool tainted = lua::luaL_optboolean(L, 2, menu->GetSelectedCharacterMenu() == 1);
+
+	if (menuID <= 0) {
+		lua_pushnil(L);
+	} else if (menuID < 18) {
+		const int pType = __ptr_g_MenuCharacterEntries[tainted ? (menuID + 18) : menuID].playerType;
+		lua_pushinteger(L, pType);
+	} else if (menuID - 18 < (int)g_ModCharacterMap.size()) {
+		const auto& modChar = g_ModCharacterMap[menuID - 18];
+		const int pType = tainted ? modChar.tainted : modChar.normal;
+		lua_pushinteger(L, pType);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 LUA_FUNCTION(lua_CharMenu_GetCharacterWheelDepth)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
@@ -308,6 +332,7 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "SetDifficulty", lua_CharMenu_SetDifficulty);
 	lua::TableAssoc(L, "GetSelectedCharacterID", lua_CharMenu_GetSelectedCharacterID);
 	lua::TableAssoc(L, "SetSelectedCharacterID", lua_CharMenu_SetSelectedCharacterID);
+	lua::TableAssoc(L, "GetPlayerTypeFromCharacterMenuID", lua_CharMenu_GetPlayerTypeFromCharacterMenuID);
 	lua::TableAssoc(L, "GetCharacterWheelDepth", lua_CharMenu_GetCharacterWheelDepth);
 	lua::TableAssoc(L, "SetCharacterWheelDepth", lua_CharMenu_SetCharacterWheelDepth);
 	lua::TableAssoc(L, "GetScrollSpeed", lua_CharMenu_GetScrollSpeed);

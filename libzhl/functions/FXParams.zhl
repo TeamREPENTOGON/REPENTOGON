@@ -1,8 +1,7 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b8dc020100":
 __thiscall FXParams* FXParams::Init();
 
-struct FXParams depends (KColor, ColorMod, ColorModState) { {{
-	inline ColorModState* GetColorModifier() { return &this->ColorModifier; }
+struct FXParams depends (KColor, ColorMod, KColor) { {{
 	inline bool* GetWaterV2() { return &this->useWaterV2; }
 	inline KColor* GetWaterColor() { return &this->waterColor; }
 	inline KColor* GetWaterColorMultiplier() { return &this->waterColorMultiplier; }
@@ -11,7 +10,9 @@ struct FXParams depends (KColor, ColorMod, ColorModState) { {{
 	inline KColor* GetLightColor() { return &this->lightColor; }
 	inline ColorMod* GetWaterEffectColor() { return &this->waterEffectColor; }
 }}
-	ColorModState ColorModifier : 0x0;
+	KColor roomColor : 0x0;
+	float brightness : 0x14;
+	float contrast : 0x18;
 	bool useWaterV2 : 0x1c;
 	KColor waterColor : 0x20, waterColorMultiplier : 0x34;
 	float shadowAlpha : 0x48;

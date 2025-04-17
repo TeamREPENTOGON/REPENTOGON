@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/VirtualRoomSets.h"
 
 LUA_FUNCTION(Lua_RoomConfigStageGetBackdrop)
 {
@@ -47,8 +48,13 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 		return luaL_error(L, "Invalid RoomSet mode %d", mode);
 	}
 	
-	RoomSet** ud = (RoomSet**)lua_newuserdata(L, sizeof(RoomSet*));
-	*ud = &stage->_rooms[mode];
+	auto& roomSet = stage->_rooms[mode];
+	if (!roomSet._loaded)
+	{
+		g_Game->GetRoomConfig()->LoadStageBinary(stage->_id, mode);
+	}
+	VirtualRoomSetManager::RoomSet** ud = (VirtualRoomSetManager::RoomSet**)lua_newuserdata(L, sizeof(VirtualRoomSetManager::RoomSet*));
+	*ud = &VirtualRoomSetManager::GetRoomSet(stage->_id, mode);
 	luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
 
 	return 1;
@@ -158,14 +164,6 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSetLoaded)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_RoomConfigStageUnload)
-{
-	RoomConfig_Stage* stage = *lua::GetRawUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	stage->unload();
-
-	return 0;
-}
-
 static void RegisterRoomConfigStage(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetBackdrop", Lua_RoomConfigStageGetBackdrop },
@@ -185,7 +183,6 @@ static void RegisterRoomConfigStage(lua_State* L) {
 		{ "GetXMLName", Lua_RoomConfigStageGetXMLName },
 		{ "SetXMLName", Lua_RoomConfigStageSetXMLName },
 		{ "IsLoaded", Lua_RoomConfigStageGetRoomSetLoaded },
-		{ "Unload", Lua_RoomConfigStageUnload },
 		{ NULL, NULL }
 	};
 

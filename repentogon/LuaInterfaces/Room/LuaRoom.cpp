@@ -98,6 +98,7 @@ LUA_FUNCTION(Lua_RoomGetFloorColor)
 	return 1;
 }
 
+//[get/set] not actual color
 LUA_FUNCTION(Lua_RoomGetWaterColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -112,12 +113,13 @@ LUA_FUNCTION(Lua_RoomSetWaterColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetUnknownWaterInt() = 1; // See Room.zhl for more info
-	*room->GetWaterColor() = *color;
+	*room->GetWaterLerpColorMultiplier() = 1; // See Room.zhl for more info
+	room->_waterLerpTargetColor = *color;
 
 	return 0;
 }
 
+//[get/set] not actual color mult
 LUA_FUNCTION(Lua_RoomGetWaterColorMultiplier)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -132,8 +134,8 @@ LUA_FUNCTION(Lua_RoomSetWaterColorMultiplier)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	*room->GetUnknownWaterInt() = 1;
-	*room->GetWaterColorMultiplier() = *color;
+	*room->GetWaterLerpColorMultiplier() = 1;
+	room->_waterLerpTargetColorMult = *color;
 
 	return 0;
 }
@@ -270,15 +272,20 @@ LUA_FUNCTION(Lua_RoomColorModifierUpdate)
 	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
-	ColorModState* pColor;
+	ColorModState pColor;
 	if (process) {
-		pColor = &room->ComputeColorModifier();
+		pColor = room->ComputeColorModifier();
+		
 	}
 	else {
-		pColor = room->GetFXParams()->GetColorModifier();
+		// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+		// This logic provides backwards compatability.
+		FXParams* fx = room->GetFXParams();
+		KColor* c = &fx->roomColor;
+		pColor = ColorModState(c->_red, c->_green, c->_blue, c->_alpha, fx->brightness, fx->contrast);
 	}
 
-	g_Game->SetColorModifier(pColor, lerp, rate);
+	g_Game->SetColorModifier(&pColor, lerp, rate);
 	return 0;
 }
 
@@ -418,65 +425,20 @@ LUA_FUNCTION(Lua_RoomSetItemPool) {
 	return 0;
 }
 
-inline int TrySpecialPool(Room* room) {
-	const uint32_t roomType = room->_roomType;
-
-	if (room->_bossId == BOSS_FALLEN) {
-		return ROOM_DEVIL;
-	}
-
-	if (roomType == ROOM_BOSS) {
-		if (*g_Game->GetLevelStateFlags() & (1 << 17)) {
-			return ROOM_DEVIL;
-		}
-		return roomType;
-	}
-
-	if (roomType == ROOM_TREASURE) {
-		if (g_Game->IsGreedMode() && (room->_descriptor->GridIndex != g_Game->_greedModeTreasureRoomIdx)) {
-			return ROOM_BOSS;
-		}
-		if (room->_descriptor->Flags & (1 << 11)) {
-			return ROOM_DEVIL;
-		}
-		return roomType;
-	}
-
-	if (roomType == ROOM_CHALLENGE && (room->_descriptor->Data->Subtype == 1)) {
-		return ROOM_BOSS;
-	}
-
-	return roomType;
-}
-
 LUA_FUNCTION(Lua_RoomGetItemPool) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
 	seed = seed != 0 ? seed : 1;
 	bool raw = lua::luaL_optboolean(L, 3, false);
 
-	const RoomConfig_Room* roomData = room->_descriptor->Data;
-	if (g_Manager->_starting || roomData == nullptr)
+	if (raw)
 	{
-		lua_pushinteger(L, POOL_NULL);
-		return 1;
-	}
-
-	if (roomASM.ItemPool != POOL_NULL || raw) {
 		lua_pushinteger(L, roomASM.ItemPool);
 		return 1;
 	}
 
-	if ((roomData->Type == ROOM_DEFAULT) && (roomData->StageId == STB_HOME) && roomData->Subtype == 2) {
-		lua_pushinteger(L, POOL_MOMS_CHEST);
-		return 1;
-	}
-
-	uint32_t roomType = TrySpecialPool(room);
-	int poolType = g_Game->_itemPool.GetPoolForRoom(roomType, seed);
-	poolType = poolType != POOL_NULL ? poolType : POOL_TREASURE;
-
-	lua_pushinteger(L, poolType);
+	int itemPool = Room::GetItemPool(seed, room->_descriptor, 0);
+	lua_pushinteger(L, itemPool);
 	return 1;
 }
 
@@ -493,13 +455,12 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	}
 }
 
-/*HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int) {
+HOOK_STATIC(Room, GetItemPool, (uint32_t seed, RoomDescriptor* roomDesc, int bossId) -> int, __cdecl) {
 	if (roomASM.ItemPool != POOL_NULL) {
-		return g_Game->_itemPool.GetCollectible(roomASM.ItemPool, seed, noDecrease, COLLECTIBLE_NULL);
+		return roomASM.ItemPool;
 	}
-	return super(seed, noDecrease);
+	return super(seed, roomDesc, bossId);
 }
-*/
 
 LUA_FUNCTION(Lua_RoomGetWallColor) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -516,6 +477,18 @@ LUA_FUNCTION(Lua_RoomTriggerOutput) {
 	}
 
 	room->TriggerOutput(output);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomClearBossHazards) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Entity* source = nullptr;
+	const bool excludeNPCs = lua::luaL_optboolean(L, 2, true);
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
+	}
+	// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
+	source->ClearBossHazards(excludeNPCs);
 	return 0;
 }
 
@@ -569,6 +542,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetItemPool", Lua_RoomSetItemPool },
 		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ "TriggerOutput", Lua_RoomTriggerOutput },
+		{ "ClearBossHazards", Lua_RoomClearBossHazards },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

@@ -1,0 +1,5 @@
+struct GameStateBossPool
+{
+    uint32_t _poolSeeds[37] : 0x0;
+    vector_bool _removedBosses : 0x94;
+} : 0xa4;

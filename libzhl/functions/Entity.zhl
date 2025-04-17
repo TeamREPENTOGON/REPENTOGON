@@ -113,6 +113,11 @@ __thiscall bool Entity::DoesEntityShareStatus();
 "558bec568b75??578bf98b4f??81f9e8030000":
 __thiscall WaterClipInfo* Entity::GetWaterClipInfo(WaterClipInfo* out);
 
+// this is Entity_NPC, but Entity is only used to create an EntityRef
+"558bec83ec30a1????????53":
+__thiscall void Entity::ClearBossHazards(bool excludeNPCs);
+
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
 	inline int GetIndex() { return this->_index; }

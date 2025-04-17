@@ -15,10 +15,12 @@ LUA_FUNCTION(Lua_GetFXParams) {
 LUA_FUNCTION(Lua_GetColorModifier)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorModState* color = params->GetColorModifier();
+	// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+	// This logic provides backwards compatability.
+	ColorModState color(params->roomColor._red, params->roomColor._green, params->roomColor._blue, params->roomColor._alpha, params->brightness, params->contrast);
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, color, sizeof(ColorModState));
+	memcpy(toLua, &color, sizeof(ColorModState));
 
 	return 1;
 }
@@ -26,7 +28,15 @@ LUA_FUNCTION(Lua_GetColorModifier)
 LUA_FUNCTION(Lua_SetColorModifier)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetColorModifier() = *lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	// It was discovered in rep+ that FXParams does not actually contain a ColorModState, its KColor+floats, and KColor gained a new field.
+	// This logic provides backwards compatability.
+	ColorModState luacolor = *lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	params->roomColor._red = luacolor.r;
+	params->roomColor._green = luacolor.g;
+	params->roomColor._blue = luacolor.b;
+	params->roomColor._alpha = luacolor.a;
+	params->brightness = luacolor.brightness;
+	params->contrast = luacolor.contrast;
 
 	return 0;
 }

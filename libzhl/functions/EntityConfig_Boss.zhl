@@ -1,4 +1,19 @@
-struct EntityConfig_Boss {
+struct EntityConfig_Boss depends (Vector, EntityConfig_Boss_Alt) {
 	int bossID : 0x0;
 	std_string name : 0x4;
+	std_string namePath : 0x1c;
+	std_string portraitPath : 0x34;
+	Vector pivot : 0x4c;
+	int achievement : 0x54;
+	vector_EntityConfig_Boss_Alt alts : 0x58;
+
+	{{
+		EntityConfig_Boss() noexcept
+		{
+			bossID = 0;
+			pivot.x = 0.0f;
+			pivot.y = 0.0f;
+			achievement = 0;
+		}
+	}}
 } : 0x64;

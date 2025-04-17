@@ -1,0 +1,11 @@
+struct EntityConfig_Boss_Alt {
+	int stageId : 0x0;
+	std_string portraitPath : 0x4;
+
+    {{
+        EntityConfig_Boss_Alt() noexcept
+        {
+            stageId = 0;
+        }
+    }}
+} : 0x1c;

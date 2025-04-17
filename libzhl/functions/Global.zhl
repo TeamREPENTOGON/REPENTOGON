@@ -61,6 +61,7 @@ typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
+typedef std::vector<ModManager_CharacterMap> vector_ModManager_CharacterMap;
 typedef std::list<ModReference> std_list_ModReference;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
@@ -79,11 +80,16 @@ typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 typedef std::vector<WeightedOutcomePicker_Outcome> vector_Outcome;
 typedef std::vector<BossPool_Entry> vector_BossPoolEntry;
 typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
+typedef std::vector<EntityConfig_Boss> vector_EntityConfig_Boss;
+typedef std::vector<EntityConfig_Boss_Alt> vector_EntityConfig_Boss_Alt;
 typedef std::vector<float> std_vector_float;
 typedef std::map<uint32_t, RoomConfig_VariantSet*> std_map_uint_VariantSetPtr;
 typedef std::vector<Devolve> vector_Devolve;
 typedef std::bitset<8> DoorsBitSet;
 typedef std::bitset<8> RoomConfigFlags;
+typedef std::bitset<13> RoomShapeBitset;
+typedef std::deque<AfterImageFrame> deque_afterImageFrames;
+typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
 
 struct PoolItem {
 	uint32_t _itemID = 0;
@@ -2297,7 +2303,9 @@ enum eBossId {
     BOSS_BEAST = 100,
     BOSS_HORNY_BOYS = 101,
     BOSS_CLUTCH = 102,
-    BOSS_CADAVRA = 103
+    BOSS_CADAVRA = 103,
+
+    NUM_BOSSES,
 };
 
 enum eMainMenuType {
@@ -2323,6 +2331,56 @@ enum eMainMenuType {
 	OPTIONSONLINE = 20,
 	CREATELOBBY = 21,
 	ONLINEAWARDS = 22 //sins list
+};
+
+enum eChallenge {
+    CHALLENGE_NULL = 0,
+    CHALLENGE_PITCH_BLACK = 1,
+    CHALLENGE_HIGH_BROW = 2,
+    CHALLENGE_HEAD_TRAUMA = 3,
+    CHALLENGE_DARKNESS_FALLS = 4,
+    CHALLENGE_THE_TANK = 5,
+    CHALLENGE_SOLAR_SYSTEM = 6,
+    CHALLENGE_SUICIDE_KING = 7,
+    CHALLENGE_CAT_GOT_YOUR_TONGUE = 8,
+    CHALLENGE_DEMO_MAN = 9,
+    CHALLENGE_CURSED = 10,
+    CHALLENGE_GLASS_CANNON = 11,
+    CHALLENGE_WHEN_LIFE_GIVES_LEMONS = 12,
+    CHALLENGE_BEANS = 13,
+    CHALLENGE_ITS_IN_THE_CARDS = 14,
+    CHALLENGE_SLOW_ROLL = 15,
+    CHALLENGE_COMPUTER_SAVY = 16,
+    CHALLENGE_WAKA_WAKA = 17,
+    CHALLENGE_THE_HOST = 18,
+    CHALLENGE_THE_FAMILY_MAN = 19,
+    CHALLENGE_PURIST = 20,
+    CHALLENGE_XXXXXXXXL = 21,
+    CHALLENGE_SPEED = 22,
+    CHALLENGE_BLUE_BOMBER = 23,
+    CHALLENGE_PAY_TO_PLAY = 24,
+    CHALLENGE_HAVE_A_HEART = 25,
+    CHALLENGE_I_RULE = 26,
+    CHALLENGE_BRAINS = 27,
+    CHALLENGE_PRIDE_DAY = 28,
+    CHALLENGE_ONANS_STREAK = 29,
+    CHALLENGE_GUARDIAN = 30,
+    CHALLENGE_BACKASSWARDS = 31,
+    CHALLENGE_APRILS_FOOL = 32,
+    CHALLENGE_POKEY_MANS = 33,
+    CHALLENGE_ULTRA_HARD = 34,
+    CHALLENGE_PONG = 35,
+    CHALLENGE_SCAT_MAN = 36,
+    CHALLENGE_BLOODY_MARY = 37,
+    CHALLENGE_BAPTISM_BY_FIRE = 38,
+    CHALLENGE_ISAACS_AWAKENING = 39,
+    CHALLENGE_SEEING_DOUBLE = 40,
+    CHALLENGE_PICA_RUN = 41,
+    CHALLENGE_HOT_POTATO = 42,
+    CHALLENGE_CANTRIPPED = 43,
+    CHALLENGE_RED_REDEMPTION = 44,
+    CHALLENGE_DELETE_THIS = 45,
+    NUM_CHALLENGES = 46,
 };
 
 enum eSeedEffect {
@@ -2397,6 +2455,14 @@ enum eSeedEffect {
     SEED_RETRO_VISION = 78,
     SEED_G_FUEL = 79,
     NUM_SEEDS = 80
+};
+
+enum SuplexState {
+	INACTIVE = 0,	
+	DASHING = 1,
+	AIMING = 2,
+	ASCENDING = 3,	
+	DESCENDING = 4
 };
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed

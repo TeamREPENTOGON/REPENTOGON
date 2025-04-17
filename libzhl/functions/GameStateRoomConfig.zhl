@@ -10,6 +10,7 @@ struct GameStateRoomConfig {
 
         // Custom Flags
         static constexpr uint32_t VIRTUAL_ROOM_FLAG = 1 << 0;
+        static constexpr uint32_t RESTORED_VIRTUAL_ROOM_FLAG = VIRTUAL_ROOM_FLAG; // Use the same as they are mutually exclusive and because we don't have many flags
 
         int GetStageID()
         {

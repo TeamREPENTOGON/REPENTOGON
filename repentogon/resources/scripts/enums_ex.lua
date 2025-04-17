@@ -2884,6 +2884,14 @@ RoomEventOutput = {
 	GROUP_ROOM_CLEAR = 9,
 }
 
+SuplexState = {
+	INACTIVE = 0,	
+	DASHING = 1,
+	AIMING = 2,
+	ASCENDING = 3,	
+	DESCENDING = 4,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include "ItemPoolManager.h"
+#include "VirtualRoomSets.h"
 
 #pragma region Helpers
 
@@ -34,7 +35,13 @@ static GameStateSlot get_game_state_slot(GameState* state) noexcept
 
 static inline bool is_remote_save(GameState* gameState) noexcept
 {
-	return !(gameState->_cloudGameStatePath.empty() || gameState->_cloudRerunStatePath.empty());
+	auto gameStateIOPtr = reinterpret_cast<void**>(gameState->_saveFile);
+	if (!gameStateIOPtr)
+	{
+		return !(gameState->_cloudGameStatePath.empty() || gameState->_cloudRerunStatePath.empty());
+	}
+
+	return *gameStateIOPtr == &SteamCloudFile_vftable;
 }
 
 static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun) noexcept
@@ -42,16 +49,48 @@ static inline std::string get_state_file_name(GameState* gameState, uint32_t sav
 	return (is_remote_save(gameState) ? "remote" : "local") + std::string("_") + (isRerun ? "rerunstate" : "gamestate") + std::to_string(saveSlot);
 }
 
+static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun) noexcept
+{
+	const char* filePath = nullptr;
+	if (io)
+	{
+		filePath = io->GetFilePath();
+	}
+
+	if (!filePath)
+	{
+		if (isRerun)
+		{
+			filePath = !gameState->_cloudRerunStatePath.empty() ? gameState->_cloudRerunStatePath.c_str() : gameState->_localRerunStatePath.c_str();
+		}
+		else
+		{
+			filePath = !gameState->_cloudGameStatePath.empty() ? gameState->_cloudGameStatePath.c_str() : gameState->_localGameStatePath.c_str();
+		}
+	}
+
+	if (!filePath)
+	{
+		return 0;
+	}
+
+	std::string fileName = std::filesystem::path(filePath).stem().string();
+	if (fileName.empty())
+	{
+		return 0;
+	}
+
+	return std::atoi(&fileName.back());
+}
+
 static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun) noexcept
 {
-	std::filesystem::path filePath(io->GetFilePath()); // Cannot really use this as the fileName is not consistent between local and remote files.
-	std::string fileName = filePath.stem().string();
-	if (fileName.empty())
+	uint32_t save_slot = get_state_slot(gameState, io, isRerun);
+	if (!(1 <= save_slot && save_slot <= 3))
 	{
 		return "";
 	}
 
-	uint32_t save_slot = std::atoi(&fileName.back());
 	return get_state_file_name(gameState, save_slot, isRerun);
 }
 
@@ -60,6 +99,7 @@ static inline std::string get_state_file_name(GameState* gameState, GameStateIO*
 static inline void save_game_state(uint32_t slot) noexcept
 {
 	ItemPoolManager::__SaveState(slot);
+	VirtualRoomSetManager::__SaveGameState(slot);
 }
 
 static inline void restore_game_state(uint32_t slot, bool startGame) noexcept
@@ -75,12 +115,18 @@ static inline void clear_game_state(uint32_t slot) noexcept
 static inline bool write_save(const std::string& fileName, bool isRerun) noexcept
 {
 	ItemPoolManager::__SaveToDisk(fileName, isRerun);
+	VirtualRoomSetManager::__WriteSave(fileName, isRerun);
 	return true;
 }
 
 // Return false to invalidate the game state
 static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
 {
+	if (!VirtualRoomSetManager::__ReadSave(fileName, isRerun))
+	{
+		return false;
+	}
+
 	ItemPoolManager::__LoadFromDisk(fileName, isRerun);
 	return true;
 }
@@ -88,6 +134,7 @@ static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
 static inline void delete_save(const std::string& fileName, bool isRerun) noexcept
 {
 	ItemPoolManager::__DeleteGameState(fileName);
+	VirtualRoomSetManager::__DeleteSave(fileName, isRerun);
 }
 
 #pragma region Hooks
@@ -216,15 +263,27 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 
 HOOK_METHOD(GameState, Delete, () -> void)
 {
+	auto fileName = get_state_file_name(this, this->_saveFile, false);
 	super();
-	auto fileName = get_state_file_name(this, g_Manager->_currentSaveSlot, false);
+	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	{
+		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
+		return;
+	}
+
 	delete_save(fileName, false);
 }
 
 HOOK_METHOD(GameState, DeleteRerun, () -> void)
 {
+	auto fileName = get_state_file_name(this, this->_saveFile, true);
 	super();
-	auto fileName = get_state_file_name(this, g_Manager->_currentSaveSlot, true);
+	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	{
+		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
+		return;
+	}
+
 	delete_save(fileName, true);
 }
 #pragma endregion

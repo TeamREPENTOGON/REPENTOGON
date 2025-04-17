@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/VirtualRoomSets.h"
 
 /*LUA_FUNCTION(Lua_GameGetRoomConfig) {
 	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -126,12 +127,37 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfig_AddRooms)
+{
+	uint32_t stageId = (uint32_t)luaL_checkinteger(L, 1);
+	int mode = (int)luaL_checkinteger(L, 2);
+
+	if (0 > stageId || stageId >= NUM_STB)
+	{
+		return luaL_argerror(L, 1, REPENTOGON::StringFormat("invalid stage %d", stageId).c_str());
+	}
+
+	if (-1 > mode || mode > 1)
+	{
+		return luaL_argerror(L, 2, REPENTOGON::StringFormat("invalid mode %d", stageId).c_str());
+	}
+
+	if (!lua_istable(L, 3))
+	{
+		return luaL_argerror(L, 3, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 3, "table").c_str());
+	}
+
+	VirtualRoomSetManager::__AddLuaRooms(L, stageId, mode, 3);
+	return 1;
+}
+
 static void RegisterRoomConfig(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
 	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
+	lua::TableAssoc(L, "AddRooms", Lua_RoomConfig_AddRooms);
 	lua_setglobal(L, "RoomConfig");
 }
 

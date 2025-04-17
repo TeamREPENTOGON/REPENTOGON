@@ -124,9 +124,17 @@ HOOK_METHOD(Entity_Familiar, Init, (unsigned int type, unsigned int variant, uns
 	super(type, variant, subtype, initSeed);
 }
 
-// eco mode stuff begin
-
+// eco mode stuff 
+decltype(&SetProcessInformation) p_SetProcessInformation=0x0;
 void EcoMode_toggle_qos(bool eco_state) {
+	if (p_SetProcessInformation == 0x0) {
+		p_SetProcessInformation = (decltype(&SetProcessInformation))GetProcAddress(GetModuleHandle("kernel32"), "SetProcessInformation");
+		if (!p_SetProcessInformation) {
+			repentogonOptions.ecoMode = false;
+			repentogonOptions.Save();
+			return;
+		}
+	};
 	HANDLE cur_process = GetCurrentProcess();
 	PROCESS_POWER_THROTTLING_STATE PowerThrottling = { 0 };
 	PowerThrottling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
@@ -138,7 +146,8 @@ void EcoMode_toggle_qos(bool eco_state) {
 	else {
 		SetPriorityClass(cur_process, NORMAL_PRIORITY_CLASS);
 	};
-	SetProcessInformation(cur_process, ProcessPowerThrottling, &PowerThrottling, sizeof(PowerThrottling));
+//	SetProcessInformation(cur_process, ProcessPowerThrottling, &PowerThrottling, sizeof(PowerThrottling));
+	p_SetProcessInformation(cur_process, ProcessPowerThrottling, &PowerThrottling, sizeof(PowerThrottling));
 };
 
 bool EcoMode_old_state = 0;
