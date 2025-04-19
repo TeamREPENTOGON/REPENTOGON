@@ -40,6 +40,7 @@ char* achieveemntsxmlpreload = "";
 bool achievsloaded = false;
 
 char* lastmodid = "BaseGame";
+bool didoddxmlpatch = false;
 bool iscontent = false;
 bool isitemmetadata = false;
 bool no = false;
@@ -2329,7 +2330,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 99: //name for mod metadata
-	if (!XMLStuff.ModData->nodes.empty()) { break; }
+	if (didoddxmlpatch) { break; }
 	if (node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		daddy = node->parent();
 		XMLAttributes mod;
@@ -2347,7 +2348,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 		}
 		int idx;
-		if (mod.count("id") <= 0) { mod["id"] = mod["directory"];  }
+		if ((mod.count("id") <= 0) || (XMLStuff.ModData->byid.find(mod["id"]) != XMLStuff.ModData->byid.end())) { mod["id"] = mod["directory"];  }
 
 		if (XMLStuff.ModData->byid.find(mod["id"]) != XMLStuff.ModData->byid.end()) {
 			idx = XMLStuff.ModData->byid[mod["id"]];
@@ -2429,6 +2430,7 @@ void UpdateOddXMLSourceData()
 			XMLStuff.CurseData->nodes[att.first] = node;
 		}
 	}
+	didoddxmlpatch = true;
 }
 
 HOOK_METHOD(Manager, LoadConfigs,()->void) {

@@ -134,6 +134,7 @@ Fixes:
 	- Fixed returning false on MC_PRE_PLAYER_ADD_CARD/PILL not preventing the card/pill being added as intended.
 * XMLData:
 	- Fixed an isue with ModData not displaying the extra REPENTOGON attributes (enabled/fulldirectory/etc)
+	- Fixed an issue with indev or pirated mods with repeated ids not showing up in luamod or in XMLData
 /newline/
 Modified:
 * EntityFamiliar:
