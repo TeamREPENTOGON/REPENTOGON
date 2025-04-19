@@ -10348,7 +10348,16 @@
 <p>If <code>Target</code> is left unspecified, this will recursively copy status effects to all <a href="https://wofsauge.github.io/IsaacDocs/rep/Entity.html#child">Child</a> Entities. <code>Overwrite</code> will additionally remove all other status effects from the target and set the properties of existing effects to match the entity.</p>
 <hr />
 <h3 aria-label="Functions" id="forcecollide">ForceCollide ()<a class="headerlink" href="#forcecollide" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="boolean-forcecollide-entity-entity-boolean-low">boolean ForceCollide ( <a href="Entity.html">Entity</a> Entity, boolean Low )<a class="headerlink" href="#boolean-forcecollide-entity-entity-boolean-low" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="boolean-forcecollide-entity-entity-boolean-force">boolean ForceCollide ( <a href="Entity.html">Entity</a> Entity, boolean Force )<a class="headerlink" href="#boolean-forcecollide-entity-entity-boolean-force" title="Permanent link">⚓︎</a></h4>
+<p>Returns true if the rest of the collision logic should be <strong>Skipped</strong>; either because the entities did not collide in the first place (if <code>Force</code> is false),
+or because one of the entities' internal collision logic decided so (which can be influenced by one of the <code>PRE_COLLISION</code> callbacks).</p>
+<p>if <code>Force</code> is set to false, then the game will check if the entities' <a href="https://wofsauge.github.io/IsaacDocs/rep/Entity.html#entitycollisionclass">EntityCollisionClass</a> are
+compatible and if both entities are not <a href="https://wofsauge.github.io/IsaacDocs/rep/Entity.html#isdead">Dead</a> before triggering the collision.</p>
+<details class="- warning">
+<summary>Collision Logic Changes</summary>
+<p>The collision logic for some entity types changes when forced.<br>
+For example: Slots do not make the player pay the regular prize for activation.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getbaitedcountdown">GetBaitedCountdown ()<a class="headerlink" href="#getbaitedcountdown" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getbaitedcountdown">int GetBaitedCountdown ( )<a class="headerlink" href="#int-getbaitedcountdown" title="Permanent link">⚓︎</a></h4>
