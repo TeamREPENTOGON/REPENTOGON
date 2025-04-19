@@ -614,13 +614,22 @@ HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void
 }
 
 HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount, bool unk) -> void) {	//soul hp
-	if (!CallbackState.test(1009 - 1000)) {
-		super(amount, unk);
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 2, std::nullopt);
+		amount = heartcount.value_or(amount);
 	}
 
-	else {
-		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
-		amount = heartcount.value_or(amount);
+	// Failsafe for the possibility of the forgotten having soul hearts, which is not supposed to happen since AddSoulHearts redirects to The Soul.
+	// In this situation the soul hearts on The Forgotten would be impossible to remove for the same reason.
+	// This was previously only known to happen via the Revive function, which was fixed, but still putting a failsafe here just in case.
+	// Allow "illegal" soul hearts to be removed from the forgotten if they happen to exist. Ideally this should never happen.
+	if (this->GetPlayerType() == PLAYER_THEFORGOTTEN && amount < 0 && this->_soulHearts > 0) {
+		int illegalSoulHearts = this->_soulHearts;
+		this->_soulHearts = 0;
+		if (amount < -illegalSoulHearts) {
+			super(amount + illegalSoulHearts, unk);
+		}
+	} else {
 		super(amount, unk);
 	}
 
@@ -3461,44 +3470,54 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 	return super(slot, config, seed, unk);
 }
 
-//MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
-static bool isMultiShotParamsEvaluating = false;
+// Prevent infinite loops in MC_EVALUATE_MULTI_SHOT_PARAMS
+// If GetMultiShotParams is called while the callback is running for that player/weaponType already,
+// skip the callback and return a vanilla MultiShotParams.
+// (player index -> weapontype)
+static std::unordered_map<int, std::set<int>> _getMultiShotParamsRecursionProtection;
+
+// MC_EVALUATE_MULTI_SHOT_PARAMS (1289)
+// Formerly MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
-	if (isMultiShotParamsEvaluating) // Prevent infinite loop when number of shots was altered
-	{
-		return super(params, weaponType);
-	}
+	std::set<int>* recursionProtection = &_getMultiShotParamsRecursionProtection[this->_playerIndex];
 
 	params = super(params, weaponType);
 
-	isMultiShotParamsEvaluating = true;
-	const int callbackid = 1251;
+	if (recursionProtection->find(weaponType) != recursionProtection->end()) {
+		return params;
+	}
 
-	if (CallbackState.test(callbackid - 1000)) {
+	recursionProtection->insert(weaponType);
+
+	const int legacycallbackid = 1251;
+	const int callbackid = 1289;
+	if (CallbackState.test(callbackid - 1000) || CallbackState.test(legacycallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		Entity_Player* ent = (Entity_Player*)this;
-
-		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+		lua::LuaCaller caller(L);
+		caller.push(callbackid)
 			.push(this->GetPlayerType())
-			.push(ent, lua::Metatables::ENTITY_PLAYER)
-			.call(1);
+			.push(this, lua::Metatables::ENTITY_PLAYER);
+		Weapon_MultiShotParams* luaParams = caller.pushUd<Weapon_MultiShotParams>(lua::metatables::MultiShotParamsMT);
+		*luaParams = *params;
+		lua::LuaResults results = caller.push(weaponType).call(1);
 
-		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
+		if (!results && lua_isuserdata(L, -1)) {
+			auto* ud = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
 
-			if (!opt) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_POST_GET_MULTI_SHOT_PARAMS");
-			}
-			else {
-				*params = *opt;
+			if (!ud) {
+				KAGE::LogMessage(2, "Invalid userdata returned in MC_EVALUATE_MULTI_SHOT_PARAMS!");
+			} else {
+				*params = *ud;
 			}
 		}
 	}
-	isMultiShotParamsEvaluating = false;
+
+	recursionProtection->erase(weaponType);
+
 	return params;
 }
 
@@ -4227,26 +4246,40 @@ HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> v
 
 //MC_PRE/POST_PLAYER_REVIVE (1482)
 HOOK_METHOD(Entity_Player, Revive, () -> void) {
-		const int precallbackid = 1481;
-		if (CallbackState.test(precallbackid - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
+	const int precallbackid = 1481;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-			Entity_Player* ent = (Entity_Player*)this;
+		Entity_Player* ent = (Entity_Player*)this;
 
-			lua::LuaResults lua_result = lua::LuaCaller(L).push(precallbackid)
-				.push(this->GetPlayerType())
-				.push(ent, lua::Metatables::ENTITY_PLAYER)
-				.call(1);
+		lua::LuaResults lua_result = lua::LuaCaller(L).push(precallbackid)
+			.push(this->GetPlayerType())
+			.push(ent, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
 
-			if (!lua_result && lua_isboolean(L, -1) && lua_toboolean(L, -1) == false) {
-				return;
-			}
+		if (!lua_result && lua_isboolean(L, -1) && lua_toboolean(L, -1) == false) {
+			return;
 		}
+	}
 
 	super();
+
+	if (this->GetPlayerType() == PLAYER_THEFORGOTTEN) {
+		// This function can leave the forgotten with half a soul heart, despite
+		// it normally being impossible for the forgotten to have soul hearts.
+		// (For vanilla revives the health is changed after Revive is called.)
+		// This results in the half soul heart being impossible to remove, as
+		// AddSoulHearts always redirects to The Soul.
+		// Fix the forgotten's health here to revive them with an empty bone heart.
+		this->_soulHearts = 0;
+		if (this->_boneHearts < 1) {
+			this->_boneHearts = 1;
+			this->_boneHeartsMask = 1;
+		}
+	}
 
 	const int postcallbackid = 1482;
 	if (CallbackState.test(postcallbackid - 1000)) {

@@ -2465,6 +2465,25 @@ enum SuplexState {
 	DESCENDING = 4
 };
 
+enum CacheFlag {
+	CACHE_DAMAGE = 0x1,
+	CACHE_FIREDELAY = 0x2,
+	CACHE_SHOTSPEED = 0x4,
+	CACHE_RANGE = 0x8,
+	CACHE_SPEED = 0x10,
+	CACHE_TEARFLAG = 0x20,
+	CACHE_TEARCOLOR = 0x40,
+	CACHE_FLYING = 0x80,
+	CACHE_WEAPON = 0x100,
+	CACHE_FAMILIARS = 0x200,
+	CACHE_LUCK = 0x400,
+	CACHE_SIZE = 0x800,
+	CACHE_COLOR = 0x1000,
+	CACHE_PICKUP_VISION = 0x2000,
+	CACHE_ALL = 0xFFFF,
+	CACHE_TWIN_SYNC = 0x80000000,
+};
+
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
 }}

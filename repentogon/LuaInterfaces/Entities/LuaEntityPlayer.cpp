@@ -2708,6 +2708,84 @@ LUA_FUNCTION(Lua_PlayerSetRockBottomLuck) {
 	return 0;
 }
 
+static const int candyHeartSoulLocketStats[6] = { CACHE_DAMAGE, CACHE_FIREDELAY, CACHE_RANGE, CACHE_SHOTSPEED, CACHE_SPEED, CACHE_LUCK };
+static const std::string candyHeartSoulLocketStatNames[6] = { "Damage", "FireDelay", "TearRange", "ShotSpeed", "MoveSpeed", "Luck"};
+
+static void AddCandyHeartSoulLocketBonus(Entity_Player* plr, const bool isSoulLocket, int cacheFlags, const int amount) {
+	cacheFlags = cacheFlags & CACHE_ALL;
+	if (cacheFlags <= 0) {
+		cacheFlags = candyHeartSoulLocketStats[plr->GetCollectibleRNG(isSoulLocket ? COLLECTIBLE_SOUL_LOCKET : COLLECTIBLE_CANDY_HEART)->RandomInt(6)];
+	}
+
+	bool evaluateItems = false;
+
+	for (int i = 0; i < 6; i++) {
+		if (cacheFlags & candyHeartSoulLocketStats[i]) {
+			if (isSoulLocket) {
+				plr->_soulLocketStatUps[i] = (uint16_t)std::clamp(plr->_soulLocketStatUps[i] + amount, 0, 0xFFFF);
+			} else {
+				plr->_candyHeartStatUps[i] = (uint16_t)std::clamp(plr->_candyHeartStatUps[i] + amount, 0, 0xFFFF);
+			}
+			evaluateItems = true;
+		}
+	}
+
+	if (evaluateItems) {
+		plr->AddCacheFlags(cacheFlags);
+		plr->EvaluateItems();
+	}
+}
+
+LUA_FUNCTION(Lua_PlayerGetCandyHeartBonus) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_newtable(L);
+	for (int i = 0; i < 6; i++) {
+		lua_pushstring(L, candyHeartSoulLocketStatNames[i].c_str());
+		lua_pushinteger(L, plr->_candyHeartStatUps[i]);
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddCandyHeartBonus) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int cacheFlags = (int)luaL_optinteger(L, 2, 0);
+	int amount = (int)luaL_optinteger(L, 3, 1);
+
+	if (amount != 0) {
+		AddCandyHeartSoulLocketBonus(plr, false, cacheFlags, amount);
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSoulLocketBonus) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_newtable(L);
+	for (int i = 0; i < 6; i++) {
+		lua_pushstring(L, candyHeartSoulLocketStatNames[i].c_str());
+		lua_pushinteger(L, plr->_soulLocketStatUps[i]);
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddSoulLocketBonus) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int cacheFlags = (int)luaL_optinteger(L, 2, 0);
+	int amount = (int)luaL_optinteger(L, 3, 1);
+
+	if (amount != 0) {
+		AddCandyHeartSoulLocketBonus(plr, true, cacheFlags, amount);
+	}
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetPlayerHUD) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
@@ -3055,6 +3133,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRockBottomShotSpeed", Lua_PlayerSetRockBottomShotSpeed },
 		{ "GetRockBottomLuck", Lua_PlayerGetRockBottomLuck },
 		{ "SetRockBottomLuck", Lua_PlayerSetRockBottomLuck },
+		{ "GetCandyHeartBonus", Lua_PlayerGetCandyHeartBonus },
+		{ "AddCandyHeartBonus", Lua_PlayerAddCandyHeartBonus },
+		{ "GetSoulLocketBonus", Lua_PlayerGetSoulLocketBonus },
+		{ "AddSoulLocketBonus", Lua_PlayerAddSoulLocketBonus },
 		{ "GetPlayerHUD", Lua_PlayerGetPlayerHUD },
 		{ "GetSuplexState", Lua_PlayerGetSuplexState },
 		{ "SetSuplexState", Lua_PlayerSetSuplexState },

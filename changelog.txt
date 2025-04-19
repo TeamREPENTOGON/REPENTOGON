@@ -26,6 +26,8 @@ Additions:
 	- [Get/Set]SuplexTargetPosition
 	- [Get/Set]SuplexLandPosition
 	- CreateAfterimage
+	- [Add/Get]CandyHeartBonus
+	- [Add/Get]SoulLocketBonus
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -96,6 +98,8 @@ Additions:
 		Fires at the start of challenge/boss rush room wave
 	- MC_POST_START_GREED_WAVE
 		(add description later)
+	- MC_EVALUATE_MULTI_SHOT_PARAMS
+		Replacement for the legacy MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS that passes along a mutable MultiShotParams and allows all mods to modify it.
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
@@ -115,6 +119,8 @@ Fixes:
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
 * Fixed Isaac.SetIcon sometimes failing after being called too many times.
 * Players can no longer get stuck with buggy heart containers when changed to soul/bone heart health types (they get converted by default).
+* Fixed player:Revive reviving The Forgotten with a bugged half soul heart that cannot be removed.
+* Fixed a possible error when a lua error occurs during a custom callback that uses a table as its callback ID.
 * EntityPlayer:
 	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
 * ItemConfig_Costume:
@@ -146,6 +152,8 @@ Modified:
 	- MC_PRE_MOD_UNLOAD(Mod, bool ShuttingDown)
 		Added boolean argument that identifies if it is running due to game shutdown
 		Now runs earlier during shutdown, so code is less likely to crash
+	- MC_POST_CURSE_EVAL
+		Returning a value will now pass the modified curse mask along to the next callback instead of ending the callback early.
 * reloadshaders command will now reload custom anm2 shaders
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
 * Daily goal path icon will now be displayed on Mega Satan daily runs.

@@ -822,7 +822,7 @@ local function logError(callbackID, modName, err)
 
 	history = table.concat(history, "\n"):reverse()
 
-	local cbName = callbackIDToName[callbackID] or callbackID
+	local cbName = callbackIDToName[callbackID] or tostring(callbackID)
 	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' .. err
 
 	-- We add a \n to our comparison to account for the parsed history having one.
@@ -1343,6 +1343,29 @@ local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ..
 	return pillCard
 end
 
+local function IsValidMultiShotParams(params)
+	return params ~= nil and type(params) == "userdata" and GetMetatableType(params) == "MultiShotParams"
+end
+
+local function RunGetMultiShotParamsCallback(_, param, player, multiShotParams, ...)
+	-- Run legacy callback first (didn't pass a modifiable MultiShotParams along, incentivised recursing GetMultiShotParams
+	-- inside the callback, returning a MultiShotParams terminated the callback and made it hard for multiple mods to modify).
+	-- Replacing it was cleaner for backwards compatability's sake, and we can just run the legacy callbacks here with no extra C jumps.
+	local legacyResult = Isaac.RunCallbackWithParam(ModCallbacks.MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS, param, player)
+	if IsValidMultiShotParams(legacyResult) then
+		multiShotParams = legacyResult
+	end
+	
+	for callback in GetCallbackIterator(ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS, param) do
+		local ret = RunCallbackInternal(ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS, callback, player, multiShotParams, ...)
+		if IsValidMultiShotParams(ret) then
+			multiShotParams = ret
+		end
+	end
+	
+	return multiShotParams
+end
+
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
 function _RunPreRenderCallback(callbackID, param, mt, value, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
@@ -1496,6 +1519,8 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 -- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
 local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
+	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,

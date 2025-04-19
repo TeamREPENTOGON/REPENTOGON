@@ -749,6 +749,8 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _hallowedGroundCountdown : 0x1d74;
 	int _brokenHearts : 0x1d84;
 	int _rottenHearts : 0x1d88;
+	uint16_t _candyHeartStatUps[6] : 0x1d94;
+	uint16_t _soulLocketStatUps[6] : 0x1da0;
 	int _numGigaBombs : 0x1db8;
 	History _history : 0x1dd0;
 	deque_afterImageFrames _afterImageFrames : 0x1e30;
