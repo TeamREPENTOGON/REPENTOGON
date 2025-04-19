@@ -28,6 +28,8 @@ Additions:
 	- CreateAfterimage
 	- [Add/Get]CandyHeartBonus
 	- [Add/Get]SoulLocketBonus
+	- GetTearsCap
+	- GetStatMultiplier
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -43,6 +45,9 @@ Additions:
 	- AddCollectible
 	- AddTemporaryCollectible
 	- RemoveTemporaryCollectible
+* ItemConfig_Item:
+	- Add/RemoveCustomTag
+	- Add/RemoveCustomCacheTag
 * HUD:
 	- GetStackedStreakSprite
 	- GetPlayerStreakSprite
@@ -55,7 +60,7 @@ Additions:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
-*FXLayers:
+* FXLayers:
 	- AddPoopFx(ColorMod Color)
 * CharacterMenu
 	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
@@ -98,13 +103,21 @@ Additions:
 		Fires at the start of challenge/boss rush room wave
 	- MC_POST_START_GREED_WAVE
 		(add description later)
-	- MC_EVALUATE_MULTI_SHOT_PARAMS
+	- MC_EVALUATE_MULTI_SHOT_PARAMS(EntityPlayer, MultiShotParams, WeaponType)
+		Optional param: PlayerType
 		Replacement for the legacy MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS that passes along a mutable MultiShotParams and allows all mods to modify it.
+	- MC_EVALUATE_STAT(EntityPlayer, EvaluateStatStage stat, float currentValue)
+		Optional param: EvaluateStatStage
+		Used to modify intermediate values of player stat calculations.
+		Currently supported: EvaluateStatStage.TEARS_UP, EvaluateStatStage.FLAT_TEARS, EvaluateStatStage.DAMAGE_UP, EvaluateStatStage.FLAT_DAMAGE
+		NOTE: Unless you need to perform complicated conditions/calculations, it is strongly suggested that you use the new XML item stats features instead of this callback!
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
 	- PlayerHUDLayout
 	- RoomEventOutput
+	- CustomCacheTag
+	- EvaluateStatStage
 * Room:
 	- GetWallColor()
 * Isaac:
@@ -114,6 +127,17 @@ Additions:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 * Added the following customcache for items.xml:
 	* "healthtype" - Re-evaluate the player's HealthType
+	* "tearscap" - Re-evaluate the player's maximum tears-per-second before flat modifiers and multipliers. Triggers a CACHE_FIREDELAY eval when changed.
+	* "statmultiplier" - Re-evaluate the multiplier on the player's stats gained from items (the same one used for Cracked Crown and Tainted Bethany). Triggers standard cache evals for the relevant stats when changed.
+* Stats can now be assigned to collectibles, trinkets and nulls in items.xml! These stat modifications will behave identically to those from most vanilla items that modify those stats.
+	- For example:
+		tears="0.7" will behave like Sad Onion
+		flattears="0.5" will behave like Pisces
+		damage="1" will behave like Pentagram
+		flatdamage="2" will behave like Curved Horn
+	- Supported: tears, flattears, damage, flatdamage, shotspeed, speed, range, luck
+	- Prepend "effect" to assign the stat change to the corresponding TemporaryEffect instead (ie: effecttears="0.7") (this is particularly relevant for active items)
+	- The corresponding "cache" values are automatically added to the item, so you don't need to specify those as well.
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
@@ -123,6 +147,7 @@ Fixes:
 * Fixed a possible error when a lua error occurs during a custom callback that uses a table as its callback ID.
 * EntityPlayer:
 	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
+	- Fixed SetFootprintColor crashing
 * ItemConfig_Costume:
 	- Fixed SkinColor attribute (now provides a valid int and can be modified)
 * Level:
@@ -132,10 +157,26 @@ Fixes:
 	- Fixed StartBossIntro crash on call if room index for room transition is invalid.
 * ModCallbacks:
 	- Fixed returning false on MC_PRE_PLAYER_ADD_CARD/PILL not preventing the card/pill being added as intended.
+	- Fixed the float DamageAmount attribute in MC(_POST)_GRID_HURT_DAMAGE
+	- Fixed MC_POST_ENTITY_TAKE_DMG sometimes providing 0 for players
+	- Fixed MC_PRE/POST_GRID_ENTITY_TELEPORTER_RENDER not running
+	- Fixed the position passed by MC_PRE/POST_PLAYERHUD_RENDER_HEARTS for co-op Esaus in REP+
 * XMLData:
 	- Fixed an isue with ModData not displaying the extra REPENTOGON attributes (enabled/fulldirectory/etc)
 	- Fixed an issue with indev or pirated mods with repeated ids not showing up in luamod or in XMLData
-/newline/
+* ImGui:
+	- Fixed RemoveElement not working on elements created with AddInputColor.
+	- Fixed Render callbacks of window elements being executed even if the window is not visible
+	- Fixed ImGui closing unexpectedly when pressing enter and the console window is not enabled
+	- Fixed ImGui.ImGuiToWorld() and ImGui.WorldToImGui() calls not taking the position arguments as intended
+* Pathfinder:
+	- Many methods that did not work properly have been fixed
+	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes
+	- (EntityNPC.Pathfinder has been left unaffected for existing mod compatibility)
+* GridEntity
+	- Fixed HurtDamage crashing
+* Misc:
+	- Modded characters locked behind achievements no longer appear in the local co-op wheel.
 Modified:
 * EntityFamiliar:
 	- GetPathFinder -> GetPathfinder
@@ -158,27 +199,21 @@ Modified:
 * reloadshaders command will now reload custom anm2 shaders
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
+/newline/
+/versionseparator/
+v1.0.12.e -
 Fixes:
-* ImGui:
-	- Fixed RemoveElement not working on elements created with AddInputColor.
-	- Fixed Render callbacks of window elements being executed even if the window is not visible
-	- Fixed ImGui closing unexpectedly when pressing enter and the console window is not enabled
-	- Fixed ImGui.ImGuiToWorld() and ImGui.WorldToImGui() calls not taking the position arguments as intended
-* Pathfinder:
-	- Many methods that did not work properly have been fixed
-	- Use Entity[Familiar/NPC]:GetPathfinder to access these fixes
-	- (EntityNPC.Pathfinder has been left unaffected for existing mod compatibility)
-* GridEntity
-	- Fixed HurtDamage crashing
-* EntityPlayer
-	- Fixed SetFootprintColor crashing
-* ModCallbacks
-	- Fixed the float DamageAmount attribute in MC(_POST)_GRID_HURT_DAMAGE
-	- Fixed MC_POST_ENTITY_TAKE_DMG sometimes providing 0 for players
-	- Fixed MC_PRE/POST_GRID_ENTITY_TELEPORTER_RENDER not running
-	- Fixed the position passed by MC_PRE/POST_PLAYERHUD_RENDER_HEARTS for co-op Esaus in REP+
-* Misc:
-	- Modded characters locked behind achievements no longer appear in the local co-op wheel.
+* Macs and old systems should now be compatible with REPENTOGON (we no longer use OGL 3)
+/newline/
+/versionseparator/
+v1.0.12.d -
+Fixes:
+* Fix unsupported versions not running the repentogon update (which could make them be stuck and be forced to manually update in the future)
+/newline/
+/versionseparator/
+v1.0.12.c -
+Fixes:
+* Fix loss of items in Mom's chase when playing coop or 2 player chaarcters like J&E
 /newline/
 /versionseparator/
 v1.0.12.b -
