@@ -460,6 +460,9 @@ __thiscall bool Entity_Player::IsEntityValidTarget(Entity * entity);
 "568bf15780be????????0075??8b86":
 __thiscall bool Entity_Player::IsInvisible();
 
+"558bec568bf1e8????????8b45??8b4d":
+__thiscall void Entity_Player::QueueItem(ItemConfig_Item* itemConfig, int charge, bool touched, bool golden, int varData);
+
 "558bec83e4f8515356578bf98b87":
 __thiscall bool Entity_Player::IsFootstepFrame(int eFoot);
 
