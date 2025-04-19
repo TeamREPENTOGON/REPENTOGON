@@ -16,6 +16,9 @@ __thiscall void Room::ShopRestockFull();
 "558bec83ec4453568bf157":
 __thiscall void Room::ShopRestockPartial();
 
+"558bec53568db1":
+__thiscall void Room::TriggerRestock(int grid_idx, int shop_idx);
+
 "558bec83ec30f30f7e05????????8bc1":
 __thiscall int Room::GetShopItemPrice(unsigned int entVariant, unsigned int entSubType, int shopItemID);
 

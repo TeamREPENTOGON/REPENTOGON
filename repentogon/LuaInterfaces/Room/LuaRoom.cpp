@@ -179,6 +179,14 @@ LUA_FUNCTION(lua_RoomGetRail) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomTriggerRestock) {
+	Room* room= lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int gridIdx = (int)luaL_checkinteger(L, 2);
+	int shopIdx = (int)luaL_checkinteger(L, 3);
+	room->TriggerRestock(gridIdx, shopIdx);
+	return 0;
+};
+
 LUA_FUNCTION(lua_RoomSetRail) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	int index = (int)luaL_checkinteger(L, 2);
@@ -543,6 +551,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ "TriggerOutput", Lua_RoomTriggerOutput },
 		{ "ClearBossHazards", Lua_RoomClearBossHazards },
+		{"TriggerRestock",Lua_RoomTriggerRestock},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
