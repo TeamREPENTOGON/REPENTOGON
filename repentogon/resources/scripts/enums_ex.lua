@@ -179,6 +179,7 @@ ModCallbacks.MC_NPC_PICK_TARGET = 1222
 ModCallbacks.MC_POST_NPC_DARK_RED_CHAMPION_REGEN = 1223
 ModCallbacks.MC_EVALUATE_CUSTOM_CACHE = 1224
 ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER = 1225
+ModCallbacks.MC_EVALUATE_STAT = 1226
 
 --ModCallbacks.DEPRECATED_MC_PRE_PLAYER_COLLISION = 1230  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PLAYER_COLLISION = 1231
@@ -2889,6 +2890,22 @@ SuplexState = {
 	AIMING = 2,
 	ASCENDING = 3,	
 	DESCENDING = 4,
+}
+
+CustomCacheTag = {
+	FAMILIAR_MULTIPLIER = "familiarmultiplier",
+	MAX_COINS = "maxcoins",
+	MAX_KEYS = "maxkeys",
+	MAX_BOMBS = "maxbombs",
+	TEARS_CAP = "tearscap",
+	STAT_MULTIPLIER = "statmultiplier",
+}
+
+EvaluateStatStage = {
+	TEARS_UP = 0,
+	FLAT_TEARS = 1,
+	DAMAGE_UP = 2,
+	FLAT_DAMAGE = 3,
 }
 
 --deprecated enums

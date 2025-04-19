@@ -827,7 +827,7 @@ void ParseTagsString(const string& str, set<string>& out) {
 }
 
 // If the item has the appropriate customtags, adds it to the customreviveitems map
-// to make it more efficient to check if the player has any of them layer.
+// to make it more efficient to check if the player has any of them later.
 void CheckCustomRevive(const int id, XMLItem* data) {
 	const bool hasReviveTag = data->HasCustomTag(id, "revive");
 	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
@@ -837,6 +837,25 @@ void CheckCustomRevive(const int id, XMLItem* data) {
 		info->effect = hasReviveEffectTag;
 		info->hidden = data->HasCustomTag(id, "hiddenrevive");
 		info->chance = data->HasCustomTag(id, "chancerevive");
+	}
+}
+
+// Parses xml-defined item stats.
+void ParseXmlItemStats(const int id, XMLAttributes* xmlAttributes, XMLItem* data, const bool isNullItem) {
+	for (const auto& [stat, tag] : EvaluateStats::evaluteStatXmlTags) {
+		if (xmlAttributes->find(tag) != xmlAttributes->end()) {
+			float value = stof(xmlAttributes->at(tag));
+			if (isNullItem) {
+				data->effectstatups[stat][id] = value;
+			} else {
+				data->statups[stat][id] = value;
+			}
+		}
+
+		const string effecttag = "effect" + tag;
+		if (xmlAttributes->find(effecttag) != xmlAttributes->end()) {
+			data->effectstatups[stat][id] = stof(xmlAttributes->at(effecttag));
+		}
 	}
 }
 
@@ -1165,6 +1184,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					} else if (id == COLLECTIBLE_DEEP_POCKETS) {
 						XMLStuff.ItemData->customcache[id].insert("maxcoins");
 					}
+					ParseXmlItemStats(id, &item, XMLStuff.ItemData, false);
+
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
 					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
@@ -1236,6 +1257,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->customcache[id]);
 						ParseTagsString(trinket["customcache"], XMLStuff.AllCustomCaches);
 					}
+					ParseXmlItemStats(id, &trinket, XMLStuff.TrinketData, false);
+
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
 					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
@@ -1283,6 +1306,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					ParseTagsString(item["customcache"], XMLStuff.NullItemData->customcache[id]);
 					ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 				}
+				ParseXmlItemStats(id, &item, XMLStuff.NullItemData, true);
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
 				XMLStuff.NullItemData->bynamemod[item["name"] + lastmodid] = id;
@@ -3668,6 +3692,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 
 	super();
 
+	EvaluateStats::UpdateItemConfig();
 
 	//retroactively patch playertype for challenges because the game sucks ass and loads modded challenges before players
 	for (int i = 46; i<=XMLStuff.ChallengeData->maxid; i++) {

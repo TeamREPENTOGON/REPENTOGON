@@ -2560,18 +2560,20 @@ LUA_FUNCTION(Lua_PlayerAddCustomCacheTag) {
 
 LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-
 	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushnumber(L, GetCustomCacheValue(player, tag));
+	return 1;
+}
 
-	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+LUA_FUNCTION(Lua_PlayerGetTearsCap) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, GetCustomCacheValue(player, "tearscap"));
+	return 1;
+}
 
-	if (playerPlus && playerPlus->customCacheResults.find(tag) != playerPlus->customCacheResults.end()) {
-		lua_pushnumber(L, playerPlus->customCacheResults[tag]);
-	}
-	else {
-		lua_pushnumber(L, 0);
-	}
-
+LUA_FUNCTION(Lua_PlayerGetStatMultiplier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, GetCustomCacheValue(player, "statmultiplier"));
 	return 1;
 }
 
@@ -3113,6 +3115,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
 		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
+		{ "GetTearsCap", Lua_PlayerGetTearsCap },
+		{ "GetStatMultiplier", Lua_PlayerGetStatMultiplier },
 		{ "GetMaxCoins", Lua_PlayerGetMaxCoins },
 		{ "GetMaxKeys", Lua_PlayerGetMaxKeys },
 		{ "GetMaxBombs", Lua_PlayerGetMaxBombs },

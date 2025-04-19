@@ -32,12 +32,25 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag)
-{
+LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag) {
 	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 	const std::string tag = luaL_checkstring(L, 2);
 	lua_pushboolean(L, GetItemXML(config)->HasCustomTag(config->id, tag));
 	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_AddCustomTag) {
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	GetItemXML(config)->AddCustomTag(config->id, tag);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_RemoveCustomTag) {
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	GetItemXML(config)->RemoveCustomTag(config->id, tag);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
@@ -58,20 +71,38 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ItemConfigItem_HasCustomCacheTag)
-{
+LUA_FUNCTION(Lua_ItemConfigItem_HasCustomCacheTag) {
 	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
 	const std::string tag = luaL_checkstring(L, 2);
 	lua_pushboolean(L, GetItemXML(config)->HasCustomCache(config->id, tag));
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfigItem_AddCustomCacheTag) {
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	GetItemXML(config)->AddCustomCache(config->id, tag);
+	XMLStuff.AddKnownCustomCache(tag);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_RemoveCustomCacheTag) {
+	ItemConfig_Item* config = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	GetItemXML(config)->RemoveCustomCache(config->id, tag);
+	return 0;
+}
+
 void RegisterItemFunctions(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetCustomTags", Lua_ItemConfigItem_GetCustomTags },
 		{ "HasCustomTag", Lua_ItemConfigItem_HasCustomTag },
+		{ "AddCustomTag", Lua_ItemConfigItem_AddCustomTag },
+		{ "RemoveCustomTag", Lua_ItemConfigItem_RemoveCustomTag },
 		{ "GetCustomCacheTags", Lua_ItemConfigItem_GetCustomCacheTags },
 		{ "HasCustomCacheTag", Lua_ItemConfigItem_HasCustomCacheTag },
+		{ "AddCustomCacheTag", Lua_ItemConfigItem_AddCustomCacheTag },
+		{ "RemoveCustomCacheTag", Lua_ItemConfigItem_RemoveCustomCacheTag },
 		{ NULL, NULL }
 	};
 

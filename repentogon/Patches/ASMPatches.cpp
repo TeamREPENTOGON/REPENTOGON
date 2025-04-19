@@ -13,6 +13,7 @@
 #include "EntityPlus.h"
 #include "ItemPoolManager.h"
 #include "CardsExtras.h"
+#include "EvaluateStats.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -153,6 +154,7 @@ void PerformASMPatches() {
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
 	ASMPatchAddActiveCharge();
+	EvaluateStats::ApplyASMPatches();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();

@@ -31,8 +31,50 @@ int __stdcall GetMaxBombs() {
 	return MAX_BOMBS;
 }
 
+float GetVanillaStatMultiplier(Entity_Player* player) {
+	float mult = 1.0f + player->GetTrinketMultiplier(TRINKET_CRACKED_CROWN) * 0.2f;
+	if (player->_playerType == PLAYER_BETHANY_B) {
+		mult *= 0.75f;
+	}
+	return mult;
+}
 
-void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMaxCoins) {
+double GetDefaultCustomCacheValue(Entity_Player* player, const std::string& customcache) {
+	if (customcache == "maxcoins" || customcache == "maxkeys" || customcache == "maxbombs") {
+		if (customcache == "maxcoins" && g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_DEEP_POCKETS, nullptr, true)) {
+			return 999;
+		}
+		return 99;
+	}
+	else if (customcache == "healthtype") {
+		EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+		if (playerPlus) {
+			playerPlus->disableHealthTypeModification = true;
+			double defaultHealthType = (double)player->GetHealthType();
+			playerPlus->disableHealthTypeModification = false;
+			return defaultHealthType;
+		}
+	}
+	else if (customcache == "tearscap") {
+		return 5.0;
+	}
+	else if (customcache == "statmultiplier") {
+		return GetVanillaStatMultiplier(player);
+	}
+
+	return 0;
+}
+
+double GetCustomCacheValue(Entity_Player* player, const std::string& customcache) {
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+
+	if (playerPlus && playerPlus->customCacheResults.find(customcache) != playerPlus->customCacheResults.end()) {
+		return playerPlus->customCacheResults[customcache];
+	}
+	return GetDefaultCustomCacheValue(player, customcache);
+}
+
+void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMax) {
 	Entity_Player* player = g_Game->_playerManager.GetPlayer(0);
 
 	int* current = nullptr;
@@ -59,7 +101,7 @@ void UpdateMaxCoinsKeysBombs(const std::string& customcache, const double newMax
 		return;
 	}
 
-	*max = (int)std::clamp(newMaxCoins, 0.0, (double)INT_MAX);;
+	*max = (int)std::clamp(newMax, 0.0, (double)INT_MAX);;
 
 	const int numDigits = *max < 1 ? 1 : ((int)std::floor(std::log10(*max)) + 1);
 	if (numDigits > 9) {
@@ -153,7 +195,7 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 
 	const bool maxCoinsKeysBombs = customcache == "maxcoins" || customcache == "maxkeys" || customcache == "maxbombs";
 
-	double initialValue = 0.0;
+	double initialValue = GetDefaultCustomCacheValue(player, customcache);
 
 	if (maxCoinsKeysBombs) {
 		// Only run evaluations as player 1 for global stats like this.
@@ -169,26 +211,20 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 				}
 			}
 		}
-
-		if (customcache == "maxcoins" && g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_DEEP_POCKETS, nullptr, true)) {
-			initialValue = 999;
-		}
-		else {
-			initialValue = 99;
-		}
 	} else if (customcache == "familiarmultiplier") {
 		// Familiar multiplier has special treatment, and does not go through the usual callback.
 		// Still otherwise implemented as a customcache because it is "triggered" in the same ways.
 		// When this cache is triggered on the player, wipe the cached multipliers from all their
 		// familiars, indirectly triggering MC_EVALUATE_FAMILIAR_MULTIPLIER instead.
 		InvalidateCachedFamiliarMultipliers(player);
+		playerPlus->customCacheResults[customcache] = 0;
 		return;
-	} else if (customcache == "healthtype") {
-		playerPlus->disableHealthTypeModification = true;
-		initialValue = (double)player->GetHealthType();
-		playerPlus->disableHealthTypeModification = false;
 	}
 
+	double previousValue = initialValue;
+	if (playerPlus->customCacheResults.find(customcache) != playerPlus->customCacheResults.end()) {
+		previousValue = playerPlus->customCacheResults[customcache];
+	}
 	double newValue = initialValue;
 
 	// MC_EVALUATE_CUSTOM_CACHE
@@ -216,18 +252,29 @@ void RunEvaluateCustomCacheCallback(Entity_Player* player, const std::string cus
 	if (maxCoinsKeysBombs) {
 		UpdateMaxCoinsKeysBombs(customcache, newValue);
 	} else if (customcache == "healthtype") {
-		player->GetHealthType();
+		player->GetHealthType();  // Trigger enforcement of the health type
+	} else if (customcache == "tearscap" && newValue != previousValue) {
+		player->_cacheFlags |= CACHE_FIREDELAY;
+		playerPlus->customCacheRequiresEvaluateItemsCall = true;
+	} else if (customcache == "statmultiplier" && newValue != previousValue) {
+		player->_cacheFlags |= CACHE_DAMAGE | CACHE_FIREDELAY | CACHE_SHOTSPEED | CACHE_RANGE | CACHE_SPEED;
+		playerPlus->customCacheRequiresEvaluateItemsCall = true;
 	}
 }
 
 void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& customcaches, const bool immediate) {
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (!playerPlus) return;  // Aaah!
+
 	if (immediate) {
 		for (const std::string& customcache : customcaches) {
 			playerPlus->customCacheTags.erase(customcache);
 			RunEvaluateCustomCacheCallback(player, customcache);
 		}
-	} else if (playerPlus) {
+		if (playerPlus->customCacheRequiresEvaluateItemsCall) {
+			player->EvaluateItems();
+		}
+	} else {
 		for (const std::string& customcache : customcaches) {
 			playerPlus->customCacheTags.insert(customcache);
 		}
@@ -235,40 +282,39 @@ void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& cust
 	}
 }
 
+void TriggerCustomCache(Entity_Player* player, XMLItem* xmlData, const int id, const bool immediate) {
+	if (xmlData->HasAnyCustomCache(id)) {
+		TriggerCustomCache(player, xmlData->GetCustomCache(id), immediate);
+	}
+}
+
 void TriggerNullCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.NullItemData->GetCustomCache(id), immediate);
+	TriggerCustomCache(player, XMLStuff.NullItemData, id, immediate);
 }
 
 void TriggerCollectibleCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.ItemData->GetCustomCache(id), immediate);
+	TriggerCustomCache(player, XMLStuff.ItemData, id, immediate);
 }
 
 void TriggerTrinketCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.TrinketData->GetCustomCache(id), immediate);
+	TriggerCustomCache(player, XMLStuff.TrinketData, id, immediate);
 }
 
 void TriggerItemCustomCache(Entity_Player* player, ItemConfig_Item* item, const bool immediate) {
 	if (item->type == 0) {  // Null
 		TriggerNullCustomCache(player, item->id, immediate);
-	}
-	else if (item->type == 2) {  // Trinket
+	} else if (item->type == 2) {  // Trinket
 		TriggerTrinketCustomCache(player, item->id, immediate);
-	}
-	else {  // Collectible (Passive/Active/Familiar)
+	} else {  // Collectible (Passive/Active/Familiar)
 		TriggerCollectibleCustomCache(player, item->id, immediate);
 	}
 }
 
 // Re-evaluate custom caches that appeared in XML data if EvaluateItems is run for CacheFlag.CACHE_ALL.
 HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
-	const int cacheFlagAll = (1 << 16) - 1;  // CacheFlag.CACHE_ALL
-	const bool evaluateAll = (this->_cacheFlags & cacheFlagAll) == cacheFlagAll;
-
-	super();
-
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
 	if (playerPlus) {
-		if (evaluateAll) {
+		if ((this->_cacheFlags & CACHE_ALL) == CACHE_ALL) {  // If visual studio tries to tell you that this equality check is not needed do NOT listen
 			for (const std::string& customcache : XMLStuff.AllCustomCaches) {
 				playerPlus->customCacheTags.insert(customcache);
 			}
@@ -282,7 +328,10 @@ HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
 				RunEvaluateCustomCacheCallback(this, customcache);
 			}
 		}
+		playerPlus->customCacheRequiresEvaluateItemsCall = false;
 	}
+
+	super();
 }
 
 // Collectibles (both real and via wisps) trigger cache evaluations immediately when added or removed.
@@ -295,7 +344,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, AddCollectible, -1, (int type, int charge, b
 HOOK_METHOD_PRIORITY(Entity_Familiar, WispInit, -1, () -> void) {
 	super();
 
-	if (this->_variant == 237 && this->_player) {
+	if (this->_variant == 237 && this->_subtype > 0 && this->_player) {
 		TriggerCollectibleCustomCache(this->_player, this->_subtype, true);
 	}
 }
@@ -360,7 +409,7 @@ void PatchFamiliarGetMultiplierCallback() {
 
 	printf("[REPENTOGON] Patching end of Entity_Familiar::GetMultiplier for callback at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | (ASMPatch::SavedRegisters::Registers::XMM_REGISTERS & ~ASMPatch::SavedRegisters::Registers::XMM0), true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.AddBytes("\x66\x0F\x7E\xC0")  // movd eax, xmm0
@@ -546,6 +595,80 @@ void PatchRemoveCurseMistEffect() {
 }
 
 
+// Tears cap (real)
+void __stdcall TearsCapHook(Entity_Player* player, float* minimumFiredDelayOut) {
+	*minimumFiredDelayOut = 5;  // Default value.
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (playerPlus && playerPlus->customCacheResults.find("tearscap") != playerPlus->customCacheResults.end()) {
+		const double tearscap = playerPlus->customCacheResults["tearscap"];
+		if (tearscap > 0) {
+			// Convert to firedelay
+			*minimumFiredDelayOut = (float)std::max((30.0 / tearscap) - 1.0, -0.75);
+		}
+	}
+}
+void PatchTearsCap() {
+	SigScan scanner("c785????????0000a040f30f5cc8f30f118d????????e8????????f30f100d????????8bb5????????8bce6a00f30f1000");
+	scanner.Scan();
+	void* patchAddr = scanner.GetAddress();
+	void* ebpOffsetAddr = (char*)patchAddr + 0x2;
+	void* movEsiPlayerAddr = (char*)patchAddr + 0x23;
+
+	printf("[REPENTOGON] Patching EvaluateItems for tears cap at %p\n", patchAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)ebpOffsetAddr, 0x4))  // lea ebx, [ebp+?]
+		.Push(ASMPatch::Registers::EBX)  // float* minimumFiredDelay
+		.AddBytes(ByteBuffer().AddAny((char*)movEsiPlayerAddr, 0x6))  // mov ESI,dword ptr [ebp+?]
+		.Push(ASMPatch::Registers::ESI)  // Entity_Player*
+		.AddInternalCall(TearsCapHook)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)patchAddr + 0xA);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+
+// Stats Multiplier (ie Cracked Crown, Tainted Bethany)
+void __stdcall StatMultiplierHook(Entity_Player* player, float* statMultiplierOut) {
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (playerPlus && playerPlus->customCacheResults.find("statmultiplier") != playerPlus->customCacheResults.end() && playerPlus->customCacheResults["statmultiplier"] > 0) {
+		*statMultiplierOut = (float)playerPlus->customCacheResults["statmultiplier"];
+	} else {
+		*statMultiplierOut = GetVanillaStatMultiplier(player);
+	}
+}
+void PatchStatMultiplier() {
+	SigScan patchScanner("6a5ce8????????660f6ec88b85????????0f5bc983b8????????24");
+	patchScanner.Scan();
+	void* patchAddr = patchScanner.GetAddress();
+
+	SigScan jumpScanner("f30f118d????????6a0068980200008bc8");
+	if (!jumpScanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature for statmultiplier CustomCache's jump\n");
+		return;
+	}
+	void* ebpOffsetAddr = (char*)jumpScanner.GetAddress() + 0x4;
+	void* jumpAddr = (char*)ebpOffsetAddr + 0x4;
+
+	printf("[REPENTOGON] Patching EvaluateItems for stat multiplier at %p\n", patchAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)ebpOffsetAddr, 0x4))  // lea ebx, [ebp+?]
+		.Push(ASMPatch::Registers::EBX)  // float* minimumFiredDelay
+		.Push(ASMPatch::Registers::ECX)  // Entity_Player*
+		.AddInternalCall(StatMultiplierHook)
+		.RestoreRegisters(savedRegisters)
+		.CopyRegister(ASMPatch::Registers::EAX, ASMPatch::Registers::ECX)
+		.AddRelativeJump(jumpAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+
 void ASMPatchesForCustomCache() {
 	PatchFamiliarGetMultiplierCallback();
 	PatchAddCoins();
@@ -555,4 +678,6 @@ void ASMPatchesForCustomCache() {
 	PatchHudRenderKeys();
 	PatchHudRenderBombs();
 	PatchRemoveCurseMistEffect();
+	PatchTearsCap();
+	PatchStatMultiplier();
 }

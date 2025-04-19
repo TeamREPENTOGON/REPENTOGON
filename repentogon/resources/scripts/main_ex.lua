@@ -1539,6 +1539,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
 	[ModCallbacks.MC_PRE_STATUS_EFFECT_APPLY] = RunPreStatusEffectApplyCallback,
 	[ModCallbacks.MC_PLAYER_HEALTH_TYPE_CHANGE] = RunNoReturnCallback,
+	[ModCallbacks.MC_EVALUATE_STAT] = RunAdditiveThirdArgCallback,
 }
 
 for _, callback in ipairs({

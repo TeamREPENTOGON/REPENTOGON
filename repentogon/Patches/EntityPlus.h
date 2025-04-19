@@ -19,6 +19,7 @@ class EntityPlayerPlus : public EntityPlus {
 public:
 	std::set<std::string> customCacheTags;
 	std::unordered_map<std::string, double> customCacheResults;
+	bool customCacheRequiresEvaluateItemsCall = false;
 	int previousHealthType = -1;
 	bool evaluatingHealthType = false;
 	bool disableHealthTypeModification = false;

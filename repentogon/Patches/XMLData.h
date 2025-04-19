@@ -12,6 +12,8 @@
 #include "HookSystem.h"
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
+#include "EvaluateStats.h"
+
 using namespace std;
 
 /* Modifiers for character stats, allow to override the computation of Eden's stats, 
@@ -59,6 +61,7 @@ typedef unordered_map<int, XMLChilds> XMLKinder;
 typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
 typedef unordered_map<string, int> XMLNodeIdxLookup;
 typedef unordered_map<string, vector<int>> XMLNodeIdxLookupMultiple;
+typedef unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>> XMLItemStats;
 
 
 inline string stringlower(char* str)
@@ -216,6 +219,18 @@ public:
 			return false;
 		}
 		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
+	}
+
+	void AddCustomTag(const int id, const std::string tag) {
+		if (!tag.empty()) {
+			this->customtags[id].insert(stringlower(tag.c_str()));
+		}
+	}
+
+	void RemoveCustomTag(const int id, const std::string tag) {
+		if (HasCustomTag(id, tag)) {
+			this->customtags[id].erase(stringlower(tag.c_str()));
+		}
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
@@ -381,14 +396,35 @@ public:
 	unordered_map<int, CustomReviveInfo> customreviveitems;
 	// Holds the contents of the "customcache" attribute, converted to lowercase and parsed into a set.
 	unordered_map<int, set<string>> customcache;
+	// Holds info for XML-defined stat changes.
+	XMLItemStats statups;
+	XMLItemStats effectstatups;  // For corresponding temporaryeffects
+
+	bool HasAnyCustomCache(const int id) {
+		return this->customcache.find(id) != this->customcache.end();
+	}
 
 	const set<string>& GetCustomCache(const int id) {
 		return this->customcache[id];
 	}
 
 	bool HasCustomCache(const int id, const std::string tag) {
-		const set<string>& customcache = GetCustomCache(id);
-		return customcache.find(stringlower(tag.c_str())) != customcache.end();
+		if (!HasAnyCustomCache(id)) {
+			return false;
+		}
+		return this->customcache[id].find(stringlower(tag.c_str())) != this->customcache[id].end();
+	}
+
+	void AddCustomCache(const int id, const std::string tag) {
+		if (!tag.empty()) {
+			this->customcache[id].insert(stringlower(tag.c_str()));
+		}
+	}
+
+	void RemoveCustomCache(const int id, const std::string tag) {
+		if (HasCustomCache(id, tag)) {
+			this->customcache[id].erase(stringlower(tag.c_str()));
+		}
 	}
 };
 
@@ -702,8 +738,14 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-	// Holds all known customcache strings.
-	set<string> AllCustomCaches = {"familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs" };
+	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
+	set<string> AllCustomCaches = {"familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
+
+	void AddKnownCustomCache(const std::string tag) {
+		if (!tag.empty()) {
+			AllCustomCaches.insert(stringlower(tag.c_str()));
+		}
+	}
 };
 
 
