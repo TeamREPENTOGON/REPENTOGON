@@ -171,6 +171,11 @@ ___
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
 
 ___
+### TriggerRestock () {: aria-label='Functions' }
+#### void TriggerRestock ( int GridIndex, int ShopItemIdx) {: .copyable aria-label='Functions' }
+Sets up the shop item to be spawned with an increased price upon the next call of ShopRestockPartial.
+
+___
 ### SaveState () {: aria-label='Functions' }
 #### void SaveState ( ) {: .copyable aria-label='Functions' }
 Saves the current state of the room
