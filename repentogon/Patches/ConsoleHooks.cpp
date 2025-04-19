@@ -54,7 +54,7 @@ void LuaReset() {
     }
     // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
     for (auto& mod : modsToReload) {
-        std::string modPath = std::filesystem::current_path().string() + "/mods/" + mod.second + "/main.lua";
+        std::string modPath = string(&g_ModsDirectory) + mod.second + "/main.lua";
         if (std::filesystem::exists(modPath)) 
             g_LuaEngine->RunScript(modPath.c_str());
     }
