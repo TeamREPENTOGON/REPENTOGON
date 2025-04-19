@@ -5,6 +5,17 @@
 #include <cstddef>
 #include <algorithm>
 
+static inline void* get_sig_address(const char* signature, const char* location)
+{
+    SigScan scanner(signature);
+    if (!scanner.Scan())
+    {
+        ZHL::Log("[ASSERT] [ASMPatch] Did not find \"%s\" for %s patch\n", signature, location);
+        assert(false);
+    }
+    return scanner.GetAddress();
+}
+
 /* This bug causes all modded items to have a craftingQuality of 0, if it is not explicitly set it in the XML or the mod doesn't use items_metadata.xml
 * After an item node is parsed and the ItemConfig is created, if the craftingQuality is equal to a special value then the craftingQuality is set to match the quality value.
 * However unlike what happens in items_metadata.xml the craftingQuality is never set to this special value before parsing the node, as such this check becomes unused.
@@ -12,9 +23,7 @@
 */
 static void fix_modded_crafting_quality(const char* signature, const char* location)
 {
-    SigScan scanner(signature);
-    scanner.Scan();
-    void* address = scanner.GetAddress();
+    void* address = get_sig_address(signature, location);
 
     ZHL::Log("[REPENTOGON] Patching %s at %p\n", location, address);
 
@@ -43,9 +52,7 @@ static void fix_variant_set_add_unique(const char* signature, const char* locati
     * cmp eax, dword ptr [ecx + 0x4] (first->upperBound)
     */
 
-    SigScan scanner(signature);
-    scanner.Scan();
-    void* address = scanner.GetAddress();
+    void* address = get_sig_address(signature, location);
 
     ZHL::Log("[REPENTOGON] Patching %s at %p\n", location, address);
 
@@ -56,8 +63,42 @@ static void fix_variant_set_add_unique(const char* signature, const char* locati
     sASMPatcher.FlatPatch(address, &patch);
 }
 
+/* This bug causes the ENTCOLL_PLAYERONLY entity collision class to behave like ENTCOLL_NONE, if set by the entity that initiated collision.
+* Unlike what happens with the other collider, the game does not check if the colliding entity is an ENTITY_PLAYER and just skips collision early.
+* This bug has no impact on vanilla, since players are always sorted to be the initiating entity, and players do not use the collision class in the first place.
+*/
+static void fix_handle_collisions_playeronly_entity_class(const char* signature, const char* location)
+{
+    /* Original assembly:
+    * cmp eax, ENTCOLL_PLAYERONLY
+    * jz SKIP_COLLISION (if entityCollisionClass == ENTCOLL_PLAYERONLY)
+    */
+
+    void* address = get_sig_address(signature, location);
+
+    ZHL::Log("[REPENTOGON] Patching %s at %p\n", location, address);
+
+    ByteBuffer byteBuffer = ByteBuffer();
+
+    size_t typeOffset = offsetof(Entity, _type);
+    uint32_t playerType = ENTITY_PLAYER;
+    int* rawJumpOffset = (int*)byteBuffer.AddAny((char*)address + 0x4, 1).GetData();
+    int jumpOffset = 0x5 + *rawJumpOffset;
+
+    ASMPatch patch;
+    patch.AddBytes(ByteBuffer().AddAny((char*)address, 0x3)) // restore cmp eax, ENTCOLL_PLAYERONLY
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)address + 0x5) // resume
+        .AddBytes("\x81\xBF") // cmp [edi + _type], ENTITY_PLAYER
+            .AddBytes(ByteBuffer().AddAny((char*)&typeOffset, sizeof(uint32_t)))
+            .AddBytes(ByteBuffer().AddAny((char*)&playerType, sizeof(uint32_t)))
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)address + jumpOffset) // SKIP_COLLISION
+        .AddRelativeJump((char*)address + 0x5); // resume
+    sASMPatcher.PatchAt(address, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
     fix_variant_set_add_unique("8b0283c002", "ModManager::UpdateRooms (inline RoomConfig::VariantSet::AddUnique)");
+    fix_handle_collisions_playeronly_entity_class("83f80174??83f901", "Entity::handle_collisions");
 }
