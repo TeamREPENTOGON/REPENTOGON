@@ -47,7 +47,17 @@ If `Target` is left unspecified, this will recursively copy status effects to al
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
-#### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Low ) {: .copyable aria-label='Functions' }
+#### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Force ) {: .copyable aria-label='Functions' }
+
+Returns true if the rest of the collision logic should be **Skipped**; either because the entities did not collide in the first place (if `Force` is false),
+or because one of the entities' internal collision logic decided so (which can be influenced by one of the `PRE_COLLISION` callbacks).
+
+if `Force` is set to false, then the game will check if the entities' [EntityCollisionClass](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#entitycollisionclass) are
+compatible and if both entities are not [Dead](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#isdead) before triggering the collision.
+
+???- warning "Collision Logic Changes"
+    The collision logic for some entity types changes when forced.<br>
+    For example: Slots do not make the player pay the regular prize for activation.
 
 ___
 ### GetBaitedCountdown () {: aria-label='Functions' }
