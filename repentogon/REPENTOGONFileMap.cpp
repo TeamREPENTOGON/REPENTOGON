@@ -125,7 +125,7 @@ namespace REPENTOGONFileMap {
 			return;
 		};
 		map_init = true;
-		auto basepath = fs::current_path() / L"mods";
+		auto basepath = std::filesystem::path(&g_ModsDirectory);
 		_modsPath = basepath.wstring();
 		auto start_time = std::chrono::high_resolution_clock::now();
 		if (g_Manager && g_Manager->GetModManager()) {
