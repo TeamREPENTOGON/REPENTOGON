@@ -81,6 +81,64 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
+
+
+void goUpTogon(char* str) {
+	const char* variants[] = {
+		"/Repentogon/",
+		"\\Repentogon/",
+		"\\Repentogon\\"
+	};
+
+	for (const char* variant : variants) {
+		size_t len = std::strlen(variant);
+		char* pos;
+		while ((pos = std::strstr(str, variant)) != nullptr) {
+			std::memmove(pos+1, pos + len, std::strlen(pos + len) + 1);
+		}
+	}
+}
+
+void ModReReoute() {
+	goUpTogon(&g_ModsDirectory);
+}
+void ModSavesReReoute() {
+	goUpTogon(&g_ModSaveDataPath);
+}
+
+void ASMPatchModReRoute() {
+	SigScan scanner("83c4446a0068????????ffd7");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Mod Dir::Point to original mods dir %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(ModReReoute)
+		.RestoreRegisters(savedRegisters);
+	sASMPatcher.FlatPatch(addr, &patch);
+
+	//Mod save data
+
+	SigScan scanner2("83c4246a0068????????ffd7803d????????00");
+	scanner2.Scan();
+	void* addr2 = scanner2.GetAddress();
+
+	printf("[REPENTOGON] Patching Mod SaveData Dir::Point to original data dir %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters2(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch patch2;
+	patch2.PreserveRegisters(savedRegisters2)
+		.AddInternalCall(ModSavesReReoute)
+		.RestoreRegisters(savedRegisters2);
+	sASMPatcher.FlatPatch(addr2, &patch2);
+	printf("%s \n", &g_ModSaveDataPath);
+
+
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
@@ -184,6 +242,9 @@ void PerformASMPatches() {
 
 	// Sprite
 	ASMPatchesForANM2Extras();
+
+	//Mod folder redirect
+	ASMPatchModReRoute();
 
 	// Tweaks (bug crashes)
 	if (!ASMPatches::FixGodheadEntityPartition()) {
