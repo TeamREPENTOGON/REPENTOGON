@@ -74,7 +74,7 @@ void RestoreEnabledStates() {
 	for each (ModEntry * mod in modman->_mods) {
 		if (mod->IsEnabled() != enabledtstates[i]) {
 			mod->SetEnabled(enabledtstates[i]);
-			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir().c_str() + "\\disable.it";
+			string disablepath = string(&g_ModsDirectory) + mod->GetDir() + "\\disable.it";
 			if (mod->IsEnabled()) {
 				std::remove(disablepath.c_str());
 			}
@@ -104,7 +104,7 @@ HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	if (g_InputManagerBase.IsActionTriggered(14,-1,0)) {
 		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
 			this->_pointerToSelectedMod->SetEnabled(!this->_pointerToSelectedMod->IsEnabled());
-			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
+			string disablepath = string(&g_ModsDirectory) + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
 			if (this->_pointerToSelectedMod->IsEnabled()) {
 				std::remove(disablepath.c_str());
 			}
