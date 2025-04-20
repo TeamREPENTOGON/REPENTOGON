@@ -82,7 +82,7 @@ static void fix_handle_collisions_playeronly_entity_class(const char* signature,
 
     size_t typeOffset = offsetof(Entity, _type);
     uint32_t playerType = ENTITY_PLAYER;
-    int* rawJumpOffset = (int*)byteBuffer.AddAny((char*)address + 0x4, 1).GetData();
+    int8_t* rawJumpOffset = (int8_t*)byteBuffer.AddAny((char*)address + 0x4, 1).GetData();
     int jumpOffset = 0x5 + *rawJumpOffset;
 
     ASMPatch patch;
