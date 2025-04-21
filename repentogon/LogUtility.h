@@ -23,13 +23,19 @@ namespace LogUtility
         ERROR = 2
     };
 
-    class LogContext
+	class ILogger
+	{
+	public:
+		virtual void LogMessage(eLogType logType, const char* message) noexcept = 0;
+	};
+
+    class LogContext : public ILogger
     {
         std::vector<std::string> m_Context;
 		std::string m_ContextCache;
 		std::array<uint32_t, 3> m_LoggedMessagesCount = { 0 };
     private:
-        const char* get_log_type_string(eLogType logType)
+        const char* get_log_type_string(eLogType logType) noexcept
         {
             switch (logType)
             {
@@ -46,7 +52,7 @@ namespace LogUtility
             return nullptr;
         }
 
-        std::string build_context_string()
+        std::string build_context_string() noexcept
         {
             std::string result = "";
 
@@ -59,38 +65,38 @@ namespace LogUtility
         }
 
     public:
-        inline void push_back(const std::string& message)
+        inline void push_back(const std::string& message) noexcept
         {
             m_Context.push_back(message);
 			m_ContextCache += m_Context.back();
         }
 
-        inline void emplace_back(std::string&& message)
+        inline void emplace_back(std::string&& message) noexcept
         {
             m_Context.emplace_back(std::move(message));
 			m_ContextCache += m_Context.back();
         }
 
-        inline void pop_back()
+        inline void pop_back() noexcept
         {
 			const std::string& last = m_Context.back();
 			m_ContextCache.erase(m_ContextCache.size() - last.size(), last.size());
             m_Context.pop_back();
         }
 
-        inline void LogMessage(eLogType logType, const char* message)
+        void LogMessage(eLogType logType, const char* message) noexcept override
         {
             ZHL::Log("[%s] %s%s\n", get_log_type_string(logType), m_ContextCache.c_str(), message);
             m_LoggedMessagesCount[(size_t)logType]++;
         }
 
-        inline uint32_t GetLoggedMessagesCount(eLogType logType)
+        inline uint32_t GetLoggedMessagesCount(eLogType logType) noexcept
         {
             return m_LoggedMessagesCount[(size_t)logType];
         }
     };
 
-	static uint32_t GetLogTypeConsoleColor(eLogType logType)
+	static uint32_t GetLogTypeConsoleColor(eLogType logType) noexcept
 	{
 		switch (logType)
 		{
@@ -103,7 +109,7 @@ namespace LogUtility
 		}
 	}
 
-	static void PrintConsole(eLogType logType, const std::string& message)
+	static void PrintConsole(eLogType logType, const std::string& message) noexcept
 	{
 		g_Game->GetConsole()->Print(message, GetLogTypeConsoleColor(logType), 0x96u);
 	}
@@ -129,27 +135,27 @@ namespace LogUtility
 			}
 		}
 
-		static inline void LogInvalidArg(LogContext& logContext, const char* error, const char* fieldName = nullptr) noexcept
+		static inline void LogInvalidArg(ILogger& logger, const char* error, const char* fieldName = nullptr) noexcept
 		{
 			assert(error);
 			
 			if (fieldName)
 			{
-				logContext.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for \"%s\" (%s)", fieldName, error).c_str());
+				logger.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for \"%s\" (%s)", fieldName, error).c_str());
 			}
 			else
 			{
-				logContext.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument (%s)", error).c_str());
+				logger.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument (%s)", error).c_str());
 			}
 		}
 
-		static inline bool ValidateTable(lua_State* L, int index, LogContext& logContext, const char* fieldName = nullptr, bool optional = true) noexcept
+		static inline bool ValidateTable(lua_State* L, int index, ILogger& logger, const char* fieldName = nullptr, bool optional = true) noexcept
 		{
 			if (!lua_istable(L, index))
 			{
 				if (!optional || !lua_isnil(L, index))
 				{
-					LogInvalidArg(logContext, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, index, "table").c_str(), fieldName);
+					LogInvalidArg(logger, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, index, "table").c_str(), fieldName);
 				}
 				return false;
 			}
@@ -157,20 +163,20 @@ namespace LogUtility
 			return true;
 		}
 
-		static inline std::optional<bool> ReadBool(lua_State* L, int index, LogContext& logContext, const char* fieldName = nullptr, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBool(lua_State* L, int index, ILogger& logger, const char* fieldName = nullptr, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Lua::ReadBool(L, index, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logger, error.value().c_str(), nullptr);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadInteger(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static std::optional<T> ReadInteger(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -178,14 +184,14 @@ namespace LogUtility
 			auto result = REPENTOGON::Lua::ReadInteger<T>(L, index, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logger, error.value().c_str(), nullptr);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadNumber(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static std::optional<T> ReadNumber(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -193,38 +199,38 @@ namespace LogUtility
 			auto result = REPENTOGON::Lua::ReadNumber<T>(L, index, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logger, error.value().c_str(), nullptr);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadString(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadString(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Lua::ReadString(L, index, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), nullptr);
+				LogInvalidArg(logger, error.value().c_str(), nullptr);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<bool> ReadBoolField(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBoolField(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Lua::ReadBoolField(L, index, fieldName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), fieldName);
+				LogInvalidArg(logger, error.value().c_str(), fieldName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadIntegerField(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<T> ReadIntegerField(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -232,14 +238,14 @@ namespace LogUtility
 			auto result = REPENTOGON::Lua::ReadIntegerField<T>(L, index, fieldName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), fieldName);
+				LogInvalidArg(logger, error.value().c_str(), fieldName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadNumberField(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<T> ReadNumberField(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -247,19 +253,19 @@ namespace LogUtility
 			auto result = REPENTOGON::Lua::ReadNumberField<T>(L, index, fieldName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), fieldName);
+				LogInvalidArg(logger, error.value().c_str(), fieldName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadStringField(lua_State* L, int index, const char* fieldName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadStringField(lua_State* L, int index, const char* fieldName, ILogger& logger, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Lua::ReadStringField(L, index, fieldName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), fieldName);
+				LogInvalidArg(logger, error.value().c_str(), fieldName);
 			}
 
 			return result;
@@ -268,56 +274,56 @@ namespace LogUtility
 
 	namespace Json
 	{
-		static void LogInvalidArg(LogContext& logContext, const char* error, const char* memberName = nullptr) noexcept
+		static void LogInvalidArg(ILogger& logger, const char* error, const char* memberName = nullptr) noexcept
 		{
 			assert(error);
 
 			if (memberName)
 			{
-				logContext.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for <%s> (%s)", memberName, error).c_str());
+				logger.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument for <%s> (%s)", memberName, error).c_str());
 			}
 			else
 			{
-				logContext.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument (%s)", error).c_str());
+				logger.LogMessage(eLogType::ERROR, REPENTOGON::StringFormat("invalid argument (%s)", error).c_str());
 			}
 		}
 
-		static inline bool ValidateArray(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static inline bool ValidateArray(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			if (!jsonValue.IsArray())
 			{
-				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Array").c_str(), memberName);
+				LogInvalidArg(logger, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Array").c_str(), memberName);
 				return false;
 			}
 
 			return true;
 		}
 
-		static inline bool ValidateObject(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static inline bool ValidateObject(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			if (!jsonValue.IsObject())
 			{
-				LogInvalidArg(logContext, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Object").c_str(), memberName);
+				LogInvalidArg(logger, REPENTOGON::Json::GenerateInvalidTypeMessage(jsonValue, "Object").c_str(), memberName);
 				return false;
 			}
 
 			return true;
 		}
 
-		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadBool(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -325,14 +331,14 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadInteger<T>(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -340,77 +346,77 @@ namespace LogUtility
 			auto result = REPENTOGON::Json::ReadNumber<T>(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, LogContext& logContext, const char* memberName = nullptr) noexcept
+		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, ILogger& logger, const char* memberName = nullptr) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadString(jsonValue, error);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<bool> ReadBoolMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBoolMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadBoolMember(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadIntegerMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<T> ReadIntegerMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 			Error error;
 			auto result = REPENTOGON::Json::ReadIntegerMember<T>(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadNumberMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<T> ReadNumberMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 			Error error;
 			auto result = REPENTOGON::Json::ReadNumberMember<T>(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadStringMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadStringMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			Error error;
 			auto result = REPENTOGON::Json::ReadStringMember(jsonValue, memberName, error, optional);
 			if (error)
 			{
-				LogInvalidArg(logContext, error.value().c_str(), memberName);
+				LogInvalidArg(logger, error.value().c_str(), memberName);
 			}
 
 			return result;
 		}
 
-		static inline std::optional<const rapidjson::Value*> GetArrayMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<const rapidjson::Value*> GetArrayMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			assert(jsonValue.IsObject());
 			assert(memberName);
@@ -420,12 +426,12 @@ namespace LogUtility
 			{
 				if (!optional)
 				{
-					LogInvalidArg(logContext, "member does not exist", memberName);
+					LogInvalidArg(logger, "member does not exist", memberName);
 				}
 				return std::nullopt;
 			}
 
-			if (!ValidateArray(it->value, logContext, memberName))
+			if (!ValidateArray(it->value, logger, memberName))
 			{
 				return std::nullopt;
 			}
@@ -433,7 +439,7 @@ namespace LogUtility
 			return &it->value;
 		}
 
-		static inline std::optional<const rapidjson::Value*> GetObjectMember(const rapidjson::Value& jsonValue, const char* memberName, LogContext& logContext, bool optional = true) noexcept
+		static inline std::optional<const rapidjson::Value*> GetObjectMember(const rapidjson::Value& jsonValue, const char* memberName, ILogger& logger, bool optional = true) noexcept
 		{
 			assert(jsonValue.IsObject());
 			assert(memberName);
@@ -443,12 +449,12 @@ namespace LogUtility
 			{
 				if (!optional)
 				{
-					LogInvalidArg(logContext, "member does not exist", memberName);
+					LogInvalidArg(logger, "member does not exist", memberName);
 				}
 				return std::nullopt;
 			}
 
-			if (!ValidateObject(it->value, logContext, memberName))
+			if (!ValidateObject(it->value, logger, memberName))
 			{
 				return std::nullopt;
 			}
