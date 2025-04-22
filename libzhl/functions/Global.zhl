@@ -1917,7 +1917,7 @@ enum eStbType {
     STB_CATACOMBS = 5,
     STB_FLOODED_CAVES = 6,
     STB_DEPTHS = 7,
-    STB_NECORPOLIS = 8,
+    STB_NECROPOLIS = 8,
     STB_DANK_DEPTHS = 9,
     STB_WOMB = 10,
     STB_UTERO = 11,
@@ -1943,7 +1943,7 @@ enum eStbType {
     STB_MAUSOLEUM = 31,
     STB_GEHENNA = 32,
     STB_CORPSE = 33,
-    STB_UNUSED7 = 34,
+    STB_MORTIS = 34,
     STB_HOME = 35,
     STB_BACKWARDS = 36,
 
