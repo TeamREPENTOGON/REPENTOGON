@@ -3591,6 +3591,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "trinket");
 				}
 			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
