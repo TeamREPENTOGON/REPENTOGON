@@ -37,7 +37,7 @@ ___
 
 ___
 ### GetModifiers () {: aria-label='Functions' }
-#### int GetModifiers ( ) {: .copyable aria-label='Functions' }
+#### [WeaponModifier](enums/WeaponModifier.md) GetModifiers ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetNumFired () {: aria-label='Functions' }
@@ -77,6 +77,6 @@ ___
 
 ___
 ### SetModifiers () {: aria-label='Functions' }
-#### void SetModifiers ( int modifiers ) {: .copyable aria-label='Functions' }
+#### void SetModifiers ( [WeaponModifier](enums/WeaponModifier.md) modifiers ) {: .copyable aria-label='Functions' }
 
 ___
