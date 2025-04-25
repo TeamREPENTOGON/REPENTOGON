@@ -5159,3 +5159,64 @@ HOOK_METHOD(Room, SpawnGreedModeWave, (bool unusedBool) -> void) {
 			.call(1);
 	}
 }
+//MC_PRE_QUEUE_ITEM (1490)
+HOOK_METHOD(Entity_Player, QueueItem, (ItemConfig_Item* itemConfig, int charge, bool touched, bool golden, int varData) -> void) {
+	const int callbackid = 1490;
+	ItemConfig_Item itemCopy;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(itemConfig, lua::Metatables::ITEM)
+			.push(charge)
+			.push(touched)
+			.push(golden)
+			.push(varData)
+			.call(1);
+
+		if (!result) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					 if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "ItemConfig") {
+							auto* retItem = lua::UserdataToData<ItemConfig_Item*>(lua_touserdata(L, -1));
+							if (retItem) {
+								itemConfig = retItem;
+							}
+						}
+					}
+					else if (lua_isstring(L, -2) && lua_isinteger(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Charge") {
+							charge = (int)lua_tointeger(L, -1);
+						}
+						else if (key == "VarData") {
+							varData = (int)lua_tointeger(L, -1);
+						}
+					}
+					else if (lua_isstring(L, -2) && lua_isboolean(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Golden") {
+							golden = lua_toboolean(L, -1);
+						}
+						else if (key == "Touched") {
+							touched = lua_toboolean(L, -1);
+						}
+					}
+
+					lua_pop(L, 1);
+				}
+			}
+		}
+	}
+
+	super(itemConfig, charge, touched, golden, varData);
+}
+
