@@ -19564,6 +19564,10 @@ The callback accepts two parameters:</p>
 </table>
 <h3 class="copyable" id="mc_pre_new_room">MC_PRE_NEW_ROOM<a class="headerlink" href="#mc_pre_new_room" title="Permanent link">⚓︎</a></h3>
 <p>Accepts no return parameters.</p>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>While this provides a Room object, and the room object is perfectly fine, the callback fires BEFORE THE ROOM IS FULLY INITIALIZED, so operations surrounding the Room object stuff should be considered unstable and unreliable, used at your own discretion, some seemindly friendly functions like GetCenterPos are already known to cause problems when used within this callback, so, again, try to move Room object stuff to other callbacks that happen after this one.</p>
+</details>
 <table>
 <thead>
 <tr>
