@@ -26,12 +26,26 @@ struct EntitySaveState depends (Vector) {
 	int8_t byteStorage : 0x5c; // 0x5c
 
 	{{
-		struct Collectible;
+		struct Bomb;
+		struct Pickup;
+		struct NPC; // FIREPLACE and MOVABLE_TNT only
+		struct Effect;
+		struct Minecart;
 	}}
 } : 0x70; // 0x70
 
 {{
-	struct EntitySaveState::Collectible
+	struct EntitySaveState::Bomb
+	{
+		static inline uint32_t* GetScale(EntitySaveState& saveState) { return (uint32_t*)&saveState.intStorage1; }
+		static inline BitSet128* GetTearFlags(EntitySaveState& saveState) { return (BitSet128*)&saveState.intStorage2; }
+		static inline bool* GetIsFetus(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage2; }
+		static inline float* GetExplosionDamage(EntitySaveState& saveState) { return (float*)&saveState.floatStorage1; }
+		static inline float* GetRadiusMulti(EntitySaveState& saveState) { return (float*)&saveState.floatStorage2; }
+		static inline int8_t* GetSpawnerPlayerIndex(EntitySaveState& saveState) { return (int8_t*)&saveState.byteStorage; } // -1 if not spawned by player
+	};
+
+	struct EntitySaveState::Pickup
 	{
 		static inline int* GetCharge(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; }
 		static inline int* GetPrice(EntitySaveState& saveState) { return (int*)&saveState.intStorage3; }
@@ -44,6 +58,31 @@ struct EntitySaveState depends (Vector) {
 		static inline int* GetAlternatePedestal(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
 		static inline int* GetActiveVarData(EntitySaveState& saveState) { return (int*)&saveState.intStorage8; }
 		static inline int* GetSourcePoolType(EntitySaveState& saveState) { return (int*)&saveState.floatStorage1; }
+		static inline std::array<int, 8>* GetCycleCollectibles(EntitySaveState& saveState) { return *(std::array<int, 8>**)((char*)&saveState + 0x60); } // 0 is used as a terminator if < 8
 		static inline EntitySaveState* GetFlipSaveState(EntitySaveState& saveState) { return *(EntitySaveState**)((char*)&saveState + 0x68); }
+	};
+
+	struct EntitySaveState::Slot
+	{
+		static inline int* GetDonationValue(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
+		static inline int* GetTriggerTimer(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; } // Only used by SHOP_RESTOCK_MACHINE 
+		static inline int* GetPrizeCollectible(EntitySaveState& saveState) { return (int*)&saveState._intStorage7; }
+	};
+
+	struct EntitySaveState::NPC // FIREPLACE and MOVABLE_TNT
+	{
+		static inline int* GetHealth(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
+	};
+
+	struct EntitySaveState::Effect
+	{
+		static inline int* GetState(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; } // Used by DIRT_PATCH, SPAWNER and LIL_GHOST
+		static inline int* GetVarData0(EntitySaveState& saveState) { return (int*)&saveState.intStorage4; } // Used by SPAWNER
+		static inline int* GetVarData1(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; } // Used by SPAWNER
+	};
+
+	struct EntitySaveState::Minecart
+	{
+		static inline float* GetAngleDegrees(EntitySaveState& saveState) { return (float*)&saveState.floatStorage1; }
 	};
 }}
