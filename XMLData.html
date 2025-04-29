@@ -8366,7 +8366,7 @@
 <hr />
 <h3 aria-label="Functions" id="getmodbyid">GetModById ()<a class="headerlink" href="#getmodbyid" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getmodbyid-string-modid">table GetModById ( string modId )<a class="headerlink" href="#table-getmodbyid-string-modid" title="Permanent link">⚓︎</a></h4>
-<p>Returns a table containing the attributes of the metdata xml of the matching mod id.</p>
+<p>Returns a table containing the attributes of the metdata xml of the matching mod id. Can be used in conjunction with the "sourceid" attribute of other xmlnodes to determine which mod they come from, in the cases where they come from a mod (most nodes have this attribute).</p>
 <details class="- info">
 <summary>Table usage</summary>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Car&#39;s mod name:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">XMLData</span><span class="p">.</span><span class="nf">GetModById</span><span class="p">(</span><span class="s2">&quot;2788006730&quot;</span><span class="p">).</span><span class="nv">name</span><span class="p">)</span>
