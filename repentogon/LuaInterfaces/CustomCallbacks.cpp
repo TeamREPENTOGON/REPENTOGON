@@ -5159,3 +5159,52 @@ HOOK_METHOD(Room, SpawnGreedModeWave, (bool unusedBool) -> void) {
 			.call(1);
 	}
 }
+
+static std::unordered_map<int, std::set<int>> _getTearHitParamsRecursionProtection;
+
+// MC_EVALUATE_TEAR_HIT_PARAMS (1490)
+HOOK_METHOD(Entity_Player, GetTearHitParams, (TearParams* params, int weaponType, float damageScale, int tearDisplacement, Entity* source) -> TearParams*) {
+	std::set<int>* recursionProtection = &_getTearHitParamsRecursionProtection[this->_playerIndex];
+
+	params = super(params, weaponType, damageScale, tearDisplacement, source);
+
+	if (recursionProtection->find(weaponType) != recursionProtection->end()) {
+		return params;
+	}
+
+	recursionProtection->insert(weaponType);
+
+	const int callbackid = 1490;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(this->GetPlayerType())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(params, lua::Metatables::TEAR_PARAMS)
+			.push(weaponType)
+			.push(damageScale)
+			.push(tearDisplacement)
+			.push(source, lua::Metatables::ENTITY)
+			.call(1);
+
+		if (!results && lua_isuserdata(L, -1)) {
+			auto* ud = lua::GetLuabridgeUserdata<TearParams*>(L, -1, lua::Metatables::TEAR_PARAMS, "TearParams");
+
+			if (!ud) {
+				KAGE::LogMessage(2, "Invalid userdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
+			}
+			else {
+				*params = *ud;
+			}
+		}
+	}
+
+	recursionProtection->erase(weaponType);
+	
+
+	return params;
+}

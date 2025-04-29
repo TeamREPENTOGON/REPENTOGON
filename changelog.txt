@@ -113,6 +113,9 @@ Additions:
 		Used to modify intermediate values of player stat calculations.
 		Currently supported: EvaluateStatStage.TEARS_UP, EvaluateStatStage.FLAT_TEARS, EvaluateStatStage.DAMAGE_UP, EvaluateStatStage.FLAT_DAMAGE
 		NOTE: Unless you need to perform complicated conditions/calculations, it is strongly suggested that you use the new XML item stats features instead of this callback!
+	- MC_EVALUATE_TEAR_HIT_PARAMS(EntityPlayer, TearParams, WeaponType, float DamageScale, integer TearDisplacement, Entity Source)
+		Optional param: PlayerType
+		Used to modify mutable TearParams object.
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
