@@ -14,7 +14,7 @@ struct RoomTransition depends (ANM2) { {{
 	inline int GetTransitionMode() { return this->_mode; }
 	inline ANM2* GetVersusScreenSprite() { return &this->_versusScreenANM2; }
 	inline bool IsRenderingBossIntro() {
-		return GetTransitionMode() == 2;
+		return GetTransitionMode() == 2 && _unkStartRoomTransitionCond != 0;
 	}
 	inline std::map<int, ANM2>* GetExtraLayerANM2s() { return &this->_extraLayerANM2s; }
 }}
@@ -26,4 +26,5 @@ struct RoomTransition depends (ANM2) { {{
 	// _playerExtraPortraitANM2 replaced by this std::map in REP+
 	// Maps layerID to ANM2. Used for player extra portraits but will work for any layer.
 	std_map_int_ANM2 _extraLayerANM2s : 0x224;
+	int _unkStartRoomTransitionCond : 0x238;
 } : 0x23c;
