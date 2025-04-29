@@ -86,7 +86,7 @@ Returns a table containing the attributes of the provided entity. The `AutoXMLPi
 ___
 ### GetModById () {: aria-label='Functions' }
 #### table GetModById ( string modId ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the metdata xml of the matching mod id.
+Returns a table containing the attributes of the metdata xml of the matching mod id. Can be used in conjunction with the "sourceid" attribute of other xmlnodes to determine which mod they come from, in the cases where they come from a mod (most nodes have this attribute).
 ???- info "Table usage"
 	```lua
 	print("Car's mod name:", XMLData.GetModById("2788006730").name)
