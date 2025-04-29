@@ -34,6 +34,8 @@ Additions:
 	- IsLilDelirium
 	- SetLilDelirium
 	- GetRandomWisp
+	- GetActiveWeaponEntity
+	- GetActiveWeaponNumFired
 * EntityConfigEntity:
 	- GetDevolvedEntity
 * Level:
@@ -62,6 +64,9 @@ Additions:
 	- AddRooms
 * FXLayers:
 	- AddPoopFx(ColorMod Color)
+* Weapon:
+	- GetMainEntity
+		Returns active entity used by weapon (Brimstone - EntityLaser, Mom's Knife -  EntityKnife and etc.)
 * CharacterMenu
 	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
 		Tainted boolean defaults to current menu if unspecified.

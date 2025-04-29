@@ -207,6 +207,36 @@ LUA_FUNCTION(Lua_GetRandomWisp) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarGetActiveWeaponEntity)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Weapon* wep = fam->_weapon;
+	if (wep == nullptr) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, wep->GetMainEntity(), lua::GetMetatableKey(lua::Metatables::ENTITY));
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarGetActiveWeaponNumFired)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Weapon* wep = fam->_weapon;
+	if (wep == nullptr) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua_pushinteger(L, wep->_numFired);
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -235,6 +265,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsLilDelirium", Lua_FamiliarIsLilDelirium },
 		{ "SetLilDelirium", Lua_SetLilDelirium },
 		{ "GetRandomWisp", Lua_GetRandomWisp },
+		{ "GetActiveWeaponEntity", Lua_FamiliarGetActiveWeaponEntity },
+		{ "GetActiveWeaponNumFired", Lua_FamiliarGetActiveWeaponNumFired },
 		{ NULL, NULL }
 	};
 

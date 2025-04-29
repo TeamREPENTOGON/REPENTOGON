@@ -177,6 +177,12 @@ LUA_FUNCTION(Lua_WeaponSetHeadLockTime) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_WeaponGetMainEntity) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	lua::luabridge::UserdataPtr::push(L, weapon->GetMainEntity(), lua::GetMetatableKey(lua::Metatables::ENTITY));
+	return 1;
+}
+
 static void RegisterWeapon(lua_State* L) {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "CreateWeapon", Lua_CreateWeapon);
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "DestroyWeapon", Lua_DestoryWeapon);
@@ -201,6 +207,7 @@ static void RegisterWeapon(lua_State* L) {
 		{ "IsItemAnimFinished", Lua_WeaponIsItemAnimFinished },
 		{ "ClearItemAnim", Lua_WeaponClearItemAnim },
 		{ "SetHeadLockTime", Lua_WeaponSetHeadLockTime },
+		{ "GetMainEntity", Lua_WeaponGetMainEntity },
 		{ NULL, NULL }
 	};
 
