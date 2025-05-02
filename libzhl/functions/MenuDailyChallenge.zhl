@@ -18,4 +18,4 @@ struct Menu_DailyChallenge depends (ANM2, AnimationState, Leaderboard, GenericPo
     GenericPopup _genericPopup : 0x13c;
     GenericPrompt _genericPrompt : 0x270;
     Leaderboard _leaderboard : 0x3a4;
-} : 0x818;
+} : 0x760;

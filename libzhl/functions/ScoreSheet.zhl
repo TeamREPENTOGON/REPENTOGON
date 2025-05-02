@@ -37,4 +37,4 @@ struct ScoreSheet
 	}}
 	
     
-} : 0x14c;
+} : 0x90;

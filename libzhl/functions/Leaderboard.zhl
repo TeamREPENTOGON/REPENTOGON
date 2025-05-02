@@ -38,4 +38,4 @@ struct Leaderboard depends (ANM2, DailyChallenge, ScoreSheet, LeaderboardEntry) 
     //int _scoreOrTimeRankingListState : 0x21C; // Ranking by Score or by Time
     //int _listTypeSelection : 0x220; // Global, Friends, ...
     //LeaderboardEntry* _leaderboardEntries : 0x22c;
-} : 0x45c;
+} : 0x3b4;
