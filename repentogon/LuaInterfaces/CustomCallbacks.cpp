@@ -4962,7 +4962,7 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage, 
 }
 
 // As of rep+, these all take a "ignoreBossStatusCooldown" boolean.
-HOOK_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
+//HOOK_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //CHECK-ME (add addEnemyKillScore param)
 HOOK_STATUS_APPLY_CALLBACKS(AddConfusion, 5);
 HOOK_STATUS_APPLY_CALLBACKS(AddFear, 6);
 HOOK_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
