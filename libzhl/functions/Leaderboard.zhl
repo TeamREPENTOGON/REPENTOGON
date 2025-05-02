@@ -22,16 +22,20 @@ struct LeaderboardEntry depends (LeaderboardEntryData) {
 struct Leaderboard depends (ANM2, DailyChallenge, ScoreSheet, LeaderboardEntry) {
 	{{
 	}}
-    int _selectedDate : 0x0;
-    int _currentDate : 0x4;
-    DailyChallenge _dailyChallenge : 0x8;
-    ScoreSheet _scoreSheet : 0xbc;
-    int _pageEntryStartID: 0x20c;
-    int _isLeaderboardClosing : 0x210;
-    int _displayState : 0x218;
-    int _scoreOrTimeRankingListState : 0x21C; // Ranking by Score or by Time
-    int _listTypeSelection : 0x220; // Global, Friends, ...
-    LeaderboardEntry* _leaderboardEntries : 0x22c;
-    ANM2 _scoreMenuSprite: 0x234;
-    ANM2 _leaderboardMenuSprite : 0x348;
+	int _displayState : 0x4;
+    ANM2 _scoreMenuSprite: 0x10;
+    ANM2 _leaderboardMenuSprite : 0x124;
+	DailyChallenge _dailyChallenge : 0x258;
+	ScoreSheet _scoreSheet : 0x30c;
+	int _isLeaderboardClosing : 0x3b0;
+	
+	//old structures vars
+    //int _selectedDate : 0x0;
+    //int _currentDate : 0x4;
+    
+    //int _pageEntryStartID: 0x20c;
+    
+    //int _scoreOrTimeRankingListState : 0x21C; // Ranking by Score or by Time
+    //int _listTypeSelection : 0x220; // Global, Friends, ...
+    //LeaderboardEntry* _leaderboardEntries : 0x22c;
 } : 0x45c;

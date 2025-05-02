@@ -95,16 +95,16 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	uint32_t _currentSaveSlot : 0x10;
 	PersistentGameData _persistentGameData : 0x14;
 	GameState _gamestate : 0xfa4;
-	Cutscene _cutsceneManager : 0x20d10;
-	NightmareScene _nightmareScene : 0x21560;
-	AchievementOverlay _achievementOverlay : 0x21b54;
-	Music _musicmanager : 0x29ec0;
-	SoundEffects _sfxManager : 0x2a228;
-	OptionsConfig _optionsConfig : 0x2a240;
-	ItemConfig _itemConfig : 0x2a2f8;
-	EntityConfig _entityConfig : 0x2a430;
-	ModManager _modManager : 0x2a480;
-	StringTable _stringTable : 0x4a6e0;
+	Cutscene _cutsceneManager : 0x20c48;
+	NightmareScene _nightmareScene : 0x21498;
+	AchievementOverlay _achievementOverlay : 0x21a8c;
+	Music _musicmanager : 0x29df8;
+	SoundEffects _sfxManager : 0x2a160;
+	OptionsConfig _optionsConfig : 0x2a178;
+	ItemConfig _itemConfig : 0x2a234;
+	EntityConfig _entityConfig : 0x2a36c;
+	ModManager _modManager : 0x2a3bc;
+	StringTable _stringTable : 0x4a61c;
 	unsigned int _framecount : 0x4a97c;
 	bool _isConsoleEnabled : 0x4a991;
 	ANM2 _buttonsSprite : 0x4a9a4;
@@ -127,7 +127,7 @@ struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, Night
 	ANM2 _cursorSprite : 0x4af4c;
 	NetplayManager _netplayManager : 0x4b080;
 	
-} : 0x4cdfc;
+} : 0x4cd68;
 
 "a1(????????)8b80????????83e800":
 reference Manager *g_Manager;

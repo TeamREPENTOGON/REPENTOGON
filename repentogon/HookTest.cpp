@@ -282,7 +282,8 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 	return ret;
 }
 */
-HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
+
+/*HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
 	super();
 
 	if (_dailyChallenge._id == 1 && _isLeaderboardClosing == 0) {
@@ -294,3 +295,4 @@ HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
 		}
 	}
 }
+*/
