@@ -31,7 +31,7 @@ __thiscall std_string Level::GetName();
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec70a1????????33c58945ec5657508d45f464a3000000008bc28945888bf9":
 cleanup void GetLevelName(std_string* result<ecx>, uint32_t levelStage<edx>, uint32_t stageType, uint32_t curseMask, uint32_t unk, uint32_t unk2, bool unk3);
 
-"558bec83ec0c53568b35":
+"558bec83ec148b15":
 __thiscall void Level::SetNextStage();
 
 "558bec5153568b35????????578b7d":
@@ -52,7 +52,7 @@ __thiscall void Level::InitializeDevilAngelRoom(bool ForceAngel, bool ForceDevil
 "558bec6aff68????????64a1????????5083ec24535657a1????????33c5508d45??64a3????????8bd9f30f7e05":
 __thiscall int Level::GetRandomRoomIndex(bool IAmErrorRoom, unsigned int Seed);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec48040000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec50040000":
 __thiscall void Level::generate_dungeon(RNG * RNG);
 
 "558bec83e4f883ec0c568bf18b86":

@@ -22,5 +22,5 @@ __thiscall char* InputManager::GetDeviceNameByIdx(int cidx);
 struct InputManager {
 };
 
-"b9(????????)32ff":
+"b9(????????)32ffe8":
 reference InputManager g_InputManagerBase;

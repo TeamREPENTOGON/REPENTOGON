@@ -1,4 +1,4 @@
-"558bec83ec60a1????????33c58945??538b5d":
+"558bec83ec58a1????????33c58945??53568bf1":
 __thiscall void DailyChallenge::Init(unsigned int dailyDate);
 
 struct DailyChallenge depends (ChallengeParam) { 

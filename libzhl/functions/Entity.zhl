@@ -95,7 +95,7 @@ __thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration, bool 
 "558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
 __thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
-"558bec83e4f883ec10568b75??5756":
+"558bec83e4f883ec10807d??00":
 __thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
 
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":

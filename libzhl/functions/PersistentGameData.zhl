@@ -1,4 +1,4 @@
-"558bec83e4f883ec0c5356578bf9807f??000f85????????8b5d":
+"558bec83e4f8568bf157807e??00":
 __thiscall bool PersistentGameData::TryUnlock(int achievementID);
 
 "558bec81ecd4000000a1????????33c58945??8b45":
