@@ -309,7 +309,7 @@ struct ConsoleMega : ImGuiWindowObject {
                 console->_commandHistory = newHistory;
         }
 
-        console->_input = input;
+        console->_input = std::string(input);
         console->SubmitInput(false);
 
         if (clear)
