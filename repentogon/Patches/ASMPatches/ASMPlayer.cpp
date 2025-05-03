@@ -63,7 +63,7 @@ void ASMPatchSpeed() {
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x05").AddBytes(ByteBuffer().AddAny((char*)&speedPtr, 4)) // addss xmm0, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x11\x87\x54\x15").AddZeroes(2) // movss dword ptr [edi + 0x1554], xmm0
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 8)) // movss dword ptr [edi + 0x????], xmm0
 		.AddRelativeJump((char*)addr + 0x8); // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -85,17 +85,21 @@ void ASMPatchDamage() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void __stdcall RangeTrampoline(Entity_Player* player) {
+	player->_tearrange += PlayerStats::modCharacterRange;
+}
 void ASMPatchRange() {
 	SigScan scanner("83f80974??83f81e74");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* rangePtr = &PlayerStats::modCharacterRange;
 	printf("[REPENTOGON] Patching EvaluateCache Range at %p\n", addr);
-	ASMPatch patch;
 
-	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&rangePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x58\x87\x74\x14").AddZeroes(2) // addss xmm0, dword ptr [edi + 0x1474]
-		.AddBytes("\xF3\x0F\x11\x87\x74\x14").AddZeroes(2) // movss dword ptr [edi + 0x1474], xmm0
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)
+		.AddInternalCall(RangeTrampoline)
+		.RestoreRegisters(savedRegisters)
 		.AddBytes("\x83\xF8\x09") // cmp eax, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x30) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
@@ -128,7 +132,7 @@ void ASMPatchLuck() {
 	ASMPatch patch;
 
 	patch.AddBytes("\xF3\x0F\x58\x15").AddBytes(ByteBuffer().AddAny((char*)&luckPtr, 4)) // addss xmm2, dword ptr ds:[0xXXXXXXXX]
-		.AddBytes("\xF3\x0F\x58\x97\x4c\x15").AddZeroes(2) // addss xmm2, dword ptr [edi + 154c]
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 8)) // addss xmm2, dword ptr [edi + 0x????]
 		.AddRelativeJump((char*)addr + 0x8);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
