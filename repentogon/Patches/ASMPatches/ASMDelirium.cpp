@@ -239,8 +239,7 @@ namespace delirium {
 			.AddBytes(movVariantBytes)
 			.FreeReturn(space)
 			.RestoreRegisters(registers)
-			.MoveToMemory(ASMPatch::Registers::ECX, 0xBC0, ASMPatch::Registers::EBX)
-			.MoveToMemory(ASMPatch::Registers::EDI, 0xBC4, ASMPatch::Registers::EBX)
+			.AddBytes(ByteBuffer().AddAny((char*)addr, 12))  // delirium->_deliriumBossType = ECX; delirium->_deliriumBossVariant = EDI;
 			.AddRelativeJump((char*)addr + 12);
 
 		sASMPatcher.PatchAt(addr, &patch);
@@ -265,7 +264,7 @@ namespace delirium {
 
 		ASMPatch patch;
 		patch.PreserveRegisters(registers)
-			.Push(Reg::EDI)
+			.Push(Reg::EBX)
 			.AddInternalCall(PostTransformationCallback)
 			.RestoreRegisters(registers)
 			.AddRelativeJump((char*)addr + distance);
