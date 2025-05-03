@@ -551,6 +551,9 @@ __thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
 "558bec83e4f881eca4000000a1????????33c4898424????????5356":
 __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 
+"558bec5153568b75??578bf981fe02010000":
+__thiscall bool Entity_Player::CanRerollCollectible(int id, bool unk);
+
 
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }

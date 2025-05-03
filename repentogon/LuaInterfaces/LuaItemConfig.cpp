@@ -209,9 +209,16 @@ LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
 	return 1;
 }
 
+// Legacy compat for a player function in ItemConfig
 LUA_FUNCTION(Lua_ItemConfig_CanRerollCollectible) {
 	int id = (int)luaL_checkinteger(L, 1);
-	lua_pushboolean(L, CanRerollCollectible(id));
+
+	if (!g_Game->_playerManager._playerList.empty() && g_Game->GetPlayer(0) && g_Game->GetPlayer(0)->_exists) {
+		lua_pushboolean(L, g_Game->GetPlayer(0)->CanRerollCollectible(id, false));
+	} else {
+		lua_pushboolean(L, !g_Manager->GetItemConfig()->IsQuestItem(id));
+	}
+
 	return 1;
 }
 

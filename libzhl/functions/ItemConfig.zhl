@@ -40,9 +40,8 @@ __thiscall ItemConfig_Item* ItemConfig::GetTrinket(unsigned int TrinketType);
 "558bec83e4f864a1????????83ec0c8b10a1????????53568bd9":
 __thiscall vector_ItemPtr& ItemConfig::GetTaggedItems(unsigned long long tags);
 
-// this is technically a player func but i'm putting it here
-"558bec5153568b75??578bf981fe02010000":
-bool CanRerollCollectible(int id);
+"558bec83e4f8518b0d????????8d89????????e8????????85c074??8b80":
+static cleanup bool ItemConfig::IsQuestItem(int id<ecx>);
 
 struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, ItemConfig_PlayerForm)
 {
