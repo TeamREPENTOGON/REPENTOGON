@@ -331,9 +331,10 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 // These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
 // The overridden bytes are restored by the patch.
 void PatchPostEntityTakeDamageCallbacks() {
-	SigScan entityTakeDmgScanner("5f5eb0015b8be55dc21400??????????????????????????????f30f1041"); //CHECK-ME (Connor's PostTakeDamagePatch)
+	// Sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
+	SigScan entityTakeDmgScanner("0186????????5f5eb0015b8be55dc21400");
 	entityTakeDmgScanner.Scan();
-	InjectPostDamageCallback(entityTakeDmgScanner.GetAddress(), false);
+	InjectPostDamageCallback((char*)entityTakeDmgScanner.GetAddress() + 0x6, false);
 
 	SigScan playerTakeDmgScanner("8b4d??64890d????????595f5e8b4d??33cde8????????8be55dc2140068????????e8????????83c404833d????????ff0f85????????c745??0d000000");
 	playerTakeDmgScanner.Scan();
@@ -416,7 +417,7 @@ void ASMPatchPostPlayerUseBomb() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EAX)  // Push the BOMB
+		.Push(ASMPatch::Registers::ECX)  // Push the BOMB
 		.Push(ASMPatch::Registers::EDI)  // Push the PLAYER
 		.AddInternalCall(ProcessPostPlayerUseBombCallback)  // Run MC_POST_PLAYER_USE_BOMB
 		.RestoreRegisters(savedRegisters)
