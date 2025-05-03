@@ -28,6 +28,7 @@ struct Entity_Projectile : public Entity {
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

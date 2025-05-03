@@ -165,6 +165,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

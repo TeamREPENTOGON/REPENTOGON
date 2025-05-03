@@ -631,6 +631,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

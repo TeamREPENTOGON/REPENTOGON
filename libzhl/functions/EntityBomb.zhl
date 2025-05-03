@@ -29,6 +29,7 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

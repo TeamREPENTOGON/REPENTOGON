@@ -31,6 +31,7 @@ struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

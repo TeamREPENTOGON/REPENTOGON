@@ -107,6 +107,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

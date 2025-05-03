@@ -254,6 +254,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
         void Remove(); 
 		
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 
@@ -298,6 +299,7 @@ __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

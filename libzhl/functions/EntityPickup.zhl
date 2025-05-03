@@ -88,6 +88,7 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
         void Remove();
 		
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor

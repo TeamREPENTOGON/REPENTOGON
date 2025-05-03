@@ -29,6 +29,7 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
+		skip; // ???
 		skip; // GetRenderZ
 		skip; // CanOverwrite
 		skip; // SetColor
