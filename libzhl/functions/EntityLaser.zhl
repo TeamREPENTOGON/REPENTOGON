@@ -27,19 +27,19 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline std_vector_uint* GetHitList() { return &this->_hitList; }
 
 }} 
-	BitSet128 _tearFlags : 0x420;
-	int _timeout : 0x450;
-	bool _sampleLaser : 0x455;
-	bool _shrink : 0x456;
-	HomingLaser _homingLaser : 0x45c;
-	uint32_t _homingType : 0x4cc;
-	float _scale : 0x4d8;
-	bool _disableFollowParent : 0x4dc;
-	bool _multidimensionalTouched: 0x4f8;
-	bool _prismTouched: 0x50c;
-	bool _oneHit: 0x50d;
-	float _damageMultiplier : 0x514;
-	std_vector_uint _hitList : 0x518;
+	BitSet128 _tearFlags : 0x428;
+	int _timeout : 0x458;
+	bool _sampleLaser : 0x45d;
+	bool _shrink : 0x45e;
+	HomingLaser _homingLaser : 0x464;
+	uint32_t _homingType : 0x4d4;
+	float _scale : 0x4e0;
+	bool _disableFollowParent : 0x4e4;
+	bool _multidimensionalTouched: 0x500;
+	bool _prismTouched: 0x514;
+	bool _oneHit: 0x515;
+	float _damageMultiplier : 0x51c;
+	std_vector_uint _hitList : 0x520;
 
 	__vtable {
 		skip; // Free
@@ -80,4 +80,4 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};
-} : 0x560;
+} : 0x568;

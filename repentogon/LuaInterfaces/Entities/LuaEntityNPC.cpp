@@ -104,11 +104,10 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 
 LUA_FUNCTION(Lua_EntityNPC_GetHitList) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	std::vector<unsigned int> hitList = npc->GetHitList();
 
 	lua_newtable(L);
 	int idx = 1;
-	for (int index : hitList) {
+	for (int index : *npc->GetHitList()) {
 		lua_pushnumber(L, idx);
 		lua_pushinteger(L, index);
 		lua_settable(L, -3);

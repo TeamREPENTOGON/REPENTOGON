@@ -59,15 +59,14 @@ struct Entity_Slot depends (ANM2) : public Entity { {{
 		skip; // LoadEntityConfig
     };
 	
-	int _state : 0x408;
-	int _prizeType : 0x40c;
-	short _shellGameAnimationIndex : 0x410;
-	short _timeout : 0x412;
-	int _donationValue : 0x414;
-	uint32_t _triggerTimer : 0x418;
-	short _unkShort1 : 0x41c;
-	uint16_t _touch : 0x41e;
-	ANM2 _prizeAnm2 : 0x420;
-	int _prizeCollectible : 0x534;
-} : 0x540;
-
+	int _state : 0x410;
+	int _prizeType : 0x414;
+	short _shellGameAnimationIndex : 0x41a;
+	short _timeout : 0x41c;
+	int _donationValue : 0x420;
+	uint32_t _triggerTimer : 0x424;
+	short _unkShort1 : 0x428;
+	uint16_t _touch : 0x42a;
+	ANM2 _prizeAnm2 : 0x42c;
+	int _prizeCollectible : 0x540;
+} : 0x548;

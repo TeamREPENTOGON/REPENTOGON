@@ -103,14 +103,14 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 		skip; // LoadEntityConfig	
 	};
 
-	ANM2 _priceANM2 : 0x408;
-	bool _isForceBlind : 0x526;
-	int _timeout : 0x538;
-	int _dropDelay : 0x54c;
-	Entity_Effect* _pickupGhost : 0x588;
-	Entity_Pickup * _megaChestCollectible[2]: 0x58c;
-	int _varData : 0x594;
-	unsigned int _cycleCollectibleList[8] : 0x598;
-	unsigned int _cycleCollectibleCount : 0x5b8;
-	
-} : 0x6e8;
+	ANM2 _priceANM2 : 0x410;
+	bool _isForceBlind : 0x52e;
+	int _timeout : 0x540;
+	int _dropDelay : 0x554;
+	Entity_Effect* _pickupGhost : 0x590;
+	Entity_Pickup * _megaChestCollectible[2]: 0x594;
+	int _varData : 0x59c;
+	unsigned int _cycleCollectibleList[8] : 0x5a0;
+	unsigned int _cycleCollectibleCount : 0x5c0;
+
+} : 0x6f0;
