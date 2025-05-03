@@ -4878,6 +4878,13 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, bool ignoreBos
 	HandleStatusApplyCallback(statusId, inputs, _APPLY_STATUS_EFFECT_LAMBDA()); \
 }
 
+#define _APPLY_TWOBOOL_STATUS_EFFECT_LAMBDA() [this, otherbool](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration, ignoreBossStatusCooldown, otherbool); }
+#define HOOK_TWOBOOL_STATUS_APPLY_CALLBACKS(_method, statusId) \
+HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, bool ignoreBossStatusCooldown, bool otherbool) -> void) { \
+	StatusEffectApplyInputs inputs = {this, ref, duration, ignoreBossStatusCooldown}; \
+	HandleStatusApplyCallback(statusId, inputs, _APPLY_TWOBOOL_STATUS_EFFECT_LAMBDA()); \
+}
+
 #define _APPLY_NOBOOL_STATUS_EFFECT_LAMBDA() [this](const EntityRef& ref, int duration, bool ignoreBossStatusCooldown) { return super(ref, duration); }
 #define HOOK_NOBOOL_STATUS_APPLY_CALLBACKS(_method, statusId) \
 HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration) -> void) { \
@@ -4962,12 +4969,14 @@ HOOK_METHOD(Entity, _method, (const EntityRef& ref, int duration, float damage, 
 }
 
 // As of rep+, these all take a "ignoreBossStatusCooldown" boolean.
-//HOOK_STATUS_APPLY_CALLBACKS(AddCharmed, 4); //CHECK-ME (add addEnemyKillScore param)
 HOOK_STATUS_APPLY_CALLBACKS(AddConfusion, 5);
 HOOK_STATUS_APPLY_CALLBACKS(AddFear, 6);
 HOOK_STATUS_APPLY_CALLBACKS(AddFreeze, 7);
 HOOK_STATUS_APPLY_CALLBACKS(AddMidasFreeze, 11);
-HOOK_STATUS_APPLY_CALLBACKS(AddShrink, 13);
+
+// AddCharmed and AddShrink got new boolean params in 1.9.7.11
+HOOK_TWOBOOL_STATUS_APPLY_CALLBACKS(AddCharmed, 4);
+HOOK_TWOBOOL_STATUS_APPLY_CALLBACKS(AddShrink, 13);
 
 // These ones take a boolean parameter but it is unused.
 HOOK_STATUS_APPLY_CALLBACKS(AddBaited, 0);

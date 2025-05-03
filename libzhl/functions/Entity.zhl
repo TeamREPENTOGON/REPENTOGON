@@ -96,7 +96,7 @@ __thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration, bool 
 __thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage, bool ignoreBossStatusCooldown);
 
 "558bec83e4f883ec10807d??00":
-__thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown);
+__thiscall void Entity::AddShrink(const EntityRef& ref, int duration, bool ignoreBossStatusCooldown, bool unk);
 
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
 __thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, float amount, ColorMod color, bool ignoreBossStatusCooldown);
