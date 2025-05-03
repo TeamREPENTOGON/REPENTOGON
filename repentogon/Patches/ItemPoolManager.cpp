@@ -1635,7 +1635,9 @@ void ItemPoolManager::fix_original_game_state(std::vector<int>& poolIdRemap, boo
 
 	for (size_t i = 0; i < gameState._roomCount; i++)
 	{
-		for (auto& entitySaveState : gameState._rooms[i].SavedEntities)
+		auto& roomState = gameState._rooms[i];
+		REPENTOGON::AssertStructSizeFromVector(roomState.SavedEntities);
+		for (auto& entitySaveState : roomState.SavedEntities)
 		{
 			fix_entity_save_state(entitySaveState, poolIdRemap);
 		}

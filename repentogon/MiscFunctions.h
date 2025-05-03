@@ -26,6 +26,20 @@ namespace REPENTOGON {
 		SetWindowTextA(GetActiveWindow(), stocktitle);
 	};
 
+	template <typename T>
+	static void AssertStructSizeFromVector(std::vector<T>& vector)
+	{
+#ifndef NDEBUG
+		uintptr_t* data = reinterpret_cast<uintptr_t*>(&vector);
+		uintptr_t begin = data[0];
+		uintptr_t end = data[1];
+		uintptr_t capacity = data[2];
+
+		assert((end - begin) % sizeof(T) == 0);
+		assert((capacity - begin) % sizeof(T) == 0);
+#endif // !NDEBUG
+	}
+
 	inline std::string FloatToStringPrecision(float number, int precision) {
 		std::stringstream ss;
 		ss << std::fixed << std::setprecision(precision) << number;
