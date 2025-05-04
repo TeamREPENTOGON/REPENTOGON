@@ -1,11 +1,11 @@
 struct ChallengeParam {
-    std_string _name : 0x0; //0x0
-    std_set_int _roomset : 0x18; //0x18
-    std_vector_int _collectibleList : 0x20;
-    std_vector_int _trinketList : 0x2C;
+    std_string _name : 0x0; //challenge name
+    std_set_int _roomset : 0x18; //roomtype filter
+    std_vector_int _collectibleList : 0x20; //list of collectibles
+    std_vector_int _trinketList : 0x2C; //list of trinkets
     int _startingPill : 0x38;
     int _startingCard : 0x3C;
-    int _endStage : 0x40;
+    int _endStage : 0x40; //LevelStage
     int _playerType : 0x44;
     std_vector_int _achievementList : 0x48;
     int _soulHearts : 0x54;
@@ -15,15 +15,16 @@ struct ChallengeParam {
     int _coins : 0x64;
     float _addDamage : 0x68;
     bool _canShoot : 0x6C;
-    bool _isAltPath : 0x6D;
+    //bool _isAltPath : 0x6D; //deprecated. Replaced with _pathType
     int _difficulty : 0x70;
     bool _isMegaSatan : 0x74;
     float _minFireRate : 0x78;
     bool _maxDamage : 0x7C;
     bool _minShotSpeed : 0x7d;
     bool _bigRange : 0x7e;
-    unsigned int _getCurse : 0x80;
-    unsigned int _curseFilter : 0x84;
-    bool _isSecretPath : 0x88;
+	int _pathType : 0x80; // 0 - Sheol/Dark Room, 1 - Cathedral/Chest, 2 - Repentance Path, 3 - Home Path
+    unsigned int _getCurse : 0x84;
+    unsigned int _curseFilter : 0x88;
+    //bool _isSecretPath : 0x88; //deprecated. Replaced with _pathType
     std_vector_int _collectibleTwinList : 0x8c;
 } : 0xa4;
