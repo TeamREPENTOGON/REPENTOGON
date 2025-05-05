@@ -70,7 +70,7 @@ bool __stdcall PlayerItemNoMetronome(int itemID) {
 		return false;
 	}
 
-	return itemID != 488 && itemID != 475 && itemID != 422 && itemID != 326 && itemID != 482 && itemID != 636;
+	return itemID != COLLECTIBLE_METRONOME && itemID != COLLECTIBLE_PLAN_C && itemID != COLLECTIBLE_GLOWING_HOUR_GLASS && itemID != COLLECTIBLE_BREATH_OF_LIFE && itemID != COLLECTIBLE_CLICKER && itemID != COLLECTIBLE_R_KEY && itemID != COLLECTIBLE_URN_OF_SOULS;
 }
 
 void ASMPatchPlayerItemNoMetronome() {
