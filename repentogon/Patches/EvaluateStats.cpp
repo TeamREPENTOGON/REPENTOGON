@@ -194,7 +194,7 @@ void PatchFlatDamage() {
 
 	printf("[REPENTOGON] Patching EvaluateItems for flat damage at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI)  // Entity_Player*
@@ -217,7 +217,7 @@ void PatchRangeUp() {
 
 	printf("[REPENTOGON] Patching EvaluateItems for range at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
@@ -240,7 +240,7 @@ void PatchSpeedUp() {
 
 	printf("[REPENTOGON] Patching EvaluateItems for move speed at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
@@ -263,7 +263,7 @@ void PatchShotSpeedUp() {
 
 	printf("[REPENTOGON] Patching EvaluateItems for shot speed at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore overridden bytes
 		.PreserveRegisters(savedRegisters)

@@ -94,7 +94,7 @@ void ASMPatchRange() {
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching EvaluateCache Range at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)
