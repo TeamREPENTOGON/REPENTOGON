@@ -156,7 +156,7 @@ void __stdcall SetMarsDoubleTapWindow() {
 }
 
 void ASMPatchMarsDoubleTapWindow() {
-	SigScan scanner("83bf????????0a7f"); // cmp dword ptr [EDI + 0x1e7c],0xa
+	SigScan scanner("83bf????????0a7f"); // cmp dword ptr [EDI + XXXXXXXX],0xa
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* frameWindowPtr = &marsDoubleTapWindow;
@@ -166,8 +166,10 @@ void ASMPatchMarsDoubleTapWindow() {
 	patch.PreserveRegisters(savedRegisters)  // Store for later
 		.AddInternalCall(SetMarsDoubleTapWindow)
 		.AddBytes("\xA1").AddBytes(ByteBuffer().AddAny((char*)&frameWindowPtr, 4)) // mov eax, dword ptr ds:[XXXXXXXX]
-		.AddBytes("\x39\x87\x7c\x1e").AddZeroes(2) // cmp dword ptr [EDI + 0x1e7c],EAX
+		// Gets offset of mars framecount directly from the address for update resistance
+		.AddBytes("\x39\x87").AddBytes(ByteBuffer().AddAny((char*)addr+0x2, 4)) // cmp dword ptr [EDI + 0xXXXXXXXX,EAX
 		.RestoreRegisters(savedRegisters)
+		// This code block is otherwise so simple that I don't expect this offset to ever change
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
 }
