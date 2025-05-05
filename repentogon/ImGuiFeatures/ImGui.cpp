@@ -70,6 +70,12 @@ std::list<ImGuiKey>* GetPressedKeys()
 	return keys;
 }
 
+float GetAvailableMenuSpace() {
+	const float helpButtonSize = ImGui::CalcTextSize(LANG.HELP_MENU).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+	const float mergeButtonWidth = ImGui::CalcTextSize(ICON_U8_FA_ELLIPSIS).x + ImGui::GetStyle().FramePadding.x * 2.0f;
+	return ImGui::GetContentRegionAvail().x - helpButtonSize - mergeButtonWidth - ImGui::GetStyle().WindowPadding.x * 2.0f;
+}
+
 void HelpMarker(const char* desc)
 {
 	ImGui::TextDisabled("(?)");
@@ -727,5 +733,6 @@ extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
+extern float GetAvailableMenuSpace();
 extern float WINMouseWheelMove_Vert;  //I don't know if this needs to be added to the end of the file, but I don't see any errors
 extern float WINMouseWheelMove_Hori;
