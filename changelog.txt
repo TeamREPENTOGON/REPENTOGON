@@ -435,7 +435,6 @@ Additions:
 	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
 	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
 /newline/
-/versionseparator/
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
