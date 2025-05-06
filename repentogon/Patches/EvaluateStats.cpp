@@ -151,7 +151,8 @@ void PatchFlatTears() {
 		.Push(ASMPatch::Registers::ESI)  // Entity_Player*
 		.AddInternalCall(FlatTearsHook)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)patchAddr + 0x5);
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x7))
+		.AddRelativeJump((char*)patchAddr + 0x7);
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
