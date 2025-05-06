@@ -14,7 +14,7 @@ const int vanillaCoinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
 // Re-implementation of GetCoinValue that returns 1 for unknown (ie, modded) subtypes instead of random huge numbers.
 // Can also run our MC_PICKUP_GET_COIN_VALUE callback when desired.
 int __stdcall GetCoinValueReimplementation(Entity_Pickup* pickup, const bool runCallback) {
-	if (pickup->_variant != 20) return 0;
+	if (pickup->_variant != PICKUP_COIN) return 0;
 
 	const unsigned int subtype = pickup->_subtype;
 

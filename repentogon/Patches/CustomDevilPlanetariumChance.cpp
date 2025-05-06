@@ -209,16 +209,16 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     // Always return 0.0 if Telescope Lens is not available in a run 
     // This seems to be a good check for every case any planetarium cannot spawn, besides the challenges case. It accounts for if planetariums are unlocked, and if the game is Greed Mode
     // Using this method also allows mods to intuitively bypass it
-    if (g_Manager->GetItemConfig()->GetTrinket(152)->IsAvailableEx((152 & 255 ^ 1) * 2 - 3) == false) {
+    if (!g_Manager->GetItemConfig()->GetTrinket(TRINKET_TELESCOPE_LENS)->IsAvailable(0)) {
         return 0.0f;
     }
 
     // ** VANILLA FIX **
     // Always return 0.0 if treasure rooms cannot spawn in a challenge, as that makes planetariums unable to spawn as well
     unsigned int challenge = g_Game->GetChallenge();
-    if (challenge != 0x0) {
+    if (challenge != CHALLENGE_NULL) {
         ChallengeParam* chalpram = g_Manager->GetChallengeParams(challenge);
-        if (chalpram->_roomset.find(4) != chalpram->_roomset.end()) {
+        if (chalpram->_roomset.find(ROOM_TREASURE) != chalpram->_roomset.end()) {
             return 0.0f;
         }
     }
@@ -233,6 +233,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     int stageType = this->_stageType;
     int stage = this->_stage;
     PlayerManager* manager = g_Game->GetPlayerManager();
+    RNG* rng = &manager->_rng;
     bool hasTelescopeLens = manager->AnyoneHasTrinket(TRINKET_TELESCOPE_LENS);
     bool shouldBypassPlanetariumRestriction = false;
     bool shouldApplyStageRestriction = true;
@@ -257,7 +258,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         stage++;
 
     if (shouldApplyStageRestriction && (stage > STAGE3_2 && !hasTelescopeLens || stage > STAGE4_2))
-        return 0.f;
+        return 0.0f;
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
     if (CallbackState.test(1111 - 1000)) {
@@ -300,10 +301,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         if (treasureRoomsVisited < stage - 1 || shouldBypassTreasureRestriction) {
             chance += ((stage - treasureRoomsVisited - 1) * 0.2f);
 
-            // no idea if these values to FirstCollectibleOwner are right, but... trust in the decomp, i guess?
-            // second is 0 for now, gotta figure out why FirstCollectibleOwner even... needs RNG, that doesn't make sense to me
-            if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_CRYSTAL_BALL, 0, true)) {
-                chance = chance + 1.f;
+            if (manager->FirstCollectibleOwner(COLLECTIBLE_CRYSTAL_BALL, &rng, true)) {
+                chance = chance + 1.0f;
             }
         }
 
@@ -324,13 +323,13 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         }
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
 
-        if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_MAGIC_8_BALL, 0, true))
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_MAGIC_8_BALL, &rng, true))
             chance += 0.15f;
 
-        if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_CRYSTAL_BALL, 0, true))
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_CRYSTAL_BALL, &rng, true))
             chance += 0.15f;
 
-        if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, 0, true))
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, &rng, true))
             chance += 0.069f; //teehee
 
         if (hasTelescopeLens)
@@ -372,8 +371,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     }
     //MC_POST_PLANETARIUM_CALCULATE
 
-    if (chance > 1.f)
-        chance = 1.f;
+    if (chance > 1.0f)
+        chance = 1.0f;
 
     return chance;
 }

@@ -33,7 +33,7 @@ HOOK_METHOD(AnimationState, GetNullFrameByID, (int nullLayerID) -> NullFrame*) {
 HOOK_METHOD(Entity_Familiar, AddToFollowers, () -> void) {
 	// Skip call if this familiar is a follower with a null Parent & a Child that is a follower familiar.
 	// This sufficiently indicates that the familiar is at the front of the chain already.
-	if (this->_isFollower && this->_parent == nullptr && this->_child != nullptr && this->_child->_type == 3 && ((Entity_Familiar*)(this->_child))->_isFollower) {
+	if (this->_isFollower && this->_parent == nullptr && this->_child != nullptr && this->_child->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->_child))->_isFollower) {
 		// Mimic the message the game would usually print to the log in this case.
 		KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to followers again!\n", this->_variant);
 		return;
@@ -44,7 +44,7 @@ HOOK_METHOD(Entity_Familiar, AddToFollowers, () -> void) {
 HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 	// Skip call if this a "delayed" familiar with a null Parent & a Child that is a "delayed" familiar.
 	// This sufficiently indicates that the familiar is at the front of the chain already.
-	if (this->_isDelayed && this->_parent == nullptr && this->_child != nullptr && this->_child->_type == 3 && ((Entity_Familiar*)(this->_child))->_isDelayed) {
+	if (this->_isDelayed && this->_parent == nullptr && this->_child != nullptr && this->_child->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->_child))->_isDelayed) {
 		// Mimic the message the game would usually print to the log in this case.
 		KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to delayed again!\n", this->_variant);
 		return;
@@ -80,4 +80,9 @@ HOOK_METHOD(Menu_Online, Render, () -> void) {
 HOOK_METHOD(Menu_DailyChallenge, Render, () -> void) {
 	this->_DailyRunSprite.SetLayerFrame(3, 2);
 	super();
+}
+
+// Prevent the mod check popup from appearing and always let the player into the online menu
+HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
+	return false;
 }

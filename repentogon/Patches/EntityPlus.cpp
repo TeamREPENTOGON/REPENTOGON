@@ -73,11 +73,11 @@ HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int
 	holder->data.reset();  // Delete any pre-existing EntityPlus.
 
 	// Initialize the EntityPlus as the correct subclass for this entity.
-	if (type == 1) {
+	if (type == ENTITY_PLAYER) {
 		holder->data = std::make_unique<EntityPlayerPlus>();
-	} else if (type == 3) {
+	} else if (type == ENTITY_FAMILIAR) {
 		holder->data = std::make_unique<EntityFamiliarPlus>();
-	} else if (type == 7) {
+	} else if (type == ENTITY_LASER) {
 		holder->data = std::make_unique<EntityLaserPlus>();
 	} else {
 		holder->data = std::make_unique<EntityPlus>();
