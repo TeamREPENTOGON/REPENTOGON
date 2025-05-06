@@ -81,8 +81,3 @@ HOOK_METHOD(Menu_DailyChallenge, Render, () -> void) {
 	this->_DailyRunSprite.SetLayerFrame(3, 2);
 	super();
 }
-
-// Prevent the mod check popup from appearing and always let the player into the online menu
-HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
-	return false;
-}
