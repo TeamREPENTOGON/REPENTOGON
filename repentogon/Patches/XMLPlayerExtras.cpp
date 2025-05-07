@@ -274,17 +274,16 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 				continue;
 			}
 
+			// This is a hidden modded character, skip
+			if (!playerXML["hidden"].empty()) {
+				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a HIDDEN modded character at offset %d\n", player._id, name.c_str(), offset);
+				continue;
+			}
 
 			// This is a locked modded character, increment offset and skip
 			if (!IsCharacterUnlockedRgon(player._id)) {
 				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a locked modded character at offset %d\n", player._id, name.c_str(), offset);
 				offset++;
-				continue;
-			}
-
-			// This is a hidden modded character, skip
-			if (!playerXML["hidden"].empty()) {
-				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a HIDDEN modded character at offset %d\n", player._id, name.c_str(), offset);
 				continue;
 			}
 
