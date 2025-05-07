@@ -762,6 +762,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	Entity_Player* _backupPlayer : 0x1e50;
 	int _redStewBonusDuration : 0x1e58;
 	float _rockBottomMoveSpeed : 0x1e94, _rockBottomMaxFireDelay : 0x1e98, _rockBottomDamage : 0x1e9c, _rockBottomTearRange : 0x1ea0, _rockBottomShotSpeed : 0x1ea4, _rockBottomLuck : 0x1ea8;
+	int _revelationChargeTimer : 0x1ec0;
 	int _maggySwingCooldown : 0x1ed4;
 	int _suplexState : 0x1f08;
 	int _suplexAimCountdown : 0x1f0c;

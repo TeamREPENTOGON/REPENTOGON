@@ -1458,6 +1458,20 @@ LUA_FUNCTION(Lua_PlayerSetBabySkin) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetRevelationCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_revelationChargeTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRevelationCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_revelationChargeTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetMaggySwingCooldown) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_maggySwingCooldown);
@@ -3016,6 +3030,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetFlippedForm", Lua_PlayerGetBackupPlayer },
 		{ "SwapForgottenForm", Lua_SwapForgottenForm },
 		{ "SpawnAquariusCreep", Lua_SpawnAquariusCreep },
+		{ "GetRevelationCharge", Lua_PlayerGetRevelationCharge },
+		{ "SetRevelationCharge", Lua_PlayerSetRevelationCharge },
 		{ "GetMaggySwingCooldown", Lua_PlayerGetMaggySwingCooldown },
 		{ "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown },
 		{ "PlayDelayedSFX", Lua_PlayerPlayDelayedSFX },

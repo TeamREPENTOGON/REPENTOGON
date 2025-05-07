@@ -20,6 +20,7 @@ Additions:
 	- [Get/Set]RockBottomTearRange
 	- [Get/Set]RockBottomShotSpeed
 	- [Get/Set]RockBottomLuck
+	- [Get/Set]RevelationCharge
 	- GetPlayerHUD
 	- [Get/Set]SuplexState
 	- [Get/Set]SuplexAimCountdown
