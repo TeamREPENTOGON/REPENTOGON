@@ -16,7 +16,7 @@ bool __stdcall PlayerTypeNoShake(int playerType) {
 		return noShake == "true" ? true : noShake == "false" ? false : false;
 	}
 
-	return playerType == 4 || playerType == 16 || playerType == 17 || playerType == 14 || playerType == 25 || playerType == 35 || playerType == 33;
+	return playerType == PLAYER_BLUEBABY || playerType == PLAYER_THEFORGOTTEN || playerType == PLAYER_THESOUL || playerType == PLAYER_KEEPER || playerType == PLAYER_BLUEBABY_B || playerType == PLAYER_THEFORGOTTEN_B || playerType == PLAYER_KEEPER_B;
 }
 
 void ASMPatchNightmareSceneNoShake() {
@@ -102,7 +102,7 @@ bool __stdcall PlayerItemNoExpansionPack(int itemID) {
 		return false;
 	}
 
-	return itemID != 489 && itemID != 488 && itemID != 422 && itemID != 703;
+	return itemID != COLLECTIBLE_D_INFINITY && itemID != COLLECTIBLE_METRONOME && itemID != COLLECTIBLE_GLOWING_HOUR_GLASS && itemID != COLLECTIBLE_ESAU_JR;
 }
 
 void ASMPatchPlayerItemNoExpansionPack() {

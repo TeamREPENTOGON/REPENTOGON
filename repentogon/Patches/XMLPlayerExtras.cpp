@@ -182,16 +182,16 @@ HOOK_METHOD(Menu_Character, UpdateRotations, () -> void) {
 	// If no modded tainted characters are locked, hide the sprite.
 	bool hideTaintedMenu = true;
 
-	for (unsigned int i = 21; i < g_Manager->GetPlayerConfig()->size(); ++i) { // TODO enums: Tainted Isaac
+	for (unsigned int i = PLAYER_ISAAC_B; i < g_Manager->GetPlayerConfig()->size(); ++i) {
 		EntityConfig_Player* player = &g_Manager->GetPlayerConfig()->at(i);
 
-		if (i <	41) { // TODO enums: max vanilla players
+		if (i < NUM_PLAYER_TYPES) {
 			if (player->_hidden) {
 				continue;
 			}
 
 			if ((player->_achievement == -1) || ((player->_achievement >= 0 && g_Manager->GetPersistentGameData()->Unlocked(player->_achievement)) &&
-				((player->_id != 30) || g_Manager->GetPersistentGameData()->GetEventCounter(21) > 0))) { // TODO enums: Tainted Eden, Eden Tokens
+				((player->_id != PLAYER_EDEN_B) || g_Manager->GetPersistentGameData()->GetEventCounter(21) > 0))) {
 				hideTaintedMenu = false;
 			}
 		}
@@ -212,12 +212,12 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 	std::vector<std::pair<int, EntityConfig_Player>> allowedCharacters;
 	std::vector<std::string> bSkinParents;
 	// These hardcoded arrays should only stick around until we have the properties for these actually figured out.
-	int bannedIds[7] = { 11, 12, 17, 20, 38, 39, 40 }; // Until we have character configs fully mapped out, this is a hardcoded list of banned ID's.
-	int hiddenIds[4] = { 4, 10, 14, 16 }; // Blue Baby, Keeper, The Lost and The Forgotten will be hidden when not unlocked, and this needs to be accounted for.
-	int hiddenTainteds[4] = { 25, 31, 33, 35 }; // Their tainted forms, too
+	int bannedIds[7] = { PLAYER_LAZARUS2, PLAYER_BLACKJUDAS, PLAYER_THESOUL, PLAYER_ESAU, PLAYER_LAZARUS2_B, PLAYER_JACOB2_B, PLAYER_THESOUL_B }; // Until we have character configs fully mapped out, this is a hardcoded list of banned ID's.
+	int hiddenIds[4] = { PLAYER_BLUEBABY, PLAYER_THELOST, PLAYER_KEEPER, PLAYER_THEFORGOTTEN }; // Will be hidden when not unlocked, so this needs to be accounted for.
+	int hiddenTainteds[4] = { PLAYER_BLUEBABY_B, PLAYER_THELOST_B, PLAYER_KEEPER_B, PLAYER_THEFORGOTTEN_B }; // Their tainted forms, too
 
 	// First, for modded characters, build a list of all bSkinParents
-	for (unsigned int i = 41; i < g_Manager->GetPlayerConfig()->size(); ++i) {
+	for (unsigned int i = NUM_PLAYER_TYPES; i < g_Manager->GetPlayerConfig()->size(); ++i) {
 		XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(g_Manager->GetPlayerConfig()->at(i)._id);
 		if (!playerXML["bskinparent"].empty()) {
 			logViewer.AddLog("[REPENTOGON]", "Pushing back %s as a b-skin parent\n", playerXML["bskinparent"].c_str());
@@ -231,11 +231,11 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 		std::string name = player.GetDisplayName(nullptr);
 
 
-		if (player._id < 41) { // Vanilla character handling
+		if (player._id < NUM_PLAYER_TYPES) { // Vanilla character handling
 			int achievement = *player.GetAchievement();
 
 			// If a character ID isn't valid for the current character menu, skip
-			if (this->GetSelectedCharacterMenu() == 1 && player._id <= 20 || this->GetSelectedCharacterMenu() == 0 && player._id > 20) { // TODO probably an enum for this, 0 = normal 1 = tainted
+			if (this->GetSelectedCharacterMenu() == 1 && player._id <= PLAYER_ESAU || this->GetSelectedCharacterMenu() == 0 && player._id > PLAYER_ESAU) { // TODO probably an enum for this, 0 = normal 1 = tainted
 				continue;
 			}
 
@@ -259,7 +259,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 			// If the character is unlocked, and we have enough Eden tokens if we're Eden, add as a valid option
 			if (achievement < 0 || g_Manager->GetPersistentGameData()->Unlocked(achievement) &&
-				(player._id != 9 && player._id != 30 || g_Manager->GetPersistentGameData()->GetEventCounter(21))) { //TODO: enums, but this is eden and tainted eden, and eden tokens
+				(player._id != PLAYER_EDEN && player._id != PLAYER_EDEN_B || g_Manager->GetPersistentGameData()->GetEventCounter(21))) { //TODO: enum for eden tokens
 				logViewer.AddLog("[REPENTOGON]", "Adding %d (%s) as an option at offset %d\n", player._id, name.c_str(), offset);
 				allowedCharacters.push_back(std::pair<int, EntityConfig_Player>(offset, player));
 			}
