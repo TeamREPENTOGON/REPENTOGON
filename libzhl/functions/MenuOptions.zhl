@@ -3,16 +3,14 @@ struct Menu_Options depends (ANM2) {
          inline ANM2* GetOptionsSprite() { return &this->OptionsSprite; }
          inline ANM2* GetGammaMenuSprite() { return &this->GammaMenuSprite; }
      }}
-    int SelectedElement : 0x4;
-    float PositionX_duplicate : 0x8;
-    float PositionY_duplicate : 0xC;
-    float PositionX : 0x10;
-    float PositionY : 0x14;
-    ANM2 OptionsSprite : 0x20;
-    ANM2 GammaMenuSprite : 0x134;
-    int HoldLeftCounter : 0x248;
-    int HoldRightCounter : 0x24c;
-    int HoldUpDownCounter : 0x250;
-    int _someState : 0x258; /* if == 3 then save options */
-    uint32_t _somethingLanguageRelated : 0x25c;
+    int SelectedElement : 0x8;
+    float PositionX_duplicate : 0xc;
+    float PositionY_duplicate : 0x10;
+    float PositionX : 0x14;
+    float PositionY : 0x18;
+    ANM2 OptionsSprite : 0x24;
+    ANM2 GammaMenuSprite : 0x138;
+    int HoldLeftCounter : 0x24c;
+    int HoldRightCounter : 0x250;
+    int HoldUpDownCounter : 0x254;
 } : 0x288;
