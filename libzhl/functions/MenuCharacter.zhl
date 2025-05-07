@@ -22,7 +22,7 @@ __thiscall void Menu_Character::UpdateRotations();
 
 struct Menu_Character depends (ANM2, CompletionWidget) {
 {{
-	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
+	inline CompletionWidget* GetCompletionWidget() { return &this->_completionWidget; } 
 	inline ANM2* GetBigCharPageSprite() { return &this->_BigCharPageSprite; }
 	inline ANM2* GetDifficultyOverlaySprite() { return &this->_DifficultyOverlaySprite; }
 	inline ANM2* GetGreedDecoSprite() { return &this->_GreedDecoOverlaySprite; }
@@ -62,9 +62,9 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     ANM2 _CharacterMenuBGSprite : 0x37c;
     CompletionWidget _completionWidget : 0x490;
     ANM2 _DifficultyPageSprite : 0x5ac;
-    ANM2 _SeedPageSprite : 0x6c8;
-    ANM2 _WinStreakPageSprite : 0x7dc;
-    ANM2 _EastereggPageSprite : 0x8f0;
+    ANM2 _SeedPageSprite : 0x6c0;
+    ANM2 _WinStreakPageSprite : 0x7d4;
+    ANM2 _EastereggPageSprite : 0x8e8;
     ANM2 _SeedUnlockPageSprite : 0xa04;
     int _numCharacters : 0xb18;
     int _numCharacters_MINUS_SelectedEntry : 0xb1c;
