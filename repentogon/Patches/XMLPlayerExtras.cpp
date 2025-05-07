@@ -174,6 +174,40 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
 }
 
+HOOK_METHOD(Menu_Character, UpdateRotations, () -> void) {
+
+	super();
+
+	// The tainted menu is very naive and hides itself if... the page swap sprite is invisible.
+	// If no modded tainted characters are locked, hide the sprite.
+	bool hideTaintedMenu = true;
+
+	for (unsigned int i = 21; i < g_Manager->GetPlayerConfig()->size(); ++i) { // TODO enums: Tainted Isaac
+		EntityConfig_Player* player = &g_Manager->GetPlayerConfig()->at(i);
+
+		if (i <	41) { // TODO enums: max vanilla players
+			if (player->_hidden) {
+				continue;
+			}
+
+			if ((player->_achievement == -1) || ((player->_achievement >= 0 && g_Manager->GetPersistentGameData()->Unlocked(player->_achievement)) &&
+				((player->_id != 30) || g_Manager->GetPersistentGameData()->GetEventCounter(21) > 0))) { // TODO enums: Tainted Eden, Eden Tokens
+				hideTaintedMenu = false;
+			}
+		}
+		else {
+			if (player->_hidden || player->_bSkinParentName.empty()) {
+				continue;
+			}
+			if (IsCharacterUnlockedRgon(player->_id)) {
+				hideTaintedMenu = false;
+			}
+		}
+	}
+	if (hideTaintedMenu)
+		this->_PageSwapWidgetSprite._color._tint[3] = 0.0f;	
+};
+
 HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 	std::vector<std::pair<int, EntityConfig_Player>> allowedCharacters;
 	std::vector<std::string> bSkinParents;

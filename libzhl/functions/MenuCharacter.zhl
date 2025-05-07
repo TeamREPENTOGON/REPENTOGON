@@ -17,6 +17,9 @@ __thiscall void Menu_Character::Init(Vector* unk);
 "558bec83ec2ca1????????33c58945??a1":
 __thiscall void Menu_Character::SelectRandomChar();
 
+"558bec83e4f883ec2056578bf933c0":
+__thiscall void Menu_Character::UpdateRotations();
+
 struct Menu_Character depends (ANM2, CompletionWidget) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
