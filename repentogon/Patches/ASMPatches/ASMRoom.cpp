@@ -219,13 +219,15 @@ void PatchRoomClearDelay() {
 	ASMPatchDeepGaperClearCheck(addrs[2]);
 }
 
-// this changes the function to check Game's time counter instead of frame counter, in parity with TrySpawnBossRushDoor
+// this changes the function to check Game->_timeCounter instead of Game->_frameCount in parity with TrySpawnBossRushDoor
 void ASMPatchTrySpawnBlueWombDoor() {
-	SigScan scanner("83f8087c??8b87");
+	SigScan scanner("8b87????????3b87????????7e");
 	scanner.Scan();
-	void* addr = (char*)scanner.GetAddress() + 7;
-	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
+	void* addr = (char*)scanner.GetAddress() + 2;
+	int* offset = (int*)addr;
+	int desired = *offset + 0x4; // _timeCounter is directly after _frameCount
+	ZHL::Log("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor frame count at %p (current offset is %d, new offset is %d)\n", addr, *offset, desired);
 	ASMPatch patch;
-	patch.AddBytes("\x28"); // 025b24 - > 025b28
+	patch.AddBytes(ByteBuffer().AddAny((char*)&desired, 4));
 	sASMPatcher.FlatPatch(addr, &patch);
 }
