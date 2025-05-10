@@ -1530,3 +1530,139 @@ void ASMPatchPreItemTextDisplayCallback() {
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
+static bool _hideActiveItemImage = false;
+static bool _hideActiveItemOutline = false;
+static bool _hideActiveItemChargeBar = false;
+
+static const ColorMod activeItemOutlineColor(0, 0, 0, 1, 1, 1, 1);
+
+HOOK_METHOD(PlayerHUDActiveItem, RenderGfx, (SourceQuad* source, DestinationQuad* dest, const ColorMod& color) -> void) {
+	if (_hideActiveItemImage) return;
+	if (_hideActiveItemOutline && color == activeItemOutlineColor) {
+		return;
+	}
+	super(source, dest, color);
+}
+
+bool __stdcall ShouldHideChargebar() {
+	return _hideActiveItemChargeBar;
+}
+
+// PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
+	const bool isSchoolbagSlot = (activeSlot == 1);
+
+	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
+	// The game does this inside RenderActiveItem.
+	// Size adjustments for pocket slots are already accounted for.
+	float actualSize = size;
+	if (isSchoolbagSlot) {
+		actualSize *= 0.5;
+	}
+
+	// The positions we send through the callback may be modified slightly to be more accurate to where the game actually rendered stuff.
+	Vector itemPos = pos;
+	Vector chargeBarPos = pos;
+
+	// Player 1's esau gets different charge bar offsets.
+	const bool playerOneEsau = this->_playerHudIndex == 4 && playerHudLayout == 1;
+
+	if (!playerOneEsau) {
+		chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
+	}
+	else if (isSchoolbagSlot) {
+		chargeBarPos.x += 38 * actualSize;
+	}
+	chargeBarPos.y += 17 * actualSize;
+
+	if (this->_activeItem[activeSlot].bookImage != nullptr) {
+		// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
+		// Update the offsets we're sending through the callbacks to match where the corresponding sprites were actually rendered.
+		itemPos.y -= 4;
+		chargeBarPos.y += 3;
+	}
+
+	const int activeItemID = this->GetPlayer()->GetActiveItem(activeSlot);
+
+	const int precallbackid = 1119;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(activeItemID)
+			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.push(activeSlot)
+			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.push(alpha)
+			.push(actualSize)
+			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == true) {
+				return;
+			} else if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "HideItem" && lua_isboolean(L, -1)) {
+							_hideActiveItemImage = (bool)lua_toboolean(L, -1);
+						} else if (key == "HideOutline" && lua_isboolean(L, -1)) {
+							_hideActiveItemOutline = (bool)lua_toboolean(L, -1);
+						} else if (key == "HideChargeBar" && lua_isboolean(L, -1)) {
+							_hideActiveItemChargeBar = (bool)lua_toboolean(L, -1);
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+		}
+	}
+
+	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
+
+	_hideActiveItemImage = false;
+	_hideActiveItemOutline = false;
+	_hideActiveItemChargeBar = false;
+
+	const int postcallbackid = 1079;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(activeItemID)
+			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.push(activeSlot)
+			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.push(alpha)
+			.push(actualSize)
+			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.call(1);
+	}
+}
+
+void ASMPatchHideChargeBar() {
+	SigScan scanner("8b55??85d20f8e????????8b4d");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching PlayerHUD:RenderActiveItem for hiding charge bars at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // mov EDX, dword ptr [EBP + ?] (active item max charge)
+		.AddBytes("\x31\xC9")  // xor ecx,ecx
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(ShouldHideChargebar)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x0F\x45\xD1")  // cmovnz edx,ecx
+		.AddBytes("\x85\xD2")  // test edx, edx
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}

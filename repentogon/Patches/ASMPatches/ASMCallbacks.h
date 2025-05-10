@@ -27,3 +27,4 @@ void ASMPatchMainMenuCallback();
 void ASMPatchPreModUnloadCallbackDuringShutdown();
 void ASMPatchPostRoomRenderEntitiesCallback();
 void ASMPatchPreItemTextDisplayCallback();
+void ASMPatchHideChargeBar();

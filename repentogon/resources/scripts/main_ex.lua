@@ -1418,6 +1418,29 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 	return combinedRet
 end
 
+local function RunAccumulateReturnTableCallback(callbackID, param, ...)
+	local retTable
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" then
+				return ret
+			elseif type(ret) == "table" then
+				if retTable then
+					for k, v in pairs(ret) do
+						retTable[k] = v
+					end
+				else
+					retTable = ret
+				end
+			end
+		end
+	end
+
+	return retTable
+end
+
 -- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
 -- Terminate early if the player is revived by any means.
 function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
@@ -1541,6 +1564,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PLAYER_HEALTH_TYPE_CHANGE] = RunNoReturnCallback,
 	[ModCallbacks.MC_EVALUATE_STAT] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_EVALUATE_TEAR_HIT_PARAMS] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM] = RunAccumulateReturnTableCallback,
 }
 
 for _, callback in ipairs({

@@ -1,9 +1,24 @@
 struct ColorMod
 {   
 	{{
-		ColorMod() : _tint{1.0f, 1.0f, 1.0f, 1.0f}, _colorize{0.0f, 0.0f, 0.0f, 0.0f}, _offset{0.0f, 0.0f, 0.0f} {}
+		ColorMod(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f,
+				float ro = 0.0f, float go = 0.0f, float bo = 0.0f,
+				float cr = 0.0f, float cg = 0.0f, float cb = 0.0f, float ca = 0.0f)
+			: _tint{r, g, b, a}, _offset{ro, go, bo}, _colorize{cr, cg, cb, ca} {}
+		
+		bool operator==(const ColorMod& other) const {
+			for (int i = 0; i < 4; i++) {
+				if (_tint[i] != other._tint[i])
+					return false;
+				if (_colorize[i] != other._colorize[i])
+					return false;
+				if (i < 3 && _offset[i] != other._offset[i])
+					return false;
+			}
+			return true;
+		}
 	}}
-    float _tint[4] : 0x0; //0x0
-    float _colorize[4] : 0x10; //0x10
-    float _offset[3] : 0x20; //0x20
-} : 0x2C; //0x2C
+	float _tint[4] : 0x0;
+	float _colorize[4] : 0x10;
+	float _offset[3] : 0x20;
+} : 0x2C;
