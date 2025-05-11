@@ -354,7 +354,11 @@ ___
 ___
 ### GetDamageModifier () {: aria-label='Functions' }
 #### int GetDamageModifier ( ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, returns `-1`, `0` or `1` depending on the damage rolled.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Modifier is applied to the player as flat damage.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the damage rolled. Void may randomly add `1`.
 
 ___
 ### GetDeadEyeCharge () {: aria-label='Functions' }
@@ -421,7 +425,11 @@ Returns the current charge of Tainted Eve's innate Sumptorium ability.
 ___
 ### GetFireDelayModifier () {: aria-label='Functions' }
 #### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, returns `-1`, `0` or `1` depending on the fire delay rolled.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Grants `0.5 * modifier` flat tears per second to the player.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the fire delay rolled. Void may randomly add `1`.
 
 ___
 ### GetFlippedForm () {: aria-label='Functions' }
@@ -502,7 +510,11 @@ ___
 ___
 ### GetLuckModifier () {: aria-label='Functions' }
 #### int GetLuckModifier ( ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, returns `-1`, `0` or `1` depending on the luck rolled.
+Used for Experimental Treatment and for stat boosts from Void.
+
+The modifier is added directly to the player's Luck stat.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the luck rolled. Void may randomly add `1`.
 
 ___
 ### GetMaggySwingCooldown () {: aria-label='Functions' }
@@ -594,7 +606,11 @@ Returns the frames left until the damage bonus from Red Stew expires.
 ___
 ### GetShotSpeedModifier () {: aria-label='Functions' }
 #### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, returns `-1`, `0` or `1` depending on the shot speed rolled.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `0.2 * modifier` to the player's ShotSpeed.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the shot speed rolled. Void may randomly add `1`.
 
 ___
 ### GetSmeltedTrinkets () {: aria-label='Functions' }
@@ -613,7 +629,11 @@ ___
 ___
 ### GetSpeedModifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rolled.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `0.2 * modifier` to the player's MoveSpeed.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the speed rolled. Void may randomly add `1`.
 
 ___
 ### GetSpoofedCollectiblesList () {: aria-label='Functions' }
@@ -910,7 +930,11 @@ Changes the player's controller index.
 ___
 ### SetDamageModifier () {: aria-label='Functions' }
 #### void SetDamageModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Modifier is applied to the player as flat damage.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the damage rolled. Void may randomly add `1`.
 
 ___
 ### SetEdenDamage () {: aria-label='Functions' }
@@ -950,7 +974,11 @@ Sets the current charge of Tainted Eve's innate Sumptorium ability.
 ___
 ### SetFireDelayModifier () {: aria-label='Functions' }
 #### void SetFireDelayModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Grants `0.5 * modifier` flat tears per second to the player.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the fire delay rolled. Void may randomly add `1`.
 
 ___
 ### SetFootprintColor () {: aria-label='Functions' }
@@ -1006,7 +1034,11 @@ Sets the player's laser color.
 ___
 ### SetLuckModifier () {: aria-label='Functions' }
 #### void SetLuckModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+The modifier is added directly to the player's Luck stat.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the luck rolled. Void may randomly add `1`.
 
 ___
 ### SetMaggySwingCooldown () {: aria-label='Functions' }
@@ -1054,12 +1086,20 @@ Sets the duration of the damage bonus given by the Red Stew collectible to the s
 ___
 ### SetShotSpeedModifier () {: aria-label='Functions' }
 #### void SetShotSpeedModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `0.2 * modifier` to the player's ShotSpeed.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the shot speed rolled. Void may randomly add `1`.
 
 ___
 ### SetSpeedModifier () {: aria-label='Functions' }
 #### void SetSpeedModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `0.2 * modifier` to the player's MoveSpeed.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the speed rolled. Void may randomly add `1`.
 
 ___
 ### SetTearPoisonDamage () {: aria-label='Functions' }
@@ -1068,7 +1108,11 @@ ___
 ___
 ### SetTearRangeModifier () {: aria-label='Functions' }
 #### void SetTearRangeModifier ( int Modifier ) {: .copyable aria-label='Functions' }
-For Experimental Treatement, set to `-1`, `0` or `1` to adjust the multiplier applied to the stat.
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `2.5 * modifier` to the player's TearRange.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the range rolled. Void may randomly add `1`.
 
 ___
 ### SetUrethraBlock () {: aria-label='Functions' }
