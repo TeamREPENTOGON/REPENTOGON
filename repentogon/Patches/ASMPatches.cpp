@@ -112,6 +112,7 @@ void PerformASMPatches() {
 	ASMPatchPostRoomRenderEntitiesCallback();
 	ASMPatchPreItemTextDisplayCallback();
 	ASMPatchHideChargeBar();
+	ASMPatchPostBackwardsRoomRestore();
 
 	// Delirium
 	delirium::AddTransformationCallback();

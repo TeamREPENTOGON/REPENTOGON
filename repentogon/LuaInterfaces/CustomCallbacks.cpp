@@ -4404,7 +4404,7 @@ HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
 	return ret;
 };
 
-inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
+static int get_glowing_hourglass_slot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
 	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
 		return 0;
 	}
@@ -4418,7 +4418,7 @@ inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlo
 
 //PRE/POST_GLOWING_HOURGLASS_SAVE (1300 - 1302)
 HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
-	int currentSlot = GetGlowingHourglassSlot(gameState);
+	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	const int preCallbackId = 1302;
 	if (CallbackState.test(preCallbackId - 1000)) {
@@ -4456,7 +4456,7 @@ HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 
 //PRE/POST_GLOWING_HOURGLASS_LOAD (1301 - 1303)
 HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
-	int currentSlot = GetGlowingHourglassSlot(gameState);
+	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	if (currentSlot != -1)
 	{
@@ -4493,6 +4493,126 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 			.call(1);
 	}
 	return;
+}
+
+// POST_ROOM_SAVE_STATE (1304)
+HOOK_METHOD(Room, SaveState, () -> void) {
+	super();
+	constexpr int callbackId = 1304;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.push(this, lua::Metatables::ROOM)
+		.push(this->_descriptor, lua::Metatables::ROOM_DESCRIPTOR)
+		.call(1);
+}
+
+static inline void run_pre_room_restore(Room* room)
+{
+	constexpr int callbackId = 1305;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	// The original method sets this before everything else so we emulate the same behavior to avoid inconsistencies
+	Entity_Pickup::BeginIgnoreModifiers();
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.push(room, lua::Metatables::ROOM)
+		.push(room->_descriptor, lua::Metatables::ROOM_DESCRIPTOR)
+		.call(1);
+
+	Entity_Pickup::EndIgnoreModifiers();
+}
+
+// PRE_ROOM_RESTORE_STATE (1305)
+HOOK_METHOD(Room, RestoreState, () -> void) {
+	run_pre_room_restore(this);
+	super();
+}
+
+// POST_SWAP_ROOMS (1306)
+HOOK_METHOD(Level, swap_rooms, (int leftIdx, int rightIdx) -> void)
+{
+	super(leftIdx, rightIdx);
+
+	constexpr int callbackId = 1306;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	auto* left = this->GetRoomByIdx(leftIdx, DIMENSION_CURRENT);
+	auto* right = this->GetRoomByIdx(rightIdx, DIMENSION_CURRENT);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.push(left, lua::Metatables::ROOM_DESCRIPTOR)
+		.push(right, lua::Metatables::ROOM_DESCRIPTOR)
+		.call(1);
+}
+
+static inline void run_post_backwards_room_save(lua_State* L, int stage, RoomDescriptor& roomDesc, const char* key, int index)
+{
+	constexpr int callbackId = 1307;
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.push(stage)
+		.push(&roomDesc, lua::Metatables::ROOM_DESCRIPTOR)
+		.pushfstring("%s_%d", key, index)
+		.call(1);
+}
+
+// POST_BACKWARDS_ROOM_SAVE (1307)
+HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
+{
+	super(stage);
+	constexpr int callbackId = 1307;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
+	{
+		assert(i < 2); // Game doesn't save more than two rooms currently, either game logic changed or the structure is misaligned
+		RoomDescriptor& savedRoomDesc = backwardsStage._bossRooms[i];
+		RoomDescriptor& roomDesc = g_Game->_gridRooms[savedRoomDesc.ListIndex];
+		assert(roomDesc.ListIndex == savedRoomDesc.ListIndex);
+		run_post_backwards_room_save(L, stage, roomDesc, "boss", i);
+	}
+
+	for (size_t i = 0; i < backwardsStage._treasureRoomsCount; i++)
+	{
+		assert(i < 2); // Game doesn't save more than two rooms currently, either game logic changed or the structure is misaligned
+		RoomDescriptor& savedRoomDesc = backwardsStage._treasureRooms[i];
+		RoomDescriptor& roomDesc = g_Game->_gridRooms[savedRoomDesc.ListIndex];
+		assert(roomDesc.ListIndex == savedRoomDesc.ListIndex);
+		run_post_backwards_room_save(L, stage, roomDesc, "treasure", i);
+	}
 }
 
 //PRE/POST_ENTITY_SET_COLOR (1486/1487)

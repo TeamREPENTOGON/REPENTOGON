@@ -8,6 +8,17 @@
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 
+static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
+{
+	SigScan scanner(signature);
+	if (!scanner.Scan())
+	{
+		ZHL::Log("[ASSERT] [ASMPatch] Did not find \"%s\" for %s patch\n", signature, callbackName);
+		assert(false);
+	}
+	return scanner.GetAddress();
+}
+
 /* * MC_PRE_LASER_COLLISION * *
 * There is no function you can hook that would allow you to skip a laser "collision".
 * This section patches in PRE_LASER_COLLISION callbacks right when the game would
@@ -1665,4 +1676,102 @@ void ASMPatchHideChargeBar() {
 		.AddBytes("\x85\xD2")  // test edx, edx
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_POST_BACKWARDS_ROOM_RESTORE (1308)
+static std::vector<int> s_BackwardsStageStack;
+
+static inline int calc_stage_from_backwards_stage(BackwardsStageDesc* backwardsStage)
+{
+	constexpr size_t structSize = sizeof(BackwardsStageDesc);
+
+	BackwardsStageDesc* backwardsStagesPtr = std::begin(g_Game->_backwardsStages);
+	assert(backwardsStagesPtr <= backwardsStage && backwardsStage <= std::end(g_Game->_backwardsStages)); // Check that the pointer is within the _backwardsStages array
+
+	size_t offset = (uintptr_t)(backwardsStage) - (uintptr_t)backwardsStagesPtr;
+	assert(offset % structSize == 0); // Check that the BackwardsStageDesc struct is alligned
+
+	int stage = offset / structSize;
+	return stage + 1; // backwards stages start from 1
+}
+
+HOOK_METHOD(Level, place_rooms_backwards, (LevelGenerator* levelGen, BackwardsStageDesc* backwardsStage, uint32_t stageId, uint32_t minDifficulty, uint32_t maxDifficulty) -> void)
+{
+	int stage = calc_stage_from_backwards_stage(backwardsStage);
+	s_BackwardsStageStack.push_back(stage);
+	super(levelGen, backwardsStage, stageId, minDifficulty, maxDifficulty);
+	s_BackwardsStageStack.pop_back();
+}
+
+static inline void run_post_backwards_room_restore(int stage, RoomDescriptor& roomDesc, const char* key, int index)
+{
+	constexpr int callbackId = 1308;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.push(stage)
+		.push(&roomDesc, lua::Metatables::ROOM_DESCRIPTOR)
+		.pushfstring("%s_%d", key, index)
+		.call(1);
+}
+
+static void __stdcall RunPostBackwardsBossRestore(int roomIndex)
+{
+	roomIndex++; // increase room index
+	int stage = s_BackwardsStageStack.back();
+	RoomDescriptor& roomDesc = g_Game->_gridRooms[g_Game->_nbRooms - 1];
+	run_post_backwards_room_restore(stage, roomDesc, "boss", roomIndex);
+}
+
+static void __stdcall RunPostBackwardsTreasureRestore(int roomIndex)
+{
+	int stage = s_BackwardsStageStack.back();
+	RoomDescriptor& roomDesc = g_Game->_gridRooms[g_Game->_nbRooms - 1];
+	run_post_backwards_room_restore(stage, roomDesc, "treasure", roomIndex);
+}
+
+static void patch_post_backwards_boss_restore(const char* signature, const char* location, const char* callbackName)
+{
+	void* address = get_sig_address(signature, location, callbackName);
+	ZHL::Log("[REPENTOGON] Patching %s at %p\n", location, address);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // roomIndex (post decrease)
+		.AddInternalCall(RunPostBackwardsBossRestore)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)address, 0x6)) // restore
+		.AddRelativeJump((char*)address + 0x6); // resume
+	sASMPatcher.PatchAt(address, &patch);
+}
+
+static void patch_post_backwards_treasure_restore(const char* signature, const char* location, const char* callbackName)
+{
+	void* address = get_sig_address(signature, location, callbackName);
+	ZHL::Log("[REPENTOGON] Patching %s at %p\n", location, address);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // roomIndex
+		.AddInternalCall(RunPostBackwardsTreasureRestore)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)address, 0x7)) // restore
+		.AddRelativeJump((char*)address + 0x7); // resume
+	sASMPatcher.PatchAt(address, &patch);
+}
+
+void ASMPatchPostBackwardsRoomRestore()
+{
+	patch_post_backwards_boss_restore("894d??8955??85c90f89", "Level::place_rooms_backwards (Post Boss Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
+	patch_post_backwards_treasure_restore("4883ea0c", "Level::place_rooms_backwards (Post Treasure Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
 }

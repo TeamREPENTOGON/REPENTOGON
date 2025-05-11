@@ -137,10 +137,13 @@ __thiscall bool Game::GetLevelStateFlag(uint32_t LevelStateFlag);
 "568bf18b0d????????8b81????????83f80274??83f80374??8b168d42??83f80577??8b89????????33c081e1000001000bc175??8b46??83f80474??83f80574":
 __thiscall bool Game::LevelHasPhotoDoor();
 
+"558bec83ec08538b5d??56578b3d":
+__stdcall void Game::SaveBackwardsStage(int stage);
+
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc) { {{
 	Game()
 	{
 		this->constructor();
@@ -299,5 +302,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	float _dizzyIntensityChangeSpeed : 0x669a8;
 	vector_ErasedEntities _erasedEntities : 0x669b0; 
 	ProceduralItemManager _proceduralItemManager : 0x669bc;
+	BackwardsStageDesc _backwardsStages[7]: 0x669f0;
 	Console _console : 0x67fd4;
 } : 0x680e8;

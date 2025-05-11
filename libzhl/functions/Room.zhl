@@ -91,6 +91,9 @@ __thiscall bool Room::TrySpawnSpecialQuestDoor();
 "558bec6aff68????????64a1????????5081ec1801000056":
 __thiscall void Room::SaveState();
 
+"558bec83e4f883ec1c538bd98b0d":
+__thiscall void Room::RestoreState();
+
 "568b35????????578bf9833e0d":
 __thiscall uint32_t Room::GetBossVictoryJingle();
 

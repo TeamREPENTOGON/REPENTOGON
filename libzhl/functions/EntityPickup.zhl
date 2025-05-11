@@ -58,10 +58,17 @@ __thiscall void Entity_Pickup::TriggerTheresOptionsPickup();
 "83f93274??83f93c":
 static cleanup bool Entity_Pickup::IsChest(uint32_t variant<ecx>);
 
+"8b0d(????????)565741":
+reference uint32_t s_EntityPickup_IgnoreModifiers;
+
 struct Entity_Pickup depends (ANM2) : public Entity { {{
 	inline bool IsBlind() { return this->_isForceBlind; }
 	inline int* GetDropDelay() { return &this->_dropDelay; }
 	inline int* GetVarData() { return &this->_varData; }
+
+	static inline bool ShouldIgnoreModifiers() noexcept { return s_EntityPickup_IgnoreModifiers != 0; }
+	static inline void BeginIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers++; }
+	static inline void EndIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers--; }
 }} 
 
 	__vtable {
