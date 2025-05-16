@@ -11,6 +11,12 @@ LUA_FUNCTION(Lua_CreateWeapon) {
 	WeaponData* ud = new (lua_newuserdata(L, sizeof(WeaponData))) WeaponData;
 	int wepType = (int)luaL_checkinteger(L, 1);
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+
+	if (!(WEAPON_NULL <= wepType && wepType < NUM_WEAPON_TYPES))
+	{
+		return luaL_argerror(L, 1, "Invalid WeaponType");
+	}
+
 	ud->weapon = Isaac::CreateWeapon((WeaponType)wepType, ent);
 	luaL_setmetatable(L, lua::metatables::WeaponMT);
 	return 1;
