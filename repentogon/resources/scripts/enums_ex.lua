@@ -11,6 +11,7 @@ ModCallbacks.MC_POST_PLAYER_ADD_HEARTS = 1010
 ModCallbacks.MC_POST_GRID_ROCK_DESTROY = 1011
 ModCallbacks.MC_GRID_HURT_DAMAGE = 1012
 ModCallbacks.MC_POST_GRID_HURT_DAMAGE = 1013
+ModCallbacks.MC_PRE_ADD_TRINKET = 1014
 
 ModCallbacks.MC_HUD_UPDATE = 1020
 ModCallbacks.MC_HUD_POST_UPDATE = 1021 -- deprecated but still in here for backwards compatibility

@@ -1,4 +1,7 @@
 #pragma once
+
+#include "PLayerFeatures.h"
+
 #include "CompletionTracker.h"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
@@ -125,4 +128,99 @@ HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val)->voi
 	{
 		playerFeatureHandler.IncreaseGreedDonationCoinCount(val);
 	}
+}
+
+// MC_PRE_ADD_TRINKET (1014)
+// This is here to hook into our AddSmeltedTrinketToPlayer function, as well as the vanilla AddTrinket.
+// Btw we don't need a MC_POST_ADD_TRINKET, we have MC_POST_TRIGGER_TRINKET_ADDED bro
+struct PreAddTrinketResult {
+	int trinketID;
+	bool firstTime;
+	bool skip = false;
+};
+
+PreAddTrinketResult RunPreAddTrinket(Entity_Player* player, int trinketID, bool firstTime) {
+	PreAddTrinketResult result{ trinketID, firstTime };
+
+	const int callbackid = 1014;
+	if (ItemConfig::IsValidTrinket(trinketID) && CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua::LuaCaller caller(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults luaResult = caller.push(callbackid)
+			.push(trinketID)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.push(trinketID)
+			.push(firstTime)
+			.call(1);
+
+		if (!luaResult) {
+			if (lua_isboolean(L, -1)) {
+				result.skip = !lua_toboolean(L, -1);
+			} else if (lua_isinteger(L, -1)) {
+				result.trinketID = (int)lua_tointeger(L, -1);
+			} else if (lua_istable(L, -1)) {
+				lua_pushinteger(L, 1);
+				lua_gettable(L, -2);
+				if (lua_isinteger(L, -1))
+					result.trinketID = (int)lua_tointeger(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushinteger(L, 2);
+				lua_gettable(L, -2);
+				if (lua_isboolean(L, -1))
+					result.firstTime = lua_toboolean(L, -1);
+				lua_pop(L, 1);
+			}
+		}
+	}
+
+	return result;
+}
+
+HOOK_METHOD(Entity_Player, AddTrinket, (int trinketID, bool firstTime) -> void) {
+	PreAddTrinketResult preCallbackResult = RunPreAddTrinket(this, trinketID, firstTime);
+	if (!preCallbackResult.skip) {
+		super(preCallbackResult.trinketID, preCallbackResult.firstTime);
+	}
+}
+
+bool AddSmeltedTrinketToPlayer(Entity_Player* player, int trinketID, bool firstTime) {
+	if (ItemConfig::IsValidTrinket(trinketID)) {
+		PreAddTrinketResult preCallbackResult = RunPreAddTrinket(player, trinketID, firstTime);
+		if (preCallbackResult.skip) {
+			return false;
+		} else {
+			trinketID = preCallbackResult.trinketID;
+			firstTime = preCallbackResult.firstTime;
+		}
+		
+		const int actualTrinketID = trinketID & TRINKET_ID_MASK;
+		if (trinketID & TRINKET_GOLDEN_FLAG) {
+			player->_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
+		}
+		else {
+			player->_smeltedTrinkets[actualTrinketID]._trinketNum++;
+		}
+
+		player->TriggerTrinketAdded(trinketID, firstTime);
+
+		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
+		player->GetHistory()->AddHistoryItem(historyItem);
+
+		delete(historyItem);
+
+		player->InvalidateCoPlayerItems();
+
+		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
+		if (config && config->addCostumeOnPickup) {
+			player->AddCostume(config, false);
+		}
+
+		return true;
+	}
+	return false;
 }

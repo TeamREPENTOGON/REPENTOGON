@@ -30,6 +30,9 @@ __thiscall void Entity_Player::trigger_max_hearts_removed(int removed);
 "558bec6aff68????????64a1????????5081ece0030000":
 __thiscall void Entity_Player::AddCollectible(int type, int charge, bool firsttime,int slot,int vardata, int unk);
 
+"558bec83e4f883ec24a1????????33c4894424??8b45??5356894424":
+__thiscall void Entity_Player::AddTrinket(int type, bool firsttime);
+
 //AddBrokenHearts
 "558bec83e4f8568bf15783be????????2875??8b86????????85c074??8bf083be????????2874??8bbe":
 __thiscall void Entity_Player::AddBrokenHearts(int amount);
@@ -666,8 +669,6 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	inline uint8_t* GetWildCardItemType() { return &this->_wildCardItemType; }
 	inline int* GetWildCardItem() { return &this->_wildCardItem; }
 	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
-	
-	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
 	ANM2 _heldSprite : 0xff8;

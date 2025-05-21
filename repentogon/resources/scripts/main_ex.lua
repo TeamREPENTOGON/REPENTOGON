@@ -1398,7 +1398,7 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 				if ret.Damage and type(ret.Damage) == "number" then
 					damage = ret.Damage
 				end
-				if ret.DamageFlags and type(ret.DamageFlags) == "number" and ret.DamageFlags == math.floor(ret.DamageFlags) then
+				if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
 					damageFlags = ret.DamageFlags
 				end
 				if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
@@ -1439,6 +1439,81 @@ local function RunAccumulateReturnTableCallback(callbackID, param, ...)
 	end
 
 	return retTable
+end
+
+local function RunPreAddCollectibleCallback(callbackID, param, collectibleType, charge, firstTime, slot, vardata, ...)
+	local retType
+	local retTable
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "number" then
+				retType = ret
+				collectibleType = ret
+				if retTable then
+					retTable.Type = ret
+				end
+			elseif type(ret) == "table" then
+				-- Set / update overrides so that they are visible to later callbacks.
+				collectibleType = ret[1] or collectibleType
+				charge = ret[2] or charge
+				if ret[3] ~= nil then
+					firstTime = ret[3]
+				end
+				slot = ret[4] or slot
+				vardata = ret[5] or vardata
+				if retTable then
+					for k, v in pairs(ret) do
+						retTable[k] = v
+					end
+				else
+					retTable = ret
+					retTable[1] = retTable[1] or collectibleType
+				end
+			end
+		end
+	end
+
+	return retTable or retType
+end
+
+local function RunPreAddTrinketCallback(callbackID, param, player, trinketType, firstTime, ...)
+	local retType
+	local retTable
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "number" then
+				retType = ret
+				trinketType = ret
+				if retTable then
+					retTable.Type = ret
+				end
+			elseif type(ret) == "table" then
+				-- Set / update overrides so that they are visible to later callbacks.
+				trinketType = ret[1] or trinketType
+				if ret[2] ~= nil then
+					firstTime = ret[2]
+				end
+				if retTable then
+					for k, v in pairs(ret) do
+						retTable[k] = v
+					end
+				else
+					retTable = ret
+					retTable[1] = retTable[1] or trinketType
+				end
+			end
+		end
+	end
+
+	return retTable or retType
 end
 
 -- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
@@ -1544,6 +1619,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
 	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_POST_ENTITY_REMOVE] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
@@ -1565,6 +1641,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_EVALUATE_STAT] = RunAdditiveThirdArgCallback,
 	[ModCallbacks.MC_EVALUATE_TEAR_HIT_PARAMS] = RunAdditiveSecondArgCallback,
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM] = RunAccumulateReturnTableCallback,
+	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = RunPreAddCollectibleCallback,
+	[ModCallbacks.MC_PRE_ADD_TRINKET] = RunPreAddTrinketCallback,
 }
 
 for _, callback in ipairs({

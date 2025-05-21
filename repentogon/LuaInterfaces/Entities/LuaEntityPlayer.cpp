@@ -9,6 +9,7 @@
 #include "../../Patches/ItemPoolManager.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
+#include "../../Patches/PlayerFeatures.h"
 #include "../../Patches/XmlData.h"
 
 #include <algorithm>
@@ -1510,7 +1511,7 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 	const int trinketID = (int)luaL_checkinteger(L, 2);
 	const bool firstTime = lua::luaL_optboolean(L, 3, true);
 
-	lua_pushboolean(L, player->AddSmeltedTrinket(trinketID, firstTime));
+	lua_pushboolean(L, AddSmeltedTrinketToPlayer(player, trinketID, firstTime));
 	return 1;
 }
 

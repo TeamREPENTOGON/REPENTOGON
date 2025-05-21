@@ -70,12 +70,16 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			.call(1);
 
 		if (!res) {
-			if (lua_istable(L, -1)) { // 6 params 
-				int* result = new int[5];
+			if (lua_istable(L, -1)) {
+				int result[5] = { type, charge, firsttime, slot, vardata };
 				for (int i = 1; i <= 5; i++) {
 					lua_pushinteger(L, i);
 					lua_gettable(L, -2);
-					result[i - 1] = (int)lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
+					if (i == 3 && lua_isboolean(L, -1)) {  // I   need to check the type
+						result[i - 1] = lua_toboolean(L, -1);
+					} else if (i != 3 && lua_isinteger(L, -1)) {
+						result[i - 1] = (int)lua_tointeger(L, -1);
+					}
 					lua_pop(L, 1);
 				}
 				super(result[0], result[1], result[2], result[3], result[4], unk);

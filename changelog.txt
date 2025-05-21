@@ -135,6 +135,8 @@ Additions:
 	- MC_POST_BACKWARDS_ROOM_RESTORE(LevelStage, RoomDescriptor, string)
 		Fires when generating the Ascent layout and one of the previously saved room is restored.
 		The string key (e.g. "boss_0", "treasure_0") identifies which slot the room was saved into.
+	- MC_PRE_ADD_TRINKET(player, TrinketType, firstTime)
+		Return false to cancel, or a different TrinketType to change the trinket being added.
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
@@ -221,6 +223,8 @@ Modified:
 		Now runs earlier during shutdown, so code is less likely to crash
 	- MC_POST_CURSE_EVAL
 		Returning a value will now pass the modified curse mask along to the next callback instead of ending the callback early.
+	- MC_PRE_ADD_COLLECTIBLE
+		Returning a value to modify the collectible being added will now pass that ID along to other callbacks instead of stopping.
 * reloadshaders command will now reload custom anm2 shaders
 * Vanilla daily run leaderboard will now mark the submitted run entry with a transparent color if the run was cheated.
 * Daily goal path icon will now be displayed on Mega Satan daily runs.

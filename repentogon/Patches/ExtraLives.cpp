@@ -31,10 +31,10 @@ int GetCustomReviveCount(Entity_Player* player, const bool includeHidden) {
 	for (const auto& [trinketID, reviveInfo] : XMLStuff.TrinketData->customreviveitems) {
 		if (!includeHidden && reviveInfo.hidden) continue;
 		if (reviveInfo.item) {
-			if ((player->_trinketsID[0] & 32767) == trinketID) {
+			if ((player->_trinketsID[0] & TRINKET_ID_MASK) == trinketID) {
 				numLives += 1;
 			}
-			if ((player->_trinketsID[1] & 32767) == trinketID) {
+			if ((player->_trinketsID[1] & TRINKET_ID_MASK) == trinketID) {
 				numLives += 1;
 			}
 			numLives += player->GetSmeltedTrinket()->at(trinketID)._trinketNum + player->GetSmeltedTrinket()->at(trinketID)._goldenTrinketNum;
