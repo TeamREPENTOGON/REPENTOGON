@@ -1514,27 +1514,69 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 	return 1;
 }
 
+LUALIB_API void PushSmeltedTrinketDesc(lua_State* L, const SmeltedTrinketDesc& desc) {
+	lua_newtable(L);
+
+	lua_pushstring(L, "trinketAmount");
+	lua_pushinteger(L, desc._trinketNum);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "goldenTrinketAmount");
+	lua_pushinteger(L, desc._goldenTrinketNum);
+	lua_settable(L, -3);
+}
+
 LUA_FUNCTION(Lua_PlayerGetSmeltedTrinkets) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	std::vector<SmeltedTrinketDesc>& smeltedTrinkets = player->_smeltedTrinkets;
 
-	lua_newtable(L);
-	for (size_t i = 1; i < smeltedTrinkets.size(); i++) {
-		lua_pushinteger(L, i); 
+	if (lua_type(L, 2) == LUA_TTABLE) {
+		// Return info for only the trinket IDs present in the provided table.
+		std::set<int> ids;
+
+		auto tableLength = lua_rawlen(L, 2);
+		for (auto i = 1; i <= tableLength; ++i) {
+			lua_pushinteger(L, i);
+			lua_gettable(L, 2);
+			if (lua_type(L, -1) == LUA_TNIL)
+				break;
+			const int trinketID = (int)luaL_checkinteger(L, -1) & TRINKET_ID_MASK;
+			if (g_Manager->GetItemConfig()->IsValidTrinket(trinketID)) {
+				ids.insert(trinketID);
+			}
+			lua_pop(L, 1);
+		}
 
 		lua_newtable(L);
-
-		lua_pushstring(L, "trinketAmount");
-		lua_pushinteger(L, smeltedTrinkets[i]._trinketNum);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "goldenTrinketAmount");
-		lua_pushinteger(L, smeltedTrinkets[i]._goldenTrinketNum);
-		lua_settable(L, -3);
-
-		lua_settable(L, -3);
+		int i = 1;
+		for (const int trinketID : ids) {
+			lua_pushinteger(L, trinketID);
+			PushSmeltedTrinketDesc(L, smeltedTrinkets[trinketID]);
+			lua_settable(L, -3);
+		}
+	} else {
+		// Return info for ALL trinkets.
+		lua_newtable(L);
+		for (size_t i = 1; i < smeltedTrinkets.size(); i++) {
+			lua_pushinteger(L, i);
+			PushSmeltedTrinketDesc(L, smeltedTrinkets[i]);
+			lua_settable(L, -3);
+		}
 	}
 
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSmeltedTrinketDesc) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int trinketID = (int)luaL_checkinteger(L, 2) & TRINKET_ID_MASK;
+
+	if (!g_Manager->GetItemConfig()->IsValidTrinket(trinketID)) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	PushSmeltedTrinketDesc(L, player->_smeltedTrinkets[trinketID]);
 	return 1;
 }
 
@@ -3038,6 +3080,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanUsePill", Lua_PlayerCanUsePill },
 		{ "AddSmeltedTrinket", Lua_PlayerAddSmeltedTrinket },
 		{ "GetSmeltedTrinkets", Lua_PlayerGetSmeltedTrinkets },
+		{ "GetSmeltedTrinketDesc", Lua_PlayerGetSmeltedTrinketDesc },
 		{ "GetCostumeLayerMap", Lua_PlayerGetCostumeLayerMap },
 		{ "IsItemCostumeVisible", Lua_PlayerIsItemCostumeVisible },
 		{ "IsCollectibleCostumeVisible", Lua_PlayerIsCollectibleCostumeVisible },
