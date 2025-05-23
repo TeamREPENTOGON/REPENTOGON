@@ -557,6 +557,8 @@ __thiscall void Entity_Player::TriggerEnemyDeath(Entity_NPC * npc);
 "558bec5153568b75??578bf981fe02010000":
 __thiscall bool Entity_Player::CanRerollCollectible(int id, bool unk);
 
+"558bec5356578bf98b4d":
+__thiscall bool Entity_Player::HasInvincibility(uint64_t damageFlags, EntityRef* source);
 
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }

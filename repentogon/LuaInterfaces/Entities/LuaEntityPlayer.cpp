@@ -2946,6 +2946,23 @@ LUA_FUNCTION(Lua_PlayerCreateAfterimage) {
 	return 0;
 }
 
+//Repentance+ bug fix: https://github.com/epfly6/RepentanceAPIIssueTracker/issues/598
+LUA_FUNCTION(Lua_PlayerHasInvincibility) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	const uint64_t flag = (uint64_t)luaL_optinteger(L, 2, 0);
+
+	EntityRef* ref = nullptr;
+
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	}
+
+	lua_pushboolean(L, player->HasInvincibility(flag, ref));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3211,6 +3228,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetSuplexLandPosition", Lua_PlayerGetSuplexLandPosition },
 		{ "SetSuplexLandPosition", Lua_PlayerSetSuplexLandPosition },
 		{ "CreateAfterimage", Lua_PlayerCreateAfterimage },
+		{ "HasInvincibility", Lua_PlayerHasInvincibility },
 
 		{ NULL, NULL }
 	};

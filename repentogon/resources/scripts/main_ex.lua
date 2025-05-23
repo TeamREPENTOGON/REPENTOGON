@@ -1838,6 +1838,7 @@ local LuaWrappersToRemove = {
 			"SetActiveCharge",
 			"DischargeActiveItem",
 			"SetPocketActiveItem",
+			"HasInvincibility",
 		}
 	},
 }
