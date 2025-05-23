@@ -8,6 +8,7 @@ Additions:
 	- [Get/Set/Reset]WaterClipFlags
 * Entity
 	- [Get/Set/Reset]WaterClipFlags
+	- CanDevolve
 * EntityPickup:
 	- GetMegaChest[Left/Right]Collectible
 	- Returns the other EntityPickup for a Mega Chest

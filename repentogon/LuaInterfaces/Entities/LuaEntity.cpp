@@ -837,6 +837,14 @@ LUA_FUNCTION(Lua_EntityResetWaterClipFlags)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityCanDevolve)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushboolean(L, ent->CanDevolve());
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -930,6 +938,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetWaterClipFlags", Lua_EntityGetWaterClipFlags },
 		{ "SetWaterClipFlags", Lua_EntitySetWaterClipFlags },
 		{ "ResetWaterClipFlags", Lua_EntityResetWaterClipFlags },
+		{ "CanDevolve", Lua_EntityCanDevolve },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

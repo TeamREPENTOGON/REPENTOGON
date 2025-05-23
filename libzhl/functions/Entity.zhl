@@ -117,6 +117,8 @@ __thiscall WaterClipInfo* Entity::GetWaterClipInfo(WaterClipInfo* out);
 "558bec83ec30a1????????53":
 __thiscall void Entity::ClearBossHazards(bool excludeNPCs);
 
+"8b89????????85c974??8b81":
+__thiscall bool Entity::CanDevolve();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
