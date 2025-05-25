@@ -718,7 +718,8 @@ enum eRoomType {
     ROOM_SECRET_EXIT = 27,
     ROOM_BLUE = 28,
     ROOM_ULTRASECRET = 29,
-    NUM_ROOMTYPES = 30
+    ROOM_DEATHMATCH = 30,
+    NUM_ROOMTYPES = 31
 };
 
 enum eDoorSlots 
@@ -1980,6 +1981,8 @@ enum eGridRooms {
     ROOM_BLUE_ROOM_IDX = -16,
     ROOM_EXTRA_BOSS_IDX = -17,
     ROOM_ANGEL_SHOP_IDX = -18,
+    ROOM_DEATHMATCH_IDX = -19,
+    ROOM_LIL_PORTAL_IDX = -20,
 
     ROOM_MIRROR_IDX = -100,
     ROOM_MINESHAFT_IDX = -101,
