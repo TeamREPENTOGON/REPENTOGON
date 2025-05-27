@@ -22,7 +22,7 @@ ___
 ___
 ### GetCollectibleCycle () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetCollectibleCycle ( ) {: .copyable aria-label='Functions' }
-Returns a table of all [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) being used inside its collectible cycle (i.e. Cracked Crown).
+Returns a table of all [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) being used inside its collectible cycle (i.e. Glitched Crown).
 
 ___
 ### GetDropDelay () {: aria-label='Functions' }
