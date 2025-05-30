@@ -11,13 +11,13 @@
 
 //=========== Main Menu Bar ==========
 I(BAR_TOOLS, ICON_U8_FA_SCREWDRIVER_WRENCH u8" Herramientas")
-I(BAR_DEBUG_CONSOLE, ICON_U8_FA_TERMINAL u8" Consola de Depuración")
+I(BAR_DEBUG_CONSOLE, ICON_U8_FA_TERMINAL u8" Consola")
 I(BAR_LOG_VIEWER, ICON_U8_FA_NEWSPAPER u8" Visor de Registros")
 I(BAR_GAME_OPTIONS, ICON_U8_FA_GEARS u8" Configuración del juego")
 I(BAR_PERFORMANCE, ICON_U8_FA_GAUGE_HIGH u8" Rendimiento")
 I(BAR_STYLE_EDITOR, ICON_U8_FA_PENCIL u8" Editor de Estilos")
 
-I(DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, u8"Editor de Estilo ImGui Estimado")
+I(DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, u8"Editor de Estilo Dear ImGui")
 
 //=========== Console Mega =============
 
@@ -66,13 +66,13 @@ I(CONSOLE_ACHIEVEMENT_DESC, u8"Desbloquea Logros")
 I(CONSOLE_ACHIEVEMENT_HELP, u8"Desbloquea logros")
 
 I(CONSOLE_ADD_PLAYER_DESC, u8"Genera un nuevo Jugador")
-I(CONSOLE_ADD_PLAYER_HELP, u8"Genera una nueva entidad de Jugador. Por defecto, genera a Isaac con ID de controlador 0.\nPlayer ID -1 te permite tomar control de un enemigo aleatorio en la sala.\nEjemplo:\n(addplayer 7 1) Genera a Azazel y puede ser controlado con el segundo dispositivo de entrada (controlador 1 la mayoría de las veces)")
+I(CONSOLE_ADD_PLAYER_HELP, u8"Genera una nueva entidad de Jugador. Por defecto, genera a Isaac con ControllerId 0.\nPlayer ID -1 te permite tomar control de un enemigo aleatorio en la sala.\nEjemplo:\n(addplayer 7 1) Genera a Azazel y puede ser controlado con el segundo dispositivo de entrada (controlador 1 la mayoría de las veces)")
 
 I(CONSOLE_CHALLENGE_DESC, u8"Iniciar nueva Partida de Desafío")
 I(CONSOLE_CHALLENGE_HELP, u8"Detiene la partida actual e inicia una nueva en una semilla aleatoria con la ID del desafio proporcionada.\nEjemplo:\n(challenge 20) Iniciará una nueva partida del desafio \"Purista\".\n")
 
-I(CONSOLE_CLEAR_DESC, u8"Limpiar la consola de depuración")
-I(CONSOLE_CLEAR_HELP, u8"Borra todo el texto dentro de la consola de depuración. Solo permanecerá la linea \"Repentance Console\".")
+I(CONSOLE_CLEAR_DESC, u8"Limpiar la consola")
+I(CONSOLE_CLEAR_HELP, u8"Borra todo el texto dentro de la consola. Solo permanecerá la linea \"Repentance Console\".")
 
 I(CONSOLE_CLEARCACHE_DESC, u8"Limpiar caché de sprites")
 I(CONSOLE_CLEARCACHE_HELP, u8"Borra la caché de sprites del juego. Puede ser útil al intentar solucionar problemas de memoria.\nTambien permite recargar los sprites de mods sin tener que reiniciar el juego por completo.")
@@ -95,8 +95,8 @@ I(CONSOLE_CURSE_HELP, u8"Añade permanentemente (hasta ser anulado) una maldici�
 I(CONSOLE_CUTSCENE_DESC, u8"Reproducir cinematica")
 I(CONSOLE_CUTSCENE_HELP, u8"Reproduce inmediatamente la cinematica especificada.\nEjemplo:\n(cutscene 1) reproducirá la intro del juego.")
 
-I(CONSOLE_DEBUG_DESC, u8"Activar un flag de depuración")
-I(CONSOLE_DEBUG_HELP, u8"Activa la flag de depuración especifica.\nEjemplo:\n(debug 3) otorgará al jugador salud infinita.")
+I(CONSOLE_DEBUG_DESC, u8"Activar un Debug Flag")
+I(CONSOLE_DEBUG_HELP, u8"Activa la Debug Flag especifica.\nEjemplo:\n(debug 3) otorgará al jugador salud infinita.")
 
 I(CONSOLE_DELIRIOUS_DESC, u8"Forzar Delirious a volverse un Jefe determinado")
 I(CONSOLE_DELIRIOUS_HELP, u8"Anula el próximo jefe en el que se convertirá el objeto Delirious.\nEjemplo:\n(delirious 3) forzará Delirious a transformarse en Chub.")
@@ -135,7 +135,7 @@ I(CONSOLE_LUA_DESC, u8"Ejecutar codigo Lua")
 I(CONSOLE_LUA_HELP, u8"Ejecuta el codigo Lua dado inmediatamente. Cualquier cosa que funcione en un archivo estándar funcionará aquí.\nEste comando también tiene una abreviatura (l).")
 
 I(CONSOLE_LUAMEM_DESC, u8"Mostrar uso de memoria lua")
-I(CONSOLE_LUAMEM_HELP, u8"Muestra la RAM utilizada actualmente de LUA.")
+I(CONSOLE_LUAMEM_HELP, u8"Muestra la RAM utilizada actualmente por LUA.")
 
 I(CONSOLE_LUAMOD_DESC, u8"Recargar un mod Lua")
 I(CONSOLE_LUAMOD_HELP, u8"Recarga el codigo Lua de la carpeta de mod especificada.\nEjemplo:\n(luamod testmod) recargará el codigo Lua para el mod en la carpeta \"testmod\".")
@@ -147,10 +147,10 @@ I(CONSOLE_LUARUN_DESC, u8"Ejecutar un archivo Lua")
 I(CONSOLE_LUARUN_HELP, u8"Ejecuta el archivo Lua dado inmediatamente.\nEjemplo:\n(luarun mods/test/test.lua) ejecutará \"test.lua\" dentro de la carpeta del mod \"test\".")
 
 I(CONSOLE_MACRO_DESC, u8"Activar un conjunto de comandos")
-I(CONSOLE_MACRO_HELP, u8"Activa un conjunto de comandos en el orden especifcado. These are effectively shortcuts. Consulte el autocompletado para obtener una lista de comandos macro.")
+I(CONSOLE_MACRO_HELP, u8"Activa un conjunto de comandos en el orden especifcado. Son, basicamente, accesos directos. Consulte el autocompletado para obtener una lista de comandos macro.")
 
 I(CONSOLE_METRO_DESC, u8"Forzar Metronomo a ser un objeto especifico")
-I(CONSOLE_METRO_HELP, u8"Anula el proximo objeto en que Metronome cambiara.\nEjemplo:\n(metro c1) obligará a Metronomo a convertirse en Sad Onion.")
+I(CONSOLE_METRO_HELP, u8"Anula el proximo objeto que utilizaría el Metronomo.\nEjemplo:\n(metro c1) obligará a Metronomo a convertirse en Sad Onion.")
 
 I(CONSOLE_NETDELAY_DESC, u8"Cambiar latencia de red")
 I(CONSOLE_NETDELAY_HELP, u8"Cambia la latencia de red a un valor especifico. Puede ser util si notas cortes al jugar en linea.")
@@ -173,17 +173,17 @@ I(CONSOLE_REMOVE_HELP, u8"Remueve un objeto del jugador inmediatamente. Acepta l
 I(CONSOLE_REMOVE2_DESC, u8"Remover un objeto")
 I(CONSOLE_REMOVE2_HELP, u8"Remueve un objeto del segundo jugador inmediatamente. Acepta la misma sintaxis que \"give\", revisar la ayuda de ese comando para mas información.")
 
-I(CONSOLE_RELOADFX_DESC, u8"Recargar capa del piso")
-I(CONSOLE_RELOADFX_HELP, u8"Recarga los efectos del piso actual.")
+I(CONSOLE_RELOADFX_DESC, u8"Recargar la capa de efectos visuales")
+I(CONSOLE_RELOADFX_HELP, u8"Recarga la capa de efectos visuales del piso actual.")
 
 I(CONSOLE_RELOADSHADERS_DESC, u8"Recargar sombreadores del juego")
-I(CONSOLE_RELOADSHADERS_HELP, u8"Recarga todo sombreador cargado actualmente.")
+I(CONSOLE_RELOADSHADERS_HELP, u8"Recarga todo sombreador(shader) cargado actualmente.")
 
-I(CONSOLE_RELOADWISPS_DESC, u8"Recargar wisps")
-I(CONSOLE_RELOADWISPS_HELP, u8"Recarga los wisps generados por Book of Virtues y langostas generadas por Abyss.")
+I(CONSOLE_RELOADWISPS_DESC, u8"Recargar fuegos fatuos")
+I(CONSOLE_RELOADWISPS_HELP, u8"Recarga los fuegos fatuos generados por Libro de virtudes y langostas generadas por Abismo.")
 
 I(CONSOLE_REPEAT_DESC, u8"Repetir comando anterior")
-I(CONSOLE_REPEAT_HELP, u8"Repite el comando ingresado previamente X cantidad de veces.\nEjemplo:\n(giveitem 1) es usado para darle al jugadore \"Sad Onion\". (repeat 5) es usado para darle al jugador \"Sad Onion\" cinco veces mas.")
+I(CONSOLE_REPEAT_HELP, u8"Repite el comando ingresado previamente X cantidad de veces.\nEjemplo:\n(giveitem 1) es usado para darle al jugador \"Sad Onion\". (repeat 5) es usado para darle al jugador \"Sad Onion\" cinco veces mas.")
 
 I(CONSOLE_RESEED_DESC, u8"Regenerar el piso actual")
 I(CONSOLE_RESEED_HELP, u8"Reinicia el piso actual, generando un nuevo diseño.")
@@ -194,14 +194,14 @@ I(CONSOLE_RESTART_HELP, u8"Reinicia el juego en una nueva partida. Opcionalmente
 I(CONSOLE_RESTOCK_DESC, u8"Reabastecer tiendas")
 I(CONSOLE_RESTOCK_HELP, u8"Reabastece todas las tiendas.")
 
-I(CONSOLE_REWIND_DESC, u8"Restablecer juego hasta el último estado de la sala")
+I(CONSOLE_REWIND_DESC, u8"Restablecer juego al estado de la ultima sala")
 I(CONSOLE_REWIND_HELP, u8"Hace que el juego olvide los cambios en la sala actual y teletransporta a Isaac a la sala anterior. Puede utilizarse para solucionar problemas de sincronización si se usa este comando en la sala donde sucedio. (Efecto similar al \"Glowing Hour Glass\")")
 
 I(CONSOLE_SEED_DESC, u8"Iniciar nueva partida con semilla establecida")
 I(CONSOLE_SEED_HELP, u8"Inicia una nueva partida con la semilla establecida.\nEjemplo:\n(seed N1CA L1SY) Iniciará una nueva partida con la semilla N1CA L1SY.")
 
-I(CONSOLE_SPAWN_DESC, u8"Generar entidad")
-I(CONSOLE_SPAWN_HELP, u8"Genera una nueva entidad. La sintaxis es (tipo).(variante).(subtipo).(campeon).\nEjemplo:\n(spawn 5.40.1) generará una bomba.")
+I(CONSOLE_SPAWN_DESC, u8"Invocar entidad")
+I(CONSOLE_SPAWN_HELP, u8"Invoca una nueva entidad. La sintaxis es (tipo).(variante).(subtipo).(campeon).\nEjemplo:\n(spawn 5.40.1) invocará una bomba.")
 
 I(CONSOLE_STAGE_DESC, u8"Ir a un escenario")
 I(CONSOLE_STAGE_HELP, u8"Te envia inmediatamente al escenario especificado. Acepta (a-d) como modificadores, donde (a) corresponde a rutas alt de WOTL, (b) coresponde a rutas alt de Afterbirth, (c) corresponde a rutas alt de Antibirth, y (d) corresponde a rutas alt de Repentance.\nEjemplo:\n(stage 4d) enviará al jugador a Ashpit II.")
@@ -324,7 +324,7 @@ I(CONSOLE_GRID_TELEPORTER_PENTAGRAM, u8"Teleportador (pentagrama)")
 I(CONSOLE_GRID_TELEPORTER_CROSS, u8"Teleportador (cruz)")
 I(CONSOLE_GRID_TELEPORTER_TRIANGLE, u8"Teleportador (triangulo)")
 I(CONSOLE_GRID_TRAP_DOOR, u8"Trampilla")
-I(CONSOLE_GRID_VOID_PORTAL, u8"Portal de Void")
+I(CONSOLE_GRID_VOID_PORTAL, u8"Portal de Vacío")
 I(CONSOLE_GRID_CRAWLSPACE, u8"Mazmorra")
 I(CONSOLE_GRID_CRAWLSPACE_GIDEON_DUNGEON, u8"Mazmorra (calabozo de Gideon)")
 I(CONSOLE_GRID_CRAWLSPACE_SECRET_SHOP, u8"Mazmorra (tienda secreta)")
@@ -354,7 +354,7 @@ I(OPT_HUD_EXTRA_HUD, u8"Extra Hud")
 I(OPT_HUD_EXTRA_HUD_MARKER, u8"Muestra los objetos recolectados del jugador en el lado derecho de la pantalla.")
 
 I(OPT_CONSOLE, u8"Consola")
-I(OPT_CONSOLE_ENABLE_DEBUG_CONSOLE, u8"Habilitar Consola de depuración")
+I(OPT_CONSOLE_ENABLE_DEBUG_CONSOLE, u8"Habilitar Consola")
 I(OPT_CONSOLE_FADED_CONSOLE_DISPLAY, "Pantalla de Consola traslucidas")
 I(OPT_CONSOLE_SAVE_COMMAND_HISTORY, u8"Save Command History")
 I(OPT_CONSOLE_CONSOLE_FONT, u8"Fuente de Consola")
@@ -403,8 +403,8 @@ I(OPT_MISC_USE_STEAM_CLOUD, u8"Usar Steam Cloud")
 I(OPT_MISC_PAUSE_ON_FOCUS_LOST, u8"Pausar al desenfocar la ventana")
 
 I(OPT_REPENTOGON, u8"REPENTOGON")
-I(OPT_REPENTOGON_BETTER_VOID_GEN, u8"Mejor Generación de Void")
-I(OPT_REPENTOGON_BETTER_VOID_GEN_MARK, u8"The Void ahora elige habitaciónes de todos los pisos desbloqueados, incluyendo las rutas alternas.")
+I(OPT_REPENTOGON_BETTER_VOID_GEN, u8"Mejor Generación de Vacío")
+I(OPT_REPENTOGON_BETTER_VOID_GEN_MARK, u8"El Vacío ahora elige habitaciónes de todos los pisos desbloqueados, incluyendo las rutas alternas.")
 I(OPT_REPENTOGON_HUSH_LASER_FIX, u8"Solución velocidad de láseres de Hush")
 I(OPT_REPENTOGON_HUSH_LASER_FIX_MARK, u8"Corrige un error en vanilla con Hush que que provoca que los láseres se muevan más rápido de lo previsto.")
 I(OPT_REPENTOGON_STAT_HUD_PLANETARIUM, u8"Probabilidad de Planetario en HUD de Estadisticas")
@@ -419,19 +419,19 @@ I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR, u8"Limpiar Habitaciónes Rapido")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"Las Habitaciónes abrirán sus puertas y generarán recompenzas más rapido. Los jefes aún requieren que sus animaciónes de muerte finalicen.")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevenir actualizar mods")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"El juego se salteará la sincronización de mods de la workshop. Muy util para prevenir cambios en la carpeta de mods al desarrollar mods.")
-I(OPT_REPENTOGON_MARSDOUBLETAP, u8"Ventana de Doble-Tap para Mars")
+I(OPT_REPENTOGON_MARSDOUBLETAP, u8"Mergen de Doble-Tap para Mars")
 I(OPT_REPENTOGON_MARSDOUBLETAP_MARK, u8"Establece la ventana de tiempo para detectar un doble-tap en el movimiento para embestir con Mars.")
 I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT, u8"Limite de Comandos de Autocompletado")
-I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK, u8"Controla el limite de cantidad de lineas mostradas en la Consola de Depuracion al escribir un comando. Incrementar esto a un numero mayor puede disminuir el rendimiento al escribir en la consola.")
+I(OPT_REPENTOGON_CONSOLE_AUTOFILL_LIMIT_MARK, u8"Controla el limite de cantidad de lineas mostradas en la Consola al escribir un comando. Incrementar esto a un numero mayor puede disminuir el rendimiento al escribir en la consola.")
 
 I(OPT_REPENTOGON_FILE_MAP, u8"Habilitar generación de mapas de archivos modificados")
-I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Comprueba Preemptively todos los archivos modificados para un arranque mas rapido del juego y menos bajones. Deshabilitalo y reportalo a nosotros si encuentras problemas al cargar assets modificados.")
+I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Comprueba prematuramente todos los archivos modificados para un arranque mas rapido del juego y menos bajones. Deshabilitalo y reportalo a nosotros si encuentras problemas al cargar assets modificados.")
 
 I(OPT_REPENTOGON_ECO_MODE, u8"Limitar juego mientras esté minimizado")
 I(OPT_REPENTOGON_ECO_MODE_MARK, u8"Previene que el juego se renderice y aplica una optimización de energía mientras se encuentre minimizado. Puede afectar a mods que dependen en la renderización sucediendo en cada fotograma.")
 
-I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Renderizar Depuración Extra para FindInRadius")
-I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"Mientras el indicador DebugFlag.HITSPHERES esté habilitado, se dibujaran esferas de depuración para llamadas de FindInRadius/QueryRadius.")
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Renderizar Información Extra para FindInRadius")
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"Mientras el indicador DebugFlag.HITSPHERES esté habilitado, se dibujaran esferas indicadoras de rango para llamadas de FindInRadius/QueryRadius.")
 
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Apagado")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
@@ -504,12 +504,12 @@ I(HELP_EGG_ASCENDING_3, u8"Sigues ascendiendo!")
 I(HELP_EGG_ASCENDING, u8"Sigues ascendiendo...")
 
 I(HELP_EGG_SINS_CRAWLING, u8"Sientes tus pecados trepar por tu espalda.")
-I(HELP_EGG_NO_HEAVEN, u8"Qué tonto eres, porque no hay ningun cielo.")
+I(HELP_EGG_NO_HEAVEN, u8"Tonto eres, paraiso no hay.")
 I(HELP_EGG_NO_DRAGON, u8"No hay ningun dragón.")
 I(HELP_EGG_NOTHING, u8"No hay nada.")
 
 I(HELP_EGG_HOWDY, u8"Buenas! Soy FLOWEY. FLOWEY la FLOR!")
-I(HELP_EGG_I_OWE_YOU, u8"I owe you a HUGE thanks! You really did a number on that old fool!\nWithout you, I NEVER could have gotten past him!")
+I(HELP_EGG_I_OWE_YOU, u8"Te debo MUCHAS gracias! Realmente aniquilaste a ese pobre idiota!\nSin ti, nunca podría haber pasado sobre el!")
 I(HELP_EGG_WITH_YOUR_HELP, u8"Pero ahora, con TU ayuda...")
 I(HELP_EGG_HE_DEAD, u8"Está MUERTO.")
 I(HELP_EGG_GOT_HUMAN_SOUL, u8"Y YO tengo las ALMAS humanas!")
@@ -548,7 +548,7 @@ I(HELP_CTRL_XB_DPAD_DESC, u8"Mover, Ajustar valores (cuando la entrada está act
 I(HELP_CTRL_XB_STICK, u8"Stick Izq")
 I(HELP_CTRL_XB_STICK_DESC, u8"Desplazar")
 I(HELP_CTRL_XB_X, u8"X")
-I(HELP_CTRL_XB_X_DESC, u8"Tap: Cambiar Menu\nMantener+L1/R1: Change Ventana focus\nMantener+D-Pad: Ajustar Ventana\nMantener+Stick-Izq: Mover Ventana")
+I(HELP_CTRL_XB_X_DESC, u8"Tap: Cambiar Menu\nMantener+L1/R1: Cambiar foco de Ventana\nMantener+D-Pad: Ajustar Ventana\nMantener+Stick-Izq: Mover Ventana")
 I(HELP_CTRL_XB_Y, u8"Y")
 I(HELP_CTRL_XB_Y_DESC, u8"Editar Texto / Teclado en pantalla")
 I(HELP_CTRL_XB_B, u8"B")
