@@ -1,6 +1,8 @@
 #include "ParserCore.h"
 
-Parser::Parser(Namespace* global, TypeMap* types, std::string const& filename) : _global(global), _types(types), _currentFile(filename) {
+Parser::Parser(Namespace* global, TypeMap* types, AsmDefMap* asmDefs,
+    std::string const& filename) : _global(global), _types(types),
+    _asmDefs(asmDefs), _currentFile(filename) {
 
 }
 
@@ -22,7 +24,7 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
         if (*convention != "") {
             fn._convention = StringToConvention(*convention);
         }
-        
+
         if (convention == "__thiscall") {
             if (!_currentStruct) {
                 if (ctx->nestedName()->functionName().size() == 0) {
@@ -87,6 +89,25 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
     return std::make_tuple(parts.size() > 1, parts.front(), fn);
 }
 
+std::any Parser::visitAsmDef(ZHLParser::AsmDefContext* ctx) {
+    std::string name = ctx->Name()->getText();
+    std::string signature = ctx->ColonLessSignature()->getText();
+
+    auto iter = _asmDefs->find(name);
+    if (iter != _asmDefs->end()) {
+        if (signature == iter->second) {
+            ParserLogger()->Warn("ASM Definition %s defined multiple times\n", name.c_str());
+        } else {
+            ParserLogger()->Fatal("ASM Definition %s defined multiple times with different values (%s -> %s)\n",
+                name.c_str(), iter->second.c_str(), signature.c_str());
+        }
+    } else {
+        (*_asmDefs)[name] = signature;
+    }
+
+    return 0;
+}
+
 std::any Parser::visitReference(ZHLParser::ReferenceContext* ctx) {
     Variable var;
     _currentVariable = &var;
@@ -124,8 +145,8 @@ std::any Parser::visitFunArgs(ZHLParser::FunArgsContext* ctx) {
 
                 std::ostringstream stream;
 
-                stream << _currentFile << ": register " << RegisterToString((Registers)i) << 
-                    " used on multiple parameters in function " << 
+                stream << _currentFile << ": register " << RegisterToString((Registers)i) <<
+                    " used on multiple parameters in function " <<
                     GetCurrentFunctionQualifiedName(_currentFunction->_name) << std::endl;
                 stream << "\tInfringing parameters are ";
                 for (int paramPos : use.second) {
@@ -236,7 +257,7 @@ std::any Parser::visitType(ZHLParser::TypeContext* ctx) {
         s._name = std::get<std::string>(type->_value);
         s._template = true;
         s._templateParams = std::any_cast<std::vector<Type*>>(visit(templateSpecCtx));
-        
+
         type = _types->Get(s.GetTemplateName());
         if (type->IsEmpty()) {
             type->_value = s;
@@ -559,7 +580,7 @@ std::any Parser::visitVtableEntry(ZHLParser::VtableEntryContext* ctx) {
         Function func = std::any_cast<Function>(visit(ctx->classFunction()));
         func._qualifiers |= PURE;
         _currentStruct->_virtualFunctions.push_back(func);
-    } 
+    }
     else {
         VirtualFunction function = std::any_cast<VirtualFunction>(visit(ctx->vtableSignature()));
         if (function._override) {
@@ -660,7 +681,7 @@ std::any Parser::visitInnerField(ZHLParser::InnerFieldContext* ctx) {
 
     FullNameV name = std::any_cast<FullNameV>(visit(ctx->fullName()));
     std::string offsetStr(ctx->Number()->getText());
-    
+
     size_t offset = std::strtoull(offsetStr.c_str(), NULL, 0);
 
     return std::make_tuple(ptrs, name, offset);

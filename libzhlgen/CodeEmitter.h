@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 class CodeEmitter {
 public:
-	CodeEmitter(TypeMap* types, bool test);
+	CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, bool test);
 
 	bool ProcessZHLFiles(fs::path const& base);
 	bool ProcessFile(fs::path const& path);
@@ -52,6 +52,9 @@ private:
 	void EmitForwardDecl();
 	void EmitJsonPrologue();
 	void EmitJsonEpilogue();
+	void EmitAsmDefinitions();
+	void EmitAsmDefinitions_Decl();
+	void EmitAsmDefinitions_Impl();
 
 	void Emit(Struct const& s);
 	void Emit(std::string const& s);
@@ -71,7 +74,7 @@ private:
 	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
 	void EmitInstruction(std::string const& ins);
-	
+
 	std::string GenerateType(Type const& type);
 	std::string GenerateType(BasicType const& t);
 	std::string GenerateType(Struct const& s);
@@ -103,8 +106,13 @@ private:
 	void EmitImpl();
 	void EmitJson();
 
-	void IncrDepth();
-	void DecrDepth();
+	inline void IncrDepth() {
+		++_emitDepth;
+	}
+
+	inline void DecrDepth() {
+		--_emitDepth;
+	}
 
 	bool Emitted(Struct const& s) const;
 	bool InProcessing(Struct const& s) const;
@@ -112,8 +120,19 @@ private:
 	void EmitDependencies(Struct const& s);
 	void AssertEmitted(Struct const& s);
 
+	inline uint32_t ResetDepth() {
+		uint32_t back = _emitDepth;
+		_emitDepth = 0;
+		return _emitDepth;
+	}
+
+	inline void RestoreDepth(uint32_t depth) {
+		_emitDepth = depth;
+	}
+
 	Namespace _global;
 	TypeMap* _types;
+	AsmDefMap* _asmDefs;
 	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
 	std::ofstream _decls, _impl, _json;

@@ -1,5 +1,5 @@
 
-// Generated from ZHLParser.g4 by ANTLR 4.13.2
+// Generated from ZHLParser.g4 by ANTLR 4.12.0
 
 #pragma once
 
@@ -27,6 +27,9 @@ public:
 
   virtual void enterTypeInfoDef(ZHLParser::TypeInfoDefContext * /*ctx*/) override { }
   virtual void exitTypeInfoDef(ZHLParser::TypeInfoDefContext * /*ctx*/) override { }
+
+  virtual void enterAsmDef(ZHLParser::AsmDefContext * /*ctx*/) override { }
+  virtual void exitAsmDef(ZHLParser::AsmDefContext * /*ctx*/) override { }
 
   virtual void enterFunction(ZHLParser::FunctionContext * /*ctx*/) override { }
   virtual void exitFunction(ZHLParser::FunctionContext * /*ctx*/) override { }

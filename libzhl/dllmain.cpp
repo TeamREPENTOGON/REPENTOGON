@@ -3,6 +3,7 @@
 #include <ehdata_forceinclude.h>
 #include <stdio.h>
 
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "CrashHandler.h"
 #include "HookSystem.h"
@@ -15,8 +16,7 @@
 #include <sstream>
 
 extern "C" {
-	__declspec(dllexport) int InitZHL()
-	{
+	__declspec(dllexport) int InitZHL() {
 		InitializeSymbolHandler();
 
 #ifdef ZHL_LOG_FILE
@@ -31,14 +31,15 @@ extern "C" {
 			ExitProcess(1);
 		}
 #endif
-		if (!FunctionDefinition::Init())
-		{
+		bool clearLog = true;
+		if (!FunctionDefinition::Init()) {
 			auto const& missing = Definition::GetMissing();
 			if (missing.size() == 1) {
 				MessageBox(0, FunctionDefinition::GetLastError(), "Error", MB_ICONERROR);
 			}
 			else {
 				std::ofstream out("libzhl.log");
+				clearLog = false;
 				for (auto const& [isFunction, name] : missing) {
 					out << name << " (";
 					if (isFunction) {
@@ -49,10 +50,29 @@ extern "C" {
 					}
 					out << ")" << std::endl;
 				}
-				MessageBox(0, "Multiple function / variables were not found.\nIf you're a user facing this issue, you might be using an unsupported version of the game.", "Error", MB_ICONERROR);
+				MessageBox(0, "Multiple function / variables were not found.\n"
+					"If you are an end-user facing this issue, you might be using an unsupported version of the game.",
+					"Error", MB_ICONERROR);
 			}
 
 			return 1;
+		}
+
+		if (!sASMDefinitionHolder->Init()) {
+			std::vector<const char*> const& misses = sASMDefinitionHolder->GetMisses();
+			std::ostringstream stream;
+			stream << "Unable to find address for " << misses.front();
+			if (misses.size() == 1) {
+				MessageBox(0, stream.str().c_str(), "Error", MB_ICONERROR);
+			} else {
+				std::ofstream stream("libzhl.log", clearLog ? std::ios_base::out : std::ios_base::app);
+				for (const char* miss : misses) {
+					stream << "Unable to find address for " << miss << std::endl;
+				}
+				MessageBox(0, "Addresses for ASM patches were not found.\n"
+					"If you are an end-user facing this issue, you might be using an unsupported version of the game.",
+					"Error", MB_ICONERROR);
+			}
 		}
 
 		FunctionDefinition::UpdateHooksStateFromJSON("hooks.json");

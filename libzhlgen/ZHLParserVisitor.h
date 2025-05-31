@@ -1,5 +1,5 @@
 
-// Generated from ZHLParser.g4 by ANTLR 4.13.2
+// Generated from ZHLParser.g4 by ANTLR 4.12.0
 
 #pragma once
 
@@ -26,6 +26,8 @@ public:
     virtual std::any visitTypeInfo(ZHLParser::TypeInfoContext *context) = 0;
 
     virtual std::any visitTypeInfoDef(ZHLParser::TypeInfoDefContext *context) = 0;
+
+    virtual std::any visitAsmDef(ZHLParser::AsmDefContext *context) = 0;
 
     virtual std::any visitFunction(ZHLParser::FunctionContext *context) = 0;
 

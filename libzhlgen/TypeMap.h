@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 #include "ParserDefinitions.h"
 
@@ -29,3 +30,6 @@ public:
 private:
     std::map<std::string, Type*> _types;
 };
+
+
+typedef std::unordered_map<std::string, std::string> AsmDefMap;

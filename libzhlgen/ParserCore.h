@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <unordered_map>
 
 #include "CodeEmitter.h"
 #include "ParserDefinitions.h"
@@ -12,10 +13,12 @@
 
 class Parser : public ZHLParserBaseVisitor {
 public:
-    Parser(Namespace* global, TypeMap* types, std::string const& filename);
+    Parser(Namespace* global, TypeMap* types, AsmDefMap* asmDefs,
+        std::string const& filename);
     virtual std::any visitZhl(ZHLParser::ZhlContext* ctx);
     virtual std::any visitFunction(ZHLParser::FunctionContext* ctx);
     virtual std::any visitReference(ZHLParser::ReferenceContext* ctx);
+    virtual std::any visitAsmDef(ZHLParser::AsmDefContext* ctx);
 
     /// _currentFunction assumed not null
     virtual std::any visitFunArgs(ZHLParser::FunArgsContext* ctx);
@@ -69,6 +72,7 @@ private:
     Signature* _currentSignature = nullptr;
     VariableSignature* _currentReference = nullptr;
     TypeMap* _types;
+    AsmDefMap* _asmDefs;
 
     std::string GetCurrentFunctionQualifiedName(std::string const& name);
     void WarnRepeatedFunctionQualifier(std::string const& name, std::string const& qualifier);

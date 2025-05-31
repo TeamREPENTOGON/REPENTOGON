@@ -1,5 +1,5 @@
 
-// Generated from ZHLLexer.g4 by ANTLR 4.13.2
+// Generated from ZHLLexer.g4 by ANTLR 4.12.0
 
 #pragma once
 
@@ -20,15 +20,16 @@ public:
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
     Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Debug = 45, 
-    NoHook = 46, Visibility = 47, Public = 48, Private = 49, Protected = 50, 
-    Register = 51, GeneralPurposeRegister = 52, Eax = 53, Ebx = 54, Ecx = 55, 
-    Edx = 56, Esi = 57, Edi = 58, Esp = 59, Ebp = 60, SSERegister = 61, 
-    Xmm0 = 62, Xmm1 = 63, Xmm2 = 64, Xmm3 = 65, Xmm4 = 66, Xmm5 = 67, Xmm6 = 68, 
-    Xmm7 = 69, CallingConvention = 70, Stdcall = 71, Cdecl = 72, Fastcall = 73, 
-    Thiscall = 74, X8664 = 75, X8664_Output = 76, Signature = 77, ReferenceSignature = 78, 
-    Operator = 79, OpSymbol = 80, Name = 81, Number = 82, HexNumber = 83, 
-    DecNumber = 84, GenericCode = 85, Whitespace = 86, Newline = 87, BlockComment = 88, 
-    LineComment = 89, Any = 90
+    NoHook = 46, Asm = 47, Visibility = 48, Public = 49, Private = 50, Protected = 51, 
+    Register = 52, GeneralPurposeRegister = 53, Eax = 54, Ebx = 55, Ecx = 56, 
+    Edx = 57, Esi = 58, Edi = 59, Esp = 60, Ebp = 61, SSERegister = 62, 
+    Xmm0 = 63, Xmm1 = 64, Xmm2 = 65, Xmm3 = 66, Xmm4 = 67, Xmm5 = 68, Xmm6 = 69, 
+    Xmm7 = 70, CallingConvention = 71, Stdcall = 72, Cdecl = 73, Fastcall = 74, 
+    Thiscall = 75, X8664 = 76, X8664_Output = 77, ColonLessSignature = 78, 
+    Signature = 79, ReferenceSignature = 80, Operator = 81, OpSymbol = 82, 
+    Name = 83, Number = 84, HexNumber = 85, DecNumber = 86, GenericCode = 87, 
+    Whitespace = 88, Newline = 89, BlockComment = 90, LineComment = 91, 
+    Any = 92
   };
 
   explicit ZHLLexer(antlr4::CharStream *input);

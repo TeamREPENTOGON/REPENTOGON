@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
@@ -51,9 +52,7 @@ bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity)
 
 // This patch injects the PRE_LASER_COLLISION callback for "sample" lasers (lasers that curve, ie have multiple sample points).
 void PatchPreSampleLaserCollision() {
-	SigScan scanner("8b48??83f90975??c780????????00000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreSampleLaserCollision);
 
 	printf("[REPENTOGON] Patching Entity_Laser::damage_entities for MC_PRE_LASER_COLLISION (sample laser) at %p\n", addr);
 
@@ -166,7 +165,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 					}
 					lua_pop(L, 1);
 				}
-				
+
 				// Retroactively fix the behaviour of certain DamageFlags.
 				// For example, ones that the game normally checks for BEFORE this callback runs.
 				const uint64_t flagsAdded = (*damageFlags) & ~originalDamageFlags;
@@ -659,7 +658,7 @@ void ASMPatchPrePickupVoided() {
 		.AddInternalCall(RunPrePickupVoided)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\x83\xC4\x04") // add esp, 4
-		.AddRelativeJump((char*)addr + 5); 
+		.AddRelativeJump((char*)addr + 5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -887,7 +886,7 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.pushUserdataValue(cropOffset, lua::Metatables::VECTOR)
 			.call(1);
-		
+
 		if (!result) {
 			if (lua_istable(L, -1)) {
 				lua_pushnil(L);
@@ -986,7 +985,7 @@ void ASMPatchTrinketRender() {
 }
 
 //MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (1335)
-bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) { 
+bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 	const int callbackid = 1335;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1005,9 +1004,9 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 			}
 		}
 	}
-	
-	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr && 
-		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead)) 
+
+	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr &&
+		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead))
 			&& (pickup->_timeout < 1) );
 }
 
@@ -1152,19 +1151,19 @@ void PreBirthPatch(void* addr, const bool isCambion) {
 }
 
 void ASMPatchPrePlayerGiveBirth() {
-	
+
 	SigScan cambionSig("818f????????000200000bc2");
 	cambionSig.Scan();
 	void* cambionAddr = cambionSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
 	PreBirthPatch(cambionAddr, true);  // Cambion
-	
+
 	SigScan immaculateSig("818f????????000200000bc6");
 	immaculateSig.Scan();
 	void* immaculateAddr = immaculateSig.GetAddress();
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
-	
+
 }
 
 bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Player* player) {
@@ -1187,7 +1186,7 @@ bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Player* player) {
 				}
 			}
 		}
-	
+
 	return false;
 }
 
@@ -1302,7 +1301,7 @@ void ASMPatchesBedCallbacks() {
 //MC_PRE_PLAYER_POCKET_ITEM_SWAP(1287)
 bool __stdcall RunPrePlayerPocketItemSwapCallback(Entity_Player* player) {
 	const int callbackid = 1287;
-	
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1536,7 +1535,7 @@ void ASMPatchPreItemTextDisplayCallback() {
 		.AddInternalCall(PreItemTextDisplayTrampoline)
 		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, cancelAddr)  // Jump for false (cancel the text) 
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, cancelAddr)  // Jump for false (cancel the text)
 		.AddRelativeJump((char*)patchAddr + 0x5);  // Jump for true (continue normally)
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }

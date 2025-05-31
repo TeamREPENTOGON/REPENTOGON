@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-static Logger parserLogger(LOG_INFO, "ZHL Generator", { 
+static Logger parserLogger(LOG_INFO, "ZHL Generator", {
     new StdoutLogOutput(),
     new StderrLogOutput(),
     new FileLogOutput("libzhlgen.log", "w")
@@ -32,7 +32,8 @@ std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
     return _emitter->GenerateType(t);
 }
 
-CodeEmitter::CodeEmitter(TypeMap* types, bool test) : _types(types) {
+CodeEmitter::CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, bool test) :
+    _types(types), _asmDefs(asmDefs) {
     if (test) {
         _decls.open("IsaacRepentance.h");
         _impl.open("IsaacRepentance.cpp");
@@ -93,9 +94,9 @@ bool CodeEmitter::ProcessFile(fs::path const& file) {
         return false;
     }
 
-    Parser p2(&_global, _types, file.string());
+    Parser p2(&_global, _types, _asmDefs, file.string());
     bool result = std::any_cast<bool>(p2.visit(tree));
-    
+
     if (!result) {
         if constexpr (std::is_same_v<char, fs::path::value_type>) {
             ParserLogger()->Fatal("Errors encountered while visting %s\n", file.c_str());
@@ -142,7 +143,67 @@ void CodeEmitter::Emit() {
         EmitNamespace(name);
     }
 
+    EmitAsmDefinitions();
+
     EmitJsonEpilogue();
+}
+
+void CodeEmitter::EmitAsmDefinitions() {
+    EmitAsmDefinitions_Decl();
+    EmitAsmDefinitions_Impl();
+}
+
+void CodeEmitter::EmitAsmDefinitions_Decl() {
+    EmitDecl();
+    uint32_t depth = ResetDepth();
+    Emit("namespace AsmDefinitions {");
+    EmitNL();
+    IncrDepth();
+
+    for (auto const& [name, _] : *_asmDefs) {
+        EmitTab();
+        std::ostringstream stream;
+        stream << "extern LIBZHL_API char " << name << ";";
+        Emit(stream.str());
+        EmitNL();
+    }
+
+    DecrDepth();
+    Emit("}");
+    EmitNL();
+
+    RestoreDepth(depth);
+}
+
+void CodeEmitter::EmitAsmDefinitions_Impl() {
+    EmitImpl();
+    uint32_t depth = ResetDepth();
+    Emit("namespace AsmDefinitions {");
+    EmitNL();
+    IncrDepth();
+
+    for (auto const& [name, signature] : *_asmDefs) {
+        EmitTab();
+        std::ostringstream stream;
+        stream << "char " << name << ";";
+        Emit(stream.str());
+        EmitNL();
+    }
+
+    EmitNL();
+
+    for (auto const& [name, signature] : *_asmDefs) {
+        EmitTab();
+        std::ostringstream stream;
+        stream << "ASMDefinition asm_" << name << "(&" << name << ", \"" << name <<
+            "\", " << signature << ");";
+        Emit(stream.str());
+        EmitNL();
+    }
+
+    DecrDepth();
+    Emit("}");
+    RestoreDepth(depth);
 }
 
 void CodeEmitter::EmitForwardDecl() {
@@ -173,7 +234,7 @@ void CodeEmitter::EmitJson(Function const& fn, std::string const& internalName,
     EmitJson();
     Emit("\t{ \"function\": \"");
     Emit(internalName);
-    Emit("\", \"fullName\": \""); 
+    Emit("\", \"fullName\": \"");
     Emit(fullName);
     Emit("\", \"hook\": ");
     if (fn.CanHook()) {
@@ -330,7 +391,7 @@ void CodeEmitter::EmitType(BasicType const& t) {
 
 std::string CodeEmitter::GenerateType(Struct const& s) {
     std::string result = s._name;
-    
+
     if (s._template) {
         result += "<";
 
@@ -423,14 +484,6 @@ void CodeEmitter::EmitImpl() {
 
 void CodeEmitter::EmitJson() {
     _emitContext = &_json;
-}
-
-void CodeEmitter::IncrDepth() {
-    ++_emitDepth;
-}
-
-void CodeEmitter::DecrDepth() {
-    --_emitDepth;
 }
 
 void CodeEmitter::EmitDependencies(Struct const& s) {
@@ -529,7 +582,7 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     EmitAssembly(var, isVirtual, false);
 
     // Emit function twice, one with the vtable, one without.
-    // This allows parent calls, otherwise only virtual calls would be possible 
+    // This allows parent calls, otherwise only virtual calls would be possible
     // as the parent call would enter a virtual call.
     if (isVirtual) {
         Signature copy(var);
@@ -1010,6 +1063,7 @@ void CodeEmitter::EmitGlobalPrologue() {
 
 void CodeEmitter::EmitImplPrologue() {
     EmitImpl();
+    Emit("#include \"ASMDefinition.h\"\n");
     Emit("#include \"HookSystem_private.h\"\n");
     Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
@@ -1136,7 +1190,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                         }
 
                         Emit(", 0 }");
-                        
+
                         if (i != fn._params.size() - 1) {
                             Emit(",");
                         }
@@ -1184,8 +1238,8 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                     if (position < 2) {
                         if (param._type->size() > 4) {
                             std::ostringstream s;
-                            s << "[FATAL] While emitting code for function " << fn.ToString() << 
-                                " with x86-64 like calling convention, encountered parameter"  
+                            s << "[FATAL] While emitting code for function " << fn.ToString() <<
+                                " with x86-64 like calling convention, encountered parameter"
                                 "that does not fit in register (parameter " << position + 1 << ")" << std::endl;
                             throw std::runtime_error(s.str());
                         }
@@ -1196,7 +1250,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                         std::string category;
                         if (param._type->IsBasic()) {
                             BasicType basic = std::get<BasicType>(param._type->_value);
-                            
+
                             if (basic._type == BasicTypes::INT || basic._type == BasicTypes::BOOL || basic._type == BasicTypes::CHAR) {
                                 reg = position == 0 ? Registers::ECX : Registers::EDX;
                                 category = "GPRegisters";
@@ -1228,7 +1282,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                             reg = position == 0 ? Registers::ECX : Registers::EDX;
                             category = "GPRegisters";
                         }
-                        
+
                         const_cast<FunctionParam&>(param)._reg = reg;
 
                         Emit("{ HookSystem::");
@@ -1288,7 +1342,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                     std::transform(regStr.begin(), regStr.end(), regStr.begin(), ::toupper);
                     Emit(regStr);
                     Emit(", 0 }");
-                    
+
                     if (i != fn._params.size() - 1) {
                         Emit(", ");
                     }
@@ -1377,7 +1431,7 @@ void CodeEmitter::EmitParamData(Function const& fn, FunctionParam const& param, 
     Emit("{ HookSystem::NoRegister(), ");
     Emit(std::to_string(paramSize));
     Emit(" }");
-    
+
     if (comma) {
         Emit(",");
     }

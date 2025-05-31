@@ -1,5 +1,5 @@
 
-// Generated from ZHLParser.g4 by ANTLR 4.13.2
+// Generated from ZHLParser.g4 by ANTLR 4.12.0
 
 #pragma once
 
@@ -20,30 +20,31 @@ public:
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
     Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Debug = 45, 
-    NoHook = 46, Visibility = 47, Public = 48, Private = 49, Protected = 50, 
-    Register = 51, GeneralPurposeRegister = 52, Eax = 53, Ebx = 54, Ecx = 55, 
-    Edx = 56, Esi = 57, Edi = 58, Esp = 59, Ebp = 60, SSERegister = 61, 
-    Xmm0 = 62, Xmm1 = 63, Xmm2 = 64, Xmm3 = 65, Xmm4 = 66, Xmm5 = 67, Xmm6 = 68, 
-    Xmm7 = 69, CallingConvention = 70, Stdcall = 71, Cdecl = 72, Fastcall = 73, 
-    Thiscall = 74, X8664 = 75, X8664_Output = 76, Signature = 77, ReferenceSignature = 78, 
-    Operator = 79, OpSymbol = 80, Name = 81, Number = 82, HexNumber = 83, 
-    DecNumber = 84, GenericCode = 85, Whitespace = 86, Newline = 87, BlockComment = 88, 
-    LineComment = 89, Any = 90
+    NoHook = 46, Asm = 47, Visibility = 48, Public = 49, Private = 50, Protected = 51, 
+    Register = 52, GeneralPurposeRegister = 53, Eax = 54, Ebx = 55, Ecx = 56, 
+    Edx = 57, Esi = 58, Edi = 59, Esp = 60, Ebp = 61, SSERegister = 62, 
+    Xmm0 = 63, Xmm1 = 64, Xmm2 = 65, Xmm3 = 66, Xmm4 = 67, Xmm5 = 68, Xmm6 = 69, 
+    Xmm7 = 70, CallingConvention = 71, Stdcall = 72, Cdecl = 73, Fastcall = 74, 
+    Thiscall = 75, X8664 = 76, X8664_Output = 77, ColonLessSignature = 78, 
+    Signature = 79, ReferenceSignature = 80, Operator = 81, OpSymbol = 82, 
+    Name = 83, Number = 84, HexNumber = 85, DecNumber = 86, GenericCode = 87, 
+    Whitespace = 88, Newline = 89, BlockComment = 90, LineComment = 91, 
+    Any = 92
   };
 
   enum {
     RuleZhl = 0, RuleExternalFunc = 1, RuleTypeInfo = 2, RuleTypeInfoDef = 3, 
-    RuleFunction = 4, RuleReference = 5, RuleFunArgs = 6, RuleFunArg = 7, 
-    RuleArgParam = 8, RuleOptNamedFunArgs = 9, RuleOptNamedFunArg = 10, 
-    RuleTemplateSpec = 11, RuleType = 12, RuleTypeSpecifier = 13, RuleSimpleType = 14, 
-    RuleSimpleTypeSignedness = 15, RuleSimpleTypeLength = 16, RuleNestedName = 17, 
-    RulePointerAttribute = 18, RuleGenericCode = 19, RuleClass = 20, RuleInheritance = 21, 
-    RuleInheritanceDecl = 22, RuleDepends = 23, RuleClassBody = 24, RuleVtable = 25, 
-    RuleVtableEntry = 26, RuleVtableSignature = 27, RuleClassSignature = 28, 
-    RuleClassFunction = 29, RuleFunctionName = 30, RuleClassField = 31, 
-    RuleInnerField = 32, RuleInnerFieldPtr = 33, RuleFullName = 34, RuleSignature = 35, 
-    RuleForwardDecl = 36, RuleTypedef = 37, RuleFunctionPtr = 38, RuleFptr = 39, 
-    RuleMemberPtr = 40
+    RuleAsmDef = 4, RuleFunction = 5, RuleReference = 6, RuleFunArgs = 7, 
+    RuleFunArg = 8, RuleArgParam = 9, RuleOptNamedFunArgs = 10, RuleOptNamedFunArg = 11, 
+    RuleTemplateSpec = 12, RuleType = 13, RuleTypeSpecifier = 14, RuleSimpleType = 15, 
+    RuleSimpleTypeSignedness = 16, RuleSimpleTypeLength = 17, RuleNestedName = 18, 
+    RulePointerAttribute = 19, RuleGenericCode = 20, RuleClass = 21, RuleInheritance = 22, 
+    RuleInheritanceDecl = 23, RuleDepends = 24, RuleClassBody = 25, RuleVtable = 26, 
+    RuleVtableEntry = 27, RuleVtableSignature = 28, RuleClassSignature = 29, 
+    RuleClassFunction = 30, RuleFunctionName = 31, RuleClassField = 32, 
+    RuleInnerField = 33, RuleInnerFieldPtr = 34, RuleFullName = 35, RuleSignature = 36, 
+    RuleForwardDecl = 37, RuleTypedef = 38, RuleFunctionPtr = 39, RuleFptr = 40, 
+    RuleMemberPtr = 41
   };
 
   explicit ZHLParser(antlr4::TokenStream *input);
@@ -67,6 +68,7 @@ public:
   class ExternalFuncContext;
   class TypeInfoContext;
   class TypeInfoDefContext;
+  class AsmDefContext;
   class FunctionContext;
   class ReferenceContext;
   class FunArgsContext;
@@ -126,6 +128,8 @@ public:
     TypeInfoContext* typeInfo(size_t i);
     std::vector<ExternalFuncContext *> externalFunc();
     ExternalFuncContext* externalFunc(size_t i);
+    std::vector<AsmDefContext *> asmDef();
+    AsmDefContext* asmDef(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -197,6 +201,24 @@ public:
   };
 
   TypeInfoDefContext* typeInfoDef();
+
+  class  AsmDefContext : public antlr4::ParserRuleContext {
+  public:
+    AsmDefContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *Asm();
+    antlr4::tree::TerminalNode *Name();
+    antlr4::tree::TerminalNode *ColonLessSignature();
+    antlr4::tree::TerminalNode *Semi();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  AsmDefContext* asmDef();
 
   class  FunctionContext : public antlr4::ParserRuleContext {
   public:

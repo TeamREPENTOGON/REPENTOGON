@@ -5,7 +5,7 @@ options {
 }
 
 zhl:
-    (signature | class | genericCode | typedef | functionPtr | forwardDecl | typeInfo | externalFunc)* EOF;
+    (signature | class | genericCode | typedef | functionPtr | forwardDecl | typeInfo | externalFunc | asmDef)* EOF;
 
 externalFunc:
     External LeftParen Name Comma Name RightParen function;
@@ -17,7 +17,10 @@ typeInfoDef:
     Size Number Semi |
     Synonym type Semi |
     Align Number Semi;
-    
+
+asmDef:
+    Asm Name ColonLessSignature Semi;
+
 function:
     Qualifier* CallingConvention? type nestedName LeftParen funArgs? RightParen Semi;
     

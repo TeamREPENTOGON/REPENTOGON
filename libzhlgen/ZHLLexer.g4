@@ -49,6 +49,7 @@ Pure: 'pure';
 Override: 'override';
 Debug: 'debug';
 NoHook: 'nohook';
+Asm: 'asm';
 
 Visibility: Public | Private | Protected;
 Public: 'public';
@@ -85,8 +86,11 @@ Thiscall: '__thiscall';
 X8664: '__x86_64';
 X8664_Output: '__x86_64_output';
 
+ColonLessSignature:
+    DoubleQuote '.'? [0-9A-Fa-f?]+ DoubleQuote;
+
 Signature: 
-    DoubleQuote '.'? [0-9A-Fa-f?]+ DoubleQuote Colon;
+    ColonLessSignature Colon;
     
 ReferenceSignature:
     DoubleQuote '.'? [0-9A-Fa-f()?]+ DoubleQuote Colon;
