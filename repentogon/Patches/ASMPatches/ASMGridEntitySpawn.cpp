@@ -63,15 +63,15 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, GridEntityType type, std::option
 void PatchInlinedSpawnGridEntity()
 {
 	ZHL::Logger logger;
-	for (const GridEntitySpawnPatchInfo& i : patches) {
-		SigScan scanner(i.signature);
+	for (const GridEntitySpawnPatchInfo& i : GetGridEntitySpawnPatches()) {
+		SigScan scanner(i.signature.c_str());
 		if (!scanner.Scan()) {
-			logger.Log("SpawnGridEntity patch %s failed, signature not found!\n", i.comment);
+			logger.Log("SpawnGridEntity patch %s failed, signature not found!\n", i.comment.c_str());
 			continue;
 		}
 		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
 
-		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment, addr);
+		logger.Log("Patching inlined SpawnGridEntity %s at %p\n", i.comment.c_str(), addr);
 		ASMPatchInlinedSpawnGridEntity(addr, i.type, i.variantReg, i.variantOffset, i.idxReg, i.idxOffset, i.seedReg, i.seedOffset, i.jumpOffset, i.jumpCondOffset);
 	};
 }
