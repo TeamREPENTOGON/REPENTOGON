@@ -3361,41 +3361,23 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
 		lua::LuaCaller caller(L);
-		LuaLevelGeneratorRoom* room = caller.push(callbackid).pushnil().pushUd<LuaLevelGeneratorRoom>(lua::metatables::LevelGeneratorRoomMT);
+		caller.push(callbackid);
+		LuaLevelGeneratorRoom* room = caller.pushUd<LuaLevelGeneratorRoom>(lua::metatables::LevelGeneratorRoomMT);
+
 		room->cleanup = false;
 		room->context = nullptr;
 		room->room = slot;
-		
-		RoomConfig_Room* other = nullptr;
-		lua::LuaResults results = caller.push(config, lua::Metatables::ROOM_CONFIG_ROOM).push(seed).call(1);
-		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
 
-			if (!opt) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_PRE_LEVEL_PLACE_ROOM");
-			}
-			else {
-				other = *opt;
-			}
-		}
+		lua::LuaResults result = caller.push(config, lua::Metatables::ROOM_CONFIG_ROOM)
+			.push(seed)
+			.call(1);
 
-		if (other) {
-			bool ok = true;
-			if (other->Shape != config->Shape) {
-				KAGE::_LogMessage(2, "MC_PRE_LEVEL_PLACE_ROOM: Shape mismatch. Original = %d, override = %d\n", config->Shape, other->Shape);
-				ok = false;
-			}
-
-			for (int i = 0; i < MAX_DOOR_SLOTS; ++i) {
-				if (slot->_doors & (1 << i) && !(other->Doors & (1 << i))) {
-					KAGE::_LogMessage(2, "MC_PRE_LEVEL_PLACE_ROOM: Required doors mismatch. Slot %d (mask = %d) required\n", i, 1 << i);
-					ok = false;
-				}
-			}
-			
-			if (ok) {
-				return super(slot, other, seed, unk);
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				RoomConfig_Room* newConf = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM, "RoomConfigRoom");
+				return super(slot, newConf, seed, unk);
 			}
 		}
 	}

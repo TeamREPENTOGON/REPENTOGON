@@ -41,7 +41,7 @@ __thiscall void Level::SetNextStage();
 static bool Level::IsStageAvailable(int LevelStage, int StageType);
 
 "558bec83ec1c53568b75??578bf9":
-bool Level::place_room(LevelGenerator_Room* slot, RoomConfig_Room* data, uint32_t seed, uint32_t unk);
+__thiscall bool Level::place_room(LevelGenerator_Room* slot, RoomConfig_Room* data, uint32_t seed, uint32_t unk);
 
 "558bec515356578b3d????????8bd9":
 __thiscall bool Level::IsNextStageAvailable();
