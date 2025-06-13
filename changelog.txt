@@ -13,8 +13,9 @@ Additions:
 	- GetMegaChest[Left/Right]Collectible
 		Returns the other EntityPickup for a Mega Chest
 	- HasFlipData
-		Returns true if pickup is collectible and has Flip save state
+		Returns true if pickup is collectible and has Flip save state.
 	- GetFlipCollectible
+		Returns CollectibleType if flip save state exists, nil otherwise.
 	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
