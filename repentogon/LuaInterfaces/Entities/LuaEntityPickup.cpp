@@ -248,6 +248,33 @@ LUA_FUNCTION(Lua_PickupGetMegaChestOtherCollectible) {
 	return 2;
 }
 
+LUA_FUNCTION(Lua_PickupGetFlippedCollectibleID) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+
+	if (pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr) {
+		lua_pushinteger(L, pickup->_flipSaveState.saveState->subtype);
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupInitFlipState) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	const CollectibleType collectID = (CollectibleType)luaL_optinteger(L, 2, 0);
+	bool setupCollectibleGraphics = lua::luaL_optboolean(L, 3, true);
+	pickup->InitFlipState(collectID, setupCollectibleGraphics);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PickupHasFlipData) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushboolean(L, pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -281,6 +308,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMegaChestLeftCollectible", Lua_PickupGetMegaChestLeftCollectible },
 		{ "GetMegaChestRightCollectible", Lua_PickupGetMegaChestRightCollectible },
 		{ "GetMegaChestOtherCollectible", Lua_PickupGetMegaChestOtherCollectible },
+		{ "GetFlipCollectible", Lua_PickupGetFlippedCollectibleID },
+		{ "InitFlipState", Lua_PickupInitFlipState },
+		{ "HasFlipData", Lua_PickupHasFlipData },
 		{ NULL, NULL }
 	};
 

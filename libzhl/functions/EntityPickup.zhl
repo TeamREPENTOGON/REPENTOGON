@@ -58,10 +58,17 @@ __thiscall void Entity_Pickup::TriggerTheresOptionsPickup();
 "83f93274??83f93c":
 static cleanup bool Entity_Pickup::IsChest(uint32_t variant<ecx>);
 
+/*"558bec83e4f883ec1856578bf98b0d":
+__thiscall void Entity_Pickup::InitFlipState();
+*/
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bfa":
+static cleanup void Entity_Pickup::SetupCollectibleGraphics(ANM2 * pedestalSprite<ecx>, int layer<edx>, CollectibleType id, uint32_t seed, bool blind);
+
 "8b0d(????????)565741":
 reference uint32_t s_EntityPickup_IgnoreModifiers;
 
-struct Entity_Pickup depends (ANM2) : public Entity { {{
+struct Entity_Pickup depends (ANM2, ReferenceCounter_EntitySaveState) : public Entity { {{
 	inline bool IsBlind() { return this->_isForceBlind; }
 	inline int* GetDropDelay() { return &this->_dropDelay; }
 	inline int* GetVarData() { return &this->_varData; }
@@ -69,6 +76,8 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 	static inline bool ShouldIgnoreModifiers() noexcept { return s_EntityPickup_IgnoreModifiers != 0; }
 	static inline void BeginIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers++; }
 	static inline void EndIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers--; }
+	
+	void LIBZHL_API Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollectibleGraphics);
 }} 
 
 	__vtable {
@@ -120,5 +129,7 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 	int _varData : 0x59c;
 	unsigned int _cycleCollectibleList[8] : 0x5a0;
 	unsigned int _cycleCollectibleCount : 0x5c0;
+	ReferenceCounter_EntitySaveState _flipSaveState : 0x5c8;
+	ANM2 _altPedestalANM2 : 0x5d0;
 
 } : 0x6f0;

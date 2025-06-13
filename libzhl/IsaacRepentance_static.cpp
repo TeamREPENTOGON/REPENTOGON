@@ -598,3 +598,47 @@ void Entity_Bomb::UpdateDirtColor() {
         }
     }
 }
+
+void Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollectibleGraphics) {
+	 
+	if (_variant == PICKUP_COLLECTIBLE && CanReroll() && !_dead) {
+
+		EntitySaveState* emptySaveState = new EntitySaveState();
+
+		_flipSaveState.SetP(emptySaveState);
+		EntitySaveState* flipState = _flipSaveState.saveState;
+
+		flipState->type = _type, flipState->variant = _variant;
+
+		RNG rng = RNG();
+		rng.SetSeed(_initSeed, 39);
+		unsigned int seed = rng.Next();
+
+		flipState->_initSeed = seed;
+
+		int collectibleID = (collectType != COLLECTIBLE_NULL) ? collectType :  g_Game->_itemPool.GetSeededCollectible(flipState->_initSeed, true, g_Game->_room->_descriptor); //to-do: add valid itemconfig check
+
+		flipState->subtype = collectibleID;
+
+		_altPedestalANM2.Reset();
+		if (setupCollectibleGraphics) {
+			
+
+			ANM2 copySprite = ANM2();
+			copySprite.construct_from_copy(&_sprite);
+
+			Isaac::SwapANM2(&_altPedestalANM2, &copySprite);
+
+			Entity_Pickup::SetupCollectibleGraphics(&_altPedestalANM2, 1, (CollectibleType)flipState->subtype, flipState->_initSeed, false);
+
+			_altPedestalANM2.LoadGraphics(true);
+
+			_altPedestalANM2.Play(_sprite.GetAnimationData(0)->GetName().c_str(), true);
+			_altPedestalANM2.Update();
+		}
+	}
+
+	
+
+	return;
+}

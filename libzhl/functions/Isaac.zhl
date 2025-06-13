@@ -52,6 +52,12 @@ static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target)
 "538bda578bf9":
 static __x86_64_output Vector Isaac::GetAxisAlignedUnitVectorFromDir(int eDir);
 
+"558bec83e4f883ec105657ba":
+static void Isaac::RebuildContentMountPoints();
+
+"558bec0f1002":
+static cleanup void Isaac::SwapANM2(ANM2* left<ecx>, ANM2* right<edx>);
+
 struct Isaac {
     {{
     LIBZHL_API static bool IsInGame();

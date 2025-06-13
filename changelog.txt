@@ -11,7 +11,11 @@ Additions:
 	- CanDevolve
 * EntityPickup:
 	- GetMegaChest[Left/Right]Collectible
-	- Returns the other EntityPickup for a Mega Chest
+		Returns the other EntityPickup for a Mega Chest
+	- HasFlipData
+		Returns true if pickup is collectible and has Flip save state
+	- GetFlipCollectible
+	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown

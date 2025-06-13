@@ -229,6 +229,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     Entity * _spawnerEntity : 0x3c8;
 	Entity_NPC * _minecart : 0x3d4;
     RNG _dropRNG : 0x3dc;
+	uint32_t _initSeed : 0x3ec;
 	LuaBridgeRef* _luaBridgeRef: 0x408;
 
     __vtable {
