@@ -354,6 +354,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.renderDebugFindInRadius, false);
 
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_DISABLE_EXIT_PROMPT, &repentogonOptions.disableExitPrompt);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.disableExitPrompt, false);
+
 
                         ImGui::EndTable();
                     }

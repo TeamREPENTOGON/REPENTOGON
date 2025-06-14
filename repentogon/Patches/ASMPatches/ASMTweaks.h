@@ -12,4 +12,7 @@ namespace ASMPatches {
 	void PatchGotInvaldParameterReadingChallengesXml();
 
 	bool SkipWombAchievementBlock();
+
+	void DisableExitPrompt();
+
 }

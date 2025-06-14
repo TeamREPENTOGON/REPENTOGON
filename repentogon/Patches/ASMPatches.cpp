@@ -219,4 +219,6 @@ void PerformASMPatches() {
 	if (!ASMPatches::SkipWombAchievementBlock()) {
 		ZHL::Log("[ERROR] Error while skipping womb achievement block\n");
 	}
+
+	ASMPatches::DisableExitPrompt();
 }

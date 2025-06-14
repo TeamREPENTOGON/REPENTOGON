@@ -38,6 +38,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
 			ini["VanillaTweaks"]["EcoMode"] = "0";
+			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -62,6 +63,7 @@ struct REPENTOGONOptions {
 		ecoMode = defstoi(ini["VanillaTweaks"]["EcoMode"], 0);
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
+		disableExitPrompt = defstoi(ini["VanillaTweaks"]["DisableExitPrompt"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
@@ -108,6 +110,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
 		Write("VanillaTweaks", "EcoMode", ecoMode);
+		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -135,6 +138,7 @@ struct REPENTOGONOptions {
 	std::string optionsPath;
 	bool renderDebugFindInRadius;
 	bool ecoMode;
+	bool disableExitPrompt;
 };
 
 extern REPENTOGONOptions repentogonOptions;

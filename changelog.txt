@@ -170,6 +170,7 @@ Additions:
 	- Supported: tears, flattears, damage, flatdamage, shotspeed, speed, range, luck
 	- Prepend "effect" to assign the stat change to the corresponding TemporaryEffect instead (ie: effecttears="0.7") (this is particularly relevant for active items)
 	- The corresponding "cache" values are automatically added to the item, so you don't need to specify those as well.
+* Add new Vanilla Tweaks option "Disable exit prompt", which disables prompt pop-up when you try to exit the game from title menu.
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.

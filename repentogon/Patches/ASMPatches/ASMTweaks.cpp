@@ -1,3 +1,4 @@
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "ASMTweaks.h"
 #include "Log.h"
@@ -9,6 +10,8 @@ namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
 	static bool __stdcall __IsLeadeboardEntryInvalid(int schwagBonus, int timePenalty, int encodedGameVersion, int encodedGameVersionFromScoreSheet);
 	static bool __stdcall __DisallowAchievements();
+
+	static bool __stdcall __ExecuteGameExit();
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -277,4 +280,36 @@ namespace ASMPatches {
 
 		return true;
 	}
+
+	 int gameExitConfirm = 1;
+	 static bool __stdcall __ExecuteGameExit() {
+		 if (repentogonOptions.disableExitPrompt) {
+			 printf("[REPENTOGON] Executing game exit\n");
+			 Isaac::ConfirmGameExit(&gameExitConfirm);
+
+			 return true;
+		 }
+		 return false;
+	 }
+
+	 void DisableExitPrompt() {
+		 void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::DisableExitPrompt);
+
+		 printf("[REPENTOGON] Patching Menu_Title::Update for exit prompt patch at %p\n", addr);
+
+		 ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+		 ASMPatch patch;
+
+		 patch.PreserveRegisters(reg)
+			 .AddInternalCall(__ExecuteGameExit)
+			 .AddBytes("\x84\xC0") // TEST AL, AL
+			 .RestoreRegisters(reg)
+			 .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x98) // Jump to return if true
+			 .AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the bytes we overwrote
+			 .AddRelativeJump((char*)addr + 0xA);  // Skip to original behaviour
+
+		 sASMPatcher.PatchAt(addr, &patch);
+
+	 }
+
 }

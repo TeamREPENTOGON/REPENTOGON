@@ -58,6 +58,9 @@ static void Isaac::RebuildContentMountPoints();
 "558bec0f1002":
 static cleanup void Isaac::SwapANM2(ANM2* left<ecx>, ANM2* right<edx>);
 
+"558bec8b45??83380175??803d????????00":
+static cleanup void Isaac::ConfirmGameExit(int* result);
+
 struct Isaac {
     {{
     LIBZHL_API static bool IsInGame();
