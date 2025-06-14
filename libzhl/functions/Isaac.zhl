@@ -58,8 +58,12 @@ static void Isaac::RebuildContentMountPoints();
 "558bec0f1002":
 static cleanup void Isaac::SwapANM2(ANM2* left<ecx>, ANM2* right<edx>);
 
-"558bec8b45??83380175??803d????????00":
-static cleanup void Isaac::ConfirmGameExit(int* result);
+/*"558bec8b45??83380175??803d????????00":
+// static cleanup void Isaac::ConfirmGameExit(int* result);
+*/
+
+"803d????????00a1????????75??6a006801000100e8????????83c408c3":
+static void Isaac::ConfirmGameExit(); //better
 
 struct Isaac {
     {{

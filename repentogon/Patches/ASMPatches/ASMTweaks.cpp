@@ -281,11 +281,10 @@ namespace ASMPatches {
 		return true;
 	}
 
-	 int gameExitConfirm = 1;
 	 static bool __stdcall __ExecuteGameExit() {
 		 if (repentogonOptions.disableExitPrompt) {
 			 printf("[REPENTOGON] Executing game exit\n");
-			 Isaac::ConfirmGameExit(&gameExitConfirm);
+			 Isaac::ConfirmGameExit();
 
 			 return true;
 		 }
