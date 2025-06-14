@@ -93,7 +93,6 @@ LUA_FUNCTION(Lua_RegisterCommand) {
 }
 
 LUA_FUNCTION(Lua_RegisterMacro) {
-	lua::LuaStackProtector protector(L);
 	const char* name = luaL_checkstring(L, 1);
 	if (!lua_istable(L, 2)) {
 
