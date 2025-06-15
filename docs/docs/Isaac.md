@@ -64,6 +64,11 @@ ___
 Sets the challenge of the corresponding `challengeid` to completed.
 
 ___
+### UnClearChallenge () {: aria-label='Functions' }
+#### void UnClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
+Sets the challenge of the corresponding `challengeid` to not completed. While it does work with vanilla challenges, it is not recommended to use it on those, as there are no instances of challenges being uncompleted in vanilla, so it could lead to unexpected behaviour in specific scenarios. 
+
+___
 ### ClearCompletionMarks () {: aria-label='Functions' }
 #### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Deletes all completion marks for a given character.
