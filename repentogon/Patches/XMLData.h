@@ -750,12 +750,12 @@ struct XMLData {
 
 
 
-inline bool isvalidid(const string& str) {
-	if (str.length() > 0) {
+inline bool isvalidid(const std::string& str) {
+	if (!str.empty()) {
 		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
-			return ((returnval != 0) || (str == "0"));
+		int returnval = std::strtol(str.c_str(), &endPtr, 0);
+		if (*endPtr == '\0') {
+			return (returnval != 0 || str == "0");
 		}
 	}
 	return false;
