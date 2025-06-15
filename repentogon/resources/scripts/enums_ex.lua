@@ -3018,6 +3018,22 @@ EvaluateStatStage = {
 	FLAT_DAMAGE = 3,
 }
 
+StringTableCategory = {
+	DEFAULT = "Default",
+	ITEMS = "Items",
+	CURSES = "Curses",
+	ENTITIES = "Entities",
+	MINIBOSSES = "Minibosses",
+	PLAYERS = "Players",
+	POCKET_ITEMS = "PocketItems",
+	STAGES = "Stages",
+	FORTUNE_GENERAL = "Fortune_General",
+	FORTUNE_RULES = "Fortune_Rules",
+	FORTUNE_SEEDS = "Fortune_Seeds",
+	RUN_STATUS = "RunStatus",
+	ONLINE = "Online",
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
