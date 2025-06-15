@@ -32,5 +32,4 @@ inline void InitChals() {
 extern void UndoChallenge(int challengeid);
 
 
-
 #endif

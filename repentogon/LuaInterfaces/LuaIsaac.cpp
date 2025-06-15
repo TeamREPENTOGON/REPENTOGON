@@ -599,6 +599,12 @@ LUA_FUNCTION(Lua_ClearChallenge) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_UndoChallenge) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	UndoChallenge(challengeid);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GetModChallengeClearCount) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
 	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
@@ -795,6 +801,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsChallengeDone", Lua_IsChallengeDone);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "UnClearChallenge", Lua_UndoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
