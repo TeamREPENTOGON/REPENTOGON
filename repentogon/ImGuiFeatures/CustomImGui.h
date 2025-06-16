@@ -742,7 +742,16 @@ struct CustomImGui {
         if (caller.call(1)) {
             // Lua encountered an error while executing the callback function
             // printing the error needs to happen in a seperate lua call, as to keep the lua-stack and imgui-stack protected and stable
-            const char* errorMsg = lua_tostring(L, lua_gettop(L));
+            int stack_top = lua_gettop(L);
+            const char* errorMsg = lua_tostring(L, stack_top);
+
+            while (errorMsg==0x0 && stack_top >= 0) {
+            //TODO: it's weird that stack top has garbage data, investigate further.
+                errorMsg=lua_tostring(L,stack_top);
+                stack_top -= 1;
+            };
+            if (errorMsg==0x0)
+                errorMsg = "[failed to get error message!]";
             int callbackTypeID = static_cast<int>(callbackType);
             g_Game->GetConsole()->PrintError(
                 "ImGui encountered an error in the '" + std::string(IMGUI_CALLBACK_TO_STRING[callbackTypeID])
