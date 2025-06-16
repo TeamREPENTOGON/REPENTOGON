@@ -1295,18 +1295,19 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 
                         stackSize += 4;
                         ++position;
+
+                        if (i != fn._params.size() - 1) {
+                            Emit(", ");
+                        }
+
+                        Emit(" /* ");
+                        Emit(param._name);
+                        Emit(" */");
                     }
                     else {
                         EmitParamData(fn, param, &fnStackSize, &stackSize, i != fn._params.size() - 1);
                     }
 
-                    if (i != fn._params.size() - 1) {
-                        Emit(", ");
-                    }
-
-                    Emit(" /* ");
-                    Emit(param._name);
-                    Emit(" */");
                     EmitNL();
                 }
             }
