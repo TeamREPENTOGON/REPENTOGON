@@ -2,6 +2,8 @@
 #include "ASMPatches.h"
 
 #include "../LuaInterfaces/LuaRender.h"
+#include "../SaveSyncing/SaveSyncing.h"
+
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
 #include "FamiliarTags.h"
@@ -83,6 +85,7 @@ void ASMPatchConsoleRunCommand() {
 }
 
 void PerformASMPatches() {
+	ASMPatchesForSaveSyncing();
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
 

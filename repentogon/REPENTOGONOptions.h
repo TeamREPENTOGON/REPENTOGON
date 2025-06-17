@@ -46,6 +46,7 @@ struct REPENTOGONOptions {
 			ini["internal"]["FileMap"] = "1";
 			ini["internal"]["ImGuiScale"] = "0";
 			ini["internal"]["RenderDebugFindInRadius"] = "0";
+			ini["internal"]["EnableSaveSyncing"] = "1";
 			iniFile.generate(ini, true);
 		}
 
@@ -70,6 +71,7 @@ struct REPENTOGONOptions {
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
+		enableSaveSyncing = defstoi(ini["internal"]["EnableSaveSyncing"], 1);
 		printf("Loaded REPENTOGON INI\n");
 	}
 
@@ -117,6 +119,7 @@ struct REPENTOGONOptions {
 		Write("internal", "FileMap", fileMap);
 		Write("internal", "ImGuiScale", imGuiScale);
 		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
+		Write("internal", "EnableSaveSyncing", enableSaveSyncing);
 	}
 
 	mINI::INIStructure ini;
@@ -137,6 +140,7 @@ struct REPENTOGONOptions {
 	int consoleAutofillLimit;
 	std::string optionsPath;
 	bool renderDebugFindInRadius;
+	bool enableSaveSyncing;
 	bool ecoMode;
 	bool disableExitPrompt;
 };

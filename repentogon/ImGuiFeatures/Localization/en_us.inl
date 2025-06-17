@@ -444,6 +444,9 @@ I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES fl
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT, u8"Disable exit prompt")
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you try to quit the game, restoring original behavior.")
 
+I(OPT_REPENTOGON_ENABLE_SAVE_SYNCING, u8"Automatically sync game progress between vanilla and REPENTOGON")
+I(OPT_REPENTOGON_ENABLE_SAVE_SYNCING_MARK, u8"While enabled, all achievements earned while playing on REPENTOGON will be reflected in vanilla as well, and vice versa. WARNING: Disabling this will not prevent save syncing on other devices!")
+
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
 I(OPT_EXTRA_HUD_MODES_MINI, u8"Mini")
@@ -646,3 +649,7 @@ I(TRANS_REPORT_WIN_NAME, u8"Translate Report")
 I(TRANS_LANGUAGE_HINT, u8"Translate info for language: %s")
 I(TRANS_UNTRANS_ITEMS, u8"Untranslated items:")
 I(TRANS_COUNT_HINT, u8"total count: %d translated: %d")
+
+// =========== Errors/Warnings ============
+
+I(ERROR_SAVE_SYNC_FAILED, u8"REPENTOGON save file synchronization failed.\n\nYour progress will not be lost. However, progress while playing on REPENTOGON may temporarily not be reflected when playing in vanilla, and vice versa.\n")
