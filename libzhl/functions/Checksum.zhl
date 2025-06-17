@@ -1,0 +1,8 @@
+"558bec83e4f883ec1453568bf2":
+static __x86_64 uint32_t Checksum::Generate(int unused, KAGE_Filesys_FileStream* file, int start, int endOffset);
+
+//"558bec8b41??53":
+//__thiscall void Checksum::Add(char* data, int length);
+
+struct Checksum {
+} : 0x10;

@@ -369,6 +369,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.disableExitPrompt, false);
 
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_ENABLE_SAVE_SYNCING, &repentogonOptions.enableSaveSyncing);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_ENABLE_SAVE_SYNCING_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.enableSaveSyncing, true);
 
                         ImGui::EndTable();
                     }
