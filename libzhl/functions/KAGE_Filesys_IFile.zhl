@@ -1,20 +1,16 @@
-struct KAGE_Filesys_IFile {
+"c706(????????)c746??00000000e8????????84c075??8b068bce6a01ff1033f685ff":
+reference void* KAGE_Filesys_IFile_vftable;
+
+struct KAGE_Filesys_IFile : public KAGE_Filesys_FileStream {
     {{
-        ~KAGE_Filesys_IFile()
+        KAGE_Filesys_IFile()
         {
-            this->Free(false);
+            this->_vtable = __ptr_KAGE_Filesys_IFile_vftable;
+            this->_status = 2;
+            this->_filePath = nullptr;
+            this->_file = nullptr;
         }
     }}
 
-    __vtable {
-        pure void Free(bool deletePtr); // technically the param is a uint8_t bitflag but this is the only flag
-        pure long GetSize();
-        pure long GetPosition();
-        pure void SetPosition(long offset, int origin);
-        pure bool IsEof();
-        pure uint32_t Read(void* buffer, uint32_t elementSize, uint32_t elementCount);
-        pure uint32_t ReadLine(char* buffer, uint32_t maxSize);
-        pure uint32_t Write(const void* buffer, uint32_t elementSize, uint32_t elementCount);
-        pure void Flush();
-    };
-};
+	FILE* _file : 0xc;
+} : 0x10;
