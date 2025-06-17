@@ -15,7 +15,7 @@ __thiscall void Manager::LoadChallenges(char *xmlpath, bool ismod);
 
 
 "68(????????)68????????8d8424":
-reference std_string g_SaveDataPath;
+reference char g_SaveDataPath;
 
 "8915(????????)a3":
 reference unsigned int g_WindowSizeX;
@@ -68,6 +68,12 @@ __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 "558bec518b55??8b0d????????83fa1a":
 __thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup, unsigned int UNKNOWN);
+
+"5668????????8bf1ff15????????83c40483380074":
+__thiscall bool Manager::IsSteamCloudEnabled();
+
+"558bec6aff68????????64a1????????50535657a1????????33c5508d45??64a3????????8bd98db3":
+__thiscall void Manager::destructor();
 
 struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
 	inline int GetState() { return this->_state; }

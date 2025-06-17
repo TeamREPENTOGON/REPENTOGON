@@ -2570,7 +2570,7 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
 
 "558bec6aff68????????64a1????????5081ece8010000a1????????33c58945??5657508d45??64a3????????8bc2":
-__cdecl void IsaacStartup(int param_1, int param_2);
+__x86_64 void IsaacStartup(int param_1, int param_2, int param_3);
 
 "a1(????????)895d??8945":
 reference char* ModReferences; // ModReference data from RegisterMod 
