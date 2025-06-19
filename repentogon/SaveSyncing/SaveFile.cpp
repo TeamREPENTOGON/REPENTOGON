@@ -177,7 +177,7 @@ bool SaveFile::ReadSaveFile() {
 	if (_steamCloud) {
 		file = std::make_unique<SteamCloudFile>();
 	} else {
-		file = std::make_unique<KAGE_Filesys_IFile>();
+		file = std::make_unique<KAGE_Filesys_File>();
 	}
 
 	_openedFile = file->OpenRead(_filePath.c_str()) && file->IsOpen();
@@ -681,7 +681,7 @@ bool SaveFile::SaveLocal(const std::string& filepath) {
 		ZHL::Log("[SaveFile] Cannot save invalid save data!\n");
 		return false;
 	}
-	KAGE_Filesys_IFile file;
+	KAGE_Filesys_File file;
 	file.OpenWrite(filepath.c_str());
 	if (!file.IsOpen()) {
 		ZHL::Log("[SaveFile] Failed to open local save file for writing.\n");

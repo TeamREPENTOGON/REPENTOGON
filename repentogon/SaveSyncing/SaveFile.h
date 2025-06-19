@@ -22,7 +22,6 @@
 * If the save file had an ongoing run, the next value here is a KAGE checksum for that run. If the file has no ongoing run, this is just 00000000.
 * The data for the run itself is stored in a different file, this checksum is just to validate it.
 * If validation fails, or something like modding state changes, the game just deletes the run.
-* We don't need to mess with this.
 * [gameStateChecksum]
 * 
 * Next, bulk of the save file are individual save data "chunks". For example, chunk 1 is achievements, chunk 2 is event counters, etc.
