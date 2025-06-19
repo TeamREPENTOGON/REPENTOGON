@@ -166,7 +166,7 @@ std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamClo
 	if (steamCloud) {
 		gamestateFile = std::make_unique<SteamCloudFile>();
 	} else {
-		gamestateFile = std::make_unique<KAGE_Filesys_IFile>();
+		gamestateFile = std::make_unique<KAGE_Filesys_File>();
 	}
 	if (gamestateFile->OpenRead(gamestatePathBuffer.get()) && gamestateFile->IsOpen()) {
 		return Checksum::Generate(0, gamestateFile.get(), 16, 4);
@@ -214,6 +214,8 @@ bool TrySyncSaveSlot(const int slot, SyncStatus& syncStatus) {
 	std::optional<uint32_t> gamestateChecksum = GetGamestateChecksum(slot, steamCloudEnabled);
 	if (gamestateChecksum) {
 		ZHL::Log("[SaveSync] Read GameState checksum: %u\n", *gamestateChecksum);
+	} else {
+		ZHL::Log("[SaveSync] No GameState found.\n");
 	}
 
 	// Read the REPENTOGON save file, initializing it as empty if needed.

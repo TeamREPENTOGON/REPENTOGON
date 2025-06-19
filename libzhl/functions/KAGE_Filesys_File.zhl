@@ -1,0 +1,16 @@
+"c706(????????)c746??00000000e8????????84c075??8b068bce6a01ff1033f685ff":
+reference void* KAGE_Filesys_File_vftable;
+
+struct KAGE_Filesys_File : public KAGE_Filesys_FileStream {
+    {{
+        KAGE_Filesys_File()
+        {
+            this->_vtable = __ptr_KAGE_Filesys_File_vftable;
+            this->_status = 2;
+            this->_filePath = nullptr;
+            this->_file = nullptr;
+        }
+    }}
+
+	FILE* _file : 0xc;
+} : 0x10;
