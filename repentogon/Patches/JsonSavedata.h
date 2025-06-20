@@ -32,7 +32,11 @@ inline void ArrayToJson(rapidjson::Document* doc, const char* name, const pseudo
 template <typename pseudomap>
 inline void JsonToArray(const rapidjson::Value& jsonValue, pseudomap& array) {
 	for (auto itr = jsonValue.MemberBegin(); itr != jsonValue.MemberEnd(); ++itr) {
-		array[itr->name.GetString()] = itr->value.GetInt();
+		if (itr->value.IsUint()) {
+			array[itr->name.GetString()] = itr->value.GetUint();
+		} else {
+			array[itr->name.GetString()] = itr->value.GetInt();
+		}
 	}
 }
 

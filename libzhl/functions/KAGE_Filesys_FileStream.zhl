@@ -1,0 +1,27 @@
+"c706(????????)c746??0200000085c0":
+reference void* KAGE_Filesys_FileStream_vftable;
+
+// Shared base class for File and SteamCloudFile.
+struct KAGE_Filesys_FileStream : public KAGE_Filesys_IFile {
+	int _status : 0x4;
+	const char* _filePath : 0x8;
+
+    __vtable {
+        //Inherited from IFile:
+        //  void Free(bool deletePtr);
+        //  long GetSize();
+        //  long GetPosition();
+        //  void SetPosition(long offset, int origin);
+        //  bool IsEof();
+        //  uint32_t Read(void* buffer, uint32_t elementSize, uint32_t elementCount);
+        //  uint32_t ReadLine(char* buffer, uint32_t maxSize);
+        //  uint32_t Write(const void* buffer, uint32_t elementSize, uint32_t elementCount);
+        //  void Flush();
+        pure bool OpenRead(const char* filePath);
+        pure bool OpenWrite(const char* filePath);
+        pure void CloseFile();
+        pure bool IsOpen();
+        pure void Close();
+        pure const char* GetFilePath();
+    };
+} : 0xC;
