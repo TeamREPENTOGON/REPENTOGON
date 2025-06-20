@@ -199,9 +199,11 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
 
-	if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
+	//patch disabled, due to bugged steam details
+	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {
 		ZHL::Log("[ERROR] Error while applying the leaderboard entry checker\n");
 	};
+	*/
 
 //	the patch is disabled because it does not do the actual heavylifting and results in a desync ;p
 //
