@@ -12,6 +12,7 @@ namespace ASMPatches {
 	static bool __stdcall __DisallowAchievements();
 
 	static bool __stdcall __ExecuteGameExit();
+	static unsigned int __stdcall __SetLeaderboardGoalOffset(Leaderboard* leaderboard);
 
 	bool FixGodheadEntityPartition() {
 		SigScan signature("6aff56f3??????????????50f3??????????????e8????????8b");
@@ -309,6 +310,76 @@ namespace ASMPatches {
 
 		 sASMPatcher.PatchAt(addr, &patch);
 
+	 }
+
+	 //LeaderboardGoalPatch
+	 static unsigned int __stdcall __SetLeaderboardGoalOffset(Leaderboard* leaderboard) {
+		ChallengeParam& challengeParams = leaderboard->_dailyChallenge._params;
+		bool isCathedralPath = challengeParams._pathType == 1;
+
+		unsigned int offset = 0;
+
+		if (challengeParams._difficulty == 1) {
+			offset = 10;
+		}
+
+		if (!challengeParams._isMegaSatan) {
+			if (challengeParams._pathType == 3) {
+				offset += 9;
+			}
+			else {
+				switch ((LevelStage)challengeParams._endStage) {
+				case STAGE3_2:
+					break;
+				case STAGE4_2:
+					offset += (challengeParams._pathType == 2) ? 8 : 1;
+					break;
+				case STAGE5:
+					offset += 3 - (unsigned int)(!isCathedralPath);
+					break;
+				case STAGE6:
+					offset += 4 - (unsigned int)(!isCathedralPath);
+					break;
+				case STAGE7:
+					offset += 7;
+					break;
+				case STAGE8:
+					offset += 9;
+					break;
+				default:
+					offset = 0;
+				}
+			}
+		}
+		else {
+			offset += 6;
+		}
+		return offset;
+	 }
+
+	 void PatchLeaderboardGoalSprite() {
+		 void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LeaderboardGoalPatch);
+
+		 SigScan goalExitScanner("68????????8d8e????????e8????????85c075??68????????68????????6a01e8????????83c40c8dbe");
+		 if (!goalExitScanner.Scan()) {
+			 ZHL::Log("[ERROR] Unable to find exit signature in LeaderboardGoalPatch for max coins\n");
+			 return;
+		 }
+		 void* goalExitAddr = goalExitScanner.GetAddress();
+
+		 printf("[REPENTOGON] Patching Leaderboard::render_leaderboard for leaderboard goal patch at %p\n", addr);
+
+		 ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDI, true);
+		 ASMPatch patch;
+
+		 patch.PreserveRegisters(reg)
+			 .Push(ASMPatch::Registers::ESI)
+			 .AddInternalCall(__SetLeaderboardGoalOffset)
+			 .CopyRegister(ASMPatch::Registers::EDI, ASMPatch::Registers::EAX)
+			 .RestoreRegisters(reg)
+			 .AddRelativeJump(((char*)goalExitAddr));
+
+		 sASMPatcher.PatchAt(addr, &patch);
 	 }
 
 }

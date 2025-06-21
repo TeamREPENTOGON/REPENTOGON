@@ -40,12 +40,14 @@ local function GetGoalDestination(stage, altPath)
         [8] = 1,
         [10] = {
             [false] = 2,
-            [true] = 3
+            [true] = 3,
         },
         [11] = {
             [false] = 4,
             [true] = 5,
         },
+		[12] = 7,
+		[13] = 9,
     }
 
     if goalMap[stage] then
@@ -112,7 +114,7 @@ local function RenderDailyStats()
         --StageGoalText = "Goal Stage: "..GetStageGoal
         isHardMode = challengeParam:GetDifficulty() == 1
         isMegaSatan = challengeParam:IsMegaSatanRun()
-		diffOffsetFrameNum = isHardMode and 7 or 0
+		diffOffsetFrameNum = isHardMode and 10 or 0
     end
     if DailyChallengeMenu:IsLeaderboardVisible() then
         return

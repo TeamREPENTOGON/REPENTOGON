@@ -14,5 +14,6 @@ namespace ASMPatches {
 	bool SkipWombAchievementBlock();
 
 	void DisableExitPrompt();
+	void PatchLeaderboardGoalSprite();
 
 }

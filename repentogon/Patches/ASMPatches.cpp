@@ -223,4 +223,5 @@ void PerformASMPatches() {
 	}
 
 	ASMPatches::DisableExitPrompt();
+	ASMPatches::PatchLeaderboardGoalSprite();
 }
