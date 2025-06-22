@@ -355,41 +355,6 @@ HOOK_METHOD(Manager, destructor, () -> void) {
 
 #ifndef NDEBUG
 
-static std::vector<std::string> ParseSaveCommand(std::string command, int size = 0) {
-	std::vector<std::string> cmdlets;
-
-	std::stringstream sstream(command);
-	std::string cmdlet;
-	char space = ' ';
-	while (std::getline(sstream, cmdlet, space)) {
-		cmdlets.push_back(cmdlet);
-		if (size > 0 && cmdlets.size() == size) {
-			break;
-		}
-	}
-	return cmdlets;
-}
-
-HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("validatesave ", 0) == 0) {
-		std::vector<std::string> cmdlets = ParseSaveCommand(in, 2);
-		if (cmdlets.size() > 1) {
-			std::string path = R"(C:\Users\McDri\Documents\My Games\Binding of Isaac )" + cmdlets[1];
-			SaveFile saveFile(path.c_str(), false);
-			g_Game->GetConsole()->Print(saveFile.IsValid() ? "SUCCESS\n" : "FAILED\n", 0xFFFFFFFF, 60);
-		}
-	}
-	else if (in.rfind("validatecloudsave ", 0) == 0) {
-		std::vector<std::string> cmdlets = ParseSaveCommand(in, 2);
-		if (cmdlets.size() > 1) {
-			std::string path = cmdlets[1];
-			SaveFile saveFile(path.c_str(), true);
-			g_Game->GetConsole()->Print(saveFile.IsValid() ? "SUCCESS\n" : "FAILED\n", 0xFFFFFFFF, 60);
-		}
-	}
-	super(in, out, player);
-}
-
 LUA_FUNCTION(Lua_ValidateLocalSave) {
 	std::string path = luaL_checkstring(L, 1);
 	SaveFile saveFile(path.c_str(), false);
@@ -405,6 +370,7 @@ LUA_FUNCTION(Lua_ValidateCloudSave) {
 }
 
 LUA_FUNCTION(Lua_TestSync) {
+	// Based on ModdingDataPath because this is used for tests that load sample saves from the REPENTOGON Test Mod.
 	std::filesystem::path basePath(&g_ModdingDataPath);
 
 	std::filesystem::path dstFilePath = basePath / std::filesystem::path(luaL_checkstring(L, 1));
