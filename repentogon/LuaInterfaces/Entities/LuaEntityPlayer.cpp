@@ -2258,7 +2258,6 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
-	g_Game->GetConsole()->Print(std::to_string(color->_red) + "\n", 0xFFFFFFFF, 60);
 	// Allegedly this boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 	bool unk = lua::luaL_optboolean(L, 3, false);
 	player->SetFootprintColor(*color, unk);
