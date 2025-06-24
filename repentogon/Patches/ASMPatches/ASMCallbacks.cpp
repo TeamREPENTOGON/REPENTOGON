@@ -101,16 +101,8 @@ void PatchPreLaserCollision() {
 * TakeDamage function parameters in memory and can modify them directly.
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
-bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
+bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* damageHearts, uint64_t* damageFlags, EntityRef* source, int* damageCountdown, const bool isPlayer) {
 	const int callbackid = 11;
-
-	// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-	// As pointers so we can modify them :)
-	uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
-	float* damage = (float*)(ebp + 0x08);
-	int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
-	EntityRef** source = (EntityRef**)(ebp + 0x14);
-	int* damageCountdown = (int*)(ebp + 0x18);
 
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -123,22 +115,20 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 		caller.push(callbackid)
 			.push(entityType)
 			.push(entity, lua::Metatables::ENTITY);
-		if (isPlayer) {
+		if (isPlayer && damageHearts) {
 			caller.push(*damageHearts);
-		}
-		else {
+		} else {
 			caller.push(*damage);
 		}
 		caller.push(*damageFlags)
-			.push(*source, lua::Metatables::ENTITY_REF)
+			.push(source, lua::Metatables::ENTITY_REF)
 			.push(*damageCountdown);
 		lua::LuaResults lua_result = caller.call(1);
 
 		if (!lua_result) {
 			if (lua_isboolean(L, -1)) {
 				return lua_toboolean(L, -1);
-			}
-			else if (lua_istable(L, -1)) {
+			} else if (lua_istable(L, -1)) {
 				const uint64_t originalDamageFlags = *damageFlags;
 
 				// New table return format for overriding values.
@@ -151,15 +141,13 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 							if (newDamage < 0) {
 								newDamage = 0;
 							}
-							if (isPlayer) {
-								*damageHearts = (int)newDamage;
+							if (isPlayer && damageHearts) {
+								*damageHearts = (int)std::round(newDamage);
 							}
 							*damage = newDamage;
-						}
-						else if (key == "DamageFlags" && lua_isinteger(L, -1)) {
+						} else if (key == "DamageFlags" && lua_isinteger(L, -1)) {
 							*damageFlags = lua_tointeger(L, -1);
-						}
-						else if (key == "DamageCountdown" && lua_isnumber(L, -1)) {
+						} else if (key == "DamageCountdown" && lua_isnumber(L, -1)) {
 							*damageCountdown = (int)lua_tonumber(L, -1);
 						}
 					}
@@ -169,42 +157,29 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 				// Retroactively fix the behaviour of certain DamageFlags.
 				// For example, ones that the game normally checks for BEFORE this callback runs.
 				const uint64_t flagsAdded = (*damageFlags) & ~originalDamageFlags;
-				const uint64_t flagsRemoved = originalDamageFlags & ~(*damageFlags);
-				const uint64_t flagsModified = flagsAdded | flagsRemoved;
+				//const uint64_t flagsRemoved = originalDamageFlags & ~(*damageFlags);
+				//const uint64_t flagsModified = flagsAdded | flagsRemoved;
 
 				if (isPlayer) {
-					// The game previously set a boolean to decide whether or not LevelStateFlag.STATE_REDHEART_DAMAGED
-					// should be set upon taking red heart damage, incurring devil deal penalties, etc.
-					// It's FALSE if either the DAMAGE_RED_HEARTS or DAMAGE_NO_PENALTIES is present, TRUE otherwise.
-					// I retroactively update the boolean again here in case either of these flags are added or removed.
-					// Relevant signature: 81e120000010
-					if ((flagsModified & (1 << 5 | 1 << 28)) != 0) {
-						*(bool*)(ebp - 0x105) = (*damageFlags & (1 << 5 | 1 << 28)) == 0;
-					}
-
-					// DamageFlag.DAMAGE_FAKE
-					if ((flagsAdded & (1 << 21)) != 0) {
+					if (damageHearts && (flagsAdded & DAMAGE_FAKE) != 0) {
 						*damageHearts = 0;
 					}
 
 					// DamageFlag.DAMAGE_NO_MODIFIERS affects the damage value before the callback runs, but
 					// IDK if I want to bother trying to fix that retroactively. Just change the damage yourself.
-				}
-				else {
-					// DamageFlag.DAMAGE_FIRE
-					if ((flagsAdded & (1 << 1)) != 0) {
+				} else {
+					if ((flagsAdded & DAMAGE_FIRE) != 0) {
 						if (*entity->GetFireDamageCountdown() > 0) {
 							return false;
 						}
 						*entity->GetFireDamageCountdown() = 10;
 					}
-					// DamageFlag.DAMAGE_COUNTDOWN
-					if ((flagsAdded & (1 << 6)) != 0 && *entity->GetDamageCountdown() > 0) {
+					if ((flagsAdded & DAMAGE_COUNTDOWN) != 0 && *entity->GetDamageCountdown() > 0) {
 						return false;
 					}
 					// If the DAMAGE_COUNTDOWN flag is currently present, set the entity's
 					// DamageCountdown to the now potentially-modified value.
-					if ((*damageFlags & (1 << 6)) != 0) {
+					if ((*damageFlags & DAMAGE_COUNTDOWN) != 0) {
 						*entity->GetDamageCountdown() = *damageCountdown;
 					}
 				}
@@ -212,7 +187,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 		}
 	}
 
-	if (isPlayer) {
+	if (isPlayer && damageHearts) {
 		*damage = (float)*damageHearts;
 	}
 
@@ -221,28 +196,52 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
+
+	const int lowerFlagsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_FlagsOffset) + 2);
+	const int upperFlagsOffset = lowerFlagsOffset + 4;
+	const int damageOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_AmountFloatOffset) + 4);
+	const int sourceOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_SourceOffset) + 2);
+	const int countdownOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_CountdownOffset) + 2);
+	const int damageHeartsOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PlayerAmountHeartsOffset) + 4);
+	const int isRedHeartDamageOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PlayerRedHeartDamagedOffset) + 2);
+	const int playerCopiedLowerFlagsOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PlayerLowerFlagsOffset) + 2);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.AddBytes("\x58\x58\x58\x58\x58")  // Pop EAX x5 to remove the overridden function's inputs from the stack.
 		.PreserveRegisters(savedRegisters)
 		.AddBytes("\x31\xC0");  // xor eax,eax
 	if (isPlayer) {
-		patch.AddBytes("\xB0\x01");  // Move Al, 0x1
+		patch.AddBytes("\xB0\x01");  // mov al, 0x1
 	}
-	patch.Push(ASMPatch::Registers::EAX)  // Push a boolean to identify if this is EntityPlayer:TakeDamge
-		.Push(ASMPatch::Registers::EBP)  // Push EBP (We'll get other inputs as offsets from this)
+	patch.Push(ASMPatch::Registers::EAX)  // Push a boolean to identify if this is EntityPlayer:TakeDamage
+		.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)&countdownOffset, 0x4)).Push(ASMPatch::Registers::EBX)  // lea ebx [ebp+?] ; push ebx
+		.Push(ASMPatch::Registers::EBP, sourceOffset)
+		.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)&lowerFlagsOffset, 0x4)).Push(ASMPatch::Registers::EBX);
+	if (isPlayer) {
+		patch.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)&damageHeartsOffset, 0x4)).Push(ASMPatch::Registers::EBX);
+	} else {
+		patch.Push(0x0);
+	}
+	patch.AddBytes("\x8D\x9D").AddBytes(ByteBuffer().AddAny((char*)&damageOffset, 0x4)).Push(ASMPatch::Registers::EBX)
 		.Push(ASMPatch::Registers::EDI)  // Push Entity pointer
 		.AddInternalCall(ProcessPreDamageCallback);  // Run the new MC_ENTITY_TAKE_DMG callback
 	if (isPlayer) {
-		// For the player, also copy the (potentially modified) lower DamageFlags to [EBP-0x104]
-		patch.AddBytes("\x8B\x75\x0C")  // mov esi,dword ptr [EBP+0x0C]
-			.AddBytes("\x89\xB5\xFC\xFE\xFF\xFF");  // mov dword ptr [EBP-0x104],esi
+		// For the player, also copy the (potentially modified) lower DamageFlags to [EBP+?]
+		patch.AddBytes("\x8B\x9D").AddBytes(ByteBuffer().AddAny((char*)&lowerFlagsOffset, 0x4))  // mov ebx,dword ptr [EBP+?]
+			.AddBytes("\x89\x9D").AddBytes(ByteBuffer().AddAny((char*)&playerCopiedLowerFlagsOffset, 0x4))  // mov dword ptr [EBP+?],ebx
+			// Update a boolean that was previously populated based on whether the DamageFlags contained DAMAGE_RED_HEARTS or DAMAGE_NO_PENALTIES.
+			// Affects whether LevelStateFlag.STATE_REDHEART_DAMAGED is set, potentially among other things.
+			.AddBytes("\xC6\x85").AddBytes(ByteBuffer().AddAny((char*)&isRedHeartDamageOffset, 0x4)).AddBytes("\x01")
+			.AddBytes("\x81\xE3\x20").AddZeroes(2).AddBytes("\x10")  // and ebx,0x10000020 (DAMAGE_RED_HEARTS | DAMAGE_NO_PENALTIES)
+			.AddBytes("\x74\x07")  // JZ (set to 0 if neither flag is present)
+			.AddBytes("\xC6\x85").AddBytes(ByteBuffer().AddAny((char*)&isRedHeartDamageOffset, 0x4)).AddZeroes(1);
 	}
 	patch.RestoreRegisters(savedRegisters);
 	if (!isPlayer) {
 		// For non-players, also copy the (potentially modified) DamageFlags into EBX and ESI
-		patch.AddBytes("\x8B\x5D\x0C")  // mov ebx,dword ptr [EBP+0x0C]
-			.AddBytes("\x8B\x75\x10");  // mov esi,dword ptr [EBP+0x10]
+		patch.AddBytes("\x8B\x9D").AddBytes(ByteBuffer().AddAny((char*)&lowerFlagsOffset, 0x4))  // mov ebx,dword ptr [EBP+?]
+			.AddBytes("\x8B\xB5").AddBytes(ByteBuffer().AddAny((char*)&upperFlagsOffset, 0x4));  // mov esi,dword ptr [EBP+?]
 	}
 	patch.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
@@ -251,13 +250,8 @@ void InjectPreDamageCallback(void* addr, bool isPlayer) {
 // Patches overtop the existing calls to LuaEngine::Callback::EntityTakeDamage,
 // within the Entity::TakeDamage and EntityPlayer::TakeDamage functions respectively.
 void PatchPreEntityTakeDamageCallbacks() {
-	SigScan entityTakeDmgScanner("e8????????84c00f84????????8d4c24??e8????????f30f1045");
-	entityTakeDmgScanner.Scan();
-	InjectPreDamageCallback(entityTakeDmgScanner.GetAddress(), false);
-
-	SigScan playerTakeDmgScanner("e8????????84c00f84????????8bcfe8????????84c00f85????????83bf????????25");
-	playerTakeDmgScanner.Scan();
-	InjectPreDamageCallback(playerTakeDmgScanner.GetAddress(), true);
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PreEntityCallback), false);
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PrePlayerCallback), true);
 }
 
 // Even though I patched overtop the calls to this callback, super kill it for good measure.
@@ -272,16 +266,9 @@ HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned
 * Like before, we need to patch into both Entity::TakeDamage and EntityPlayer::TakeDamage.
 */
 
-void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
+void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, const uint64_t damageFlags, EntityRef* source, const int damageCountdown, const bool isPlayer) {
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
-		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
-		const unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
-		const float damage = *(float*)(ebp + 0x08);
-		const int damageHearts = (int)std::round(damage);
-		EntityRef* source = *(EntityRef**)(ebp + 0x14);
-		const int damageCountdown = *(int*)(ebp + 0x18);
-
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
 			// The white fireplace is a unique case where the game considers the player to have taken "damage"
 			// but no on-damage effets are triggered. Don't run the post-damage callback in this case.
@@ -297,9 +284,8 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 			.push(*entity->GetType())
 			.push(entity, lua::Metatables::ENTITY);
 		if (isPlayer) {
-			caller.push(damageHearts);
-		}
-		else {
+			caller.push((int)std::round(damage));
+		} else {
 			caller.push(damage);
 		}
 		caller.push(damageFlags)
@@ -312,22 +298,34 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
+
+	const int lowerFlagsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_FlagsOffset) + 2);
+	const int upperFlagsOffset = lowerFlagsOffset + 4;
+	const int damageOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_AmountFloatOffset) + 4);
+	const int sourceOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_SourceOffset) + 2);
+	const int countdownOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_CountdownOffset) + 2);
+	const int damageHeartsOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PlayerAmountHeartsOffset) + 4);
+
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	if (isPlayer) {
 		patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.
-		patch.AddBytes("\x84\xC0") // Test Al (Al?)
+		patch.AddBytes("\x84\xC0") // test al, al
 			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + numOverriddenBytes);
 	}
 	patch.PreserveRegisters(savedRegisters)
 		.AddBytes("\x31\xC0");  // xor eax,eax
 	if (isPlayer) {
-		patch.AddBytes("\xB0\x01");  // Move Al, 0x1
+		patch.AddBytes("\xB0\x01");  // Move al, 0x1
 	}
-	patch.Push(ASMPatch::Registers::EAX)  // Push a boolean to identify if this is EntityPlayer:TakeDamge
-		.Push(ASMPatch::Registers::EBP)  // Push EBP (We'll get other inputs as offsets from this)
+	patch.Push(ASMPatch::Registers::EAX)  // Push a boolean to identify if this is EntityPlayer:TakeDamage
+		.Push(ASMPatch::Registers::EBP, countdownOffset)
+		.Push(ASMPatch::Registers::EBP, sourceOffset)
+		.Push(ASMPatch::Registers::EBP, upperFlagsOffset)
+		.Push(ASMPatch::Registers::EBP, lowerFlagsOffset)
+		.Push(ASMPatch::Registers::EBP, damageOffset)
 		.Push(ASMPatch::Registers::EDI)  // Push Entity pointer
 		.AddInternalCall(ProcessPostDamageCallback)  // Run the MC_POST_(ENTITY_)TAKE_DMG callback
 		.RestoreRegisters(savedRegisters);
@@ -342,13 +340,8 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 // The overridden bytes are restored by the patch.
 void PatchPostEntityTakeDamageCallbacks() {
 	// Sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
-	SigScan entityTakeDmgScanner("0186????????5f5eb0015b8be55dc21400");
-	entityTakeDmgScanner.Scan();
-	InjectPostDamageCallback((char*)entityTakeDmgScanner.GetAddress() + 0x6, false);
-
-	SigScan playerTakeDmgScanner("8b4d??64890d????????595f5e8b4d??33cde8????????8be55dc2140068????????e8????????83c404833d????????ff0f85????????c745??0d000000");
-	playerTakeDmgScanner.Scan();
-	InjectPostDamageCallback(playerTakeDmgScanner.GetAddress(), true);
+	InjectPostDamageCallback((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostEntityCallback) + 0x6, false);
+	InjectPostDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostPlayerCallback), true);
 }
 
 // End of POST_ENTITY_TAKE_DMG patches
