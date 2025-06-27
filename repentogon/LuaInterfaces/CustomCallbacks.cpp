@@ -3363,7 +3363,7 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid);
+		caller.push(callbackid).pushnil();
 		LuaLevelGeneratorRoom* room = caller.pushUd<LuaLevelGeneratorRoom>(lua::metatables::LevelGeneratorRoomMT);
 
 		room->cleanup = false;
