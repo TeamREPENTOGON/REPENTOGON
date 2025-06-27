@@ -171,15 +171,7 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 
 // eco mode stuff end
 
-//clearing kerning pairs from parsed font
-/*HOOK_METHOD(Font, Load, (const char* path, bool unusedIsLoading) -> void) {
-	super(path, unusedIsLoading);
-
-	auto& kernPair = _kerningPairs;
-
-	if (!kernPair.empty()) {
-		kernPair.clear();
-	}
+//prevents joining lobbies
+HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void) {
 
 }
-*/
