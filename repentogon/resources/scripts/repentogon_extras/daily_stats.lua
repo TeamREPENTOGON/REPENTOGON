@@ -37,7 +37,10 @@ end
 local function GetGoalDestination(stage, altPath)
     local goalMap = {
         [6] = 0,
-        [8] = 1,
+        [8] = {
+			[false] = 1,
+			[true] = 8,
+		},
         [10] = {
             [false] = 2,
             [true] = 3,
@@ -100,7 +103,8 @@ local function RenderDailyStats()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_STREAK)
         TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_PLAYED)
         GetStageGoal = challengeParam:GetEndStage()
-        isAltPath = challengeParam:IsAltPath()
+        isAltPath = challengeParam:IsSecretPath() or challengeParam:IsAltPath()
+		isBrokenBeastPath = challengeParam:IsBeastPath() and challengeParam:GetEndStage() ~= LevelStage.STAGE8
 
         --[[if WinStreak > 0 then
             StreakSheet:SetFrame("Good", 0)
@@ -134,6 +138,9 @@ local function RenderDailyStats()
         LeaderboardSprite:SetFrame(goalFrame)
         LeaderboardSprite:RenderLayer(0, goalPosition - Vector(16, 0)) --alr variant -8,48
     else
+		if isBrokenBeastPath then
+			goalFrame = 9 + diffOffsetFrameNum
+		end
         LeaderboardSprite:SetFrame(goalFrame)
         LeaderboardSprite:RenderLayer(0, goalPosition)
     end

@@ -276,6 +276,14 @@ LUA_FUNCTION(Lua_ChallengeParamGetCollectibleTwinList)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ChallengeParamIsBeastPath)
+{
+	ChallengeParam* challengeParam = *lua::GetRawUserdata<ChallengeParam**>(L, 1, lua::metatables::ChallengeParamMT);
+	lua_pushboolean(L, challengeParam->_pathType == 3); //formerly challengeParam->_isSecretPath
+
+	return 1;
+}
+
 static void RegisterChallengeParam(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::GAME, "GetChallengeParams", Lua_GameGetChallengeParams);
 
@@ -307,6 +315,7 @@ static void RegisterChallengeParam(lua_State* L) {
 		{ "GetCurseFilter", Lua_ChallengeParamGetCurseFilter },
 		{ "IsSecretPath", Lua_ChallengeParamIsSecretPath },
 		{ "GetCollectibleTwinList", Lua_ChallengeParamGetCollectibleTwinList },
+		{ "IsBeastPath", Lua_ChallengeParamIsBeastPath },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::ChallengeParamMT, lua::metatables::ChallengeParamMT, functions);
