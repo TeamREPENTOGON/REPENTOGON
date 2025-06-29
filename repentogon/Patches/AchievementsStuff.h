@@ -630,6 +630,22 @@ inline int GetAchievementIdByName(const std::string &name) {
 	return -1;
 }
 
+// Takes an achievement string, presumably parsed by XML, and returns true if the corresponding achievement is unlocked.
+// If the string is an integer, checks if the achievement with that ID is unlocked (probably a vanilla achievement).
+// Otherwise, looks for a modded achievement that has that name, and checks that one.
+// Returns false if no corresponding achievement is found.
+inline bool IsAchievementUnlockedByXmlString(const std::string& achievement) {
+	if (!achievement.empty()) {
+		char* end = NULL;
+		long id = strtol(achievement.c_str(), &end, 0);
+		if (id == 0 && end == achievement.c_str()) {
+			id = GetAchievementIdByName(achievement);
+		}
+		return g_Manager->GetPersistentGameData()->Unlocked(id);
+	}
+	return false;
+}
+
 inline void AddAChievListener4Item(const string& item, int achievementid) {
 	int isnumba = toint(item);
 	if (isnumba == 0) {

@@ -16,9 +16,9 @@ void ASMPatchSpawnSelectedBaby() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// Patches into `PlayerManager::init_special_baby_selection` to hide modded characters from the co-op menu if they are still locked behind an achievement.
+// Patches into `PlayerManager::init_special_baby_selection` to hide modded characters from the co-op menu if they are still locked or hidden by an achievement.
 bool __stdcall ShouldHideModdedCharacterInCoopWheel(EntityConfig_Player* conf) {
-	return conf->_hidden || (conf->_achievement > 0 && !g_Manager->GetPersistentGameData()->Unlocked(conf->_achievement)) || !IsCharacterUnlockedRgon(conf->_id);
+	return conf->_hidden || (conf->_achievement > 0 && !g_Manager->GetPersistentGameData()->Unlocked(conf->_achievement)) || !IsCharacterUnlockedRgon(conf->_id) || IsCharacterHiddenByAchievementRgon(conf->_id);
 }
 void ASMPatchCoopWheelRespectModdedAchievements() {
 	SigScan scanner("80b8????????0075??8b47??895d");

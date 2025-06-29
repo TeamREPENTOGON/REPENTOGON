@@ -1009,6 +1009,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.PlayerData->bynamemod[player["name"] + lastmodid] = id;
 			}
 
+			// If only "hideachievement" was specified, use that value for "achievement" too.
+			if (player.find("achievement") == player.end() && player.find("hideachievement") != player.end()) {
+				player["achievement"] = player["hideachievement"];
+			}
+
 			player["sourceid"] = lastmodid;
 			if (player.find("relativeid") != player.end()) { XMLStuff.PlayerData->byrelativeid[lastmodid + player["relativeid"]] = id;}
 			//printf("playa: %d (%s) \n", id, player["name"].c_str());

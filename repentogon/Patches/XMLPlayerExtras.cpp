@@ -3,6 +3,9 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 #include "AchievementsStuff.h"
+#include "ASMDefinition.h"
+#include "ASMPatches.h"
+#include "ASMPatcher.hpp"
 #include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
@@ -94,18 +97,48 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 
 bool IsCharacterUnlockedRgon(const int playerType) {
 	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(playerType);
-	std::string const& achievement = att["achievement"];
-
+	const std::string& achievement = att["achievement"];
 	if (!achievement.empty()) {
-		char* end = NULL;
-		long id = strtol(achievement.c_str(), &end, 0);
-		if (id == 0 && end == achievement.c_str()) {
-			id = GetAchievementIdByName(achievement);
-		}
-		return g_Manager->GetPersistentGameData()->Unlocked(id);
+		return IsAchievementUnlockedByXmlString(achievement);
 	}
 	return true;
 }
+
+bool IsCharacterHiddenByAchievementRgon(const int playerType) {
+	if (playerType < NUM_PLAYER_TYPES) {
+		return false;
+	}
+	EntityConfig_Player* player = g_Manager->GetEntityConfig()->GetPlayer(playerType);
+	if (!player->_bSkinParentName.empty()) {
+		// This is a tainted character. Need to check their non-tainted counterpart.
+		for (uint32_t i = NUM_PLAYER_TYPES; i < g_Manager->GetEntityConfig()->GetPlayers()->size(); i++) {
+			EntityConfig_Player* otherPlayer = g_Manager->GetEntityConfig()->GetPlayer(i);
+			if (otherPlayer && otherPlayer->_id != player->_id && otherPlayer->_name == player->_bSkinParentName && otherPlayer->_bSkinParentName.empty()) {
+				return IsCharacterHiddenByAchievementRgon(otherPlayer->_id);
+			}
+		}
+		return false;
+	}
+	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(playerType);
+	const std::string& achievement = att["hideachievement"];
+	if (!achievement.empty()) {
+		return !IsAchievementUnlockedByXmlString(att["hideachievement"]);
+	}
+	return false;
+}
+
+HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
+	super();
+
+	// Players with the "hideachievement" attribute (hides them from menus until an achievement is earned) cannot also be ""hidden"".
+	// They mean different things (for example, The Forgotten never has the ""hidden"" attribute).
+	for (EntityConfig_Player& player : *g_Manager->GetEntityConfig()->GetPlayers()) {
+		if (player._hidden && !XMLStuff.PlayerData->GetNodeById(player._id)["hideachievement"].empty()) {
+			player._hidden = false;
+		}
+	}
+}
+
 
 HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(id);
@@ -275,12 +308,18 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 			}
 
 			// This is a hidden modded character, skip
-			if (!playerXML["hidden"].empty()) {
+			if (player._hidden) {
 				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a HIDDEN modded character at offset %d\n", player._id, name.c_str(), offset);
 				continue;
 			}
 
-			// This is a locked modded character, increment offset and skip
+			// This is a modded character hidden from the menu by an achievement, skip
+			if (IsCharacterHiddenByAchievementRgon(player._id)) {
+				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a modded character \"hidden\" by an achievement at offset %d\n", player._id, name.c_str(), offset);
+				continue;
+			}
+
+			// This is a visible, but locked modded character, increment offset and skip
 			if (!IsCharacterUnlockedRgon(player._id)) {
 				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a locked modded character at offset %d\n", player._id, name.c_str(), offset);
 				offset++;
@@ -314,4 +353,29 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 	this->_randomRotationAmount = chosenCharacter.first + this->GetNumCharacters() * 2 + this->GetNumCharacters();
 	this->_randomRotationVelocity = (360.0f / this->GetNumCharacters()) / 30.0f;
 
+}
+
+// In Menu_Character::Reset, the game reconstructs the set of characters that should appear on the main menu.
+// Normally the only condition to not include a modded character on the menu would be for it to be hidden.
+// This patch introduces an additional check to see if it should be "hidden" until some achievement is unlocked.
+bool __stdcall HideModdedCharacterInMenu(EntityConfig_Player* playerConf) {
+	return playerConf->_hidden || IsCharacterHiddenByAchievementRgon(playerConf->_id);
+}
+void PatchModdedCharacterHiddenByAchievementInMenu() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::HideModdedCharacterByAchievement);
+
+	const int jumpOffset = 0x9 + *(uint8_t*)((char*)addr + 0x8);
+
+	printf("[REPENTOGON] Patching Menu_Character::Reset to support hidden-until-locked modded characters at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)  // EntityConfig_Player*
+		.AddInternalCall(HideModdedCharacterInMenu)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jumpOffset)  // Jump for true
+		.AddRelativeJump((char*)addr + 0x9);  // Jump for false
+	sASMPatcher.PatchAt(addr, &patch);
 }

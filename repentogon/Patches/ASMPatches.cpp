@@ -14,6 +14,7 @@
 #include "ItemPoolManager.h"
 #include "CardsExtras.h"
 #include "EvaluateStats.h"
+#include "XMLPlayerExtras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -140,6 +141,7 @@ void PerformASMPatches() {
 	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchOnlineMenu();
+	PatchModdedCharacterHiddenByAchievementInMenu();
 
 	// Room
 	ASMPatchAmbushWaveCount();
