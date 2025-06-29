@@ -172,7 +172,7 @@ Additions:
 		flattears="0.5" will behave like Pisces
 		damage="1" will behave like Pentagram
 		flatdamage="2" will behave like Curved Horn
-	- Supported: tears, flattears, damage, flatdamage, shotspeed, speed, range, luck
+	- Supported: tears, flattears, tearsmult, damage, flatdamage, damagemult, shotspeed, speed, range, luck
 	- Prepend "effect" to assign the stat change to the corresponding TemporaryEffect instead (ie: effecttears="0.7") (this is particularly relevant for active items)
 	- The corresponding "cache" values are automatically added to the item, so you don't need to specify those as well.
 * Add new Vanilla Tweaks option "Disable exit prompt", which disables prompt pop-up when you try to exit the game from title menu.

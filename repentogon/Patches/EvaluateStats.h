@@ -16,6 +16,8 @@ enum EvaluateStatStage {
 	STAT_SPEED_UP,
 	STAT_RANGE_UP,
 	STAT_LUCK_UP,
+	STAT_TEARS_MULT,
+	STAT_DAMAGE_MULT,
 };
 
 static const std::unordered_map<EvaluateStatStage, std::string> evaluteStatXmlTags = {
@@ -27,6 +29,8 @@ static const std::unordered_map<EvaluateStatStage, std::string> evaluteStatXmlTa
 	{ STAT_SPEED_UP, "speed" },
 	{ STAT_RANGE_UP, "range" },
 	{ STAT_LUCK_UP, "luck" },
+	{ STAT_TEARS_MULT, "tearsmult" },
+	{ STAT_DAMAGE_MULT, "damagemult" },
 };
 
 static const std::unordered_map<EvaluateStatStage, CacheFlag> evaluteStatCacheFlags = {
@@ -38,6 +42,8 @@ static const std::unordered_map<EvaluateStatStage, CacheFlag> evaluteStatCacheFl
 	{ STAT_SPEED_UP, CACHE_SPEED },
 	{ STAT_RANGE_UP, CACHE_RANGE },
 	{ STAT_LUCK_UP, CACHE_LUCK },
+	{ STAT_TEARS_MULT, CACHE_FIREDELAY },
+	{ STAT_DAMAGE_MULT, CACHE_DAMAGE },
 };
 
 void UpdateItemConfig();

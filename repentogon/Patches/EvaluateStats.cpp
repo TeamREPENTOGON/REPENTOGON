@@ -7,6 +7,7 @@
 #include "ASMPatches.h"
 #include "EntityPlus.h"
 #include "SigScan.h"
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../LuaInit.h"
 
@@ -66,8 +67,34 @@ float CalculateStatChange(Entity_Player* player, const EvaluateStatStage stat) {
 	return totalChange;
 }
 
+float CalculateStatMult(Entity_Player* player, const EvaluateStatStage stat) {
+	TemporaryEffects* effects = &player->_temporaryeffects;
+	float finalMult = 1;
+	for (const auto& [id, change] : XMLStuff.ItemData->statups[stat]) {
+		float mult = player->GetCollectibleNum(id, false) * change;
+		if (mult > 0) finalMult *= mult;
+	}
+	for (const auto& [id, change] : XMLStuff.ItemData->effectstatups[stat]) {
+		float mult = effects->GetCollectibleEffectNum(id) * change;
+		if (mult > 0) finalMult *= mult;
+	}
+	for (const auto& [id, change] : XMLStuff.TrinketData->statups[stat]) {
+		float mult = player->GetTrinketMultiplier(id) * change;
+		if (mult > 0) finalMult *= mult;
+	}
+	for (const auto& [id, change] : XMLStuff.TrinketData->effectstatups[stat]) {
+		float mult = effects->GetTrinketEffectNum(id) * change;
+		if (mult > 0) finalMult *= mult;
+	}
+	for (const auto& [id, change] : XMLStuff.NullItemData->effectstatups[stat]) {
+		float mult = effects->GetNullEffectNum(id) * change;
+		if (mult > 0) finalMult *= mult;
+	}
+	return finalMult;
+}
+
 // MC_EVALUATE_STAT
-float RunEvaluateStatCallback(Entity_Player* player, const float currentStatValue, const EvaluateStatStage stat) {
+float RunEvaluateStatCallback(Entity_Player* player, const float currentStatValue, const EvaluateStatStage stat, const bool positiveOnly) {
 	const int callbackid = 1226;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -85,7 +112,7 @@ float RunEvaluateStatCallback(Entity_Player* player, const float currentStatValu
 
 		if (!result && lua_isnumber(L, -1)) {
 			const float newStatValue = (float)lua_tonumber(L, -1);
-			if (newStatValue > 0) {
+			if (!positiveOnly || newStatValue > 0) {
 				return newStatValue;
 			}
 		}
@@ -99,7 +126,7 @@ float RunEvaluateStatCallback(Entity_Player* player, const float currentStatValu
 // The float tears value at this point is purely the "tears up" value, so its 0 if the player has no items.
 void __stdcall TearsUpHook(Entity_Player* player, float* tears) {
 	*tears += CalculateStatChange(player, STAT_TEARS_UP);
-	*tears = RunEvaluateStatCallback(player, *tears, STAT_TEARS_UP);
+	*tears = RunEvaluateStatCallback(player, *tears, STAT_TEARS_UP, false);
 
 	// Write new tears value to xmm1 and multiply by 1.3 (the multiplication is overridden by the patch)
 	float toXmm1 = (*tears) * 1.3f;
@@ -108,9 +135,7 @@ void __stdcall TearsUpHook(Entity_Player* player, float* tears) {
 	}
 }
 void PatchTearsUp() {
-	SigScan scanner("f30f118d????????f30f590d????????8d95????????8d8d");
-	scanner.Scan();
-	void* baseAddr = scanner.GetAddress();
+	void* baseAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_TearsUp);
 	void* ebpOffsetAddr = (char*)baseAddr + 0x4;
 	void* patchAddr = (char*)baseAddr + 0x8;
 
@@ -132,12 +157,11 @@ void PatchTearsUp() {
 // After the tears cap and other math is applied, but before multipliers.
 void __stdcall FlatTearsHook(Entity_Player* player, float* tears) {
 	*tears += CalculateStatChange(player, STAT_FLAT_TEARS);
-	*tears = RunEvaluateStatCallback(player, *tears, STAT_FLAT_TEARS);
+	*tears = RunEvaluateStatCallback(player, *tears, STAT_FLAT_TEARS, true);
+	*tears *= CalculateStatMult(player, STAT_TEARS_MULT);
 }
 void PatchFlatTears() {
-	SigScan scanner("f30f1195????????6a0068f50000008bcee8????????84c00f85");
-	scanner.Scan();
-	void* baseAddr = scanner.GetAddress();
+	void* baseAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_FlatTears);
 	void* ebpOffsetAddr = (char*)baseAddr + 0x4;
 	void* patchAddr = (char*)baseAddr + 0x8;
 
@@ -160,12 +184,10 @@ void PatchFlatTears() {
 // After (most) standard damage ups, right before Odd Mushroom (Thin)'s 0.9x multiplier.
 void __stdcall DamageUpHook(Entity_Player* player, float* damage) {
 	*damage += CalculateStatChange(player, STAT_DAMAGE_UP);
-	*damage = RunEvaluateStatCallback(player, *damage, STAT_DAMAGE_UP);
+	*damage = RunEvaluateStatCallback(player, *damage, STAT_DAMAGE_UP, false);
 }
 void PatchDamageUp() {
-	SigScan scanner("8b8d????????6a006a78");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_DamageUp);
 
 	printf("[REPENTOGON] Patching EvaluateItems for base damage at %p\n", addr);
 
@@ -186,12 +208,11 @@ void PatchDamageUp() {
 // At this point, the game is manipulating the player's damage field directly.
 void __stdcall FlatDamageHook(Entity_Player* player) {
 	player->_damage += CalculateStatChange(player, STAT_FLAT_DAMAGE);
-	player->_damage = RunEvaluateStatCallback(player, player->_damage, STAT_FLAT_DAMAGE);
+	player->_damage = RunEvaluateStatCallback(player, player->_damage, STAT_FLAT_DAMAGE, false);
+	player->_damage *= CalculateStatMult(player, STAT_DAMAGE_MULT);
 }
 void PatchFlatDamage() {
-	SigScan scanner("6a00689f0100008bcee8????????84c074??689f010000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_FlatDamage);
 
 	printf("[REPENTOGON] Patching EvaluateItems for flat damage at %p\n", addr);
 
@@ -212,9 +233,7 @@ void __stdcall RangeUpHook(Entity_Player* player) {
 	player->_tearrange += CalculateStatChange(player, STAT_RANGE_UP);
 }
 void PatchRangeUp() {
-	SigScan scanner("6a006a068bcfe8????????84c075");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_RangeUp);
 
 	printf("[REPENTOGON] Patching EvaluateItems for range at %p\n", addr);
 
@@ -235,9 +254,7 @@ void __stdcall SpeedUpHook(Entity_Player* player) {
 	player->_movespeed += CalculateStatChange(player, STAT_SPEED_UP);
 }
 void PatchSpeedUp() {
-	SigScan scanner("f30f1095????????f30f109f????????f30f5919");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_SpeedUp);
 
 	printf("[REPENTOGON] Patching EvaluateItems for move speed at %p\n", addr);
 
@@ -258,9 +275,7 @@ void __stdcall ShotSpeedUpHook(Entity_Player* player) {
 	player->_shotspeed += CalculateStatChange(player, STAT_SHOTSPEED_UP);
 }
 void PatchShotSpeedUp() {
-	SigScan scanner("f30f5806f30f1106e8????????84c075??6a058bcf");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EvaluateItems_ShotSpeedUp);
 
 	printf("[REPENTOGON] Patching EvaluateItems for shot speed at %p\n", addr);
 
