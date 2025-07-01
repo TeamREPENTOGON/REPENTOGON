@@ -77,3 +77,7 @@ ___
 #### void SetViewPosition ( [Vector](../Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
+### IsActive () {: aria-label='Functions' }
+#### void IsActive () {: .copyable aria-label='Functions' }
+Returns True when MenuManager is ready to be used a.k.a if you can use the menuman/mainmenu functionality (normally, if you are at the main menu).
+___
