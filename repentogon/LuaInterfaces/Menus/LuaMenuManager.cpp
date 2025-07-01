@@ -207,6 +207,11 @@ LUA_FUNCTION(Lua_GetInputMask) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsActive) {
+	lua_pushboolean(L, g_MenuManager != NULL);
+	return 1;
+}
+
 
 static void RegisterMenuManager(lua_State* L)
 {
@@ -229,6 +234,7 @@ static void RegisterMenuManager(lua_State* L)
 	lua::TableAssoc(L, "SetViewPosition", Lua_MenuSetViewPosition);
 	lua::TableAssoc(L, "GetInputMask", Lua_GetInputMask);
 	lua::TableAssoc(L, "SetInputMask", Lua_SetInputMask);
+	lua::TableAssoc(L, "IsActive", Lua_IsActive);
 
 	lua_setglobal(L, lua::metatables::MenuManagerMT);
 }

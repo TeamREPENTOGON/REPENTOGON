@@ -77,6 +77,8 @@ Additions:
 * Weapon:
 	- GetMainEntity
 		Returns active entity used by weapon (Brimstone - EntityLaser, Mom's Knife -  EntityKnife and etc.)
+* MenuManager:
+	- IsActive: returns true when MenuManager is ready to be used a.k.a if you can use the menuman functions (normally, if you are at the main menu)
 * CharacterMenu
 	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
 		Tainted boolean defaults to current menu if unspecified.
