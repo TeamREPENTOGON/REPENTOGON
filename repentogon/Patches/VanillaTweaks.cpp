@@ -175,3 +175,19 @@ HOOK_METHOD(Manager, Render, (void)->void) {
 HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void) {
 
 }
+
+//Prints log message about redirected configs
+HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePath) -> void) {
+	super(result, filePath);
+
+	auto suffixRes = [](std::string s) {
+		if (s.rfind(".xml") != std::string::npos)
+			return true;
+		else
+			return false;
+	};
+
+	if (!result->empty() && result->compare(*filePath) != 0 && suffixRes(*result)) {
+		KAGE::_LogMessage(0, "[warn] Redirected .xml config %s\n", result->c_str());
+	}
+}
