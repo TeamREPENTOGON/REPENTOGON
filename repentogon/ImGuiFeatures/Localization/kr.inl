@@ -346,7 +346,7 @@ I(OPT_SFX_VOLUME, u8"SFX")
 I(OPT_MUSIC_VOLUME, u8"음악")
 I(OPT_MAP_OPACITY, u8"맵 투명도")
 I(OPT_FILTER, u8"필터")
-I(OPT_FILTER_MARK, u8"게임 화면을 비픽셀 스타일로 스타일로 보이게 하는 셰이더를 적용합니다. 일부 텍스트 렌더링 문제를 일으킬 수 있습니다!")
+I(OPT_FILTER_MARK, u8"게임 화면을 비픽셀 스타일로 보이게 하는 셰이더를 적용합니다. 일부 텍스트 렌더링 문제를 일으킬 수 있습니다!")
 I(OPT_POP_UPS, u8"팝업")
 I(OPT_ANNOUNCER_VOICE_MODE, u8"아나운서 음성 모드")
 
