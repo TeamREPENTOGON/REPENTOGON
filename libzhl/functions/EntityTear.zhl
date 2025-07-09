@@ -13,7 +13,19 @@ __thiscall void Entity_Tear::ResetSpriteScale();
 "558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??e8????????c745??00000000c706":
 __thiscall void Entity_Tear::Constructor();
 
-struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
+"558bec83ec10568bf18b46??83f82e":
+__thiscall float Entity_Tear::GetRenderHeight();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec68a1????????33c58945??5657508d45??64a3????????8bf968":
+__thiscall void Entity_Tear::SetTearFlags(BitSet128 flags);
+
+"558becf30f1055":
+__thiscall void Entity_Tear::SetHeight(float height);
+
+"558becf30f1045??f30f5f05":
+__thiscall void Entity_Tear::SetScale(float scale);
+
+struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	__vtable {
 		skip; // Free
 		skip; // Init
@@ -47,12 +59,25 @@ struct Entity_Tear depends (ANM2, BitSet128) : public Entity {
 		skip; // LoadEntityConfig
 	};
 	
+	float _height : 0x410;
+	float _fallingSpeed : 0x414;
+	float _fallingAccel : 0x418;
+	float _homingFriction : 0x41c;
+	float _fScale : 0x420;
+	float _baseScale : 0x424;
 	BitSet128 _tearFlags : 0x428;
+	int _waitFrames : 0x438;
+	Vector _continueVelocity : 0x43c;
+	int _tearIdx : 0x450;
+	float _baseDamage : 0x454;
+	float _rotation : 0x458;
 	int _scaleAnimNum : 0x45c;
+	float _knockbackMultiplier : 0x460;
 	float _deadEyeIntensity : 0x464;
 	bool _multidimensionalTouched : 0x468;
 	bool _prismTouched : 0x469;
 	ANM2 _tearHaloANM2 : 0x4ac;
 	ANM2 _tearEffectANM2 : 0x5c0;
 	ANM2 _deadEyeANM2 : 0x6d4;
+	float _tearRange : 0x820;
 } : 0x848;

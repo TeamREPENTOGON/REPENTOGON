@@ -228,6 +228,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     Vector _knockbackDirection : 0x308;
 	int _pauseTimer : 0x31c;
     Vector _pos : 0x33c;
+	Vector _posOffset : 0x34c;
     Vector _velocity : 0x360;
     float _size : 0x370;
     float _collisionDamage : 0x388;

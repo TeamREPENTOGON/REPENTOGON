@@ -10,7 +10,11 @@ __thiscall std_vector_uint * Entity_Knife::GetHitEntities();
 "558bec51568bf18975??e8????????c706????????8d8e":
 __thiscall void Entity_Knife::Constructor();
 
-struct Entity_Knife : public Entity { 
+"8b81????????85c074??8378??0875??8b88":
+__thiscall Entity_Player* Entity_Knife::GetPlayer();
+
+struct Entity_Knife depends (BitSet128) : public Entity { 
+	BitSet128 _tearFlags : 0x410;
 	bool _isSwinging : 0x465;
 	bool _prismApplied : 0x4e5;
 	bool _multidimensionalApplied : 0x4e6;

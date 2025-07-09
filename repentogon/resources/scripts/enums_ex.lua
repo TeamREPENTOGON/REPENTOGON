@@ -19,6 +19,7 @@ ModCallbacks.MC_POST_HUD_UPDATE = 1021
 ModCallbacks.MC_HUD_RENDER = 1022
 ModCallbacks.MC_MAIN_MENU_RENDER = 1023
 ModCallbacks.MC_POST_HUD_RENDER = 1024
+ModCallbacks.MC_POST_FIRE_SPLIT_TEAR = 1025
 
 ModCallbacks.MC_PRE_SFX_PLAY = 1030
 ModCallbacks.MC_POST_SFX_PLAY = 1031
@@ -3033,6 +3034,21 @@ StringTableCategory = {
 	RUN_STATUS = "RunStatus",
 	ONLINE = "Online",
 }
+
+SplitTearType = {
+	GENERIC = 0,
+	QUAD = 1,  -- Cricket's Body
+	PARASITE = 2,
+	BONE = 3,
+	ABSORB = 4,  -- Lachryphagy
+	SPORE = 5,  -- Mucormycosis
+	STICKY = 6,  -- Explosivo/Booger/Spore for knives/lasers/ludo
+	BURST = 7,  -- Haemolacria
+	POP = 8,  -- Pop! + Lasers
+	MULTIDIMENSIONAL = 9,
+	ANGELIC_PRISM = 10,
+}
+
 
 --deprecated enums
 

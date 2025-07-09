@@ -16,6 +16,9 @@ __thiscall void Entity_Laser::ClearLaserSamples();
 "558bec6aff68????????64a1????????50515657a1????????33c5508d45??64a3????????8bf9897d??e8????????c745??000000008d8f????????c707":
 __thiscall void Entity_Laser::Constructor();
 
+"558bec81ec9400000056":
+__thiscall ColorMod* Entity_Laser::CalculateTearColor(ColorMod* buffer);
+
 struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline uint32_t* GetHomingType() { return &this->_homingType; }
 	inline float* GetScale() { return &this->_scale; }

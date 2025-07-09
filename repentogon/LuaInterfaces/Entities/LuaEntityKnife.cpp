@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/ASMPatches/ASMSplitTears.h"
 
 LUA_FUNCTION(Lua_KnifeGetHitList) {
 	Entity_Knife * knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
@@ -81,6 +82,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMultidimensionalTouched", Lua_SetMultidimensionalTouched },
 		{ "IsPrismTouched", Lua_IsPrismTouched },
 		{ "SetPrismTouched", Lua_SetPrismTouched },
+		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);

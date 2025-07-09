@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/EntityPlus.h"
+#include "../../Patches/ASMPatches/ASMSplitTears.h"
 
 LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 {
@@ -185,6 +186,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsMultidimensionalTouched", Lua_EntityLaserIsMultidimensionalTouched },
 		{ "IsPrismTouched", Lua_EntityLaserIsPrismTouched },
 		{ "SetPrismTouched", Lua_EntityLaserSetPrismTouched },
+		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);

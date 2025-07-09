@@ -31,6 +31,7 @@
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMFixes.h"
+#include "ASMPatches/ASMSplitTears.h"
 
 #include "ASMPatcher.hpp"
 
@@ -114,6 +115,7 @@ void PerformASMPatches() {
 	ASMPatchPreItemTextDisplayCallback();
 	ASMPatchHideChargeBar();
 	ASMPatchPostBackwardsRoomRestore();
+	SplitTears::ASMPatchesForSplitTearCallback();
 
 	// Delirium
 	delirium::AddTransformationCallback();
