@@ -19,7 +19,7 @@ namespace LagMetric{
 	};
 	inline bool LagMetric::is_tris_laser(Entity_Laser* in) {
 		const unsigned int tris_flag = (1 << (60 - 32));
-		if(in->_parent && in->_parent->_type == 2 && ((((Entity_Tear*)(in->_parent))->_tearFlags.lh & tris_flag) == tris_flag)){
+		if(in->GetParent() && in->GetParent()->_type == 2 && ((((Entity_Tear*)(in->GetParent()))->_tearFlags.lh & tris_flag) == tris_flag)) {
 			return true;
 		};
 		return false;

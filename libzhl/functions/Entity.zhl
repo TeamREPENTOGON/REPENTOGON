@@ -120,7 +120,7 @@ __thiscall void Entity::ClearBossHazards(bool excludeNPCs);
 "8b89????????85c974??8b81":
 __thiscall bool Entity::CanDevolve();
 
-struct Entity depends (AnimationState, ANM2, RNG, Vector) {
+struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 {{
 	inline int GetIndex() { return this->_index; }
 	inline unsigned int* GetType() { return &this->_type; }
@@ -151,7 +151,19 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
         return (T)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, target, false); 
     }
 
-    inline Entity_NPC* GetMinecart() { return this->_minecart; }
+	inline Entity* GetParent() { return this->_parent.GetReference(); }
+	inline void SetParent(Entity* entity) { this->_parent.SetReference(entity); }
+
+	inline Entity* GetChild() { return this->_child.GetReference(); }
+	inline void SetChild(Entity* entity) { this->_child.SetReference(entity); }
+
+	inline Entity* GetTarget() { return this->_target.GetReference(); }
+	inline void SetTarget(Entity* entity) { this->_target.SetReference(entity); }
+
+	inline Entity* GetSpawnerEntity() { return this->_spawnerEntity.GetReference(); }
+	inline void SetSpawnerEntity(Entity* entity) { this->_spawnerEntity.SetReference(entity); }
+
+	inline Entity* GetMinecart() { return this->_minecart.GetReference(); }
 	
 	inline LuaBridgeRef** GetLuaRef() { return &this->_luaBridgeRef; }
 	
@@ -223,11 +235,11 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	bool _isInvicible : 0x3b0;
     float _shrinkStatus1 : 0x3b4;
     float _shrinkStatus2 : 0x3b8;
-    Entity * _parent : 0x3bc;
-    Entity * _child : 0x3c0;
-    Entity * _target : 0x3c4;
-    Entity * _spawnerEntity : 0x3c8;
-	Entity_NPC * _minecart : 0x3d4;
+    EntityPtr _parent : 0x3bc;
+    EntityPtr _child : 0x3c0;
+    EntityPtr _target : 0x3c4;
+    EntityPtr _spawnerEntity : 0x3c8;
+	EntityPtr _minecart : 0x3d4;
     RNG _dropRNG : 0x3dc;
 	uint32_t _initSeed : 0x3ec;
 	LuaBridgeRef* _luaBridgeRef: 0x408;

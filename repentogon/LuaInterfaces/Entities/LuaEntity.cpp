@@ -190,13 +190,17 @@ LUA_FUNCTION(lua_EntityGiveMinecart) {
 
 LUA_FUNCTION(lua_EntityGetMinecart) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Entity_NPC* minecart = entity->GetMinecart();
+	Entity* minecart = entity->GetMinecart();
 
 	if (!minecart) {
 		lua_pushnil(L);
 	}
-	else {
+	else if (minecart->ToNPC()) {
 		lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	}
+	else {
+		// bwuh?
+		lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY));
 	}
 
 	return 1;
@@ -470,7 +474,7 @@ LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	bool overwrite = lua::luaL_optboolean(L, 3, false);
 	if (lua_isnil(L, 2)) {
-		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
+		for (Entity* child = ent1->GetChild(); child != (Entity*)0x0; child = child->GetChild()) {
 			CopyStatusEffects(ent1, child, overwrite);
 		}
 	}

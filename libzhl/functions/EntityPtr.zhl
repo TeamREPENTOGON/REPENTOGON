@@ -1,0 +1,21 @@
+// Smart pointer for entities.
+// The game tracks these references using some sort of data structure on the referenced Entity class that is not fully understood.
+// However, SetReference handles keeping everything in order, such as properly establishing the references
+// and cleaning up any pre-existing reference. So for our purposes using this is fully functional and safe.
+// If the referenced Entity is removed, or the EntityPtr object is destroyed, _ref is set to nullptr,
+// and things are automatically updated/cleaned up elsewhere accordingly.
+
+"558bec83ec08568bf18b0e":
+__thiscall void EntityPtr::SetReference(Entity* entity);
+
+struct EntityPtr { {{
+	EntityPtr() : _ref(nullptr) {}
+	EntityPtr(Entity* entity) { this->SetReference(entity); }
+	~EntityPtr() { this->SetReference(nullptr); }
+
+	inline Entity* GetReference() { return this->_ref; }
+}}
+
+	// Please don't modify this directly - use SetReference.
+	Entity* _ref : 0x0;
+} : 0x4;
