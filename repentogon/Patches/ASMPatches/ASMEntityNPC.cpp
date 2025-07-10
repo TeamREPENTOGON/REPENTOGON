@@ -23,12 +23,15 @@ void PatchHushLaserSpeed() {
 	void* addr = scanner.GetAddress();
 	printf("[REPENTOGON] Patching Hush laser attack speed bug at %p\n", addr);
 
+	const size_t playerMoveSpeedOffset = offsetof(Entity_Player, _movespeed);
+
 	const float* floatPtr = &hushLaserAdjust;
 	ASMPatch patch;
 	patch.Push(ASMPatch::Registers::ECX); // preserve player
 	patch.AddInternalCall(IsRoomSlow);
 	patch.Pop(ASMPatch::Registers::ECX); // restore player
-	patch.AddBytes("\xF3\x0F\x10\x81\x54\x15").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+1554]
+	patch.AddBytes("\xF3\x0F\x10\x81"); // movss xmm0,dword ptr ds:[ecx+_movespeed]
+	patch.AddBytes(ByteBuffer().AddAny((char*)&playerMoveSpeedOffset, sizeof(playerMoveSpeedOffset))).AddZeroes(2); //add bytes for playerMoveSpeedOffset
 	patch.AddBytes("\x84\xC0"); // test al, al
 	patch.AddBytes("\x74\x08"); // je, eip+0x8
 	patch.AddBytes("\xF3\x0F\x59\x05").AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4)); // mulss xmm0, dword ptr [0xXXXXXXXX]
