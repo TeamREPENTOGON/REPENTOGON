@@ -21,6 +21,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
     const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
+    const char* jacobAndEsauControlModes[2] = { "Classic", "Better" };
 
     void InitAfterLanguageAvaliable(){
         extraHudModes[0] = LANG.OPT_EXTRA_HUD_MODES_OFF;
@@ -41,6 +42,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
 
         offOnModes[0] = LANG.OPT_OFF_ON_MODES_OFF;
         offOnModes[1] = LANG.OPT_OFF_ON_MODES_ON;
+
+        jacobAndEsauControlModes[0] = LANG.OPT_JACOB_ESAU_CONTROLS_MODES_CLASSIC;
+		jacobAndEsauControlModes[1] = LANG.OPT_JACOB_ESAU_CONTROLS_MODES_BETTER;
 
         unifontRenderMode[0] = LANG.OPT_UNIFONT_RENDER_MODE_NORMAL;
         unifontRenderMode[1] = LANG.OPT_UNIFONT_RENDER_MODE_LARGE;
@@ -107,7 +111,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddNewTableRow();
                         ImGui::SliderInt(LANG.OPT_ANNOUNCER_VOICE_MODE, &g_Manager->GetOptions()->_announcerVoiceMode, 0, 2, announcerModes[g_Manager->GetOptions()->_announcerVoiceMode], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_announcerVoiceMode, 0);
-
+                        AddNewTableRow();
+                        ImGui::SliderInt(LANG.OPT_JACOB_ESAU_CONTROLS_MODE, &g_Manager->GetOptions()->_jacobEsauControls, 0, 1, jacobAndEsauControlModes[g_Manager->GetOptions()->_jacobEsauControls], ImGuiSliderFlags_NoInput);
+                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_jacobEsauControls, 0);
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();

@@ -349,6 +349,8 @@ I(OPT_FILTER, u8"Filter")
 I(OPT_FILTER_MARK, u8"Applies a shader that makes the game look no longer pixelated. Can cause issues with text rendering on screen!")
 I(OPT_POP_UPS, u8"Pop-Ups")
 I(OPT_ANNOUNCER_VOICE_MODE, u8"Announcer Voice Mode")
+I(OPT_JACOB_ESAU_CONTROLS_MODE, u8"Jacob & Esau Controls")
+I(OPT_ASCENT_VOICEOVER, u8"Ascent Voiceover")
 
 I(OPT_HUD_HUDS, u8"HUDs")
 I(OPT_HUD_HUD_OFFSET, u8"HUD Offset")
@@ -460,6 +462,9 @@ I(OPT_CONSOLE_FOND_MODES_TINY, u8"Tiny")
 
 I(OPT_OFF_ON_MODES_OFF, u8"Off")
 I(OPT_OFF_ON_MODES_ON, u8"On")
+
+I(OPT_JACOB_ESAU_CONTROLS_MODES_CLASSIC, u8"Classic")
+I(OPT_JACOB_ESAU_CONTROLS_MODES_BETTER, u8"Better")
 
 I(OPT_UNIFONT_RENDER_MODE_NORMAL, u8"Normal: 13px, only non-latin chars")
 I(OPT_UNIFONT_RENDER_MODE_LARGE, u8"LargePerfect: 16px")
