@@ -796,9 +796,11 @@ inline bool MultiValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* x
 	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
 	if (attr) {
 		string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute(attrname)->value()), xmldata);
-		xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
-		auxnode->remove_attribute(attr);
-		auxnode->append_attribute(newAttr);
+		if (parseditemlist.length() > 0) { // didnt wanna do this, but its sadly needed to prevent a vanilla fuckup where _Kilburn used spaces instead of commas to separate elements (which, for the record, doesnt even work well in vanilla)
+			xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+			auxnode->remove_attribute(attr);
+			auxnode->append_attribute(newAttr);
+		}
 		return true;
 	}
 	return false;
