@@ -114,6 +114,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddNewTableRow();
                         ImGui::SliderInt(LANG.OPT_JACOB_ESAU_CONTROLS_MODE, &g_Manager->GetOptions()->_jacobEsauControls, 0, 1, jacobAndEsauControlModes[g_Manager->GetOptions()->_jacobEsauControls], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_jacobEsauControls, 0);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_ASCENT_VOICEOVER, &g_Manager->GetOptions()->_ascentVoiceover);
+                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_ascentVoiceover, true);
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();

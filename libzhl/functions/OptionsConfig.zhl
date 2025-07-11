@@ -61,14 +61,16 @@ struct OptionsConfig depends (Game) {
     bool _bossHpOnBottom : 0x8e;
     int _announcerVoiceMode : 0x90;
 	int _jacobEsauControls : 0x94;
-	int _onlineHud : 0x98;
-	bool _streamerMode : 0x9c;
-	int _onlinePlayerVolume : 0xa0;
-	int _onlinePlayerOpacity : 0xa4;
-	bool _onlineChatEnabled : 0xa8;
-	bool _onlineFilterEnabled : 0xa9;
-	int _onlineColorSet : 0xac;
-	bool _acceptedPublicBeta_VERSION : 0xb0; // VERSION changes to version string
-	bool _acceptedModDisclaimer : 0xb1;
-	bool _acceptedDataCollectionDisclaimer : 0xb2;
-} : 0xb4;
+	bool _ascentVoiceover: 0x98;
+	int _onlineHud : 0x9c;
+	bool _streamerMode : 0xa0;
+	int _onlinePlayerVolume : 0xa4;
+	int _onlinePlayerOpacity : 0xa8;
+	bool _onlineChatEnabled : 0xac;
+	bool _onlineFilterEnabled : 0xad;
+	int _onlineColorSet : 0xb0;
+	int _onlineInputDelay : 0xb4;
+	bool _acceptedPublicBeta_VERSION : 0xb8; // VERSION changes to version string
+	bool _acceptedModDisclaimer : 0xb9;
+	bool _acceptedDataCollectionDisclaimer : 0xba;
+} : 0xbc;
