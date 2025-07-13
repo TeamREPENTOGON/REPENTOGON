@@ -264,7 +264,7 @@ namespace lua {
 	}
 
 	void* TestUserdata(lua_State* L, int ud, lua::Metatables mt) {
-		// s = ... userdata ... 
+		// s = ... userdata ...
 		void* p = lua_touserdata(L, ud);
 		if (p != NULL) {
 			lua::PushMetatable(L, mt); // ... userdata ... meta
@@ -395,17 +395,24 @@ namespace lua {
 	}
 
 	void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
-		RegisterVariableGetterToLoadedMT(L, variableName, getFunc, 1);
-		RegisterVariableSetterToLoadedMT(L, variableName, setFunc, 2);
+		if (getFunc) {
+			RegisterVariableGetterToLoadedMT(L, variableName, getFunc, 1);
+		}
+
+		if (setFunc) {
+			RegisterVariableSetterToLoadedMT(L, variableName, setFunc, 1);
+		}
+
+		lua_pop(L, 1);
 	}
 
 	void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop) {
-		lua_pushstring(L, "__propget");
-		lua_rawget(L, -2);
+		lua_pushstring(L, "__propget"); // table, key
+		lua_rawget(L, -2); // table, value
 
-		lua_pushstring(L, variableName);
-		lua_pushcfunction(L, func);
-		lua_rawset(L, -3);
+		lua_pushstring(L, variableName); // table, value, string
+		lua_pushcfunction(L, func); // table, value, string, function
+		lua_rawset(L, -3); // table, value
 		lua_pop(L, pop);
 	}
 
@@ -711,7 +718,7 @@ namespace lua {
 				lua_pop(_L, _n);
 			}
 			else {
-				// If an error occured during lua_pcall, there is an error object at the top 
+				// If an error occured during lua_pcall, there is an error object at the top
 				// of the stack. Pop it now.
 				lua_pop(_L, 1);
 			}
