@@ -12,7 +12,7 @@
 
 #ifdef max
 #undef max
-#endif 
+#endif
 
 LUA_FUNCTION(Lua_Options_GetOnlineHUD) {
 	lua_pushinteger(L, g_Manager->GetOptions()->_onlineHud);
@@ -376,28 +376,28 @@ LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 }
 
 static void RegisterLuaOptions(lua_State* L) {
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineHUD", Lua_Options_GetOnlineHUD, Lua_Options_SetOnlineHUD);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StreamerMode", Lua_Options_GetStreamerMode, Lua_Options_SetStreamerMode);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineChatEnabled", Lua_Options_GetOnlineChatEnabled, Lua_Options_SetOnlineChatEnabled);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerVolume", Lua_Options_GetOnlinePlayerVolume, Lua_Options_SetOnlinePlayerVolume);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerOpacity", Lua_Options_GetOnlinePlayerOpacity, Lua_Options_SetOnlinePlayerOpacity);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineColorSet", Lua_Options_GetOnlineColorSet, Lua_Options_SetOnlineColorSet);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineInputDelay", Lua_Options_GetOnlineInputDelay, Lua_Options_SetOnlineInputDelay);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineHUD", Lua_Options_GetOnlineHUD, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StreamerMode", Lua_Options_GetStreamerMode, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineChatEnabled", Lua_Options_GetOnlineChatEnabled, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerVolume", Lua_Options_GetOnlinePlayerVolume, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerOpacity", Lua_Options_GetOnlinePlayerOpacity, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineColorSet", Lua_Options_GetOnlineColorSet, NULL);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineInputDelay", Lua_Options_GetOnlineInputDelay, NULL);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "Exposure", Lua_Options_GetExposure, Lua_Options_SetExposure);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "Brightness", Lua_Options_GetBrightness, Lua_Options_SetBrightness);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "Contrast", Lua_Options_GetContrast, Lua_Options_SetContrast);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "ControllerHotplugEnabled", Lua_Options_GetControllerHotplugEnabled, Lua_Options_SetControllerHotplugEnabled);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "TryImportSave", Lua_Options_GetTryImportSave, Lua_Options_SetTryImportSave);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "ControllerHotplugEnabled", Lua_Options_GetControllerHotplugEnabled, Lua_Options_SetControllerHotplugEnabled);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "TryImportSave", Lua_Options_GetTryImportSave, Lua_Options_SetTryImportSave);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "BossHPOnBottom", Lua_Options_GetBossHPOnBottom, Lua_Options_SetBossHPOnBottom);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "ModsEnabled", Lua_Options_GetModsEnabled, Lua_Options_SetModsEnabled);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "ModsEnabled", Lua_Options_GetModsEnabled, Lua_Options_SetModsEnabled);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "TouchMode", Lua_Options_GetTouchMode, Lua_Options_SetTouchMode);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AimLockEnabled", Lua_Options_GetAimLockEnabled, Lua_Options_SetAimLockEnabled);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AscentVoiceOver", Lua_Options_GetAscentVoiceOver, Lua_Options_SetAscentVoiceOver);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineChatFilterEnabled", Lua_Options_GetOnlineChatFilterEnabled, Lua_Options_SetOnlineChatFilterEnabled);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedModDisclaimer", Lua_Options_GetAcceptedModDisclaimer, Lua_Options_SetAcceptedModDisclaimer);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedDataCollectionDisclaimer", Lua_Options_GetAcceptedDataCollectionDisclaimer, Lua_Options_SetAcceptedDataCollectionDisclaimer);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedPublicBeta", Lua_Options_GetAcceptedPublicBeta, Lua_Options_SetAcceptedPublicBeta);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "SteamCloudEnabled", Lua_Options_GetSteamCloudEnabled, Lua_Options_SetSteamCloudEnabled);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineChatFilterEnabled", Lua_Options_GetOnlineChatFilterEnabled, NULL);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedModDisclaimer", Lua_Options_GetAcceptedModDisclaimer, Lua_Options_SetAcceptedModDisclaimer);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedDataCollectionDisclaimer", Lua_Options_GetAcceptedDataCollectionDisclaimer, Lua_Options_SetAcceptedDataCollectionDisclaimer);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "AcceptedPublicBeta", Lua_Options_GetAcceptedPublicBeta, Lua_Options_SetAcceptedPublicBeta);
+	// lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "SteamCloudEnabled", Lua_Options_GetSteamCloudEnabled, Lua_Options_SetSteamCloudEnabled);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "WindowWidth", Lua_Options_GetWindowWidth, Lua_Options_SetWindowWidth);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "WindowHeight", Lua_Options_GetWindowHeight, Lua_Options_SetWindowHeight);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "WindowPosX", Lua_Options_GetWindowPosX, Lua_Options_SetWindowPosX);
@@ -406,7 +406,7 @@ static void RegisterLuaOptions(lua_State* L) {
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "HushPanicStateFix", Lua_Options_GetHushFix, Lua_Options_SetHushFix);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StatHUDPlanetarium", Lua_Options_GetStatHUDPlanetarium, Lua_Options_SetStatHUDPlanetarium);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "QuickRoomClear", Lua_Options_GetQuickRoomClear, Lua_Options_SetQuickRoomClear);
-	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "PreventModUpdates", Lua_Options_GetPreventModUpdates, Lua_Options_SetPreventModUpdates);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "PreventModUpdates", Lua_Options_GetPreventModUpdates, NULL);
 	lua::RegisterGlobalClassVariableSetter(L, lua::GlobalClasses::Options, "SFXVolume", Lua_Options_Fix_SetSFXVolume);
 }
 

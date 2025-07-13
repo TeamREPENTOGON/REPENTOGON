@@ -162,28 +162,22 @@ Additions:
 	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
 	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
 * Options:
-	- AcceptedDataCollectionDisclaimer
-	- AcceptedModDisclaimer
-	- AcceptedPublicBeta
 	- AimLockEnabled
 	- AscentVoiceOver
 	- BossHPOnBottom
 	- Brightness
 	- Contrast
-	- ControllerHotplugEnabled
 	- Exposure
-	- ModsEnabled
-	- OnlineChatEnabled
-	- OnlineChatFilterEnabled
-	- OnlineColorSet
-	- OnlineHUD
-	- OnlineInputDelay
-	- OnlinePlayerOpacity
-	- OnlinePlayerVolume
-	- SteamCloudEnabled
-	- StreamerMode
+	- OnlineChatEnabled (read-only)
+	- OnlineChatFilterEnabled (read-only)
+	- OnlineColorSet (read-only)
+	- OnlineHUD (read-only)
+	- OnlineInputDelay (read-only)
+	- OnlinePlayerOpacity (read-only)
+	- OnlinePlayerVolume (read-only)
+	- PreventModUpdates (now read-only)
+	- StreamerMode (read-only)
 	- TouchMode
-	- TryImportSave
 	- WindowHeight
 	- WindowPosX
 	- WindowPosY
