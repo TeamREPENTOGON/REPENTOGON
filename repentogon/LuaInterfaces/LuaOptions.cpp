@@ -14,6 +14,88 @@
 #undef max
 #endif 
 
+LUA_FUNCTION(Lua_Options_GetOnlineHUD) {
+	lua_pushinteger(L, g_Manager->GetOptions()->_onlineHud);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlineHUD) {
+	int value = luaL_checkinteger(L, 1);
+	value = std::min(std::max(0, value), 3);
+	g_Manager->GetOptions()->_onlineHud = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetStreamerMode) {
+	lua_pushboolean(L, g_Manager->GetOptions()->_streamerMode);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetStreamerMode) {
+	bool value = lua::luaL_checkboolean(L, 1);
+	g_Manager->GetOptions()->_streamerMode = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetOnlineChatEnabled) {
+	lua_pushboolean(L, g_Manager->GetOptions()->_onlineChatEnabled);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlineChatEnabled) {
+	bool value = lua::luaL_checkboolean(L, 1);
+	g_Manager->GetOptions()->_onlineChatEnabled = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetOnlinePlayerVolume) {
+	lua_pushinteger(L, g_Manager->GetOptions()->_onlinePlayerVolume);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlinePlayerVolume) {
+	int value = luaL_checkinteger(L, 1);
+	value = std::min(std::max(0, value), 10);
+	g_Manager->GetOptions()->_onlinePlayerVolume = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetOnlinePlayerOpacity) {
+	lua_pushinteger(L, g_Manager->GetOptions()->_onlinePlayerOpacity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlinePlayerOpacity) {
+	int value = luaL_checkinteger(L, 1);
+	value = std::min(std::max(0, value), 10);
+	g_Manager->GetOptions()->_onlinePlayerOpacity = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetOnlineColorSet) {
+	lua_pushinteger(L, g_Manager->GetOptions()->_onlineColorSet);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlineColorSet) {
+	int value = luaL_checkinteger(L, 1);
+	value = std::min(std::max(0, value), 3);
+	g_Manager->GetOptions()->_onlineColorSet = value;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Options_GetOnlineInputDelay) {
+	lua_pushinteger(L, g_Manager->GetOptions()->_onlineInputDelay);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetOnlineInputDelay) {
+	int value = luaL_checkinteger(L, 1);
+	value = std::min(std::max(1, value), 5);
+	g_Manager->GetOptions()->_onlineInputDelay = value;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_Options_GetVoidGeneration) {
 	lua_pushboolean(L, repentogonOptions.betterVoidGeneration);
 	return 1;
@@ -83,6 +165,13 @@ LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 }
 
 static void RegisterLuaOptions(lua_State* L) {
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineHUD", Lua_Options_GetOnlineHUD, Lua_Options_SetOnlineHUD);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StreamerMode", Lua_Options_GetStreamerMode, Lua_Options_SetStreamerMode);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineChatEnabled", Lua_Options_GetOnlineChatEnabled, Lua_Options_SetOnlineChatEnabled);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerVolume", Lua_Options_GetOnlinePlayerVolume, Lua_Options_SetOnlinePlayerVolume);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlinePlayerOpacity", Lua_Options_GetOnlinePlayerOpacity, Lua_Options_SetOnlinePlayerOpacity);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineColorSet", Lua_Options_GetOnlineColorSet, Lua_Options_SetOnlineColorSet);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "OnlineInputDelay", Lua_Options_GetOnlineInputDelay, Lua_Options_SetOnlineInputDelay);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "BetterVoidGeneration", Lua_Options_GetVoidGeneration, Lua_Options_SetVoidGeneration);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "HushPanicStateFix", Lua_Options_GetHushFix, Lua_Options_SetHushFix);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StatHUDPlanetarium", Lua_Options_GetStatHUDPlanetarium, Lua_Options_SetStatHUDPlanetarium);
