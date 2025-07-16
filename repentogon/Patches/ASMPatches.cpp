@@ -30,6 +30,7 @@
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 
@@ -184,6 +185,7 @@ void PerformASMPatches() {
 	ASMPatches::__ItemPoolManager();
 	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
+	ASMPatchRedirectToLocalizationFolders();
 	ASMFixes();
 	HookImGui();
 
