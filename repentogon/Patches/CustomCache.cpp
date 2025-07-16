@@ -5,8 +5,8 @@
 #include "HookSystem.h"
 #include "ASMPatches.h"
 #include "EntityPlus.h"
-#include "SigScan.h"
 #include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 
 
 // Max coins/keys/bombs is a global thing so no need to store it on any player.
@@ -403,9 +403,7 @@ void __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* familiar, float 
 	}
 }
 void PatchFamiliarGetMultiplierCallback() {
-	SigScan scanner("5f5e5b8be55dc3????????????????????558bec83e4f856");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::FamiliarGetMultiplier);
 
 	printf("[REPENTOGON] Patching end of Entity_Familiar::GetMultiplier for callback at %p\n", addr);
 
@@ -428,9 +426,7 @@ const char* __stdcall GetHudCoinsStringFormat() {
 	return HUD_COINS_STR_FORMAT;
 }
 void PatchHudRenderCoins() {
-	SigScan scanner("e8????????8b75??85c0ba");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxCoins_HudRender);
 
 	printf("[REPENTOGON] Patching HUD::Render for max coins at %p\n", addr);
 
@@ -449,9 +445,7 @@ void PatchHudRenderCoins() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchAddCoins() {
-	SigScan scanner("e8????????f7d8c745??000000008d55??1bc08d4d??2584030000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxCoins_AddCoins);
 
 	printf("[REPENTOGON] Patching EntityPlayer::AddCoins for max coins at %p\n", addr);
 
@@ -474,33 +468,23 @@ const char* __stdcall GetHudKeysStringFormat() {
 	return HUD_KEYS_STR_FORMAT;
 }
 void PatchAddKeys() {
-	SigScan scanner("83f8638945??56");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxKeys_AddKeys);
 
 	printf("[REPENTOGON] Patching EntityPlayer::AddKeys for max keys at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.Push(ASMPatch::Registers::ESI)
-		.AddBytes("\x8D\x75\xFC")  // lea esi, [ebp - 0x4]
-		.Push(ASMPatch::Registers::ESI)
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr + 0x3, 0x7))  // Restore a thigns
 		.PreserveRegisters(savedRegisters)
 		.AddInternalCall(GetMaxKeys)
-		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
+		.AddBytes("\x39\x45").AddBytes(ByteBuffer().AddAny((char*)addr + 0x5, 0x1))  // cmp DWORD PTR [ebp+?],eax
+		.AddBytes("\x89\x45").AddBytes(ByteBuffer().AddAny((char*)addr + 0x9, 0x1))  // mov DWORD PTR [ebp+?],eax
 		.RestoreRegisters(savedRegisters)
-		.AddBytes("\x39\xF0")  // cmp eax,esi
-		.AddBytes("\x89\x45\x08")  // mov dword ptr [ebp + 0x8], eax
-		.AddBytes("\x89\x75\xFC")  // mov dword ptr [ebp - 0x4], esi
-		.Pop(ASMPatch::Registers::ESI)
 		.AddRelativeJump((char*)addr + 0x11);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchHudRenderKeys() {
-	// wow
-	SigScan scanner("68????????6a1068????????e8????????83c410c785????????00000000c785????????ffff0000c785????????00000000c785????????0000803fc785????????ffffffffc785????????00000000c745??000000008d85????????c745??03000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxKeys_HudRender);
 
 	printf("[REPENTOGON] Patching HUD::Render for max keys at %p\n", addr);
 
@@ -520,9 +504,7 @@ const char* __stdcall GetHudBombsStringFormat() {
 	return HUD_BOMBS_STR_FORMAT;
 }
 void PatchAddBombs() {
-	SigScan scanner("c74424??6300000083f863894424??8d5424");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxBombs_AddBombs);
 
 	printf("[REPENTOGON] Patching EntityPlayer::AddBombs for max bombs at %p\n", addr);
 
@@ -532,16 +514,13 @@ void PatchAddBombs() {
 		.AddInternalCall(GetMaxBombs)
 		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
 		.RestoreRegisters(savedRegisters)
-		.AddBytes("\x89\x54\x24\x08")  // mov dword ptr [esp + 0x8], edx
+		.AddBytes("\x89\x54\x24").AddBytes(ByteBuffer().AddAny((char*)addr + 0x3, 0x1))  // mov dword ptr [esp+?], edx
 		.AddBytes("\x39\xD0")  // cmp eax,edx
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 void PatchHudRenderBombs() {
-	// wow
-	SigScan scanner("68????????6a1068????????e8????????83c410c785????????00000000c785????????ffff0000c785????????00000000c785????????0000803fc785????????ffffffffc785????????00000000c745??000000008d85????????c745??01000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxBombs_HudRender);
 
 	printf("[REPENTOGON] Patching HUD::Render for max bombs at %p\n", addr);
 
@@ -554,6 +533,20 @@ void PatchHudRenderBombs() {
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+void PatchControlBombs() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxBombs_ControlBombs);
+
+	printf("[REPENTOGON] Patching EntityPlayer::control_bombs for max bombs at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ECX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(GetMaxBombs)
+		.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
 
 
 // Prevent RemoveCurseMistEffect from enforcing the coin/key/bomb limits when restoring consumables.
@@ -561,18 +554,10 @@ void PatchHudRenderBombs() {
 // If a higher amount than should normally be allowed is restored, we'll fix it on customcache evaluation anyway.
 void PatchRemoveCurseMistEffect() {
 	// Coins
-	SigScan coinPatchScanner("6a015168a0010000e8????????8b8f????????f7d8");
-	coinPatchScanner.Scan();
-	void* coinPatchAddr = coinPatchScanner.GetAddress();
+	void* coinPatchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxCoins_CurseMist);
+	void* coinExitAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxCoins_CurseMist_Exit);
 
-	SigScan coinExitScanner("038f????????8903");
-	if (!coinExitScanner.Scan()) {
-		ZHL::Log("[ERROR] Unable to find exit signature in RemoveCurseMistEffect for max coins\n");
-		return;
-	}
-	void* coinExitAddr = coinExitScanner.GetAddress();
-
-	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max coins at %p\n", coinPatchAddr);
+	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max coins at %p (exit @ %p)\n", coinPatchAddr, coinExitAddr);
 	ASMPatch coinPatch;
 	coinPatch.AddBytes(ByteBuffer().AddAny((char*)coinPatchAddr + 13, 0x6)) // ECX,dword ptr [EDI+?] (restores something that gets skipped)
 		.AddBytes("\x89\xF0")  // MOV EAX,ESI
@@ -580,16 +565,12 @@ void PatchRemoveCurseMistEffect() {
 	sASMPatcher.PatchAt((char*)coinPatchAddr, &coinPatch);
 
 	// Keys
-	SigScan keyPatchScanner("3bc80f4cc18987????????8b87????????0387????????3bc6");
-	keyPatchScanner.Scan();
-	void* keyPatchAddr = keyPatchScanner.GetAddress();
+	void* keyPatchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxKeys_CurseMist);
 	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max keys at %p\n", keyPatchAddr);
 	sASMPatcher.FlatPatch((char*)keyPatchAddr, "\x89\xC8\x90\x90\x90", 5);  // MOV EAX, ECX
 
 	// Bombs
-	SigScan bombPatchScanner("3bc60f4cd080bf????????00");
-	bombPatchScanner.Scan();
-	void* bombPatchAddr = bombPatchScanner.GetAddress();
+	void* bombPatchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MaxBombs_CurseMist);
 	printf("[REPENTOGON] Patching RemoveCurseMistEffect for max bombs at %p\n", bombPatchAddr);
 	sASMPatcher.FlatPatch((char*)bombPatchAddr, "\x89\xC2\x90\x90\x90", 5);  // MOV EDX, EAX
 }
@@ -609,9 +590,7 @@ void __stdcall TearsCapHook(Entity_Player* player, float* minimumFiredDelayOut) 
 	}
 }
 void PatchTearsCap() {
-	SigScan scanner("c785????????0000a040f30f5cc8f30f118d????????e8????????f30f100d????????8bb5????????8bce6a00f30f1000");
-	scanner.Scan();
-	void* patchAddr = scanner.GetAddress();
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TearsCap);
 	void* ebpOffsetAddr = (char*)patchAddr + 0x2;
 	void* movEsiPlayerAddr = (char*)patchAddr + 0x23;
 
@@ -641,16 +620,8 @@ void __stdcall StatMultiplierHook(Entity_Player* player, float* statMultiplierOu
 	}
 }
 void PatchStatMultiplier() {
-	SigScan patchScanner("6a5ce8????????660f6ec88b85????????0f5bc983b8????????24");
-	patchScanner.Scan();
-	void* patchAddr = patchScanner.GetAddress();
-
-	SigScan jumpScanner("f30f118d????????6a0068980200008bc8");
-	if (!jumpScanner.Scan()) {
-		ZHL::Log("[ERROR] Unable to find signature for statmultiplier CustomCache's jump\n");
-		return;
-	}
-	void* ebpOffsetAddr = (char*)jumpScanner.GetAddress() + 0x4;
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StatMultiplier);
+	void* ebpOffsetAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StatMultiplier_Jump) + 0x4;
 	void* jumpAddr = (char*)ebpOffsetAddr + 0x4;
 
 	printf("[REPENTOGON] Patching EvaluateItems for stat multiplier at %p\n", patchAddr);
@@ -677,6 +648,7 @@ void ASMPatchesForCustomCache() {
 	PatchHudRenderCoins();
 	PatchHudRenderKeys();
 	PatchHudRenderBombs();
+	PatchControlBombs();
 	PatchRemoveCurseMistEffect();
 	PatchTearsCap();
 	PatchStatMultiplier();
