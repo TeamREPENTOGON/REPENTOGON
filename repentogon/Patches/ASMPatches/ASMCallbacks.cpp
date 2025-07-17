@@ -1687,12 +1687,13 @@ static inline int calc_stage_from_backwards_stage(BackwardsStageDesc* backwardsS
 	return stage + 1; // backwards stages start from 1
 }
 
-HOOK_METHOD(Level, place_rooms_backwards, (LevelGenerator* levelGen, BackwardsStageDesc* backwardsStage, uint32_t stageId, uint32_t minDifficulty, uint32_t maxDifficulty) -> void)
+HOOK_METHOD(Level, place_rooms_backwards, (LevelGenerator* levelGen, BackwardsStageDesc* backwardsStage, uint32_t stageId, uint32_t minDifficulty, uint32_t maxDifficulty) -> bool)
 {
 	int stage = calc_stage_from_backwards_stage(backwardsStage);
 	s_BackwardsStageStack.push_back(stage);
-	super(levelGen, backwardsStage, stageId, minDifficulty, maxDifficulty);
+	bool success = super(levelGen, backwardsStage, stageId, minDifficulty, maxDifficulty);
 	s_BackwardsStageStack.pop_back();
+	return success;
 }
 
 static inline void run_post_backwards_room_restore(int stage, RoomDescriptor& roomDesc, const char* key, int index)

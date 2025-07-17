@@ -62,7 +62,7 @@ __thiscall int Level::GetRandomRoomIndex(bool IAmErrorRoom, unsigned int Seed);
 __thiscall void Level::generate_dungeon(RNG * RNG);
 
 "558bec6aff68????????64a1????????5083ec68a1????????33c58945??535657508d45??64a3????????8bd98b55":
-__thiscall void Level::place_rooms_backwards(LevelGenerator* levelGen, BackwardsStageDesc* backwardsStage, uint32_t stage, uint32_t minDifficulty, uint32_t maxDifficulty);
+__thiscall bool Level::place_rooms_backwards(LevelGenerator* levelGen, BackwardsStageDesc* backwardsStage, uint32_t stage, uint32_t minDifficulty, uint32_t maxDifficulty);
 
 "558bec83e4f883ec0c568bf18b86":
 __thiscall void Level::StartMamaMega(Vector * Position, Entity_Player* player);
