@@ -40,7 +40,7 @@ void PatchHushLaserSpeed() {
 }
 
 void ASMPatchHushBug() {
-	PatchHushLaserSpeed();
+	//PatchHushLaserSpeed();
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
