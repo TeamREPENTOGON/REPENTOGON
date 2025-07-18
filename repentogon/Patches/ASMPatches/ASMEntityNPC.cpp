@@ -31,7 +31,7 @@ void PatchHushLaserSpeed() {
 	patch.AddInternalCall(IsRoomSlow);
 	patch.Pop(ASMPatch::Registers::ECX); // restore player
 	patch.AddBytes("\xF3\x0F\x10\x81"); // movss xmm0,dword ptr ds:[ecx+_movespeed]
-	patch.AddBytes(ByteBuffer().AddAny((char*)&playerMoveSpeedOffset, sizeof(playerMoveSpeedOffset))).AddZeroes(2); //add bytes for playerMoveSpeedOffset
+	patch.AddBytes(ByteBuffer().AddAny((char*)&playerMoveSpeedOffset, sizeof(playerMoveSpeedOffset))); //add bytes for playerMoveSpeedOffset
 	patch.AddBytes("\x84\xC0"); // test al, al
 	patch.AddBytes("\x74\x08"); // je, eip+0x8
 	patch.AddBytes("\xF3\x0F\x59\x05").AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4)); // mulss xmm0, dword ptr [0xXXXXXXXX]
@@ -40,7 +40,7 @@ void PatchHushLaserSpeed() {
 }
 
 void ASMPatchHushBug() {
-	//PatchHushLaserSpeed();
+	PatchHushLaserSpeed();
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
