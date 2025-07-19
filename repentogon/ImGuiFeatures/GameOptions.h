@@ -280,9 +280,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_MISC_ENABLE_CTRL_HOTPLUG, &g_Manager->GetOptions()->_controlHotplugEnabled);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_controlHotplugEnabled, true);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_MISC_USE_STEAM_CLOUD, &g_Manager->GetOptions()->_enableSteamCloud);
-                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableSteamCloud, true);
-                        AddNewTableRow();
+                        //ImGui::Checkbox(LANG.OPT_MISC_USE_STEAM_CLOUD, &g_Manager->GetOptions()->_enableSteamCloud); //Dont add this back!, it can fuck up saves pretty badly to toggle this ingame, leaving it commented so noone is tempted to add it back
+                        //AddResetButton(++resetCounter, g_Manager->GetOptions()->_enableSteamCloud, true);
+                        //AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_MISC_PAUSE_ON_FOCUS_LOST, &g_Manager->GetOptions()->_enablePauseOnFocusLost);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_enablePauseOnFocusLost, true);
 
