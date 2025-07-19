@@ -1,3 +1,5 @@
+// Shared interface for FileStream (and File/SteamCloudFile in turn) and ArchiveFile.
+// May or may not be "StreamBase".
 struct KAGE_Filesys_IFile {
     {{
         ~KAGE_Filesys_IFile()
@@ -5,6 +7,8 @@ struct KAGE_Filesys_IFile {
             this->Free(false);
         }
     }}
+
+	void* _vtable : 0x0;
 
     __vtable {
         pure void Free(bool deletePtr); // technically the param is a uint8_t bitflag but this is the only flag
@@ -17,4 +21,4 @@ struct KAGE_Filesys_IFile {
         pure uint32_t Write(const void* buffer, uint32_t elementSize, uint32_t elementCount);
         pure void Flush();
     };
-};
+} : 0x4;

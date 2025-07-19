@@ -31,6 +31,9 @@ __thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
 "558bec515356578bf9837f??00":
 __thiscall void PersistentGameData::Save();
 
+"558bec518b15????????535657":
+__thiscall void PersistentGameData::SaveLocally();
+
 "558bec83e4f88b15????????83ec088b82":
 __thiscall void PersistentGameData::SaveToSteamCloud();
 
@@ -40,7 +43,37 @@ __thiscall void PersistentGameData::AddChallenge(int challengeID);
 "558bec568bf1807e??000f85":
 __thiscall void PersistentGameData::AddBoss(int bossID);
 
-struct PersistentGameData { {{
+"558bec807d??00538bd9":
+__thiscall void PersistentGameData::Clear(bool unk);
+
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??c746??00000000c746??00000000c746??00000000":
+__thiscall PersistentGameData* PersistentGameData::constructor();
+
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??6a18":
+__thiscall PersistentGameData_Bestiary* PersistentGameData_Bestiary::constructor();
+
+struct PersistentGameData_Bestiary { {{
+	PersistentGameData_Bestiary() {
+		this->constructor();
+	}
+}}
+	std_map_int_int encounters : 0x0;
+	std_map_int_int kills : 0x8;
+	std_map_int_int hits : 0x10;
+	std_map_int_int deaths : 0x18;
+} : 0x20;
+
+struct PersistentGameData depends (PersistentGameData_Bestiary) { {{
+	PersistentGameData() {
+		this->constructor();
+	}
+	~PersistentGameData() {
+		if (this->file) {
+			this->file->Free(true);
+			this->file = nullptr;
+		}
+	}
+	
 	inline int GetEventCounter(int eventCounterNum) {return this->eventCounter[eventCounterNum]; }
 	inline bool IsItemInCollection (int collectibleID) {
 		bool savedata = this->itemsCollection[collectibleID];
@@ -51,9 +84,14 @@ struct PersistentGameData { {{
 		return savedata != false; 
 	}
 }}
+	
+	KAGE_Filesys_FileStream* file : 0x4;
+	std_string filepath : 0x8;
+	std_string steamcloudfilepath : 0x20;
 	bool achievements[641] : 0x38;
 	int eventCounter[523] : 0x2bc;
 	bool itemsCollection[733] : 0xae8;
 	bool bosses[104] : 0xe07;
 	bool challenges[45] : 0xe6f;
+	PersistentGameData_Bestiary bestiary : 0xf64;
 } : 0xf90;
