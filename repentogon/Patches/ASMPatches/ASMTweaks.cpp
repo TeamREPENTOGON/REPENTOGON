@@ -338,7 +338,7 @@ namespace ASMPatches {
 					offset += 3 - (unsigned int)(!isCathedralPath);
 					break;
 				case STAGE6:
-					offset += 4 - (unsigned int)(!isCathedralPath);
+					offset += 5 - (unsigned int)(!isCathedralPath);
 					break;
 				case STAGE7:
 					offset += 7;
