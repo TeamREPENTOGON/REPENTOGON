@@ -359,6 +359,11 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 ???- info "Note"
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
+### SpawnBoss() {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) SpawnBoss( int Type, int Variant, int SubType, [Vector](Vector.md) Position,  [Vector](Vector.md) Velocity, [Entity](Entity.md) Spawner, int Seed = ?) {: .copyable aria-label='Functions' }
+Spawns an NPC forcing it to be a Boss, returning true for IsBoss(), giving it a boss bar, playing the boss end single on kill in appropiate rooms and other qualities that you may expect from a boss entity, even if the entity is normally not a Boss.
+
+___
 ### StartNewGame () {: aria-label='Functions' }
 #### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random ) {: .copyable aria-label='Functions' }
 Starts a new game using the specified arguments. Can be used from the main menu.
