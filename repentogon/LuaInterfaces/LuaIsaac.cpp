@@ -338,6 +338,31 @@ LUA_FUNCTION(Lua_PlayCutscene) {
 
 }
 
+LUA_FUNCTION(Lua_SpawnBoss) {
+	const unsigned int type = (unsigned int)luaL_checkinteger(L, 1);
+	const unsigned int var = (unsigned int)luaL_checkinteger(L, 2);
+	const unsigned int sub = (unsigned int)luaL_checkinteger(L, 3);
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	Vector* vel = lua::GetLuabridgeUserdata<Vector*>(L, 5, lua::Metatables::VECTOR, "Vector");
+	const unsigned int seed = (unsigned int)luaL_optinteger(L, 7,g_Game->GetCurrentRoomDesc()->SpawnSeed);
+
+	if ((type > 9) && (type < 990)) {
+		if (!lua_isnil(L, 6)) {
+			Entity* spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+			Entity_NPC* ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, spawner, sub, seed, 0);
+			ent->_isBoss = true;
+		}
+		else {
+			Entity_NPC* ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, nullptr, sub, seed, 0);
+			ent->_isBoss = true;
+		}
+	}
+	else {
+		return luaL_error(L, "SpawnBoss only works with NPC-able entity types");
+	}
+	return 0;
+}
+
 LUA_FUNCTION(Lua_GetCutsceneByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.CutsceneData->byname.count(text) > 0)
@@ -813,6 +838,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
+
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
