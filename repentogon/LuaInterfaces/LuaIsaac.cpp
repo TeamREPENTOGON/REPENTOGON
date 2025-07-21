@@ -344,23 +344,27 @@ LUA_FUNCTION(Lua_SpawnBoss) {
 	const unsigned int sub = (unsigned int)luaL_checkinteger(L, 3);
 	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	Vector* vel = lua::GetLuabridgeUserdata<Vector*>(L, 5, lua::Metatables::VECTOR, "Vector");
-	const unsigned int seed = (unsigned int)luaL_optinteger(L, 7,g_Game->GetCurrentRoomDesc()->SpawnSeed);
+	const unsigned int seed = (unsigned int)luaL_optinteger(L, 7, g_Game->GetCurrentRoomDesc()->SpawnSeed);
+
+	Entity_NPC* ent = nullptr;
 
 	if ((type > 9) && (type < 990)) {
 		if (!lua_isnil(L, 6)) {
 			Entity* spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-			Entity_NPC* ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, spawner, sub, seed, 0);
+			ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, spawner, sub, seed, 0);
 			ent->_isBoss = true;
 		}
 		else {
-			Entity_NPC* ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, nullptr, sub, seed, 0);
+			ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, nullptr, sub, seed, 0);
 			ent->_isBoss = true;
 		}
+		lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+
 	}
 	else {
 		return luaL_error(L, "SpawnBoss only works with NPC-able entity types");
 	}
-	return 0;
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetCutsceneByName) {
