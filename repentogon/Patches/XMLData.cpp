@@ -2609,7 +2609,7 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 		lua_newtable(L);
 		for each (const auto & att in elem)
 		{
-			printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+			//printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 			lua_pushstring(L, att.first.c_str());
 			lua_pushstring(L, att.second.c_str());
 			lua_settable(L, -3);
@@ -2625,7 +2625,7 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 	lua_newtable(L);
 	for each (const auto & att in node)
 	{
-		printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+		//printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 		lua_pushstring(L, att.first.c_str());
 		lua_pushstring(L, att.second.c_str());
 		lua_settable(L, -3);
