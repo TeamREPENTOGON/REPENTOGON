@@ -18,6 +18,7 @@
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
 
+namespace SaveSyncing {
 
 // REPENTOGON uses a separate save file that we automatically keep synced with the vanilla save file.
 // Under normal circumstances, this process should be invisible.
@@ -88,65 +89,108 @@ void ASMPatchRemoteSaveFileName() {
 }
 
 void ASMPatchesForSaveSyncing() {
-	ASMPatchLocalSaveFileName();
-	ASMPatchRemoteSaveFileName();
+	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		ASMPatchLocalSaveFileName();
+		ASMPatchRemoteSaveFileName();
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
 // -- JSON file maintained with the checksums of the most recent successful save syncs
 
-// Holds checksums for the most recent successful synchronizations.
-// Allows us to identify if the saves are out of sync or not.
-// Contents are saved and loaded from json.
-struct SyncStatus {
-	std::map<std::string, uint32_t> checksums;
+SyncStatus syncStatus;  // `extern SaveSync::SyncStatus syncStatus` defined in header
 
-	bool HasChecksum(const std::string& key) const {
-		return checksums.find(key) != checksums.end();
-	}
-	bool ChecksumMatches(const std::string& key, const uint32_t checksum) const {
-		return HasChecksum(key) && checksums.at(key) == checksum;
-	}
-	void UpdateChecksum(const std::string& key, const uint32_t checksum) {
-		checksums[key] = checksum;
-	}
-
-	static std::string GetKey(const int slot, const bool isSteamCloud, const bool isRepentogon) {
-		return std::string(isSteamCloud ? "cloud" : "local") + std::string(isRepentogon ? ".REPENTOGON." : ".Vanilla.") + std::to_string(slot);
-	}
-};
-
-std::string GetJsonPath() {
-	std::string jsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
-	jsonpath.append("savesyncstatus.json");
-	return jsonpath;
+std::string SyncStatus::GetKey(const int slot, const bool isRepentogon) {
+	return std::string(isRepentogon ? "REPENTOGON." : "Vanilla.") + std::to_string(slot);
 }
 
-void SaveSyncStatusToJson(const SyncStatus syncStatus) {
+std::string SyncStatus::GetJsonPath() {
+	if (g_Manager->IsSteamCloudEnabled()) {
+		return "rgon_savesyncstatus.json";
+	}
+	return std::string(REPENTOGON::GetRepentogonDataPath()) + "savesyncstatus.json";
+}
+
+bool SyncStatus::SaveToJson() {
+	if (!_loaded) {
+		ZHL::Log("[SaveSyncing] Cannot save SyncStatus - not initialized!\n");
+		return false;
+	}
+
 	rapidjson::Document doc;
 	doc.SetObject();
-
-	ArrayToJson(&doc, "SaveChecksums", syncStatus.checksums);
+	doc.AddMember(rapidjson::StringRef("Enabled"), _enabled, doc.GetAllocator());
+	ArrayToJson(&doc, "Checksums", _checksums);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 	doc.Accept(writer);
 
-	std::string jsonPath = GetJsonPath();
-	std::ofstream ofs(jsonPath);
-	ofs << buffer.GetString() << std::endl;
+	const std::string jsonPath = GetJsonPath();
+
+	if (g_Manager->IsSteamCloudEnabled()) {
+		SteamCloudFile file;
+		if (!file.PushToSteamCloud(jsonPath.c_str(), buffer.GetSize()) || !file.IsOpen()) {
+			ZHL::Log("[SaveSyncing] Failed to write %s to the steam cloud!\n", jsonPath.c_str());
+			return false;
+		}
+		file.Write(buffer.GetString(), 1, buffer.GetSize());
+		file.Close();
+	} else {
+		KAGE_Filesys_File file;
+		if (!file.OpenWrite(jsonPath.c_str()) || !file.IsOpen()) {
+			ZHL::Log("[SaveSyncing] Failed to write %s!\n", jsonPath.c_str());
+			return false;
+		}
+		file.Write(buffer.GetString(), 1, buffer.GetSize());
+		file.Close();
+	}
+
+	ZHL::Log("[SaveSyncing] Successfully wrote %s\n", jsonPath.c_str());
+	return true;
 }
 
-SyncStatus LoadLastSyncStatusFromJson() {
-	SyncStatus syncStatus;
+bool SyncStatus::LoadFromJson() {
+	const std::string jsonPath = GetJsonPath();
 
-	std::string jsonPath = GetJsonPath();
-	rapidjson::Document doc = GetJsonDoc(&jsonPath);
+	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
+
+	std::unique_ptr<KAGE_Filesys_FileStream> file;
+
+	if (steamCloudEnabled) {
+		file = std::make_unique<SteamCloudFile>();
+	} else {
+		file = std::make_unique<KAGE_Filesys_File>();
+	}
+
+	if (!file->OpenRead(jsonPath.c_str()) || !file->IsOpen()) {
+		if (steamCloudEnabled || !std::filesystem::exists(jsonPath)) {
+			// File does not exist yet - use defaults.
+			_loaded = true;
+			return true;
+		}
+		ZHL::Log("[SaveSyncing] Failed to read %s\n", jsonPath.c_str());
+		return false;
+	}
+
+	const long size = file->GetSize();
+	auto content = std::make_unique<char[]>(size + 1);
+	content[size] = '\0';
+
+	file->Read(content.get(), 1, size);
+
+	rapidjson::Document doc;
+	doc.Parse(content.get());
+
 	if (doc.IsObject()) {
-		JsonToArray(doc["SaveChecksums"], syncStatus.checksums);
+		_enabled = doc["Enabled"].GetBool();
+		JsonToArray(doc["Checksums"], _checksums);
+	} else {
+		ZHL::Log("[SaveSyncing] Could not parse json from %s\n", jsonPath.c_str());
 	}
 	
-	return syncStatus;
+	_loaded = true;
+	return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -190,13 +234,13 @@ std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamClo
 // some issue causes synchronization to fail while the user is switching between playing on REPENTOGON and vanilla.
 // Possible issues include Nicalis making a change to the Rep+ save format, persistent crashing, or perhaps some
 // niche edge case with the save data contents that we did not account for.
-bool TrySyncSaveSlot(const int slot, SyncStatus& syncStatus) {
+bool TrySyncSaveSlot(const int slot) {
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
 
 	auto vanillaPathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
 	auto rgonPathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
 	
-	if (g_Manager->IsSteamCloudEnabled()) {
+	if (steamCloudEnabled) {
 		snprintf(vanillaPathBuffer.get(), PATH_BUFFER_SIZE, VANILLA_PERSISTENTGAMEDATA_STEAMCLOUD, slot);
 		snprintf(rgonPathBuffer.get(), PATH_BUFFER_SIZE, REPENTOGON_PERSISTENTGAMEDATA_STEAMCLOUD, slot);
 	} else {
@@ -258,8 +302,8 @@ bool TrySyncSaveSlot(const int slot, SyncStatus& syncStatus) {
 	}
 	uint32_t vanillaChecksum = vanillaSave.GenerateChecksum(true);
 
-	const std::string vanillaSyncKey = SyncStatus::GetKey(slot, steamCloudEnabled, /*isRepentogon=*/false);
-	const std::string rgonSyncKey = SyncStatus::GetKey(slot, steamCloudEnabled, /*isRepentogon=*/true);
+	const std::string vanillaSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/false);
+	const std::string rgonSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/true);
 
 	// Check if each save has changed since the last successful sync (OR no successful sync is logged).
 	const bool previouslySynced = syncStatus.HasChecksum(vanillaSyncKey) && syncStatus.HasChecksum(rgonSyncKey);
@@ -316,31 +360,37 @@ bool TrySyncSaveSlot(const int slot, SyncStatus& syncStatus) {
 }
 
 void PerformSaveSynchronization() {
-	if (!repentogonOptions.enableSaveSyncing) {
+	if (!syncStatus.IsEnabled() || !USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ZHL::Log("[SaveSync] Save syncing disabled.\n");
 		return;
 	}
 
-	SyncStatus syncStatus = LoadLastSyncStatusFromJson();
-
 	bool syncingFailed = false;
 
-	for (int slot = 1; slot <= 3; slot++) {
-		if (!TrySyncSaveSlot(slot, syncStatus)) {
-			syncingFailed = true;
+	if (!syncStatus.IsLoaded()) {
+		ZHL::Log("[SaveSync] Cannot sync - SyncStatus not loaded.\n");
+		syncingFailed = true;
+	} else {
+		for (int slot = 1; slot <= 3; slot++) {
+			if (!TrySyncSaveSlot(slot)) {
+				syncingFailed = true;
+			}
 		}
+	}
+
+	if (!syncStatus.SaveToJson()) {
+		syncingFailed = true;
 	}
 
 	if (syncingFailed) {
 		MessageBox(0, LANG.ERROR_SAVE_SYNC_FAILED, "REPENTOGON", MB_ICONERROR);
 	}
-
-	SaveSyncStatusToJson(syncStatus);
 }
 
 // Sync on startup, before the game has read any save files.
 HOOK_GLOBAL(IsaacStartup, (int param1, int param2, int param3) -> void, _X86_) {
 	super(param1, param2, param3);
+	syncStatus.LoadFromJson();
 	PerformSaveSynchronization();
 }
 
@@ -472,3 +522,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 
 #endif // !NDEBUG
+
+}  // namespace SaveSyncing
