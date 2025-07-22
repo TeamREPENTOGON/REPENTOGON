@@ -85,7 +85,7 @@ void ASMPatchConsoleRunCommand() {
 }
 
 void PerformASMPatches() {
-	ASMPatchesForSaveSyncing();
+	SaveSyncing::ASMPatchesForSaveSyncing();
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
 
