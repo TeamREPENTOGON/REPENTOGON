@@ -215,7 +215,7 @@ class SaveFile {
 	bool ReadSaveFile();
 
 	// Returns true if a file was successfully opened, even if some other issue occurred afterwards.
-	inline bool OpenedFile() {
+	inline bool OpenedFile() const {
 		return _openedFile;
 	}
 

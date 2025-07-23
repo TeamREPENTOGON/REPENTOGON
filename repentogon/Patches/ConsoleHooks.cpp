@@ -176,7 +176,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             this->Print(res.c_str(), Console::Color::WHITE, 0x96U);
         else
             out->append(res);
-        g_MenuManager->GetMenuSave()->reload_graphics_i_guess();
+        g_MenuManager->GetMenuSave()->Reset();
         return;
     };
 

@@ -42,20 +42,113 @@ namespace SaveSyncing {
 //
 // Under normal circumstances, we can just keep the two saves in sync by copying the more recent state.
 
+struct SaveDataPathInfo {
+	const char* name;
+	const char* localPath;
+	const char* cloudPath;
+};
 
-// These are identical to the ones the game would normally be using for rep+
-constexpr char VANILLA_PERSISTENTGAMEDATA[] = "%spersistentgamedata%d.dat";
-constexpr char VANILLA_PERSISTENTGAMEDATA_STEAMCLOUD[] = "rep+persistentgamedata%d.dat";
-
-// These are the paths we make the game use for REPENTOGON
-constexpr char REPENTOGON_PERSISTENTGAMEDATA[] = "%sRepentogon/rgon_persistentgamedata%d.dat";
-constexpr char REPENTOGON_PERSISTENTGAMEDATA_STEAMCLOUD[] = "rgon_steam_persistentgamedata%d.dat";
+static const std::unordered_map<GameVersion, SaveDataPathInfo> SAVE_DATA_PATHS = {
+	{ REBIRTH,			{ "Rebirth",		"%s../Binding of Isaac Rebirth/persistentgamedata%d.dat",		"persistentgamedata%d.dat",				} },
+	{ AFTERBIRTH,		{ "Afterbirth",		"%s../Binding of Isaac Afterbirth/persistentgamedata%d.dat",	"ab_persistentgamedata%d.dat",			} },
+	{ AFTERBIRTH_PLUS,	{ "Afterbirth+",	"%s../Binding of Isaac Afterbirth+/persistentgamedata%d.dat",	"abp_persistentgamedata%d.dat",			} },
+	{ REPENTANCE,		{ "Repentance",		"%s../Binding of Isaac Repentance/persistentgamedata%d.dat",	"rep_persistentgamedata%d.dat",			} },
+	{ REPENTANCE_PLUS,	{ "Repentance+",	"%spersistentgamedata%d.dat",									"rep+persistentgamedata%d.dat",			} },
+	{ REPENTOGON,		{ "REPENTOGON",		"%sRepentogon/rgon_persistentgamedata%d.dat",					"rgon_steam_persistentgamedata%d.dat",	} },
+};
 
 // Shared paths for GameState. At the moment, REPENTOGON still uses the same GameState file.
 constexpr char GAMESTATE_PATH[] = "%sgamestate%d.dat";
 constexpr char GAMESTATE_PATH_STEAMCLOUD[] = "rep+gamestate%d.dat";
 
 constexpr int PATH_BUFFER_SIZE = 1024;
+
+std::string GetPersistentGameDataPath(const GameVersion version, const int slot, const bool steamCloud) {
+	if (SAVE_DATA_PATHS.find(version) == SAVE_DATA_PATHS.end()) {
+		return "";
+	}
+
+	auto pathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
+
+	if (steamCloud) {
+		snprintf(pathBuffer.get(), PATH_BUFFER_SIZE, SAVE_DATA_PATHS.at(version).cloudPath, slot);
+		return std::string(pathBuffer.get());
+	}
+	
+	snprintf(pathBuffer.get(), PATH_BUFFER_SIZE, SAVE_DATA_PATHS.at(version).localPath, &g_SaveDataPath, slot);
+	// Normalize the path string.
+	return std::filesystem::weakly_canonical(pathBuffer.get()).string();
+}
+
+bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, const int slot) {
+	if (slot < 1 || slot > 3) {
+		ZHL::Log("[SaveSyncing] Cannot import unknown slot %d\n", slot);
+		return false;
+	}
+	ZHL::Log("[SaveSyncing] Attempting to import slot %d from %s to %s\n", slot, SAVE_DATA_PATHS.at(srcVersion).name, SAVE_DATA_PATHS.at(dstVersion).name);
+
+	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
+
+	const std::string srcPath = GetPersistentGameDataPath(srcVersion, slot, steamCloudEnabled);
+	const std::string dstPath = GetPersistentGameDataPath(dstVersion, slot, steamCloudEnabled);
+
+	ZHL::Log("[SaveSyncing] Source: %s\n", srcPath.c_str());
+	ZHL::Log("[SaveSyncing] Destination: %s\n", srcPath.c_str());
+
+	const SaveFile srcSave(srcPath.c_str(), steamCloudEnabled);
+	SaveFile dstSave(dstPath.c_str(), steamCloudEnabled);
+
+	if (!srcSave.OpenedFile()) {
+		ZHL::Log("[SaveSyncing] Failed to open %s\n", srcPath.c_str());
+		return false;
+	}
+	if (!srcSave.IsValid()) {
+		ZHL::Log("[SaveSyncing] Failed to validate %s\n", srcPath.c_str());
+		return false;
+	}
+	if (!dstSave.OpenedFile()) {
+		ZHL::Log("[SaveSyncing] Failed to open %s\n", dstPath.c_str());
+		return false;
+	}
+	if (!dstSave.IsValid()) {
+		ZHL::Log("[SaveSyncing] Failed to validate %s\n", dstPath.c_str());
+		return false;
+	}
+	if (!dstSave.Sync(srcSave, SAVE_SYNC_TAKE_MAX)) {
+		ZHL::Log("[SaveSyncing] Import failed.\n");
+		return false;
+	}
+	if (!dstSave.Save()) {
+		ZHL::Log("[SaveSyncing] Failed to write modified save %s\n", dstPath.c_str());
+		return false;
+	}
+
+	ZHL::Log("[SaveSyncing] Import successful!\n");
+	return true;
+}
+
+bool ImportAll(const GameVersion srcVersion, const GameVersion dstVersion) {
+	for (int slot = 1; slot <= 3; slot++) {
+		if (!ImportSlot(srcVersion, dstVersion, slot)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ImportFrom(const GameVersion srcVersion, const int slot) {
+	if (slot == 0) {
+		return ImportAll(srcVersion, REPENTOGON);
+	}
+	return ImportSlot(srcVersion, REPENTOGON, slot);
+}
+
+bool ExportTo(const GameVersion dstVersion, const int slot) {
+	if (slot == 0) {
+		return ImportAll(REPENTOGON, dstVersion);
+	}
+	return ImportSlot(REPENTOGON, dstVersion, slot);
+}
 
 // ----------------------------------------------------------------------------------------------------
 // -- ASM Patches to replace the file path formats used for the save files
@@ -66,7 +159,7 @@ void ASMPatchLocalSaveFileName() {
 
 	printf("[REPENTOGON] Patching Manager::SetSaveSlot for the local save file name @ %p\n", addr);
 
-	const char* ptr = REPENTOGON_PERSISTENTGAMEDATA;
+	const char* ptr = SAVE_DATA_PATHS.at(REPENTOGON).localPath;
 
 	ASMPatch patch;
 	patch.AddBytes("\x68").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4))
@@ -80,7 +173,7 @@ void ASMPatchRemoteSaveFileName() {
 
 	printf("[REPENTOGON] Patching Manager::SetSaveSlot for the steam cloud save file name @ %p\n", addr);
 
-	const char* ptr = REPENTOGON_PERSISTENTGAMEDATA_STEAMCLOUD;
+	const char* ptr = SAVE_DATA_PATHS.at(REPENTOGON).cloudPath;
 
 	ASMPatch patch;
 	patch.AddBytes("\x68").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4))
@@ -237,19 +330,11 @@ std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamClo
 bool TrySyncSaveSlot(const int slot) {
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
 
-	auto vanillaPathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
-	auto rgonPathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
-	
-	if (steamCloudEnabled) {
-		snprintf(vanillaPathBuffer.get(), PATH_BUFFER_SIZE, VANILLA_PERSISTENTGAMEDATA_STEAMCLOUD, slot);
-		snprintf(rgonPathBuffer.get(), PATH_BUFFER_SIZE, REPENTOGON_PERSISTENTGAMEDATA_STEAMCLOUD, slot);
-	} else {
-		snprintf(vanillaPathBuffer.get(), PATH_BUFFER_SIZE, VANILLA_PERSISTENTGAMEDATA, &g_SaveDataPath, slot);
-		snprintf(rgonPathBuffer.get(), PATH_BUFFER_SIZE, REPENTOGON_PERSISTENTGAMEDATA, &g_SaveDataPath, slot);
-	}
+	const std::string vanillaPathStr = GetPersistentGameDataPath(REPENTANCE_PLUS, slot, steamCloudEnabled);
+	const std::string rgonPathStr = GetPersistentGameDataPath(REPENTOGON, slot, steamCloudEnabled);
 
-	const char* vanillaPath = vanillaPathBuffer.get();
-	const char* rgonPath = rgonPathBuffer.get();
+	const char* vanillaPath = vanillaPathStr.c_str();
+	const char* rgonPath = rgonPathStr.c_str();
 
 	ZHL::Log("[SaveSync] Beginning sync for %s saves in slot %d\n", steamCloudEnabled ? "cloud" : "local", slot);
 	ZHL::Log("[SaveSync] Vanilla save path: %s\n", vanillaPath);
@@ -359,10 +444,10 @@ bool TrySyncSaveSlot(const int slot) {
 	return true;
 }
 
-void PerformSaveSynchronization() {
-	if (!syncStatus.IsEnabled() || !USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSync] Save syncing disabled.\n");
-		return;
+bool PerformVanillaSaveSynchronization() {
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		ZHL::Log("[SaveSync] Separate REPENTOGON save file is disabled.\n");
+		return false;
 	}
 
 	bool syncingFailed = false;
@@ -382,21 +467,32 @@ void PerformSaveSynchronization() {
 		syncingFailed = true;
 	}
 
-	if (syncingFailed) {
-		MessageBox(0, LANG.ERROR_SAVE_SYNC_FAILED, "REPENTOGON", MB_ICONERROR);
+	return !syncingFailed;
+}
+
+bool PerformAutomaticVanillaSaveSynchronization() {
+	if (!syncStatus.IsEnabled()) {
+		ZHL::Log("[SaveSync] Automatic save syncing is disabled.\n");
+		return false;
 	}
+
+	if (!PerformVanillaSaveSynchronization()) {
+		MessageBox(0, LANG.ERROR_SAVE_SYNC_FAILED, "REPENTOGON", MB_ICONERROR);
+		return false;
+	}
+	return true;
 }
 
 // Sync on startup, before the game has read any save files.
 HOOK_GLOBAL(IsaacStartup, (int param1, int param2, int param3) -> void, _X86_) {
 	super(param1, param2, param3);
 	syncStatus.LoadFromJson();
-	PerformSaveSynchronization();
+	PerformAutomaticVanillaSaveSynchronization();
 }
 
 // Sync on shutdown, after the game is already finished with save-related stuff.
 HOOK_METHOD(Manager, destructor, () -> void) {
-	PerformSaveSynchronization();
+	PerformAutomaticVanillaSaveSynchronization();
 	super();
 }
 
