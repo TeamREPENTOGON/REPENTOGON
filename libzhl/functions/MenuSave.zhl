@@ -2,7 +2,7 @@
 __thiscall void Menu_Save::select_save_slot(uint32_t slot);
 
 "558bec83e4f883ec14538bd956578dbb":
-__fastcall void Menu_Save::reload_graphics_i_guess();
+__thiscall void Menu_Save::Reset();
 
 struct Menu_Save depends (ANM2, GenericPrompt) { 
     {{

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace SaveSyncing {
 
@@ -43,7 +44,20 @@ class SyncStatus {
 
 extern SyncStatus syncStatus;
 
-void PerformSaveSynchronization();
+enum GameVersion {
+	UNKNOWN = 0,
+	REBIRTH = 1,
+	AFTERBIRTH = 2,
+	AFTERBIRTH_PLUS = 3,
+	REPENTANCE = 4,
+	REPENTANCE_PLUS = 5,
+	REPENTOGON = 6,
+};
+
+bool ImportFrom(GameVersion srcVersion, int slot);
+bool ExportTo(GameVersion dstVersion, int slot);
+
+bool PerformVanillaSaveSynchronization();
 
 void ASMPatchesForSaveSyncing();
 
