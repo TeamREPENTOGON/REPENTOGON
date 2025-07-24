@@ -471,6 +471,11 @@ bool PerformVanillaSaveSynchronization() {
 }
 
 bool PerformAutomaticVanillaSaveSynchronization() {
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		ZHL::Log("[SaveSync] Separate REPENTOGON save file is disabled.\n");
+		return false;
+	}
+
 	if (!syncStatus.IsEnabled()) {
 		ZHL::Log("[SaveSync] Automatic save syncing is disabled.\n");
 		return false;
