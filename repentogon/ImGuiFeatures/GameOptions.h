@@ -478,9 +478,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
                 }
                 ImGui::EndTabBar();
             }
-
-            ImGui::End(); // close window element
         }
+
+        ImGui::End(); // end window element
     }
 };
 
