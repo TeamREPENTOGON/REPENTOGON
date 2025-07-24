@@ -25,6 +25,9 @@ class SyncStatus {
 	void UpdateChecksum(const std::string& key, const uint32_t checksum) {
 		_checksums[key] = checksum;
 	}
+	void ClearChecksum(const std::string& key) {
+		_checksums.erase(key);
+	}
 
 	bool IsLoaded() { return _loaded; }
 	bool IsEnabled() { return _enabled; }

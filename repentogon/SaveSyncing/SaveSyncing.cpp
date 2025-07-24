@@ -336,6 +336,9 @@ bool TrySyncSaveSlot(const int slot) {
 	const char* vanillaPath = vanillaPathStr.c_str();
 	const char* rgonPath = rgonPathStr.c_str();
 
+	const std::string vanillaSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/false);
+	const std::string rgonSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/true);
+
 	ZHL::Log("[SaveSync] Beginning sync for %s saves in slot %d\n", steamCloudEnabled ? "cloud" : "local", slot);
 	ZHL::Log("[SaveSync] Vanilla save path: %s\n", vanillaPath);
 	ZHL::Log("[SaveSync] REPENTOGON save path: %s\n", rgonPath);
@@ -367,6 +370,9 @@ bool TrySyncSaveSlot(const int slot) {
 			ZHL::Log("[SaveSync] Failed to initialize REPENTOGON save file for slot %d @ %s\n", slot, rgonPath);
 			return false;
 		}
+
+		// Clear any pre-existing sync checksum since we've newly created this save file.
+		syncStatus.ClearChecksum(rgonSyncKey);
 	}
 	if (!rgonSave.IsValid()) {
 		ZHL::Log("[SaveSync] Failed to validate rgon save file for slot %d @ %s\n", slot, rgonPath);
@@ -378,6 +384,7 @@ bool TrySyncSaveSlot(const int slot) {
 	SaveFile vanillaSave(vanillaPath, steamCloudEnabled);
 	if (!vanillaSave.OpenedFile()) {
 		// We can't perform synchronization without a vanilla save file, but don't consider this an error.
+		syncStatus.ClearChecksum(vanillaSyncKey);
 		ZHL::Log("[SaveSync] No vanilla save file found for slot %d @ %s\n", slot, vanillaPath);
 		return true;
 	}
@@ -386,9 +393,6 @@ bool TrySyncSaveSlot(const int slot) {
 		return false;
 	}
 	uint32_t vanillaChecksum = vanillaSave.GenerateChecksum(true);
-
-	const std::string vanillaSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/false);
-	const std::string rgonSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/true);
 
 	// Check if each save has changed since the last successful sync (OR no successful sync is logged).
 	const bool previouslySynced = syncStatus.HasChecksum(vanillaSyncKey) && syncStatus.HasChecksum(rgonSyncKey);
