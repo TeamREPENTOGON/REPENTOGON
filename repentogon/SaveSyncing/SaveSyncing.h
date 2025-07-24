@@ -9,7 +9,7 @@ namespace SaveSyncing {
 // Global toggle for whether REPENTOGON should use a separate save file from vanilla.
 // Temporary measure to test this functionality in a more controlled environment.
 // Long term, we need to use a separate save file as a precaution against future game updates.
-static constexpr bool USE_SEPARATE_REPENTOGON_SAVE_FILES = true;
+static constexpr bool USE_SEPARATE_REPENTOGON_SAVE_FILES = false;
 
 // Holds checksums for the most recent successful synchronizations.
 // Allows us to identify if the saves are out of sync or not.
