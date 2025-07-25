@@ -411,7 +411,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                     ImGui::EndTabItem();
                 }
 
-                if (ImGui::BeginTabItem(LANG.OPT_SAVE_MANAGEMENT)) {
+                if (SaveSyncing::USE_SEPARATE_REPENTOGON_SAVE_FILES && ImGui::BeginTabItem(LANG.OPT_SAVE_MANAGEMENT)) {
                     if (ImGui::BeginTable("SaveManagement_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         // Save Management options/utilities that can immediately modify save data are only available on the title/save menus when no save file is loaded.
                         const bool saveManagementAllowed = !Isaac::IsInGame() && g_MenuManager && (g_MenuManager->_selectedMenuID == 1 || g_MenuManager->_selectedMenuID == 2);
@@ -422,26 +422,22 @@ struct GameOptionsWindow : ImGuiWindowObject {
                             ImGui::PopStyleColor();
                         }
 
-                        if (SaveSyncing::USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-                            AddNewTableRow();
-                            if (ImGui::Checkbox(LANG.OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING, SaveSyncing::syncStatus.GetEnabledPtr())) {
-                                SaveSyncing::syncStatus.SaveToJson();
-                            }
-                            ImGui::SameLine();
-                            HelpMarker(LANG.OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING_MARK);
-                            AddResetButton(++resetCounter, *SaveSyncing::syncStatus.GetEnabledPtr(), true);
+                        AddNewTableRow();
+                        if (ImGui::Checkbox(LANG.OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING, SaveSyncing::syncStatus.GetEnabledPtr())) {
+                            SaveSyncing::syncStatus.SaveToJson();
                         }
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING_MARK);
+                        AddResetButton(++resetCounter, *SaveSyncing::syncStatus.GetEnabledPtr(), true);
 
                         ImGui::BeginDisabled(!saveManagementAllowed);
 
-                        if (SaveSyncing::USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-                            AddSaveManagementButton(
-                                LANG.OPT_SAVE_MANAGEMENT_SYNC,
-                                LANG.OPT_SAVE_MANAGEMENT_SYNC_MARK,
-                                LANG.OPT_SAVE_MANAGEMENT_SYNC_PROMPT,
-                                saveManagementSyncResult,
-                                []() { return SaveSyncing::PerformVanillaSaveSynchronization(); });
-                        }
+                        AddSaveManagementButton(
+                            LANG.OPT_SAVE_MANAGEMENT_SYNC,
+                            LANG.OPT_SAVE_MANAGEMENT_SYNC_MARK,
+                            LANG.OPT_SAVE_MANAGEMENT_SYNC_PROMPT,
+                            saveManagementSyncResult,
+                            []() { return SaveSyncing::PerformVanillaSaveSynchronization(); });
 
                         AddNewTableRow();
                         ImGui::SeparatorText(LANG.OPT_SAVE_MANAGEMENT_IMPORT_EXPORT);
