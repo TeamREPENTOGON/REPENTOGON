@@ -101,6 +101,13 @@ void goUpTogon(char* str) {
 			std::memmove(pos+1, pos + len, std::strlen(pos + len) + 1);
 		}
 	}
+
+	//Normalize backslashes with forward slash...easier than to go and change everything else, lol
+	for (char* p = str; *p != '\0'; ++p) {
+		if (*p == '\\') {
+			*p = '/';
+		}
+	}
 }
 
 void ModReReoute() {
