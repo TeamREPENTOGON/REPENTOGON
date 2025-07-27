@@ -1,3 +1,4 @@
+/*
 #include "SaveImport.h"
 #include "HookSystem.h"
 bool SaveImportHelper::IsForcedImportHijack = false;
@@ -47,3 +48,4 @@ HOOK_METHOD(SteamCloudFile, ReadPGD, (void)->void*) {
     };
     return super();
 };
+*/

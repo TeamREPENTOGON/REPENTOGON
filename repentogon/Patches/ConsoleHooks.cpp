@@ -6,7 +6,6 @@
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
 #include "Anm2Extras.h"
-#include "SaveImport.h"
 
 #include <filesystem>
 #include <iostream>
@@ -147,6 +146,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         return super(in,out,player);
     };
 
+    /*
     if ((in == "forceimport") || (in.rfind("forceimport ", 0) == 0)) {
         std::vector<std::string> cmdlets = ParseCommand(in, 2);
         unsigned int slot = 0;
@@ -179,6 +179,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         g_MenuManager->GetMenuSave()->Reset();
         return;
     };
+    */
 
     if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {
         for (auto & [ key, value ] : custom_shaders)

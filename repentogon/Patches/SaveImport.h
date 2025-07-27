@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include "IsaacRepentance.h"
 class SaveImportHelper {
@@ -13,3 +14,4 @@ public:
     static bool IsForcedImportHijack;
 };
 extern SaveImportHelper saveimport;
+*/
