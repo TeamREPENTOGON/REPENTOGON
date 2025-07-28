@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "SaveFile.h"
+
 namespace SaveSyncing {
 
 // Global toggle for whether REPENTOGON should use a separate save file from vanilla.
@@ -57,11 +59,20 @@ enum GameVersion {
 	REPENTOGON = 6,
 };
 
-bool ImportFrom(GameVersion srcVersion, int slot);
-bool ExportTo(GameVersion dstVersion, int slot);
+// Imports any missing achievements/progress to the REPENTOGON save file from another version of the game.
+// By default can only add/update missing/lesser values, will not remove anything.
+bool ImportFrom(GameVersion srcVersion, int slot, SaveSyncMode mode = SAVE_SYNC_TAKE_MAX);
 
+// Copies achievements/progress from the REPENTOGON save file over to the save from another version of the game.
+// By default can only add/update missing/lesser values, will not remove anything.
+bool ExportTo(GameVersion dstVersion, int slot, SaveSyncMode mode = SAVE_SYNC_TAKE_MAX);
+
+// Runs a synchronization between the REPENTOGON save file and the corresponding vanilla Repentance+ save file.
+// If previously synced, carries over save data changes from whichever file was updated over to the other one.
+// Otherwise, (re)establishes synchronization by merging the achievements/progress from both files onto each other.
 bool PerformVanillaSaveSynchronization();
 
+// Applies ASM patches that cause the game to read the REPENTOGON PersistentGameData files.
 void ASMPatchesForSaveSyncing();
 
 }  // namespace SaveSyncing

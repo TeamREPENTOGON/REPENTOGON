@@ -204,8 +204,8 @@ class SaveFile {
 	}
 
 	// Generates a KAGE checksum for the current contents of the raw data buffer.
-	// ignoreCounter excludes the "counter" from the checksum, as its safe to ignore it for the purposes of determining sync status.
-	uint32_t GenerateChecksum(bool ignoreCounter) const;
+	// ignoreGamestateAndCounter excludes the gamestate checksum and "counter" from the checksum, as its safe to ignore them for the purposes of determining sync status.
+	uint32_t GenerateChecksum(bool ignoreGamestateAndCounter) const;
 
 	// Regenerates the checksum for the contents of the file, then writes the updated checksum into the raw data.
 	// Returns false if writing the checksum fails.
@@ -241,6 +241,12 @@ class SaveFile {
 	// Returns the desired BestiarySectionDesc, or nullptr if none exists.
 	const BestiarySectionDesc* GetBestiarySectionDesc(int32_t bestiarySectionID) const;
 
+	// Reads the current gamestate checksum value near the beginning of the file.
+	bool ReadGamestateChecksum(uint32_t* out) const;
+
+	// Sets the gamestate checksum to the given value.
+	bool SetGamestateChecksum(uint32_t value);
+
 	// Reads the current value of the "counter" towards the end of the save file.
 	// Seemingly tracks how many times the file was loaded by the game.
 	bool ReadCounter(uint32_t* out) const;
@@ -248,7 +254,7 @@ class SaveFile {
 	// Sync achievements/counters/etc from another save file into this one, with the behaviour indicated by the SaveSyncMode.
 	// Only achievements/counters/etc that exist in both files are synced, so syncing files with different amounts of achievements is safe.
 	// Returns false if synchronization fails.
-	bool Sync(const SaveFile& srcFile, SaveSyncMode mode, const std::optional<uint32_t> overrideGamestateChecksum = std::nullopt);
+	bool Sync(const SaveFile& srcFile, SaveSyncMode mode);
 
 	// Save a file to the specified location, overwriting any existing file.
 	// Returns false if writing fails.
@@ -292,9 +298,6 @@ class SaveFile {
 
 	// Syncs the data for a particular chunk.
 	bool SyncChunk(const SaveFile& srcFile, SaveChunk chunkID, SaveSyncMode mode);
-
-	// Sets the gamestate checksum to the given value.
-	bool SetGamestateChecksum(uint32_t value);
 
 	// Modify the counter value near the end of the raw data.
 	bool SetCounter(uint32_t value);

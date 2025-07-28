@@ -110,7 +110,7 @@ bool SaveFile::Seek(const long offset, const int origin) const {
 	return false;
 }
 
-uint32_t SaveFile::GenerateChecksum(const bool ignoreCounter) const {
+uint32_t SaveFile::GenerateChecksum(const bool ignoreGamestateAndCounter) const {
 	// Checksum::Flush is inlined and I was having trouble recreating it, so I use Checksum::Generate instead, which takes in a KAGE stream.
 	// Using a fake SteamCloudFile like this is a little hacky but it works perfectly fine.
 	SteamCloudFile file;
@@ -120,9 +120,9 @@ uint32_t SaveFile::GenerateChecksum(const bool ignoreCounter) const {
 	file._status = 0;
 
 	// Normally the checksum starts after the 16-byte header, and ends before where the actual checksum is written.
-	// For save synchronization tracking we can also ignore the counter.
-	const int start = 16;
-	const int endOffset = ignoreCounter ? 8 : 4;
+	// For save synchronization tracking we can also ignore the gamestate checksum and the counter.
+	const int start = ignoreGamestateAndCounter ? 20 : 16;
+	const int endOffset = ignoreGamestateAndCounter ? 8 : 4;
 	const uint32_t checksum = Checksum::Generate(0, &file, start, endOffset);
 
 	// Clear the SteamCloudFile to prevent the destructor from doing anything weird.
@@ -237,7 +237,7 @@ bool SaveFile::ParseAndValidateData(const bool isInitialRead) {
 		ZHL::Log("[SaveFile] Failed to read GameState checksum.\n");
 		return false;
 	}
-	ZHL::Log("[SaveSync] GameState checksum: %u\n", gameStateChecksum);
+	ZHL::Log("[SaveFile] GameState checksum: %u\n", gameStateChecksum);
 
 	for (int i = 1; i <= NUM_SAVE_CHUNKS; i++) {
 		int rawChunkID = 0;
@@ -543,7 +543,7 @@ bool SaveFile::SyncChunk(const SaveFile& srcFile, const SaveChunk chunkID, const
 
 	const SaveChunkConfig* chunkConfig = &SAVE_CHUNK_CONFIGS.at(chunkID);
 
-	if (!chunkConfig->allowSyncing) {
+	if (!chunkConfig->allowSyncing && mode != SAVE_SYNC_OVERWRITE) {
 		ZHL::Log("[SaveFile] Skipping %s...\n", chunkConfig->name);
 		return true;
 	}
@@ -560,6 +560,18 @@ bool SaveFile::SyncChunk(const SaveFile& srcFile, const SaveChunk chunkID, const
 	return false;
 }
 
+bool SaveFile::ReadGamestateChecksum(uint32_t* out) const {
+	if (!Seek(16, SEEK_SET)) {
+		ZHL::Log("[SaveFile] Failed to seek to gamestate checksum for reading.\n");
+		return false;
+	}
+	if (!Read(out)) {
+		ZHL::Log("[SaveFile] Failed to read gamestate checksum.\n");
+		return false;
+	}
+	return true;
+}
+
 bool SaveFile::SetGamestateChecksum(const uint32_t value) {
 	if (!Seek(16, SEEK_SET)) {
 		ZHL::Log("[SaveFile] Failed to seek to gamestate checksum for writing.\n");
@@ -567,6 +579,15 @@ bool SaveFile::SetGamestateChecksum(const uint32_t value) {
 	}
 	if (!Write(&value)) {
 		ZHL::Log("[SaveFile] Failed to write updated gamestate checksum.\n");
+		return false;
+	}
+	// Update the save checksum and re-run validations.
+	if (!UpdateChecksum()) {
+		ZHL::Log("[SaveFile] Failed to update save checksum after updating GameState checksum!\n");
+		return false;
+	}
+	if (!ParseAndValidateData(false)) {
+		ZHL::Log("[SaveFile] Post-GameState checksum update validation failed!\n");
 		return false;
 	}
 	return true;
@@ -628,7 +649,7 @@ bool SaveFile::SyncCounter(const SaveFile& srcFile, const SaveSyncMode mode) {
 	return true;
 }
 
-bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode, const std::optional<uint32_t> overrideGamestateChecksum) {
+bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode) {
 	if (!IsValid() || !srcFile.IsValid()) {
 		ZHL::Log("[SaveFile] Cannot sync saves - validation failed.\n");
 		return false;
@@ -651,11 +672,6 @@ bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode, const std:
 		}
 	}
 
-	// If provided, overwrite the GameState checksum.
-	if (overrideGamestateChecksum && !SetGamestateChecksum(*overrideGamestateChecksum)) {
-		return false;
-	}
-
 	// Sync the "counter" value.
 	if (!SyncCounter(srcFile, mode)) {
 		return false;
@@ -663,6 +679,7 @@ bool SaveFile::Sync(const SaveFile& srcFile, const SaveSyncMode mode, const std:
 
 	// Now that everything else is updated, generate a new checksum and write it into the data.
 	if (!UpdateChecksum()) {
+		ZHL::Log("[SaveFile] Failed to update save checksum after sync!\n");
 		return false;
 	}
 

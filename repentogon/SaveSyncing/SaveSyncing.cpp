@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 #include <sstream>
+#include <regex>
 
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
@@ -57,6 +58,11 @@ static const std::unordered_map<GameVersion, SaveDataPathInfo> SAVE_DATA_PATHS =
 	{ REPENTOGON,		{ "REPENTOGON",		"%sRepentogon/rgon_persistentgamedata%d.dat",					"rgon_steam_persistentgamedata%d.dat",	} },
 };
 
+// Given a PersistentGameData path to the REPENTOGON save file, returns the corresponding vanilla Repentance+ save file path.
+std::string ConvertRgonSavePathToVanilla(const std::string rgonSavePath) {
+	return std::regex_replace(rgonSavePath, std::regex(R"((Repentogon[\/\\]+rgon_)|(rgon_steam_))"), "");
+}
+
 // Shared paths for GameState. At the moment, REPENTOGON still uses the same GameState file.
 constexpr char GAMESTATE_PATH[] = "%sgamestate%d.dat";
 constexpr char GAMESTATE_PATH_STEAMCLOUD[] = "rep+gamestate%d.dat";
@@ -76,11 +82,11 @@ std::string GetPersistentGameDataPath(const GameVersion version, const int slot,
 	}
 	
 	snprintf(pathBuffer.get(), PATH_BUFFER_SIZE, SAVE_DATA_PATHS.at(version).localPath, &g_SaveDataPath, slot);
-	// Normalize the path string.
-	return std::filesystem::weakly_canonical(pathBuffer.get()).string();
+	// Normalize the path string. Replace backslashes with forward slashes because this game is awesome
+	return std::regex_replace(std::filesystem::weakly_canonical(pathBuffer.get()).string(), std::regex(R"(\\)"), "/");
 }
 
-bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, const int slot) {
+bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
 	if (slot < 1 || slot > 3) {
 		ZHL::Log("[SaveSyncing] Cannot import unknown slot %d\n", slot);
 		return false;
@@ -93,11 +99,9 @@ bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, cons
 	const std::string dstPath = GetPersistentGameDataPath(dstVersion, slot, steamCloudEnabled);
 
 	ZHL::Log("[SaveSyncing] Source: %s\n", srcPath.c_str());
-	ZHL::Log("[SaveSyncing] Destination: %s\n", srcPath.c_str());
+	ZHL::Log("[SaveSyncing] Destination: %s\n", dstPath.c_str());
 
 	const SaveFile srcSave(srcPath.c_str(), steamCloudEnabled);
-	SaveFile dstSave(dstPath.c_str(), steamCloudEnabled);
-
 	if (!srcSave.OpenedFile()) {
 		ZHL::Log("[SaveSyncing] Failed to open %s\n", srcPath.c_str());
 		return false;
@@ -106,6 +110,8 @@ bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, cons
 		ZHL::Log("[SaveSyncing] Failed to validate %s\n", srcPath.c_str());
 		return false;
 	}
+
+	SaveFile dstSave(dstPath.c_str(), steamCloudEnabled);
 	if (!dstSave.OpenedFile()) {
 		ZHL::Log("[SaveSyncing] Failed to open %s\n", dstPath.c_str());
 		return false;
@@ -114,7 +120,8 @@ bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, cons
 		ZHL::Log("[SaveSyncing] Failed to validate %s\n", dstPath.c_str());
 		return false;
 	}
-	if (!dstSave.Sync(srcSave, SAVE_SYNC_TAKE_MAX)) {
+
+	if (!dstSave.Sync(srcSave, mode)) {
 		ZHL::Log("[SaveSyncing] Import failed.\n");
 		return false;
 	}
@@ -127,27 +134,27 @@ bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, cons
 	return true;
 }
 
-bool ImportAll(const GameVersion srcVersion, const GameVersion dstVersion) {
+bool ImportAll(const GameVersion srcVersion, const GameVersion dstVersion, const SaveSyncMode mode) {
 	for (int slot = 1; slot <= 3; slot++) {
-		if (!ImportSlot(srcVersion, dstVersion, slot)) {
+		if (!ImportSlot(srcVersion, dstVersion, slot, mode)) {
 			return false;
 		}
 	}
 	return true;
 }
 
-bool ImportFrom(const GameVersion srcVersion, const int slot) {
+bool ImportFrom(const GameVersion srcVersion, const int slot, const SaveSyncMode mode) {
 	if (slot == 0) {
-		return ImportAll(srcVersion, REPENTOGON);
+		return ImportAll(srcVersion, REPENTOGON, mode);
 	}
-	return ImportSlot(srcVersion, REPENTOGON, slot);
+	return ImportSlot(srcVersion, REPENTOGON, slot, mode);
 }
 
-bool ExportTo(const GameVersion dstVersion, const int slot) {
+bool ExportTo(const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
 	if (slot == 0) {
-		return ImportAll(REPENTOGON, dstVersion);
+		return ImportAll(REPENTOGON, dstVersion, mode);
 	}
-	return ImportSlot(REPENTOGON, dstVersion, slot);
+	return ImportSlot(REPENTOGON, dstVersion, slot, mode);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -244,6 +251,11 @@ bool SyncStatus::SaveToJson() {
 }
 
 bool SyncStatus::LoadFromJson() {
+	if (_loaded) {
+		ZHL::Log("[SaveSyncing] Cannot load SyncStatus - already loaded!\n");
+		return false;
+	}
+
 	const std::string jsonPath = GetJsonPath();
 
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
@@ -291,14 +303,14 @@ bool SyncStatus::LoadFromJson() {
 
 // Checks if a GameState file exists for this slot, and if so, generates & returns the checksum for it.
 // We update the GameState checksum when syncing so that switching between RGON and vanilla does not always delete it.
-std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamCloud) {
+uint32_t GetGamestateChecksum(const int slot, const bool steamCloud) {
 	auto gamestatePathBuffer = std::make_unique<char[]>(PATH_BUFFER_SIZE);
 	if (steamCloud) {
 		snprintf(gamestatePathBuffer.get(), PATH_BUFFER_SIZE, GAMESTATE_PATH_STEAMCLOUD, slot);
 	} else {
 		snprintf(gamestatePathBuffer.get(), PATH_BUFFER_SIZE, GAMESTATE_PATH, &g_SaveDataPath, slot);
 	}
-	ZHL::Log("[SaveSync] Reading GameState from: %s\n", gamestatePathBuffer.get());
+	ZHL::Log("[SaveSyncing] Reading GameState from: %s\n", gamestatePathBuffer.get());
 	std::unique_ptr<KAGE_Filesys_FileStream> gamestateFile;
 	if (steamCloud) {
 		gamestateFile = std::make_unique<SteamCloudFile>();
@@ -308,7 +320,65 @@ std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamClo
 	if (gamestateFile->OpenRead(gamestatePathBuffer.get()) && gamestateFile->IsOpen()) {
 		return Checksum::Generate(0, gamestateFile.get(), 16, 4);
 	}
-	return std::nullopt;
+	return 0;
+}
+
+bool SaveFileExists(const std::string path, const bool steamCloud) {
+	if (steamCloud) {
+		SteamCloudFile file;
+		if (file.OpenRead(path.c_str())) {
+			file.Close();
+			return true;
+		}
+		return false;
+	}
+	return std::filesystem::exists(path.c_str());
+}
+
+void TryInitRepentogonSaveFile(const int slot) {
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
+		return;
+	}
+
+	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
+
+	const std::string rgonPath = GetPersistentGameDataPath(REPENTOGON, slot, steamCloudEnabled);
+
+	if (SaveFileExists(rgonPath, steamCloudEnabled)) {
+		// Already exists.
+		return;
+	}
+
+	syncStatus.ClearChecksum(SyncStatus::GetKey(slot, /*isRepentogon=*/true));
+
+	ZHL::Log("[SaveSyncing] Initializing REPENTOGON save file for slot %d @ %s\n", slot, rgonPath);
+	
+	// Start by initializing the PersistentGameData normally, importing from a previous DLC if available (Repentance, AB+, etc)
+	PersistentGameData pgd;
+	if (steamCloudEnabled) {
+		pgd.steamcloudfilepath = rgonPath;
+		pgd.LoadFromSteamCloud();
+		pgd.SaveToSteamCloud();
+	} else {
+		pgd.Load(rgonPath.c_str());
+		pgd.SaveLocally();
+	}
+
+	// Attempt to overwrite with achievements/progress from the corresponding vanilla Rep+ save file.
+	ZHL::Log("[SaveSyncing] Attempting to import progress from Repentance+...\n");
+	if (!ImportFrom(REPENTANCE_PLUS, slot, SAVE_SYNC_OVERWRITE)) {
+		ZHL::Log("[SaveSyncing] Could not import progress from Repentance+.\n");
+	}
+
+	ZHL::Log("[SaveSyncing] Finished initializing REPENTOGON save file.\n");
+}
+
+// Checks if the REPENTOGON save files exist yet, and if they don't, initializes them.
+void TryInitRepentogonSaveFiles() {
+	for (int slot = 1; slot <= 3; slot++) {
+		TryInitRepentogonSaveFile(slot);
+	}
 }
 
 // The first time we perform synchronization, we perform a "full" sync by taking the maximum values for all
@@ -328,6 +398,11 @@ std::optional<uint32_t> GetGamestateChecksum(const int slot, const bool steamClo
 // Possible issues include Nicalis making a change to the Rep+ save format, persistent crashing, or perhaps some
 // niche edge case with the save data contents that we did not account for.
 bool TrySyncSaveSlot(const int slot) {
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
+		return false;
+	}
+
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
 
 	const std::string vanillaPathStr = GetPersistentGameDataPath(REPENTANCE_PLUS, slot, steamCloudEnabled);
@@ -339,45 +414,33 @@ bool TrySyncSaveSlot(const int slot) {
 	const std::string vanillaSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/false);
 	const std::string rgonSyncKey = SyncStatus::GetKey(slot, /*isRepentogon=*/true);
 
-	ZHL::Log("[SaveSync] Beginning sync for %s saves in slot %d\n", steamCloudEnabled ? "cloud" : "local", slot);
-	ZHL::Log("[SaveSync] Vanilla save path: %s\n", vanillaPath);
-	ZHL::Log("[SaveSync] REPENTOGON save path: %s\n", rgonPath);
+	ZHL::Log("[SaveSyncing] Beginning sync for %s saves in slot %d\n", steamCloudEnabled ? "cloud" : "local", slot);
+	ZHL::Log("[SaveSyncing] Vanilla save path: %s\n", vanillaPath);
+	ZHL::Log("[SaveSyncing] REPENTOGON save path: %s\n", rgonPath);
 
-	std::optional<uint32_t> gamestateChecksum = GetGamestateChecksum(slot, steamCloudEnabled);
-	if (gamestateChecksum) {
-		ZHL::Log("[SaveSync] Read GameState checksum: %u\n", *gamestateChecksum);
+	const uint32_t gamestateChecksum = GetGamestateChecksum(slot, steamCloudEnabled);
+	if (gamestateChecksum > 0) {
+		ZHL::Log("[SaveSyncing] Current GameState checksum: %u\n", gamestateChecksum);
 	} else {
-		ZHL::Log("[SaveSync] No GameState found.\n");
+		ZHL::Log("[SaveSyncing] No GameState found.\n");
 	}
 
-	// Read the REPENTOGON save file, initializing it as empty if needed.
+	// Read the REPENTOGON save file.
 	SaveFile rgonSave(rgonPath, steamCloudEnabled);
 	if (!rgonSave.OpenedFile()) {
-		ZHL::Log("[SaveSync] REPENTOGON save file not found. Initializing...\n");
-		PersistentGameData pgd;
-		pgd.filepath = std::string(rgonPath);
-		if (steamCloudEnabled) {
-			pgd.steamcloudfilepath = std::string(rgonPath);
-			pgd.SaveToSteamCloud();
-		} else {
-			pgd.SaveLocally();
-		}
-
-		// Attempt to read the save file again.
-		rgonSave.ReadSaveFile();
-
-		if (!rgonSave.OpenedFile()) {
-			ZHL::Log("[SaveSync] Failed to initialize REPENTOGON save file for slot %d @ %s\n", slot, rgonPath);
-			return false;
-		}
-
-		// Clear any pre-existing sync checksum since we've newly created this save file.
-		syncStatus.ClearChecksum(rgonSyncKey);
-	}
-	if (!rgonSave.IsValid()) {
-		ZHL::Log("[SaveSync] Failed to validate rgon save file for slot %d @ %s\n", slot, rgonPath);
+		ZHL::Log("[SaveSyncing] REPENTOGON save file not initialized for slot %d @ %s\n", slot, rgonPath);
 		return false;
 	}
+	if (!rgonSave.IsValid()) {
+		ZHL::Log("[SaveSyncing] Failed to validate rgon save file for slot %d @ %s\n", slot, rgonPath);
+		return false;
+	}
+	uint32_t rgonGamestateChecksum = 0;
+	if (!rgonSave.ReadGamestateChecksum(&rgonGamestateChecksum)) {
+		ZHL::Log("[SaveSyncing] Failed to read gamestate checksum from rgon save for slot %d @ %s\n", slot, rgonPath);
+		return false;
+	}
+	const bool updateRgonGamestateChecksum = rgonGamestateChecksum != gamestateChecksum;
 	uint32_t rgonChecksum = rgonSave.GenerateChecksum(true);
 
 	// Read the vanilla save file.
@@ -385,13 +448,19 @@ bool TrySyncSaveSlot(const int slot) {
 	if (!vanillaSave.OpenedFile()) {
 		// We can't perform synchronization without a vanilla save file, but don't consider this an error.
 		syncStatus.ClearChecksum(vanillaSyncKey);
-		ZHL::Log("[SaveSync] No vanilla save file found for slot %d @ %s\n", slot, vanillaPath);
+		ZHL::Log("[SaveSyncing] No vanilla save file found for slot %d @ %s\n", slot, vanillaPath);
 		return true;
 	}
 	if (!vanillaSave.IsValid()) {
-		ZHL::Log("[SaveSync] Failed to validate vanilla save file for slot %d @ %s\n", slot, vanillaPath);
+		ZHL::Log("[SaveSyncing] Failed to validate vanilla save file for slot %d @ %s\n", slot, vanillaPath);
 		return false;
 	}
+	uint32_t vanillaGamestateChecksum = 0;
+	if (!vanillaSave.ReadGamestateChecksum(&vanillaGamestateChecksum)) {
+		ZHL::Log("[SaveSyncing] Failed to read gamestate checksum from vanilla save for slot %d @ %s\n", slot, vanillaPath);
+		return false;
+	}
+	const bool updateVanillaGamestateChecksum = vanillaGamestateChecksum != gamestateChecksum;
 	uint32_t vanillaChecksum = vanillaSave.GenerateChecksum(true);
 
 	// Check if each save has changed since the last successful sync (OR no successful sync is logged).
@@ -406,36 +475,60 @@ bool TrySyncSaveSlot(const int slot) {
 	const SaveSyncMode syncMode = fullSync ? SAVE_SYNC_TAKE_MAX : SAVE_SYNC_OVERWRITE;
 
 	if (!syncVanilla && !syncRgon) {
-		ZHL::Log("[SaveSync] No synchronization required for slot %d\n", slot);
-		return true;
+		ZHL::Log("[SaveSyncing] No synchronization required for slot %d\n", slot);
+		if (!updateVanillaGamestateChecksum && !updateRgonGamestateChecksum) {
+			return true;
+		}
 	} else if (!fullSync) {
-		ZHL::Log("[SaveSync] Only one save has been modified since the last successful sync. Updating sync...\n");
+		ZHL::Log("[SaveSyncing] Only one save has been modified since the last successful sync. Updating sync...\n");
 	} else if (!previouslySynced) {
-		ZHL::Log("[SaveSync] No previous synchronization found. Performing a full synchronization...\n");
+		ZHL::Log("[SaveSyncing] No previous synchronization found. Performing a full synchronization...\n");
 	} else {
-		ZHL::Log("[SaveSync] Both saves have been modified and are potentially diverged. Performing a full synchronization...\n");
+		ZHL::Log("[SaveSyncing] Both saves have been modified and are potentially diverged. Performing a full synchronization...\n");
 	}
 
-	if (syncRgon) {
-		ZHL::Log("[SaveSync] Syncing REPENTOGON save...\n");
-		if (!rgonSave.Sync(vanillaSave, syncMode, gamestateChecksum)) {
-			ZHL::Log("[SaveSync] Failed to sync rgon save with vanilla save for slot %d\n", slot);
-			return false;
+	if (syncRgon || updateRgonGamestateChecksum) {
+		if (syncRgon) {
+			ZHL::Log("[SaveSyncing] Syncing REPENTOGON save...\n");
+			if (!rgonSave.Sync(vanillaSave, syncMode)) {
+				ZHL::Log("[SaveSyncing] Failed to sync rgon save with vanilla save for slot %d\n", slot);
+				return false;
+			}
 		}
+
+		if (updateRgonGamestateChecksum) {
+			ZHL::Log("[SaveSyncing] Updating REPENTOGON save's gamestate checksum...\n");
+			if (!rgonSave.SetGamestateChecksum(gamestateChecksum)) {
+				ZHL::Log("[SaveSyncing] Failed to update rgon save's gamestate checksum for slot %d\n", slot);
+				return false;
+			}
+		}
+
 		if (!rgonSave.Save()) {
-			ZHL::Log("[SaveSync] Failed to write synced rgon save for slot %d\n", slot);
+			ZHL::Log("[SaveSyncing] Failed to write updated rgon save for slot %d\n", slot);
 			return false;
 		}
 	}
 
-	if (syncVanilla) {
-		ZHL::Log("[SaveSync] Syncing vanilla save...\n");
-		if (!vanillaSave.Sync(rgonSave, syncMode, gamestateChecksum)) {
-			ZHL::Log("[SaveSync] Failed to sync vanilla save with rgon save for slot %d\n", slot);
-			return false;
+	if (syncVanilla || updateVanillaGamestateChecksum) {
+		if (syncVanilla) {
+			ZHL::Log("[SaveSyncing] Syncing vanilla save...\n");
+			if (!vanillaSave.Sync(rgonSave, syncMode)) {
+				ZHL::Log("[SaveSyncing] Failed to sync vanilla save with rgon save for slot %d\n", slot);
+				return false;
+			}
 		}
+
+		if (updateVanillaGamestateChecksum) {
+			ZHL::Log("[SaveSyncing] Updating vanilla save's gamestate checksum...\n");
+			if (!vanillaSave.SetGamestateChecksum(gamestateChecksum)) {
+				ZHL::Log("[SaveSyncing] Failed to update vanilla save's gamestate checksum for slot %d\n", slot);
+				return false;
+			}
+		}
+
 		if (!vanillaSave.Save()) {
-			ZHL::Log("[SaveSync] Failed to write synced vanilla save for slot %d\n", slot);
+			ZHL::Log("[SaveSyncing] Failed to write updated vanilla save for slot %d\n", slot);
 			return false;
 		}
 	}
@@ -444,26 +537,26 @@ bool TrySyncSaveSlot(const int slot) {
 	syncStatus.UpdateChecksum(vanillaSyncKey, vanillaSave.GenerateChecksum(true));
 	syncStatus.UpdateChecksum(rgonSyncKey, rgonSave.GenerateChecksum(true));
 
-	ZHL::Log("[SaveSync] Completed synchronization for slot %d\n", slot);
+	ZHL::Log("[SaveSyncing] Completed synchronization for slot %d\n", slot);
 	return true;
 }
 
 bool PerformVanillaSaveSynchronization() {
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSync] Separate REPENTOGON save file is disabled.\n");
+		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
+		return false;
+	}
+
+	if (!syncStatus.IsLoaded()) {
+		ZHL::Log("[SaveSyncing] Cannot sync - SyncStatus not loaded.\n");
 		return false;
 	}
 
 	bool syncingFailed = false;
 
-	if (!syncStatus.IsLoaded()) {
-		ZHL::Log("[SaveSync] Cannot sync - SyncStatus not loaded.\n");
-		syncingFailed = true;
-	} else {
-		for (int slot = 1; slot <= 3; slot++) {
-			if (!TrySyncSaveSlot(slot)) {
-				syncingFailed = true;
-			}
+	for (int slot = 1; slot <= 3; slot++) {
+		if (!TrySyncSaveSlot(slot)) {
+			syncingFailed = true;
 		}
 	}
 
@@ -476,12 +569,12 @@ bool PerformVanillaSaveSynchronization() {
 
 bool PerformAutomaticVanillaSaveSynchronization() {
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSync] Separate REPENTOGON save file is disabled.\n");
+		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
 		return false;
 	}
 
 	if (!syncStatus.IsEnabled()) {
-		ZHL::Log("[SaveSync] Automatic save syncing is disabled.\n");
+		ZHL::Log("[SaveSyncing] Automatic save syncing is disabled.\n");
 		return false;
 	}
 
@@ -495,15 +588,49 @@ bool PerformAutomaticVanillaSaveSynchronization() {
 // Sync on startup, before the game has read any save files.
 HOOK_GLOBAL(IsaacStartup, (int param1, int param2, int param3) -> void, _X86_) {
 	super(param1, param2, param3);
-	syncStatus.LoadFromJson();
-	PerformAutomaticVanillaSaveSynchronization();
+	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		syncStatus.LoadFromJson();
+		TryInitRepentogonSaveFiles();
+		PerformAutomaticVanillaSaveSynchronization();
+	}
 }
 
 // Sync on shutdown, after the game is already finished with save-related stuff.
 HOOK_METHOD(Manager, destructor, () -> void) {
-	PerformAutomaticVanillaSaveSynchronization();
+	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		PerformAutomaticVanillaSaveSynchronization();
+	}
 	super();
 }
+
+// The functions for importing saves from previous versions expect to be passed the vanilla save path,
+// and they copy/modify it to obtain the path for the legacy save. These don't work at all when passed
+// the REPENTOGOIN save data paths, so here we fix them to still start from the vanilla paths.
+#define FIX_LOCAL_SAVE_IMPORT(_func) \
+HOOK_METHOD(PersistentGameData, _func, (const char* path) -> bool) { \
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) return super(path); \
+	std::string vanillaPath = ConvertRgonSavePathToVanilla(path); \
+	return super(vanillaPath.c_str()); \
+}
+FIX_LOCAL_SAVE_IMPORT(TryImportRepLocalSave);
+FIX_LOCAL_SAVE_IMPORT(TryImportABPLocalSave);
+FIX_LOCAL_SAVE_IMPORT(TryImportABLocalSave);
+FIX_LOCAL_SAVE_IMPORT(TryImportRebirthLocalSave);
+
+// Same as above for the steam cloud files, though these read from `steamcloudfilepath` instead of taking a parameter.
+// Note there is no function to import a rebirth save from the cloud, for some reason!!
+#define FIX_STEAM_CLOUD_SAVE_IMPORT(_func) \
+HOOK_METHOD(PersistentGameData, _func, () -> bool) { \
+	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) return super(); \
+	const std::string rgonPath = this->steamcloudfilepath; \
+	this->steamcloudfilepath = ConvertRgonSavePathToVanilla(rgonPath); \
+	const bool result = super(); \
+	this->steamcloudfilepath = rgonPath; \
+	return result; \
+}
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportRepCloudSave);
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABPCloudSave);
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave);
 
 // ----------------------------------------------------------------------------------------------------
 // -- Testing Utils
