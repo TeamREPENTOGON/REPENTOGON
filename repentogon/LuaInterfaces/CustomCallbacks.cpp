@@ -1054,7 +1054,21 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 	if (!result) {
 		if (lua_istable(L, -1)) {
 			if (lua_rawlen(L, -1) == 2) {
-				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2));
+				const int changedRoomId = lua::callbacks::ToInteger(L, 1);
+				const int changedDimension = lua::callbacks::ToInteger(L, 2);
+
+				RoomDescriptor* roomDesc = nullptr;
+
+				roomDesc = GetRoomByIdx(changedRoomId, changedDimension);
+				if (!roomDesc || !roomDesc->Data) {
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_CHANGE_ROOM: Tried to switch to room with Idx %d and dimension %d, but it doesn't exist\n", changedRoomId, changedDimension);
+					super(roomId, dimension);
+				}
+				else {
+					g_Game->_leaveDoor = -1;
+					super(changedRoomId, changedDimension);
+				}
+				
 			}
 		}
 		else {
