@@ -890,7 +890,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             for (auto& XMLPair : XMLPairs) {
                                 for (auto& node : std::get<0>(XMLPair)) {
                                     int id = node.first;
-                                    if (id == 0) // dont display NULL item and trinket
+                                    if ((id == 0) && (std::get<1>(XMLPair) != "p")) // dont display NULL item and trinket
                                       continue;
                                     std::string name = node.second["name"];
                                     auto& untranslated_name = node.second["untranslatedname"];
