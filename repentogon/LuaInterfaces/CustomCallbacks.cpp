@@ -1036,7 +1036,7 @@ HOOK_METHOD(Room, ShopRestockPartial, () -> void) {
 	}
 }
 
-//PRE_LEVEL_CHANGE_ROOM (id :1061)
+//PRE_CHANGE_ROOM (id :1061)
 HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 	const int callbackid = 1061;
 	if (!CallbackState.test(callbackid - 1000)) { return super(roomId, dimension); }
@@ -1061,7 +1061,7 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 
 				roomDesc = GetRoomByIdx(changedRoomId, changedDimension);
 				if (!roomDesc || !roomDesc->Data) {
-					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_CHANGE_ROOM: Tried to switch to room with Idx %d and dimension %d, but it doesn't exist\n", changedRoomId, changedDimension);
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_CHANGE_ROOM: Tried to switch to room with Idx %d and dimension %d, but it doesn't exist\n", changedRoomId, changedDimension);
 					super(roomId, dimension);
 				}
 				else {
