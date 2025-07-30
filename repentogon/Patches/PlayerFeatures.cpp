@@ -6,6 +6,8 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "JsonSavedata.h"
+#include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 
 #include "../ImGuiFeatures/LogViewer.h"
 #include "../MiscFunctions.h"
@@ -14,7 +16,6 @@ class PlayerFeatureHandler {
 public:
 	unordered_map<string, int> GreedDonationCounter;
 	string jsonpath;
-	int currentModdedPlayerID = 0;
 
 	void SavePlayerDataToJson()
 	{
@@ -70,7 +71,9 @@ public:
 
 	int GetGreedDonationCoinCount(int playerType)
 	{
-		currentModdedPlayerID = playerType;
+		if (playerType < NUM_PLAYER_TYPES) {
+			return 0;
+		}
 		string playerIdx = GetPlayerIdx(playerType);
 
 		if (GreedDonationCounter.find(playerIdx) == GreedDonationCounter.end()) {
@@ -79,12 +82,12 @@ public:
 		return GreedDonationCounter.at(playerIdx);
 	}
 
-	void IncreaseGreedDonationCoinCount(int amount)
+	void IncreaseGreedDonationCoinCount(int playerType, int amount)
 	{
-		if (currentModdedPlayerID < 41) {
+		if (playerType < NUM_PLAYER_TYPES) {
 			return;
 		}
-		string playerIdx = GetPlayerIdx(currentModdedPlayerID);
+		string playerIdx = GetPlayerIdx(playerType);
 
 		if (GreedDonationCounter.find(playerIdx) == GreedDonationCounter.end()) {
 			GreedDonationCounter.insert({ playerIdx, 0 });
@@ -103,31 +106,57 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot)->void)
 }
 
 // Fix modded characters having 100% greed donation jam chance
-HOOK_METHOD(Entity_Player, GetGreedDonationBreakChance, ()->float)
-{
-	float jamChance = super();
-	if (this->GetPlayerType() < 41) // vanilla characters
-	{
-		playerFeatureHandler.currentModdedPlayerID = 0;
-		return jamChance;
-	}
-	int donatedCoins = playerFeatureHandler.GetGreedDonationCoinCount(this->GetPlayerType());
-	jamChance = floor(0.2f * min(100.0f, exp(0.023f * donatedCoins) - 1.0f) + 0.5f);
+void __stdcall GetGreedDonationBreakChanceForModdedCharacterTrampoline(const int playerType) {
+	// This function will only get called for modded characters due to the placement of the patch.
+	const int donatedCoins = playerFeatureHandler.GetGreedDonationCoinCount(playerType);
+	float jamChance = floor(0.2f * min(100.0f, exp(0.023f * donatedCoins) - 1.0f) + 0.5f);
 	if (g_Game->IsHardMode()) {
 		// Greedier Mode caps percentage at 1%
 		jamChance = min(jamChance, 1.0f);
 	}
-	return jamChance;
+	__asm {
+		movd xmm0, jamChance
+	}
+}
+void PatchGetGreedDonationBreakChanceForModdedCharacters() {
+	// Patches over where 99.9f would normally be placed in XMM0 for a modded character.
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GreedDonationBreakChanceForModdedCharacters);
+
+	printf("[REPENTOGON] Patching GetGreedDonationBreakChance for modded characters at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | (ASMPatch::SavedRegisters::Registers::XMM_REGISTERS & ~ASMPatch::SavedRegisters::Registers::XMM0), true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX)  // PlayerType
+		.AddInternalCall(GetGreedDonationBreakChanceForModdedCharacterTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x8);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // Custom handling for Greed donations with modded characters
-HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val)->void)
-{
-	super(eEvent, val);
-	if (eEvent == 115) // EventCounter.GREED_DONATION_MACHINE_COUNTER
-	{
-		playerFeatureHandler.IncreaseGreedDonationCoinCount(val);
-	}
+void __stdcall IncreaseGreedDonationCoinCountForModdedCharactersTrampoline(const int playerType) {
+	playerFeatureHandler.IncreaseGreedDonationCoinCount(playerType, 1);
+}
+void PatchIncreaseGreedDonationCoinCountForModdedCharacters() {
+	// Where the game checks if the PlayerType in EAX is a vanilla one.
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GreedDonationCoinCountForModdedCharacters);
+
+	// Patch overrides the jump normally taken by modded characters that skips the per-player greed coin event counter.
+	const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching Greed Donation Machine coin count for modded characters at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes("\x83\xf8\x29")  // CMP EAX, 41
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JL, (char*)addr + 0x5)  // Continue normally for vanilla characters.
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)  // PlayerType
+		.AddInternalCall(IncreaseGreedDonationCoinCountForModdedCharactersTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);  // Continue on for modded characters (skip vanilla character logic, as usual).
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 // MC_PRE_ADD_TRINKET (1014)

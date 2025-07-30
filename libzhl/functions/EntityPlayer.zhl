@@ -539,8 +539,9 @@ __thiscall RNG* Entity_Player::GetCollectibleRNG(int id);
 "558bec83e4f851538bd98b8b????????568b75":
 __thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);
 
-"558bec518b89????????83f929":
-__thiscall float Entity_Player::GetGreedDonationBreakChance();
+// rep+ moved the output from st0 to xmm0, and added optional PersistentGameData* param
+// "558bec518b89????????83f929":
+// __thiscall float<xmm0> Entity_Player::GetGreedDonationBreakChance(PersistentGameData* pgd);
 
 "568bf1e8????????84c074??8d8e":
 __thiscall void Entity_Player::ClearQueueItem();
