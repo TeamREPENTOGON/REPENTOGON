@@ -83,7 +83,7 @@ extern "C" {
 		}
 #endif
 		InitializeSymbolHandler();
-		bool clearLog = true;
+		bool clearLog = false;
 		if (!FunctionDefinition::Init())
 		{
 			auto const& missing = Definition::GetMissing();
@@ -91,8 +91,7 @@ extern "C" {
 				MessageBox(0, FunctionDefinition::GetLastError(), "Error", MB_ICONERROR);
 			}
 			else {
-				std::ofstream out("libzhl.log");
-				clearLog = false;
+				std::ofstream out("repentogon.log");
 				for (auto const& [isFunction, name] : missing) {
 					out << name << " (";
 					if (isFunction) {
@@ -118,7 +117,7 @@ extern "C" {
 			if (misses.size() == 1) {
 				MessageBox(0, stream.str().c_str(), "Error", MB_ICONERROR);
 			} else {
-				std::ofstream stream("libzhl.log", clearLog ? std::ios_base::out : std::ios_base::app);
+				std::ofstream stream("repentogon.log", clearLog ? std::ios_base::out : std::ios_base::app);
 				for (const char* miss : misses) {
 					stream << "Unable to find address for " << miss << std::endl;
 				}

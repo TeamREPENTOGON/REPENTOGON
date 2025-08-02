@@ -213,9 +213,9 @@ int VariableDefinition::Load()
 	const SigScan::Match &m = sig.GetMatch();
 	memcpy(_outVar, m.address, m.length);
 
-	Log("Found value for %s:", _name);
-	for(int i=0 ; i<m.length ; ++i) Log(" %02x", ((unsigned char*)_outVar)[i]);
-	Log("\n");
+	ZHL::Log("[HOOKSYS] Found value for %s:", _name);
+	for(int i=0 ; i<m.length ; ++i) ZHL::Log(" %02x", ((unsigned char*)_outVar)[i]);
+	ZHL::Log("\n");
 
 	return 1;
 }
@@ -243,7 +243,7 @@ FunctionDefinition::FunctionDefinition(const char *name,
 	_canHook(canHook)
 {
 	SetName(name, type.raw_name());
-	Log("Adding function %s\n", _name);
+	ZHL::Log("[HOOKSYS] Adding function %s\n", _name);
 	Add(_name, internalName, this);
 }
 
@@ -299,7 +299,7 @@ int FunctionDefinition::Load()
 
 			_address = sig.GetAddress<void*>();
 			*_outFunc = _address;
-			Log("Found address for %s: %08x, dist %d\n", _name, (unsigned int)_address, sig.GetDistance());
+			ZHL::Log("[HOOKSYS] Found address for %s: %08x, dist %d\n", _name, (unsigned int)_address, sig.GetDistance());
 		}
 		else {
 			sprintf_s(g_defLastError, "No signature or addresss defined for function %s", _name);
@@ -308,7 +308,7 @@ int FunctionDefinition::Load()
 	}
 	else {
 		*_outFunc = _address;
-		Log("Address for %s already defined or manually specified: %08x\n", _name, (unsigned int)_address);
+		ZHL::Log("[HOOKSYS] Address for %s already defined or manually specified: %08x\n", _name, (unsigned int)_address);
 	}
 
 	return 1;
@@ -558,7 +558,7 @@ unsigned char* FunctionHook_private::EmitEpilogue(FunctionDefinition const* def,
 int FunctionHook_private::Install()
 {
 	using namespace HookSystem;
-	Log("Installing hook for function %s\n", _name);
+	ZHL::Log("[HOOKSYS] Installing hook for function %s\n", _name);
 
 	FunctionDefinition* def = dynamic_cast<FunctionDefinition*>(Definition::Find(_name));
 	if (!def)
@@ -760,7 +760,7 @@ int FunctionHook_private::Install()
 
 	*_outInternalSuper = _internalSuper;
 
-	Log("Successfully hooked function %s\n", _name);
+	ZHL::Log("[HOOKSYS] Successfully hooked function %s\n", _name);
 
 	return 1;
 }
@@ -1251,7 +1251,7 @@ int FunctionHookCustom_private::Install() {
 	// Set the external reference to internalSuper so it can be used inside the user defined hook
 	*_outInternalSuper = _internalSuper;
 
-	Log("Successfully hooked function %s\n", _name);
+	ZHL::Log("[HOOKSYS] Successfully hooked function %s\n", _name);
 
 #ifdef HOOK_LOG
 	if (!g_hookLog) g_hookLog = fopen("hooks.log", "w");
