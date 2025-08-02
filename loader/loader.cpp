@@ -122,7 +122,7 @@ DWORD RedirectLua(FILE* f, HMODULE* outLua) {
 static HMODULE luaHandle = NULL;
 
 void __stdcall LoadMods() {
-	FILE* f = fopen("zhlLoader.log", "a");
+	FILE* f = fopen("repentogon.log", "a");
 	Log(f, "INFO", "Loading mods...\n");
 
 	WIN32_FIND_DATAA data;
@@ -224,7 +224,7 @@ void DumpThreadsContext(FILE* logFile) {
 
 extern "C" {
 	__declspec(dllexport) int Launch(bool initConsole) {
-		FILE* f = fopen("zhlLoader.log", "w");
+		FILE* f = fopen("repentogon.log", "w");
 		if (!f) {
 			return -1;
 		}
