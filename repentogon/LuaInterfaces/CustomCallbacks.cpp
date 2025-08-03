@@ -1057,9 +1057,8 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 				const int changedRoomId = lua::callbacks::ToInteger(L, 1);
 				const int changedDimension = lua::callbacks::ToInteger(L, 2);
 
-				RoomDescriptor* roomDesc = nullptr;
-
-				roomDesc = GetRoomByIdx(changedRoomId, changedDimension);
+				RoomDescriptor* roomDesc = GetRoomByIdx(changedRoomId, changedDimension);
+				
 				if (!roomDesc || !roomDesc->Data) {
 					logViewer.AddLog(LogViewer::Game, "MC_PRE_CHANGE_ROOM: Tried to switch to room with Idx %d and dimension %d, but it doesn't exist\n", changedRoomId, changedDimension);
 					super(roomId, dimension);
