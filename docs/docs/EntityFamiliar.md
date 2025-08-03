@@ -98,8 +98,13 @@ ___
 
 ___
 ### TryAimAtMarkedTarget () {: aria-label='Functions' }
-#### [Vector](Vector.md) TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction) {: .copyable aria-label='Functions' }
-Returns `nil` if unsuccessful.
+#### [Vector](Vector.md) TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = Direction.NO_DIRECTION ) {: .copyable aria-label='Functions' }
+#### boolean, table TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection = nil, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = Direction.NO_DIRECTION, [Vector](Vector.md) TargetPos = nil ) {: .copyable aria-label='Functions' }
+Return `true` if player's mark from Marked or Eye of the Occult/Gello target exists, `false` otherwise.
+Return a table containing the changed AimDirection, Direction, and TargetPos.
+
+Legacy version returns modified TargetPos, `nil` if unsuccessful.
+
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
