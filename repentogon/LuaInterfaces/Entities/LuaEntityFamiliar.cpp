@@ -24,17 +24,42 @@ LUA_FUNCTION(Lua_FamiliarGetPathFinder)
 LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 {
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Vector* aimDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	int direction = (int)luaL_checkinteger(L, 3);
-	Vector buffer;
-	if (fam->TryAimAtMarkedTarget(aimDirection, direction, &buffer)) {
-		lua::luabridge::UserdataPtr::push(L, &buffer, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector aimDirection;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		aimDirection = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	}
-	else
-	{
-		lua_pushnil(L);
+	int direction = (int)luaL_optinteger(L, 3, -1);
+	Vector targetPosBuffer;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		targetPosBuffer = *lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	}
-	return 1;
+	bool success = fam->TryAimAtMarkedTarget(&aimDirection, &direction, &targetPosBuffer);
+
+	if (lua_gettop(L) == 3) {
+		if (success) {
+			lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
+		}
+		else
+		{
+			lua_pushnil(L);
+		}
+		return 1;
+	}
+
+	lua_pushboolean(L, success);
+
+	lua_newtable(L);
+	lua_pushinteger(L, 1);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
+	lua_rawset(L, -3);
+	lua_pushinteger(L, 2);
+	lua_pushinteger(L, direction);
+	lua_rawset(L, -3);
+	lua_pushinteger(L, 3);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), aimDirection);
+	lua_rawset(L, -3);
+	
+	return 2;
 }
 
 LUA_FUNCTION(Lua_FamiliarTriggerRoomClear)

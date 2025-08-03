@@ -244,6 +244,10 @@ Fixes:
 Modified:
 * EntityFamiliar:
 	- GetPathFinder -> GetPathfinder
+	- bool, table TryAimAtMarkedTarget(Vector AimDirection = nil, Direction Direction = Direction.NO_DIRECTION, Vector TargetPos = nil)
+		Return true if player's mark from Marked or Eye of the Occult/Gello target exists, false otherwise.
+		Return a table containing the changed AimDirection, Direction, and TargetPos.
+		The legacy function signature has been kept and should now properly return the changed TargetPos.
 * EntityPlayer:
 	- DropCollectible now returns the spawned pedestal if one was spawned, as intended 
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
