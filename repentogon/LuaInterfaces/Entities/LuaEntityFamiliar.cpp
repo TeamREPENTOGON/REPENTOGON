@@ -50,13 +50,13 @@ LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 
 	lua_newtable(L);
 	lua_pushinteger(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), aimDirection);
 	lua_rawset(L, -3);
 	lua_pushinteger(L, 2);
 	lua_pushinteger(L, direction);
 	lua_rawset(L, -3);
 	lua_pushinteger(L, 3);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), aimDirection);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
 	lua_rawset(L, -3);
 	
 	return 2;
