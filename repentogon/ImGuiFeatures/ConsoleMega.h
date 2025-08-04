@@ -309,8 +309,35 @@ struct ConsoleMega : ImGuiWindowObject {
                 console->_commandHistory = newHistory;
         }
 
-        console->_input = std::string(input);
-        console->SubmitInput(false);
+        //multiline support for history + support for multiline cmds
+        std::string inputstr = input;
+        bool islua = (inputstr.find("lua ") == 0) || (inputstr.find("l ") == 0); 
+        if (inputstr.find("\\n") > 0) {
+            std::istringstream stream(input);
+            std::string line;
+            std::string historyentry = "";
+            while (std::getline(stream, line)) {
+                if (!islua) {
+                    console->_input = line;
+                    console->SubmitInput(false);
+                    console->_commandHistory.pop_front();
+                }
+                if (historyentry.length() > 0) {
+                    historyentry += "\\-|newline|-\\"; //hacky teim! (these multiline things dont even work in vanilla anyway)
+                }
+                historyentry += line; 
+            }
+            if (islua) {
+                console->_input = std::string(input);
+                console->SubmitInput(false);
+                console->_commandHistory.pop_front();
+            }
+            console->_commandHistory.push_front(historyentry);
+        }//multiline support for history + support for multiline cmds end
+        else {
+            console->_input = std::string(input);
+            console->SubmitInput(false);
+        }
 
         if (clear)
             console->_commandHistory.pop_front();
@@ -424,12 +451,16 @@ struct ConsoleMega : ImGuiWindowObject {
               }
 
               if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
-                  char* s = inputBuf;
-                  Strtrim(s);
-                  std::string fixedCommand = FixSpawnCommand(s);
-                  s = (char*)fixedCommand.c_str();
-                  if (s[0])
-                      ExecuteCommand(s);
+                  if (!ImGui::GetIO().KeyShift) { // Prevent submission when Shift+Enter is pressed
+                      char* s = inputBuf;
+                      Strtrim(s);
+                      std::string fixedCommand = FixSpawnCommand(s);
+                      s = (char*)fixedCommand.c_str();
+                      if (s[0])
+                          ExecuteCommand(s);
+                      
+                  }
+                  else { reclaimFocus = true; }
                   ImGui::SetKeyboardFocusHere(0);
               }
               ImGui::PopItemWidth();
@@ -476,6 +507,7 @@ struct ConsoleMega : ImGuiWindowObject {
     {
         switch (data->EventFlag)
         {
+
             case ImGuiInputTextFlags_CallbackAlways:
             {
 
@@ -498,6 +530,15 @@ struct ConsoleMega : ImGuiWindowObject {
                 if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x) {
                     ImGui::SetScrollX(textSize + data->CursorPos * textSize - ImGui::GetContentRegionAvail().x - imFontUnifont->Scale);
                 }
+
+
+                if (ImGui::IsKeyPressed(ImGuiKey_Enter, false)) { //stupid shit to make shift-enter do its thing
+                    ImGuiIO& io = ImGui::GetIO();
+                    if (io.KeyShift && !io.KeyCtrl) {
+                        data->InsertChars(data->CursorPos, "\n"); 
+                    }
+                }
+
 
                 break;
             }
@@ -1266,6 +1307,14 @@ struct ConsoleMega : ImGuiWindowObject {
                 if (prev_history_pos != historyPos) {
                     std::string entry = historyPos ? history[historyPos - 1] : "";
                     entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+
+                    std::string needle = "\\-|newline|-\\"; 
+                    size_t pos = 0;
+                    while ((pos = entry.find(needle, pos)) != std::string::npos) {
+                        entry.replace(pos, needle.length(), "\n"); 
+                        pos += 1; 
+                    }
+
                     autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, entry.c_str());
