@@ -237,7 +237,7 @@ bool SaveFile::ParseAndValidateData(const bool isInitialRead) {
 		ZHL::Log("[SaveFile] Failed to read GameState checksum.\n");
 		return false;
 	}
-	ZHL::Log("[SaveFile] GameState checksum: %u\n", gameStateChecksum);
+	if (isInitialRead) ZHL::Log("[SaveFile] GameState checksum: %u\n", gameStateChecksum);
 
 	for (int i = 1; i <= NUM_SAVE_CHUNKS; i++) {
 		int rawChunkID = 0;

@@ -437,7 +437,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                             LANG.OPT_SAVE_MANAGEMENT_SYNC_MARK,
                             LANG.OPT_SAVE_MANAGEMENT_SYNC_PROMPT,
                             saveManagementSyncResult,
-                            []() { return SaveSyncing::PerformVanillaSaveSynchronization(); });
+                            []() { return SaveSyncing::PerformVanillaSaveSynchronization(false); });
 
                         AddNewTableRow();
                         ImGui::SeparatorText(LANG.OPT_SAVE_MANAGEMENT_IMPORT_EXPORT);

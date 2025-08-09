@@ -219,7 +219,7 @@ bool SyncStatus::SaveToJson() {
 
 	rapidjson::Document doc;
 	doc.SetObject();
-	doc.AddMember(rapidjson::StringRef("Enabled"), _enabled, doc.GetAllocator());
+	doc.AddMember(rapidjson::StringRef("AutoSyncingEnabled"), _autoSyncEnabled, doc.GetAllocator());
 	ArrayToJson(&doc, "Checksums", _checksums);
 
 	rapidjson::StringBuffer buffer;
@@ -268,13 +268,15 @@ bool SyncStatus::LoadFromJson() {
 		file = std::make_unique<KAGE_Filesys_File>();
 	}
 
+	ZHL::Log("[SaveSyncing] Reading SyncStatus from json @ %s\n", jsonPath.c_str());
+
 	if (!file->OpenRead(jsonPath.c_str()) || !file->IsOpen()) {
 		if (steamCloudEnabled || !std::filesystem::exists(jsonPath)) {
-			// File does not exist yet - use defaults.
+			ZHL::Log("[SaveSyncing] SyncStatus json file does not exist yet. Using defaults.\n");
 			_loaded = true;
 			return true;
 		}
-		ZHL::Log("[SaveSyncing] Failed to read %s\n", jsonPath.c_str());
+		ZHL::Log("[SaveSyncing] Failed to open SyncStatus json file.\n");
 		return false;
 	}
 
@@ -285,13 +287,18 @@ bool SyncStatus::LoadFromJson() {
 	file->Read(content.get(), 1, size);
 
 	rapidjson::Document doc;
+	ZHL::Log("[SaveSyncing] Parsing SyncStatus json...\n");
 	doc.Parse(content.get());
-
 	if (doc.IsObject()) {
-		_enabled = doc["Enabled"].GetBool();
-		JsonToArray(doc["Checksums"], _checksums);
+		if (doc.HasMember("AutoSyncingEnabled")) {
+			_autoSyncEnabled = doc["AutoSyncingEnabled"].GetBool();
+		}
+		if (doc.HasMember("Checksums")) {
+			JsonToArray(doc["Checksums"], _checksums);
+		}
+		ZHL::Log("[SaveSyncing] ...success!\n");
 	} else {
-		ZHL::Log("[SaveSyncing] Could not parse json from %s\n", jsonPath.c_str());
+		ZHL::Log("[SaveSyncing] ...failed! Using defaults.\n");
 	}
 	
 	_loaded = true;
@@ -336,6 +343,8 @@ bool SaveFileExists(const std::string path, const bool steamCloud) {
 }
 
 void TryInitRepentogonSaveFile(const int slot) {
+	if (slot < 1 || slot > 3) return;
+
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
 		return;
@@ -381,6 +390,12 @@ void TryInitRepentogonSaveFiles() {
 	}
 }
 
+// Make sure that the REPENTOGON save file is properly initialized.
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	TryInitRepentogonSaveFile(slot);
+	super(slot);
+}
+
 // The first time we perform synchronization, we perform a "full" sync by taking the maximum values for all
 // shared achievements/counters/etc from both save files and merging them together, writing that to both saves.
 //
@@ -397,7 +412,7 @@ void TryInitRepentogonSaveFiles() {
 // some issue causes synchronization to fail while the user is switching between playing on REPENTOGON and vanilla.
 // Possible issues include Nicalis making a change to the Rep+ save format, persistent crashing, or perhaps some
 // niche edge case with the save data contents that we did not account for.
-bool TrySyncSaveSlot(const int slot) {
+bool TrySyncSaveSlot(const int slot, const bool isStartup) {
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
 		return false;
@@ -468,7 +483,11 @@ bool TrySyncSaveSlot(const int slot) {
 	const bool vanillaChanged = !previouslySynced || !syncStatus.ChecksumMatches(vanillaSyncKey, vanillaChecksum);
 	const bool rgonChanged = !previouslySynced || !syncStatus.ChecksumMatches(rgonSyncKey, rgonChecksum);
 
-	const bool fullSync = !previouslySynced || (vanillaChanged && rgonChanged);
+	// As an extra (possibly unnecessary) safety check, if the REPENTOGON save file is found to have been modified during startup, trigger a full sync.
+	// This case could imply the save file was modified externally or some other issue occured that caused the shutdown sync to fail.
+	const bool unexpectedRgonModification = previouslySynced && rgonChanged && isStartup;
+
+	const bool fullSync = !previouslySynced || (vanillaChanged && rgonChanged) || unexpectedRgonModification;
 	const bool syncVanilla = fullSync || (!vanillaChanged && rgonChanged);
 	const bool syncRgon = fullSync || (vanillaChanged && !rgonChanged);
 
@@ -483,6 +502,8 @@ bool TrySyncSaveSlot(const int slot) {
 		ZHL::Log("[SaveSyncing] Only one save has been modified since the last successful sync. Updating sync...\n");
 	} else if (!previouslySynced) {
 		ZHL::Log("[SaveSyncing] No previous synchronization found. Performing a full synchronization...\n");
+	} else if (unexpectedRgonModification) {
+		ZHL::Log("[SaveSyncing] Detected potential external REPENTOGON save file modification. Performing a full synchronization...\n");
 	} else {
 		ZHL::Log("[SaveSyncing] Both saves have been modified and are potentially diverged. Performing a full synchronization...\n");
 	}
@@ -541,7 +562,7 @@ bool TrySyncSaveSlot(const int slot) {
 	return true;
 }
 
-bool PerformVanillaSaveSynchronization() {
+bool PerformVanillaSaveSynchronization(const bool isStartup) {
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
 		return false;
@@ -555,7 +576,7 @@ bool PerformVanillaSaveSynchronization() {
 	bool syncingFailed = false;
 
 	for (int slot = 1; slot <= 3; slot++) {
-		if (!TrySyncSaveSlot(slot)) {
+		if (!TrySyncSaveSlot(slot, isStartup)) {
 			syncingFailed = true;
 		}
 	}
@@ -567,7 +588,9 @@ bool PerformVanillaSaveSynchronization() {
 	return !syncingFailed;
 }
 
-bool PerformAutomaticVanillaSaveSynchronization() {
+static bool startupSyncWasSuccessful = false;
+
+bool PerformAutomaticVanillaSaveSynchronization(const bool isStartup) {
 	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
 		return false;
@@ -578,9 +601,18 @@ bool PerformAutomaticVanillaSaveSynchronization() {
 		return false;
 	}
 
-	if (!PerformVanillaSaveSynchronization()) {
+	if (!isStartup && !startupSyncWasSuccessful) {
+		ZHL::Log("[SaveSyncing] Skipping automatic sync - startup sync was not performed / not successful!\n");
+		return false;
+	}
+
+	if (!PerformVanillaSaveSynchronization(isStartup)) {
 		MessageBox(0, LANG.ERROR_SAVE_SYNC_FAILED, "REPENTOGON", MB_ICONERROR);
 		return false;
+	}
+
+	if (isStartup) {
+		startupSyncWasSuccessful = true;
 	}
 	return true;
 }
@@ -591,14 +623,14 @@ HOOK_GLOBAL(IsaacStartup, (int param1, int param2, int param3) -> void, _X86_) {
 	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		syncStatus.LoadFromJson();
 		TryInitRepentogonSaveFiles();
-		PerformAutomaticVanillaSaveSynchronization();
+		PerformAutomaticVanillaSaveSynchronization(true);
 	}
 }
 
 // Sync on shutdown, after the game is already finished with save-related stuff.
 HOOK_METHOD(Manager, destructor, () -> void) {
 	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		PerformAutomaticVanillaSaveSynchronization();
+		PerformAutomaticVanillaSaveSynchronization(false);
 	}
 	super();
 }

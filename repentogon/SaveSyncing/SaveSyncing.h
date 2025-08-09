@@ -32,8 +32,8 @@ class SyncStatus {
 	}
 
 	bool IsLoaded() { return _loaded; }
-	bool IsEnabled() { return _enabled; }
-	bool* GetEnabledPtr() { return &_enabled; }
+	bool IsEnabled() { return _autoSyncEnabled; }
+	bool* GetEnabledPtr() { return &_autoSyncEnabled; }
 
 	static std::string GetKey(const int slot, const bool isRepentogon);
 	static std::string SyncStatus::GetJsonPath();
@@ -44,7 +44,7 @@ class SyncStatus {
   private:
 	std::map<std::string, uint32_t> _checksums;
 	bool _loaded = false;
-	bool _enabled = true;
+	bool _autoSyncEnabled = true;
 };
 
 extern SyncStatus syncStatus;
@@ -70,7 +70,7 @@ bool ExportTo(GameVersion dstVersion, int slot, SaveSyncMode mode = SAVE_SYNC_TA
 // Runs a synchronization between the REPENTOGON save file and the corresponding vanilla Repentance+ save file.
 // If previously synced, carries over save data changes from whichever file was updated over to the other one.
 // Otherwise, (re)establishes synchronization by merging the achievements/progress from both files onto each other.
-bool PerformVanillaSaveSynchronization();
+bool PerformVanillaSaveSynchronization(const bool isStartup);
 
 // Applies ASM patches that cause the game to read the REPENTOGON PersistentGameData files.
 void ASMPatchesForSaveSyncing();
