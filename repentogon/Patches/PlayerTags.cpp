@@ -1,6 +1,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 #include "SigScan.h"
 #include "XMLData.h"
 
@@ -109,13 +110,10 @@ void ASMPatchPlayerItemNoExpansionPack() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan patchSignature("81f9e9010000");
-	patchSignature.Scan();
-
-	void* patchAddr = patchSignature.GetAddress();
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PlayerItemNoMetronome);
 	printf("[REPENTOGON] Patching Player::TriggerActiveItemUsed for noexpansionpack tag at %p\n", patchAddr);
 
-	SigScan exitSignature("8b45??ff45??8b55??8b88????????8b80????????2bc1c1f8023bd00f82????????8b8f????????81c1500b0000");
+	SigScan exitSignature("8b45??ff45??8b55??8b88????????8b80????????2bc1c1f8023bd00f82????????8b8b????????81c1500b0000");
 	exitSignature.Scan();
 	void* exitAddr = exitSignature.GetAddress();
 
