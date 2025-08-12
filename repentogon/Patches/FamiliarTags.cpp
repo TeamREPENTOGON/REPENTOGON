@@ -77,7 +77,7 @@ bool __stdcall FamiliarCanBeDamagedByProjectilesReimplementation(Entity_Familiar
 	}
 
 	// Re-implementation of Entity_Familiar::CanBeDamagedByProjectiles()
-	return var == 62 || var == 67 || var == 211 || var == 237 || (var == 206 && subt != 702);
+	return var == 62 || var == 67 || var == 100 || var == 211 || var == 237 || (var == 206 && subt != 702);
 }
 
 // Entity_Familiar::CanBeDamagedByProjectiles() is inlined into Entity_Projectile::HandleCollision().
@@ -122,7 +122,7 @@ bool __stdcall FamiliarCanBeDamagedByLaserReimplementation(Entity_Familiar* fam)
 	}
 
 	// Re-implementation of Entity_Familiar::CanBeDamagedByLaser()
-	return var == 62 || var == 67 || var == 211 || var == 100 || (var == 206 && subt == 427);
+	return var == 62 || var == 67 || var == 100 || var == 211 || var == 100 || (var == 206 && subt == 427);
 }
 
 // Entity_Familiar::CanBeDamagedByLaser() is inlined into Entity_Laser::CanDamageEntity().
