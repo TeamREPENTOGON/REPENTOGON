@@ -120,7 +120,7 @@ LUA_FUNCTION(Lua_FamiliarCanBeDamagedByEnemies)
 		// Wisps do get hurt by enemies, except the Vengeful Spirit ones.
 		lua_pushboolean(L, subtype != 702);
 	} else if(variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 237 || variant == 238) {
-		// Milk, Friendly dips, Tinytomas, Minisaacs, Item Wisps and Blood Babies do, in fact, get hurt by enemy contact.
+		// Friendly dips, Tinytomas, Minisaacs, Item Wisps and Blood Babies do, in fact, get hurt by enemy contact.
 		lua_pushboolean(L, true);
 	}
 	else {
