@@ -119,7 +119,7 @@ LUA_FUNCTION(Lua_FamiliarCanBeDamagedByEnemies)
 	if (variant == 206) {
 		// Wisps do get hurt by enemies, except the Vengeful Spirit ones.
 		lua_pushboolean(L, subtype != 702);
-	} else if(variant == 100 || variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 237 || variant == 238) {
+	} else if(variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 237 || variant == 238) {
 		// Milk, Friendly dips, Tinytomas, Minisaacs, Item Wisps and Blood Babies do, in fact, get hurt by enemy contact.
 		lua_pushboolean(L, true);
 	}
@@ -134,8 +134,8 @@ LUA_FUNCTION(Lua_FamiliarCanBeDamagedByProjectiles)
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	const int variant = *fam->GetVariant();
 	// Ugh 2
-	if (variant == 100 || variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 238) {
-		// Milk, Friendly dips, Tinytomas, Minisaacs and Blood Babies do, in fact, get hurt by projectiles.
+	if (variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 238) {
+		// Friendly dips, Tinytomas, Minisaacs and Blood Babies do, in fact, get hurt by projectiles.
 		lua_pushboolean(L, true);
 	}
 	else {
