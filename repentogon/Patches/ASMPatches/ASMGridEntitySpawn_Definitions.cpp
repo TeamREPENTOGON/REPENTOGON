@@ -212,7 +212,7 @@ static inline std::array<GridEntitySpawnPatchInfo, 23> build_patches()
 
 		// idx is being pulled from Entity_NPC._projectileDelay because it gets moved to a register AFTER we patch
 		{"8b0d????????8bbb",
-		"Entity_NPC_Gideon::SpawnLadder", 0, GRID_STAIRS, NO_VARIANT_REG, 1, ASMPatch::Registers::EBX, 0xb9c, ASMPatch::Registers::EAX, 0, 0xa5, NO_COND_JMP},
+		"Entity_NPC_Gideon::SpawnLadder", 0, GRID_STAIRS, NO_VARIANT_REG, 1, ASMPatch::Registers::EBX, 0xba4, ASMPatch::Registers::EAX, 0, 0xa5, NO_COND_JMP},
 
 		{"8b0d????????8945??8b81????????8945",
 		"Entity_NPC_Raglich::UpdateAI_Arm", 0, GRID_PIT, NO_VARIANT_REG, 0, ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0, 0xa5, NO_COND_JMP},
