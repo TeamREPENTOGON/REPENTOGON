@@ -69,7 +69,7 @@ LUA_FUNCTION(Lua_PEGetActionProperty) {
 		lua_setfield(L, -2, "flags2");
 		break;
 	case ProceduralEffect::ACTION_FART:
-		lua_pushnumber(L, pi->GetActionData()->fart.fartScale);
+		lua_pushnumber(L, pi->GetActionData()->fart.fartScale * 6);
 		lua_setfield(L, -2, "scale");
 		lua_pushnumber(L, pi->GetActionData()->fart.radius * 6.f / 85.f);
 		lua_setfield(L, -2, "radius");
@@ -78,11 +78,10 @@ LUA_FUNCTION(Lua_PEGetActionProperty) {
 	return 1;
 }
 
-
 LUA_FUNCTION(Lua_PEGetTriggerChance) {
 	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
-	float chance = pi->triggerChance;
-	//manually fix the chance from 0 ~ 1 to the actual rate.
+	float chance = pi->triggerChanceScale;
+	/* Note: the chance is hard coded in the game program. */
 	switch (pi->effectConditionType)
 	{
 	case ProceduralEffect::CONDITION_TEAR_FIRE:
@@ -100,6 +99,18 @@ LUA_FUNCTION(Lua_PEGetTriggerChance) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PEGetTriggerChanceScale) {
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	lua_pushnumber(L, pi->triggerChanceScale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PEGetScore) {
+	ProceduralEffect* pi = *lua::GetRawUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	lua_pushnumber(L, pi->score);
+	return 1;
+}
+
 static void RegisterProceduralItem(lua_State* L) {
 	luaL_Reg functions[] = {
 		{"GetConditionType", Lua_PEGetConditionType},
@@ -107,6 +118,8 @@ static void RegisterProceduralItem(lua_State* L) {
 		{"GetConditionProperty", Lua_PEGetConditionProperty},
 		{"GetActionProperty", Lua_PEGetActionProperty},
 		{"GetTriggerChance", Lua_PEGetTriggerChance},
+		{"GetTriggerChanceScale", Lua_PEGetTriggerChanceScale},
+		{"GetScore", Lua_PEGetScore},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::ProceduralEffectMT, lua::metatables::ProceduralEffectMT, functions);

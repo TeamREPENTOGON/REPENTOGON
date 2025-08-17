@@ -83,5 +83,6 @@ struct ProceduralEffect depends (
 }}
     int effectConditionType : 0x0;
     int effectActionType : 0x4;
-    float triggerChance : 0x30;
-} : 0x60;
+    float triggerChanceScale : 0x30;
+    float score : 0x60;
+} : 0x68;

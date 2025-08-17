@@ -84,8 +84,19 @@ ___
 Returns the timing when the effect was triggered.
 
 ___
+### GetScore () {: aria-label='Functions' }
+#### float GetScore ( ) {: .copyable aria-label='Functions' }
+
+The score is used to generate the `ProceduralItem`. Each `ProceduralItem` has a score limit when generating its effects. If the limit is reached, no more effect will be added.
+___
 ### GetTriggerChance () {: aria-label='Functions' }
 #### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
 
-Values range from `0` to `1`.
+This is the actual change that the game actually uses. In most cases, this value ranges from `0` to `1`. This is the value that the result of `GetTriggerChanceScale` has been applied.
+
+___
+### GetTriggerChanceScale () {: aria-label='Functions' }
+#### float GetTriggerChanceScale ( ) {: .copyable aria-label='Functions' }
+
+In most cases, this value should be `1`.
 ___

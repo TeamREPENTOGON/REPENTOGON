@@ -66,6 +66,10 @@ Additions:
 * PlayerHUD:
 	- GetIndex
 	- GetLayout
+* ProceduralEffect
+	- Fix fartScale.
+	- GetScore
+	- GetTriggerChanceScale
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
 * RoomConfig:
