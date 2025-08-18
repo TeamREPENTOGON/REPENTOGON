@@ -46,6 +46,9 @@ Additions:
 	- GetRandomWisp
 	- GetActiveWeaponEntity
 	- GetActiveWeaponNumFired
+* EntityTear:
+	- GetHitList
+	- ClearHitList
 * EntityConfigEntity:
 	- GetDevolvedEntity
 * Level:
