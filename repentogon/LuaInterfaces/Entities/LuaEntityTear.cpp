@@ -71,6 +71,28 @@ LUA_FUNCTION(Lua_SetPrismTouched) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetHitList) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	lua_newtable(L);
+	int idx = 1;
+	for (int index : tear->_hitList) {
+		lua_pushnumber(L, idx);
+		lua_pushinteger(L, index);
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ClearHitList) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	tear->_hitList.clear();
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -87,6 +109,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMultidimensionalTouched", Lua_SetMultidimensionalTouched },
 		{ "IsPrismTouched", Lua_IsPrismTouched },
 		{ "SetPrismTouched", Lua_SetPrismTouched },
+		{ "GetHitList", Lua_GetHitList },
+		{ "ClearHitList", Lua_ClearHitList },
 		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
 		{ NULL, NULL }
 	};

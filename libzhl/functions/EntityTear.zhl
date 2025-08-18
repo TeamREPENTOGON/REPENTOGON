@@ -68,6 +68,7 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	BitSet128 _tearFlags : 0x428;
 	int _waitFrames : 0x438;
 	Vector _continueVelocity : 0x43c;
+	std_vector_uint _hitList : 0x444;
 	int _tearIdx : 0x450;
 	float _baseDamage : 0x454;
 	float _rotation : 0x458;
