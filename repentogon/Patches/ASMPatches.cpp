@@ -6,6 +6,7 @@
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
+#include "CustomActiveGFX.h"
 #include "FamiliarTags.h"
 #include "PlayerTags.h"
 #include "GetCoinValue.h"
@@ -187,6 +188,7 @@ void PerformASMPatches() {
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
+	ASMPatchesForCustomActiveGFX();
 	ASMPatches::__ItemPoolManager();
 	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
