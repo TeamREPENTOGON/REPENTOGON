@@ -399,6 +399,7 @@ public:
 	// Holds info for XML-defined stat changes.
 	XMLItemStats statups;
 	XMLItemStats effectstatups;  // For corresponding temporaryeffects
+	unordered_map<int, string> customActiveGFX;
 
 	bool HasAnyCustomCache(const int id) {
 		return this->customcache.find(id) != this->customcache.end();
@@ -425,6 +426,14 @@ public:
 		if (HasCustomCache(id, tag)) {
 			this->customcache[id].erase(stringlower(tag.c_str()));
 		}
+	}
+
+	string GetCustomActiveGFX(const int id) {
+		auto it = this->customActiveGFX.find(id);
+		if (it != this->customActiveGFX.end()) {
+			return it->second;
+		}
+		return "";
 	}
 };
 

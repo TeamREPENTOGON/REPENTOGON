@@ -1189,6 +1189,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					} else if (id == COLLECTIBLE_DEEP_POCKETS) {
 						XMLStuff.ItemData->customcache[id].insert("maxcoins");
 					}
+
+					if (strcmp(auxnodename, "active") == 0 && item.find("customactivegfx") != item.end()) {
+						XMLStuff.ItemData->customActiveGFX[id] = item["gfxroot"] + "collectibles/" + item["customactivegfx"];
+					}
+
 					ParseXmlItemStats(id, &item, XMLStuff.ItemData, false);
 
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
