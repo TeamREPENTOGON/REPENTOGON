@@ -17,25 +17,48 @@
 // Equivalent to the lastmodid used in XMLData.cpp, except empty for basegame.
 std::string lastModIdButCooler = "";
 
-void UpdateLastModId(ModEntry* modentry) {
-	lastModIdButCooler = "";
-	if (modentry != nullptr) {
-		if (std::string(modentry->GetId()).length() > 0) {
-			lastModIdButCooler = modentry->GetId();
+//this is now basically just a copypaste of void ProcessModEntry(char* xmlpath,ModEntry* mod) from XMLData.cpp with minor changes
+void UpdateLastModId( ModEntry* mod, char* xmlpath) {
+	bool iscontent = false;
+	if (mod != NULL) { //it is null when its loading vanilla stuff
+		lastModIdButCooler = mod->GetId();
+	}
+	else {
+		lastModIdButCooler = "BaseGame";
+	}
+	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
+		iscontent = true;
+	}
+	else {
+		iscontent = false;
+	}
+	if ((string(lastModIdButCooler).length() == 0) || ((lastModIdButCooler == "BaseGame") && iscontent)) {
+		string path = string(xmlpath);
+		int first = path.find("/mods/") + 6;
+		int last = path.find("/content");
+		if (!iscontent) {
+			last = path.find("/resources");
 		}
-		else if (modentry->GetDir().length() > 0) {
-			lastModIdButCooler = modentry->GetDir();
+		else if (last <= 0) {
+			last = path.find("/content-dlc3");
 		}
+		path = path.substr(first, last - first); //when the id is null(which it can fucking be) just use the folder name as ID...
+		lastModIdButCooler = path;
+	}
+	//printf("path: %s (mod:%s iscontent:%d) \n", xmlpath,lastmodid,iscontent);
+	//logViewer.AddLog("[REPENTOGON]", "Mod ID: %s \n", lastmodid);
+	if (lastModIdButCooler == "BaseGame") {
+		lastModIdButCooler = "";
 	}
 }
 
 HOOK_METHOD(ItemConfig, Load, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry);
+	UpdateLastModId(modentry, xmlpath);
 	super(xmlpath, modentry);
 }
 
 HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry);
+	UpdateLastModId(modentry, xmlpath);
 	super(xmlpath, modentry);
 }
 
@@ -161,7 +184,7 @@ void ASMPatchTieModdedCostumesToModdedNullItems() {
 * This allows the costume to be permanantly applied to the player, including during the mineshaft sequence, like the hair of vanilla characters.
 */
 HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry);
+	UpdateLastModId(modentry, xmlpath);
 
 	super(xmlpath, modentry);
 
