@@ -6,7 +6,6 @@
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
-#include "CustomActiveGFX.h"
 #include "FamiliarTags.h"
 #include "PlayerTags.h"
 #include "GetCoinValue.h"

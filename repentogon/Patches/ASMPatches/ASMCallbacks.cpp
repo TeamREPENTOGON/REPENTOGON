@@ -1539,6 +1539,8 @@ static bool _hideActiveItemChargeBar = false;
 
 static const ColorMod activeItemOutlineColor(0, 0, 0, 1, 1, 1, 1);
 
+std::unordered_map<short, Vector[4]> activeRenderCropOffsetCache;
+
 HOOK_METHOD(PlayerHUDActiveItem, RenderGfx, (SourceQuad* source, DestinationQuad* dest, const ColorMod& color) -> void) {
 	if (_hideActiveItemImage) return;
 	if (_hideActiveItemOutline && color == activeItemOutlineColor) {
@@ -1585,6 +1587,8 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 		chargeBarPos.y += 3;
 	}
 
+	Vector cropOffset(.0f, .0f);
+
 	const int activeItemID = this->GetPlayer()->GetActiveItem(activeSlot);
 
 	const int precallbackid = 1119;
@@ -1617,6 +1621,8 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 							_hideActiveItemOutline = (bool)lua_toboolean(L, -1);
 						} else if (key == "HideChargeBar" && lua_isboolean(L, -1)) {
 							_hideActiveItemChargeBar = (bool)lua_toboolean(L, -1);
+						} else if (key == "CropOffset" && lua_isuserdata(L, -1)) {
+							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 						}
 					}
 					lua_pop(L, 1);
@@ -1625,6 +1631,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 		}
 	}
 
+	activeRenderCropOffsetCache[_playerHudIndex][activeSlot] = cropOffset;
 	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	_hideActiveItemImage = false;
@@ -1668,6 +1675,85 @@ void ASMPatchHideChargeBar() {
 		.AddBytes("\x85\xD2")  // test edx, edx
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int slot) {
+	printf("printing it %d %s \n", slot, gfxPath);
+
+	const int collectibleID = hud->_activeItem[slot].id;
+
+	static std::string staticCustomGfxPath;
+
+	std::string customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
+
+	if (!customGfxPath.empty()) {
+		staticCustomGfxPath = customGfxPath;
+
+		return staticCustomGfxPath.c_str();
+	}
+
+	return gfxPath;
+}
+
+void PatchGFXPath() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SetActiveItemGFXPath);
+
+	printf("[REPENTOGON] Patching HUD::PlayerHUD::Update for active item gfx path at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, -0x1024) //push activeSlot idx
+		.Push(ASMPatch::Registers::EBP, -0x1028) //push PlayerHUD
+		.Push(ASMPatch::Registers::EAX) //push original filepath to Active item sprite
+		.AddInternalCall(ReplaceGFXPath)
+		//.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot) {
+	printf("getplayerhud %d \n", activeSlot);
+
+
+	const Vector& cropOffset = activeRenderCropOffsetCache[0][activeSlot];
+
+	float x = cropOffset.x;
+	float y = cropOffset.y;
+
+	__asm {
+		movd xmm1, x
+		movd xmm2, y
+	}
+}
+
+void ASMPatchActiveItemRender() {
+	SigScan scanner("518d45??508d45??508d8d????????e8????????51");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching PlayerHUD:RenderActiveItem for capturing something at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::XMM_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBX, 0x8) //push activeSlot
+		.AddInternalCall(GetPlayerHUDActiveItemCropOffset)
+		.AddBytes("\xF3\x0F\x11\x55\xD4") // movss [ebp-0x2c], xmm2
+		.AddBytes("\xF3\x0F\x11\x4d\xD0") // movvs [ebp-0x30], xmm1
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+
+void ASMPatchesForCustomActiveGFX() {
+	PatchGFXPath();
+	ASMPatchActiveItemRender();
 }
 
 // MC_POST_BACKWARDS_ROOM_RESTORE (1308)
