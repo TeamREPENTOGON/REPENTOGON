@@ -1714,15 +1714,21 @@ void PatchGFXPath() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot) {
-	printf("getplayerhud %d \n", activeSlot);
+void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot, PlayerHUD* playerHUD, float origCropX, float origCropY) {
+
+	float x = origCropX;
+	float y = origCropY;
 
 
-	const Vector& cropOffset = activeRenderCropOffsetCache[0][activeSlot];
+	//currently modify crop offset only for modded items
+	if (playerHUD->_activeItem[activeSlot].id >= CollectibleType::NUM_COLLECTIBLES) {
+		const short playerIDX = playerHUD->_playerHudIndex;
+		const Vector& cropOffset = activeRenderCropOffsetCache[playerIDX][activeSlot];
 
-	float x = cropOffset.x;
-	float y = cropOffset.y;
-
+		x = cropOffset.x;
+		y = cropOffset.y;
+	}
+	
 	__asm {
 		movd xmm1, x
 		movd xmm2, y
@@ -1739,6 +1745,9 @@ void ASMPatchActiveItemRender() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::XMM_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, -0x2c)
+		.Push(ASMPatch::Registers::EBP, -0x30)
+		.Push(ASMPatch::Registers::EBP, -0x38) //push PlayerHUD
 		.Push(ASMPatch::Registers::EBX, 0x8) //push activeSlot
 		.AddInternalCall(GetPlayerHUDActiveItemCropOffset)
 		.AddBytes("\xF3\x0F\x11\x55\xD4") // movss [ebp-0x2c], xmm2
