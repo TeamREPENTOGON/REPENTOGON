@@ -1190,8 +1190,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						XMLStuff.ItemData->customcache[id].insert("maxcoins");
 					}
 
-					if (strcmp(auxnodename, "active") == 0 && item.find("customactivegfx") != item.end()) {
-						XMLStuff.ItemData->customActiveGFX[id] = item["gfxroot"] + "collectibles/" + item["customactivegfx"];
+					if (strcmp(auxnodename, "active") == 0 && item.find("activegfx") != item.end()) {
+						XMLStuff.ItemData->customActiveGFX[id] = item["gfxroot"] + "collectibles/" + item["activegfx"];
 					}
 
 					ParseXmlItemStats(id, &item, XMLStuff.ItemData, false);
