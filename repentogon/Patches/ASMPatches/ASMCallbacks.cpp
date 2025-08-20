@@ -1678,7 +1678,6 @@ void ASMPatchHideChargeBar() {
 }
 
 const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int slot) {
-	printf("printing it %d %s \n", slot, gfxPath);
 
 	const int collectibleID = hud->_activeItem[slot].id;
 
@@ -1719,7 +1718,6 @@ void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot, PlayerHUD* playe
 	float x = origCropX;
 	float y = origCropY;
 
-
 	//currently modify crop offset only for modded items
 	if (playerHUD->_activeItem[activeSlot].id >= CollectibleType::NUM_COLLECTIBLES) {
 		const short playerIDX = playerHUD->_playerHudIndex;
@@ -1736,9 +1734,8 @@ void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot, PlayerHUD* playe
 }
 
 void ASMPatchActiveItemRender() {
-	SigScan scanner("518d45??508d45??508d8d????????e8????????51");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SetActiveItemCropOffset);
 
 	printf("[REPENTOGON] Patching PlayerHUD:RenderActiveItem for capturing something at %p\n", addr);
 
