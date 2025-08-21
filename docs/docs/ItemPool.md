@@ -61,27 +61,6 @@ The `PoolItems` parameter can be either a single Lua PoolItem object or an array
     Temporary Collectibles are automatically Added and Removed on Run Continue/Exit; as well as when returning to a previous state that had/didn't have the Collectible when using Glowing Hourglass.
 
 ___
-### RemoveTemporaryCollectible () {: aria-label='Functions' }
-#### void RemoveTemporaryCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, table | table[] PoolItems ) {: .copyable aria-label='Functions' }
-
-Removes the provided Temporary Collectibles from the specified Pool, assuming they exist.
-
-The PoolItem object **MUST** be equal (in terms of field values) to the one that was added in [AddTemporaryCollectible](ItemPool.md#addtemporarycollectible)
-
-The `PoolItems` parameter can be either a single Lua PoolItem object or an array of them.
-
-???- info "Lua PoolItem format"
-    |Field|Type|Comment|
-    |:--|:--|:--|
-    | itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | `Default = COLLECTIBLE_NULL` |
-    | name | string | `Optional`<br /> Alternative to `itemID` |
-    | weight | float | `Default = 1.0` |
-    | decreaseBy | float | `Default = 0.5` |
-    | removeOn | float | `Default = 0.1` |
-
-    All field names are case insensitive
-
-___
 ### CanSpawnCollectible () {: aria-label='Functions' }
 #### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean ignoreLocked ) {: .copyable aria-label='Functions' }
 
@@ -258,6 +237,27 @@ The table contains the following fields:
     - Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
     
     - Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
+
+___
+### RemoveTemporaryCollectible () {: aria-label='Functions' }
+#### void RemoveTemporaryCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, table | table[] PoolItems ) {: .copyable aria-label='Functions' }
+
+Removes the provided Temporary Collectibles from the specified Pool, assuming they exist.
+
+The PoolItem object **MUST** be equal (in terms of field values) to the one that was added in [AddTemporaryCollectible](ItemPool.md#addtemporarycollectible)
+
+The `PoolItems` parameter can be either a single Lua PoolItem object or an array of them.
+
+???- info "Lua PoolItem format"
+    |Field|Type|Comment|
+    |:--|:--|:--|
+    | itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | `Default = COLLECTIBLE_NULL` |
+    | name | string | `Optional`<br /> Alternative to `itemID` |
+    | weight | float | `Default = 1.0` |
+    | decreaseBy | float | `Default = 0.5` |
+    | removeOn | float | `Default = 0.1` |
+
+    All field names are case insensitive
 
 ___
 ### ResetCollectible () {: aria-label='Functions' }

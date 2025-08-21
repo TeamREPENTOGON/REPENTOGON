@@ -78,6 +78,10 @@ ___
 #### [Color](Color.md) GetFloorColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetFXLayers () {: aria-label='Functions' }
+#### [FXLayers](FXLayers.md) GetFXLayers ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetFXParams () {: aria-label='Functions' }
 #### [FXParams](FXParams.md) GetFXParams ( ) {: .copyable aria-label='Functions' }
 
@@ -169,6 +173,10 @@ ___
 ### RemoveGridEntityImmediate () {: aria-label='Functions' }
 #### void RemoveGridEntityImmediate ( int GridIndex, int PathTrail, boolean KeepDecoration ) {: .copyable aria-label='Functions' }
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
+
+___
+### TriggerOutput () {: aria-label='Functions' }
+#### void TriggerOutput ( [RoomEventOutput](enums/RoomEventOutput.md) GroupIdx) {: .copyable aria-label='Functions' }
 
 ___
 ### TriggerRestock () {: aria-label='Functions' }
