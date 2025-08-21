@@ -87,6 +87,11 @@ ___
 #### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
+### AddCandyHeartBonus () {: aria-label='Functions' }
+#### void AddCandyHeartBonus ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag = 0, int Amount = 1 ) {: .copyable aria-label='Functions' }
+Adds a random stat bonus as if the player had collected a heart with Candy Heart. Can specify a CacheFlag to force the bonus onto a specific stat. Stats are only applied while the player has Candy Heart.
+
+___
 ### AddCustomCacheTag () {: aria-label='Functions' }
 #### void AddCustomCacheTag ( string OR \{string, string, ...\}, boolean EvaluateItems = false ) {: .copyable aria-label='Functions' }
 Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
@@ -139,6 +144,11 @@ Adds a smelted trinket directly to the player's inventory.
 Returns ``true`` if the trinket was successfully added, otherwise ``false``.
 
 ___
+### AddSoulLocketBonus () {: aria-label='Functions' }
+#### void AddSoulLocketBonus ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag = 0, int Amount = 1 ) {: .copyable aria-label='Functions' }
+Adds a random stat bonus as if the player had collected a heart with Soul Locket. Can specify a CacheFlag to force the bonus onto a specific stat. Stats are only applied while the player has Soul Locket.
+
+___
 ### AddUrnSouls () {: aria-label='Functions' }
 #### void AddUrnSouls ( int Count = 0 ) {: .copyable aria-label='Functions' }  
 
@@ -186,6 +196,11 @@ ___
 ___
 ### ClearQueueItem () {: aria-label='Functions' }
 #### void ClearQueueItem ( ) {: .copyable aria-label='Functions' }
+
+___
+### CreateAfterimage () {: aria-label='Functions' }
+#### void CreateAfterimage ( int Duration, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+Creates an afterimage of the player that fades over the course of the given duration, similar to those created by items such as A Pony and Mars.
 
 ___
 ### DropCollectible () {: aria-label='Functions' }
@@ -268,6 +283,13 @@ ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
 #### int GetCambionConceptionState ( ) {: .copyable aria-label='Functions' }
 Returns how many times the player has taken damage with the Cambion Conception item.
+
+___
+### GetCandyHeartBonus () {: aria-label='Functions' }
+#### table GetCandyHeartBonus ( ) {: .copyable aria-label='Functions' }
+Returns a table of fields corresponding to each stat that Candy Heart can increase and the active amount of bonuses tied to each stat.
+
+The fields are: `FireDelay`, `Damage`, `TearRange`, `ShotSpeed`, `Luck`, `MoveSpeed`.
 
 ___
 ### GetCambionPregnancyLevel () {: aria-label='Functions' }
@@ -621,6 +643,10 @@ ___
 Returns the frames left until the damage bonus from Red Stew expires.
 
 ___
+### GetRevelationCharge () {: aria-label='Functions' }
+#### float GetRevelationCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetRockBottomMoveSpeed () {: aria-label='Functions' }
 #### float GetRockBottomMoveSpeed ( ) {: .copyable aria-label='Functions' }
 
@@ -655,8 +681,20 @@ Experimental Treatment adds `-1`, `0` or `1` depending on the shot speed rolled.
 
 ___
 ### GetSmeltedTrinkets () {: aria-label='Functions' }
-#### table GetSmeltedTrinkets ( ) {: .copyable aria-label='Functions' }
+#### table GetSmeltedTrinkets ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)[] TrinketList = nil ) {: .copyable aria-label='Functions' }
 Returns a table of smelted trinkets and their corresponding amounts. The returned table contains the following fields:
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| trinketAmount | int | |
+| goldenTrinketAmount | int | |
+
+The optional TrinketList param can be used as a filter to only return the provided TrinketTypes for better performance.
+
+___
+### GetSmeltedTrinketDesc () {: aria-label='Functions' }
+#### table GetSmeltedTrinketDesc ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) ) {: .copyable aria-label='Functions' }
+Returns a table of the provided smelted trinket and their corresponding amounts. The returned table contains the following fields:
 
 |Field|Type|Comment|
 |:--|:--|:--|
@@ -687,6 +725,38 @@ ___
 | IsBlocked | boolean | |
 
 ___
+### GetSoulLocketBonus () {: aria-label='Functions' }
+#### table GetSoulLocketBonus ( ) {: .copyable aria-label='Functions' }
+Returns a table of fields corresponding to each stat that Soul Locket can increase and the active amount of bonuses tied to each stat.
+
+The fields are: `FireDelay`, `Damage`, `TearRange`, `ShotSpeed`, `Luck`, `MoveSpeed`.
+
+___
+### GetStatMultiplier () {: aria-label='Functions' }
+#### float GetStatMultiplier ( ) {: .copyable aria-label='Functions' }
+Returns the multiplier added to stats gained from any items.
+
+???- info "Multipliers"
+    - **Tainted Bethany**: x0.75
+    - **Cracked Crown**: x1.2
+
+___
+### GetSuplexAimCountdown () {: aria-label='Functions' }
+#### int GetSuplexAimCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSuplexLandPosition () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetSuplexLandPosition ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSuplexState () {: aria-label='Functions' }
+#### int GetSuplexState ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSuplexTargetPosition () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetSuplexTargetPosition ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetTearDisplacement () {: aria-label='Functions' }
 #### int GetTearDisplacement ( ) {: .copyable aria-label='Functions' }
 Returns the player's TearDisplacement value, used to check what eye the player is shooting from.
@@ -703,6 +773,11 @@ Used for Experimental Treatment and for stat boosts from Void.
 Adds `2.5 * modifier` to the player's TearRange.
 
 Experimental Treatment adds `-1`, `0` or `1` depending on the range rolled. Void may randomly add `1`.
+
+___
+### GetTearsCap () {: aria-label='Functions' }
+#### int GetTearsCap ( ) {: .copyable aria-label='Functions' }
+Returns the soft tears cap. Default is `5.0`. Not affected by firedelay modifiers.
 
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
@@ -1141,6 +1216,10 @@ ___
 Sets the duration of the damage bonus given by the Red Stew collectible to the specified amount of frames. Setting the duration above 0 will activate the effect if it wasn't active already.
 
 ___
+### SetRevelationCharge () {: aria-label='Functions' }
+#### void SetRevelationCharge ( float Charge ) {: .copyable aria-label='Functions' }
+
+___
 ### SetRockBottomMoveSpeed () {: aria-label='Functions' }
 #### void SetRockBottomMoveSpeed ( float MoveSpeed ) {: .copyable aria-label='Functions' }
 
@@ -1181,6 +1260,22 @@ Used for Experimental Treatment and for stat boosts from Void.
 Adds `0.2 * modifier` to the player's MoveSpeed.
 
 Experimental Treatment adds `-1`, `0` or `1` depending on the speed rolled. Void may randomly add `1`.
+
+___
+### SetSuplexAimCountdown () {: aria-label='Functions' }
+#### void SetSuplexAimCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetSuplexLandPosition () {: aria-label='Functions' }
+#### void SetSuplexLandPosition ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+
+___
+### SetSuplexState () {: aria-label='Functions' }
+#### void SetSuplexState ( int State ) {: .copyable aria-label='Functions' }
+
+___
+### SetSuplexTargetPosition () {: aria-label='Functions' }
+#### void SetSuplexTargetPosition ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetTearPoisonDamage () {: aria-label='Functions' }

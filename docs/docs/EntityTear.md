@@ -25,6 +25,12 @@ ___
 Returns the red aura sprite used by the Dead Eye collectible.
 
 ___
+### GetHitList () {: aria-label='Functions' }
+#### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
+
+
+___
 ### GetTearEffectSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetTearEffectSprite ( ) {: .copyable aria-label='Functions' }
 Returns the tear effect sprite used by tear variants like Fire Mind and Mysterious Liquid.

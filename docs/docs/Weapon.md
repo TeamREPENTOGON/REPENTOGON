@@ -32,6 +32,13 @@ ___
 #### int GetFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetMainEntity () {: aria-label='Functions' }
+#### int GetMainEntity ( ) {: .copyable aria-label='Functions' }
+Returns active entity used by weapon (Brimstone - EntityLaser, Mom's Knife -  EntityKnife and etc.).
+
+Returns `nil` if it cannot be found.
+
+___
 ### GetMaxFireDelay () {: aria-label='Functions' }
 #### int GetMaxFireDelay ( ) {: .copyable aria-label='Functions' }
 

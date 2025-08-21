@@ -185,6 +185,7 @@ nav:
     - ProjectileMode: enums/ProjectileMode.md
     - PurityState: enums/PurityState.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
+    - RoomEventOutput: enums/RoomEventOutput.md
     - RoomSubType: enums/RoomSubType.md
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
@@ -217,6 +218,7 @@ nav:
   - ColorParams: ColorParams.md
   - Console: Console.md
   - CostumeSpriteDesc: CostumeSpriteDesc.md
+  - CustomCacheTag: CustomCacheTag.md
   - DailyChallenge: DailyChallenge.md
   - Debug: Debug.md
   - Entity:
@@ -238,7 +240,9 @@ nav:
     - EntityConfigBaby: EntityConfigBaby.md
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
+  - EvaluateStatStage: EvaluateStatStage.md
   - Font: Font.md
+  - FXLayers: FXLayers.md
   - FXParams: FXParams.md
   - Game: Game.md
   - GenericPrompt: GenericPrompt.md

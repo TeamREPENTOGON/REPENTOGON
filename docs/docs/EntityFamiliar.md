@@ -28,6 +28,18 @@ ___
 #### boolean CanCharm ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetActiveWeaponEntity () {: aria-label='Functions' }
+#### [Entity](Entity.md) GetActiveWeaponEntity ( ) {: .copyable aria-label='Functions' }
+Returns the Entity associated with the familiar's active [Weapon](Weapon.md).
+
+Returns `nil` if it cannot be found.
+
+___
+### GetActiveWeaponNumFired () {: aria-label='Functions' }
+#### int GetActiveWeaponNumFired ( ) {: .copyable aria-label='Functions' }
+Returns the amount of times the familiar's active [Weapon](Weapon.md) has been fired.
+
+___
 ### GetDirtColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 
@@ -60,6 +72,10 @@ Returns the "multiplier" for the familiar, from effects such as **BFFS!** or **H
 ___
 ### GetPathfinder () {: aria-label='Functions' }
 #### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathfinder ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRandomWisp () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetWeapon () {: aria-label='Functions' }
@@ -108,10 +124,5 @@ Legacy version returns modified TargetPos, `nil` if unsuccessful.
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
-
-___
-### GetRandomWisp () {: aria-label='Functions' }
-[ ](#){: .static .tooltip .badge }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
 
 ___

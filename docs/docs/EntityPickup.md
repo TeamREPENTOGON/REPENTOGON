@@ -29,6 +29,11 @@ ___
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetFlipCollectible () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetFlipCollectible ( ) {: .copyable aria-label='Functions' }
+Returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) if Flip save state exists, `nil` otherwise.
+
+___
 ### GetLootList () {: aria-label='Functions' }
 #### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
@@ -70,6 +75,16 @@ ___
 ___
 ### GetVarData () {: aria-label='Functions' }
 #### int GetVarData ( ) {: .copyable aria-label='Functions' }
+
+___
+### HasFlipData () {: aria-label='Functions' }
+#### boolean HasFlipData ( ) {: .copyable aria-label='Functions' }
+Returns `true` if pickup is collectible and has Flip save state.
+
+___
+### InitFlipState () {: aria-label='Functions' }
+#### void InitFlipState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) = CollectibleType.COLLECTIBLE_NULL, boolean SetupCollectibleGraphics = true ) {: .copyable aria-label='Functions' }
+Initiates the flip state for the pickup with the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html).
 
 ___
 ### IsBlind () {: aria-label='Functions' }

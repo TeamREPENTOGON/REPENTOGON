@@ -10,6 +10,7 @@ tags:
 
 ### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
 
 ___
 ### GetIsSpinAttack () {: aria-label='Functions' }

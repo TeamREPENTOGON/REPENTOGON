@@ -172,6 +172,8 @@ Repentogon itself adds some tags that can be used to apply certain features to i
 | maxkeys | Triggers re-evaluation of the max keys for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max keys, the callback only runs for player 1. |
 | maxbombs | Triggers re-evaluation of the max bombs for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max bombs, the callback only runs for player 1. |
 | healthtype | Triggers re-evaluation of the player's [HealthType](../enums/HealthType.md). |
+| tearscap | Triggers re-evaluation of the the player's maximum tears-per-second before flat modifiers and multipliers. Triggers a CACHE_FIREDELAY eval when changed. |
+| statmultiplier | Triggers re-evaluation of the the player's stats gained from items (the same one used for Cracked Crown and Tainted Bethany). Triggers standard cache evals for the relevant stats when changed. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/items.html). 
