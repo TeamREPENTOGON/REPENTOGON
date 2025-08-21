@@ -105,6 +105,10 @@ ___
 #### boolean IsAltPath ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsBeastPath () {: aria-label='Functions' }
+#### boolean IsBeastPath ( ) {: .copyable aria-label='Functions' }
+
+___
 ### IsBigRangeEnabled () {: aria-label='Functions' }
 #### boolean IsBigRangeEnabled ( ) {: .copyable aria-label='Functions' }
 

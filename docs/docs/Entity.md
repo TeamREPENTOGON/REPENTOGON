@@ -37,6 +37,11 @@ ___
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### ClearHitList () {: aria-label='Functions' }
+#### void ClearHitList ( ) {: .copyable aria-label='Functions' }
+Clears the tear's hit list, allowing it to hit previously hit enemies again.
+
+___
 ### ComputeStatusEffectDuration () {: aria-label='Functions' }
 #### int ComputeStatusEffectDuration ( int InitialLength, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
 
@@ -112,6 +117,10 @@ ___
 #### [Shape](renderer/Shape.md) GetDebugShape ( boolean Unknown ) {: .copyable aria-label='Functions' }
 
 ___
+### CanDevolve () {: aria-label='Functions' }
+#### boolean CanDevolve ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetEntityConfigEntity () {: aria-label='Functions' }
 #### [EntityConfigEntity](EntityConfigEntity.md) GetEntityConfigEntity ( ) {: .copyable aria-label='Functions' }
 Returns the corresponding [EntityConfig](EntityConfig.md) entry for this entity.
@@ -131,6 +140,7 @@ ___
 ___
 ### GetHitListIndex () {: aria-label='Functions' }
 #### int GetHitListIndex ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
 
 ___
 ### GetIceCountdown () {: aria-label='Functions' }
