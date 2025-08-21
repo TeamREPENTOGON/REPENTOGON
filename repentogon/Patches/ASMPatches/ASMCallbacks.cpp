@@ -1591,6 +1591,25 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 
 	const int activeItemID = this->GetPlayer()->GetActiveItem(activeSlot);
 
+	if (activeItemID < CollectibleType::NUM_COLLECTIBLES) {
+		switch ((CollectibleType)activeItemID) {
+		case COLLECTIBLE_MOVING_BOX:
+			cropOffset.x += !_player->_movingBoxContents.empty() ? 32.0f : .0f;
+			break;
+		case COLLECTIBLE_EVERYTHING_JAR:
+			/*
+			const int charges = std::max(_player->GetBatteryCharge(activeSlot), 12);
+			cropOffset.x += (float)(charges + 1) * 32.0f;
+			*/
+		case COLLECTIBLE_FLIP:
+			cropOffset.x += _player->GetPlayerType() == 38 ? 32.0f : .0f; //is dead Tainted Lazarus
+			break;
+		default:
+			break;
+		}
+
+	}
+
 	const int precallbackid = 1119;
 	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
