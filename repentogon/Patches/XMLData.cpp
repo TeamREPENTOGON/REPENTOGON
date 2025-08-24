@@ -1204,7 +1204,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.ItemData->nodes[id] = item;
 					XMLStuff.ItemData->byorder[XMLStuff.ItemData->nodes.size()] = id;
 					XMLStuff.ModData->items[lastmodid] += 1;
-					if (toint(item["achievement"]) > 637) {
+					if (toint(item["achievement"]) > static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1) {
 						XMLStuff.ItemData->customachievitems.push_back(item);
 					}
 				}
