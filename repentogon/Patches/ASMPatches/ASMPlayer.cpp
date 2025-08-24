@@ -215,9 +215,13 @@ unsigned int __stdcall GetPlayerHurtSound(Entity_Player* player) {
 void ASMPatchPlayerHurtSound() {
 	ASMPatch patch;
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_HurtSoundOverride);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::ALL & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 
-	patch.Push(ASMPatch::Registers::EDI) // EntityPlayer*
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // EntityPlayer*
 		.AddInternalCall(GetPlayerHurtSound)
+		.RestoreRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
 		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
 
 	sASMPatcher.PatchAt(addr, &patch);
@@ -265,4 +269,18 @@ void ASMPatchPlayerDeathSoundSoulOfLazarus() {
 		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
 
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchPlayerDeathSoundWhiteFireplace() {
+	/*
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_WhiteFireplaceDeathSoundOverride);
+
+	patch.Push(ASMPatch::Registers::EDI) // EntityPlayer*
+		.AddInternalCall(GetPlayerDeathSound)
+		.MoveToMemory(ASMPatch::Registers::EAX, 0x38, ASMPatch::Registers::ESP)
+		.AddRelativeJump((char*)addr + 0x8); 
+
+	sASMPatcher.PatchAt(addr, &patch);
+	*/
 }

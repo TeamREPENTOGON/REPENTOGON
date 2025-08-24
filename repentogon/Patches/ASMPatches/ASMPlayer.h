@@ -23,3 +23,4 @@ void ASMPatchAddActiveCharge();
 void ASMPatchPlayerHurtSound();
 void ASMPatchPlayerDeathSound();
 void ASMPatchPlayerDeathSoundSoulOfLazarus();
+void ASMPatchPlayerDeathSoundWhiteFireplace();
