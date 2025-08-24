@@ -4,6 +4,8 @@
 #include "ASMPlayer.h"
 #include "../XMLData.h"
 
+#include "ASMDefinition.h"
+
 thread_local CheckFamiliarStorage familiarsStorage;
 
 void __stdcall CheckFamiliar_Internal(Entity_Familiar* familiar) {
@@ -188,4 +190,67 @@ void ASMPatchAddActiveCharge() {
 	sASMPatcher.FlatPatch((char*)addr + 0x2, "\x18", 1);
 	sASMPatcher.FlatPatch((char*)addr + 0x7, "\x14", 1);
 	sASMPatcher.FlatPatch((char*)addr + 0xA, "\x10", 1);
+}
+
+unsigned int __stdcall GetPlayerHurtSound(Entity_Player* player) {
+	int playerType = player->GetPlayerType();
+	XMLAttributes playerData = XMLStuff.PlayerData->GetNodeById(playerType);
+
+	const unsigned int defaultHurtSound = 55; // Default hurt grunt sound. Nicalis won't ever change it... right?
+
+	if (playerData.count("hurtsound") == 0) {
+		return defaultHurtSound; 
+	}
+
+	XMLAttributes soundData = XMLStuff.SoundData->GetNodeByName(playerData["hurtsound"]);
+
+	if (soundData.count("id") == 0) {
+		return defaultHurtSound;
+	}
+	else {
+		return stoi(soundData["id"]);
+	}
+}
+
+void ASMPatchPlayerHurtSound() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_HurtSoundOverride);
+
+	patch.Push(ASMPatch::Registers::EDI) // EntityPlayer*
+		.AddInternalCall(GetPlayerHurtSound)
+		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+unsigned int __stdcall GetPlayerDeathSound(Entity_Player* player) {
+	int playerType = player->GetPlayerType();
+	XMLAttributes playerData = XMLStuff.PlayerData->GetNodeById(playerType);
+
+	const unsigned int defaultDeathSound = 217; // Default death grunt sound.
+
+	if (playerData.count("deathsound") == 0) {
+		return defaultDeathSound;
+	}
+
+	XMLAttributes soundData = XMLStuff.SoundData->GetNodeByName(playerData["deathsound"]);
+
+	if (soundData.count("id") == 0) {
+		return defaultDeathSound;
+	}
+	else {
+		return stoi(soundData["id"]);
+	}
+}
+
+void ASMPatchPlayerDeathSound() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_DeathSoundOverride);
+
+	patch.Push(ASMPatch::Registers::EDI) // EntityPlayer*
+		.AddInternalCall(GetPlayerDeathSound)
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
+
+	sASMPatcher.PatchAt(addr, &patch);
 }

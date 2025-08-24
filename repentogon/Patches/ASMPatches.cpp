@@ -167,6 +167,8 @@ void PerformASMPatches() {
 	EvaluateStats::ApplyASMPatches();
 	PatchGetGreedDonationBreakChanceForModdedCharacters();
 	PatchIncreaseGreedDonationCoinCountForModdedCharacters();
+	ASMPatchPlayerHurtSound();
+	ASMPatchPlayerDeathSound();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
