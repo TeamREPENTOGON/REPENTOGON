@@ -169,6 +169,7 @@ void PerformASMPatches() {
 	PatchIncreaseGreedDonationCoinCountForModdedCharacters();
 	ASMPatchPlayerHurtSound();
 	ASMPatchPlayerDeathSound();
+	ASMPatchPlayerDeathSoundSoulOfLazarus();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();

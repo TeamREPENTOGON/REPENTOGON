@@ -254,3 +254,15 @@ void ASMPatchPlayerDeathSound() {
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+void ASMPatchPlayerDeathSoundSoulOfLazarus() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_SoulOfLazarusDeathSoundOverride);
+
+	patch.Push(ASMPatch::Registers::EBX) // EntityPlayer*
+		.AddInternalCall(GetPlayerDeathSound)
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
