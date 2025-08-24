@@ -47,6 +47,8 @@ bool no = false;
 vector<string> xmlerrors;
 string currpath;
 
+unordered_map<XMLDataHolder*, XMLattrparse> xmllatepatches;
+
 unordered_map<string, int> xmlnodeenum;
 unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
@@ -1067,7 +1069,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.CardData->byorder[XMLStuff.CardData->nodes.size()] = id;
 				XMLStuff.CardData->byname[card["name"]] = id;
 				XMLStuff.ModData->cards[lastmodid] += 1;
-				if (toint(card["achievement"]) > 637) {
+				if (toint(card["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 					XMLStuff.CardData->customachievitems.push_back(card);
 				}
 			}
@@ -1112,7 +1114,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.PillData->nodes[id] = pill;
 				XMLStuff.PillData->byorder[XMLStuff.PillData->nodes.size()] = id;
 				XMLStuff.ModData->pills[lastmodid] += 1;
-				if (toint(pill["achievement"]) > 637) {
+				if (toint(pill["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 					XMLStuff.PillData->customachievitems.push_back(pill);
 				}
 			}
@@ -1204,7 +1206,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.ItemData->nodes[id] = item;
 					XMLStuff.ItemData->byorder[XMLStuff.ItemData->nodes.size()] = id;
 					XMLStuff.ModData->items[lastmodid] += 1;
-					if (toint(item["achievement"]) > static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1) {
+					if (toint(item["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 						XMLStuff.ItemData->customachievitems.push_back(item);
 					}
 				}
@@ -1277,7 +1279,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.TrinketData->nodes[id] = trinket;
 					XMLStuff.TrinketData->byorder[XMLStuff.TrinketData->nodes.size()] = id;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
-					if (toint(trinket["achievement"]) > 637) {
+					if (toint(trinket["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 						XMLStuff.TrinketData->customachievitems.push_back(trinket);
 					}
 				}
@@ -2470,7 +2472,7 @@ void UpdateOddXMLSourceData()
 HOOK_METHOD(Manager, LoadConfigs,()->void) {
 	super();
 	UpdateXMLModEntryData(); //resources are already loaded by this point only mod content remains
-	UpdateOddXMLSourceData(); //these get loaded in limbo so I need to do this to get the proper mod source
+	UpdateOddXMLSourceData(); //these get loaded in limbo so I need to do this to get the proper mod source	
 }
 
 HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, ModEntry* modentry)->void) {
@@ -3716,6 +3718,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 			}
 		}
 	}
+	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
