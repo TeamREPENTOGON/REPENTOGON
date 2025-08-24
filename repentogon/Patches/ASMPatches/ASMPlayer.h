@@ -21,3 +21,4 @@ void ASMPatchPlayerItemNoMetronome();
 void ASMPatchMarsDoubleTapWindow();
 void ASMPatchAddActiveCharge();
 void ASMPatchPlayerHurtSound();
+void ASMPatchPlayerDeathSound();

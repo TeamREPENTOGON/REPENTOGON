@@ -168,6 +168,7 @@ void PerformASMPatches() {
 	PatchGetGreedDonationBreakChanceForModdedCharacters();
 	PatchIncreaseGreedDonationCoinCountForModdedCharacters();
 	ASMPatchPlayerHurtSound();
+	ASMPatchPlayerDeathSound();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
