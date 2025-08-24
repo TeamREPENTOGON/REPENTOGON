@@ -196,10 +196,10 @@ unsigned int __stdcall GetPlayerHurtSound(Entity_Player* player) {
 	int playerType = player->GetPlayerType();
 	XMLAttributes playerData = XMLStuff.PlayerData->GetNodeById(playerType);
 
-	const unsigned int defaultHurtSound = 55;
+	const unsigned int defaultHurtSound = 55; // Default hurt grunt sound. Nicalis won't ever change it... right?
 
 	if (playerData.count("hurtsound") == 0) {
-		return defaultHurtSound; // Default hurt grunt sound. Nicalis won't ever change it... right?
+		return defaultHurtSound; 
 	}
 
 	XMLAttributes soundData = XMLStuff.SoundData->GetNodeByName(playerData["hurtsound"]);
