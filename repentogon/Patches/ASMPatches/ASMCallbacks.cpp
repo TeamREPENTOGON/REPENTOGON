@@ -1598,9 +1598,9 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 			cropOffset.x += !_player->_movingBoxContents.empty() ? 32.0f : .0f;
 			break;
 		case COLLECTIBLE_EVERYTHING_JAR:
-			
 			const int charges = std::max(_player->GetBatteryCharge(activeSlot), 12);
 			cropOffset.x += (float)(charges + 1) * 32.0f;
+			break;
 			
 		case COLLECTIBLE_FLIP:
 			cropOffset.x += _player->GetPlayerType() == ePlayerType::PLAYER_LAZARUS2_B ? 32.0f : .0f; //is dead Tainted Lazarus
