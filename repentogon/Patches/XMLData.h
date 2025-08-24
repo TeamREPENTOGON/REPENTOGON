@@ -428,10 +428,10 @@ public:
 		}
 	}
 
-	string GetCustomActiveGFX(const int id) {
+	const char* GetCustomActiveGFX(const int id) {
 		auto it = this->customActiveGFX.find(id);
 		if (it != this->customActiveGFX.end()) {
-			return it->second;
+			return it->second.c_str();
 		}
 		return "";
 	}

@@ -1591,24 +1591,26 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 
 	const int activeItemID = this->GetPlayer()->GetActiveItem(activeSlot);
 
+	/* for now we only support modded items
 	if (activeItemID < CollectibleType::NUM_COLLECTIBLES) {
 		switch ((CollectibleType)activeItemID) {
 		case COLLECTIBLE_MOVING_BOX:
 			cropOffset.x += !_player->_movingBoxContents.empty() ? 32.0f : .0f;
 			break;
 		case COLLECTIBLE_EVERYTHING_JAR:
-			/*
+			
 			const int charges = std::max(_player->GetBatteryCharge(activeSlot), 12);
 			cropOffset.x += (float)(charges + 1) * 32.0f;
-			*/
+			
 		case COLLECTIBLE_FLIP:
-			cropOffset.x += _player->GetPlayerType() == 38 ? 32.0f : .0f; //is dead Tainted Lazarus
+			cropOffset.x += _player->GetPlayerType() == ePlayerType::PLAYER_LAZARUS2_B ? 32.0f : .0f; //is dead Tainted Lazarus
 			break;
 		default:
 			break;
 		}
 
-	}
+	*/
+	
 
 	const int precallbackid = 1119;
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -1650,7 +1652,11 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 		}
 	}
 
-	activeRenderCropOffsetCache[_playerHudIndex][activeSlot] = cropOffset;
+
+	if (!(activeSlot < 0 || activeSlot > 3)) {
+		activeRenderCropOffsetCache[_playerHudIndex][activeSlot] = cropOffset;
+	}
+	
 	super(activeSlot, pos, playerHudLayout, size, alpha, unused);
 
 	_hideActiveItemImage = false;
@@ -1700,14 +1706,10 @@ const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int sl
 
 	const int collectibleID = hud->_activeItem[slot].id;
 
-	static std::string staticCustomGfxPath;
+	const char* customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
 
-	std::string customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
-
-	if (!customGfxPath.empty()) {
-		staticCustomGfxPath = customGfxPath;
-
-		return staticCustomGfxPath.c_str();
+	if (customGfxPath[0] != '\0') {
+		return customGfxPath;
 	}
 
 	return gfxPath;
@@ -1725,7 +1727,6 @@ void PatchGFXPath() {
 		.Push(ASMPatch::Registers::EBP, -0x1028) //push PlayerHUD
 		.Push(ASMPatch::Registers::EAX) //push original filepath to Active item sprite
 		.AddInternalCall(ReplaceGFXPath)
-		//.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 0x7);
@@ -1738,7 +1739,7 @@ void __stdcall GetPlayerHUDActiveItemCropOffset(int activeSlot, PlayerHUD* playe
 	float y = origCropY;
 
 	//currently modify crop offset only for modded items
-	if (playerHUD->_activeItem[activeSlot].id >= CollectibleType::NUM_COLLECTIBLES) {
+	if (!(activeSlot < 0 || activeSlot > 3) && playerHUD->_activeItem[activeSlot].id >= CollectibleType::NUM_COLLECTIBLES) {
 		const short playerIDX = playerHUD->_playerHudIndex;
 		const Vector& cropOffset = activeRenderCropOffsetCache[playerIDX][activeSlot];
 
