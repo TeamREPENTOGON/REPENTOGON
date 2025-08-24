@@ -63,7 +63,6 @@ typedef unordered_map<string, int> XMLNodeIdxLookup;
 typedef unordered_map<string, vector<int>> XMLNodeIdxLookupMultiple;
 typedef unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>> XMLItemStats;
 
-
 inline string stringlower(char* str)
 {
 	string s = string(str);
@@ -149,6 +148,24 @@ public:
 
 	XMLAttributes  GetNodeById(int name) {
 		auto iter = this->nodes.find(name);
+		if (iter == this->nodes.end()) { return XMLAttributes(); }
+		else { return iter->second; }
+	}
+
+	XMLAttributes GetNodeById(string name) { //for convenience,lol
+		int id = 0;
+		if (name.length() > 0) {
+			char* endPtr;
+			int tentid = strtol(name.c_str(), &endPtr, 0);
+			if (endPtr != "\0") {
+				id = tentid;
+			}
+			else {
+				return XMLAttributes();
+			}
+		}
+
+		auto iter = this->nodes.find(id);
 		if (iter == this->nodes.end()) { return XMLAttributes(); }
 		else { return iter->second; }
 	}
@@ -770,7 +787,7 @@ inline bool isvalidid(const std::string& str) {
 	return false;
 }
 
-inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata) {
+inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata, string mod = "BaseGame") {
 	size_t start = 0;
 	size_t pos = names.find(',');
 	string item;
@@ -778,7 +795,10 @@ inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldat
 	while (pos != std::string::npos) {
 		item = names.substr(start, pos - start);
 		if (!isvalidid(item)) {
-			if (xmldata->byname.find(item) != xmldata->byname.end()) {
+			if (xmldata->bynamemod.find(item + mod) != xmldata->byname.end()) { //priority for stuff from its own mod
+				parsedlist += to_string(xmldata->byname[item]) + ",";
+			}
+			else if (xmldata->byname.find(item) != xmldata->byname.end()) {
 				parsedlist += to_string(xmldata->byname[item]) + ",";
 			}
 		}
@@ -828,6 +848,38 @@ inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* 
 		}
 	}
 	return false;
+}
+
+typedef unordered_map<string, XMLDataHolder*> XMLattrparse;
+extern unordered_map<XMLDataHolder*, XMLattrparse> xmllatepatches; //xmlname, list of attrs to parse
+
+inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, string AttributeName, XMLDataHolder* XMLDataForIds) { // this makes it so Name attributes in XMLData are parsed to their Id counterparts after Manager::LoadConfig finishes (as in, after all xmls are loaded, which means no XML load order shenanigans)
+	xmllatepatches[XMLDataToUpdate][AttributeName] = XMLDataForIds;
+}
+
+inline bool MultiValXMLParamParseLATE() {
+	bool did = false;
+	for each (auto patch in xmllatepatches) {
+		XMLDataHolder* xmldatasource = patch.first;
+		for each (auto node in xmldatasource->nodes) {
+			XMLAttributes auxnode = node.second;
+			for each (auto toparse in xmllatepatches[xmldatasource]) {
+				XMLDataHolder* xmldata = toparse.second;
+				string attrname = toparse.first;
+				if (auxnode.find(attrname) != auxnode.end()) {
+					string parseditemlist = ComaSeparatedNamesToIds(auxnode[attrname], xmldata, auxnode["sourceid"]);
+					printf("DINGUS: %s BINGUS: %s \n", auxnode[attrname].c_str(), parseditemlist.c_str());
+					if (parseditemlist.length() > 0) {
+						auxnode["raw-" + attrname] = auxnode[attrname];
+						auxnode[attrname] = parseditemlist;
+						xmldatasource->nodes[node.first] = auxnode;
+						did = true;
+					}
+				}
+			}
+		}
+	}
+	return did;
 }
 
 inline int GetMaxIdFromChilds(xml_node<char>* parentnode,const char* attrname = "id") {
