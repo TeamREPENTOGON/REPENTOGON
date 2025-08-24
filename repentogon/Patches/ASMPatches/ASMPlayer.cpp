@@ -202,7 +202,7 @@ unsigned int __stdcall GetPlayerHurtSound(Entity_Player* player) {
 		return defaultHurtSound; 
 	}
 
-	XMLAttributes soundData = XMLStuff.SoundData->GetNodeByName(playerData["hurtsound"]);
+	XMLAttributes soundData = XMLStuff.SoundData->GetNodeById(playerData["hurtsound"]);
 
 	if (soundData.count("id") == 0) {
 		return defaultHurtSound;
@@ -225,6 +225,8 @@ void ASMPatchPlayerHurtSound() {
 		.AddRelativeJump((char*)addr + 0x5); // Jump to next instruction (play sound)
 
 	sASMPatcher.PatchAt(addr, &patch);
+
+	RegisterCustomXMLAttr(XMLStuff.PlayerData, "hurtsound", XMLStuff.SoundData); //this is so the parsing for all of the attribute nes is done only once and by the xmldata structure itself in a single place
 }
 
 unsigned int __stdcall GetPlayerDeathSound(Entity_Player* player) {
@@ -237,7 +239,7 @@ unsigned int __stdcall GetPlayerDeathSound(Entity_Player* player) {
 		return defaultDeathSound;
 	}
 
-	XMLAttributes soundData = XMLStuff.SoundData->GetNodeByName(playerData["deathsound"]);
+	XMLAttributes soundData = XMLStuff.SoundData->GetNodeById(playerData["deathsound"]); 
 
 	if (soundData.count("id") == 0) {
 		return defaultDeathSound;
@@ -283,4 +285,6 @@ void ASMPatchPlayerDeathSoundWhiteFireplace() {
 
 	sASMPatcher.PatchAt(addr, &patch);
 	*/
+
+	RegisterCustomXMLAttr(XMLStuff.PlayerData, "deathsound", XMLStuff.SoundData); //this is so the parsing for all of the attribute nes is done only once and by the xmldata structure itself in a single place
 }
