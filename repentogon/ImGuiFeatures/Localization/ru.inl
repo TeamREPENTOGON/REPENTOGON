@@ -6,3 +6,8 @@
 #ifndef V
 #define V(TYPE, VAR, VALUE)
 #endif
+
+/*
+ * note: Remove items inside "en_us.inl" may cause compile error, and you
+ * need also remove all of them in other language files.
+ */
