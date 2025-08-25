@@ -44,7 +44,7 @@ struct Music depends (MusicEntry) {
 {{
 	inline void StopJingle() {
 		*(int*)((char*)this + 0x348) = 0;
-		*(int*)((char*)this + 0x364) = -99;
+		*(int*)((char*)this + 0x364) = -100;
 	};
 	
 	  bool LIBZHL_API ValidateMusicID(int id, int& max);
