@@ -273,6 +273,21 @@ void ASMPatchPlayerDeathSoundSoulOfLazarus() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void ASMPatchPlayerDeathSoundLost() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_SoulDeathSoundOverride);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::ALL & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // EntityPlayer*
+		.AddInternalCall(GetPlayerDeathSound)
+		.RestoreRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchPlayerDeathSoundAstralProjection() {
 	ASMPatch patch;
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Player_AstralProjectionDeathSoundOverride);
@@ -289,3 +304,4 @@ void ASMPatchPlayerDeathSoundAstralProjection() {
 
 	RegisterCustomXMLAttr(XMLStuff.PlayerData, "deathsound", XMLStuff.SoundData); //this is so the parsing for all of the attribute nes is done only once and by the xmldata structure itself in a single place
 }
+
