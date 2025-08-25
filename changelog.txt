@@ -93,6 +93,7 @@ Additions:
 	- Added support for modded/text trinkets on the "trinket" param (I forgot trinkets existed tbh, lol)
 	- Added "hideachievement" attribute, which hides the character from the character select menu until the corresponding achievement is obtained
 		(Doesn't do anything for tainted characters, since whether or not they appear on the menu is entirely dependant on the non-tainted character)
+	- Added "activegfx" attribute, which sets separate active item image for rendering in active slot.
 	- Added "hurtsound" attribute, which overrides the player's damage sound.
 	- Added "deathsound" attribute, which overrides the player's death sound.
 * ModCallbacks:
@@ -276,6 +277,8 @@ Modified:
 		Returning a value will now pass the modified curse mask along to the next callback instead of ending the callback early.
 	- MC_PRE_ADD_COLLECTIBLE
 		Returning a value to modify the collectible being added will now pass that ID along to other callbacks instead of stopping.
+	- MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM
+		Added CropOffset field (Vector, defines rectangle area of the active item image that will rendered in active slot)
 * reloadshaders command will now reload custom anm2 shaders
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
 /newline/
