@@ -170,7 +170,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerHurtSound();
 	ASMPatchPlayerDeathSound();
 	ASMPatchPlayerDeathSoundSoulOfLazarus();
-	ASMPatchPlayerDeathSoundWhiteFireplace();
+	ASMPatchPlayerDeathSoundAstralProjection();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
