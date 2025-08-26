@@ -49,6 +49,8 @@ Additions:
 * EntityTear:
 	- GetHitList
 	- ClearHitList
+* EntitySlot:
+	- GetPrizeSprite
 * EntityConfigEntity:
 	- GetDevolvedEntity
 * Level:

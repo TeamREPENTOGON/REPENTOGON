@@ -156,6 +156,13 @@ LUA_FUNCTION(Lua_SetTouch) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetPrizeSprite) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua::luabridge::UserdataPtr::push(L, &slot->_prizeAnm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
 void RegisterSlotMetatable(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "ToSlot", Lua_EntityToEntitySlot);
 
@@ -216,6 +223,7 @@ void RegisterSlotMetatable(lua_State* L) {
 		{ "SetTimeout", Lua_SetTimeout },
 		{ "GetTouch", Lua_GetTouch },
 		{ "SetTouch", Lua_SetTouch },
+		{ "GetPrizeSprite", Lua_GetPrizeSprite },
 		{ NULL, NULL }
 	};
 
