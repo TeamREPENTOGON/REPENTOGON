@@ -103,7 +103,7 @@ local function RenderDailyStats()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_STREAK)
         TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_PLAYED)
         GetStageGoal = challengeParam:GetEndStage()
-        isAltPath = challengeParam:IsSecretPath() or challengeParam:IsAltPath()
+        isAltPath = challengeParam:IsSecretPath() or (GetStageGoal >= LevelStage.STAGE5 and challengeParam:IsAltPath())
 		isBrokenBeastPath = challengeParam:IsBeastPath() and challengeParam:GetEndStage() ~= LevelStage.STAGE8
 
         --[[if WinStreak > 0 then
