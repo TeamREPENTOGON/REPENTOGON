@@ -4,8 +4,8 @@ v1.0.x -
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
-	- SetClamped(bool clamped)
-	- IsClamped
+	- SetClampEnabled(bool clamped)
+	- IsClampEnabled
 * ChallengeParam:
 	- IsBeastPath
 * GridEntity
