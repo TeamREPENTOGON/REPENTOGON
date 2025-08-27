@@ -297,6 +297,10 @@ ___
 Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
+### GetCharmOfTheVampireKills () {: aria-label='Functions' }
+#### int GetCharmOfTheVampireKills ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetCollectiblesList () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
 Returns a table with the amount of each collectible the player has, without counting innate items.
@@ -1047,6 +1051,10 @@ ___
 ### SetCanShoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+
+___
+### SetCharmOfTheVampireKills () {: aria-label='Functions' }
+#### void SetCharmOfTheVampireKills ( int KillAmount ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetConceptionFamiliarFlags () {: aria-label='Functions' }
