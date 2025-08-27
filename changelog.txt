@@ -40,6 +40,7 @@ Additions:
 	- GetTearsCap
 	- GetStatMultiplier
 	- GetSmeltedTrinketDesc
+	- [Get/Set]CharmOfTheVampireKills
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium

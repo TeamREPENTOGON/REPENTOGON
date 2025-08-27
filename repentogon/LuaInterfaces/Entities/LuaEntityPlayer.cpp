@@ -2962,6 +2962,21 @@ LUA_FUNCTION(Lua_PlayerHasInvincibility) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetCharmOfVampireKills) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_pushinteger(L, player->_vampireCharmKills);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetCharmOfVampireKills) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	unsigned int kills = (unsigned int)luaL_checkinteger(L, 2);
+	player->_vampireCharmKills = kills;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3228,6 +3243,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetSuplexLandPosition", Lua_PlayerSetSuplexLandPosition },
 		{ "CreateAfterimage", Lua_PlayerCreateAfterimage },
 		{ "HasInvincibility", Lua_PlayerHasInvincibility },
+		{ "GetCharmOfTheVampireKills", Lua_PlayerGetCharmOfVampireKills },
+		{ "SetCharmOfTheVampireKills", Lua_PlayerSetCharmOfVampireKills },
 
 		{ NULL, NULL }
 	};

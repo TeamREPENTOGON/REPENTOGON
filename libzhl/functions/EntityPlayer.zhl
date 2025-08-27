@@ -713,6 +713,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int8_t _tearDisplacement : 0x156c;
 	float _tearPoisonDamage : 0x1570;
 	ActiveItemDesc _activeDesc[4] : 0x1574;
+	uint32_t _vampireCharmKills : 0x15fc;
 	int _bombPlaceDelay : 0x1604;
 	int _forgottenSwapFormCooldown : 0x1608;
 	int _controllerIndex : 0x160c;
