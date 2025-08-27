@@ -32,4 +32,5 @@ void ASMPatchCameraBoundOverride() {
 
 HOOK_METHOD(Camera, destructor, () -> void) {
 	roomCameraData.Clamped = true;
+	super();
 }
