@@ -340,6 +340,25 @@ LUA_FUNCTION(Lua_GetGenericPrompt) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ChainLightning) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	const float baseDamage = (float)luaL_optnumber(L, 3, 3.5f);
+	BitSet128 flags { 0, 0, 0 ,0 };
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		flags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+	}
+	Entity* spawner = nullptr;
+
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		spawner = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
+	}
+
+	lua::luabridge::UserdataPtr::push(L, game->ChainLightning(pos, baseDamage, flags, spawner), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -380,6 +399,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetDizzyAmount", Lua_SetDizzyAmount},
 		{ "RecordPlayerCompletion", Lua_RecordPlayerCompletion},
 		{ "GetGenericPrompt", Lua_GetGenericPrompt},
+		{ "ChainLightning", Lua_ChainLightning},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

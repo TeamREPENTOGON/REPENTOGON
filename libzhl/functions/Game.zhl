@@ -140,6 +140,9 @@ __thiscall bool Game::LevelHasPhotoDoor();
 "558bec83ec08538b5d??56578b3d":
 __stdcall void Game::SaveBackwardsStage(int stage);
 
+"558bec83e4f883ec14f30f1005":
+static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>, BitSet128 tearFlags, Entity* spawner);
+
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 

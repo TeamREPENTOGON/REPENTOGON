@@ -6,6 +6,8 @@ Additions:
 	- Update(bool Interpolated = false)
 * ChallengeParam:
 	- IsBeastPath
+* Game:
+	- ChainLightning(Vector Position, float BaseDamage = 3.5, TearFlags TearFlags = TearFlags.TEAR_NORMAL, Entity Spanwer = nil)
 * GridEntity
 	- [Get/Set/Reset]WaterClipFlags
 * Entity
