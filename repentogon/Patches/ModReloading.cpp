@@ -5,9 +5,9 @@
 // We always want to restart after the game fully loads, this ensures that
 HOOK_METHOD(ModManager, UpdateWorkshopMods, () -> void) {
 	bool res = repentogonOptions.GetBool("internal", "DidModReset");
-	if (!res && !repentogonOptions.preventModUpdates) {
-		super();
-	}
+	//if (!res && !repentogonOptions.preventModUpdates) {
+		//super(); //The launcher does this now
+	//}
 	repentogonOptions.Write("internal", "DidModReset", "0");
 	// UpdateWorkshopMods gets called unconditionally by IsaacStartup, so we can guarantee that the bool is properly reset by doing it here
 }

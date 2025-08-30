@@ -355,11 +355,13 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.quickRoomClear, false);
-                        AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES, &repentogonOptions.preventModUpdates);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
+
+                        //AddNewTableRow();
+                        //ImGui::Checkbox(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES, &repentogonOptions.preventModUpdates); //The mod updating process has been moved into the launcher
+                        //ImGui::SameLine();
+                        //HelpMarker(LANG.OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK);
+                        //AddResetButton(++resetCounter, repentogonOptions.preventModUpdates, false);
+                         
                         //AddNewTableRow();
                         //ImGui::Checkbox(LANG.OPT_REPENTOGON_FAST_LASERS, &repentogonOptions.fastLasers);
                         //ImGui::SameLine();
