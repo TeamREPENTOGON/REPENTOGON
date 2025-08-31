@@ -164,6 +164,7 @@ Additions:
 		The string key (e.g. "boss_0", "treasure_0") identifies which slot the room was saved into.
 	- MC_PRE_ADD_TRINKET(player, TrinketType, firstTime)
 		Return false to cancel, or a different TrinketType to change the trinket being added.
+	- MC_POST_ITEM_OVERLAY_RENDER
 * New Enums:
 	- DoorMask
 	- WaterClipFlag

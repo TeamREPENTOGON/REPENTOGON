@@ -5288,3 +5288,28 @@ HOOK_METHOD(Entity_Player, GetTearHitParams, (TearParams* params, int weaponType
 
 	return params;
 }
+
+// MC_POST_ITEM_OVERLAY_RENDER (1139)
+HOOK_METHOD(ItemOverlay, Render, () -> void) {
+	super();
+
+	constexpr int callbackId = 1139;
+	if (_state == eItemOverlayState::INACTIVE ||
+		_state == eItemOverlayState::WAITING ||
+		(!_sprite._loaded && _overlayID != 45 ) ||
+		!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.push(_overlayID)
+		.push(_overlayID)
+		.call(1);
+
+
+	printf("superball");
+}
