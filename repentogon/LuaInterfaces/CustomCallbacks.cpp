@@ -5310,6 +5310,4 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 		.push(_overlayID)
 		.call(1);
 
-
-	printf("superball");
 }
