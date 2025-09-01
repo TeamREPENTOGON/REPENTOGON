@@ -53,19 +53,19 @@ struct hash<tuple<int, int>> {
 };
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 
-typedef unordered_map<string, string> XMLAttributes;
-typedef unordered_map<int, XMLAttributes> XMLNodes;
-typedef unordered_map<string, std::vector <XMLAttributes>> XMLChilds;
-typedef unordered_map<int, std::vector <XMLAttributes>> XMLRelEnt;
-typedef unordered_map<int, XMLChilds> XMLKinder;
-typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
-typedef unordered_map<string, int> XMLNodeIdxLookup;
-typedef unordered_map<string, vector<int>> XMLNodeIdxLookupMultiple;
-typedef unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>> XMLItemStats;
+using XMLAttributes = unordered_map<string, string>;
+using XMLNodes = unordered_map<int, XMLAttributes>;
+using XMLChilds = unordered_map<string, std::vector<XMLAttributes>>;
+using XMLRelEnt = unordered_map<int, std::vector<XMLAttributes>>;
+using XMLKinder = unordered_map<int, XMLChilds>;
+using XMLEntityKinder = unordered_map<tuple<int, int, int>, XMLChilds>;
+using XMLNodeIdxLookup = unordered_map<string, int>;
+using XMLNodeIdxLookupMultiple = unordered_map<string, vector<int>>;
+using XMLItemStats = unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>>;
 
 inline string stringlower(char* str)
 {
-	string s = string(str);
+	string s{ str };
 	for (auto& c : s) {
 		c = tolower(c);
 	}
@@ -74,7 +74,7 @@ inline string stringlower(char* str)
 
 inline string stringlower(const char* str)
 {
-	string s = string(str);
+	string s{ str };
 	for (auto& c : s) {
 		c = tolower(c);
 	}
@@ -105,7 +105,7 @@ class XMLDataHolder {
 public:
 	XMLNodes nodes;
 	XMLKinder childs;
-	unordered_map<string, int> childbyname;
+	XMLNodeIdxLookup childbyname;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
 	unordered_map<int, int> byorder;
@@ -152,7 +152,7 @@ public:
 		else { return iter->second; }
 	}
 
-	XMLAttributes GetNodeById(string name) { //for convenience,lol
+	XMLAttributes GetNodeById(const string& name) { //for convenience,lol
 		int id = 0;
 		if (name.length() > 0) {
 			char* endPtr;
@@ -176,17 +176,17 @@ public:
 		else { return this->GetNodeById(iter->second); }
 	}
 
-	XMLAttributes GetNodeByName(const string &name) {
+	XMLAttributes GetNodeByName(const string& name) {
 		auto iter = this->byname.find(name);
 		if (iter == this->byname.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
 	}
-	XMLAttributes GetNodeByNameMod(const string &name) {
+	XMLAttributes GetNodeByNameMod(const string& name) {
 		auto iter = this->bynamemod.find(name);
 		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
 	}
-	XMLAttributes GetNodesByMod(const string &name) {
+	XMLAttributes GetNodesByMod(const string& name) {
 		auto iter = this->bynamemod.find(name);
 		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
@@ -198,7 +198,7 @@ public:
 		return iter->second;
 	}
 
-	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(const string& name) {
 		XMLAttributes Node;
 		XMLChilds Childs;
 		Node = this->GetNodeByName(name);
@@ -231,34 +231,34 @@ public:
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
 
-	bool HasCustomTag(const int id, const std::string tag) {
+	bool HasCustomTag(const int id, const std::string& tag) {
 		if (this->customtags.find(id) == this->customtags.end()) {
 			return false;
 		}
 		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
 	}
 
-	void AddCustomTag(const int id, const std::string tag) {
+	void AddCustomTag(const int id, const std::string& tag) {
 		if (!tag.empty()) {
 			this->customtags[id].insert(stringlower(tag.c_str()));
 		}
 	}
 
-	void RemoveCustomTag(const int id, const std::string tag) {
+	void RemoveCustomTag(const int id, const std::string& tag) {
 		if (HasCustomTag(id, tag)) {
 			this->customtags[id].erase(stringlower(tag.c_str()));
 		}
 	}
 
-	void ProcessChilds(xml_node<char>* parentnode, int id) {
+	void ProcessChilds(const xml_node<char>* parentnode, int id) {
 		ProcessChilds(parentnode, id, "");
 	}
 
-	void ProcessChilds(xml_node<char>* parentnode, int id, string lastmodid) {
+	void ProcessChilds(const xml_node<char>* parentnode, int id, const string& lastmodid) {
 
-		for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+		for (const xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
 			XMLAttributes child;
-			for (xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
+			for (const xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
 			{
 				child[stringlower(attr->name())] = string(attr->value());
 			}
@@ -426,20 +426,20 @@ public:
 		return this->customcache[id];
 	}
 
-	bool HasCustomCache(const int id, const std::string tag) {
+	bool HasCustomCache(const int id, const std::string& tag) {
 		if (!HasAnyCustomCache(id)) {
 			return false;
 		}
 		return this->customcache[id].find(stringlower(tag.c_str())) != this->customcache[id].end();
 	}
 
-	void AddCustomCache(const int id, const std::string tag) {
+	void AddCustomCache(const int id, const std::string& tag) {
 		if (!tag.empty()) {
 			this->customcache[id].insert(stringlower(tag.c_str()));
 		}
 	}
 
-	void RemoveCustomCache(const int id, const std::string tag) {
+	void RemoveCustomCache(const int id, const std::string& tag) {
 		if (HasCustomCache(id, tag)) {
 			this->customcache[id].erase(stringlower(tag.c_str()));
 		}
@@ -533,18 +533,18 @@ public:
 
 class XMLTrinket : public XMLItem {
 public:
-	unordered_map<string, int> bypickup;
+	XMLNodeIdxLookup bypickup;
 };
 
 class XMLCard : public XMLDataHolder {
 public:
-	unordered_map<string, int> bypickup;
+	XMLNodeIdxLookup bypickup;
 	vector<XMLAttributes> customachievitems;
 };
 
 class XMLPill : public XMLDataHolder {
 public:
-	unordered_map<string, int> bypickup;
+	XMLNodeIdxLookup bypickup;
 	vector<XMLAttributes> customachievitems;
 };
 
@@ -638,7 +638,7 @@ public:
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
 
-	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(const std::string& name) {
 		XMLAttributes Node;
 		XMLChilds Childs;
 		Node = this->GetNodeByName(name);
@@ -666,7 +666,7 @@ public:
 		//return this->GetNodeById(iter->second);
 	//}
 
-	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
+	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub, bool strict ) {
 		auto iter = this->nodes.find({ type, var, sub });
 		if (iter != this->nodes.end()) {
 			return iter->second;
@@ -701,20 +701,20 @@ public:
 		return GetCustomTags(entity.id, entity.variant, entity.subtype);
 	}
 
-	bool HasCustomTag(int type, int var, int sub, const std::string tag) {
+	bool HasCustomTag(int type, int var, int sub, const std::string& tag) {
 		const set<string>& customtags = GetCustomTags(type, var, sub);
 		return customtags.find(stringlower(tag.c_str())) != customtags.end();
 	}
 
-	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string tag) {
+	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string& tag) {
 		return HasCustomTag(entity.id, entity.variant, entity.subtype, tag);
 	}
 
-	void ProcessChilds(xml_node<char>* parentnode, tuple<int, int, int> id) {
+	void ProcessChilds(const xml_node<char>* parentnode, tuple<int, int, int> id) {
 
-		for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+		for (const xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
 			XMLAttributes child;
-			for (xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
+			for (const xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
 			{
 				child[stringlower(attr->name())] = string(attr->value());
 			}
@@ -767,7 +767,7 @@ struct XMLData {
 	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
 	set<string> AllCustomCaches = {"familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
 
-	void AddKnownCustomCache(const std::string tag) {
+	void AddKnownCustomCache(const std::string& tag) {
 		if (!tag.empty()) {
 			AllCustomCaches.insert(stringlower(tag.c_str()));
 		}
@@ -787,7 +787,7 @@ inline bool isvalidid(const std::string& str) {
 	return false;
 }
 
-inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata, string mod = "BaseGame") {
+inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata, const string& mod = "BaseGame") {
 	size_t start = 0;
 	size_t pos = names.find(',');
 	string item;
@@ -850,10 +850,10 @@ inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* 
 	return false;
 }
 
-typedef unordered_map<string, XMLDataHolder*> XMLattrparse;
+using XMLattrparse = unordered_map<string, XMLDataHolder *>;
 extern unordered_map<XMLDataHolder*, XMLattrparse> xmllatepatches; //xmlname, list of attrs to parse
 
-inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, string AttributeName, XMLDataHolder* XMLDataForIds) { // this makes it so Name attributes in XMLData are parsed to their Id counterparts after Manager::LoadConfig finishes (as in, after all xmls are loaded, which means no XML load order shenanigans)
+inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, const string& AttributeName, XMLDataHolder* XMLDataForIds) { // this makes it so Name attributes in XMLData are parsed to their Id counterparts after Manager::LoadConfig finishes (as in, after all xmls are loaded, which means no XML load order shenanigans)
 	xmllatepatches[XMLDataToUpdate][AttributeName] = XMLDataForIds;
 }
 
@@ -882,10 +882,10 @@ inline bool MultiValXMLParamParseLATE() {
 	return did;
 }
 
-inline int GetMaxIdFromChilds(xml_node<char>* parentnode,const char* attrname = "id") {
+inline int GetMaxIdFromChilds(const xml_node<char>* parentnode,const char* attrname = "id") {
 	int maxid = -1;
-	for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
-		xml_attribute<char>* attr = auxnodebabe->first_attribute(attrname);
+	for (const xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+		const xml_attribute<char>* attr = auxnodebabe->first_attribute(attrname);
 		if (attr && (stoi(attr->value()) > maxid)) {
 			maxid = stoi(attr->value());
 		}
