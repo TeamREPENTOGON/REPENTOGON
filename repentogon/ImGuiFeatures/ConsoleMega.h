@@ -25,7 +25,7 @@ struct ConsoleCommand {
     unsigned int autocompleteType = 0;
     std::vector<std::string> aliases;
 
-    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu, unsigned int cmdAutocompleteType = 0, std::vector<std::string> cmdAliases = {}) {
+    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu, unsigned int cmdAutocompleteType = 0, const std::vector<std::string>& cmdAliases = {}) {
         name = cmdName;
         desc = cmdDesc;
         helpText = cmdHelpText;
@@ -34,9 +34,7 @@ struct ConsoleCommand {
         aliases = cmdAliases;
     }
     
-    ConsoleCommand() {
-
-    }
+    ConsoleCommand() = default;
 
     bool operator<(const ConsoleCommand& cc) const
     {
@@ -48,15 +46,12 @@ struct AutocompleteEntry {
     std::string autocompleteText;
     std::string autocompleteDesc;
 
-    AutocompleteEntry(std::string text, std::string desc = "") {
-        autocompleteText = text;
-        autocompleteDesc = desc;
+    AutocompleteEntry(const std::string& text, const std::string& desc = "")
+    : autocompleteText(text) , autocompleteDesc(desc)
+    {
     }
 
-    AutocompleteEntry() {
-        autocompleteText = "";
-        autocompleteDesc = "";
-    }
+    AutocompleteEntry() = default;
 
     bool operator<(const AutocompleteEntry& ae) const
     {
@@ -90,9 +85,9 @@ struct ConsoleMacro {
     std::string name;
     std::vector<std::string> commands;
 
-    ConsoleMacro(std::string macroName, std::vector<std::string>* macroCommands) {
-        name = macroName;
-        commands = *macroCommands;
+    ConsoleMacro(const std::string& macroName, const std::vector<std::string>* macroCommands)
+			: name(macroName), commands(*macroCommands)
+    {
     }
 };
 
@@ -153,11 +148,11 @@ struct ConsoleMega : ImGuiWindowObject {
     };
 
 
-    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE, std::vector<std::string> aliases = {}) {
+    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE, const std::vector<std::string>& aliases = {}) {
         commands.insert(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete, aliases));
     }
 
-    void RegisterMacro(const char* macroName, std::vector<std::string> &macroCommands) {
+    void RegisterMacro(const char* macroName, const std::vector<std::string>& macroCommands) {
         macros.push_back(ConsoleMacro(macroName, &macroCommands));
     }
 
@@ -245,7 +240,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("forceimport", LANG.CONSOLE_FORCEIMPORT_DESC, LANG.CONSOLE_FORCEIMPORT_HELP, true);
     }
 
-    const ConsoleCommand* GetCommandByName(std::string& commandName) {
+    const ConsoleCommand* GetCommandByName(const std::string& commandName) {
       for (auto& commandIter : commands) {
         if (commandName == commandIter.name) {
           return &commandIter;
@@ -283,7 +278,7 @@ struct ConsoleMega : ImGuiWindowObject {
       return input;
     }
 
-    void ExecuteCommand(char* input) {
+    void ExecuteCommand(const char* input) {
         Console* console = g_Game->GetConsole();
 
         std::string printin = std::string(">") + input + "\n";
@@ -545,7 +540,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
             case ImGuiInputTextFlags_CallbackCompletion:
             {
-                if (autocompleteBuffer.size() > 0) {
+                if (!autocompleteBuffer.empty()) {
                     ++autocompletePos;
                     if (autocompletePos >= autocompleteBuffer.size())
                         autocompletePos = 0;

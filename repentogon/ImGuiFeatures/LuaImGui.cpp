@@ -31,7 +31,6 @@ static int EvalIDAndParent(lua_State* L, const char* id, const char* parentId)
 
 LUA_FUNCTION(Lua_CustomImGui)
 {
-	Manager* manager = g_Manager;
 	CustomImGui** ud = (CustomImGui**)lua_newuserdata(L, sizeof(CustomImGui*));
 	*ud = &customImGui;
 	luaL_setmetatable(L, lua::metatables::ImGuiMT);
@@ -625,15 +624,15 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 	float y = -1;
 
 	if (menuShown) {
-		ImGuiIO& io = ImGui::GetIO();
+		const ImGuiIO& io = ImGui::GetIO();
 		if (ImGui::IsMousePosValid()) {
 			x = io.MousePos.x;
 			y = io.MousePos.y;
 		}
 	}
 	else {
-		x = (float)*(double*)((char*)g_KAGEInputController + 0x48);
-		y = (float)*(double*)((char*)g_KAGEInputController + 0x50);
+		x = (float)*(double*)(g_KAGEInputController + 0x48);
+		y = (float)*(double*)(g_KAGEInputController + 0x50);
 	}
 
 	lua::LuaCaller(L).pushUserdataValue(Vector(x, y), lua::Metatables::VECTOR);
@@ -909,7 +908,7 @@ LUA_FUNCTION(Lua_ImGui_GetWindowPinned)
 {
 	const char* elementId = luaL_checkstring(L, 2);
 
-	Element* element = customImGui.GetElementById(elementId);
+	const Element* element = customImGui.GetElementById(elementId);
 	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
 		lua_pushboolean(L, element->data.windowPinned);
 		return 1;
@@ -937,7 +936,7 @@ LUA_FUNCTION(Lua_ImGui_GetWindowFlags)
 {
 	const char* elementId = luaL_checkstring(L, 1);
 
-	Element* element = customImGui.GetElementById(elementId);
+	const Element* element = customImGui.GetElementById(elementId);
 	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
 		lua_pushinteger(L, element->data.windowFlags);
 		return 1;
@@ -966,7 +965,7 @@ LUA_FUNCTION(Lua_ImGui_GetWindowChildFlags)
 {
 	const char* elementId = luaL_checkstring(L, 1);
 
-	Element* element = customImGui.GetElementById(elementId);
+	const Element* element = customImGui.GetElementById(elementId);
 	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
 		lua_pushinteger(L, element->data.childFlags);
 		return 1;
