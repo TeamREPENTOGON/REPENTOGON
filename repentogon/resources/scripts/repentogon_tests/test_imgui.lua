@@ -11,6 +11,12 @@ ImGui.AddElement("testMenu", "menuElem2", ImGuiElement.MenuItem, "Menu Item Call
 ImGui.AddCallback("menuElem2", ImGuiCallback.Clicked, function(i) print("Clicked Counter " .. i) end)
 ImGui.SetColor("menuElem2", ImGuiColor.Text, 0.75, 0.75, 0.75, 1)
 
+-- Menu item with random elements nested inside
+ImGui.AddElement("testMenu", "menuNestingRoot", ImGuiElement.Menu, "Nested Menu test")
+ImGui.AddText("menuNestingRoot", "A text inside a menu element", true)
+ImGui.AddElement("menuNestingRoot", "nestedButtonTest", ImGuiElement.Button, "A button inside a menu")
+ImGui.AddCheckbox("menuNestingRoot", "nestedCheckboxTest", "checkbox in a menu")
+
 -- Add big testing window
 ImGui.AddElement("testMenu", "menuElem3", ImGuiElement.MenuItem, "Awesome Test Menu")
 
