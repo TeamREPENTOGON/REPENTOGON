@@ -5311,3 +5311,41 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 		.call(1);
 
 }
+
+// MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1491)
+HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
+	const int preCallbackId = 1491;
+	const int postCallbackId = 1492;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->_variant)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!results && lua_isboolean(L, -1) && !(bool)lua_toboolean(L, -1)) {
+			return false;
+		}
+	}
+
+	bool opened = super(player);
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(postCallbackId)
+			.push(this->_variant)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+	}
+
+	return opened;
+}
