@@ -682,7 +682,9 @@ KnifeVariant = {
 }
 
 KnifeSubType = {
+	DEFAULT = 0,
 	PROJECTILE = 1,
+	YES_MOTHER = 3,
 	CLUB_HITBOX = 4,
 }
 
