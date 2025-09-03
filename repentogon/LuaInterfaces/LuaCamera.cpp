@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../ImGuiFeatures/LogViewer.h"
+#include "../Patches/ASMPatches/ASMCamera.h"
 
 LUA_FUNCTION(Lua_GetCamera) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
@@ -47,6 +48,19 @@ LUA_FUNCTION(Lua_IsPosVisible) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsClampEnabled) {
+	Camera* camera = *lua::GetRawUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
+	lua_pushboolean(L, roomCameraData.Clamped);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetClampEnabled) {
+	Camera* camera = *lua::GetRawUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
+	bool clamped = lua::luaL_checkboolean(L, 2);
+	roomCameraData.Clamped = clamped;
+	return 0;
+}
+
 static void RegisterCamera(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ROOM, "GetCamera", Lua_GetCamera);
 
@@ -55,6 +69,8 @@ static void RegisterCamera(lua_State* L) {
 		{ "SnapToPosition", Lua_SnapToPosition },
 		{ "IsPosVisible", Lua_IsPosVisible },
 		{ "Update", Lua_CameraUpdate },
+		{ "IsClampEnabled", Lua_IsClampEnabled },
+		{ "SetClampEnabled", Lua_SetClampEnabled },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::CameraMT, lua::metatables::CameraMT, functions);

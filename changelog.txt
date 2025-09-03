@@ -4,6 +4,8 @@ v1.0.x -
 Additions:
 * Camera:
 	- Update(bool Interpolated = false)
+	- SetClampEnabled(bool clamped)
+	- IsClampEnabled
 * ChallengeParam:
 	- IsBeastPath
 * Game:
