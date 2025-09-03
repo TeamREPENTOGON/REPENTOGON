@@ -5325,6 +5325,7 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 
 		lua::LuaResults results = lua::LuaCaller(L).push(preCallbackId)
 			.push(this->_variant)
+			.push(this, lua::Metatables::ENTITY_PICKUP)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -5343,6 +5344,7 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 
 		lua::LuaResults results = lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_variant)
+			.push(this, lua::Metatables::ENTITY_PICKUP)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
