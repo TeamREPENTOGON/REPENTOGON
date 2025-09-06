@@ -14,17 +14,35 @@ bool __stdcall ShouldClampCamera() {
 }
 
 void ASMPatchCameraBoundOverride() {
-	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Camera_ClampOverride);
+	void* clampToRoomAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Camera_ClampOverride);
 
-	ASMPatch patch;
+	ASMPatch clampToRoomPatch;
 
-	patch.AddInternalCall(ShouldClampCamera)
-		.AddBytes("\x85\xC0") // test eax, eax
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x2 + 0x12)
+	clampToRoomPatch.AddInternalCall(ShouldClampCamera)
+		.AddBytes("\x84\xC0") // test al, al
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)clampToRoomAddr + 0x14)
 		.AddBytes("\x8B\x45\x08") // mov eax, dword ptr [ebp + 0x8]
-		.AddRelativeJump((char*)addr + 0x5);
+		.AddRelativeJump((char*)clampToRoomAddr + 0x5);
 
-	sASMPatcher.PatchAt(addr, &patch);
+	sASMPatcher.PatchAt(clampToRoomAddr, &clampToRoomPatch);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::ALL & ~ASMPatch::SavedRegisters::Registers::EDX, false);
+	void* ultraSmoothAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Camera_SlowStopClampOverride);
+
+	ASMPatch smoothUpdatePatch;
+	smoothUpdatePatch.Push(ASMPatch::Registers::EDX)
+		.PreserveRegisters(savedRegisters)
+		.AddInternalCall(ShouldClampCamera)       
+		.AddBytes("\x0F\xB6\xD0") // movzx edx, al
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x85\xD2") // test edx, edx
+		.Pop(ASMPatch::Registers::EDX)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)ultraSmoothAddr + 0x9)
+		.AddBytes(ByteBuffer().AddAny((char*)ultraSmoothAddr, 0x9)) // Restore original instructions
+		.AddRelativeJump((char*)ultraSmoothAddr + 0x9);
+
+	sASMPatcher.PatchAt(ultraSmoothAddr, &smoothUpdatePatch);
+
 }
 
 // Rooms only have one camera instance, so we don't really need to stress about having
