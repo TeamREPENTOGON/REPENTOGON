@@ -165,6 +165,12 @@ Additions:
 	- MC_PRE_ADD_TRINKET(player, TrinketType, firstTime)
 		Return false to cancel, or a different TrinketType to change the trinket being added.
 	- MC_POST_ITEM_OVERLAY_RENDER
+	- MC_PRE_OPEN_CHEST(EntityPickup, EntityPlayer?)
+		Optional param: PickupVariant
+		Fires before a chest is opened. Return false to prevent it from opening.
+	- MC_POST_OPEN_CHEST(EntityPickup, EntityPlayer?)
+		Optional param: PickupVariant
+		Fires after a chest opened.
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
