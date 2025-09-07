@@ -100,9 +100,10 @@ Additions:
 	- Added support for modded/text trinkets on the "trinket" param (I forgot trinkets existed tbh, lol)
 	- Added "hideachievement" attribute, which hides the character from the character select menu until the corresponding achievement is obtained
 		(Doesn't do anything for tainted characters, since whether or not they appear on the menu is entirely dependant on the non-tainted character)
-	- Added "activegfx" attribute, which sets separate active item image for rendering in active slot.
 	- Added "hurtsound" attribute, which overrides the player's damage sound.
 	- Added "deathsound" attribute, which overrides the player's death sound.
+* Items.xml
+	- Added "activegfx" attribute, which sets separate active item image for rendering in active slot.
 * ModCallbacks:
 	- MC_PRE_PLAYER_POCKET_ITEMS_SWAP(EntityPlayer player)
 		Triggers when the player swaps their pocket items using the action drop button (even if they are empty).
