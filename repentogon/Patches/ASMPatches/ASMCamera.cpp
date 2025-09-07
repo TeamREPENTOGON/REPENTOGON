@@ -24,7 +24,7 @@ void ASMPatchCameraBoundClampOverride() {
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)clampToRoomAddr + 0x14)
-		.AddBytes("\x8B\x45\x08") // mov eax, dword ptr [ebp + 0x8]
+		.AddBytes(ByteBuffer().AddAny((char*)clampToRoomAddr + 0x2, 0x3))
 		.AddRelativeJump((char*)clampToRoomAddr + 0x5);
 
 	sASMPatcher.PatchAt(clampToRoomAddr, &clampToRoomPatch);
