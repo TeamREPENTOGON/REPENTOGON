@@ -35,6 +35,7 @@
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
+#include "ASMPatches/ASMCamera.h"
 
 #include "ASMPatcher.hpp"
 
@@ -184,6 +185,10 @@ void PerformASMPatches() {
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
 	ASMPatchCoopWheelRespectModdedAchievements();
+
+	// Camera
+	ASMPatchCameraBoundClampOverride();
+	ASMPatchCameraBoundSlowStopOverride();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
