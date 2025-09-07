@@ -6,4 +6,5 @@ struct RoomCameraData {
 
 extern RoomCameraData roomCameraData;
 
-void ASMPatchCameraBoundOverride();
+void ASMPatchCameraBoundClampOverride();
+void ASMPatchCameraBoundSlowStopOverride();

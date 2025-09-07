@@ -187,7 +187,8 @@ void PerformASMPatches() {
 	ASMPatchCoopWheelRespectModdedAchievements();
 
 	// Camera
-	ASMPatchCameraBoundOverride();
+	ASMPatchCameraBoundClampOverride();
+	ASMPatchCameraBoundSlowStopOverride();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
