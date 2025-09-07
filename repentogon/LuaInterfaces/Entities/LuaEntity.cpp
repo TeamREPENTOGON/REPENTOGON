@@ -266,7 +266,7 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 	const float delay = (float)luaL_checknumber(L, 3);
 	Vector res = entity->GetPredictedTargetPosition(target, delay);
 
-	lua::luabridge::UserdataPtr::push(L, &res, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), res);
 
 	return 1;
 }

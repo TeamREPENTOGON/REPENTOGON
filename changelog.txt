@@ -231,6 +231,8 @@ Fixes:
 * Players can no longer get stuck with buggy heart containers when changed to soul/bone heart health types (they get converted by default).
 * Fixed player:Revive reviving The Forgotten with a bugged half soul heart that cannot be removed.
 * Fixed a possible error when a lua error occurs during a custom callback that uses a table as its callback ID.
+* Entity:
+	- Fixed GetPredictedTargetPosition returning unusable data.
 * EntityPlayer:
 	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
 	- Fixed SetFootprintColor crashing
