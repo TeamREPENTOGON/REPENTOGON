@@ -91,7 +91,7 @@ ___
 
 ___
 ### ReplaceSpritesheet () {: aria-label='Functions' }
-#### void ReplaceSpritesheet ( int LayerId, string PngFilename, boolean LoadGraphics = false ) {: .copyable aria-label='Functions' }
+#### boolean ReplaceSpritesheet ( int LayerId, string PngFilename, boolean LoadGraphics = false ) {: .copyable aria-label='Functions' }
 Similar to [Sprite.ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to `PngFilename` if possible.
 
 ___
