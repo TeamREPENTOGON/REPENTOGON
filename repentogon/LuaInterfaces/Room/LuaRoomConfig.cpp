@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	bool reduceWeight = lua::luaL_checkboolean(L, 2);
 
 	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage > 17 && stage < 26) || stage > 36) {
+	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
 		return luaL_error(L, "Invalid stage %d\n", stage);
 	}
 
