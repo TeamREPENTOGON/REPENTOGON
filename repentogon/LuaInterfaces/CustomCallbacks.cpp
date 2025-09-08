@@ -2298,7 +2298,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
-HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> void) {
+HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> bool) {
 	const int callbackid1 = 1116;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid1 - 1000)) {
@@ -2321,7 +2321,9 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) ->
 			}
 		}
 	}
-	super(LayerID, PngFilename);
+
+	bool successful = super(LayerID, PngFilename);
+
 	const int callbackid2 = 1117;
 	if (CallbackState.test(callbackid2 - 1000)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -2332,6 +2334,8 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) ->
 			.push(PngFilename.c_str())
 			.call(1);
 	}
+
+	return successful;
 }
 
 //PLAYER_GET_HEART_LIMIT (id: 1074)

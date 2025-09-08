@@ -8,7 +8,7 @@ __thiscall void ANM2::Update();
 __thiscall void ANM2::SetLayerFrame(int layerid,int frame);
 
 "558bec8b45??83ec0853":
-__thiscall void ANM2::ReplaceSpritesheet(int LayerId, std_string &PngFilename);
+__thiscall bool ANM2::ReplaceSpritesheet(int LayerId, std_string &PngFilename);
 
 "558bec6aff68????????64a1????????5083ec28535657a1????????33c5508d45??64a3????????8bf933c9":
 __thiscall void ANM2::LoadGraphics(bool unk);

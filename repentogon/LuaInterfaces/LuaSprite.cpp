@@ -20,13 +20,15 @@ LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 
 	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
 
-	anm2->ReplaceSpritesheet(layerId, filename);
+	bool successful = anm2->ReplaceSpritesheet(layerId, filename);
 
-	if (loadGraphics) {
+	if (successful && loadGraphics) {
 		anm2->LoadGraphics(false);
 	}
 
-	return 0;
+	lua_pushboolean(L, successful);
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_SpriteIsOverlayEventTriggered)
