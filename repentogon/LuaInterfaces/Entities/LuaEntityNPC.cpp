@@ -388,12 +388,17 @@ LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
 	std::string input;
 
 	npc->translate_gfx_path(input, newSpriteSheet);
-	npc->_sprite.ReplaceSpritesheet(layerId, input);
 
-	if (loadGraphics) {
+
+	bool successful = npc->_sprite.ReplaceSpritesheet(layerId, input);
+
+	if (successful && loadGraphics) {
 		npc->_sprite.LoadGraphics(false);
 	}
-	return 0;
+
+	lua_pushboolean(L, successful);
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
