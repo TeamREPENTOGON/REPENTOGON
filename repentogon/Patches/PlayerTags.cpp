@@ -127,8 +127,46 @@ void ASMPatchPlayerItemNoExpansionPack() {
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
+//stageportrait attribute
+
+std::string* __stdcall GetPlayerStagePortraitFilename(int playerType) {
+	static std::string result;
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
+
+	std::string portraitRoot = playerXML["bigportraitroot"];
+
+	auto stagePortraitIt = playerXML.find("stageportrait");
+	if (stagePortraitIt != playerXML.end() && !stagePortraitIt->second.empty()) {
+		result = portraitRoot + stagePortraitIt->second;
+		return &result;
+	}
+
+	return nullptr;
+}
+
+void ASMPatchNightmareSceneStagePortrait() {
+	ASMPatch patch;
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_PortraitOverride);
+
+	printf("[REPENTOGON] Patching NightmareScene::Show for stageportrait set at %p\n", addr);
+
+	patch.Push(ASMPatch::Registers::EDI)   // playerType
+		.AddInternalCall(GetPlayerStagePortraitFilename)
+		.AddBytes("\x85\xC0")  // test eax, eax
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6)) //restoring original command here
+		.AddBytes("\x74\x08") // je + 0x8
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX) //copy string with our stage portrait to ESI
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x9)  // Skipping playerConfig portrait push
+		.AddRelativeJump((char*)addr + 0x6);  // Jump to sprite loading from playerConfig portrait
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForPlayerCustomTags() {
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchPlayerItemNoExpansionPack();
+	ASMPatchNightmareSceneStagePortrait();
 }
