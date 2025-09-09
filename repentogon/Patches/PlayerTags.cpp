@@ -164,9 +164,52 @@ void ASMPatchNightmareSceneStagePortrait() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+std::string* __stdcall GetPlayerExtraStagePortraitFilename(EntityConfig_Player* playerConfig, NightmareScene* scene) {
+	static std::string result;
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerConfig->_id);
+
+	std::string portraitRoot = playerXML["bigportraitroot"];
+
+	auto stagePortraitIt = playerXML.find("extrastageportrait");
+	if (stagePortraitIt != playerXML.end() && !stagePortraitIt->second.empty()) {
+		result = portraitRoot + stagePortraitIt->second;
+
+		scene->_playerExtraPortraitANM2.Load(result, true);
+		scene->_playerExtraPortraitANM2.Play(scene->_playerExtraPortraitANM2._animDefaultName.c_str(), false);
+
+		return &result;
+	}
+
+	return nullptr;
+}
+
+void ASMPatchNightmareSceneExtraStagePortrait() {
+	ASMPatch patch;
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+
+	const int nightmareSceneOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_ExtraPortraitOverrideCheckNightmareOffset) + 0x2);
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_ExtraPortraitOverrideCheck);
+
+	printf("[REPENTOGON] Patching NightmareScene::Show for extrastageportrait set at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, nightmareSceneOffset)
+		.Push(ASMPatch::Registers::ESI)
+		.AddInternalCall(GetPlayerExtraStagePortraitFilename)
+		.AddBytes("\x85\xC0")  // test eax, eax
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x3D)  // Skipping playerConfig portrait push
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7)) //restoring original command here
+		.AddRelativeJump((char*)addr + 0x7);  // Jump to sprite loading from playerConfig portrait
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForPlayerCustomTags() {
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchPlayerItemNoExpansionPack();
 	ASMPatchNightmareSceneStagePortrait();
+	ASMPatchNightmareSceneExtraStagePortrait();
 }
