@@ -92,3 +92,6 @@ asm Player_AstralProjectionDeathSoundOverride "c74424??d9000000e8????????f30f104
 
 asm Camera_ClampOverride "74??8b45??f30f1128";
 asm Camera_SlowStopClampOverride "894f??8b40??8947??a1";
+
+// Custom stageportrait attribute
+asm StagePortrait_PortraitOverride "8bbd????????83c64c";
