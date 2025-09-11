@@ -148,18 +148,21 @@ std::string* __stdcall GetPlayerStagePortraitFilename(int playerType) {
 void ASMPatchNightmareSceneStagePortrait() {
 	ASMPatch patch;
 
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_PortraitOverride);
 
 	printf("[REPENTOGON] Patching NightmareScene::Show for stageportrait set at %p\n", addr);
 
-	patch.Push(ASMPatch::Registers::EDI)   // playerType
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)   // playerType
 		.AddInternalCall(GetPlayerStagePortraitFilename)
 		.AddBytes("\x85\xC0")  // test eax, eax
+		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6)) //restoring original command here
-		.AddBytes("\x74\x08") // je + 0x8
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x6) // Jump to sprite loading from playerConfig portrait  
 		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX) //copy string with our stage portrait to ESI
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x9)  // Skipping playerConfig portrait push
-		.AddRelativeJump((char*)addr + 0x6);  // Jump to sprite loading from playerConfig portrait
+		.AddRelativeJump((char*)addr + 0x9);  // Skipping playerConfig portrait push
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -190,6 +193,7 @@ void ASMPatchNightmareSceneExtraStagePortrait() {
 
 	const int nightmareSceneOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_ExtraPortraitOverrideCheckNightmareOffset) + 0x2);
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::StagePortrait_ExtraPortraitOverrideCheck);
+	const int jumpoffset = 0x9 + *(int8_t*)((char*)addr + 0x8);  // Read from JZ
 
 	printf("[REPENTOGON] Patching NightmareScene::Show for extrastageportrait set at %p\n", addr);
 
@@ -199,7 +203,7 @@ void ASMPatchNightmareSceneExtraStagePortrait() {
 		.AddInternalCall(GetPlayerExtraStagePortraitFilename)
 		.AddBytes("\x85\xC0")  // test eax, eax
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x3D)  // Skipping playerConfig portrait push
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jumpoffset)  // Skipping playerConfig portrait push
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7)) //restoring original command here
 		.AddRelativeJump((char*)addr + 0x7);  // Jump to sprite loading from playerConfig portrait
 
