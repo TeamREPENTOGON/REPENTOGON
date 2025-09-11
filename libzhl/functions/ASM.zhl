@@ -90,5 +90,11 @@ asm Player_SoulOfLazarusDeathSoundOverride "68d9000000e8????????837b??00";
 asm Player_SoulDeathSoundOverride "68d9000000f30f1015";
 asm Player_AstralProjectionDeathSoundOverride "c74424??d9000000e8????????f30f104424";
 
+// Camera 
+
 asm Camera_ClampOverride "74??8b45??f30f1128";
 asm Camera_SlowStopClampOverride "894f??8b40??8947??a1";
+
+// Custom Champion Support
+
+asm Champion_ColorSelect "8b4d??8bd6d3ea8b4d??33d68bc2d3e08b4d??33c28bf0d3ee33f08b0d";

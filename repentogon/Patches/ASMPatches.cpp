@@ -36,6 +36,7 @@
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
+#include "ASMPatches/ASMChampion.h"
 
 #include "ASMPatcher.hpp"
 
@@ -203,6 +204,9 @@ void PerformASMPatches() {
 	ASMPatchesForCardsExtras();
 	ASMFixes();
 	HookImGui();
+
+	// Champion
+	ASMChampion::ASMPatchChampionInitialization();
 
 	// Sprite
 	ASMPatchesForANM2Extras();
