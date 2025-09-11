@@ -1,26 +1,11 @@
 #include <map>
 #include <vector>
 #include "IsaacRepentance.h"
+
 namespace ASMChampion {
-	/*
-		Some champions may only appear in certain points of the game. Furthermore,
-		the odds of champions change depending on the player's LevelStage.
-	*/
-	enum class ChampionTier {
-		/** LevelStage 1 - 2 **/
-		EARLY_GAME = 0,
-
-		/** LevelStage 3 - 4 **/
-		MID_GAME = 1,
-
-		/** LevelStage 5 - 6 **/
-		LATE_GAME = 2,
-	};
-
-	// <ChampionColor, weight>
-    std::map<ChampionTier, std::vector<std::pair<eChampionColor, float>>> champion_chances = {
+    std::vector<std::pair<eChampionColor, float>> championChances[] = {
+        // For LevelStage 1 - 2
         {
-            ChampionTier::EARLY_GAME, {
             {eChampionColor::CHAMPION_ORANGE, 0.05f},
             {eChampionColor::CHAMPION_BLUE, 0.05f},
             {eChampionColor::CHAMPION_DARK_RED, 0.05f},
@@ -34,10 +19,10 @@ namespace ASMChampion {
             {eChampionColor::CHAMPION_GREY, 0.1167f},
             {eChampionColor::CHAMPION_PINK, 0.1167f},
             {eChampionColor::CHAMPION_LIGHT_BLUE, 0.1167f},
-        }
-    },
-    {
-        ChampionTier::MID_GAME, {
+        },
+
+        // For LevelStage 3 - 4
+        {
             {eChampionColor::CHAMPION_ORANGE, 0.05f},
             {eChampionColor::CHAMPION_BLUE, 0.05f},
             {eChampionColor::CHAMPION_DARK_RED, 0.05f},
@@ -54,10 +39,10 @@ namespace ASMChampion {
             {eChampionColor::CHAMPION_GREY, 0.1f},
             {eChampionColor::CHAMPION_PINK, 0.1f},
             {eChampionColor::CHAMPION_LIGHT_BLUE, 0.1f},
-        }
-    },    
-    {
-        ChampionTier::LATE_GAME, {
+        },
+
+        // For LevelStage 5+
+        {
             {eChampionColor::CHAMPION_WHITE, 0.005f},
             {eChampionColor::CHAMPION_RAINBOW, 0.005f},
             {eChampionColor::CHAMPION_TRANSPARENT, 0.01f},
@@ -85,7 +70,6 @@ namespace ASMChampion {
             {eChampionColor::CHAMPION_PINK, 0.0929f},
             {eChampionColor::CHAMPION_LIGHT_BLUE, 0.0929f},
         }
-    }
     };
 
 	void ASMPatchChampionInitialization();
