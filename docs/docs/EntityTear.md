@@ -15,6 +15,13 @@ Now accepts a `Force` argument to force the tear into re-evaluating what tear sc
 ___
 ## Functions
 
+### FireSplitTear () {: aria-label='Functions' }
+#### [EntityTear](EntityTear.md) FireSplitTear ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, float DamageMultiplier = 0.5, float SizeMultiplier = 0.6, int Variant = 0, [SplitTearType](enums/SplitTearType.md) splitType = SplitTearType.SPLIT_GENERIC ) {: .copyable aria-label='Functions' }
+Fire a new tear that inherits many attributes from this tear (flags, damage, size, color, etc).
+
+This will also trigger the `MC_POST_FIRE_SPLIT_TEAR` callback. For custom effects, a string may be passed in place of the [SplitTearType](enums/SplitTearType.md).
+
+___
 ### GetDeadEyeIntensity () {: aria-label='Functions' }
 #### float GetDeadEyeIntensity ( ) {: .copyable aria-label='Functions' }
 Returns the intensity value of the tear as a result of the Dead Eye collectible. It is between `0` and `1`.
