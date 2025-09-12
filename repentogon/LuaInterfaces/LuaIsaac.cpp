@@ -787,6 +787,22 @@ LUA_FUNCTION(Lua_IsaacIsShuttingDown) {
 	return 1;
 }
 
+
+LUA_FUNCTION(Lua_GetChampionColorByName) {
+	std::string colorName = stringlower(luaL_checkstring(L, 1));
+
+	if (XMLStuff.ChampionColorData->byname.count(colorName) > 0)
+	{
+		XMLAttributes color = XMLStuff.ChampionColorData->GetNodeByName(colorName);
+		lua_pushinteger(L, stoi(color["id"]));
+		return 1;
+	};
+
+	lua_pushinteger(L, -1);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -842,6 +858,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetChampionColorByName", Lua_GetChampionColorByName);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 

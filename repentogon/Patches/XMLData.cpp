@@ -54,7 +54,7 @@ unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
 
-XMLDataHolder* xmlnodetypetodata[35] = {
+XMLDataHolder* xmlnodetypetodata[36] = {
 	XMLStuff.ModData,             // 0
 	NULL,//XMLStuff.EntityData,          // 1
 	XMLStuff.PlayerData,          // 2
@@ -89,7 +89,8 @@ XMLDataHolder* xmlnodetypetodata[35] = {
 	XMLStuff.BossColorData,         // 31
 	XMLStuff.FxLayerData,       // 32
 	XMLStuff.FxParamData,        // 33
-	XMLStuff.FxRayData        // 34
+	XMLStuff.FxRayData,        // 34
+	XMLStuff.ChampionColorData // 35
 };
 
 
@@ -111,6 +112,7 @@ void ClearXMLData() {
 	XMLStuff.WispData->Clear();
 	XMLStuff.WispColorData->Clear();
 	XMLStuff.ModData->Clear();
+	XMLStuff.ChampionColorData->Clear();
 }
 
 //lazy mem clears to prevent leaks
@@ -2414,6 +2416,9 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		LoadGenericXMLData(XMLStuff.FxRayData, node);
 		UpdateRelEntTracker(XMLStuff.FxRayData, &XMLStuff.BackdropData->relfxrays, "backdrop");
 		break;
+	case 29: //championcolors
+		LoadGenericXMLData(XMLStuff.ChampionColorData, node);
+		break;
 	}
 	//printf("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
 }
@@ -3490,6 +3495,40 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
+					else if (strcmp(filename.c_str(), "championcolors.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>();
+							sourceid->name("sourceid");
+							sourceid->value(lastmodid.c_str());
+							clonedNode->append_attribute(sourceid);
+
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+
+							xmlmaxnode[filename]++;
+							if (node.count("id") == 0) {
+								xml_attribute<char>* newid = new xml_attribute<char>();
+								newid->name("id");
+								newid->value(IntToChar(xmlmaxnode[filename]));
+								clonedNode->append_attribute(newid);
+							}
+							else {
+								if (node.count("relativeid") == 0) {
+									xml_attribute<char>* newid = new xml_attribute<char>();
+									newid->name("relativeid");
+									newid->value(clonedNode->first_attribute("id")->value());
+									clonedNode->append_attribute(newid);
+								}
+								clonedNode->first_attribute("id")->value(IntToChar(xmlmaxnode[filename]));
+							}
+							inheritdaddy(auxnode, clonedNode);
+							root->append_node(clonedNode);
+						}
+					}
 					else if (strcmp(filename.c_str(), "ambush.xml") == 0) {
 						resourcescroot = resourcesdoc->first_node("bossrush"); //only bossrush works anyway, the rest was deprecated in rpeentance, so why bother?
 						root = xmldoc->first_node("bossrush");
@@ -3826,12 +3865,16 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
+		}
+		else if (charfind(xmldata, "<championcolors", 50)) {
+			super(BuildModdedXML(xmldata, "championcolors.xml", false));
+		}
 		//}
 		//else if (charfind(xmldata, "<stringtab", 50)) {		//disableddue to mem corruption 
 			//char * notxmldata = new char[strlen(xmldata) + 1];
 			//strcpy(notxmldata, xmldata);
 			//super(BuildModdedXML(notxmldata, "stringtable.sta", true));
-		}else if (charfind(xmldata, "<reci",  50)) {
+		else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;

@@ -761,6 +761,7 @@ struct XMLData {
 	XMLGeneric* FxParamData = new XMLGeneric(0);
 	XMLGeneric* FxRayData = new XMLGeneric(0);
 	XMLBossColor* BossColorData = new XMLBossColor();
+	XMLGeneric* ChampionColorData = new XMLGeneric(0);
 
 	XMLMod* ModData = new XMLMod();
 
@@ -923,6 +924,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["fxlayers"] = 26;
 	xmlnodeenum["fxparams"] = 27;
 	xmlnodeenum["fxrays"] = 28;
+	xmlnodeenum["championcolors"] = 29;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -933,6 +935,7 @@ inline void initxmlmaxnodeenum() {
 	xmlmaxnode["playerforms.xml"] = 14;
 	xmlmaxnode["cutscenes.xml"] = 26;
 	xmlmaxnode["backdrops.xml"] = 60;
+	xmlmaxnode["championcolors.xml"] = 25;
 }
 
 extern unordered_map<string, int> xmlfullmerge;
@@ -940,7 +943,7 @@ inline void initxmlfullmergelist() {
 	xmlfullmerge["bosscolors.xml"] = 1;	
 }
 
-extern XMLDataHolder* xmlnodetypetodata[35];
+extern XMLDataHolder* xmlnodetypetodata[36];
 extern XMLData XMLStuff;
 
 #endif
