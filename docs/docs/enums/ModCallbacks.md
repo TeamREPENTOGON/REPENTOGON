@@ -486,6 +486,19 @@ Returning any value will have no effect on later callback executions.
 |:--|:--|:--|:--|:--|
 |1257 |MC_POST_FIRE_KNIFE {: .copyable } | ([EntityKnife](../EntityKnife.md) Knife) | - | void |
 
+### MC_POST_FIRE_SPLIT_TEAR {: .copyable }
+Called when a tear is fired from an existing tear/laser/knife.
+
+This includes various vanilla effects such as Cricket's Body, The Parasite, Mucormycosis, etc. The originating effect is identified by the [SplitTearType](SplitTearType.md) value.
+
+For mods, this callback also runs when a tear is fired via [EntityTear:FireSplitTear()](../EntityTear.md#firesplittear), [EntityLaser:FireSplitTear()](../EntityLaser.md#firesplittear), or [EntityKnife:FireSplitTear()](../EntityKnife.md#firesplittear). The `FireSplitTear` functions allow for a string to be passed in place of a [SplitTearType](SplitTearType.md), and that string will also appear in place of the [SplitTearType](SplitTearType.md) in this callback.
+
+Returning any value will have no effect on later callback executions.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1258 |MC_POST_FIRE_SPLIT_TEAR {: .copyable } | ([EntityTear](../EntityTear.md) Tear, [Entity](../Entity.md) SourceEntity, [SplitTearType](SplitTearType.md) or string) | [SplitTearType](SplitTearType.md) or string | void |
+
 ### MC_POST_FIRE_SWORD {: .copyable }
 Called when the player swings the sword from Spirit Sword.
 
