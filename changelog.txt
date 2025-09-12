@@ -96,6 +96,10 @@ Additions:
 * CharacterMenu
 	- GetPlayerTypeFromCharacterMenuID(int CharacterMenuID, bool Tainted)
 		Tainted boolean defaults to current menu if unspecified.
+	- GetCharacterMenuIDFromPlayerType(int PlayerType)
+		Note that the normal/tainted versions of a character have the same CharacterMenuID.
+	- GetSelectedCharacterPlayerType()
+		Returns the PlayerType for the character currently selected in the menu.
 * Players.xml
 	- Added support for modded/text trinkets on the "trinket" param (I forgot trinkets existed tbh, lol)
 	- Added "hideachievement" attribute, which hides the character from the character select menu until the corresponding achievement is obtained

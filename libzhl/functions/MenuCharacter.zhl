@@ -20,6 +20,12 @@ __thiscall void Menu_Character::SelectRandomChar();
 "558bec83e4f883ec2056578bf933c0":
 __thiscall void Menu_Character::UpdateRotations();
 
+"558bec51538bd956578dbb":
+__thiscall void Menu_Character::DoPageSwap();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec40a1????????33c58945??5657508d45??64a3????????8bf98b43":
+__thiscall void Menu_Character::ChangeCharacterPage(int menu);
+
 struct Menu_Character depends (ANM2, CompletionWidget) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return &this->_completionWidget; } 
@@ -69,14 +75,20 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     int _numCharacters : 0xb18;
     int _numCharacters_MINUS_SelectedEntry : 0xb1c;
     ANM2 _CharacterPortraitsSprite : 0xb20;
+    float _horizontalScrollPosition : 0xc34;
     ANM2 _SeedEntrySprite : 0xc50;
-    int _characterMenuShown : 0xdb4; /* 0 Normal 1 Tained */
+    int _characterMenuShown : 0xdb4; /* 0 Normal 1 Tainted */
     ANM2 _PageSwapWidgetSprite : 0xdb8;
     ANM2 _TaintedMenuBGDecoSprite : 0xecc;
 } : 0xfe8;
 
+"568b71??578b3d":
+__thiscall bool Menu_Character_Entry::IsCharacterAvailable(int unused);
+
 struct Menu_Character_Entry {
+	char* animationName : 0x0;
 	int playerType : 0x4;
+	bool hidden : 0x8;
 } : 0x18;
 
 "b8(????????)895424??33f6":
