@@ -20,7 +20,7 @@
 #include "libzhl.h"
 
 extern "C" {
-	__declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
+	__declspec(dllexport) int InitZHL(void (__stdcall*ptr)(), void**, char*);
 }
 
 class LIBZHL_API ASMPatcher
@@ -115,11 +115,11 @@ private:
 	// This function CANNOT return NULL.
 	void* AllocPage();
 
-	// Return either an existing page, or a new page if writing the patch would 
-	// go out of the bounds of the last allocated page. 
+	// Return either an existing page, or a new page if writing the patch would
+	// go out of the bounds of the last allocated page.
 	// The returned page will always have at least read and write privileges.
-	// If withExecute is set to false, the page will not have execute permission 
-	// regardless of its original protection. If withExecute is set to true, 
+	// If withExecute is set to false, the page will not have execute permission
+	// regardless of its original protection. If withExecute is set to true,
 	// the page will have execute permission, regardless of its original protection.
 	// By construction, both these functions CANNOT return NULL.
 	void* GetAllocPage(const char* text, bool withExecute);
@@ -181,10 +181,10 @@ private:
 
 public:
 	/* Convert an integer to its hex representation as a string, performing
-	 * a zero extension. 
-	 * 
+	 * a zero extension.
+	 *
 	 * For 16 and 32 bits versions, endianConvert can be used to flip the bytes of
-	 * the result if needed. 
+	 * the result if needed.
 	 */
 	static ByteBuffer ToHexString(int8_t x);
 	static ByteBuffer ToHexString(int16_t x, bool endianConvert);
@@ -225,7 +225,7 @@ public:
 
 	private:
 		friend ASMPatch;
-		friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
+		friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)(), void**, char*);
 
 		void Restore();
 		uint32_t GetMask() const;
@@ -292,12 +292,12 @@ public:
 
 		size_t Size() const { return _size;  }
 
-		void Free() { 
+		void Free() {
 			if (_freed) {
 				throw std::runtime_error("Stack space deallocated multiple times");
 			}
 
-			_freed = true;  
+			_freed = true;
 		}
 
 	private:
@@ -315,16 +315,16 @@ public:
 	ASMPatch& AddZeroes(uint32_t n = 1);
 	ASMPatch& AddRelativeJump(void* target);
 	ASMPatch& AddConditionalRelativeJump(ASMPatcher::CondJumps cond, void* target);
-	/* Move a value from memory into a register. Memory access is performed through 
+	/* Move a value from memory into a register. Memory access is performed through
 	 * a register. This allows moves of the form "mov dst, [src + offset]".
-	 * 
+	 *
 	 * Do not use with a src register of ESP or EBP as they use the SIB byte which is not
 	 * supported yet.
 	 */
 	ASMPatch& MoveFromMemory(Registers src, int32_t offset, Registers dst);
-	/* Move a value from a register into memory. Memory access is performed through 
+	/* Move a value from a register into memory. Memory access is performed through
 	 * a register. This allows moves of the form "mov dst, [src + offset]".
-	 * 
+	 *
 	 * Do not use with a src register of ESP or EBP as they use the SIB byte which is not
 	 * supported yet.
 	 */
@@ -334,26 +334,26 @@ public:
 	ASMPatch& MoveImmediate(Registers dst, int32_t immediate);
 
 	/* Copy the value of one register into another.
-	 * 
-	 * This function will only work with the low 32-bits of registers. For 
+	 *
+	 * This function will only work with the low 32-bits of registers. For
 	 * instance, MoveImmediate(XMM0, EAX) will copy the value of EAX in the
-	 * low 32 bits of XMM0 (MM0). 
-	 * 
-	 * Please remember that moving to an (X)MM register zeroes the bits that 
+	 * low 32 bits of XMM0 (MM0).
+	 *
+	 * Please remember that moving to an (X)MM register zeroes the bits that
 	 * are unaffected.
 	 */
-	ASMPatch& CopyRegister(std::variant<Registers, XMMRegisters> const& dst, 
+	ASMPatch& CopyRegister(std::variant<Registers, XMMRegisters> const& dst,
 		std::variant<Registers, XMMRegisters> const& src);
 
-	/* Copy the value of one register into another. 
-	 * 
-	 * This function will only with the low 8-bits of registers. As a consequence, 
-	 * you cannot use to move to/from (X)MM registers. You can only use with 
+	/* Copy the value of one register into another.
+	 *
+	 * This function will only with the low 8-bits of registers. As a consequence,
+	 * you cannot use to move to/from (X)MM registers. You can only use with
 	 * general purpose registers.
 	 */
 	ASMPatch& CopyRegister8(Registers dst, Registers src);
 
-	/* Allocate space on the stack for the return value of a function that returns 
+	/* Allocate space on the stack for the return value of a function that returns
 	 * a complex type. */
 	ASMPatch& AllocateReturn(StackSpace& space) {
 		size_t s = space.Size();
@@ -364,7 +364,7 @@ public:
 		return AddBytes(bytes);
 	}
 
-	/* Free space on the stack for the return value of a function that returns 
+	/* Free space on the stack for the return value of a function that returns
 	 * a complex type. */
 	ASMPatch& FreeReturn(StackSpace& space) {
 		size_t s = space.Size();
@@ -375,12 +375,12 @@ public:
 		space.Free();
 		return AddBytes(bytes);
 	}
-	
+
 	/* typedef std::variant<Registers, int32_t> LeaOperand;
 	typedef std::tuple<LeaOps, LeaOperand> LeaParameter;
 	ASMPatch& LoadEffectiveAddress(Registers dst, Registers src, std::optional<LeaParameter> firstParam, std::optional<LeaParameter> secondParam); */
 
-	// Do not use this function with ESP or EBP as the source register as they use the 
+	// Do not use this function with ESP or EBP as the source register as they use the
 	// SIB byte which is not supported for now.
 	ASMPatch& LoadEffectiveAddress(Registers src, int32_t offset, Registers dst);
 	ASMPatch& PreserveRegisters(SavedRegisters& registers);
@@ -391,9 +391,9 @@ public:
 	// Push [reg - imm32].
 	ASMPatch& Push(Registers ref, int32_t imm32);
 	ASMPatch& Pop(Registers reg);
-	/* Add a call instruction. The jump is relative and uses the 0xE8 opcode for the 
+	/* Add a call instruction. The jump is relative and uses the 0xE8 opcode for the
 	 * call instruction. Registers are not preserved: you must take care of that yourself.
-	 * 
+	 *
 	 * addr is the address of the function to call.
 	 */
 	ASMPatch& AddInternalCall(void* addr);
@@ -470,7 +470,7 @@ private:
 		void* _target;
 	};
 
-	friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)());
+	friend __declspec(dllexport) int InitZHL(void (__stdcall*ptr)(), void**, char*);
 	static void _Init();
 
 	uint8_t RegisterTox86(Registers reg);
@@ -479,7 +479,7 @@ private:
 	// friend void* ASMPatcher::PatchAt(void*, const char*);
 
 	std::bitset<8> ModRM(Registers reg, int32_t value);
-	std::bitset<8> ModRM(std::variant<Registers, XMMRegisters> const& src, 
+	std::bitset<8> ModRM(std::variant<Registers, XMMRegisters> const& src,
 		std::variant<Registers, XMMRegisters> const& dst, bool isRegDst);
 	std::vector<std::unique_ptr<ASMNode>> _nodes;
 	static std::map<ASMPatch::Registers, std::bitset<8>> _ModRM;

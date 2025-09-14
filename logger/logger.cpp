@@ -82,7 +82,7 @@ void Logger::Log(LogLevel level, const char* fmt, va_list va) {
         if (!buffer) {
             std::exit(-1);
         }
-        
+
         char* position = buffer;
         position += strftime(buffer, timeLength, "[%m-%d-%Y %H:%M:%S] ", asTm);
         if (!_prefix.empty()) {

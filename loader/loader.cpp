@@ -89,7 +89,7 @@ DWORD RedirectLua(FILE* f, HMODULE* outLua) {
 		++resolvedData;
 	}
 
-	/* This is a point of no return. Either we manage to redirect everything, 
+	/* This is a point of no return. Either we manage to redirect everything,
 	 * or the process dies.
 	 */
 	for (FunctionMapping& mapping : functionMapping) {
@@ -120,6 +120,8 @@ DWORD RedirectLua(FILE* f, HMODULE* outLua) {
 }
 
 static HMODULE luaHandle = NULL;
+static void* __poisonAddr = NULL;
+static char __poisonValue = 0;
 
 void __stdcall LoadMods() {
 	FILE* f = fopen("repentogon.log", "a");
@@ -129,6 +131,8 @@ void __stdcall LoadMods() {
 	memset(&data, 0, sizeof(data));
 	HANDLE files = FindFirstFileA("zhl*.dll", &data);
 	BOOL ok = (files != INVALID_HANDLE_VALUE);
+	bool errorsEncountered = false;
+	bool repentogonFound = false;
 	while (ok) {
 		if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || !strcmp(data.cFileName, "zhlLoader.dll")) {
 			HMODULE mod = LoadLibraryA(data.cFileName);
@@ -136,13 +140,26 @@ void __stdcall LoadMods() {
 				Log(f, "WARN", "Unable to load mod %s\n", data.cFileName);
 			}
 			else {
-				FARPROC init = GetProcAddress(mod, "ModInit");
+				int (*init)() = (int(*)())GetProcAddress(mod, "ModInit");
 				if (!init) {
-					Log(f, "WARN", "No ModInit found in mod %s\n", data.cFileName);
-					FreeLibrary(mod);
+					auto repentogonInit = (int(*)(void*, char))GetProcAddress(mod, "InitRepentogon");
+					if (!repentogonInit) {
+						Log(f, "WARN", "No ModInit found in mod %s\n", data.cFileName);
+						FreeLibrary(mod);
+					} else {
+						repentogonFound = true;
+						if (repentogonInit(__poisonAddr, __poisonValue)) {
+							errorsEncountered = true;
+							Log(f, "WARN", "Errors encountered while initializing mod %s\n", data.cFileName);
+							FreeLibrary(mod);
+						} else {
+							Log(f, "INFO", "Successfully loaded and initialized mod %s at %p\n", data.cFileName, mod);
+						}
+					}
 				}
 				else {
 					if (init()) {
+						errorsEncountered = true;
 						Log(f, "WARN", "Errors encountered while initializing mod %s\n", data.cFileName);
 						FreeLibrary(mod);
 					}
@@ -154,6 +171,18 @@ void __stdcall LoadMods() {
 			}
 		}
 		ok = FindNextFileA(files, &data);
+	}
+
+	if (!repentogonFound) {
+		Log(f, "[FATAL]", "Repentogon was not found, aborting to prevent possible save files corruption");
+		fclose(f);
+		abort();
+	}
+
+	if (errorsEncountered) {
+		Log(f, "[FATAL]", "Errors were encountered while loading DLL mods\n");
+		fclose(f);
+		abort();
 	}
 
 	fclose(f);
@@ -200,7 +229,7 @@ void DumpThreadsContext(FILE* logFile) {
 		}
 
 		Log(logFile, "INFO", "Processing thread %d\n", threadEntry.th32ThreadID);
-		
+
 		HANDLE thread = OpenThread(THREAD_GET_CONTEXT, false, threadEntry.th32ThreadID);
 		if (!thread) {
 			Log(logFile, "ERROR", "Unable to open handle to thread %d (%d)\n", threadEntry.th32ThreadID, GetLastError());
@@ -256,7 +285,8 @@ extern "C" {
 		Log(f, "INFO", "Loaded ZHL at %p\n", zhl);
 		Log(f, "INFO", "Search InitZHL in ZHL\n");
 
-		int (*initZhl)(void (__stdcall*)()) = (int(*)(void(__stdcall*)()))GetProcAddress(zhl, "InitZHL");
+		int (*initZhl)(void (__stdcall*)(), void**, char*) =
+			(int(*)(void(__stdcall*)(), void**, char*))GetProcAddress(zhl, "InitZHL");
 		if (!initZhl) {
 			FreeLibrary(zhl);
 			Log(f, "ERROR", "InitZHL not found\n");
@@ -266,7 +296,8 @@ extern "C" {
 		Log(f, "INFO", "Found InitZHL at %p\n", initZhl);
 		Log(f, "INFO", "Initializing ZHL\n");
 
-		if (initZhl(&LoadMods)) {
+
+		if (initZhl(&LoadMods, &__poisonAddr, &__poisonValue)) {
 			Log(f, "ERROR", "Errors encountered while initializing ZHL, check zhl.log for infos\n");
 			FreeLibrary(zhl);
 			return -1;

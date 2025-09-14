@@ -25,7 +25,7 @@ void __stdcall SanityCheckInitZHL() {
 /* Because ZHL is not initialized inside libzhl, we cannot use HOOK_GLOBAL here,
  * because the static constructor would be invoked before ZHL is ready.
  */
-void HookMain() {
+void HookMain(void** poisonPtr, char* poisonValue) {
 	FunctionDefinition* definition = FunctionDefinition::Find("IsaacMain", typeid(int (*)(int, char**)));
 	if (!definition) {
 		ZHL::Log("[CRITICAL][HookMain] main was not found in the executable\n");
@@ -37,6 +37,13 @@ void HookMain() {
 	}
 
 	void* addr = definition->GetAddress();
+	{
+		ZHL::Log("[INFO][HookMain] Flat patching main at %p to heal a single byte\n");
+		ASMPatch patch;
+		patch.AddBytes("\x55"); // push ebp, this restores the poison byte
+		sASMPatcher.FlatPatch(addr, &patch);
+	}
+
 	char* patchAddr = (char*)addr + 0x3; /* Patch immediately after ebp and esp are setup. */
 	char brokenBytes[7]; /* Backup all bytes that will be broken by the patch. */
 	static_assert (sizeof(char) == 1);
@@ -60,6 +67,20 @@ void HookMain() {
 	buffer.AddAny(brokenBytes, sizeof(brokenBytes));
 	patch.AddBytes(buffer);
 	patch.AddRelativeJump((char*)patchAddr + 0x7);
+
+	{
+		ZHL::Log("[INFO][HookMain] Flat patching main to poison the return byte of LoadMods\n");
+		void* target = (char*)patchAddr + 0x7;
+		*poisonPtr = target;
+		*poisonValue = *(char*)target;
+
+		_mm_sfence(); // Store fence to enforce the above writes to complete
+
+		ASMPatch patch;
+		patch.AddBytes("\xcc"); // int3, poison the first byte after the return
+		sASMPatcher.FlatPatch((char*)patchAddr + 0x7, &patch);
+	}
+
 	size_t patchLen = 0;
 	void* patchedAddr = sASMPatcher.PatchAt(patchAddr, &patch, &patchLen);
 
@@ -68,7 +89,8 @@ void HookMain() {
 }
 
 extern "C" {
-	__declspec(dllexport) int InitZHL(void (__stdcall*loaderFinishPtr)())
+	__declspec(dllexport) int InitZHL(void (__stdcall*loaderFinishPtr)(),
+		void** poisonPtr, char* poisonValue)
 	{
 #ifdef ZHL_LOG_FILE
 		std::ofstream f(ZHL_LOG_FILE, std::ios_base::app);
@@ -133,7 +155,7 @@ extern "C" {
 
 		loaderFinish = loaderFinishPtr;
 
-		HookMain();
+		HookMain(poisonPtr, poisonValue);
 
 		return 0;
 	}

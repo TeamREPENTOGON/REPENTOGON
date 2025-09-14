@@ -186,8 +186,8 @@ static void FixLuaDump()
 }
 char REPENTOGON::stocktitle[256]="";
 char REPENTOGON::moddedtitle[256] = "";
-// This small function loads all the hooks and must be present in every mod
-MOD_EXPORT int ModInit(int argc, char** argv)
+
+MOD_EXPORT int InitRepentogon(void* poisonAddr, char poisonedValue)
 {
 	ZHL::Logger logger(true);
 	logger.Log("REPENTOGON: ModInit\n");
@@ -217,6 +217,13 @@ MOD_EXPORT int ModInit(int argc, char** argv)
 
 	REPENTOGON::UpdateProgressDisplay("ModInit done");
 	SigScan::FlushCache();
+
+	ASMPatch patch;
+	ByteBuffer buffer;
+	buffer.AddByte(poisonedValue);
+	patch.AddBytes(buffer);
+	sASMPatcher.FlatPatch(poisonAddr, &patch);
+
 	return 0;
 }
 
