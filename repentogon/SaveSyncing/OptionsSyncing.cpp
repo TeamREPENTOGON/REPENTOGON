@@ -42,45 +42,45 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 
 	if (!std::filesystem::exists(rgonPath)) {
 		if (defaultLoadPath && std::filesystem::exists(defaultLoadPath)) {
-			ZHL::Log("[OptionsSyncing::Load] Initializing vanilla options from `%s`...", defaultLoadPath);
+			ZHL::Log("[OptionsSyncing::Load] Initializing vanilla options from `%s`...\n", defaultLoadPath);
 			if (!std::filesystem::copy_file(defaultLoadPath, rgonPath)) {
-				ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to copy defaultLoadPath `%s` to rgonPath `%s`", defaultLoadPath, rgonPath.c_str());
+				ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to copy defaultLoadPath `%s` to rgonPath `%s`\n", defaultLoadPath, rgonPath.c_str());
 				return;
 			}
 			ZHL::Log("[OptionsSyncing::Load] Initialized `%s`", rgonPath.c_str());
 		} else if (std::filesystem::exists(vanillaPath)) {
-			ZHL::Log("[OptionsSyncing::Load] Initializing vanilla options from `%s`...", vanillaPath.c_str());
+			ZHL::Log("[OptionsSyncing::Load] Initializing vanilla options from `%s`...\n", vanillaPath.c_str());
 			if (!std::filesystem::copy_file(vanillaPath, rgonPath)) {
-				ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to copy vanillaPath `%s` to rgonPath `%s`", vanillaPath.c_str(), rgonPath.c_str());
+				ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to copy vanillaPath `%s` to rgonPath `%s`\n", vanillaPath.c_str(), rgonPath.c_str());
 				return;
 			}
-			ZHL::Log("[OptionsSyncing::Load] Initialized `%s`", rgonPath.c_str());
+			ZHL::Log("[OptionsSyncing::Load] Initialized `%s`\n", rgonPath.c_str());
 		}
 	}
 
 	if (std::filesystem::exists(vanillaPath) && std::filesystem::exists(rgonPath)) {
-		ZHL::Log("[OptionsSyncing::Load] Syncing vanilla options from `%s` to `%s`...", vanillaPath.c_str(), rgonPath.c_str());
+		ZHL::Log("[OptionsSyncing::Load] Syncing vanilla options from `%s` to `%s`...\n", vanillaPath.c_str(), rgonPath.c_str());
 
 		mINI::INIFile vanillaFile(vanillaPath);
 		mINI::INIStructure vanillaData;
 		if (!vanillaFile.read(vanillaData)) {
-			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to read vanilla INI data from `%s`", vanillaPath.c_str());
+			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to read vanilla INI data from `%s`\n", vanillaPath.c_str());
 			return;
 		}
 
 		mINI::INIFile rgonFile(rgonPath);
 		mINI::INIStructure rgonData;
 		if (!rgonFile.read(rgonData)) {
-			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to read rgon INI data from `%s`", rgonPath.c_str());
+			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to read rgon INI data from `%s`\n", rgonPath.c_str());
 			return;
 		}
 		CopySharedOptions(vanillaData, rgonData);
 		if (!rgonFile.write(rgonData)) {
-			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to write rgon INI data to `%s`", rgonPath.c_str());
+			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to write rgon INI data to `%s`\n", rgonPath.c_str());
 			return;
 		}
 
-		ZHL::Log("[OptionsSyncing::Load] Sync completed.");
+		ZHL::Log("[OptionsSyncing::Load] Sync completed.\n");
 	}
 
 	super(rgonPath.c_str());
@@ -95,32 +95,32 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 	const std::string rgonPath = GetRgonVanillaOptionsIniPath();
 
 	if (!std::filesystem::exists(rgonPath)) {
-		ZHL::Log("[OptionsSyncing::Save] ERROR: Expected rgon file does not exist @ `%s`", rgonPath.c_str());
+		ZHL::Log("[OptionsSyncing::Save] ERROR: Expected rgon file does not exist @ `%s`\n", rgonPath.c_str());
 	} else {
-		ZHL::Log("[OptionsSyncing::Save] Syncing vanilla options from `%s` to `%s`...", rgonPath.c_str(), vanillaPath.c_str());
+		ZHL::Log("[OptionsSyncing::Save] Syncing vanilla options from `%s` to `%s`...\n", rgonPath.c_str(), vanillaPath.c_str());
 
 		mINI::INIFile rgonFile(rgonPath);
 		mINI::INIStructure rgonData;
 		if (!rgonFile.read(rgonData)) {
-			ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to read rgon INI data from `%s`", rgonPath.c_str());
+			ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to read rgon INI data from `%s`\n", rgonPath.c_str());
 			return;
 		}
 
 		if (!std::filesystem::exists(vanillaPath)) {
 			if (!std::filesystem::copy_file(rgonPath, vanillaPath)) {
-				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to copy rgonPath `%s` to vanillaPath `%s`", rgonPath.c_str(), vanillaPath.c_str());
+				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to copy rgonPath `%s` to vanillaPath `%s`\n", rgonPath.c_str(), vanillaPath.c_str());
 				return;
 			}
 		} else {
 			mINI::INIFile vanillaFile(vanillaPath);
 			mINI::INIStructure vanillaData;
 			if (!vanillaFile.read(vanillaData)) {
-				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to read vanilla INI data from `%s`", vanillaPath.c_str());
+				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to read vanilla INI data from `%s`\n", vanillaPath.c_str());
 				return;
 			}
 			CopySharedOptions(rgonData, vanillaData);
 			if (!vanillaFile.write(vanillaData)) {
-				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write vanilla INI data to `%s`", vanillaPath.c_str());
+				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write vanilla INI data to `%s`\n", vanillaPath.c_str());
 				return;
 			}
 		}
@@ -132,10 +132,10 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 			updatedRgonData[category] = options;
 		}
 		if (!rgonFile.generate(updatedRgonData)) {
-			ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write rgon INI data to `%s`", rgonPath.c_str());
+			ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write rgon INI data to `%s`\n", rgonPath.c_str());
 			return;
 		}
 
-		ZHL::Log("[OptionsSyncing::Save] Sync completed.");
+		ZHL::Log("[OptionsSyncing::Save] Sync completed.\n");
 	}
 }
