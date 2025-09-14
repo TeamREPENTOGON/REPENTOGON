@@ -15,6 +15,7 @@
 #include <fstream>
 #include <filesystem>
 #include <sstream>
+#include <emmintrin.h>  
 
 void (__stdcall*loaderFinish)() = NULL;
 
