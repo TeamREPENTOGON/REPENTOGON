@@ -53,8 +53,46 @@ unordered_map<string, int> xmlnodeenum;
 unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
+vector<CustomXML> pendingcustomxmls;
 
-XMLDataHolder* xmlnodetypetodata[35] = {
+unordered_map<string, int> getxmlnodeidbyname = {
+	 {"metadata.xml", 0},
+	 {"entities2.xml", 1},
+	 {"players.xml", 2},
+	 {"items.xml", 3},
+	 {"pocketitems.xml", -1},
+	 {"bossoverlays.xml", -1},
+	 {"achievements.xml", 26},
+	 {"ambush.xml", 28},
+	 {"backdrops.xml", 25},
+	 {"bosscolors.xml", 31},
+	 {"bosspools.xml", 21},
+	 {"bossportraits.xml", 22},
+	 {"challenges.xml", 9},
+	 {"costumes2.xml", 12},
+	 {"curses.xml", 16},
+	 {"cutscenes.xml", 23},
+	 {"fxlayers.xml", 32},
+	 {"giantbook.xml", 27},
+	 {"itempools.xml", 28},
+	 {"minibosses.xml", -1},
+	 {"music.xml", 7},
+	 {"nightmares.xml", 29},
+	 {"preload.xml", -1},	 
+	 {"seedmenu.xml", -1},
+	 {"seeds.xml", -1},
+	 {"playerforms.xml", 11},
+	 {"sounds.xml", 8},
+	 {"stages.xml", 24},
+	 {"locusts.xml", 17},
+	 {"wisps.xml", 14},
+	 {"translations.xml", -1},
+	 {"recipes.xml", -1},
+	 {"pocketitems.xml", -1},
+	 {"items_metadata.xml", -1}
+};
+
+vector <XMLDataHolder*> xmlnodetypetodata = {
 	XMLStuff.ModData,             // 0
 	NULL,//XMLStuff.EntityData,          // 1
 	XMLStuff.PlayerData,          // 2
@@ -89,7 +127,33 @@ XMLDataHolder* xmlnodetypetodata[35] = {
 	XMLStuff.BossColorData,         // 31
 	XMLStuff.FxLayerData,       // 32
 	XMLStuff.FxParamData,        // 33
-	XMLStuff.FxRayData        // 34
+	XMLStuff.FxRayData,        // 34
+	NULL,//reserved for missing vanilla xmls //35
+	NULL,//reserved for missing vanilla xmls //36
+	NULL,//reserved for missing vanilla xmls //37
+	NULL,//reserved for missing vanilla xmls //38
+	NULL,//reserved for missing vanilla xmls //39
+	NULL,//reserved for missing vanilla xmls //40
+	NULL,//reserved for missing vanilla xmls //41
+	NULL,//reserved for missing vanilla xmls //42
+	NULL,//reserved for missing vanilla xmls //43
+	NULL,//reserved for missing vanilla xmls //44
+	NULL,//reserved for missing vanilla xmls //45
+	NULL,//reserved for missing vanilla xmls //46
+	NULL,//reserved for missing vanilla xmls //47
+	NULL,//reserved for missing vanilla xmls //48
+	NULL,//reserved for missing vanilla xmls //49
+	NULL,//reserved for missing vanilla xmls //50
+	NULL,//reserved for missing vanilla xmls //51
+	NULL,//reserved for missing vanilla xmls //52
+	NULL,//reserved for missing vanilla xmls //53
+	NULL,//reserved for missing vanilla xmls //54
+	NULL,//reserved for missing vanilla xmls //55
+	NULL,//reserved for missing vanilla xmls //56
+	NULL,//reserved for missing vanilla xmls //57
+	NULL,//reserved for missing vanilla xmls //58
+	NULL,//reserved for missing vanilla xmls //59
+	NULL //reserved for missing vanilla xmls //60  //these are for missing vanilla xmls, since custom xmls will be shoved afterwards and I dont want the NUM_XMLS bs vanilla api does...so custom xmls go from 61 (thsi doesnt mean much for the average user tho, thats just for us, since most custom xmls will be ours)
 };
 
 
@@ -159,27 +223,6 @@ XMLAttributes BuildGenericEntry(xml_node<char>* node) {
 	return mod;
 }
 
-void inheritdaddyatts(xml_node<char>* daddy, XMLAttributes* atts) {
-	for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
-	{
-		if (atts->find(attr->name()) == atts->end()) {
-			atts->insert(pair<string, string>(stringlower(attr->name()), string(attr->value())));
-		}
-	}
-}
-
-void UpdateRelEntTracker(XMLDataHolder* data, XMLRelEnt* target, const char* trgtattr) {
-	for each (auto node in data->nodes) {
-		XMLAttributes attrs = node.second;
-		if (attrs.find(trgtattr) != attrs.end()) {
-			int entid = toint(attrs[trgtattr]);
-			if (target->find(entid) == target->end()) {
-				target->insert(pair<int,vector<XMLAttributes>>(entid, vector<XMLAttributes > ()));
-			}
-			target->at(entid).push_back(attrs);
-		}
-	}
-}
 
 void LoadGenericXMLData(XMLDataHolder* data,xml_node<char>* daddy) {
 	int id = 1;
@@ -2403,15 +2446,15 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	}
 	break;
 	case 26: //fxlayers
-		LoadGenericXMLData(XMLStuff.FxLayerData, node);
+		LoadGenericXMLData(XMLStuff.FxLayerData, node, iscontent, currpath, lastmodid);
 		UpdateRelEntTracker(XMLStuff.FxLayerData, &XMLStuff.BackdropData->relfxlayers, "backdrop");
 		break;
 	case 27: //fxparams
-		LoadGenericXMLData(XMLStuff.FxParamData, node);
+		LoadGenericXMLData(XMLStuff.FxParamData, node, iscontent, currpath, lastmodid);
 		UpdateRelEntTracker(XMLStuff.FxParamData, &XMLStuff.BackdropData->relfxparams, "backdrop");
 		break;
 	case 28: //fxrays
-		LoadGenericXMLData(XMLStuff.FxRayData, node);
+		LoadGenericXMLData(XMLStuff.FxRayData, node, iscontent, currpath, lastmodid);
 		UpdateRelEntTracker(XMLStuff.FxRayData, &XMLStuff.BackdropData->relfxrays, "backdrop");
 		break;
 	}
@@ -2873,75 +2916,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 
 //Crash Prevention//
-int getLineNumber(const char* data, const char* errorOffset) {
-	if (strlen(errorOffset) <= 0) { return 0; }
-	int lineNumber = 1;
-	const char* current = data;
-	while (current < errorOffset) {
-		if (*current == '\n') {
-			lineNumber++;
-		}
-		current++;
-	}
-	return lineNumber;
-}
-
-bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
-	try {
-		if (strlen(xml) == strlen(xml + 1)) {
-			xmldoc->parse<0>(xml);
-		}else{
-			char* zeroTerminatedStr  = new char[strlen(xml) + 1];
-			strcpy(zeroTerminatedStr, xml);
-			xmldoc->parse<0>(zeroTerminatedStr);
-		}
-		return true;
-	}
-	catch (rapidxml::parse_error err) {
-		int lineNumber = getLineNumber(xml, err.where<char>());
-		string a = stringlower((char*)string(xml).substr(0, 60).c_str());
-		string reason = err.what() + string(" at line ") + to_string(lineNumber);
-		string error = "[XMLError] " + reason + " in " + dir;
-		g_Game->GetConsole()->PrintError(error);
-		KAGE::LogMessage(3, (error + "\n").c_str());
-		//ZHL::Log("%s \n", error.c_str());
-		//mclear(xmldoc);
-	}
-	return false;
-}
-
-char* GetResources(char* xml,const string &dir,const string &filename) {
-	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
-	for (const string & path : paths) {
-		ifstream file(path.c_str());
-		if (file.is_open()) {
-			std::stringstream sbuffer;
-			sbuffer << file.rdbuf();
-			string filedata = sbuffer.str();
-			char* buffer = new char[filedata.length()];
-			strcpy(buffer, filedata.c_str());
-			return buffer;
-		}
-	}
-	return "";
-}
-
-bool GetContent(const string &dir, xml_document<char>* xmldoc) {
-	ifstream file(dir.c_str());
-	if (file.is_open()) {
-//		ZHL::Log("path: %s \n", dir.c_str());
-		std::stringstream sbuffer;
-		sbuffer << file.rdbuf();
-		string filedata = sbuffer.str();
-		char* buffer = new char[filedata.length() + 1];
-		strcpy(buffer, filedata.c_str());
-		if (XMLParse(xmldoc, buffer, dir)) {
-		delete[] buffer;
-		return true;
-		}
-	}
-	return false;
-}
 
 xml_node<char>* find_child(
 	xml_node<char>* parent,
@@ -2973,7 +2947,7 @@ char* IntToChar(int number) {
 	return charPointer;
 }
 
-void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) {
+void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) { //in this context "custom xml" is just added support for content/resources, not actual custom xmls
 	if (strcmp(filename, "cutscenes.xml") == 0) {
 		int id = 26;
 		xml_node<char>* root = xmldoc->first_node();
@@ -3256,7 +3230,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 			if (mod->IsEnabled()) {
 				string dir = string(&g_ModsDirectory) + mod->GetDir();
 				string resourcesdir = dir + "\\resources\\" + filename;
-				char* xmlaux = GetResources(xml, dir, filename);
+				char* xmlaux = GetResources(dir, filename);
 				if (strlen(xmlaux) > 1) {
 					xml_document<char>* xmldoc = new xml_document<char>();
 					if ((strcmp(filename.c_str(), "bosspools.xml")==0) && endsWithPools(xml)) {
@@ -3719,6 +3693,8 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		}
 	}
 	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
+	//RegisterGenericCustomXML("poopoo.xml", "poopoos", "poo");
+	LoadCustomXMLs(); //this loads custom xmls into their respective xmldata structures
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {

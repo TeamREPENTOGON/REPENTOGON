@@ -4,7 +4,10 @@
 #include <stdio.h>
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cctype>
+#include <filesystem>
 
 
 #include "SigScan.h"
@@ -99,7 +102,6 @@ public:
 		}
 	}
 };
-
 
 class XMLDataHolder {
 public:
@@ -273,6 +275,8 @@ public:
 	}
 
 };
+
+
 
 
 class XMLMod: public XMLDataHolder {
@@ -762,6 +766,8 @@ struct XMLData {
 	XMLGeneric* FxRayData = new XMLGeneric(0);
 	XMLBossColor* BossColorData = new XMLBossColor();
 
+	unordered_map<string, XMLGeneric*> CustomXMLData;
+
 	XMLMod* ModData = new XMLMod();
 
 	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
@@ -774,6 +780,9 @@ struct XMLData {
 	}
 };
 
+extern unordered_map<string, int> getxmlnodeidbyname;
+extern vector<XMLDataHolder*> xmlnodetypetodata;
+extern XMLData XMLStuff;
 
 
 inline bool isvalidid(const std::string& str) {
@@ -850,8 +859,10 @@ inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* 
 	return false;
 }
 
+
 using XMLattrparse = unordered_map<string, XMLDataHolder *>;
 extern unordered_map<XMLDataHolder*, XMLattrparse> xmllatepatches; //xmlname, list of attrs to parse
+
 
 inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, const string& AttributeName, XMLDataHolder* XMLDataForIds) { // this makes it so Name attributes in XMLData are parsed to their Id counterparts after Manager::LoadConfig finishes (as in, after all xmls are loaded, which means no XML load order shenanigans)
 	xmllatepatches[XMLDataToUpdate][AttributeName] = XMLDataForIds;
@@ -881,6 +892,244 @@ inline bool MultiValXMLParamParseLATE() {
 	}
 	return did;
 }
+
+
+struct CustomXML {
+	string filename;
+	string rootnodename;
+	string entrynodename;
+};
+extern vector<CustomXML> pendingcustomxmls;
+
+inline int getLineNumber(const char* data, const char* errorOffset) {
+	if (strlen(errorOffset) <= 0) { return 0; }
+	int lineNumber = 1;
+	const char* current = data;
+	while (current < errorOffset) {
+		if (*current == '\n') {
+			lineNumber++;
+		}
+		current++;
+	}
+	return lineNumber;
+}
+
+inline int xmltoint(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval;
+		}
+	}
+	return 0;
+}
+
+inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
+	try {
+		if (strlen(xml) == strlen(xml + 1)) {
+			xmldoc->parse<0>(xml);
+		}
+		else {
+			char* zeroTerminatedStr = new char[strlen(xml) + 1];
+			strcpy(zeroTerminatedStr, xml);
+			xmldoc->parse<0>(zeroTerminatedStr);
+		}
+		return true;
+	}
+	catch (rapidxml::parse_error err) {
+		int lineNumber = getLineNumber(xml, err.where<char>());
+		string a = stringlower((char*)string(xml).substr(0, 60).c_str());
+		string reason = err.what() + string(" at line ") + to_string(lineNumber);
+		string error = "[XMLError] " + reason + " in " + dir;
+		g_Game->GetConsole()->PrintError(error);
+		KAGE::LogMessage(3, (error + "\n").c_str());
+		//printf("%s \n", error.c_str());
+		//mclear(xmldoc);
+	}
+	return false;
+}
+
+inline char* GetResources(const string& dir, const string& filename) {
+	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
+	for (const string& path : paths) {
+		ifstream file(path.c_str());
+		if (file.is_open()) {
+			std::stringstream sbuffer;
+			sbuffer << file.rdbuf();
+			string filedata = sbuffer.str();
+			char* buffer = new char[filedata.length()];
+			strcpy(buffer, filedata.c_str());
+			return buffer;
+		}
+	}
+	return "";
+}
+
+inline bool GetContent(const string& dir, xml_document<char>* xmldoc) {
+	ifstream file(dir.c_str());
+	if (file.is_open()) {
+		//		printf("path: %s \n", dir.c_str());
+		std::stringstream sbuffer;
+		sbuffer << file.rdbuf();
+		string filedata = sbuffer.str();
+		char* buffer = new char[filedata.length() + 1];
+		strcpy(buffer, filedata.c_str());
+		if (XMLParse(xmldoc, buffer, dir)) {
+			delete[] buffer;
+			return true;
+		}
+	}
+	return false;
+}
+
+inline void UpdateRelEntTracker(XMLDataHolder* data, XMLRelEnt* target, const char* trgtattr) {
+	for each (auto node in data->nodes) {
+		XMLAttributes attrs = node.second;
+		if (attrs.find(trgtattr) != attrs.end()) {
+			int entid = xmltoint(attrs[trgtattr]);
+			if (target->find(entid) == target->end()) {
+				target->insert(pair<int, vector<XMLAttributes>>(entid, vector<XMLAttributes >()));
+			}
+			target->at(entid).push_back(attrs);
+		}
+	}
+}
+inline void inheritdaddyatts(xml_node<char>* daddy, XMLAttributes* atts) {
+	for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+	{
+		if (atts->find(attr->name()) == atts->end()) {
+			atts->insert(pair<string, string>(stringlower(attr->name()), string(attr->value())));
+		}
+	}
+}
+
+inline void LoadGenericXMLData(XMLDataHolder* data, xml_node<char>* daddy, bool iscontent,string currpath, string lastmodid) {
+	int id = 1;
+	xml_node<char>* babee = daddy->first_node();
+	for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+		XMLAttributes attributes;
+		for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+		{
+			attributes[stringlower(attr->name())] = string(attr->value());
+		}
+		inheritdaddyatts(daddy, &attributes);
+		//string oldid = attributes["id"];
+		if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
+			id = xmltoint(attributes["id"]);
+		}
+
+		else {
+			if (attributes.find("id") != attributes.end()) { attributes["relativeid"] = attributes["id"]; }
+			data->maxid = data->maxid + 1;
+			attributes["id"] = to_string(data->maxid);
+			id = data->maxid;
+		}
+		if (id > data->maxid) {
+			data->maxid = id;
+		}
+
+		if (attributes.find("sourceid") == attributes.end()) {
+			attributes["sourceid"] = lastmodid;
+		}
+		data->ProcessChilds(auxnode, id);
+		
+		if (attributes.find("relativeid") != attributes.end()) { data->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+		data->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+		data->bymod[attributes["sourceid"]].push_back(id);
+		data->byfilepathmulti.tab[currpath].push_back(id);
+		if (attributes.find("name") != attributes.end()) {
+			data->byname[attributes["name"]] = id;
+		}
+		data->nodes[id] = attributes;
+		data->byorder[data->nodes.size()] = id;
+		//printf("gen: %s id: %d // %d \n", attributes["name"].c_str(), id, data->maxid);
+	}
+}
+
+inline void LoadCustomXML(CustomXML xml) {
+	XMLStuff.CustomXMLData[xml.filename] = new XMLGeneric(0);
+	vector<pair<string,string>> dirstoload;
+	//check for resources
+	string targetresource = "";	
+	string lastmodid;
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (mod->IsEnabled()) {
+			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
+			vector<string> paths = { dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
+			for (const string& path : paths) {
+				if (filesystem::exists(path)) {
+					targetresource = path;
+					break;
+				}
+			}
+		}
+	}
+	if (!targetresource.empty()) {
+		dirstoload.push_back({ targetresource, "BaseGame"});
+	}
+	//end check for resources
+	//check for content 
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (mod->IsEnabled()) {
+			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
+			vector<string> paths = { dir + "\\content-dlc3\\" + xml.filename, dir + "\\content\\" + xml.filename };
+			for (const string& path : paths) {
+				if (filesystem::exists(path)) {
+					lastmodid = string(mod->GetId());
+					if (string(lastmodid).length() == 0) {
+						lastmodid = string(mod->GetDir());
+					} 
+					dirstoload.push_back({path, lastmodid});
+					break;
+				}
+			}
+		}
+	}
+	//end check for content
+	//load everything
+	int count = 0;
+	for (const pair<string,string>& path : dirstoload) {
+		xml_document<char>* xmldoc = new xml_document<char>();
+		if (GetContent(path.first, xmldoc)) {
+			xml_node<char>* root = xmldoc->first_node(xml.rootnodename.c_str());
+			LoadGenericXMLData(XMLStuff.CustomXMLData[xml.filename], root, count > 0, path.first,path.second); //first element in the vector is the resrouce
+			//UpdateRelEntTracker(XMLStuff.FxLayerData, &XMLStuff.BackdropData->relfxlayers, "backdrop");
+			count++;
+		}
+	}
+		
+	//end load everything
+}
+
+inline bool LoadCustomXMLs() {
+	bool did = false;
+	while (!pendingcustomxmls.empty()) {
+		LoadCustomXML(pendingcustomxmls.back());
+		pendingcustomxmls.pop_back();
+		did = true;
+	}
+	for (auto entry : XMLStuff.CustomXMLData) {
+		getxmlnodeidbyname[entry.first] = xmlnodetypetodata.size();
+		xmlnodetypetodata.push_back(entry.second);
+	}
+	return did;
+}
+
+inline void RegisterGenericCustomXML(string filename, string rootname,string entrynodename, bool loaditNOW = false) {
+	CustomXML xml;
+	xml.filename = filename;
+	xml.rootnodename = rootname;
+	xml.entrynodename = entrynodename;
+	if (!loaditNOW) {
+		pendingcustomxmls.push_back(xml);
+	}
+	else {
+		LoadCustomXML(xml);
+	}
+}
+
+
 
 inline int GetMaxIdFromChilds(const xml_node<char>* parentnode,const char* attrname = "id") {
 	int maxid = -1;
@@ -940,7 +1189,5 @@ inline void initxmlfullmergelist() {
 	xmlfullmerge["bosscolors.xml"] = 1;	
 }
 
-extern XMLDataHolder* xmlnodetypetodata[35];
-extern XMLData XMLStuff;
 
 #endif
