@@ -59,8 +59,8 @@ static const std::unordered_map<GameVersion, SaveDataPathInfo> SAVE_DATA_PATHS =
 };
 
 // Given a PersistentGameData path to the REPENTOGON save file, returns the corresponding vanilla Repentance+ save file path.
-std::string ConvertRgonSavePathToVanilla(const std::string rgonSavePath) {
-	return std::regex_replace(rgonSavePath, std::regex(R"((Repentogon[\/\\]+rgon_)|(rgon_steam_))"), "");
+std::string ConvertRgonSavePathToVanilla(std::string rgonSavePath) {
+	return std::regex_replace(rgonSavePath, std::regex(R"((Repentogon[\/\\]+rgon_)|(rgon_steam_))", std::regex_constants::icase), "");
 }
 
 // Shared paths for GameState. At the moment, REPENTOGON still uses the same GameState file.
@@ -188,10 +188,38 @@ void ASMPatchRemoteSaveFileName() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// If the game attempts to load a save file with the wrong number of achievements, it does not handle it properly and
+// will nuke everything in the save file except the achievments. Just freaking crash instead of letting that happen.
+// In theory this shouldn't get triggered unless something in repentogon breaks or the user fucks with ther save manually.
+// Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
+void __stdcall DifferentNumberOfAchievementsCheck(const int numAchievements) {
+	if (numAchievements > 641) {
+		ZHL::Log("[SaveSyncing] Fatal error: Attempt to load a save file with the wrong number of achievements! Throwing an exception to avoid save corruption...\n");
+		MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_ACHIEVEMENTS, "REPENTOGON", MB_ICONERROR);
+		throw std::runtime_error("Wrong number of achievements");
+	}
+}
+void ASMPatchDifferentNumberOfAchievementsCheck() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::DifferentNumberOfAchievements);
+
+	printf("[REPENTOGON] Patching fatal error for invalid save files @ %p\n", addr);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(DifferentNumberOfAchievementsCheck)
+		.RestoreRegisters(reg)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore overwritten bytes if we're still alive
+		.AddRelativeJump((char*)addr + 0x8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForSaveSyncing() {
 	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
 		ASMPatchLocalSaveFileName();
 		ASMPatchRemoteSaveFileName();
+		ASMPatchDifferentNumberOfAchievementsCheck();
 	}
 }
 
@@ -663,6 +691,29 @@ HOOK_METHOD(PersistentGameData, _func, () -> bool) { \
 FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportRepCloudSave);
 FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABPCloudSave);
 FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave);
+
+// An attempt to load anything other than our designated repentogon save file(s) most likely means something broke.
+// In such a case, throw and exception to avoid possible save data corruption.
+// This should never occur unless something in REPENTOGON is broken.
+// Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
+void VerifyExpectedSaveFile(const char* path) {
+	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
+		std::string filename = std::filesystem::path(path).filename().string();
+		if (!std::regex_match(filename, std::regex("rgon_.*", std::regex_constants::icase))) {
+			ZHL::Log("[SaveSyncing] Fatal error: Attempt to load unexpected save file `%s`\n", path);
+			MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_NAME, "REPENTOGON", MB_ICONERROR);
+			throw std::runtime_error("Unexpected save file load");
+		}
+	}
+}
+HOOK_METHOD(PersistentGameData, Load, (const char* path) -> bool) {
+	VerifyExpectedSaveFile(path);
+	return super(path);
+}
+HOOK_METHOD(PersistentGameData, LoadFromSteamCloud, () -> bool) {
+	VerifyExpectedSaveFile(this->steamcloudfilepath.c_str());
+	return super();
+}
 
 // ----------------------------------------------------------------------------------------------------
 // -- Testing Utils

@@ -669,3 +669,5 @@ I(TRANS_COUNT_HINT, u8"total count: %d translated: %d")
 // =========== Errors/Warnings ============
 
 I(ERROR_SAVE_SYNC_FAILED, u8"REPENTOGON save file synchronization failed.\n\nYour progress will not be lost. However, progress while playing on REPENTOGON may temporarily not be reflected when playing in vanilla, and vice versa.\n")
+I(FATAL_SAVE_FILE_WRONG_ACHIEVEMENTS, u8"Fatal error: Attempt to load a save file with the wrong number of achievements! Terminating to prevent corruption!\n")
+I(FATAL_SAVE_FILE_WRONG_NAME, u8"Fatal error: Attempt to load an unexpected save file! Terminating to prevent possible corruption!\n")
