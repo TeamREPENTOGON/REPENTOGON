@@ -54,7 +54,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_BANNED">
-            <string>Disable REPENTOGON to play online</string>
+            <string>Launch without REPENTOGON to play online</string>
             <string></string>
             <string></string>
             <string></string>
@@ -64,7 +64,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_PERMABANNED">
-            <string>Disable REPENTOGON to play online</string>
+            <string>Launch without REPENTOGON to play online</string>
             <string></string>
             <string></string>
             <string></string>
