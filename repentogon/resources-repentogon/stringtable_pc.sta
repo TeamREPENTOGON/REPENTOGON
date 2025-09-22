@@ -44,7 +44,7 @@
             <string>Désinstallation de %s</string>
         </key>
         <key name="ONLINE_MODS_NEEDS_RESTART">
-            <string>Mods are not allowed in online play, mods are currently disabled but the game needs to be restarted in order to continue</string>
+            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>
@@ -54,7 +54,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_BANNED">
-            <string>Launch without REPENTOGON to play online</string>
+            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>
@@ -64,7 +64,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_PERMABANNED">
-            <string>Launch without REPENTOGON to play online</string>
+            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>

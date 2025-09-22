@@ -67,13 +67,13 @@ HOOK_METHOD(Menu_Online, Render, () -> void) {
 	}
 
 	KColor fontColor(0.21f, 0.18f, 0.18f, 1.f);
-	FontSettings settings;
-	settings._align = 1;
+	FontSettings settings; 
+	settings._align = 1; 
 
 	Vector pos = Vector(g_MenuManager->_ViewPosition.x - g_MenuManager->_viewPositionSet[19].x + 330, g_MenuManager->_ViewPosition.y - g_MenuManager->_viewPositionSet[19].y + 220);
 
 	super();
-	g_Manager->_font1_TeamMeatEx10.DrawString("Launch without REPENTOGON\nto play online.", pos, Vector(1, 1), &fontColor, &settings);
+	g_Manager->_font1_TeamMeatEx10.DrawString("Change the Launch Mode\n to Vanilla, in the launcher options\n to play Online.", pos, Vector(1, 1), &fontColor, &settings);
 };
 
 // This one is easier, since the ANM2 already has a frame with the right alpha set.
