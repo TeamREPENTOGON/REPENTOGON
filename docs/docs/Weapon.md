@@ -33,7 +33,7 @@ ___
 
 ___
 ### GetMainEntity () {: aria-label='Functions' }
-#### int GetMainEntity ( ) {: .copyable aria-label='Functions' }
+#### [Entity](Entity.md) GetMainEntity ( ) {: .copyable aria-label='Functions' }
 Returns active entity used by weapon (Brimstone - EntityLaser, Mom's Knife -  EntityKnife and etc.).
 
 Returns `nil` if it cannot be found.
