@@ -76,6 +76,8 @@ ___
 ___
 ### GetRandomWisp () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+???+ warning "Warning"
+    This is a static function and must be called via `EntityFamiliar.GetRandomWisp(RNG)`.
 
 ___
 ### GetWeapon () {: aria-label='Functions' }
