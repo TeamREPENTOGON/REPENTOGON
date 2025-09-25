@@ -154,6 +154,4 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 			printf("Loaded super mod: %s\n", mod->GetName().c_str());
 		}
 	}
-	CurseSpriteData& curseSpriteEntry = curseSpriteMap[9];
-	printf("something something %s\n", curseSpriteEntry.customANM2->_filename.c_str());
 }
