@@ -2659,7 +2659,7 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 		lua_newtable(L);
 		for each (const auto & att in elem)
 		{
-			ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+			//ZHL::Log("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
 			lua_pushstring(L, att.first.c_str());
 			lua_pushstring(L, att.second.c_str());
 			lua_settable(L, -3);
