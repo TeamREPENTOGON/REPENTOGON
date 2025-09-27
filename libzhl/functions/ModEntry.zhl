@@ -1,3 +1,6 @@
+"558bec6aff68????????64a1????????5083ec0c5657a1????????33c5508d45??64a3????????8bf9897d??c70700000000":
+__thiscall void ModEntry::constructor();
+
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8b51":
 __thiscall void ModEntry::GetContentPath(std_string* result, const std_string* filePath);
 
@@ -6,13 +9,13 @@ __thiscall void ModEntry::WriteMetadata();
 
 struct ModEntry depends (ModShader) {
 {{
-	inline std_string GetDir() { return *(std_string*)((char*)this + 0); }
-	inline std_string GetName() { return *(std_string*)((char*)this + 0x18); }
-	inline char* GetVersion() { return (char*)this + 120; } //these last 2 are consistent
-	inline char* GetId() { return (char*)this + 144; } //these last 2 are consistent (this is the one I needed anyway)
+	inline std_string GetDir() { return this->_directory; }
+	inline std_string GetName() { return this->_name; }
+	inline char* GetVersion() { return (char*)this->_metadataVersion.c_str(); } //these last 2 are consistent
+	inline char* GetId() { return (char*)this->_metadataWorkshopID.c_str(); } //these last 2 are consistent (this is the one I needed anyway)
 	
-	inline bool IsEnabled() { return *(bool*)((char*)this + 0xFC); }
-	inline void SetEnabled(bool  x) { *(bool*)((char*)this + 0xFC) = x; }
+	inline bool IsEnabled() { return this->_enabled; }
+	inline void SetEnabled(bool x) { this->_enabled = x; }
 
 	inline ANM2* GetDeathEnemiesAnm2() { return (ANM2*)((char*)this + 0xDF0); }
 

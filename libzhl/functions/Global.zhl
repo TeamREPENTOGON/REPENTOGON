@@ -148,6 +148,7 @@ struct FontKerningPair {
 };
 
 typedef std::vector<FontKerningPair> vector_KerningPair;
+//typedef std::list<ModShader*> list_ModShader;
 
 }}
 
