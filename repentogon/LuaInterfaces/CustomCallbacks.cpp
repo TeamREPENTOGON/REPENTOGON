@@ -5388,3 +5388,63 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 
 	return opened;
 }
+
+HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource) -> void) {
+	super(pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+
+	const int callbackid = 1275;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(callbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(pos, lua::Metatables::VECTOR)
+			.push(damage)
+			.push(radius)
+			.push(lineCheck);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(&tearFlags, lua::Metatables::BITSET_128)
+			.push(damageFlags)
+			.push(damageSource)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult) -> void) {
+	super(pos, radius, tearFlags, source, radiusMult);
+
+	const int callbackid = 1276;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(callbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(pos, lua::Metatables::VECTOR)
+			.push(radius)
+			.push(&tearFlags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(radiusMult).call(1);
+	}
+}
