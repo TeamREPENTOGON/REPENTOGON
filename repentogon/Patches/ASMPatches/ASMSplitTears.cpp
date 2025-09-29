@@ -357,23 +357,55 @@ void PatchSplitTears(const char* funcName, const char* desc, const char* asmDef,
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void __stdcall PreAngelicPrism(Entity_Tear* tear) {
+	// This one doesn't run for Ludo tears
+	tear->_dead = true;
+}
+void __stdcall PostAngelicPrism(Entity_Tear* tear) {
+	if ((tear->_tearFlags.hh & (1 << 31)) == 0) {  // ignore ludo
+		tear->Remove();
+	}
+}
 void PatchAngelicPrismTears() {
 	const int originalTearOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SplitTears_AngelicPrismOriginalTearOffset) + 0x2);
-	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SplitTears_AngelicPrism);
-
-	printf("[REPENTOGON] Patching for Angelic Prism split tears at %p\n", addr);
-
+	
+	void* preAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SplitTears_PreAngelicPrism);
+	printf("[REPENTOGON] Patching for BEFORE Angelic Prism split tears at %p\n", preAddr);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX)  // Original Tear
+		.AddInternalCall(PreAngelicPrism)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)preAddr + 0x5);
+	sASMPatcher.PatchAt(preAddr, &patch);
+	
+	void* tearAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SplitTears_AngelicPrism);
+	printf("[REPENTOGON] Patching for Angelic Prism split tears at %p\n", tearAddr);
+	ASMPatch::SavedRegisters tearSavedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch tearPatch;
+	tearPatch.PreserveRegisters(tearSavedRegisters)
 		.Push(SPLIT_ANGELIC_PRISM)
 		.Push(0x1)
 		.Push(ASMPatch::Registers::EBP, originalTearOffset)  // Original Tear
 		.Push(ASMPatch::Registers::ESI)  // New Tear
 		.AddInternalCall(PostFireSplitTearCallbackTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x7);
-	sASMPatcher.PatchAt(addr, &patch);
+		.RestoreRegisters(tearSavedRegisters)
+		.AddRelativeJump((char*)tearAddr + 0x7);
+	sASMPatcher.PatchAt(tearAddr, &tearPatch);
+
+	void* postAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SplitTears_PostAngelicPrism);
+	const int jumpOffset = *(int*)((char*)postAddr + 0x2) + 0x6;
+	printf("[REPENTOGON] Patching for AFTER Angelic Prism split tears at %p\n", postAddr);
+	ASMPatch::SavedRegisters postSavedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch postPatch;
+	postPatch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JL, (char*)postAddr + jumpOffset)
+		.PreserveRegisters(postSavedRegisters)
+		.Push(ASMPatch::Registers::EBP, originalTearOffset)
+		.AddInternalCall(PostAngelicPrism)
+		.RestoreRegisters(postSavedRegisters)
+		.AddRelativeJump((char*)postAddr + 0x6);
+	sASMPatcher.PatchAt(postAddr, &postPatch);
 }
 
 void ASMPatchesForSplitTearCallback() {

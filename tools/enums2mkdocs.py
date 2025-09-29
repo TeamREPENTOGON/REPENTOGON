@@ -20,7 +20,7 @@ if "GITHUB_WORKSPACE" in os.environ:
 
 data = []
 
-with open(ENUM_FILE_PATH, "r") as enums:
+with open(ENUM_FILE_PATH, "r", encoding="utf8") as enums:
 
     for enum in enums.readlines():
         enum = enum.strip().split("--")
@@ -48,6 +48,8 @@ current_class = ""
 
 for value in data:
     beaned = False
+    if value.startswith("}"):
+        current_class = ""
     for subvalue in blocked_values:
         if isinstance(value, int) or subvalue.lower() in value.lower() or value.startswith(" --") or value == "" or value == "end" or value == "}":
             beaned = True
@@ -58,7 +60,7 @@ for value in data:
                 filtered_data[current_class] = []
                 if value.replace(" ", "").endswith("--bitwise"):
                     bitwise_classes.append(current_class)
-        elif current_class not in banned_classes:
+        elif current_class and current_class not in banned_classes:
             entry = {}
             value = value.split("=", 1)
             entry["name"] = value[0].strip()
@@ -70,7 +72,10 @@ for value in data:
                 entry["value"] = value[1].replace(",", "").strip()
 
             if "x" in entry["value"]:
-                entry["value"] = int(entry["value"], 16)
+                try: 
+                    entry["value"] = int(entry["value"], 16)
+                except ValueError:
+                    entry["value"] = entry["value"]
             filtered_data[current_class].append(entry)
 
 

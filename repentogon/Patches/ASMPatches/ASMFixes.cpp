@@ -99,7 +99,8 @@ static void fix_handle_collisions_playeronly_entity_class(const char* signature,
 
 // nop's out an check in TryRemoveSmeltedTrinket that requires the trinket ID to be a vanilla one, fixing removal of smelted modded trinkets.
 // The check is entirely unnecessary anyway because the code also checks if the trinket has a valid ItemConfig entry.
-// Note: This is a Rep+ bug on v1.7.9.12 (https://github.com/epfly6/RepentanceAPIIssueTracker/issues/605)
+// Note: This is a Rep+ bug on v1.9.7.12 (https://github.com/epfly6/RepentanceAPIIssueTracker/issues/605)
+// Fixed on v1.9.7.13, so this patch can likely be removed if we port to a new version.
 static void fix_try_remove_smelted_trinket()
 {
     void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TryRemoveSmeltedTrinketIdCheck);
@@ -110,10 +111,24 @@ static void fix_try_remove_smelted_trinket()
     sASMPatcher.FlatPatch(addr, &patch, true);
 }
 
+// nop's out a PillEffect validity check added in ForceAddPillEffect that mostly served to prevent modded pill effects from being added.
+// Note: This is a Rep+ bug on v1.9.7.12 (https://github.com/epfly6/RepentanceAPIIssueTracker/issues/599)
+// Fixed on v1.9.7.13, so this patch can likely be removed if we port to a new version.
+static void fix_force_add_pill_effect()
+{
+    void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::ForceAddPillEffectIdCheck);
+    ASMPatch patch;
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 9);
+    patch.AddBytes(buffer);
+    sASMPatcher.FlatPatch(addr, &patch, true);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
     fix_variant_set_add_unique("8b0283c002", "ModManager::UpdateRooms (inline RoomConfig::VariantSet::AddUnique)");
     fix_handle_collisions_playeronly_entity_class("83f80174??83f901", "Entity::handle_collisions");
     fix_try_remove_smelted_trinket();
+    fix_force_add_pill_effect();
 }

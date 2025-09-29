@@ -991,6 +991,29 @@ local function CallbackComparator(a, b)
 	end
 end
 
+-- Support to apply a conversion function to the params for certain callbacks (ie, for stuff like tables/userdata).
+local function ConvertItemConfigItemParam(param)
+	if param and type(param) == "userdata" and GetMetatableType(param) == "Item" then
+		return GetPtrHash(param)
+	end
+	return param
+end
+local CALLBACK_PARAM_CONVERSION_FUNCS = {
+	[ModCallbacks.MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_POST_PLAYER_ADD_EFFECT] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_POST_ROOM_ADD_EFFECT] = ConvertItemConfigItemParam,
+}
+local function ConvertCallbackParam(callbackID, param)
+	if callbackID and param then
+		local convertFunc = CALLBACK_PARAM_CONVERSION_FUNCS[callbackID]
+		if convertFunc then
+			return convertFunc(param)
+		end
+	end
+	return param
+end
+
 -- Normally if you execute a callback with -1 as the param, it will run ALL added callbacks regardless of their specified param.
 -- This behaviour exists for some vanilla callbacks that aren't intended to support optional params in the first place.
 -- However, it can cause problems if a callback that DOES use params can get executed with -1 as the param, such as the first glitch item ID.
@@ -1032,6 +1055,8 @@ local function GetCallbackIterator(callbackID, param)
 			return nextCallback
 		end
 	end
+
+	param = ConvertCallbackParam(callbackID, param)
 
 	local commonCallback = callbackData.COMMON[1]
 	local paramCallback = param and callbackData.PARAM[param] and callbackData.PARAM[param][1]
@@ -1149,6 +1174,7 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	checkCallbackIdArg(2, callbackID)
 	checkNumberArg(3, priority)
 	checkFunctionArg(4, fn)
+	param = ConvertCallbackParam(callbackID, param)
 
 	InitCallbackIfNeeded(callbackID)
 

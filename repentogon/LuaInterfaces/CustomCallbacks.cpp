@@ -4176,7 +4176,7 @@ HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int cou
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(item, lua::Metatables::ITEM)
 			.push(count)
@@ -4193,9 +4193,42 @@ HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> v
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.call(1);
+	}
+}
+
+//MC_POST_PLAYER/ROOM_ADD_EFFECT (1273/1274)
+HOOK_METHOD(TemporaryEffects, AddEffect, (TemporaryEffect* effect, bool addCostume, int count) -> void) {
+	super(effect, addCostume, count);
+	if (!this->_disabled && count != 0 && effect->_item) {
+		if (this == &g_Game->_room->_temporaryEffects) {
+			const int callbackid = 1274;
+			if (CallbackState.test(callbackid - 1000)) {
+				lua_State* L = g_LuaEngine->_state;
+				lua::LuaStackProtector protector(L);
+				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+				lua::LuaCaller(L).push(callbackid)
+					.push(effect->_item, lua::Metatables::ITEM)
+					.push(effect->_item, lua::Metatables::ITEM)
+					.call(1);
+			}
+		} else if (this->_player) {
+			const int callbackid = 1273;
+			if (CallbackState.test(callbackid - 1000)) {
+				lua_State* L = g_LuaEngine->_state;
+				lua::LuaStackProtector protector(L);
+				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+				lua::LuaCaller(L).push(callbackid)
+					.push(effect->_item, lua::Metatables::ITEM)
+					.push(this->_player, lua::Metatables::ENTITY_PLAYER)
+					.push(effect->_item, lua::Metatables::ITEM)
+					.push(addCostume)
+					.push(count)
+					.call(1);
+			}
+		}
 	}
 }
 
@@ -5354,4 +5387,64 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 	}
 
 	return opened;
+}
+
+HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource) -> void) {
+	super(pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+
+	const int callbackid = 1275;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(callbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(pos, lua::Metatables::VECTOR)
+			.push(damage)
+			.push(radius)
+			.push(lineCheck);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(&tearFlags, lua::Metatables::BITSET_128)
+			.push(damageFlags)
+			.push(damageSource)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult) -> void) {
+	super(pos, radius, tearFlags, source, radiusMult);
+
+	const int callbackid = 1276;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(callbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(pos, lua::Metatables::VECTOR)
+			.push(radius)
+			.push(&tearFlags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(radiusMult).call(1);
+	}
 }
