@@ -92,7 +92,7 @@ struct LogViewer : ImGuiWindowObject {
                 char* delimiter = NULL;
                 // Do not use strtok as it would replace newlines with '\0'
                 while ((delimiter = strpbrk(content, "\n")) && readSize < reductionAmount) {
-                    ptrdiff_t length = delimiter - content;
+                    ptrdiff_t length = delimiter - content + 1;
                     readSize += length;
                     content = delimiter + 1;
                 }
