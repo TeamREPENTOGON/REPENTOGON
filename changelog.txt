@@ -26,6 +26,7 @@ Additions:
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]MaggyHealthDrainCooldown
 	- [Get/Set]RockBottomMoveSpeed
 	- [Get/Set]RockBottomMaxFireDelay
 	- [Get/Set]RockBottomDamage

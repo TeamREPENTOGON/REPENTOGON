@@ -2977,6 +2977,20 @@ LUA_FUNCTION(Lua_PlayerSetCharmOfVampireKills) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetMaggyHealthDrainCooldown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_maggyHealthDrainCooldown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMaggyHealthDrainCooldown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_maggyHealthDrainCooldown = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3245,6 +3259,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasInvincibility", Lua_PlayerHasInvincibility },
 		{ "GetCharmOfTheVampireKills", Lua_PlayerGetCharmOfVampireKills },
 		{ "SetCharmOfTheVampireKills", Lua_PlayerSetCharmOfVampireKills },
+		{ "GetMaggyHealthDrainCooldown", Lua_PlayerGetMaggyHealthDrainCooldown },
+		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
 
 		{ NULL, NULL }
 	};
