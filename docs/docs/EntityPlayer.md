@@ -556,6 +556,10 @@ The modifier is added directly to the player's Luck stat.
 Experimental Treatment adds `-1`, `0` or `1` depending on the luck rolled. Void may randomly add `1`.
 
 ___
+### GetMaggyHealthDrainCooldown () {: aria-label='Functions' }
+#### int GetMaggyHealthDrainCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetMaggySwingCooldown () {: aria-label='Functions' }
 #### int GetMaggySwingCooldown ( ) {: .copyable aria-label='Functions' }
 Returns the amount of frames left until Tainted Magdalene's swing attack from being damaged can be used again. Returns `0` if the player is not Tainted Magdalene.
@@ -1179,6 +1183,10 @@ Used for Experimental Treatment and for stat boosts from Void.
 The modifier is added directly to the player's Luck stat.
 
 Experimental Treatment adds `-1`, `0` or `1` depending on the luck rolled. Void may randomly add `1`.
+
+___
+### SetMaggyHealthDrainCooldown () {: aria-label='Functions' }
+#### void SetMaggyHealthDrainCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetMaggySwingCooldown () {: aria-label='Functions' }
