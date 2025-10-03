@@ -2877,11 +2877,20 @@ BlendFactor = {
 	ONE_MINUS_SRC_ALPHA = 7,
 	DST_ALPHA = 8,
 	ONE_MINUS_DST_ALPHA = 9,
+	-- the following are currently not supported
 	CONSTANT_COLOR = 10,
 	ONE_MINUS_CONSTANT_COLOR = 11,
 	CONSTANT_ALPHA = 12,
 	ONE_MINUS_CONSTANT_ALPHA = 13,
 	SRC_ALPHA_SATURATE = 14,
+}
+
+BlendEquation = {
+	FUNC_ADD = 0,
+	FUNC_SUBTRACT = 1,
+	FUNC_REVERSE_SUBTRACT = 2,
+	MIN = 3,
+	MAX = 4,
 }
 
 BlendType = {

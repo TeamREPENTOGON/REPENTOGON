@@ -49,7 +49,7 @@ static void Manager::RestartGame(Seeds seeds, bool clearSeedEffects, bool progre
 __thiscall void Manager::cleanup_current_state();
  
 "558bec6aff68????????64a1000000005083ec3ca1????????33c58945f0535657508d45f464a3000000008b550c8bca":
-static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
+static KAGE_SmartPointer_ImageBase* Manager::LoadImage(KAGE_SmartPointer_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
 
 "558bec83e4f883ec6856578b3d":
 __thiscall void Manager::Render();
@@ -75,7 +75,7 @@ __thiscall bool Manager::IsSteamCloudEnabled();
 "558bec6aff68????????64a1????????50535657a1????????33c5508d45??64a3????????8bd98db3":
 __thiscall void Manager::destructor();
 
-struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, KAGE_SmartPointer_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
 	inline int GetState() { return this->_state; }
 	inline PersistentGameData* GetPersistentGameData() { return &this->_persistentGameData; }
 	inline NightmareScene* GetNightmareScene() { return &this->_nightmareScene; }

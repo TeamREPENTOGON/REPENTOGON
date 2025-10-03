@@ -1,0 +1,7 @@
+struct KAGE_Graphics_ImageManager {
+    vector_ImagePtr _frameImages : 0x10;
+    vector_pair_RenderBatchPtr_ImagePtr _transparentBatches : 0x28;
+} : 0x3c;
+
+"a1(????????)8d0c??8b34":
+reference KAGE_Graphics_ImageManager g_KAGE_Graphics_ImageManager;

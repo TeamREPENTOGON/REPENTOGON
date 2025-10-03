@@ -1,19 +1,23 @@
 struct KAGE_Graphics_ImageBase_VertexAttributeDescriptor {
     char const* const* name : 0x0;
-    uint32_t param : 0x4;
+    uint32_t format : 0x4; // eVertexFormat
 } : 0x8;
 
+// this is actually ImagePlatformBase, this is not a problem as every image in the game is an ImagePlatformBase
 struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphics_Color) {
     __vtable {
 		skip; // IsLoaded
 		skip; // IsProcedural
-		skip; // Render
-		
-        "558bec8b45108b1150505050ff750cff7508ff5208":
-        void Render(SourceQuad& source, DestinationQuad& dest, KAGE_Graphics_Color& color);
-		
+
+		// Returns the (batched) vertex buffer for this specific render, so that shader specific attributes may be submitted.
+		// Position, Color and Texture Coordinates are already submitted by the function, if they are defined as such in the VertexAttributeDescriptor
         "558bec83ec248b4508568bf10f1000":
-        void Render(SourceQuad& source, DestinationQuad& dest, KAGE_Graphics_Color& col1, KAGE_Graphics_Color& col2, KAGE_Graphics_Color& col3, KAGE_Graphics_Color& col4);
+        float* Render(const SourceQuad& source, const DestinationQuad& dest, const KAGE_Graphics_Color& colTopLeft, const KAGE_Graphics_Color& colTopRight, const KAGE_Graphics_Color& colBottomLeft, const KAGE_Graphics_Color& colBottomRight);
+		
+		// Returns the (batched) vertex buffer for this specific render, so that shader specific attributes may be submitted.
+		// Position, Color and Texture Coordinates are already submitted by the function, if they are defined as such in the VertexAttributeDescriptor
+        "558bec8b45108b1150505050ff750cff7508ff5208":
+        float* Render(const SourceQuad& source, const DestinationQuad& dest, const KAGE_Graphics_Color& color);
 		
 		skip; // Render
 		skip; // Render
@@ -21,10 +25,12 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphi
 		skip; // Render
 		skip; // Render
 		skip; // Render
-		skip; // GetWidth
-		skip; // GetHeight
-		skip; // GetPaddedWidth
-		skip; // GetPaddedHeight
+
+		pure int GetWidth();
+		pure int GetHeight();
+		pure int GetPaddedWidth();
+		pure int GetPaddedHeight();
+
 		skip; // GetBytesPerPixel
 		skip; // SetVertexFormat
 		skip; // SetFilterMode
@@ -33,7 +39,10 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphi
 		skip; // SetPalette
 		skip; // SetTexel
 		skip; // GetTexel
-		skip; // GetTexelRegion
+
+		"558bec51a0":
+		void GetTexelRegion(int x, int y, uint32_t width, uint32_t height, void* buffer);
+
 		skip; // RenderTexturedTriangle
 		skip; // Free?
 		skip; // Load
@@ -47,7 +56,7 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphi
 		skip; // Bind
 		skip; // ApplyPallete
 		skip; // apply_image
-		skip; // SetTexelData
+		skip; // SetTexelData (exclusive to ImagePlatformBase)
     };
 } : 0;
 

@@ -1,9 +1,9 @@
 "558bec8b45??83e80074??83e80174??83e8018bc1":
-__thiscall void BlendMode::SetMode(unsigned int mode);
+static __stdcall BlendMode BlendMode::GetMode(unsigned int mode); // creates a new blend mode object based on the mode configuration and the Graphics manager _usesPremultipliedAlpha field
 
 struct BlendMode { {{
-	BlendMode() : _rgbSourceFactor(1), _rgbDestFactor(7), _alphaSourceFactor(1), _alphaDestFactor(7){}
-	BlendMode(int rgbS, int rgbD, int aS, int aD) : _rgbSourceFactor(rgbS), _rgbDestFactor(rgbD), _alphaSourceFactor(aS), _alphaDestFactor(aD) {}
+	BlendMode() : _equation(0), _rgbSourceFactor(1), _rgbDestFactor(7), _alphaSourceFactor(1), _alphaDestFactor(7){}
+	BlendMode(int equation, int rgbS, int rgbD, int aS, int aD) : _equation(equation), _rgbSourceFactor(rgbS), _rgbDestFactor(rgbD), _alphaSourceFactor(aS), _alphaDestFactor(aD) {}
 }}
-    unsigned int _rgbSourceFactor : 0x0, _rgbDestFactor : 0x4, _alphaSourceFactor : 0x8, _alphaDestFactor : 0xc;
-} : 0x10;
+    unsigned int _equation : 0x0, _rgbSourceFactor : 0x4, _rgbDestFactor : 0x8, _alphaSourceFactor : 0xc, _alphaDestFactor : 0x10;
+} : 0x14;

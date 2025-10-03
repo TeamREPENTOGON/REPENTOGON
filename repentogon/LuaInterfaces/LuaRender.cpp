@@ -2120,8 +2120,8 @@ struct ContextDataVisitor {
 	}
 };
 
-void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
-	float* vertexBuffer = (float*)descriptor->vertices.GetBase();
+void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
+	float* vertexBuffer = (float*)descriptor->_vertexBuffer.GetBase();
 	size_t size = 0;
 	switch (type) {
 	case GL_UNSIGNED_BYTE:
@@ -2169,7 +2169,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 		*bufferUd = buffer;
 		caller.push(shaderId);
 
-		auto vertexBufferDescriptor = &descriptor->vertices;
+		auto vertexBufferDescriptor = &descriptor->_vertexBuffer;
 		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
 		if (it != LuaRender::VerticesRenderContext.end()) {
 			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
@@ -2253,8 +2253,8 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 
 	glDrawElements(mode, count, type, indices);
 
-	LuaRender::ElementsRenderContext[&descriptor->elements].clear();
-	LuaRender::VerticesRenderContext[&descriptor->vertices].clear();
+	LuaRender::ElementsRenderContext[&descriptor->_indexBuffer].clear();
+	LuaRender::VerticesRenderContext[&descriptor->_vertexBuffer].clear();
 }
 
 static void RegisterCustomRenderMetatables(lua_State* L) {
@@ -2276,7 +2276,7 @@ static void RegisterCustomRenderMetatables(lua_State* L) {
 
 LUA_FUNCTION(lua_Renderer_LoadImage) {
 	const char* path = luaL_checkstring(L, 1);
-	ReferenceCounter_ImageBase image;
+	KAGE_SmartPointer_ImageBase image;
 	Manager::LoadImage(&image, path, __ptr_g_VertexAttributeDescriptor_Position, false);
 
 	if (!image.image) {
@@ -2372,7 +2372,7 @@ LUA_FUNCTION(Lua_Renderer_RenderSet) {
 // ============================================================================
 // Hooks
 
-HOOK_METHOD(KAGE_Memory_MemoryPoolDescriptor, Allocate, (uint32_t n) -> void*) {
+HOOK_METHOD(KAGE_Graphics_GraphicsBufferObject, Allocate, (uint32_t n) -> void*) {
 	void* result = super(n);
 	if (!EnableCustomRendering) {
 		return result;

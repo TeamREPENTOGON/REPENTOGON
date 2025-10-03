@@ -2,6 +2,25 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+constexpr int FUNC_ADD = (int)eBlendEquation::FUNC_ADD;
+
+constexpr int BLEND_ZERO = (int)eBlendFactor::ZERO;
+constexpr int BLEND_ONE = (int)eBlendFactor::ONE;
+constexpr int SRC_COLOR = (int)eBlendFactor::SRC_COLOR;
+constexpr int DEST_COLOR = (int)eBlendFactor::DEST_COLOR;
+constexpr int ONE_MINUS_SRC_ALPHA = (int)eBlendFactor::ONE_MINUS_SRC_ALPHA;
+
+static void check_valid_blend_factor(lua_State* L, int idx, int blendFactor) {
+	if (blendFactor < 0 || blendFactor >= (int)eBlendFactor::NUM_BLEND_FACTORS) {
+		luaL_argerror(L, idx, "Invalid blend factor");
+	}
+}
+
+static void check_valid_blend_equation(lua_State* L, int idx, int equation) {
+	if (equation < 0 || equation >= (int)eBlendEquation::NUM_BLEND_EQUATIONS) {
+		luaL_argerror(L, idx, "Invalid equation");
+	}
+}
 
 //1
 LUA_FUNCTION(Lua_GetRGBSourceFactor)
@@ -15,7 +34,9 @@ LUA_FUNCTION(Lua_GetRGBSourceFactor)
 LUA_FUNCTION(Lua_SetRGBSourceFactor)
 {
 	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	mode->_rgbSourceFactor = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
+	check_valid_blend_factor(L, 2, blendFactor);
+	mode->_rgbSourceFactor = blendFactor;
 	return 0;
 }
 
@@ -31,7 +52,9 @@ LUA_FUNCTION(Lua_GetRGBDestinationFactor)
 LUA_FUNCTION(Lua_SetRGBDestinationFactor)
 {
 	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	mode->_rgbDestFactor = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
+	check_valid_blend_factor(L, 2, blendFactor);
+	mode->_rgbDestFactor = blendFactor;
 	return 0;
 }
 
@@ -47,7 +70,9 @@ LUA_FUNCTION(Lua_GetAlphaSourceFactor)
 LUA_FUNCTION(Lua_SetAlphaSourceFactor)
 {
 	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	mode->_alphaSourceFactor = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
+	check_valid_blend_factor(L, 2, blendFactor);
+	mode->_alphaSourceFactor = blendFactor;
 	return 0;
 }
 
@@ -63,26 +88,61 @@ LUA_FUNCTION(Lua_GetAlphaDestinationFactor)
 LUA_FUNCTION(Lua_SetAlphaDestinationFactor)
 {
 	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	mode->_alphaDestFactor = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
+	check_valid_blend_factor(L, 2, blendFactor);
+	mode->_alphaDestFactor = blendFactor;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetBlendEquation)
+{
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	lua_pushinteger(L, mode->_equation);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetBlendEquation)
+{
+	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	unsigned int equation = (unsigned int)luaL_checkinteger(L, 2);
+	check_valid_blend_equation(L, 2, equation);
+	mode->_equation = equation;
 	return 0;
 }
 
 const BlendMode modes[5] = {
-	BlendMode(1, 0, 1, 0),
-	BlendMode(1, 7, 1, 7),
-	BlendMode(1, 1, 1, 1),
-	BlendMode(0, 2, 0, 2),
-	BlendMode(4, 7, 4, 7)
+	BlendMode(FUNC_ADD, BLEND_ONE, BLEND_ZERO, BLEND_ONE, BLEND_ZERO), // CONSTANT / REPLACE
+	BlendMode(FUNC_ADD, BLEND_ONE, ONE_MINUS_SRC_ALPHA, BLEND_ONE, ONE_MINUS_SRC_ALPHA), // NORMAL (Pre multiplied alpha)
+	BlendMode(FUNC_ADD, BLEND_ONE, BLEND_ONE, BLEND_ONE, BLEND_ONE), // ADDITIVE (Pre multiplied alpha)
+	BlendMode(FUNC_ADD, BLEND_ZERO, SRC_COLOR, BLEND_ZERO, SRC_COLOR), // MULTIPLICATIVE
+	BlendMode(FUNC_ADD, DEST_COLOR, ONE_MINUS_SRC_ALPHA, DEST_COLOR, ONE_MINUS_SRC_ALPHA) // OVERLAY
 };
 
 LUA_FUNCTION(Lua_SetMode)
 {
 	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	if (lua_gettop(L) > 2) {
-		mode->_rgbSourceFactor = (int)luaL_optnumber(L, 2, mode->_rgbSourceFactor);
-		mode->_rgbDestFactor = (int)luaL_optnumber(L, 3, mode->_rgbDestFactor);
-		mode->_alphaSourceFactor = (int)luaL_optnumber(L, 4, mode->_alphaSourceFactor);
-		mode->_alphaDestFactor = (int)luaL_optnumber(L, 5, mode->_alphaDestFactor);
+		int rgbSrc = (int)luaL_optnumber(L, 2, mode->_rgbSourceFactor);
+		check_valid_blend_factor(L, 2, rgbSrc);
+
+		int rgbDst = (int)luaL_optnumber(L, 3, mode->_rgbDestFactor);
+		check_valid_blend_factor(L, 3, rgbDst);
+
+		int alphaSrc = (int)luaL_optnumber(L, 4, mode->_alphaSourceFactor);
+		check_valid_blend_factor(L, 4, alphaSrc);
+
+		int alphaDst = (int)luaL_optnumber(L, 5, mode->_alphaDestFactor);
+		check_valid_blend_factor(L, 5, alphaDst);
+
+		int equation = (int)luaL_optnumber(L, 6, mode->_equation);
+		check_valid_blend_equation(L, 6, equation);
+
+		mode->_rgbSourceFactor = rgbSrc;
+		mode->_rgbDestFactor = rgbDst;
+		mode->_alphaSourceFactor = alphaSrc;
+		mode->_alphaDestFactor = alphaDst;
+		mode->_equation = equation;
 	}
 	else
 	{
@@ -132,6 +192,10 @@ static void RegisterBlendMode(lua_State* L) {
 	lua_pushcfunction(L, Lua_GetAlphaDestinationFactor);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "Equation");
+	lua_pushcfunction(L, Lua_GetBlendEquation);
+	lua_rawset(L, -3);
+
 	// depreciated
 	lua_pushstring(L, "Flag1");
 	lua_pushcfunction(L, Lua_GetRGBSourceFactor);
@@ -169,6 +233,10 @@ static void RegisterBlendMode(lua_State* L) {
 
 	lua_pushstring(L, "AlphaDestinationFactor");
 	lua_pushcfunction(L, Lua_SetAlphaDestinationFactor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Equation");
+	lua_pushcfunction(L, Lua_SetBlendEquation);
 	lua_rawset(L, -3);
 
 	// depreciated

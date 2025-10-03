@@ -90,6 +90,9 @@ typedef std::bitset<8> RoomConfigFlags;
 typedef std::bitset<13> RoomShapeBitset;
 typedef std::deque<AfterImageFrame> deque_afterImageFrames;
 typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
+typedef std::vector<KAGE_Graphics_ImageBase*> vector_ImagePtr;
+typedef std::vector<std::pair<KAGE_Graphics_RenderBatch*, KAGE_Graphics_ImageBase*>> vector_pair_RenderBatchPtr_ImagePtr;
+typedef std::deque<ColorMod> deque_ColorMod;
 
 struct PoolItem {
 	uint32_t _itemID = 0;
@@ -3198,6 +3201,54 @@ enum class eAchievement : int {
 	WON_ONLINE = 639, ONLINE_WON = 639,
 	WON_ONLINE_DAILY = 640, DAILY_ONLINE_WON = 640,
 	NUM_ACHIEVEMENTS,
+};
+
+enum class eAnimationFlag : int {
+    IGNORE_COLOR_MODIFIERS = 1 << 0,
+    GLITCH = 1 << 1,
+    IS_LIGHT = 1 << 2,
+    APPLY_LAYER_SCALE_TO_SPRITE = 1 << 3,
+    USE_CHAMPION_SHADER = 1 << 4,
+    USE_DOGMA_SHADER = 1 << 5,
+    IGNORE_GAME_TIME = 1 << 6,
+    USE_GOLD_SHADER = 1 << 7,
+    USE_SIMPLE_COLOR_OFFSET_SHADER = 1 << 8, // unused in PC
+    PROCEDURAL = 1 << 9,
+};
+
+enum class eVertexAttributeFormat : int {
+    FLOAT = 1,
+    VEC_2 = 2,
+    VEC_3 = 3,
+    VEC_4 = 4,
+    POSITION = 5, // Special handling in image render
+    COLOR = 6, // Special handling in image render
+    TEX_COORD = 7, // Special handling in image render
+};
+
+enum class eBlendFactor : int {
+    ZERO = 0,
+    ONE = 1,
+    SRC_COLOR = 2,
+    ONE_MINUS_SRC_COLOR = 3,
+    DEST_COLOR = 4,
+    ONE_MINUS_DST_COLOR = 5,
+    SRC_ALPHA = 6,
+    ONE_MINUS_SRC_ALPHA = 7,
+    DST_ALPHA = 8,
+    ONE_MINUS_DST_ALPHA = 9,
+
+    NUM_BLEND_FACTORS,
+};
+
+enum class eBlendEquation : int {
+    FUNC_ADD = 0,
+    FUN_SUBTRACT = 1,
+    FUNC_REVERSE_SUBTRACT = 2,
+    MIN = 3,
+    MAX = 4,
+
+    NUM_BLEND_EQUATIONS
 };
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
