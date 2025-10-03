@@ -20,6 +20,7 @@
 #include "EvaluateStats.h"
 #include "XMLPlayerExtras.h"
 
+#include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
 #include "ASMPatches/ASMEntityNPC.h"
@@ -187,6 +188,7 @@ void PerformASMPatches() {
 	ASMPatchHideChargeBar();
 	ASMPatchPostBackwardsRoomRestore();
 	SplitTears::ASMPatchesForSplitTearCallback();
+	ASMPatchesForBagOfCrafting();
 
 	// Delirium
 	delirium::AddTransformationCallback();

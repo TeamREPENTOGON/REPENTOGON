@@ -1578,6 +1578,28 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
+local function RunTryAddToBagOfCraftingCallback(callbackID, param, player, pickup, ...)
+	local result = {...}
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, pickup, result)
+		if type(ret) == "boolean" and ret == false then
+			return false
+		elseif type(ret) == "table" then
+			result = {}
+			for i=1,8 do
+				if not ret[i] or ret[i] <= BagOfCraftingPickup.BOC_NONE or ret[i] > BagOfCraftingPickup.BOC_POOP then
+					break
+				else
+					table.insert(result, ret[i])
+				end
+			end
+		end
+	end
+
+	return result
+end
+
 local preStatusApplyReturnTableTypes = {
 	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
 	[StatusEffect.CHARMED] = checkTableTypeFunction({ "integer", "boolean" }),
@@ -1649,6 +1671,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_TRY_ADD_TO_BAG_OF_CRAFTING] = RunTryAddToBagOfCraftingCallback,
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = RunAdditiveFirstArgCallback,

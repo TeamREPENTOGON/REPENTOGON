@@ -2299,8 +2299,8 @@ LUA_FUNCTION(Lua_PlayerSyncConsumableCounts) {
 LUA_FUNCTION(Lua_PlayerTryAddToBagOfCrafting) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	player->TryAddToBagOfCrafting(pickup);
-	return 0;
+	lua_pushboolean(L, player->TryAddToBagOfCrafting(pickup));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerTryDecreaseGlowingHourglassUses) {

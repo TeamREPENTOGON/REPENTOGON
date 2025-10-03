@@ -590,6 +590,7 @@ public:
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
 	// Holds the contents of an entity's "customtags" attribute, converted to lowercase and parsed into a set.
 	unordered_map<tuple<int, int, int>, set<string>> customtags;
+	unordered_map<tuple<int, int, int>, vector<int>> bagofcraftingpickups;
 
 	void Clear() {
 		nodes.clear();
@@ -712,6 +713,14 @@ public:
 
 	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string& tag) {
 		return HasCustomTag(entity.id, entity.variant, entity.subtype, tag);
+	}
+
+	const vector<int>& GetBagOfCraftingPickups(int var, int sub) {
+		auto iter = this->bagofcraftingpickups.find({ ENTITY_PICKUP, var, sub });
+		if (iter != this->bagofcraftingpickups.end()) {
+			return iter->second;
+		}
+		return this->bagofcraftingpickups[{ ENTITY_PICKUP, var, 0 }];
 	}
 
 	void ProcessChilds(const xml_node<char>* parentnode, tuple<int, int, int> id) {

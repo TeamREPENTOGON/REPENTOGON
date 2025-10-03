@@ -222,6 +222,13 @@ Additions:
 	- WindowPosX
 	- WindowPosY
 	- WindowWidth
+* Added the following attributes for entities2.xml:
+	* bagofcrafting="..." - Allows specifying BagOfCraftingPickup results for bagging custom pickups
+		bagofcrafting="blackheart" - adds a black heart to the bag
+		bagofcrafting="penny bomb key" - adds a penny, bomb and key to the bag (up to 8 at once is supported)
+		bagofcrafting="none" - prevents the pickup from adding anything to the bag (may be useful for custom subtypes)
+	* meleecollide="true" - Allows the custom pickup to trigger collision with the player when hit by a bone club or similar melee weapon
+	* boomerang="true" - Allows the custom pickup to be grabbed by Boomerang / Jaw Bone
 * Added the following customtag for items.xml:
 	* "noexpansionpack" - Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket.
 * Added the following customcache for items.xml:
@@ -293,6 +300,7 @@ Modified:
 	- DropCollectible now returns the spawned pedestal if one was spawned, as intended 
 	- SwapForgottenForm returns boolean, depending if Forgotten/Soul form was switched or not.
 	- GetSmeltedTrinkets now accepts an optional table parameter, a list of trinket IDs, to use as a filter for better performance
+	- TryAddToBagOfCrafting now returns a boolean (true if something was added to the bag)
 * EntityNPC:
 	- boolean ReplaceSpritesheet
 * Level:
