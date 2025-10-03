@@ -189,6 +189,7 @@ void PerformASMPatches() {
 	ASMPatchPostBackwardsRoomRestore();
 	SplitTears::ASMPatchesForSplitTearCallback();
 	ASMPatchesForBagOfCrafting();
+	ASMPatchBombPreApplyTearflagEffects();
 
 	// Delirium
 	delirium::AddTransformationCallback();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IsaacRepentance.h"
+
 bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity);
 void PatchPreSampleLaserCollision();
 void PatchPreLaserCollision();
@@ -7,6 +9,7 @@ void PatchPreEntityTakeDamageCallbacks();
 void PatchPostEntityTakeDamageCallbacks();
 void ASMPatchPrePlayerUseBomb();
 void ASMPatchPostPlayerUseBomb();
+void ASMPatchBombPreApplyTearflagEffects();
 void ASMPatchPreMMorphActiveCallback();
 void ASMPatchTrySplit();
 void ASMPatchInputAction();

@@ -1600,6 +1600,39 @@ local function RunTryAddToBagOfCraftingCallback(callbackID, param, player, picku
 	return result
 end
 
+local function RunPreApplyTearflagEffectsCallback(callbackID, param, entity, pos, flags, source, damage)
+	local combinedRet
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, entity, pos, flags, source, damage)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				-- Set / update modified values so that they are visible to later callbacks.
+				if ret.Damage and type(ret.Damage) == "number" then
+					damage = ret.Damage
+				end
+				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					flags = ret.TearFlags
+				end
+				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					pos = ret.Position
+				end
+				if combinedRet then
+					for k, v in pairs(ret) do
+						combinedRet[k] = v
+					end
+				else
+					combinedRet = ret
+				end
+			end
+		end
+	end
+
+	return combinedRet
+end
+
 local preStatusApplyReturnTableTypes = {
 	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
 	[StatusEffect.CHARMED] = checkTableTypeFunction({ "integer", "boolean" }),
@@ -1666,6 +1699,7 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
+	[ModCallbacks.MC_PRE_APPLY_TEARFLAG_EFFECTS] = RunPreApplyTearflagEffectsCallback,
 	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_ENTITY_REMOVE] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,

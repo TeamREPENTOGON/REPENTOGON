@@ -173,6 +173,9 @@ void TryAddToBagOfCraftingPatches() {
 
 // MC_POST_ADD_TO_BAG_OF_CRAFTING
 HOOK_METHOD(Entity_Player, TryAddToBagOfCrafting, (Entity_Pickup* pickup) -> bool) {
+	if (!pickup) {
+		return false;
+	}
 	const bool added = super(pickup);
 	if (added) {
 		const int callbackid = 1016;

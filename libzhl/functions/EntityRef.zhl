@@ -1,5 +1,11 @@
+"558bec83e4f88b55??83ec0c53":
+__thiscall void EntityRef::constructor(Entity* entity);
+
 struct EntityRef depends (Vector)
 {
+  {{
+    EntityRef(Entity* entity) { this->constructor(entity); }
+  }}
   int  _type : 0x0; //TODO: EntityType enum
   int _variant : 0x4;
   int _spawnerType : 0x8; //TODO: ditto
