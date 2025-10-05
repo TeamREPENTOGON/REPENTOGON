@@ -392,6 +392,23 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
+//Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
+HOOK_METHOD(MenuManager, Update, ()-> void) {
+	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19) {
+		g_MenuManager->_selectedMenuID = 1;
+	}
+	super();
+}
+
+HOOK_METHOD(Game, FadeOut, (float Speed, int FadeoutTarget, KColor* color)-> void) {
+	if (FadeoutTarget == 3) {
+		FadeoutTarget = 6;
+	}
+	else if (FadeoutTarget == 4) { //backwards compat
+		FadeoutTarget = 7;
+	}
+	super(Speed, FadeoutTarget, color);
+}
 
 //Custom BigBook Anims
 HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player)-> void) {
