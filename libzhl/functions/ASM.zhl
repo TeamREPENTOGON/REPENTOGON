@@ -119,3 +119,6 @@ asm StagePortrait_PortraitOverride "8bbd????????83c64c";
 asm StagePortrait_ExtraPortraitOverrideCheck "83be????????0074??8d46";
 asm StagePortrait_ExtraPortraitOverrideCheckNightmareOffset "8bb5????????6a0150";
 asm DifferentNumberOfAchievements "83c4103d81020000";
+
+// Misc patches
+asm Misc_FixOptionsMusicVolumeBoundCheck "f30f1005????????8d45??0f57d2";

@@ -317,4 +317,5 @@ void PerformASMPatches() {
 
 	ASMPatches::DisableExitPrompt();
 	ASMPatches::PatchLeaderboardGoalSprite();
+	ASMPatches::PatchOptionsSetMusicBound();
 }
