@@ -122,10 +122,41 @@ void ASMPatchRegisterCurseSprite() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void __stdcall TestArrayPrint(int* mapIcons) {
+		for (int i = 0; i < 8; i++) {
+			printf("thing here %d: %d\n", i, mapIcons[i]);
+		}
+	
+}
+
+void ASMPatchArrayPrint() {
+	//ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseRegisterFrameOffset);
+	const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
+
+	//patch.PreserveRegisters(savedRegisters)
+		//.AddBytes("\x8d\x80\x24").AddBytes(ByteBuffer().AddAny((char*)&mapIconsOffset, 1)).AddZeroes(3)
+		//.Push(ASMPatch::Registers::EAX)
+		patch.AddBytes("\xff\x74\x24").AddBytes(ByteBuffer().AddAny((char*)&mapIconsOffset, 1))
+		//.Push(ASMPatch::Registers::ESP, 0x4c)
+		.AddInternalCall(TestArrayPrint)
+		//.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore the bytes we overwrote
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JBE, (char*)addr + jumpOffset)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForCustomModManager() {
 	ASMPatchLoadModEntryExAssets();
 	ASMPatchCaptureModEntryForCurse();
 	ASMPatchRegisterCurseSprite();
+	ASMPatchArrayPrint();
 }
 
 //void AddModdedCurseIcons(uint32_t curseBitmask, uint32_t& iconCount, std::array<int, 8>& icons) {
