@@ -192,7 +192,7 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 	else if (instruction.info.length > 5) {
 		logger.Log("Instruction too long, noping the end\nStart at %p, for %d bytes\n", (char*)at + 5, instruction.info.length - 5);
 		memset((char*)at + 5, 0x90, instruction.info.length - 5);
-	} 
+	}
 	// Jump overrides other instructions, nop them properly
 	else {
 		logger.Log("Instruction too short, multiple nops required\n");
@@ -484,8 +484,8 @@ void ASMPatch::SavedRegisters::_Init() {
 	// For XMM registers, first make place on the stack, because
 	// x86 doesn't allow direct push of an XMM value onto the stack.
 	// Room is made first, then the value is moved from the register
-	// to the stack. 
-	// movupd is used because there is no guarantee that the stack will 
+	// to the stack.
+	// movupd is used because there is no guarantee that the stack will
 	// be aligned on a 16-byte boundary (as is expected by movapd).
 	_RegisterPushMap[Reg::XMM0] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x04\x24")); // sub esp, 16 (0x10); movupd [esp], xmm0
 	_RegisterPushMap[Reg::XMM1] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x0C\x24")); // sub esp, 16 (0x10); movupd [esp], xmm1
@@ -504,8 +504,8 @@ void ASMPatch::SavedRegisters::_Init() {
 	_RegisterPopMap[Reg::EBP] = std::move(ByteBuffer().AddString("\x5d"));
 	_RegisterPopMap[Reg::ESI] = std::move(ByteBuffer().AddString("\x5e"));
 	_RegisterPopMap[Reg::EDI] = std::move(ByteBuffer().AddString("\x5f"));
-	// Similar reasoning as above: we cannot pop from the stack into an 
-	// XMM register, so first we move the value from the stack to the 
+	// Similar reasoning as above: we cannot pop from the stack into an
+	// XMM register, so first we move the value from the stack to the
 	// register, then we free the space used on the stack.
 	// movupd used because no guarantee of alignment.
 	_RegisterPopMap[Reg::XMM0] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x04\x24\x83\xC4\x10")); // movupd xmm0, [esp]; add esp, 128
@@ -517,7 +517,7 @@ void ASMPatch::SavedRegisters::_Init() {
 	_RegisterPopMap[Reg::XMM6] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x34\x24\x83\xC4\x10")); // movupd xmm6, [esp]; add esp, 128
 	_RegisterPopMap[Reg::XMM7] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x3C\x24\x83\xC4\x10")); // movupd xmm7, [esp]; add esp, 128
 
-	_RegisterOrder = std::array<uint32_t, 16>({ Reg::EAX, Reg::EBX, Reg::ECX, Reg::EDX, Reg::ESP, Reg::EBP, Reg::ESI, Reg::EDI, 
+	_RegisterOrder = std::array<uint32_t, 16>({ Reg::EAX, Reg::EBX, Reg::ECX, Reg::EDX, Reg::ESP, Reg::EBP, Reg::ESI, Reg::EDI,
 		Reg::XMM0, Reg::XMM1, Reg::XMM2, Reg::XMM3, Reg::XMM4, Reg::XMM5, Reg::XMM6, Reg::XMM7 });
 }
 
@@ -636,7 +636,7 @@ ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMP
 
 	stream << "\x8B";
 	// Mod R/M part, I hate this
-		
+
 	std::bitset<8> source = _ModRM[src];
 	std::bitset<8> destination = _ModRM[dst] << 3;
 
@@ -699,7 +699,7 @@ ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
 	return AddBytes(instruction);
 }
 
-ASMPatch& ASMPatch::CopyRegister(std::variant<Registers, XMMRegisters> const& dst, 
+ASMPatch& ASMPatch::CopyRegister(std::variant<Registers, XMMRegisters> const& dst,
 	std::variant<Registers, XMMRegisters> const& src) {
 	ByteBuffer bytes;
 	XMMRegisters const* xmmDst = std::get_if<XMMRegisters>(&dst);
@@ -726,7 +726,7 @@ ASMPatch& ASMPatch::CopyRegister(std::variant<Registers, XMMRegisters> const& ds
 		}
 	}
 	else {
-		bytes.AddByte(0x8B);		
+		bytes.AddByte(0x8B);
 	}
 
 	// Add R/M
@@ -746,84 +746,135 @@ ASMPatch& ASMPatch::CopyRegister8(ASMPatch::Registers dst, ASMPatch::Registers s
 	return AddBytes(bytes);
 }
 
-/* static bool IsRegister(ASMPatch::LeaOperand const& operand) {
-	return std::holds_alternative<ASMPatch::Registers>(operand);
-}
-
-static ASMPatch::LeaParameter const& ValidateLeaParameter(ASMPatch::LeaParameter const& param) {
-	ASMPatch::LeaOps op;
-	ASMPatch::LeaOperand operand;
-
-	std::tie(op, operand) = param;
-	if (op == ASMPatch::LeaOps::MULT) {
-		if (IsRegister(operand)) {
-			throw std::runtime_error("Operand of mult cannot be a register");
-		}
-		else {
-			int32_t value = std::get<int32_t>(operand);
-			if (value != 1 && value != 2 && value != 4 && value != 8) {
-				std::ostringstream stream;
-				stream << "Invalid SCALE value for MULT operand of lea: " << value;
-				throw std::runtime_error(stream.str());
+ByteBuffer ASMPatch::EncodeRMOperand(Registers base, int32_t displacement,
+	std::optional<Registers> index, uint8_t scale, uint8_t reg_op,
+	bool allowMod0Disp0) {
+	if (index) {
+		if (scale == 0)
+			index = std::nullopt;
+		else if (scale != 1 && scale != 2 && scale != 4 && scale != 8) {
+			std::ostringstream stream;
+			stream << "ASMPatch::EncodeRMOperand: invalid scale value " << scale << std::endl;
+			throw std::runtime_error(stream.str());
+		} else {
+			if (index == Registers::ESP) {
+				throw std::runtime_error("ASMPatch::EncodeRMOperand: cannot use esp as a base register\n");
 			}
 		}
 	}
 
-	return param;
-}
+	ByteBuffer result;
+	/* Step 1: encode RM.
+	 * Mod R/M = |Mod|Reg/Opcode|R/M|
+	 *            7 6 5        3 2 0
+	 */
 
-ASMPatch& ASMPatch::LoadEffectiveAddress(Registers dst, Registers src, std::optional<LeaParameter> firstParam, std::optional<LeaParameter> secondParam) {
-	if (!firstParam && secondParam) {
-		firstParam = secondParam;
-		secondParam = std::nullopt;
-	}
+	// Immediately zero the high bits of reg_op to avoid any problems later
+	reg_op &= 0b00000111;
 
-	LeaOps firstOp, secondOp;
-	LeaOperand firstOperand, secondOperand;
-	bool needSIB = false;
-	ByteBuffer SIB;
+	/* Mod is dependant on the displacement : 0 => 00, 8 bits => 01,
+	 * 32 bits => 10, no index => 11 (not applicable here).
+	 *
+	 * In addition, it is possible to have a 32 bits displacement with a mod of
+	 * 00 if the base register is EBP. In this case we rely on allowMod0Disp0
+	 * to determine whether the user want to generate [ebp] or [0].
+	 */
+	uint8_t mod = 0;
 
-	if (firstParam) {
-		std::tie(firstOp, firstOperand) = ValidateLeaParameter(*firstParam);
-	}
-
-	if (secondParam) {
-		std::tie(secondOp, secondOperand) = ValidateLeaParameter(*secondParam);
-	}
-
-	if (firstParam && secondParam) {
-		if (firstOp == secondOp && firstOp == LeaOps::MULT) {
-			throw std::runtime_error("Cannot use multiple multiplications in lea");
+	if (displacement == 0 && base == Registers::EBP) {
+		if (!allowMod0Disp0) {
+			mod = 0b01;
 		}
 	}
-} */
+	else if (displacement >= -127 && displacement <= 127)
+		mod = 0b01;
+	else
+		mod = 0b10;
+	mod <<= 6;
 
-ASMPatch& ASMPatch::LoadEffectiveAddress(Registers src, int32_t offset, Registers dst) {
-	ByteBuffer result, hexOffset;
-	result.AddString("\x8D"); // lea opcode
+	/* The R/M part is based on whether we perform an indirect register access,
+	 * i.e. whether we need the SIB byte or not (for operations of the form
+	 * base + scale * index [+ disp]).
+	 *
+	 * If index is given, we need to use the SIB, so we need to encode an R/M
+	 * of 100.
+	 */
+	uint8_t mod_rm = 0;
+	if (index)
+		mod_rm = mod | reg_op << 3 | 0b100;
+	else
+		mod_rm = mod | reg_op << 3 | (_ModRM[base].to_ulong());
 
-	// 7-6: mod
-	// 5-3: dest
-	// 2-0: src
-	std::bitset<8> modrmBits = 0b00000000;
-	if (offset < -127 || offset > 127) {
-		modrmBits[7] = true;
-		hexOffset = ToHexString(offset, false);
+	result.AddByte(mod_rm);
+
+	/* Step 2: encode SIB, if applicable.
+	 * SIB = |Scale|Index|Base|
+	 *        7   6 5   3 2  0
+	 *
+	 * Offset based access to ESP requires the use of the SIB byte, even if
+	 * no index may be provided.
+	 */
+	if (index || base == Registers::ESP) {
+		uint8_t sib = 0;
+		switch (scale) {
+		case 1:
+			sib = 0b00;
+			break;
+
+		case 2:
+			sib = 0b01;
+			break;
+
+		case 4:
+			sib = 0b10;
+			break;
+
+		case 8:
+			sib = 0b11;
+			break;
+
+		default:
+			std::terminate();
+		}
+
+		sib <<= 6;
+
+		/* If no index is provided, default to ESP, as it encodes an index of
+		 * none.
+		 */
+		if (!index)
+			index = Registers::ESP;
+
+		sib |= (_ModRM[*index].to_ulong() << 3) | _ModRM[base].to_ulong();
+		result.AddByte(sib);
 	}
-	else {
-		modrmBits[7] = false;
-		hexOffset = ToHexString((int8_t)offset);
-	}
 
-	modrmBits[6] = !modrmBits[7];
+	/* Step 3: encode displacement (if any) */
+	if (displacement) {
+		if (displacement >= -127 && displacement <= 127) {
+			result.AddByte(displacement & 0xFF);
+		} else {
+			result.AddInteger(displacement, false);
+		}
+	} else if (base == Registers::EBP)
+		result.AddByte(0); // Displacement is mandatory with a base of ebp
 
-	std::bitset<8> destBits = _ModRM[dst] << 3, srcBits = _ModRM[src];
+	return result;
+}
 
-	modrmBits |= (destBits | srcBits);
-	result.AddByteBuffer(ToHexString((int8_t)modrmBits.to_ulong()))
-		.AddByteBuffer(hexOffset);
+ASMPatch& ASMPatch::LoadEffectiveAddress(Registers base, int32_t offset, Registers dst,
+	std::optional<Registers> index, uint8_t scale) {
+	ByteBuffer bytes;
+	bytes.AddByte('\x8D');
+	bytes.AddByteBuffer(EncodeRMOperand(base, offset, index, scale, _ModRM[dst].to_ulong()));
+	return this->AddBytes(bytes);
+}
 
-	return AddBytes(result);
+ASMPatch& ASMPatch::LoadEffectiveAddress(Registers dst, int32_t addr) {
+	ByteBuffer bytes;
+	bytes.AddByte('\x8D');
+	bytes.AddByteBuffer(EncodeRMOperand(Registers::EBP, 0, std::nullopt, 0, _ModRM[dst].to_ulong(), true));
+	return this->AddBytes(bytes);
 }
 
 ASMPatch& ASMPatch::Push(ASMPatch::Registers reg) {
@@ -846,30 +897,9 @@ ASMPatch& ASMPatch::Push(int32_t imm32) {
 }
 
 ASMPatch& ASMPatch::Push(ASMPatch::Registers reg, int32_t imm32) {
-	ByteBuffer buffer, immBuffer;
-	buffer.AddString("\xFF");
-	std::bitset<8> modrm;
-
-	// ModRM displacement 
-	if (imm32 < -127 || imm32 > 127) {
-		immBuffer = ASMPatch::ToHexString(imm32, false);
-		modrm[7] = true;
-	}
-	else {
-		immBuffer = ASMPatch::ToHexString((int8_t)imm32);
-		modrm[7] = false;
-	}
-
-	modrm[6] = !modrm[7];
-	
-	// ModRM Push specific identifier
-	modrm[5] = modrm[4] = true;
-	modrm[3] = false;
-
-	// ModRM register
-	modrm |= _ModRM[reg];
-
-	buffer.AddByteBuffer(ToHexString((int8_t)modrm.to_ulong())).AddByteBuffer(immBuffer);
+	ByteBuffer buffer;
+	buffer.AddByte('\xFF');
+	buffer.AddByteBuffer(EncodeRMOperand(reg, imm32, std::nullopt, 0, 0x6, false));
 	return AddBytes(buffer);
 }
 
@@ -1132,7 +1162,7 @@ uint8_t ASMPatch::RegisterTox86(XMMRegisters reg) {
 	}
 }
 
-std::bitset<8> ASMPatch::ModRM(std::variant<Registers, XMMRegisters> const& src, 
+std::bitset<8> ASMPatch::ModRM(std::variant<Registers, XMMRegisters> const& src,
 	std::variant<Registers, XMMRegisters> const& dst, bool isRegDst) {
 	uint8_t rmDst = std::visit([=](auto x) { return RegisterTox86(x);  }, dst);
 	uint8_t rmSrc = std::visit([=](auto x) { return RegisterTox86(x);  }, src);

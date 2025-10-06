@@ -99,7 +99,7 @@ ByteBuffer& ByteBuffer::AddZeroes(uint32_t n) {
 	return *this;
 }
 
-ByteBuffer& ByteBuffer::AddAny(const char* addr, size_t n) {
+ByteBuffer& ByteBuffer::AddAny(void* addr, size_t n) {
 	if (n == 0) {
 		throw std::runtime_error("Adding 0 length byte array to ByteBuffer");
 	}

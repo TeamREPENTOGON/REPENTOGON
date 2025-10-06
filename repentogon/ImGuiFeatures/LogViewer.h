@@ -70,8 +70,8 @@ struct LogViewer : ImGuiWindowObject {
 
             size_t cumulatedSize = (size_t)currentSize + textSize;
             /* Make space for the new string.
-             * 
-             * If adding more text would cause the threshold to be reached or exceeded, we remove 
+             *
+             * If adding more text would cause the threshold to be reached or exceeded, we remove
              * content from the buffer in order to make space.
              */
             if (cumulatedSize >= LogViewerBufMaxSize) {
@@ -84,7 +84,7 @@ struct LogViewer : ImGuiWindowObject {
                 }
 
                 /* Do not cut lines in the middle, repeatedly split the buffer on '\n' to remove full lines
-                 * This should handle backslashes nicely as imgui should have already formatted strings in 
+                 * This should handle backslashes nicely as imgui should have already formatted strings in
                  * such a way that '\n' is treated as a character and '\\n' is treated as '\' followed by '\n'.
                  */
                 char* content = logBuf.Buf.Data;
