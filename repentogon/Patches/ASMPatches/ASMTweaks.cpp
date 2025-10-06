@@ -382,4 +382,16 @@ namespace ASMPatches {
 		 sASMPatcher.PatchAt(addr, &patch);
 	 }
 
+	 const float bound = 1.f;
+
+	 void PatchOptionsSetMusicBound() {
+		 void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Misc_FixOptionsMusicVolumeBoundCheck);
+		 printf("[REPENTOGON] Patching Options::SetMusicVolume for bound check patch at %p\n", addr);
+		 const float* floatPtr = &bound;
+
+		 ASMPatch patch;
+		 patch.AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4));
+
+		 sASMPatcher.FlatPatch((char*)addr + 0x4, &patch);
+	 }
 }

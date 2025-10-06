@@ -12,6 +12,8 @@ struct KAGE_Graphics_ShaderBase {
         KAGE_Graphics_ShaderBase() : _vtable(__ptr_KAGE_Graphics_ShaderBase_vftable) {};
     }}
     void* _vtable : 0x0;
+    KAGE_Graphics_ImageBase_VertexAttributeDescriptor* _vertexAttributes : 0x8;
+    uint32_t _numVertexAttributes : 0xc;
 } : 0x28;
 
 struct KAGE_Graphics_Shader depends (KAGE_Graphics_ShaderBase) {

@@ -2,15 +2,17 @@ struct UnkStructWithHWND {
 	void* HWND : 0x218;
 } : 0x21c;
 
-struct KAGE_Graphics_Manager depends (UnkStructWithHWND){
-    KAGE_Graphics_ImageBase* currentRenderTarget : 0x18; // 0x18
-    bool unk : 0x1c; // 0x1C
+struct KAGE_Graphics_Manager depends (BlendMode, UnkStructWithHWND){
+    BlendMode _blendMode : 0x4; // 0x4
+    KAGE_Graphics_Shader* _shader : 0x18; // 0x18
+    KAGE_Graphics_ImageBase* currentRenderTarget : 0x1c; // 0x1c
+    bool renderTargetUsesScreenSize : 0x20; // 0x20
     uint32_t openGLFramebufferID : 0xc8; // 0xC8
 	//this struct pointer got shifted in rep+, be careful
     UnkStructWithHWND* _unk_HWND : 0xe0;
 
     "558bec518a45":
-    void SetCurrentRenderTarget(KAGE_Graphics_ImageBase* target, bool unk);
+    void SetCurrentRenderTarget(KAGE_Graphics_ImageBase* target, bool usesScreenSize);
     
     "568bf157837e??0074??83ec10":
     void Clear();

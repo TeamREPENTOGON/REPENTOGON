@@ -1,4 +1,4 @@
-struct LayerState depends (LayerData, Vector, ColorMod, BlendMode) { {{
+struct LayerState depends (KAGE_SmartPointer_ImageBase, LayerData, Vector, ColorMod, BlendMode) { {{
     inline int GetLayerID() { return this->_layerData->ID; }
     inline std_string GetName() { return this->_layerData->name; }
 	inline std_string GetSpritesheetPath() { return this->_spriteSheetPath; }
@@ -27,8 +27,12 @@ struct LayerState depends (LayerData, Vector, ColorMod, BlendMode) { {{
     Vector _pos : 0x40;
     ColorMod _color : 0x48;
     bool _visible : 0x74;
-    BlendMode _blendMode : 0x7c;
+    BlendMode _blendMode : 0x78;
     unsigned int _bitflags : 0x8c;
     Vector _cropOffset : 0x90;
-    KAGE_Graphics_ImageBase* _imageBasePtr : 0x98;
+    KAGE_SmartPointer_ImageBase _spriteSheet : 0x98;
 } : 0xA0;
+
+// Retrieves the sprite sheet, as a smart pointer while also performing a lazy sync of the filter and wrap modes
+"558bec568bf18b8e":
+__thiscall KAGE_SmartPointer_ImageBase LayerState::GetSpriteSheet();

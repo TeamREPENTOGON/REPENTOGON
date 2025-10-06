@@ -429,6 +429,16 @@ void ASMPatchPostPlayerUseBomb() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void ASMPatchBombPreApplyTearflagEffects() {
+	// Allows MC_PRE_APPLY_TEARFLAG_EFFECTS to run for bombs without TearFlags.
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreBombApplyTearFlagEffects);
+	ASMPatch patch;
+	ByteBuffer buffer;
+	buffer.AddByte('\x90', 20);
+	patch.AddBytes(buffer);
+	sASMPatcher.FlatPatch(addr, &patch, true);
+}
+
 // MC_PRE_M_MORPH_ACTIVE
 int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleId) {
 	const int callbackId = 1190;

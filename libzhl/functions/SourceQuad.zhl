@@ -1,4 +1,3 @@
-struct SourceQuad depends(Vector) {
-    Vector _topLeft : 0x0, _topRight : 0x8, _bottomLeft : 0x10, _bottomRight : 0x18;
+struct SourceQuad depends(Vector, DestinationQuad) : public DestinationQuad {
     int __coordinateSpaceEnum : 0x20;
 } : 0x24;

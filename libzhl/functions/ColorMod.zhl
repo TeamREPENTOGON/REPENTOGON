@@ -17,6 +17,26 @@ struct ColorMod
 			}
 			return true;
 		}
+
+		inline ColorMod& operator*=(const ColorMod& other) {
+			for (int i = 0; i < 4; ++i)
+				_tint[i] *= other._tint[i];
+
+			if (other._colorize[0] + other._colorize[1] + other._colorize[2] != 0.0f) {
+				if (_colorize[0] + _colorize[1] + _colorize[2] != 0.0f) {
+					for (int i = 0; i < 4; ++i)
+						_colorize[i] = (_colorize[i] + other._colorize[i]) * 0.5f;
+				} else {
+					for (int i = 0; i < 4; ++i)
+						_colorize[i] = other._colorize[i];
+				}
+			}
+
+			for (int i = 0; i < 3; ++i)
+				_offset[i] += other._offset[i];
+
+			return *this;
+		}
 	}}
 	float _tint[4] : 0x0;
 	float _colorize[4] : 0x10;

@@ -1,14 +1,14 @@
 "558bec83e4f88b45088bd185c0":
 __thiscall void Backdrop::Init(uint32_t backdropId, bool LoadGraphics);
 
-struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector, ANM2) {
-    ReferenceCounter_ImageBase floorBuffer : 0x0; // 0x0
-    ReferenceCounter_ImageBase wallsBuffer : 0x8; // 0x8 
-    ReferenceCounter_ImageBase floorSurface2 : 0x10; // 0x10
-    ReferenceCounter_ImageBase tempBackdropSurface : 0x18; // 0x18
-    ReferenceCounter_ImageBase gfx : 0x24; // 0x24
-    ReferenceCounter_ImageBase waterGfx : 0x2C; // 0x2C
-    ReferenceCounter_ImageBase nlfloorGfx : 0x34; // 0x34
+struct Backdrop depends (KAGE_SmartPointer_ImageBase, BackdropConfig, RNG, Vector, ANM2) {
+    KAGE_SmartPointer_ImageBase floorBuffer : 0x0; // 0x0
+    KAGE_SmartPointer_ImageBase wallsBuffer : 0x8; // 0x8 
+    KAGE_SmartPointer_ImageBase floorSurface2 : 0x10; // 0x10
+    KAGE_SmartPointer_ImageBase tempBackdropSurface : 0x18; // 0x18
+    KAGE_SmartPointer_ImageBase gfx : 0x24; // 0x24
+    KAGE_SmartPointer_ImageBase waterGfx : 0x2C; // 0x2C
+    KAGE_SmartPointer_ImageBase nlfloorGfx : 0x34; // 0x34
     ANM2 floorANM2 : 0x3C; // 0x3C
     uint32_t backdropId : 0x150; // 0x150
     BackdropConfig configurations[63] : 0x154; // 0x154

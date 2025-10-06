@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
+#include <cmath>
 
 bool Room::IsValidRailType(int rail) {
 	if (rail < 0 || rail > RailType::RAIL_NONE) {
@@ -641,4 +642,40 @@ void Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollect
 	
 
 	return;
+}
+
+void DestinationQuad::RotateRadians(const Vector& pivot, float radians) noexcept
+{
+	if (radians == 0.0)
+	{
+		return;
+	}
+
+	float sin = std::sin(radians);
+	float cos = std::cos(radians);
+
+	// translate
+	_topLeft -= pivot;
+	_topRight -= pivot;
+	_bottomLeft -= pivot;
+	_bottomRight -= pivot;
+
+	// apply rotation
+	_topLeft.x = cos * _topLeft.x - sin * _topLeft.y;
+	_topLeft.y = sin * _topLeft.x + cos * _topLeft.y;
+
+	_topRight.x = cos * _topRight.x - sin * _topRight.y;
+	_topRight.y = sin * _topRight.x + cos * _topRight.y;
+
+	_bottomLeft.x = cos * _bottomLeft.x - sin * _bottomLeft.y;
+	_bottomLeft.y = sin * _bottomLeft.x + cos * _bottomLeft.y;
+
+	_bottomRight.x = cos * _bottomRight.x - sin * _bottomRight.y;
+	_bottomRight.y = sin * _bottomRight.x + cos * _bottomRight.y;
+
+	// undo translation
+	_topLeft += pivot;
+	_topRight += pivot;
+	_bottomLeft += pivot;
+	_bottomRight += pivot;
 }

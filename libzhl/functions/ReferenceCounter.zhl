@@ -1,17 +1,15 @@
-struct ReferenceCounter_ImageBase {
-    KAGE_Graphics_ImageBase* image : 0x0;
-    KAGE_SmartPointer_ImageBase* counter : 0x4;
+struct KAGE_ReferenceCount_ImageBase depends (KAGE_System_Mutex) {
+    void* vtable: 0x0; // 0x0
+    uint16_t strong : 0x4; // 0x4
+    uint16_t weak : 0x6; // 0x6
+    KAGE_System_Mutex mutex : 0x8; // 0x8
+    KAGE_Graphics_ImageBase* image : 0x14; // 0x14
+} : 0x18; // 0x18
 
-    {{
-    ReferenceCounter_ImageBase() {
-        image = nullptr;
-        counter = nullptr;
-    }
-    }}
-} : 0x8;
-
-"558bec6aff68????????64a1000000005083ec0c5657a1????????33c5508d45f464a3000000008bf9ff75088d4de8e86c010000":
-ReferenceCounter_ImageBase& ReferenceCounter_ImageBase::operator=(ReferenceCounter_ImageBase const& other);
-
-"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf18b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595e8be55dc3????????????????????558bec6aff68????????64a1????????5051":
-void ReferenceCounter_ImageBase::DecrRef();
+struct KAGE_SmartPointer_EntitySaveState depends (KAGE_System_Mutex) {
+    void* vtable: 0x0; // 0x0
+    uint16_t strong : 0x4; // 0x4
+    uint16_t weak : 0x6; // 0x6
+    KAGE_System_Mutex mutex : 0x8; // 0x8
+    EntitySaveState* _saveState : 0x14; // 0x14
+} : 0x18; // 0x18

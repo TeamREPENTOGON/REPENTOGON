@@ -392,6 +392,23 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
+//Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
+HOOK_METHOD(MenuManager, Update, ()-> void) {
+	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19) {
+		g_MenuManager->_selectedMenuID = 1;
+	}
+	super();
+}
+
+HOOK_METHOD(Game, FadeOut, (float Speed, int FadeoutTarget, KColor* color)-> void) {
+	if (FadeoutTarget == 3) {
+		FadeoutTarget = 6;
+	}
+	else if (FadeoutTarget == 4) { //backwards compat
+		FadeoutTarget = 7;
+	}
+	super(Speed, FadeoutTarget, color);
+}
 
 //Custom BigBook Anims
 HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player)-> void) {
@@ -871,6 +888,63 @@ void ParseTagsString(const string& str, set<string>& out) {
 	}
 }
 
+static const unordered_map<string, int> bagOfCraftingTags = {
+	{"-1", 0},
+	{"none", 0},
+	{"false", 0},
+	{"redheart", 1},
+	{"heart", 1},
+	{"soulheart", 2},
+	{"blackheart", 3},
+	{"eternalheart", 4},
+	{"goldheart", 5},
+	{"boneheart", 6},
+	{"rottenheart", 7},
+	{"penny", 8},
+	{"nickel", 9},
+	{"dime", 10},
+	{"luckypenny", 11},
+	{"key", 12},
+	{"goldkey", 13},
+	{"chargedkey", 14},
+	{"bomb", 15},
+	{"goldbomb", 16},
+	{"gigabomb", 17},
+	{"minibattery", 18},
+	{"battery", 19},
+	{"megabattery", 20},
+	{"card", 21},
+	{"pill", 22},
+	{"rune", 23},
+	{"diceshard", 24},
+	{"crackedkey", 25},
+	{"goldpenny", 26},
+	{"goldpill", 27},
+	{"goldbattery", 28},
+	{"poop", 29}
+};
+
+void ParseBagOfCraftingAttribute(const string& str, vector<int>& out) {
+	const string tagsstr = stringlower(str.c_str());
+	if (!tagsstr.empty()) {
+		stringstream tagstream(tagsstr);
+		string tag;
+		while (getline(tagstream, tag, ' ')) {
+			if (out.size() >= 8)
+				break;
+			if (!tag.empty() && bagOfCraftingTags.find(tag) != bagOfCraftingTags.end()) {
+				const int n = bagOfCraftingTags.at(tag);
+				if (n > 0 || out.empty())
+					out.push_back(n);
+				if (n == 0)
+					break;
+			} else {
+				break;
+			}
+		}
+	}
+}
+
 // If the item has the appropriate customtags, adds it to the customreviveitems map
 // to make it more efficient to check if the player has any of them later.
 void CheckCustomRevive(const int id, XMLItem* data) {
@@ -986,6 +1060,9 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 			if (entity.find("customtags") != entity.end()) {
 				ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
+			}
+			if (type == ENTITY_PICKUP && entity.find("bagofcrafting") != entity.end()) {
+				ParseBagOfCraftingAttribute(entity["bagofcrafting"], XMLStuff.EntityData->bagofcraftingpickups[idx]);
 			}
 			if (iscontent && (entity["boss"] == "1")) {
 				tuple<int, int> clridx = { toint(entity["id"]), toint(entity["variant"]) };

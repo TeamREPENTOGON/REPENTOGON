@@ -61,6 +61,13 @@ __thiscall bool Entity_Pickup::TryOpenChest(Entity_Player* player);
 "83f93274??83f93c":
 static cleanup bool Entity_Pickup::IsChest(uint32_t variant<ecx>);
 
+// Note: This is only used for melee & boomerang pickups.
+"558bec8b41??83f80a":
+__thiscall bool Entity_Pickup::CanBePickedUp(bool ignorePrice);
+
+"558bec83e4f883ec28568b75??578bb9":
+__thiscall bool Entity_Pickup::CanPickupShopItem(Entity_Player* player);
+
 /*"558bec83e4f883ec1856578bf98b0d":
 __thiscall void Entity_Pickup::InitFlipState();
 */
@@ -125,6 +132,7 @@ struct Entity_Pickup depends (ANM2, ReferenceCounter_EntitySaveState) : public E
 
 	ANM2 _priceANM2 : 0x410;
 	bool _isForceBlind : 0x52e;
+	int _price : 0x534;
 	int _timeout : 0x540;
 	int _dropDelay : 0x554;
 	Entity_Effect* _pickupGhost : 0x590;

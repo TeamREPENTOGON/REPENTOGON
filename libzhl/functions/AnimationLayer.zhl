@@ -21,4 +21,10 @@ struct AnimationLayer depends (AnimationFrame) { {{
 } : 0x10;
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec98010000a1????????33c58945??5657508d45??64a3????????8079??00":
-__thiscall void AnimationLayer::RenderFrame(const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation);
+__thiscall void AnimationLayer::RenderFrame(const Vector& position, int frameIndex, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation);
+
+"558bec83e4f883ec10803d????????00":
+static __stdcall SourceQuad* AnimationLayer::GetSourceQuad(SourceQuad* ret, void* unused, const AnimationFrame& frame, const LayerState& layer, const Vector& topLeftClamp, const Vector& BottomRightClamp, const ANM2& animation);
+
+"558bec83e4f883ec448b45??8b55":
+static __stdcall DestinationQuad* AnimationLayer::GetDestQuad(DestinationQuad* ret, const Vector& position, const AnimationFrame& frame, const LayerState& layer, const Vector& topLeftClamp, const Vector& BottomRightClamp, const ANM2& animation);

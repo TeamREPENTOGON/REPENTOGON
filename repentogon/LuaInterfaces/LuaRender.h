@@ -10,11 +10,11 @@
 
 namespace LuaRender {
 	struct LuaImage {
-		ReferenceCounter_ImageBase image;
+		KAGE_SmartPointer_ImageBase image;
 	};
 
 	struct Transformation {
-		ReferenceCounter_ImageBase _input;
+		KAGE_SmartPointer_ImageBase _input;
 		SourceQuad _source;
 		DestinationQuad _dest;
 		KAGE_Graphics_Color _color1;
@@ -24,7 +24,7 @@ namespace LuaRender {
 	};
 
 	struct LuaTransformer {
-		ReferenceCounter_ImageBase _output;
+		KAGE_SmartPointer_ImageBase _output;
 		std::vector<Transformation> _transformations;
 		bool _valid;
 	};
@@ -264,7 +264,7 @@ namespace LuaRender {
 	/* Type of a map from a vertex buffer to a context array. This is used to associate
 	 * an array of context queues to every vertex buffer used by the game. 
 	 */
-	typedef std::map<KAGE_Memory_MemoryPoolDescriptor*, ContextArray> RenderContext;
+	typedef std::map<KAGE_Graphics_GraphicsBufferObject*, ContextArray> RenderContext;
 
 	/* Maps of the vertex/elements buffers to their corresponding context arrays */
 	extern RenderContext ElementsRenderContext;

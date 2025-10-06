@@ -1578,6 +1578,61 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
+local function RunTryAddToBagOfCraftingCallback(callbackID, param, player, pickup, ...)
+	local result = {...}
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, pickup, result)
+		if type(ret) == "boolean" and ret == false then
+			return false
+		elseif type(ret) == "table" then
+			result = {}
+			for i=1,8 do
+				if not ret[i] or ret[i] <= BagOfCraftingPickup.BOC_NONE or ret[i] > BagOfCraftingPickup.BOC_POOP then
+					break
+				else
+					table.insert(result, ret[i])
+				end
+			end
+		end
+	end
+
+	return result
+end
+
+local function RunPreApplyTearflagEffectsCallback(callbackID, param, entity, pos, flags, source, damage)
+	local combinedRet
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, entity, pos, flags, source, damage)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				-- Set / update modified values so that they are visible to later callbacks.
+				if ret.Damage and type(ret.Damage) == "number" then
+					damage = ret.Damage
+				end
+				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					flags = ret.TearFlags
+				end
+				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					pos = ret.Position
+				end
+				if combinedRet then
+					for k, v in pairs(ret) do
+						combinedRet[k] = v
+					end
+				else
+					combinedRet = ret
+				end
+			end
+		end
+	end
+
+	return combinedRet
+end
+
 local preStatusApplyReturnTableTypes = {
 	[StatusEffect.CONFUSION] = checkTableTypeFunction({ "integer", "boolean" }),
 	[StatusEffect.CHARMED] = checkTableTypeFunction({ "integer", "boolean" }),
@@ -1644,11 +1699,13 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
+	[ModCallbacks.MC_PRE_APPLY_TEARFLAG_EFFECTS] = RunPreApplyTearflagEffectsCallback,
 	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_ENTITY_REMOVE] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_TRY_ADD_TO_BAG_OF_CRAFTING] = RunTryAddToBagOfCraftingCallback,
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = RunAdditiveFirstArgCallback,

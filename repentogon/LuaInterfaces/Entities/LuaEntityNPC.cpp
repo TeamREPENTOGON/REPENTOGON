@@ -368,6 +368,19 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_ApplyTearflagEffects) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	BitSet128* flags = lua::GetLuabridgeUserdata<BitSet128*>(L, 3, lua::Metatables::BITSET_128, "BitSet128");
+	Entity* source = !lua_isnoneornil(L, 4) ? lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity") : nullptr;
+	float damage = (float)luaL_optnumber(L, 5, 3.5f);
+	if (damage < 0) {
+		damage = 0;
+	}
+	Entity_Tear::ApplyTearFlagEffects(npc, pos, *flags, source, damage);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	const float defaultDamage = (float)luaL_checknumber(L, 2);
@@ -436,7 +449,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetFlyingOverride", Lua_EntityNPC_GetFlyingOverride },
 		{ "SetFlyingOverride", Lua_EntityNPC_SetFlyingOverride },
 		{ "ClearFlyingOverride", Lua_EntityNPC_ClearFlyingOverride },
-
+		{ "ApplyTearflagEffects", Lua_EntityNPC_ApplyTearflagEffects },
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },

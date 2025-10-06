@@ -5448,3 +5448,106 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		caller.push(radiusMult).call(1);
 	}
 }
+
+// MC_PRE/POST_APPLY_TEARFLAG_EFFECTS
+HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, BitSet128 flags, Entity* source, float damage) -> void, __cdecl) {
+	if (!entity) {
+		return;
+	}
+	if (!entity->ToNPC()) {
+		// IDK if this can happen naturally. Ignoring for now.
+		super(entity, pos, flags, source, damage);
+		return;
+	}
+	if (source) {
+		EntityRef ref(source);
+		if (entity->IgnoreEffectFromFriendly(&ref)) {
+			return;
+		}
+	}
+
+	Vector posCopy = *pos;
+
+	const int precallbackid = 1277;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(precallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(entity, lua::Metatables::ENTITY_NPC)
+			.push(&posCopy, lua::Metatables::VECTOR)
+			.push(&flags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		lua::LuaResults results = caller.push(damage).call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Damage" && lua_isnumber(L, -1)) {
+							float newDamage = (float)lua_tonumber(L, -1);
+							if (newDamage < 0) {
+								newDamage = 0;
+							}
+							damage = newDamage;
+						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
+							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							if (newFlags) {
+								flags = *newFlags;
+							}
+						} else if (key == "Position" && lua_isuserdata(L, -1)) {
+							Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							if (newPos) {
+								posCopy = *newPos;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+
+	super(entity, &posCopy, flags, source, damage);
+
+	const int postcallbackid = 1278;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(postcallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(entity, lua::Metatables::ENTITY_NPC)
+			.push(&posCopy, lua::Metatables::VECTOR)
+			.push(&flags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(damage).call(1);
+	}
+}

@@ -25,6 +25,9 @@ __thiscall void Entity_Tear::SetHeight(float height);
 "558becf30f1045??f30f5f05":
 __thiscall void Entity_Tear::SetScale(float scale);
 
+"558bec6aff68????????64a1????????5081ec94010000":
+static cleanup void Entity_Tear::ApplyTearFlagEffects(Entity* entity<ecx>, Vector* position<edx>, BitSet128 flags, Entity* source, float damage);
+
 struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	__vtable {
 		skip; // Free
