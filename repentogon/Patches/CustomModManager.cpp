@@ -120,17 +120,35 @@ void ASMPatchRegisterCurseSprite() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void __stdcall TestArrayPrint(int* mapIcons, int mapIndex) {
+int __stdcall TestArrayPrint(int* mapIcons, int mapIndex) {
 		for (int i = 0; i < 7; i++) {
 			mapIcons[i] = -1;
 		}
-		//mapIndex = 7;
+		mapIndex = 7;
 		//printf("map index: %d\n", mapIndex);
+		return mapIndex;
 	
 }
 
-void ASMPatchArrayPrint() {
-	//ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+int AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int iconCount) {
+	if (curseSpriteMap.empty() || iconCount >= 7) return iconCount;
+
+	for (const auto& entry : curseSpriteMap) {
+		uint32_t adjustedCurseId = entry.first;
+		uint32_t originalCurseId = adjustedCurseId + 1;
+
+		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (originalCurseId - 1)))) {
+			mapIcons[iconCount] = -(adjustedCurseId + 1);
+			iconCount++;
+			if (iconCount >= 7) break;
+		}
+	}
+
+	return iconCount;
+}
+
+void ASMPatchAssignCustomFrame() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 
 	const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
@@ -139,12 +157,14 @@ void ASMPatchArrayPrint() {
 
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
-	//patch.PreserveRegisters(savedRegisters)
-		patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset, ASMPatch::Registers::EDI, std::nullopt, 4u )
+	patch.PreserveRegisters(savedRegisters)
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x1c, ASMPatch::Registers::EDI, std::nullopt, 4u )
 		.Push(ASMPatch::Registers::EBX)
 		.Push(ASMPatch::Registers::EDI)
-		.AddInternalCall(TestArrayPrint)
-		//.RestoreRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(AddModdedCurseIcons)
+		.RestoreRegisters(savedRegisters)
+		.CopyRegister(ASMPatch::Registers::EBX, ASMPatch::Registers::EAX)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore the bytes we overwrote
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JBE, (char*)addr + jumpOffset)
 		.AddRelativeJump((char*)addr + 0x5);
@@ -155,23 +175,8 @@ void ASMPatchesForCustomModManager() {
 	ASMPatchLoadModEntryExAssets();
 	ASMPatchCaptureModEntryForCurse();
 	ASMPatchRegisterCurseSprite();
-	ASMPatchArrayPrint();
+	ASMPatchAssignCustomFrame();
 }
-
-//void AddModdedCurseIcons(uint32_t curseBitmask, uint32_t& iconCount, std::array<int, 8>& icons) {
-//	if (curseSpriteMap.empty() || iconCount >= 7) return;
-//
-//	for (const auto& entry : curseSpriteMap) {
-//		uint32_t adjustedCurseId = entry.first;
-//		uint32_t originalCurseId = adjustedCurseId + 1;
-//
-//		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (originalCurseId - 1)))) {
-//			icons[iconCount] = -(adjustedCurseId + 1);
-//			iconCount++;
-//			if (iconCount >= 7) break;
-//		}
-//	}
-//}
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	super();
