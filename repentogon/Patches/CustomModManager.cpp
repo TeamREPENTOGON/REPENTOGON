@@ -77,12 +77,10 @@ void ASMPatchCaptureModEntryForCurse() {
 }
 
 HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlPath, bool isMod) -> void) {
-	if (!isMod) super(xmlPath, isMod);
-
-	LoadCustomMinimapANM2(capturedModEntry);
-
+	if (isMod) {
+		LoadCustomMinimapANM2(capturedModEntry);
+	}
 	super(xmlPath, isMod);
-
 }
 
 void __stdcall RegisterCurseSprite(uint32_t curseId) {
@@ -122,15 +120,17 @@ void ASMPatchRegisterCurseSprite() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void __stdcall TestArrayPrint(int* mapIcons) {
-		for (int i = 0; i < 8; i++) {
-			printf("thing here %d: %d\n", i, mapIcons[i]);
+void __stdcall TestArrayPrint(int* mapIcons, int mapIndex) {
+		for (int i = 0; i < 7; i++) {
+			mapIcons[i] = -1;
 		}
+		//mapIndex = 7;
+		//printf("map index: %d\n", mapIndex);
 	
 }
 
 void ASMPatchArrayPrint() {
-	//ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	//ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
 	const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
@@ -140,10 +140,9 @@ void ASMPatchArrayPrint() {
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
 	//patch.PreserveRegisters(savedRegisters)
-		//.AddBytes("\x8d\x80\x24").AddBytes(ByteBuffer().AddAny((char*)&mapIconsOffset, 1)).AddZeroes(3)
-		//.Push(ASMPatch::Registers::EAX)
-		patch.AddBytes("\xff\x74\x24").AddBytes(ByteBuffer().AddAny((char*)&mapIconsOffset, 1))
-		//.Push(ASMPatch::Registers::ESP, 0x4c)
+		patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset, ASMPatch::Registers::EDI, std::nullopt, 4u )
+		.Push(ASMPatch::Registers::EBX)
+		.Push(ASMPatch::Registers::EDI)
 		.AddInternalCall(TestArrayPrint)
 		//.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore the bytes we overwrote
