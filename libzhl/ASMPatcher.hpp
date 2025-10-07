@@ -18,6 +18,7 @@
 
 #include "ByteBuffer.h"
 #include "libzhl.h"
+#include "x86_defines.h"
 
 extern "C" {
 	__declspec(dllexport) int InitZHL(void (__stdcall*ptr)(), void**, char*);
@@ -180,16 +181,6 @@ private:
 	};
 
 public:
-	/* Convert an integer to its hex representation as a string, performing
-	 * a zero extension.
-	 *
-	 * For 16 and 32 bits versions, endianConvert can be used to flip the bytes of
-	 * the result if needed.
-	 */
-	static ByteBuffer ToHexString(int8_t x);
-	static ByteBuffer ToHexString(int16_t x, bool endianConvert);
-	static ByteBuffer ToHexString(int32_t x, bool endianConvert);
-
 	enum class Registers;
 
 	/* Encode an operand for an instruction expecting an r/mXX operand.
@@ -329,6 +320,25 @@ public:
 		bool _freed = false;
 	};
 
+	enum SIBScale {
+		SCALE_NONE,
+		SCALE_1,
+		SCALE_2,
+		SCALE_4,
+		SCALE_8
+	};
+
+	struct LIBZHL_API RMOperand {
+		SIBScale					scale = SCALE_NONE;
+		std::optional<Registers>	index = std::nullopt;
+		Registers					base  = Registers::EAX;
+		int32_t						disp  = 0;
+
+		RMOperand() = delete;
+		RMOperand(Registers base, int32_t disp, SIBScale scale = SCALE_NONE,
+			std::optional<Registers> index = std::nullopt);
+	};
+
 	/* Add arbitrary bytes to the patch. These bytes cannot contain a null character
 	 * as it will cause the copy of the bytes into the patch to stop early.
 	 */
@@ -381,9 +391,12 @@ public:
 	ASMPatch& AllocateReturn(StackSpace& space) {
 		size_t s = space.Size();
 		ByteBuffer bytes;
+		// Use sub /5
 		char opcode = '\x81';
 		unsigned char modrm = 0b11101100; // Mod = 11, Reg = 101 (/5), RM = 100 (ESP)
-		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
+		ByteBuffer buffer;
+		buffer.AddInteger((int32_t)s);
+		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(buffer);
 		return AddBytes(bytes);
 	}
 
@@ -392,9 +405,12 @@ public:
 	ASMPatch& FreeReturn(StackSpace& space) {
 		size_t s = space.Size();
 		ByteBuffer bytes;
+		// Use add /5
 		char opcode = '\x81';
 		unsigned char modrm = 0b11000100; // Mod = 11, Reg = 000 (/0), RM = 100 (ESP)
-		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
+		ByteBuffer buffer;
+		buffer.AddInteger((int32_t)s);
+		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(buffer);
 		space.Free();
 		return AddBytes(bytes);
 	}
@@ -428,6 +444,7 @@ public:
 	ASMPatch& Push(int32_t imm32);
 	// Push [reg - imm32].
 	ASMPatch& Push(Registers ref, int32_t imm32);
+	ASMPatch& Push(RMOperand rm);
 	ASMPatch& Pop(Registers reg);
 	/* Add a call instruction. The jump is relative and uses the 0xE8 opcode for the
 	 * call instruction. Registers are not preserved: you must take care of that yourself.
@@ -523,6 +540,8 @@ private:
 	static std::map<ASMPatch::Registers, std::bitset<8>> _ModRM;
 	static uint32_t RegisterToBackupRegister(Registers reg);
 	size_t _size = 0;
+
+	uint8_t SIBScaleToInt(SIBScale scale);
 };
 
 /// Box a type, preventing Visual Studio from moving a value of such a type in a register.

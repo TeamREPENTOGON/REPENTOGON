@@ -7,8 +7,6 @@
 
 #define X86_LONGEST_INSTRUCTION_NBYTES 15
 
-void LIBZHL_API EndianSwap(char* src, int a, int b);
-
 class LIBZHL_API ByteBuffer {
 public:
 	ByteBuffer();
@@ -27,7 +25,7 @@ public:
 		T result = t;
 		if (endianConvert) {
 			if constexpr (sizeof(T) == 1)
-				return AddAny(t, 1);
+				;
 			else if constexpr (sizeof(T) == 2) {
 				result = _byteswap_ushort(t);
 			} else if constexpr (sizeof(T) == 4) {

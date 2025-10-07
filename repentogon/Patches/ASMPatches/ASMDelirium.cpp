@@ -29,8 +29,8 @@ static bool __stdcall PreTransformationCallback(Box<Entity_NPC*> deliriumBox) {
 			bool res = lua_toboolean(L, -1);
 			if (!res) {
 				// Force an attack state to prevent Delirium from becoming stuck
-				// in a loop of attempting to transform. 
-				*delirium->GetDeliriumState() = 8; 
+				// in a loop of attempting to transform.
+				*delirium->GetDeliriumState() = 8;
 			}
 
 			return res;
@@ -48,7 +48,7 @@ struct DeliriumTransformationData {
 static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bdata, Box<Entity_NPC*> bdelirium, Box<int> btype, Box<int> bvariant) {
 	Entity_NPC* delirium = bdelirium.Get();
 	int type = btype.Get(), variant = bvariant.Get();
-	
+
 	auto iter = delirium::ForcedTransformations.find(delirium);
 	bool forced = iter != delirium::ForcedTransformations.end();
 	DeliriumTransformationData* data = bdata.Get();
@@ -66,7 +66,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 		}
 	}
 
-	
+
 	data->type = type;
 	data->variant = variant;
 
@@ -98,7 +98,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 			lua_len(L, -1);
 			int length = (int)lua_tointeger(L, -1);
 			lua_pop(L, 1);
-			
+
 			// Empty table
 			if (length == 0) {
 				return;
@@ -158,7 +158,7 @@ namespace delirium {
 		void* addr = scanner.GetAddress();
 
 		/* Full patch:
-		 * 
+		 *
 		 * jz addr + 0x857
 		 * <save registers>
 		 * push ebx
@@ -173,7 +173,7 @@ namespace delirium {
 			ASMPatch::SavedRegisters::ECX |
 			ASMPatch::SavedRegisters::EDX |
 			ASMPatch::SavedRegisters::EDI |
-			ASMPatch::SavedRegisters::ESI | 
+			ASMPatch::SavedRegisters::ESI |
 			ASMPatch::SavedRegisters::EAX, true);
 
 		// test al, al buffer
@@ -183,7 +183,7 @@ namespace delirium {
 		patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x857);
 		patch.PreserveRegisters(saved);
 		patch.Push(ASMPatch::Registers::EBX);
-		// The call returns false if Delirium shouldn't transform, true if 
+		// The call returns false if Delirium shouldn't transform, true if
 		// he should.
 		patch.AddInternalCall(PreTransformationCallback);
 		patch.AddBytes(check);
@@ -209,16 +209,16 @@ namespace delirium {
 		// the decision taken by the user.
 		ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::EDX | Reg::ESI, true);
 		ASMPatch::StackSpace space = ASMPatch::StackSpace::Make<DeliriumTransformationData>(true);
-		ByteBuffer leaBytes, movTypeBytes, movVariantBytes; 
+		ByteBuffer leaBytes, movTypeBytes, movVariantBytes;
 		leaBytes.AddByte('\x8D') // opcode
 			.AddByte(0b01000100) // ModRM, mod = 01 (8 bits disp), reg = 000 (EAX), rm = 100 (ESP)
 			.AddByte(0b00100100) // SIB, scale = 00 (ignored), index = 100 (ESP), base = 100 (ESP)
-			.AddByteBuffer(ASMPatch::ToHexString(12));
+			.AddInteger((int8_t)12);
 
 		movVariantBytes.AddByte('\x8B') // opcode
 			.AddByte(0b01111100) // ModRM, mod = 01 (8 bits disp), reg = 111 (edi), rm = 100 (ESP)
 			.AddByte(0b00100100) // SIB, scale = 00 (ignored), index = 100 (ESP), base = 100 (ESP)
-			.AddByteBuffer(ASMPatch::ToHexString(0x4));
+			.AddInteger((int8_t)0x4);
 
 		movTypeBytes.AddByte('\x8B') // opcode
 			.AddByte(0b00001100) // Mod RM, mod = 00 (no disp), reg = 001 (ecx), rm = 100 (ESP)

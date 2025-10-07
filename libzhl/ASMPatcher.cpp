@@ -15,6 +15,7 @@
 #include "ByteBuffer.h"
 #include "Log.h"
 #include "SigScan.h"
+#include "x86_defines.h"
 
 // C4309: truncation of constant value
 #pragma warning(disable : 4309)
@@ -22,6 +23,7 @@
 #ifdef max
 #undef max
 #endif
+
 
 ASMPatcher::ASMPatcher() {
 	_patching.store(false, std::memory_order_relaxed);
@@ -346,7 +348,7 @@ std::unique_ptr<char[]> ASMPatcher::EncodeJump(const void* at, const void* targe
 	void* next = (char*)at + 5;
 	ptrdiff_t offset = JumpOffset(next, target);
 	char* buffer = new char[5];
-	*buffer = 0xE9;
+	*buffer = x86::Opcode8(x86::Opcodes8::JMP_ABSOLUTE);
 	memcpy(buffer + 1, &offset, sizeof(ptrdiff_t));
 	return std::unique_ptr<char[]>(buffer);
 }
@@ -623,13 +625,13 @@ ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMP
 	std::bitset<8> modrmBits;
 	// 32 bits opcode
 	if (offset < -127 || offset > 127) {
-		offsetHex = ToHexString(offset, false);
+		offsetHex.AddInteger(offset);
 		modrmBits[7] = true;
 		modrmBits[6] = false;
 	}
 	else {
 		// 8 bits opcode
-		offsetHex = ToHexString((int8_t)offset);
+		offsetHex.AddInteger((int8_t)offset);
 		modrmBits[7] = false;
 		modrmBits[6] = true;
 	}
@@ -644,7 +646,7 @@ ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMP
 
 	uint8_t modRmVal = (uint8_t)modrmBits.to_ulong();
 	ByteBuffer result;
-	result.AddString("\x8B").AddByteBuffer(ToHexString(modRmVal)).AddByteBuffer(offsetHex);
+	result.AddString("\x8B").AddInteger(modRmVal).AddByteBuffer(offsetHex);
 	return AddBytes(result);
 }
 
@@ -656,13 +658,13 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 	std::bitset<8> modrmBits;
 	// 32 bits opcode
 	if (offset < -127 || offset > 127) {
-		offsetHex = ToHexString(offset, false);
+		offsetHex.AddInteger(offset);
 		modrmBits[7] = true;
 		modrmBits[6] = false;
 	}
 	else {
 		// 8 bits opcode
-		offsetHex = ToHexString((int8_t)offset);
+		offsetHex.AddInteger((int8_t)offset);
 		modrmBits[7] = false;
 		modrmBits[6] = true;
 	}
@@ -676,7 +678,7 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 
 	uint8_t modRmVal = (uint8_t)modrmBits.to_ulong();
 	ByteBuffer result;
-	result.AddString("\x89").AddByteBuffer(ToHexString(modRmVal)).AddByteBuffer(offsetHex);
+	result.AddString("\x89").AddInteger(modRmVal).AddByteBuffer(offsetHex);
 	return AddBytes(result);
 }
 
@@ -685,10 +687,10 @@ ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
 	ByteBuffer offset;
 	if (immediate >= -127 && immediate <= 127) {
 		opcode = '\xB0';
-		offset = ToHexString((int8_t)immediate);
+		offset.AddInteger((int8_t)immediate);
 	}
 	else {
-		offset = ToHexString(immediate, false);
+		offset.AddInteger(immediate);
 	}
 
 	opcode += RegisterTox86(dst);
@@ -875,14 +877,14 @@ ByteBuffer ASMPatch::EncodeRMOperand(Registers base, int32_t displacement,
 ASMPatch& ASMPatch::LoadEffectiveAddress(Registers base, int32_t offset, Registers dst,
 	std::optional<Registers> index, uint8_t scale) {
 	ByteBuffer bytes;
-	bytes.AddByte('\x8D');
+	bytes.AddByte(x86::Opcode8(x86::Opcodes8::LEA));
 	bytes.AddByteBuffer(EncodeRMOperand(base, offset, index, scale, _ModRM[dst].to_ulong()));
 	return this->AddBytes(bytes);
 }
 
 ASMPatch& ASMPatch::LoadEffectiveAddress(Registers dst, int32_t addr) {
 	ByteBuffer bytes;
-	bytes.AddByte('\x8D');
+	bytes.AddByte(x86::Opcode8(x86::Opcodes8::LEA));
 	bytes.AddByteBuffer(EncodeRMOperand(Registers::EBP, 0, std::nullopt, 0, _ModRM[dst].to_ulong(), true));
 	return this->AddBytes(bytes);
 }
@@ -894,22 +896,28 @@ ASMPatch& ASMPatch::Push(ASMPatch::Registers reg) {
 
 ASMPatch& ASMPatch::Push(int8_t imm8) {
 	ByteBuffer buffer;
-	buffer.AddString("\x6A");
-	buffer.AddByteBuffer(ASMPatch::ToHexString(imm8));
+	buffer.AddByte(x86::Opcode8(x86::Opcodes8::PUSH_IMM8));
+	buffer.AddInteger(imm8);
 	return AddBytes(buffer);
 }
 
 ASMPatch& ASMPatch::Push(int32_t imm32) {
 	ByteBuffer buffer;
-	buffer.AddString("\x68");
-	buffer.AddByteBuffer(ASMPatch::ToHexString(imm32, false));
+	buffer.AddByte(x86::Opcode8(x86::Opcodes8::PUSH_IMM32));
+	buffer.AddInteger(imm32);
 	return AddBytes(buffer);
 }
 
 ASMPatch& ASMPatch::Push(ASMPatch::Registers reg, int32_t imm32) {
+	RMOperand operand(reg, imm32);
+	return Push(operand);
+}
+
+ASMPatch& ASMPatch::Push(RMOperand rm) {
 	ByteBuffer buffer;
-	buffer.AddByte('\xFF');
-	buffer.AddByteBuffer(EncodeRMOperand(reg, imm32, std::nullopt, 0, 0x6, false));
+	buffer.AddByte(x86::Opcode8(x86::Opcodes8::PUSH_RM));
+	buffer.AddByteBuffer(EncodeRMOperand(rm.base, rm.disp, rm.index,
+		SIBScaleToInt(rm.scale), x86::RM(x86::RMs::PUSH_RM), false));
 	return AddBytes(buffer);
 }
 
@@ -1014,7 +1022,7 @@ ASMPatch::ASMInternalCall::ASMInternalCall(void* target) : _target(target) {
 
 std::unique_ptr<char[]> ASMPatch::ASMInternalCall::ToASM(void* at) const {
 	std::unique_ptr<char[]> call(new char[5]);
-	call[0] = '\xE8';
+	call[0] = x86::Opcode8(x86::Opcodes8::CALL_NEAR_REL);
 	ptrdiff_t diff = ASMPatcher::JumpOffset((char*)at + 5, _target);
 	memcpy(call.get() + 1, &diff, sizeof(ptrdiff_t));
 	return call;
@@ -1059,42 +1067,6 @@ std::unique_ptr<char[]> ASMPatch::ToASM(void* at) const {
 
 size_t ASMPatch::Length() const {
 	return _size;
-}
-
-ByteBuffer ASMPatch::ToHexString(int8_t x) {
-	ByteBuffer result;
-	char value;
-	memcpy(&value, &x, 1);
-	result.AddAny(&value, 1);
-	return result;
-}
-
-ByteBuffer ASMPatch::ToHexString(int16_t x, bool endianConvert) {
-	char buffer[2];
-	memcpy(buffer, &x, 2);
-
-	if (endianConvert) {
-		// Flip 0 and 1
-		EndianSwap(buffer, 0, 1);
-	}
-
-	ByteBuffer result;
-	result.AddAny(buffer, 2);
-	return result;
-}
-
-ByteBuffer ASMPatch::ToHexString(int32_t x, bool endianConvert) {
-	char buffer[4];
-	memcpy(buffer, &x, 4);
-
-	if (endianConvert) {
-		EndianSwap(buffer, 0, 3);
-		EndianSwap(buffer, 1, 2);
-	}
-
-	ByteBuffer result;
-	result.AddAny(buffer, 4);
-	return result;
 }
 
 /* void ASMPatcher::Error(const char* fmt, ...) {
@@ -1182,5 +1154,31 @@ std::bitset<8> ASMPatch::ModRM(std::variant<Registers, XMMRegisters> const& src,
 	}
 	else {
 		return 0b11000000 | (rmSrc << 3) | rmDst;
+	}
+}
+
+ASMPatch::RMOperand::RMOperand(Registers base, int32_t disp, SIBScale scale,
+	std::optional<Registers> index) : base(base), disp(disp), scale(scale),
+	index(index) {
+
+}
+
+uint8_t ASMPatch::SIBScaleToInt(SIBScale scale) {
+	switch (scale) {
+	case SCALE_NONE:
+	case SCALE_1:
+		return 0b00;
+
+	case SCALE_2:
+		return 0b01;
+
+	case SCALE_4:
+		return 0b10;
+
+	case SCALE_8:
+		return 0b11;
+
+	default:
+		std::terminate();
 	}
 }
