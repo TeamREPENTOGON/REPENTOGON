@@ -6,7 +6,7 @@
 #include "Log.h"
 #include "Signature.h"
 
-static void ValidateSignature(size_t start, size_t end, unsigned char* sig, const unsigned char** p, size_t oldSize, 
+static void ValidateSignature(size_t start, size_t end, unsigned char* sig, const unsigned char** p, size_t oldSize,
 	const unsigned char* limit, std::list<const unsigned char*>& matches) {
 	// logger->Log("[DEBUG] Validating signature from %p. Start = %u, end = %u, limit = %p\n", *p, start, end, limit);
 	const unsigned char* ptr = *p;
@@ -29,8 +29,8 @@ static void ValidateSignature(size_t start, size_t end, unsigned char* sig, cons
 	}
 }
 
-Signature::SignatureCheckStatus Signature::CheckSignature(const unsigned char* start, 
-	const unsigned char* end, std::list<const unsigned char*>& matches, 
+Signature::SignatureCheckStatus Signature::CheckSignature(const unsigned char* start,
+	const unsigned char* end, std::list<const unsigned char*>& matches,
 	size_t oldSize) {
 	// logger->Log("[DEBUG] Checking signature between %p and %p\n", start, end);
 	const unsigned char* p = start;
@@ -73,7 +73,7 @@ Signature::SignatureCheckStatus Signature::CheckSignature(const unsigned char* s
 
 void Signature::ReadRaw(unsigned char** raw, size_t n) {
 	for (size_t i = 0; i < n; ++i) {
-		_bytes.AddAny((const char*)*raw, 1);
+		_bytes.AddAny(*raw, 1);
 		++* raw;
 	}
 }
@@ -92,7 +92,7 @@ bool Signature::AddInstructionHeaderToSignature(ZydisDisassembledInstruction con
 	unsigned char** raw) {
 	if (instruction.info.encoding == ZydisInstructionEncoding::ZYDIS_INSTRUCTION_ENCODING_LEGACY) {
 		// Legacy instruction contain a possibly mandatory prefix (SSE etc.)
-		// followed by the opcode. The opcode can be one, two or three bytes, 
+		// followed by the opcode. The opcode can be one, two or three bytes,
 		// depending on the map used.
 		ReadRaw(raw, instruction.info.raw.prefix_count);
 
@@ -177,12 +177,12 @@ void Signature::AddInstructionOperandsToSignature(ZydisDisassembledInstruction c
 		ReadRaw(raw, 1);
 	}
 
-	// Read displacement. Displacement is present only in some configurations of 
+	// Read displacement. Displacement is present only in some configurations of
 	// ModR/M + SIB, and on specific instructions (movs from/to (e)A(X/H), specific opcodes).
 	bool hasDisplacement = (modrm && instruction.info.raw.modrm.mod != 3) || HasMoffs(instruction);
 	if (hasDisplacement) {
-		// Displacement needs to be wildcarded when RM references the BP register and mod is 00 and the 
-		// displacement falls into the address space of the proces. It means we may be attempting to 
+		// Displacement needs to be wildcarded when RM references the BP register and mod is 00 and the
+		// displacement falls into the address space of the proces. It means we may be attempting to
 		// read from / write to an absolute address.
 		if (instruction.info.raw.modrm.mod == 0 && instruction.info.raw.modrm.rm == 5 /* BP */ &&
 			instruction.info.raw.disp.value >= (ZyanI64)moduleAddr && instruction.info.raw.disp.value < (ZyanI64)(moduleAddr + _moduleSize)) {
@@ -201,9 +201,9 @@ void Signature::AddInstructionOperandsToSignature(ZydisDisassembledInstruction c
 		ZydisDecodedOperand const& operand = instruction.operands[i];
 		if (operand.type == ZydisOperandType::ZYDIS_OPERAND_TYPE_IMMEDIATE) {
 			// Addresses will always be written as 32 bits values in memory.
-			// 
+			//
 			// Heuristic: if the immediate is a value that falls anywhere
-			// in the image of the process (_any_ region in the process), and its 
+			// in the image of the process (_any_ region in the process), and its
 			// size is 32 bits, then it is an absolute address. Wildcard it.
 			//
 			// The heuristic relies on the fact that most immediate values are "low"
@@ -215,8 +215,8 @@ void Signature::AddInstructionOperandsToSignature(ZydisDisassembledInstruction c
 			// is irrelevant for addresses.
 			ZyanU64 value = operand.imm.value.u;
 			//logger->Log(" (operand value = %#llx, low = %#llx, high = %#llx, size = %#x, size = %d, signed = %d) ", value, moduleAddr, moduleAddr + moduleSize, moduleSize, operand.size, operand.imm.is_signed);
-			// First comparison is inclusive because the address can be the first instruction of 
-			// the module. Second comparison is strict because the address cannot be the last 
+			// First comparison is inclusive because the address can be the first instruction of
+			// the module. Second comparison is strict because the address cannot be the last
 			// address of the module (it would end up outside the module).
 			if (value >= moduleAddr && value < moduleAddr + _moduleSize && operand.size == 32) {
 				ZyanU8 nWildcards = operand.size / 8;
@@ -304,7 +304,7 @@ std::optional<ByteBuffer> Signature::Make() {
 				return std::nullopt;
 			}
 
-			// If the target of the jump falls in the text segment, move the limit of 
+			// If the target of the jump falls in the text segment, move the limit of
 			// disassembly further, if needed.
 			if (target >= (ZyanU64)_moduleTextAddr && target < (ZyanU64)_moduleTextAddr + _moduleTextSize) {
 				if (target > farthestAddr) {
@@ -312,7 +312,7 @@ std::optional<ByteBuffer> Signature::Make() {
 				}
 			}
 			else {
-				// Otherwise, we're in an ASM patched function (probably), and cannot compute a 
+				// Otherwise, we're in an ASM patched function (probably), and cannot compute a
 				// signature because of that.
 				_logger->Log("[ERROR] Unable to compute signature because function is ASM patched\n");
 				return std::nullopt;
@@ -359,7 +359,7 @@ std::optional<ByteBuffer> Signature::Make() {
 // Build a signature for the function at the given address. The signature will be unique
 // in the context of the module from which the address comes, not necessarily unique
 // in the context of the entire process.
-// 
+//
 // This function must not raise any C++ exceptions, because there's already an exception
 // ready to be processed on the stack (_CxxThrowException is suspended).
 Signature::Signature(void* addr, const char* moduleName, ZHL::Logger* logger) : _addr(addr), _logger(logger) {

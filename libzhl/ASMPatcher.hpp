@@ -190,6 +190,34 @@ public:
 	static ByteBuffer ToHexString(int16_t x, bool endianConvert);
 	static ByteBuffer ToHexString(int32_t x, bool endianConvert);
 
+	enum class Registers;
+
+	/* Encode an operand for an instruction expecting an r/mXX operand.
+	 * The returned ByteBuffer provides the values of the R/M byte, the
+	 * SIB byte (if applicable) and the displacement.
+	 *
+	 * The function attempts to optimize the generation by privileging shorter
+	 * forms of the encoding when possible. displacement values in range
+	 * [-127, 127] prefer the 1 byte displacement encoding while other values
+	 * use the 4 bytes displacement encoding.
+	 *
+	 * An r/mXX operand is, in Intel syntax, of the form [base (+index * scale)? + displacement].
+	 * Examples:
+	 *	push [eax + 0x12] (base = eax, index = nullopt, scale = n/a, displacement = 0x12)
+	 *  push [eax + ebx * 2 + 0x31] (base = eax, index = ebx, scale = 2, displacement = 0x31)
+	 *
+	 * Legal values for scale are 1, 2, 4 and 8. A value of 0 is ignored, alongside
+	 * any provided index. Other values raise an exception.
+	 *
+	 * If the encoding of the Mod R/M byte results in a use of the SIB byte, and
+	 * index is set to ESP, then an exception is raised. While this would not
+	 * result in an invalid encoding, it would result in an unexpected (for the
+	 * non R/M gurus) operation.
+	 */
+	static ByteBuffer EncodeRMOperand(Registers base, int32_t displacement,
+		std::optional<Registers> index, uint8_t scale, uint8_t reg_op,
+		bool allowMod0Disp0 = false);
+
 	ASMPatch();
 	ASMPatch(ByteBuffer const& buffer);
 	ASMPatch(const ASMPatch& other) = delete;
@@ -260,11 +288,6 @@ public:
 		XMM5,
 		XMM6,
 		XMM7
-	};
-
-	enum class LeaOps {
-		PLUS,
-		MULT
 	};
 
 	class LIBZHL_API StackSpace {
@@ -376,13 +399,28 @@ public:
 		return AddBytes(bytes);
 	}
 
-	/* typedef std::variant<Registers, int32_t> LeaOperand;
-	typedef std::tuple<LeaOps, LeaOperand> LeaParameter;
-	ASMPatch& LoadEffectiveAddress(Registers dst, Registers src, std::optional<LeaParameter> firstParam, std::optional<LeaParameter> secondParam); */
-
-	// Do not use this function with ESP or EBP as the source register as they use the
-	// SIB byte which is not supported for now.
-	ASMPatch& LoadEffectiveAddress(Registers src, int32_t offset, Registers dst);
+	/* Encode the lea instruction using the index/base + displacement format.
+	 * Usual restrictions to the encoding an r/m operand apply.
+	 * Additionally, this implementation cannot be used for operations such as
+	 * `lea reg, [reg]`. For such operations, prefer the CopyRegister function.
+	 *
+	 * For the meaning of base, index and scale, please refer to the
+	 * EncodeRMOperand function.
+	 *
+	 * If you wish to encode something like lea r32, [m64], use the overload below.
+	 *
+	 * Example: to encode lea ebx, [eax + ecx * 2 + 0xA], call :
+	 * LoadEffectiveAddress(EAX, 0xA, EBX, ECX, 2);
+	 */
+	ASMPatch& LoadEffectiveAddress(Registers base, int32_t offset, Registers dst,
+		std::optional<Registers> index = std::nullopt, uint8_t scale = 0);
+	/* Load an effective address into the given register. This effectively moves
+	 * the value inside the register.
+	 *
+	 * Use this function when you want the very specific encoding of the Mod R/M
+	 * such that the effective address is addr.
+	 */
+	ASMPatch& LoadEffectiveAddress(Registers dst, int32_t addr);
 	ASMPatch& PreserveRegisters(SavedRegisters& registers);
 	ASMPatch& RestoreRegisters(SavedRegisters& registers);
 	ASMPatch& Push(Registers reg);

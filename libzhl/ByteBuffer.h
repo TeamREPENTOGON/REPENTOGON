@@ -22,9 +22,28 @@ public:
 	ByteBuffer& operator=(ByteBuffer&& other);
 
 	ByteBuffer& AddByte(unsigned char byte, size_t n = 1);
+	template<typename T>
+	std::enable_if_t<std::is_integral_v<T>, ByteBuffer&> AddInteger(T t, bool endianConvert = true) {
+		T result = t;
+		if (endianConvert) {
+			if constexpr (sizeof(T) == 1)
+				return AddAny(t, 1);
+			else if constexpr (sizeof(T) == 2) {
+				result = _byteswap_ushort(t);
+			} else if constexpr (sizeof(T) == 4) {
+				result = _byteswap_ulong(t);
+			} else if constexpr (sizeof(T) == 8) {
+				result = _byteswap_uint64(t);
+			} else {
+				static_assert(false, "AddInteger with endian conversion does not support integers of more than 64 bits");
+			}
+		}
+
+		return AddAny(&result, sizeof(T));
+	}
 	ByteBuffer& AddString(const char* s);
 	ByteBuffer& AddZeroes(uint32_t n);
-	ByteBuffer& AddAny(const char* addr, size_t n);
+	ByteBuffer& AddAny(void* addr, size_t n);
 	ByteBuffer& AddByteBuffer(ByteBuffer const& other);
 	ByteBuffer& AddPointer(void* ptr);
 
