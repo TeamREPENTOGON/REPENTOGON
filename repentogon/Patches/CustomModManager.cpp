@@ -130,7 +130,7 @@ int __stdcall TestArrayPrint(int* mapIcons, int mapIndex) {
 	
 }
 
-int AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int iconCount) {
+int __stdcall AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int iconCount) {
 	if (curseSpriteMap.empty() || iconCount >= 7) return iconCount;
 
 	for (const auto& entry : curseSpriteMap) {
@@ -148,7 +148,7 @@ int AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int iconCount) {
 }
 
 void ASMPatchAssignCustomFrame() {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 
 	const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
@@ -158,7 +158,7 @@ void ASMPatchAssignCustomFrame() {
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x1c, ASMPatch::Registers::EDI, std::nullopt, 4u )
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u )
 		.Push(ASMPatch::Registers::EBX)
 		.Push(ASMPatch::Registers::EDI)
 		.Push(ASMPatch::Registers::EAX)
