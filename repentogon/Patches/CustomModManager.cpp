@@ -83,10 +83,8 @@ HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlPath, bool isMod) -> void) {
 	super(xmlPath, isMod);
 }
 
-void __stdcall RegisterCurseSprite(uint32_t curseId) {
-	if (!capturedModEntry) return;  // No mod captured
-
-	const unsigned int adjustedCurseId = curseId - 1;
+void __stdcall RegisterCurseSprite(uint32_t curseId, bool isMod) {
+	if (!isMod || !capturedModEntry) return;  // No mod captured
 
 	if (capturedModEntry != lastModEntry) {
 		currentFrameNum = 0;
@@ -95,7 +93,7 @@ void __stdcall RegisterCurseSprite(uint32_t curseId) {
 
 	ModEntryEx* ex = CustomModManager::GetInstance().GetEx(capturedModEntry);
 	if (ex && &ex->_customMinimapANM2) {
-		curseSpriteMap[adjustedCurseId] = { ex, &ex->_customMinimapANM2, currentFrameNum };
+		curseSpriteMap[curseId] = { ex, &ex->_customMinimapANM2, currentFrameNum };
 		currentFrameNum++;
 	}
 
@@ -107,16 +105,17 @@ void ASMPatchRegisterCurseSprite() {
 
 	const uint32_t curseIdOffset = *(uint32_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseGuessIdOffset) + 0x2);
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseRegisterSprite);
-	const int jumpOffset = 0x6 + *(int8_t*)((char*)addr + 0x5);
+	//const int jumpOffset = 0x6 + *(int8_t*)((char*)addr + 0x5);
 
 	printf("[REPENTOGON] Patching RoomConfig::LoadCurses for registering custom sprite at %p\n", addr);
 	
 	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, 0xC) //isMod
 		.Push(ASMPatch::Registers::EBP, curseIdOffset)
 		.AddInternalCall(RegisterCurseSprite)
 		.RestoreRegisters(savedRegisters)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x4))  // Restore the bytes we overwrote
-		.AddRelativeJump((char*)addr + jumpOffset);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0xA);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
