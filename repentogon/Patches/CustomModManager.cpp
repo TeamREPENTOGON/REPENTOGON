@@ -32,7 +32,7 @@ void __stdcall LoadCustomMinimapANM2(ModEntry* mod) {
     if (expanded != nullptr) {
         ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod);
         if (ex != nullptr) {
-            ex->_customMinimapANM2.Load(path, true);
+			ex->_customMinimapANM2.Load(path, true);
 			printf("are we here? %s\n", ex->_customMinimapANM2._filename.c_str());
         }
     }
@@ -133,10 +133,9 @@ int __stdcall AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int icon
 	if (curseSpriteMap.empty() || iconCount >= 7) return iconCount;
 
 	for (const auto& entry : curseSpriteMap) {
-		uint32_t adjustedCurseId = entry.first;
-		uint32_t originalCurseId = adjustedCurseId + 1;
+		int adjustedCurseId = (int)entry.first;
 
-		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (originalCurseId - 1)))) {
+		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (adjustedCurseId - 1)))) {
 			mapIcons[iconCount] = -(adjustedCurseId + 1);
 			iconCount++;
 			if (iconCount >= 7) break;
@@ -170,11 +169,58 @@ void ASMPatchAssignCustomFrame() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+bool __stdcall RenderCustomCurses(int curseId) {
+	if (curseId >= 8) {
+
+		std::string curseName = "curses";
+		auto& curseEntry = curseSpriteMap[curseId + 1];
+		ANM2* curseSprite = curseEntry.customANM2;
+		if (curseSprite->_loaded) {
+			curseSprite->Play("curses", false);
+			curseSprite->SetFrame(&curseName, curseEntry.frameNum);
+			Vector pos { 100, 25 };
+			Vector zero { 0,0 };
+
+			curseSprite->Render(&pos, &zero, &zero);
+			return true;
+		}
+		
+	}
+	return false;
+}
+
+void ASMPatchRenderCustomCurses() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	//const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsCustomRender);
+	//const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+
+	printf("[REPENTOGON] Patching Minimap::render_icons for rendering custom curses at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		/*.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u)
+		.Push(ASMPatch::Registers::EBX)
+		
+		.Push(ASMPatch::Registers::EAX)*/
+		//.LoadEffectiveAddress(ASMPatch::Registers::EBP)
+		.Push(ASMPatch::Registers::EDI)
+		.AddInternalCall(RenderCustomCurses)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x80)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMPatchesForCustomModManager() {
 	ASMPatchLoadModEntryExAssets();
 	ASMPatchCaptureModEntryForCurse();
 	ASMPatchRegisterCurseSprite();
 	ASMPatchAssignCustomFrame();
+	ASMPatchRenderCustomCurses();
 }
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {

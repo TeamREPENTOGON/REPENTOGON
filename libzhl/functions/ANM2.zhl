@@ -32,7 +32,7 @@ __thiscall bool ANM2::IsPlaying(std_string* name);
 __thiscall int ANM2::GetFrame();
 
 "558bec518b45??568bf18378??1072??8b006a0150e8????????84c074??8b46":
-__thiscall int ANM2::SetFrame(std_string* anim,float frame);
+__thiscall void ANM2::SetFrame(std_string* anim, int frame);
 
 "558bec5153568bf157837e??0074":
 __thiscall void ANM2::Load(std_string &ANM2Path, bool loadgraphics);
@@ -58,6 +58,9 @@ __thiscall void ANM2::Play(const char* anim, bool reset);
 "558bec83ec0880b9????????00":
 __thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
 
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf18975??c70600000000c746??00000000c746??0f000000c60600c745??00000000":
+__thiscall void ANM2::constructor();
+
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec14":
 __thiscall void ANM2::construct_from_copy(ANM2* right);
 
@@ -79,6 +82,11 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
 	inline unsigned int GetLayerCount() { return this->_layerCount; } 
     inline unsigned int* GetRenderFlags() { return &this->_bitflags; } 
 	inline ColorMod* GetColor() { return &this->_color; } 
+	
+	ANM2() 
+	{
+		this->constructor();
+	}
 }} 
     std_string _filename : 0x0;
     std_string _animDefaultName : 0x18;
