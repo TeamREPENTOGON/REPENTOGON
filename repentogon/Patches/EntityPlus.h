@@ -38,6 +38,12 @@ class EntityLaserPlus : public EntityPlus {
 	bool recalculateSamplesNextUpdate = false;
 };
 
+// Attributes for EntityKnife.
+class EntityKnifePlus : public EntityPlus {
+public:
+	EntityPtr hitboxSource;
+};
+
 // Returns a ptr to the base EntityPlus class held by the entity.
 // In theory should typically not be nullptr as it, or a child class, is initialized on entity Init.
 EntityPlus* GetEntityPlus(Entity* entity);
@@ -47,5 +53,6 @@ EntityPlus* GetEntityPlus(Entity* entity);
 EntityPlayerPlus* GetEntityPlayerPlus(Entity_Player* player);
 EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
+EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife);
 
 void ASMPatchesForEntityPlus();

@@ -97,6 +97,8 @@ asm TryAddToBagOfCraftingBelialEffectEspOffset "c64424??0083fb1e";
 asm TryAddToBagOfCraftingAccessArray "8b54????85d274??83f808";
 asm TryAddToBagOfCraftingArrayLength "83f90272??894424";
 
+asm PostMeleeHitboxInit "8b078bcfff50??8b4d??85c9";
+
 asm PreBombApplyTearFlagEffects "8b43??0b43??75??8b43??0b43??0f84";
 
 // Custom Active item GFX
