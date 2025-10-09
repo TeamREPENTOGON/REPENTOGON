@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_KnifeGetHitList) {
 	Entity_Knife * knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
@@ -67,6 +68,28 @@ LUA_FUNCTION(Lua_SetPrismTouched) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetHitboxParentKnife) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
+	Entity* parentKnife = entityPlus ? entityPlus->hitboxSource.GetReference() : nullptr;
+	if (parentKnife && parentKnife->_type == ENTITY_KNIFE) {
+		lua::luabridge::UserdataPtr::push(L, parentKnife, lua::Metatables::ENTITY_KNIFE);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetHitboxParentKnife) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity_Knife* parentKnife = !lua_isnoneornil(L, 2) ? lua::GetLuabridgeUserdata<Entity_Knife*>(L, 2, lua::Metatables::ENTITY_KNIFE, "EntityKnife") : nullptr;
+	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
+	if (entityPlus) {
+		entityPlus->hitboxSource.SetReference(parentKnife);
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -83,6 +106,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsPrismTouched", Lua_IsPrismTouched },
 		{ "SetPrismTouched", Lua_SetPrismTouched },
 		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
+		{ "GetHitboxParentKnife", Lua_GetHitboxParentKnife },
+		{ "SetHitboxParentKnife", Lua_SetHitboxParentKnife },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);

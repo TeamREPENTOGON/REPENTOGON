@@ -24,7 +24,7 @@ __thiscall void MenuManager::Update();
 //"558bec83ec08538b1d????????568b75":
 //__thiscall void MenuManager::SetState(int estate); //unused?
 
-struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
+struct MenuManager depends (KColor, ColorModState, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
 {{
 	MenuManager()
 	{
@@ -56,9 +56,9 @@ struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vec
     float _fadeOutProgress : 0x10;
     int _fadeInActive : 0x14;
     float _fadeInProgress : 0x18;
-    KAGE_Graphics_Color _fadeInColor : 0x1C;
-    int _returnState : 0x2c; /* ??? 256 when opening main menu from a run */
-    int _unrecognizedControllerPopupVisible : 0x30; // ???
+    KColor _fadeInColor : 0x1C;
+    int _returnState : 0x30; /* ??? 256 when opening main menu from a run */
+    // int _unrecognizedControllerPopupVisible : 0x??; // lost in REP+
     float _vingnetteIntensity : 0x34;
     float _backWidgetPositionOffsetY : 0x38;
     float _selectWidgetPositionOffsetY : 0x3c;

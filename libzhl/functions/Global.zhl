@@ -93,6 +93,7 @@ typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
 typedef std::vector<KAGE_Graphics_ImageBase*> vector_ImagePtr;
 typedef std::vector<std::pair<KAGE_Graphics_RenderBatch*, KAGE_Graphics_ImageBase*>> vector_pair_RenderBatchPtr_ImagePtr;
 typedef std::deque<ColorMod> deque_ColorMod;
+typedef KColor KAGE_Graphics_Color;
 
 struct PoolItem {
 	uint32_t _itemID = 0;

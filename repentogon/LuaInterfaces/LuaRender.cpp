@@ -2280,7 +2280,6 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 	Manager::LoadImage(&image, path, __ptr_g_VertexAttributeDescriptor_Position, false);
 
 	if (!image.image) {
-		image.DecrRef();
 		return luaL_error(L, "Image %s does not exist", path);
 	}
 
@@ -2288,7 +2287,6 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 	memset(ud, 0, sizeof(LuaImage));
 	luaL_setmetatable(L, LuaRender::ImageMT);
 	ud->image = image;
-	image.DecrRef();
 	return 1;
 }
 

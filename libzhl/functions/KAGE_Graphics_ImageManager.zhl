@@ -3,5 +3,8 @@ struct KAGE_Graphics_ImageManager {
     vector_pair_RenderBatchPtr_ImagePtr _transparentBatches : 0x28;
 } : 0x3c;
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec30568b35":
+__thiscall void KAGE_Graphics_ImageManager::apply_frame_images();
+
 "a1(????????)8d0c??8b34":
 reference KAGE_Graphics_ImageManager g_KAGE_Graphics_ImageManager;

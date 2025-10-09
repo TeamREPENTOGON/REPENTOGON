@@ -24,6 +24,7 @@
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
+#include "ASMPatches/ASMEntityKnife.h"
 #include "ASMPatches/ASMEntityNPC.h"
 #include "ASMPatches/ASMGridEntityCollision.h"
 #include "ASMPatches/ASMGridEntitySpawn.h"
@@ -201,6 +202,9 @@ void PerformASMPatches() {
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
 	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
+
+	// EntityKnife
+	PatchMeleeHitboxInit();
 
 	// GridEntity
 	PatchGridCollisionCallback();

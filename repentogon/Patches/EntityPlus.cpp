@@ -79,6 +79,8 @@ HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int
 		holder->data = std::make_unique<EntityFamiliarPlus>();
 	} else if (type == ENTITY_LASER) {
 		holder->data = std::make_unique<EntityLaserPlus>();
+	} else if (type == ENTITY_KNIFE) {
+		holder->data = std::make_unique<EntityKnifePlus>();
 	} else {
 		holder->data = std::make_unique<EntityPlus>();
 	}
@@ -119,6 +121,10 @@ EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar) {
 
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser) {
 	return dynamic_cast<EntityLaserPlus*>(GetEntityPlusHolder(laser, true)->data.get());
+}
+
+EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife) {
+	return dynamic_cast<EntityKnifePlus*>(GetEntityPlusHolder(knife, true)->data.get());
 }
 
 
