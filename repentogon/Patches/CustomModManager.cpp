@@ -169,7 +169,7 @@ void ASMPatchAssignCustomFrame() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-bool __stdcall RenderCustomCurses(int curseId) {
+bool __stdcall RenderCustomCurses(int curseId, Vector* position) {
 	if (curseId >= 8) {
 
 		std::string curseName = "curses";
@@ -178,10 +178,10 @@ bool __stdcall RenderCustomCurses(int curseId) {
 		if (curseSprite->_loaded) {
 			curseSprite->Play("curses", false);
 			curseSprite->SetFrame(&curseName, curseEntry.frameNum);
-			Vector pos { 100, 25 };
+			//Vector pos { 100, 25 };
 			Vector zero { 0,0 };
 
-			curseSprite->Render(&pos, &zero, &zero);
+			curseSprite->Render(position, &zero, &zero);
 			return true;
 		}
 		
@@ -202,9 +202,11 @@ void ASMPatchRenderCustomCurses() {
 	patch.PreserveRegisters(savedRegisters)
 		/*.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u)
 		.Push(ASMPatch::Registers::EBX)
-		
+
 		.Push(ASMPatch::Registers::EAX)*/
 		//.LoadEffectiveAddress(ASMPatch::Registers::EBP)
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, 0x24, ASMPatch::Registers::EAX, std::nullopt, 4u)
+		.Push(ASMPatch::Registers::EAX)
 		.Push(ASMPatch::Registers::EDI)
 		.AddInternalCall(RenderCustomCurses)
 		.AddBytes("\x84\xC0") // test al, al
