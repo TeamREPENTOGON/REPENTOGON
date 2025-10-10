@@ -231,7 +231,7 @@ __thiscall void Entity_Player::IncrementPlayerFormCounter(int ePlayerForm, int n
 __thiscall void Entity_Player::TriggerNewRoom_TemporaryEffects();
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd00000005657a1????????33c5508d45??64a3????????8bf9897d??8a43":
-__thiscall void Entity_Player::TriggerNewStage(bool unk);
+__thiscall void Entity_Player::TriggerNewStage(bool FromPlayerUpdate);
 
 "558bec83e4f851568bf18b86????????0386":
 __thiscall bool Entity_Player::TryPreventDeath();
@@ -726,6 +726,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	std_vector_int _voidedCollectibles : 0x1744;
 	uint32_t _actionHoldDrop : 0x17b0;
 	int _playerForms[15] : 0x17cc;
+	bool _postLevelInitFinished : 0x1810;
 	bool _canShoot : 0x1811;
 	ColorMod _footprintColor1 : 0x1814;
 	ColorMod _footprintColor2 : 0x1840;

@@ -2991,6 +2991,13 @@ LUA_FUNCTION(Lua_PlayerSetMaggyHealthDrainCooldown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerIsPostLevelInitFinished) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, player->_postLevelInitFinished);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3261,6 +3268,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetCharmOfTheVampireKills", Lua_PlayerSetCharmOfVampireKills },
 		{ "GetMaggyHealthDrainCooldown", Lua_PlayerGetMaggyHealthDrainCooldown },
 		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
+		{ "IsPostLevelInitFinished", Lua_PlayerIsPostLevelInitFinished },
 
 		{ NULL, NULL }
 	};

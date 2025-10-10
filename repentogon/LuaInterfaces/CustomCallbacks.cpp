@@ -2574,9 +2574,9 @@ HOOK_METHOD(Entity_Player, TriggerNewRoom_TemporaryEffects, () -> void) {
 }
 
 //POST_PLAYER_NEW_LEVEL (id: 1078)
-HOOK_METHOD(Entity_Player, TriggerNewStage, (bool unk) -> void) {
+HOOK_METHOD(Entity_Player, TriggerNewStage, (bool FromPlayerUpdate) -> void) {
 	
-	super(unk);
+	super(FromPlayerUpdate);
 	const int callbackid = 1078;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2587,7 +2587,8 @@ HOOK_METHOD(Entity_Player, TriggerNewStage, (bool unk) -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetPlayerType())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(unk)
+			.push(FromPlayerUpdate)
+			.push(_postLevelInitFinished)
 			.call(1);
 	}
 }
