@@ -37,6 +37,17 @@ struct ColorMod
 
 			return *this;
 		}
+		
+		inline ColorMod& operator=(const ColorMod& other) {
+			for (int i = 0; i < 4; ++i) {
+				_tint[i] = other._tint[i];
+				_colorize[i] = other._colorize[i];
+			}
+			for (int i = 0; i < 3; ++i)
+				_offset[i] = other._offset[i];
+			
+			return *this;
+		}
 	}}
 	float _tint[4] : 0x0;
 	float _colorize[4] : 0x10;

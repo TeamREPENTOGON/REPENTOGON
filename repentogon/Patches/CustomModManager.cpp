@@ -136,7 +136,7 @@ int __stdcall AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int icon
 		int adjustedCurseId = (int)entry.first;
 
 		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (adjustedCurseId - 1)))) {
-			mapIcons[iconCount] = -(adjustedCurseId + 1);
+			mapIcons[iconCount] = -(adjustedCurseId);
 			iconCount++;
 			if (iconCount >= 7) break;
 		}
@@ -151,7 +151,7 @@ void ASMPatchAssignCustomFrame() {
 
 	const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseRegisterFrameOffset);
-	const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
+	const int jumpOffset = 0x7 + *(int8_t*)((char*)addr + 0x6);
 
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
@@ -163,9 +163,7 @@ void ASMPatchAssignCustomFrame() {
 		.AddInternalCall(AddModdedCurseIcons)
 		.RestoreRegisters(savedRegisters)
 		.CopyRegister(ASMPatch::Registers::EBX, ASMPatch::Registers::EAX)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore the bytes we overwrote
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JBE, (char*)addr + jumpOffset)
-		.AddRelativeJump((char*)addr + 0x5);
+		.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -181,6 +179,12 @@ bool __stdcall RenderCustomCurses(int curseId, Vector* position) {
 			//Vector pos { 100, 25 };
 			Vector zero { 0,0 };
 
+			/*
+			if (!(&curseSprite->_color == color)) {
+				curseSprite->_color = *color;
+			}
+			*/
+
 			curseSprite->Render(position, &zero, &zero);
 			return true;
 		}
@@ -193,8 +197,10 @@ void ASMPatchRenderCustomCurses() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	//const int8_t mapIconsOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsArrayOffset) + 0x3);
+	
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsCustomRender);
+	const int8_t positionOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsPositionOffset) + 0x3);
+	const int8_t colorModOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsColorModOffset) + 0x3);
 	//const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
 
 	printf("[REPENTOGON] Patching Minimap::render_icons for rendering custom curses at %p\n", addr);
@@ -205,15 +211,17 @@ void ASMPatchRenderCustomCurses() {
 
 		.Push(ASMPatch::Registers::EAX)*/
 		//.LoadEffectiveAddress(ASMPatch::Registers::EBP)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, 0x24, ASMPatch::Registers::EAX, std::nullopt, 4u)
-		.Push(ASMPatch::Registers::EAX)
-		.Push(ASMPatch::Registers::EDI)
+		//.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x10 + 0x1A8, ASMPatch::Registers::EBX, std::nullopt, 4u) // load colorMod ptr to EAX (idiotic magic number offset)
+		//.Push(ASMPatch::Registers::EBX) //push ColorMod
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x10, ASMPatch::Registers::EAX, std::nullopt, 4u) // load position ptr to EAX
+		.Push(ASMPatch::Registers::EAX) //push position
+		.Push(ASMPatch::Registers::EDI) // push curseId
 		.AddInternalCall(RenderCustomCurses)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x80)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x80) //skipping vanilla curse icons rendering
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the bytes we overwrote
-		.AddRelativeJump((char*)addr + 0x7);
+		.AddRelativeJump((char*)addr + 0x7); 
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
