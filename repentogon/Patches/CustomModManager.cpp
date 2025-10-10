@@ -33,7 +33,6 @@ void __stdcall LoadCustomMinimapANM2(ModEntry* mod) {
         ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod);
         if (ex != nullptr) {
 			ex->_customMinimapANM2.Load(path, true);
-			printf("are we here? %s\n", ex->_customMinimapANM2._filename.c_str());
         }
     }
 }
@@ -134,8 +133,9 @@ int __stdcall AddModdedCurseIcons(uint32_t curseBitmask, int* mapIcons, int icon
 
 	for (const auto& entry : curseSpriteMap) {
 		int adjustedCurseId = (int)entry.first;
+		ANM2* curseSprite = entry.second.customANM2;
 
-		if (adjustedCurseId >= 9 && (curseBitmask & (1U << (adjustedCurseId - 1)))) {
+		if (adjustedCurseId >= 9 && curseSprite->_loaded && (curseBitmask & (1U << (adjustedCurseId - 1)))) {
 			mapIcons[iconCount] = -(adjustedCurseId);
 			iconCount++;
 			if (iconCount >= 7) break;
@@ -219,22 +219,9 @@ void ASMPatchRenderCustomCurses() {
 }
 
 void ASMPatchesForCustomModManager() {
-	ASMPatchLoadModEntryExAssets();
+	//ASMPatchLoadModEntryExAssets();
 	ASMPatchCaptureModEntryForCurse();
 	ASMPatchRegisterCurseSprite();
 	ASMPatchAssignCustomFrame();
 	ASMPatchRenderCustomCurses();
-}
-
-HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
-	super();
-
-	if (capturedModEntry != nullptr) {
-		printf("captured mode entry %s", capturedModEntry->GetName().c_str());
-	}
-	for (auto mod : _mods) {
-		if (mod->_loaded) {
-			printf("Loaded super mod: %s\n", mod->GetName().c_str());
-		}
-	}
 }
