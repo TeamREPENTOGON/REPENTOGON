@@ -156,18 +156,18 @@ void ASMPatchAssignCustomFrame() {
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u )
-		.Push(ASMPatch::Registers::EBX)
-		.Push(ASMPatch::Registers::EDI)
-		.Push(ASMPatch::Registers::EAX)
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u ) //load mapIcons array ptr to EDI
+		.Push(ASMPatch::Registers::EBX) // push iconCount
+		.Push(ASMPatch::Registers::EDI) //push mapIcons array
+		.Push(ASMPatch::Registers::EAX) //push curseBitmask
 		.AddInternalCall(AddModdedCurseIcons)
 		.RestoreRegisters(savedRegisters)
-		.CopyRegister(ASMPatch::Registers::EBX, ASMPatch::Registers::EAX)
+		.CopyRegister(ASMPatch::Registers::EBX, ASMPatch::Registers::EAX) //overwriting iconCount
 		.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-bool __stdcall RenderCustomCurses(int curseId, Vector* position) {
+bool __stdcall RenderCustomCurses(int curseId, Vector* position, float* alpha) {
 	if (curseId >= 8) {
 
 		std::string curseName = "curses";
@@ -176,14 +176,13 @@ bool __stdcall RenderCustomCurses(int curseId, Vector* position) {
 		if (curseSprite->_loaded) {
 			curseSprite->Play("curses", false);
 			curseSprite->SetFrame(&curseName, curseEntry.frameNum);
-			//Vector pos { 100, 25 };
 			Vector zero { 0,0 };
 
-			/*
-			if (!(&curseSprite->_color == color)) {
-				curseSprite->_color = *color;
+			const float epsilon = 1e-6f;
+
+			if (fabs(curseSprite->_color._tint[3] - *alpha) > epsilon) {
+				curseSprite->_color._tint[3] = *alpha;
 			}
-			*/
 
 			curseSprite->Render(position, &zero, &zero);
 			return true;
@@ -196,24 +195,18 @@ bool __stdcall RenderCustomCurses(int curseId, Vector* position) {
 void ASMPatchRenderCustomCurses() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-
 	
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsCustomRender);
 	const int8_t positionOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsPositionOffset) + 0x3);
-	const int8_t colorModOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsColorModOffset) + 0x3);
+	const int8_t colorModAlphaOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::CustomModManager_CurseMapIconsColorModAlphaOffset) + 0x5);
 	//const int jumpOffset = 0x5 + *(int8_t*)((char*)addr + 0x4);
 
 	printf("[REPENTOGON] Patching Minimap::render_icons for rendering custom curses at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		/*.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u)
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, colorModAlphaOffset + 0x20, ASMPatch::Registers::EBX, std::nullopt, 4u) // load color alpha ptr to EBX
 		.Push(ASMPatch::Registers::EBX)
-
-		.Push(ASMPatch::Registers::EAX)*/
-		//.LoadEffectiveAddress(ASMPatch::Registers::EBP)
-		//.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x10 + 0x1A8, ASMPatch::Registers::EBX, std::nullopt, 4u) // load colorMod ptr to EAX (idiotic magic number offset)
-		//.Push(ASMPatch::Registers::EBX) //push ColorMod
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x10, ASMPatch::Registers::EAX, std::nullopt, 4u) // load position ptr to EAX
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x14, ASMPatch::Registers::EAX, std::nullopt, 4u) // load position ptr to EAX
 		.Push(ASMPatch::Registers::EAX) //push position
 		.Push(ASMPatch::Registers::EDI) // push curseId
 		.AddInternalCall(RenderCustomCurses)

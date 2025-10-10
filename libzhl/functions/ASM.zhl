@@ -131,7 +131,7 @@ asm CustomModManager_CurseRegisterFrameOffset "a90001000074??83fb07";
 asm CustomModManager_CurseMapIconsArrayOffset "895c24??bb01000000";
 
 asm CustomModManager_CurseMapIconsPositionOffset "8d4424??8bcf50e8????????8b4c24??8d89";
-asm CustomModManager_CurseMapIconsColorModOffset "8d4424??f30f114424??c74424??0000803f";
+asm CustomModManager_CurseMapIconsColorModAlphaOffset "f30f114424??e8????????85c074??c74424??05000000";
 asm CustomModManager_CurseMapIconsCustomRender "660f6ecf8d4e??0f5bc9e8????????8b46??85c074??c646??008b4c24";
 
 // Misc patches
