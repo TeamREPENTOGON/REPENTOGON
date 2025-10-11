@@ -129,7 +129,7 @@ void ASMPatchAssignCustomFrame() {
 	printf("[REPENTOGON] Patching Minimap::render_icons for accessing mapIcons array at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI, std::nullopt, 4u ) //load mapIcons array ptr to EDI
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, mapIconsOffset + 0x14, ASMPatch::Registers::EDI) //load mapIcons array ptr to EDI
 		.Push(ASMPatch::Registers::EBX) // push iconCount
 		.Push(ASMPatch::Registers::EDI) //push mapIcons array
 		.Push(ASMPatch::Registers::EAX) //push curseBitmask
@@ -176,9 +176,9 @@ void ASMPatchRenderCustomCurses() {
 	printf("[REPENTOGON] Patching Minimap::render_icons for rendering custom curses at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, colorModAlphaOffset + 0x20, ASMPatch::Registers::EBX, std::nullopt, 4u) // load color alpha ptr to EBX
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, colorModAlphaOffset + 0x20, ASMPatch::Registers::EBX) // load color alpha ptr to EBX
 		.Push(ASMPatch::Registers::EBX)
-		.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x14, ASMPatch::Registers::EAX, std::nullopt, 4u) // load position ptr to EAX
+		.LoadEffectiveAddress(ASMPatch::Registers::ESP, positionOffset + 0x14, ASMPatch::Registers::EAX) // load position ptr to EAX
 		.Push(ASMPatch::Registers::EAX) //push position
 		.Push(ASMPatch::Registers::EDI) // push curseId
 		.AddInternalCall(RenderCustomCurses)
