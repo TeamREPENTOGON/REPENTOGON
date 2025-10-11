@@ -1403,7 +1403,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						XMLStuff.TrinketData->customachievitems.push_back(trinket);
 					}
 				}
-			} else if (!isitemmetadata && (strcmp(auxnodename, "null") == 0)) {
+			} else if (!isitemmetadata) {
+				//if (strcmp(auxnodename, "null") != 0) {
+					//printf("FUCK YOUR MOTHER!");
+				//}
 				XMLAttributes item;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{
