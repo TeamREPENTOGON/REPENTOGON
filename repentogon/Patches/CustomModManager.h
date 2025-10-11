@@ -1,6 +1,5 @@
 #pragma once
 #include "IsaacRepentance.h"
-#include <map>
 
 class ModEntryEx {
 public:
@@ -25,7 +24,7 @@ public:
     }
 
 private:
-    std::map<ModEntry*, ModEntryEx> modExtensions;
+    std::unordered_map<ModEntry*, ModEntryEx> modExtensions;
 
     
     CustomModManager() = default;
