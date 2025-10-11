@@ -7,6 +7,7 @@
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
+#include "CustomModManager.h"
 #include "FamiliarTags.h"
 #include "PlayerTags.h"
 #include "GetCoinValue.h"
@@ -274,6 +275,7 @@ void PerformASMPatches() {
 	ASMPatches::__ItemPoolManager();
 	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
+	ASMPatchesForCustomModManager();
 	ASMFixes();
 	HookImGui();
 
