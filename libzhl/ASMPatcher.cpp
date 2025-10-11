@@ -761,6 +761,9 @@ ByteBuffer ASMPatch::EncodeRMOperand(Registers base, int32_t displacement,
 				throw std::runtime_error("ASMPatch::EncodeRMOperand: cannot use esp as a base register\n");
 			}
 		}
+	} else if (scale) {
+		ZHL::Log("[WARN] Using non zero scale with no index in EncodeRMOperand. Defaulting to 0 scale.\n");
+		scale = 0;
 	}
 
 	ByteBuffer result;
@@ -816,25 +819,32 @@ ByteBuffer ASMPatch::EncodeRMOperand(Registers base, int32_t displacement,
 	 */
 	if (index || base == Registers::ESP) {
 		uint8_t sib = 0;
-		switch (scale) {
-		case 1:
+		if (index) {
+			switch (scale) {
+			case 1:
+				sib = 0b00;
+				break;
+
+			case 2:
+				sib = 0b01;
+				break;
+
+			case 4:
+				sib = 0b10;
+				break;
+
+			case 8:
+				sib = 0b11;
+				break;
+
+			default:
+				std::terminate();
+			}
+		} else {
+			/* Arbitrarily defaulting to scale of 1 if no index is provided, as
+			 * all possible values will result in the same instruction here.
+			 */
 			sib = 0b00;
-			break;
-
-		case 2:
-			sib = 0b01;
-			break;
-
-		case 4:
-			sib = 0b10;
-			break;
-
-		case 8:
-			sib = 0b11;
-			break;
-
-		default:
-			std::terminate();
 		}
 
 		sib <<= 6;
