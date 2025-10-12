@@ -254,6 +254,9 @@ Additions:
 	- Prepend "effect" to assign the stat change to the corresponding TemporaryEffect instead (ie: effecttears="0.7") (this is particularly relevant for active items)
 	- The corresponding "cache" values are automatically added to the item, so you don't need to specify those as well.
 * Add new Vanilla Tweaks option "Disable exit prompt", which disables prompt pop-up when you try to exit the game from title menu.
+* Custom curse icons can now be applied to custom curses
+	- Custom graphics can be defined in mapitemicons.anm2, placed in modName/content/gfx folder, with one frame per curse entry on animation curses, otherwise all icons from the mod will be empty by default
+	- Recommended settings for curse frame is 16x16 and centered around the origin (position set to 0, 0, pivot to 8, 8)
 Fixes:
 * Fixed an issue with luamod autocomplete not displaying all the available options
 * Fixed an issue where modded items' crafting quality was set to 0 if not explicitly defined in the XML.
