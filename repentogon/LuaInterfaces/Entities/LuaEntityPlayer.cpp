@@ -2998,6 +2998,60 @@ LUA_FUNCTION(Lua_PlayerIsPostLevelInitFinished) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerUseActiveItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+
+	unsigned int useFlags = 0;
+	int activeSlot = -1;
+	int varData = 0;
+
+	// Reimplementation of this function's old lua wrapper and AB+ backwards compatibility.
+	// Written weirdly but very intentionally, to exactly mimic the original behaviour.
+	if (lua_type(L, 3) == LUA_TNUMBER) {
+		// Repentance ver
+		useFlags = (unsigned int)luaL_checkinteger(L, 3);
+		if (lua_toboolean(L, 4)) {
+			activeSlot = (int)luaL_checkinteger(L, 4);
+		}
+		if (lua_toboolean(L, 5)) {
+			varData = (int)luaL_checkinteger(L, 5);
+		}
+	} else {
+		// AB+ ver
+		// showAnim
+		if (lua_isboolean(L, 3) && !lua_toboolean(L, 3)) {
+			useFlags |= USE_NOANIM;
+		}
+		// keepActive
+		if (lua_isboolean(L, 4) && !lua_toboolean(L, 4)) {
+			useFlags |= USE_REMOVEACTIVE;
+		}
+		// allowNonMain
+		if (lua_toboolean(L, 5)) {
+			useFlags |= USE_ALLOWNONMAIN;
+		}
+		// addCostume
+		if (lua_isboolean(L, 6) && !lua_toboolean(L, 6)) {
+			useFlags |= USE_NOCOSTUME;
+		}
+		// activeSlot
+		if (lua_toboolean(L, 7)) {
+			activeSlot = (int)luaL_checkinteger(L, 7);
+		}
+		// customVarData
+		if (lua_toboolean(L, 8)) {
+			useFlags |= USE_CUSTOMVARDATA;
+			varData = (int)luaL_checkinteger(L, 8);
+		}
+	}
+
+	short resultFlags = 0;
+	player->UseActiveItem(&resultFlags, collectibleType, useFlags, activeSlot, varData);
+	lua_pushinteger(L, resultFlags);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3269,6 +3323,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaggyHealthDrainCooldown", Lua_PlayerGetMaggyHealthDrainCooldown },
 		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
 		{ "IsPostLevelInitFinished", Lua_PlayerIsPostLevelInitFinished },
+		{ "UseActiveItem", Lua_PlayerUseActiveItem },
 
 		{ NULL, NULL }
 	};

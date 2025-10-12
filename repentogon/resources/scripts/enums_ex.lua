@@ -3072,6 +3072,11 @@ SplitTearType = {
 	ANGELIC_PRISM = 10,
 }
 
+UseActiveItemResultFlag = {
+	DISCHARGE = 1 << 0,
+	REMOVE = 1 << 8,
+}
+
 
 --deprecated enums
 
