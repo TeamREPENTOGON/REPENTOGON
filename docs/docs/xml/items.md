@@ -15,6 +15,24 @@ With REPENTOGON, the following xml attributes have changed functionality for reg
 |:--|:--|:--|
 | achievement | int or string | Ties the item/trinket to be unlocked by an achievement. For modded achievements use the corresponding `name` xml attribute value. |
 
+## Item stats
+
+With REPENTOGON, you can now add stats to modded items right in the XML; no lua required! These stat changes behave similarly to those of vanilla items, which was difficult to do using `MC_EVALUATE_CACHE`.
+
+Examples:
+- `tears="0.7"` will behave like Sad Onion
+- `flattears="0.5"` will behave like Pisces
+- `damage="1"` will behave like Pentagram
+- `flatdamage="2"` will behave like Curved Horn
+
+Supported attributes: `tears`, `flattears`, `tearsmult`, `damage`, `flatdamage`, `damagemult`, `shotspeed`, `speed`, `range`, `luck`
+
+You do not need to also add the `cache` attribute values corresponding to these stats - they are automatically applied by these attributes.
+
+Prepending "effect" to the attribute will assign the stat change to the corresponding [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) instead of the item itself (ie: `effecttears="0.7"`). This is useful for temporary/stacking effects and active items.
+
+Fully supported for items, trinkets, and null items.
+
 ## "Null" Items
 
 With REPENTOGON, you can now define custom "null" items. "Null" items are not typical items that can be spawned or visually seen in-game. They are typically used by the game to handle various costumes, buffs and effects (both temporary and persistent).
