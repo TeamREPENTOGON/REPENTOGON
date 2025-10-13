@@ -2,12 +2,13 @@
 tags:
   - Enum
 ---
-# Enum "CustomCachetag"
+# Enum "CustomCacheTag"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
-|"familiarmultiplier"|FAMILIAR_MULTIPLIER |  |
-|"maxcoins"|MAX_COINS |  |
-|"maxkeys"|MAX_KEYS |  |
-|"maxbombs"|MAX_BOMBS |  |
-|"tearscap"|TEARS_CAP |  |
-|"statmultiplier"|STAT_MULTIPLIER |  |
+|"familiarmultiplier"|FAMILIAR_MULTIPLIER {: .copyable } |  |
+|"maxcoins"|MAX_COINS {: .copyable } |  |
+|"maxkeys"|MAX_KEYS {: .copyable } |  |
+|"maxbombs"|MAX_BOMBS {: .copyable } |  |
+|"tearscap"|TEARS_CAP {: .copyable } |  |
+|"statmultiplier"|STAT_MULTIPLIER {: .copyable } |  |
+|"healthtype"|HEALTH_TYPE {: .copyable } |  |

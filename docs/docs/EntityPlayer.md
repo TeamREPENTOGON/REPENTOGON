@@ -64,6 +64,11 @@ ___
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
+### UseActiveItem () {: aria-label='Functions' }
+#### [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md) UseActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Item, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlag.html) UseFlags = 0, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = -1, int CustomVarData = 0 ) {: .copyable aria-label='Functions' }
+Now has a return value, a bitmask of [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md).
+
+___
 
 ## Modified Variables
 ___
@@ -942,6 +947,10 @@ ___
 #### boolean IsPacifist ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsPostLevelInitFinished () {: aria-label='Functions' }
+#### boolean IsPostLevelInitFinished ( ) {: .copyable aria-label='Functions' }
+
+___
 ### IsUrethraBlocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
 Returns true when the player can no longer shoot due to charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
@@ -1388,8 +1397,8 @@ Triggers effects on the player as if a room was cleared (i.e. Charging actives).
 
 ___
 ### TryAddToBagOfCrafting () {: aria-label='Functions' }
-#### void TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) Pickup ) {: .copyable aria-label='Functions' }
-Tries to add the specified pickup to the player's Bag of Crafting.
+#### bool TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) Pickup ) {: .copyable aria-label='Functions' }
+Tries to add the specified pickup to the player's Bag of Crafting. Returns true if successful.
 
 ___
 ### TryDecreaseGlowingHourglassUses () {: aria-label='Functions' }

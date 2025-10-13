@@ -21,6 +21,13 @@ ___
 
 ## Functions
 
+### ApplyTearflagEffects () {: aria-label='Functions' }
+#### void ApplyTearflagEffects ( [Vector](Vector.md) Position, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](Entity.md) Source = nil, float Damage = 3.5 ) {: .copyable aria-label='Functions' }
+Attempt to the on-hit effects of the provided [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) to this enemy, credited to the provided source [Entity](Entity.md), if any.
+
+Will also trigger [MC_POST_APPLY_TEARFLAG_EFFECTS](enums/ModCallbacks.md#mc_post_apply_tearflag_effects) if successful.
+
+___
 ### ClearFlyingOverride () {: aria-label='Functions' }
 #### void ClearFlyingOverride ( ) {: .copyable aria-label='Functions' }
 Removes any value set by [SetFlyingOverride](EntityNPC.md#setflyingoverride)
