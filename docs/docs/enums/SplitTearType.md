@@ -5,14 +5,14 @@ tags:
 # Enum "SplitTearType"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
-|0 |GENERIC| Default value for [EntityTear:FireSplitTear()](../EntityTear.md#firesplittear), [EntityLaser:FireSplitTear()](../EntityLaser.md#firesplittear), and [EntityKnife:FireSplitTear()](../EntityKnife.md#firesplittear). |
-|1 |QUAD| Cricket's Body |
-|2 |PARASITE| The Parasite |
-|3 |BONE| Compound Fracture |
-|4 |ABSORB| Lachryphagy |
-|5 |SPORE| Mucormycosis |
-|6 |STICKY| Explosivo/Booger/Spore synergies for knives/lasers/Ludovico |
-|7 |BURST| Haemolacria |
-|8 |POP| Pop! synergy for lasers |
-|9 |MULTIDIMENSIONAL| Multidimensional Baby |
-|10 |ANGELIC_PRISM| Angelic Prism |
+|0 |GENERIC {: .copyable } | Default value for [EntityTear:FireSplitTear()](../EntityTear.md#firesplittear), [EntityLaser:FireSplitTear()](../EntityLaser.md#firesplittear), and [EntityKnife:FireSplitTear()](../EntityKnife.md#firesplittear). |
+|1 |QUAD {: .copyable } | Cricket's Body |
+|2 |PARASITE {: .copyable } | The Parasite |
+|3 |BONE {: .copyable } | Compound Fracture |
+|4 |ABSORB {: .copyable } | Lachryphagy |
+|5 |SPORE {: .copyable } | Mucormycosis |
+|6 |STICKY {: .copyable } | Explosivo/Booger/Spore synergies for knives/lasers/Ludovico |
+|7 |BURST {: .copyable } | Haemolacria |
+|8 |POP {: .copyable } | Pop! synergy for lasers |
+|9 |MULTIDIMENSIONAL {: .copyable } | Multidimensional Baby |
+|10 |ANGELIC_PRISM {: .copyable } | Angelic Prism |
