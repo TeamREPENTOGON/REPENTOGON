@@ -195,6 +195,7 @@ Additions:
 	- MC_POST_OPEN_CHEST(EntityPickup, EntityPlayer?)
 		Optional param: PickupVariant
 		Fires after a chest opened.
+	- MC_POST_DISCHARGE_ACTIVE_ITEM(CollectibleType, boolean CollectibleRemoved, EntityPlayer, ActiveSlot)
 * New Enums:
 	- DoorMask
 	- WaterClipFlag

@@ -5552,3 +5552,25 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 		caller.push(damage).call(1);
 	}
 }
+
+//MC_POST_DISCHARGE_ACTIVE_ITEM (1140)
+HOOK_METHOD(Entity_Player, DischargeActiveItem, (unsigned int slot, bool collectilbeRemoved) -> void) {
+	super(slot, collectilbeRemoved);
+
+	const int callbackid = 1140;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(_activeDesc[slot]._item)
+			.push(_activeDesc[slot]._item)
+			.push(collectilbeRemoved)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(slot)
+			.call(1);
+	}
+}
