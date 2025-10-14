@@ -305,6 +305,11 @@ TypeInfo vector_ImagePtr {
     Align 4;
 };
 
+TypeInfo vector_RenderBatchPtr {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_pair_RenderBatchPtr_ImagePtr {
     Size 12;
     Align 4;

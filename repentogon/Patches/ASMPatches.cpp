@@ -20,6 +20,8 @@
 #include "CardsExtras.h"
 #include "EvaluateStats.h"
 #include "XMLPlayerExtras.h"
+#include "ImagePatches.h"
+#include "MinimapPatches.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -264,6 +266,9 @@ void PerformASMPatches() {
 	ASMPatchCameraBoundClampOverride();
 	ASMPatchCameraBoundSlowStopOverride();
 
+	ImagePatches::ApplyPatches();
+	MinimapPatches::ApplyPatches();
+
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
@@ -278,9 +283,6 @@ void PerformASMPatches() {
 	ASMPatchesForCustomModManager();
 	ASMFixes();
 	HookImGui();
-
-	// Sprite
-	ASMPatchesForANM2Extras();
 
 	//Mod folder redirect
 	ASMPatchModReRoute();

@@ -91,6 +91,7 @@ typedef std::bitset<13> RoomShapeBitset;
 typedef std::deque<AfterImageFrame> deque_afterImageFrames;
 typedef std::deque<RoomConfig_Room> std_deque_RoomConfigRoom;
 typedef std::vector<KAGE_Graphics_ImageBase*> vector_ImagePtr;
+typedef std::vector<KAGE_Graphics_RenderBatch*> vector_RenderBatchPtr;
 typedef std::vector<std::pair<KAGE_Graphics_RenderBatch*, KAGE_Graphics_ImageBase*>> vector_pair_RenderBatchPtr_ImagePtr;
 typedef std::deque<ColorMod> deque_ColorMod;
 typedef KColor KAGE_Graphics_Color;
