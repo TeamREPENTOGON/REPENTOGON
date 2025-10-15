@@ -338,6 +338,7 @@ Modified:
 		Added PostLevelInitFinished argument
 * reloadshaders command will now reload custom anm2 shaders
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
+* Fixed "luareset" command executing scripts from not loaded mods
 /newline/
 /versionseparator/
 v1.0.12.e -

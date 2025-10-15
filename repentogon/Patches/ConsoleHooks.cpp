@@ -18,7 +18,7 @@ void LuaReset() {
     std::map<std::string, std::string> modsToReload;
 
     for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
-        if (mod != NULL && mod->IsEnabled()) {
+        if (mod != NULL && mod->_loaded) {
             modsToReload[mod->GetName()] = mod->GetDir();
         }
     }
