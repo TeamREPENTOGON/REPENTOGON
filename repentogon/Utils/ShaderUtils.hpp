@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ShaderUtils.h"
 
 inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor) noexcept
