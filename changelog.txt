@@ -188,6 +188,13 @@ Additions:
 		The string key (e.g. "boss_0", "treasure_0") identifies which slot the room was saved into.
 	- MC_PRE_ADD_TRINKET(player, TrinketType, firstTime)
 		Return false to cancel, or a different TrinketType to change the trinket being added.
+	- MC_TRY_ADD_TO_BAG_OF_CRAFTING(player, pickup, BagOfCraftingPickup[])
+		Optional param: PickupVariant
+		Return false to prevent, or return a table of BagOfCraftingPickups to modify what gets added.
+		Note: Prefer to use the new `bagofcrafting` attribute in entities2.xml where possible.
+	- MC_POST_ADD_TO_BAG_OF_CRAFTING(player, pickup)
+		Optional param: PickupVariant
+		Only runs when the pickup was successfully "added" to the bag.
 	- MC_POST_ITEM_OVERLAY_RENDER
 	- MC_PRE_OPEN_CHEST(EntityPickup, EntityPlayer?)
 		Optional param: PickupVariant

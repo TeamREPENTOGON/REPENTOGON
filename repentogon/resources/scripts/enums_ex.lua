@@ -3034,6 +3034,7 @@ CustomCacheTag = {
 	MAX_BOMBS = "maxbombs",
 	TEARS_CAP = "tearscap",
 	STAT_MULTIPLIER = "statmultiplier",
+	HEALTH_TYPE = "healthtype",
 }
 
 EvaluateStatStage = {
