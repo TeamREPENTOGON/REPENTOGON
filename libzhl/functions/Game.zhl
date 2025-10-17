@@ -155,7 +155,7 @@ static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>,
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc, RNG) { {{
 	Game()
 	{
 		this->constructor();
@@ -251,6 +251,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _roomOffset[507] : 0x17adc;
 	uint32_t _nbRooms : 0x182cc;
 	uint32_t _startingRoomIdx : 0x182d0;
+	RNG _generationRNG : 0x182d4;
 	Room* _room : 0x18300;
 	uint32_t _currentRoomIdx : 0x18304;
 	uint32_t _lastRoomIdx : 0x18308;

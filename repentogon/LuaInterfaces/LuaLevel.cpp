@@ -338,6 +338,12 @@ LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LevelGetGenerationRNG) {
+	lua::luabridge::UserdataPtr::push(L, &g_Game->_generationRNG, lua::Metatables::RNG);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -364,6 +370,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryPlaceRoomAtDoor", Lua_LevelTryPlaceRoomAtDoor },
 		{ "FindValidRoomPlacementLocations", Lua_LevelFindValidRoomPlacementLocations },
 		{ "GetNeighboringRooms", Lua_LevelGetNeighboringRooms },
+		{ "GetGenerationRNG", Lua_LevelGetGenerationRNG },
 
 		{ NULL, NULL }
 	};

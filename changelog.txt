@@ -71,6 +71,7 @@ Additions:
 	- GetDevolvedEntity
 * Level:
 	- Added overloads for CanPlaceRoom(AtDoor) and FindValidRoomPlacementLocations that accept a RoomShape and DoorMask instead of a RoomConfigRoom.
+	- GetGenerationRNG
 * PlayerManager:
 	- GetRandomCollectibleOwner
 	- GetRandomTrinketOwner
@@ -97,6 +98,8 @@ Additions:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
+* Seeds:
+	- SetStageSeed(LevelStage, Seed)
 * FXLayers:
 	- AddPoopFx(ColorMod Color)
 * Weapon:

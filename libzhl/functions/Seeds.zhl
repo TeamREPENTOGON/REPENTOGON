@@ -21,7 +21,7 @@ struct Seeds depends (RNG,ANM2){
     bool _isCustomRun : 0x0;
     unsigned int _gameStartSeed : 0x4;
     RNG _rng : 0x8;
-    int _stageSeeds[14] : 0x18;
+    unsigned int _stageSeeds[14] : 0x18;
     unsigned int _playerInitSeed : 0x50;
 	unsigned int _unkseed : 0x54;
     int _seedEffectsCount : 0x58;
