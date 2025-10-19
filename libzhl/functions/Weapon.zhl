@@ -45,7 +45,8 @@ struct Weapon depends (Vector) { {{
 		
 		skip; // Reset
 		skip; // ClearReferences
-		skip; // GetMaxCharge
+		"d9eec3cccccccc":
+		float GetMaxCharge();
 		skip; // GetChargeBarAmount
 		skip; // GetChargeBarAmount?
 		skip; // GetFocusEntity

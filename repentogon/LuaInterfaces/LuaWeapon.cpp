@@ -189,6 +189,12 @@ LUA_FUNCTION(Lua_WeaponGetMainEntity) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_WeaponGetMaxCharge) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	lua_pushnumber(L, weapon->GetMaxCharge());
+	return 1;
+}
+
 static void RegisterWeapon(lua_State* L) {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "CreateWeapon", Lua_CreateWeapon);
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "DestroyWeapon", Lua_DestoryWeapon);
@@ -214,6 +220,7 @@ static void RegisterWeapon(lua_State* L) {
 		{ "ClearItemAnim", Lua_WeaponClearItemAnim },
 		{ "SetHeadLockTime", Lua_WeaponSetHeadLockTime },
 		{ "GetMainEntity", Lua_WeaponGetMainEntity },
+		{ "GetMaxCharge", Lua_WeaponGetMaxCharge },
 		{ NULL, NULL }
 	};
 
