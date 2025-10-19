@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -90,6 +92,47 @@ LUA_FUNCTION(Lua_SetHitboxParentKnife) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_KnifeRemoveFromHitList) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	auto hitList = knife->GetHitEntities();
+
+	auto iterator = std::find(hitList->begin(), hitList->end(), entity->GetHitListIndex());
+
+	if (iterator != hitList->end()) {
+		std::swap(*iterator, hitList->back());
+		hitList->pop_back();
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_KnifeAddToHitList) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = knife->GetHitEntities();
+	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
+
+	if (!found) {
+		hitList->push_back(hitListIndex);
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_KnifeInHitList) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = knife->GetHitEntities();
+	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
+
+	lua_pushboolean(L, found);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -108,6 +151,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
 		{ "GetHitboxParentKnife", Lua_GetHitboxParentKnife },
 		{ "SetHitboxParentKnife", Lua_SetHitboxParentKnife },
+		{ "RemoveFromHitList", Lua_KnifeRemoveFromHitList },
+		{ "AddToHitList", Lua_KnifeAddToHitList },
+		{ "InHitList", Lua_KnifeInHitList },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);

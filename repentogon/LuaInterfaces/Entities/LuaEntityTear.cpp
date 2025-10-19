@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -93,6 +95,47 @@ LUA_FUNCTION(Lua_ClearHitList) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_TearRemoveFromHitList) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+
+	auto iterator = std::find(tear->_hitList.begin(), tear->_hitList.end(), entity->GetHitListIndex());
+
+	if (iterator != tear->_hitList.end()) {
+		std::swap(*iterator, tear->_hitList.back());
+		tear->_hitList.pop_back();
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearAddToHitList) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto &hitList = tear->_hitList;
+	bool found = std::find(hitList.begin(), hitList.end(), hitListIndex) != hitList.end();
+
+	if (!found) {
+		hitList.push_back(hitListIndex);
+	}
+	
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearInHitList) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto& hitList = tear->_hitList;
+	bool found = std::find(hitList.begin(), hitList.end(), hitListIndex) != hitList.end();
+
+	lua_pushboolean(L, found);
+
+	return 1;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -112,6 +155,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHitList", Lua_GetHitList },
 		{ "ClearHitList", Lua_ClearHitList },
 		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
+		{ "RemoveFromHitList", Lua_TearRemoveFromHitList },
+		{ "AddToHitList", Lua_TearAddToHitList },
+		{ "InHitList", Lua_TearInHitList },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);

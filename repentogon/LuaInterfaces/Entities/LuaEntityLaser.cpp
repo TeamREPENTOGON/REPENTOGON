@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -163,6 +165,47 @@ LUA_FUNCTION(Lua_EntityLaserSetPrismTouched) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserRemoveFromHitList) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	auto hitList = laser->GetHitList();
+
+	auto iterator = std::find(hitList->begin(), hitList->end(), entity->GetHitListIndex());
+
+	if (iterator != hitList->end()) {
+		std::swap(*iterator, hitList->back());
+		hitList->pop_back();
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityLaserAddToHitList) {
+	Entity_Laser* knife = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = knife->GetHitList();
+	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
+
+	if (!found) {
+		hitList->push_back(hitListIndex);
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityLaserInHitList) {
+	Entity_Laser* knife = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = knife->GetHitList();
+	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
+
+	lua_pushboolean(L, found);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -187,6 +230,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsPrismTouched", Lua_EntityLaserIsPrismTouched },
 		{ "SetPrismTouched", Lua_EntityLaserSetPrismTouched },
 		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
+		{ "RemoveFromHitList", Lua_EntityLaserRemoveFromHitList },
+		{ "AddToHitList", Lua_EntityLaserAddToHitList },
+		{ "InHitList", Lua_EntityLaserInHitList },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);
