@@ -1194,20 +1194,19 @@ bool __stdcall RunPreTriggerBedSleepEffectCallback(Entity_Player* player) {
 }
 
 void ASMPatchPreTriggerBedSleepEffect() {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8b0883b9????????28");
-	scanner_transition.Scan();
-	void* addr = scanner_transition.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreTriggerBedSleepEffect);
 	ZHL::Log("[REPENTOGON] Patching ItemOverlay::Update at %p for PreTriggerBedSleepEffect callback\n", addr);
+	const int skipJumpOffset = 0xF + *(int*)((char*)addr + 0xB);
 
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EAX) // Player
+		.AddBytes("\xFF\x30") // push dword ptr [eax]
 		.AddInternalCall(RunPreTriggerBedSleepEffectCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x6B) // Skipping hearts gain
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + skipJumpOffset) // Skipping hearts gain
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9))  // Restore instructions that we overwrote
 		.AddRelativeJump((char*)addr + 0x9);
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1256,7 +1255,7 @@ bool __stdcall RunPreBedSleepCallback(Entity_Player* player, Entity_Pickup* bed)
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(bed, lua::Metatables::ENTITY_PICKUP)
+			.push(bed->_variant)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(bed, lua::Metatables::ENTITY_PICKUP)
 			.call(1);
@@ -1274,12 +1273,11 @@ bool __stdcall RunPreBedSleepCallback(Entity_Player* player, Entity_Pickup* bed)
 }
 
 void ASMPatchPreBedSleep() {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 
-	SigScan scanner_transition("8bcae8????????83f80174??83f80274??8b8a????????8b82????????8d04");
-	scanner_transition.Scan();
-	void* addr = scanner_transition.GetAddress();
+	void* incPlayerAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreBedSleepCallback_IncPlayerAddr);
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreBedSleepCallback);
 	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::handle_collision at %p for PreBedSleep callback\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
@@ -1288,8 +1286,8 @@ void ASMPatchPreBedSleep() {
 		.AddInternalCall(RunPreBedSleepCallback)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x4EA) // Skipping player's hearts check
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edi
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, incPlayerAddr) // Skipping player's hearts check
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x2))  // Restore mov ecx, edx
 		.AddInternalCall(((char*)addr + 0x7) + *(ptrdiff_t*)((char*)addr + 0x3)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x7);
 	sASMPatcher.PatchAt(addr, &patch);
