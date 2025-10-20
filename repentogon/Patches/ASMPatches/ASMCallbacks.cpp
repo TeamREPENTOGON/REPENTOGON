@@ -1255,7 +1255,7 @@ bool __stdcall RunPreBedSleepCallback(Entity_Player* player, Entity_Pickup* bed)
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(bed->_variant)
+			.push(bed->_subtype)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(bed, lua::Metatables::ENTITY_PICKUP)
 			.call(1);
