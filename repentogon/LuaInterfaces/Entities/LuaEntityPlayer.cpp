@@ -553,7 +553,14 @@ LUA_FUNCTION(Lua_PlayerGetMegaBlastDuration)
 LUA_FUNCTION(Lua_PlayerSetMegaBlastDuration)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetMegaBlastDuration() = (int)luaL_checkinteger(L, 2);
+	const int duration = (int)luaL_checkinteger(L, 2);
+	*player->GetMegaBlastDuration() = duration;
+
+	Entity_Laser* laser = player->_megaBlastLaser;
+	if (laser) {
+		laser->_timeout = std::max(1, duration);
+	}
+
 	return 0;
 }
 

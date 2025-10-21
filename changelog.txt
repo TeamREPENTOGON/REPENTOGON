@@ -280,6 +280,7 @@ Fixes:
 * EntityPlayer:
 	- SetBagOfCraftingSlot / SetBagOfCraftingContent now automatically recalculate the crafting output & shift bag contents if empty spaces are added in the middle.
 	- Fixed SetFootprintColor crashing
+	- Fixed an issue where SetMegaBlastDuration was not updating the laser duration if it existed
 * ItemConfig_Costume:
 	- Fixed SkinColor attribute (now provides a valid int and can be modified)
 * Level:
