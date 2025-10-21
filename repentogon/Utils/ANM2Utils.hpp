@@ -17,8 +17,8 @@ inline ColorMod ANM2Utils::_detail::get_frame_color(const ANM2& anm2, const Laye
     if ((flags & (uint32_t)eAnimationFlag::IGNORE_COLOR_MODIFIERS))
     {
         // does not apply anm2 color
-        ColorMod color = frame.color;
-        color *= layer._color;
+        ColorMod color = layer._color;
+        color *= frame.color;
         return color;
     }
 
@@ -27,9 +27,9 @@ inline ColorMod ANM2Utils::_detail::get_frame_color(const ANM2& anm2, const Laye
         return g_ColorOverrideStack.back();
     }
 
-    ColorMod color = frame.color;
+    ColorMod color = anm2._color;
     color *= layer._color;
-    color *= anm2._color;
+    color *= frame.color;
     return color;
 }
 
