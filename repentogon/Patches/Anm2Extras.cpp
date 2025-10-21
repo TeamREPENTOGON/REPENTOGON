@@ -7,6 +7,10 @@
 #include "SigScan.h"
 #include "Anm2Extras.h"
 
+#include "../repentogon/Utils/ANM2Utils.hpp"
+#include "../repentogon/Utils/ShaderUtils.hpp"
+#include "../repentogon/Utils/ImageUtils.hpp"
+
 // Normalizes input shader paths for use as keys and for identification.
 // Converts to lowercase and strips excess slashes, ie `shaders\\MyShader` -> `shaders/myshader`
 std::string NormalizeShaderPath(const std::string& input_path) {
@@ -235,81 +239,116 @@ bool HasCustomShader(LayerState* layer, const std::string& path, const bool cham
 	return false;
 }
 
-bool reset_shader = false;
-
-KAGE_Graphics_Shader* __stdcall CustomAnm2ShaderHook(LayerState* layerState, const bool champion) {
+static KAGE_Graphics_Shader* get_color_offset_shader(LayerState* layerState, const bool champion)
+{
 	CustomShader* shader = GetCustomShaderForLayer(layerState, champion);
 	if (shader) {
-		reset_shader = !champion;
 		// Use the custom shader.
 		return &shader->shader;
 	}
 	// Use the normal shader.
-	return __ptr_g_AllShaders[champion ? 10 : 0];
+	return __ptr_g_AllShaders[champion ? SHADER_COLOR_OFFSET_CHAMPION : SHADER_COLOR_OFFSET];
 }
 
-HOOK_METHOD(AnimationLayer, RenderFrame, (Vector const& pos, int unk, Vector const& top_left_clamp, Vector const& bottom_right_clamp, ANM2* anm2) -> void) {
-	super(pos, unk, top_left_clamp, bottom_right_clamp, anm2);
-	if (reset_shader) {
-		// Just in case...
-		g_CurrentShader = __ptr_g_AllShaders[0];
-		reset_shader = false;
+static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int frameIndex, const Vector& topLeftClamp, const Vector& bottomRightClamp, ANM2& anm2) noexcept
+{
+	if (!layer._visible)
+	{
+		return;
 	}
+
+	LayerState& state = anm2._layerState[layer._layerID];
+	if (!state._visible)
+	{
+		return;
+	}
+
+	int frameCount = layer._numFrames;
+	if (!(0 <= frameIndex && frameIndex < frameCount))
+	{
+		return;
+	}
+
+	AnimationFrame& frame = layer._animFrames[frameIndex];
+	if (!frame.visible)
+	{
+		return;
+	}
+
+	uint32_t flags = anm2._bitflags | state._bitflags;
+	if ((flags & (uint32_t)eAnimationFlag::IS_LIGHT) && !g_ANM2_LightRendering)
+	{
+		return;
+	}
+
+	KAGE_SmartPointer_ImageBase spriteSheet = state.GetSpriteSheet();
+	KAGE_Graphics_ImageBase* image = spriteSheet.image;
+	if (!image)
+	{
+		return;
+	}
+
+	static ImageUtils::ShaderRenderData colorOffsetRenderData(*__ptr_g_AllShaders[ShaderType::SHADER_COLOR_OFFSET]);
+	static ImageUtils::ShaderRenderData colorOffsetChampionRenderData(*__ptr_g_AllShaders[ShaderType::SHADER_COLOR_OFFSET_CHAMPION]);
+
+	BlendMode blendMode = ANM2Utils::GetFrameBlendMode(state);
+	ColorMod color = ANM2Utils::GetFrameColor(anm2, state, frame, flags);
+	SourceQuad sourceQuad = ANM2Utils::GetFrameSourceQuad(frame, state, topLeftClamp, bottomRightClamp, anm2);
+	DestinationQuad destQuad = ANM2Utils::GetFrameDestinationQuad(frame, position, state, topLeftClamp, bottomRightClamp, anm2);
+
+	KAGE_Graphics_Manager& manager = g_KAGE_Graphics_Manager;
+	BlendMode previousBlendMode = manager._blendMode;
+	manager._blendMode = blendMode;
+	KAGE_Graphics_Color kColor = KAGE_Graphics_Color(color._tint[0], color._tint[1], color._tint[2], color._tint[3]);
+
+	if ((flags & (uint32_t)eAnimationFlag::USE_CHAMPION_SHADER) != 0) // use champion shader
+	{
+		constexpr bool IS_CHAMPION = true;
+		KAGE_Graphics_Shader* shader = get_color_offset_shader(&state, IS_CHAMPION);
+
+		float* vertexBuffer = ImageUtils::SubmitQuadForShader(*image, *shader, colorOffsetChampionRenderData, sourceQuad, destQuad, ImageUtils::QuadColor(kColor));
+		if (vertexBuffer)
+		{
+			ShaderUtils::ColorOffsetChampion::FillVertices(vertexBuffer, *image, color, anm2._championColor);
+		}
+	}
+	else if ((flags & ((uint32_t)eAnimationFlag::USE_DOGMA_SHADER | (uint32_t)eAnimationFlag::USE_GOLD_SHADER)) != 0) // use special shader
+	{
+		size_t shaderType = (flags & (uint32_t)eAnimationFlag::USE_DOGMA_SHADER) ? ShaderType::SHADER_COLOR_OFFSET_DOGMA : ShaderType::SHADER_COLOR_OFFSET_GOLD;
+		KAGE_Graphics_Shader* shader = __ptr_g_AllShaders[shaderType];
+
+		bool affectedByPause = (flags & (uint32_t)eAnimationFlag::IGNORE_GAME_TIME) == 0;
+		int time = affectedByPause ? g_Game->_frameCount : (g_Manager->_framecount / 2);
+		float progression = (float)(time % 256) / 256;
+		color._colorize[3] = progression;
+
+		float* vertexBuffer = ImageUtils::SubmitQuadForShader(*image, *shader, colorOffsetRenderData, sourceQuad, destQuad, ImageUtils::QuadColor(kColor));
+		if (vertexBuffer)
+		{
+			ShaderUtils::ColorOffset::FillVertices(vertexBuffer, *image, color);
+		}
+	}
+	else if ((flags & (uint32_t)eAnimationFlag::PROCEDURAL) != 0) // let the graphics manager handle the render
+	{
+		image->Render(sourceQuad, destQuad, kColor, kColor, kColor, kColor);
+	}
+	else // use color offset shader
+	{
+		constexpr bool IS_CHAMPION = false;
+		KAGE_Graphics_Shader* shader = get_color_offset_shader(&state, IS_CHAMPION);
+
+		float* vertexBuffer = ImageUtils::SubmitQuadForShader(*image, *shader, colorOffsetRenderData, sourceQuad, destQuad, ImageUtils::QuadColor(kColor));
+		if (vertexBuffer)
+		{
+			ShaderUtils::ColorOffset::FillVertices(vertexBuffer, *image, color);
+		}
+	}
+
+	manager._blendMode = previousBlendMode;
 }
 
-// Patches into AnimationLayer::RenderFrame() where the default ColorOffset(_Champion) shader
-// would normally be set, to allow overriding with a custom shader.
-void ASMPatchCustomAnm2ShaderHook(const char* sig, const bool isChampion) {
-	SigScan scanner(sig);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	printf("[REPENTOGON] Patching AnimationLayer::RenderFrame for custom shaders at %p\n", addr);
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::EAX, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.Push(isChampion)
-		.Push(ASMPatch::Registers::ESI)  // Push the LayerState
-		.AddInternalCall(CustomAnm2ShaderHook)
-		.RestoreRegisters(reg)
-		.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-/*bool __stdcall HasCustomAnm2ShaderApplied(LayerState* layerState) {
-	return GetCustomShaderForLayer(layerState, false) != nullptr;
-}
-
-// Patches into AnimationLayer::RenderFrame() to override the champion/dogma shaders with the custom one.
-void ASMPatchCustomAnm2ShaderOverride(const char* sig, const int jmp) {
-	SigScan scanner(sig);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::EDI)  // Push the LayerState
-		.AddInternalCall(HasCustomAnm2ShaderApplied)
-		.AddBytes("\x84\xC0")  // test al, al
-		.RestoreRegisters(reg)
-		.AddBytes("\x0F\x45\xCF")  // cmovne ecx,edi
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + jmp)  // jump for true (custom shader in use)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overridden bytes
-		.AddRelativeJump((char*)addr + 0x5);  // jump for false (no custom shader)
-	sASMPatcher.PatchAt(addr, &patch);
-}*/
-
-constexpr char kNormalShaderSig[] = "a1????????a3????????8d85";
-constexpr char kChampionShaderSig[] = "a1????????8bcea3";
-//constexpr char kGoldShaderSig[] = "a1????????a3????????f6c14074??a1????????8b80????????992bc2d1f8eb??a1????????8b80????????25ff00008079??480d00ffffff40660f6ec08bcf0f5bc08d85????????50f30f5905????????f30f1185????????e8????????c745??06000000";
-//constexpr char kDogmaShaderSig[] = "a1????????a3????????f6c14074??a1????????8b80????????992bc2d1f8eb??a1????????8b80????????25ff00008079??480d00ffffff40660f6ec08bcf0f5bc08d85????????50f30f5905????????f30f1185????????e8????????c745??05000000";
-
-void ASMPatchesForANM2Extras() {
-	ASMPatchCustomAnm2ShaderHook(kNormalShaderSig, false);
-	ASMPatchCustomAnm2ShaderHook(kChampionShaderSig, true);
-
-	//ASMPatchCustomAnm2ShaderOverride(kGoldShaderSig, 0xF8);
-	//ASMPatchCustomAnm2ShaderOverride(kDogmaShaderSig, 0x1CB);
+// Low priority since this is a Reimplementation
+HOOK_METHOD_PRIORITY(AnimationLayer, RenderFrame, 9999, (Vector const& pos, int frameIndex, Vector const& top_left_clamp, Vector const& bottom_right_clamp, ANM2* anm2) -> void)
+{
+	RenderFrameEx(*this, pos, frameIndex, top_left_clamp, bottom_right_clamp, *anm2);
 }

@@ -32,7 +32,10 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KColor) {
 		pure int GetPaddedHeight();
 
 		skip; // GetBytesPerPixel
-		skip; // SetVertexFormat
+	
+		"558bec83e4f883ec1c8b55":
+		void SetVertexFormat(const KAGE_Graphics_ImageBase_VertexAttributeDescriptor& vertexFormat);
+
 		skip; // SetFilterMode
 		skip; // SetWrapMode
 		skip; // IsPalleted
@@ -66,8 +69,15 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KColor) {
 	uint8_t* _vertexFormat : 0x34;
 	uint8_t _numVertexAttributes : 0x38;
 	uint16_t _vertexFormatStride : 0x3a;
-
+	char* _name : 0x3c;
+	vector_RenderBatchPtr _renderBatches : 0x40;
+	KAGE_Graphics_RenderBatch* _lastRenderBatch : 0x4c;
+	vector_RenderBatchPtr _reusableTransparentRenderBatches : 0x50;
+	KAGE_Graphics_RenderBatch* _lastTransparentRenderBatch : 0x5c;
 } : 0x80;
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec385657a1????????33c5508d45??64a3????????8bf18975":
+__thiscall KAGE_Graphics_RenderBatch* KAGE_Graphics_ImageBase::get_batch(bool isTransparent);
 
 struct KAGE_Graphics_ImagePNG : public KAGE_Graphics_ImageBase {
 

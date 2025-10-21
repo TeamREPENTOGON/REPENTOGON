@@ -22,5 +22,3 @@ bool LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, boo
 
 extern std::unordered_map<std::string, CustomShader> custom_shaders;
 extern std::unordered_map<std::string, CustomShader> custom_champion_shaders;
-
-void ASMPatchesForANM2Extras();
