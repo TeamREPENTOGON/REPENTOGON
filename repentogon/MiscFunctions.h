@@ -128,7 +128,14 @@ namespace REPENTOGON {
 	}
 
 	static const char* GetRepentogonDataPath() {
-		if (CreateDirectory(optionsPath.c_str(), NULL)) {
+		std::error_code err;
+		bool existed = std::filesystem::is_directory(optionsPath.c_str());
+		std::filesystem::create_directories(optionsPath.c_str(), err);
+		if (err) {
+				ZHL::Log("Error %s creating Repentogon Save directory: %s\n", err.message().c_str(), optionsPath.c_str());
+				return "";
+		}
+		if (!existed) {
 			ZHL::Log("Newly created REPENTOGON savedata folder @ %s\n", optionsPath.c_str());
 			std::string optionsPathMinus = optionsPath;
 			optionsPathMinus.erase(optionsPathMinus.find_last_of('+'), 1);  // REP- savedata path is the same, just without the '+'
@@ -140,10 +147,8 @@ namespace REPENTOGON {
 			} else {
 				ZHL::Log("No legacy REPENTOGON savedata directory found.\n");
 			}
-		} else if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			ZHL::Log("Error %s creating Repentogon Save directory: %s\n", GetLastError(), optionsPath.c_str());
-			return "";
 		}
+
 		return optionsPath.c_str();
 	}
 
