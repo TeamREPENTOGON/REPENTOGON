@@ -2463,7 +2463,8 @@ enum eSeedEffect {
     SEED_SUPER_HOT = 77,
     SEED_RETRO_VISION = 78,
     SEED_G_FUEL = 79,
-    NUM_SEEDS = 80
+	
+    NUM_SEEDS
 };
 
 enum SuplexState {

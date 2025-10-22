@@ -152,6 +152,9 @@ __stdcall void Game::SaveBackwardsStage(int stage);
 "558bec83e4f883ec14f30f1005":
 static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>, BitSet128 tearFlags, Entity* spawner);
 
+"558bec83ec0c568bb1":
+__thiscall bool Game::HasSeedEffect(int SeedEffect);
+
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 

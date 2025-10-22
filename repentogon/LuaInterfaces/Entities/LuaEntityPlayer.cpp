@@ -3059,6 +3059,51 @@ LUA_FUNCTION(Lua_PlayerUseActiveItem) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetCamoOverride) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
+	if (entityPlayerPlus && entityPlayerPlus->camoOverride.has_value()) {
+		lua_pushboolean(L, *entityPlayerPlus->camoOverride);
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetCamoOverride) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
+	if (entityPlayerPlus) {
+		entityPlayerPlus->camoOverride = lua::luaL_checkboolean(L, 2);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerClearCamoOverride) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
+	if (entityPlayerPlus) {
+		entityPlayerPlus->camoOverride = std::nullopt;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerHasCamoEffect) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
+	TemporaryEffects* effects = &player->_temporaryeffects;
+
+	lua_pushboolean(L,
+		(entityPlayerPlus && entityPlayerPlus->camoOverride.has_value() && *entityPlayerPlus->camoOverride)
+		|| g_Game->HasSeedEffect(SEED_CAMO_ISAAC)
+		|| g_Game->HasSeedEffect(SEED_CAMO_EVERYTHING)
+		|| effects->HasCollectibleEffect(CollectibleType::COLLECTIBLE_CAMO_UNDIES)
+		|| effects->HasTrinketEffect(TrinketType::TRINKET_FADED_POLAROID)
+	);
+		return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3331,6 +3376,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
 		{ "IsPostLevelInitFinished", Lua_PlayerIsPostLevelInitFinished },
 		{ "UseActiveItem", Lua_PlayerUseActiveItem },
+		{ "GetCamoOverride", Lua_PlayerGetCamoOverride },
+		{ "SetCamoOverride", Lua_PlayerSetCamoOverride },
+		{ "ClearCamoOverride", Lua_PlayerClearCamoOverride },
+		{ "HasCamoEffect", Lua_PlayerHasCamoEffect },
 
 		{ NULL, NULL }
 	};

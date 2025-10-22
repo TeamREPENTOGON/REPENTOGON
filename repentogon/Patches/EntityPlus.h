@@ -23,6 +23,7 @@ public:
 	int previousHealthType = -1;
 	bool evaluatingHealthType = false;
 	bool disableHealthTypeModification = false;
+	std::optional<bool> camoOverride = std::nullopt;
 };
 
 // Attributes for EntityFamiliar.

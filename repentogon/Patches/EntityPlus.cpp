@@ -6,6 +6,7 @@
 #include "IsaacRepentance.h"
 #include "SigScan.h"
 #include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 
 // ----------------------------------------------------------------------------------------------------
 // -- EntityPlusHolder
@@ -187,9 +188,39 @@ void PatchRecalculateLaserSamples(const char* sig, const int numOverriddenBytes)
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+bool __stdcall PlayerHasCamoOverride(Entity_Player* player) {
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+	if (playerPlus && playerPlus->camoOverride) {
+		return *playerPlus->camoOverride;
+	}
+
+	return false;
+}
+
+void PatchPlayerForceCamo() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlus_PlayerForceCamo);
+	const int jumpOffset = 0x15 + *(int*)((char*)addr + 0x11);
+
+	printf("[REPENTOGON] Patching Player::UpdateEffect for camo override at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // push player
+		.AddInternalCall(PlayerHasCamoOverride)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + jumpOffset) //skipping vanilla curse icons rendering
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 }  // namespace
 
 void ASMPatchesForEntityPlus() {
 	PatchRecalculateLaserSamples("f30f108f????????0f2e8f", 8);  // update_laser
 	PatchRecalculateLaserSamples("8b97????????8d8f????????52", 6);  // update_circle_laser
+	PatchPlayerForceCamo(); // update_effects
 }
