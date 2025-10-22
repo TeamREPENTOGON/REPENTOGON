@@ -846,9 +846,17 @@ ___
 Returns a table of [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) corresponding to the item wisps the player has.
 
 ___
+### HasCamoEffect () {: aria-label='Functions' }
+#### boolean HasCamoEffect ( ) {: .copyable aria-label='Functions' }
+
+___
 ### HasChanceRevive () {: aria-label='Functions' }
 #### boolean HasChanceRevive ( ) {: .copyable aria-label='Functions' }
 Returns true if a "?" would be displayed on the player's extra life count (ie, the player has Guppy's Collar, or a modded revive item with the `chancerevive` string in REPENTOGON's [customtags items.xml attribute](xml/items.md)).
+
+___
+### HasForcedCamoEffect () {: aria-label='Functions' }
+#### boolean HasForcedCamoEffect ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### HasGoldenTrinket () {: aria-label='Functions' }
@@ -1136,6 +1144,10 @@ ___
 ### SetFootprintColor () {: aria-label='Functions' }
 #### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, boolean RightFoot = false ) {: .copyable aria-label='Functions' }
 Sets the player's footprint color.
+
+___
+### SetForceCamoEffect () {: aria-label='Functions' }
+#### void SetForceCamoEffect ( boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetForgottenSwapFormCooldown () {: aria-label='Functions' }
