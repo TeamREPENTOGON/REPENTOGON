@@ -47,7 +47,8 @@ Additions:
 	- GetSmeltedTrinketDesc
 	- [Get/Set]CharmOfTheVampireKills
 	- IsPostLevelInitFinished
-	- [Has/Set]ForceCamoEffect
+	- HasForcedCamoEffect
+	- SetForceCamoEffect
 	- HasCamoEffect
 * EntityFamiliar:
 	- IsLilDelirium
