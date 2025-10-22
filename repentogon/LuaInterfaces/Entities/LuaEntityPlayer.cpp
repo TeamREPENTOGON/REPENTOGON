@@ -3364,7 +3364,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
 		{ "IsPostLevelInitFinished", Lua_PlayerIsPostLevelInitFinished },
 		{ "UseActiveItem", Lua_PlayerUseActiveItem },
-		{ "IsForceCamoEffect", Lua_PlayerIsForceCamo },
+		{ "HasForceCamoEffect", Lua_PlayerIsForceCamo },
 		{ "SetForceCamoEffect", Lua_PlayerSetForceCamo },
 		{ "HasCamoEffect", Lua_PlayerHasCamoEffect },
 
