@@ -190,11 +190,8 @@ void PatchRecalculateLaserSamples(const char* sig, const int numOverriddenBytes)
 
 bool __stdcall PlayerHasCamoOverride(Entity_Player* player) {
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
-	if (playerPlus && playerPlus->camoOverride) {
-		return *playerPlus->camoOverride;
-	}
 
-	return false;
+	return playerPlus && playerPlus->camoOverride;
 }
 
 void PatchPlayerForceCamo() {

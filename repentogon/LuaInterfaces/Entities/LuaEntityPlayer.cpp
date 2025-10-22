@@ -3059,33 +3059,21 @@ LUA_FUNCTION(Lua_PlayerUseActiveItem) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerGetCamoOverride) {
+LUA_FUNCTION(Lua_PlayerIsForceCamo) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
-	if (entityPlayerPlus && entityPlayerPlus->camoOverride.has_value()) {
-		lua_pushboolean(L, *entityPlayerPlus->camoOverride);
-	}
-	else {
-		lua_pushnil(L);
-	}
+	lua_pushboolean(L, entityPlayerPlus && entityPlayerPlus->camoOverride);
+
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerSetCamoOverride) {
+LUA_FUNCTION(Lua_PlayerSetForceCamo) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
 	if (entityPlayerPlus) {
 		entityPlayerPlus->camoOverride = lua::luaL_checkboolean(L, 2);
 	}
-	return 0;
-}
 
-LUA_FUNCTION(Lua_PlayerClearCamoOverride) {
-	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	EntityPlayerPlus* entityPlayerPlus = GetEntityPlayerPlus(player);
-	if (entityPlayerPlus) {
-		entityPlayerPlus->camoOverride = std::nullopt;
-	}
 	return 0;
 }
 
@@ -3095,7 +3083,7 @@ LUA_FUNCTION(Lua_PlayerHasCamoEffect) {
 	TemporaryEffects* effects = &player->_temporaryeffects;
 
 	lua_pushboolean(L,
-		(entityPlayerPlus && entityPlayerPlus->camoOverride.has_value() && *entityPlayerPlus->camoOverride)
+		(entityPlayerPlus && entityPlayerPlus->camoOverride)
 		|| g_Game->HasSeedEffect(SEED_CAMO_ISAAC)
 		|| g_Game->HasSeedEffect(SEED_CAMO_EVERYTHING)
 		|| effects->HasCollectibleEffect(CollectibleType::COLLECTIBLE_CAMO_UNDIES)
@@ -3376,9 +3364,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMaggyHealthDrainCooldown", Lua_PlayerSetMaggyHealthDrainCooldown },
 		{ "IsPostLevelInitFinished", Lua_PlayerIsPostLevelInitFinished },
 		{ "UseActiveItem", Lua_PlayerUseActiveItem },
-		{ "GetCamoOverride", Lua_PlayerGetCamoOverride },
-		{ "SetCamoOverride", Lua_PlayerSetCamoOverride },
-		{ "ClearCamoOverride", Lua_PlayerClearCamoOverride },
+		{ "IsForceCamoEffect", Lua_PlayerIsForceCamo },
+		{ "SetForceCamoEffect", Lua_PlayerSetForceCamo },
 		{ "HasCamoEffect", Lua_PlayerHasCamoEffect },
 
 		{ NULL, NULL }
