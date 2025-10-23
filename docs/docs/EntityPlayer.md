@@ -660,6 +660,15 @@ Returns the player's TearDisplacement value, used to check what eye the player i
     - `-1` Left eye
 
 ___
+### GetTearRangeModifier () {: aria-label='Functions' }
+#### int GetTearRangeModifier ( ) {: .copyable aria-label='Functions' }
+Used for Experimental Treatment and for stat boosts from Void.
+
+Adds `2.5 * modifier` to the player's TearRange.
+
+Experimental Treatment adds `-1`, `0` or `1` depending on the range rolled. Void may randomly add `1`.
+
+___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
