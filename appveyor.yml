@@ -2,9 +2,12 @@ version: 1.0.{build}
 only_commits:
   message: "chore: release"
 image: Visual Studio 2022
+git:
+  submodules: true
+  depth: full
 build_script:
 - ps: >-
-    git submodule update --init --recursive 2>$null
+    git submodule update --init --recursive --force
 - ps: >-
     $version = Get-Content version.txt -Raw
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
