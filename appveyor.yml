@@ -2,9 +2,6 @@ version: 1.0.{build}
 only_commits:
   message: "chore: release"
 image: Visual Studio 2022
-git:
-  submodules: true
-  depth: full
 build_script:
 - ps: >-
     git submodule update --init --recursive --force
