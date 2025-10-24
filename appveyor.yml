@@ -4,7 +4,7 @@ only_commits:
 image: Visual Studio 2022
 build_script:
 - ps: >-
-    git submodule update --init --recursive
+    git submodule update --init --recursive 2>$null
 - ps: >-
     $version = Get-Content version.txt -Raw
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
