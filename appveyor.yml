@@ -4,6 +4,8 @@ only_commits:
 image: Visual Studio 2022
 build_script:
 - ps: |
+    $global:ErrorActionPreference = "Continue"
+- ps: |
     git --version
 - ps: |
     git submodule update --init --recursive
