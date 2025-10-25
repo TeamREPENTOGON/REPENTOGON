@@ -4,8 +4,7 @@ only_commits:
 image: Visual Studio 2022
 build_script:
 - ps: >-
-
-	git config --system core.longpaths true
+    git config --system core.longpaths true
 	
     git submodule update --init --recursive
     
