@@ -5,8 +5,11 @@ image: Visual Studio 2022
 build_script:
 - ps: >-
     git --version
+
     git config --system core.longpaths true
+
     git submodule init
+
     git submodule update --recursive
     
 - ps: >-
