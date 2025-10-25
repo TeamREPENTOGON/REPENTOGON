@@ -706,7 +706,7 @@ void ASMPatchPrePickupVoidedBlackRune() {
 		.AddInternalCall(RunPrePickupVoidedBlackRune)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1b9) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1b5) // jump for false
 		.AddInternalCall(((char*)addr + 0x5) + *(ptrdiff_t*)((char*)addr + 0x1)) // restore the commands we overwrote (god this is ugly)
 		.AddRelativeJump((char*)addr + 0x5);
 
@@ -752,7 +752,7 @@ void ASMPatchPrePickupVoidedAbyss() {
 		.AddInternalCall(RunPrePickupVoidedAbyss)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0xAA) // jump for false
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0xA6) // jump for false
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x1)) // restore push eax
 		.AddInternalCall(((char*)addr + 0x6) + *(ptrdiff_t*)((char*)addr + 0x2)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x6);
