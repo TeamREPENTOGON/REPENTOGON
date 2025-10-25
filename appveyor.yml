@@ -9,6 +9,7 @@ build_script:
     echo "I fuckin' love appveyor [citation needed]"
 
 - ps: |
+    dir
     $version = Get-Content version.txt -Raw
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
 
@@ -16,6 +17,7 @@ build_script:
     cmake --build build --config Release
 
     cd build/Release
+    dir
     mkdir artifact
     mv resources artifact
     mv resources-repentogon artifact
@@ -29,21 +31,24 @@ build_script:
     cp ../../changelog.txt artifact/rgon_changelog.txt
 
     cd artifact
+    dir
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
     Push-AppveyorArtifact REPENTOGON.zip
-    
+
 - ps: |
-    cd Launcher
+    cd ../../../Launcher
 
     $version = Get-Content version.txt -Raw
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_LAUNCHER_VERSION="$version"
     cmake --build build --config Reelease
 
     cd build/Release
+    dir
     mkdir artifact
     mv *.dll REPENTOGONLauncher.exe artifact
 
     cd artifact
+    dir
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o".." "REPENTOGONLauncher.zip" "." -aoa
     Push-AppveyorArtifact REPENTOGONLauncher.zip
 
