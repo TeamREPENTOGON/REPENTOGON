@@ -3,11 +3,11 @@ only_commits:
   message: "chore: release"
 image: Visual Studio 2022
 build_script:
-- ps: >-
+- ps: |
     git --version
     git submodule update --init --recursive
 
-- ps: >-
+- ps: |
     $version = Get-Content version.txt -Raw
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
 
@@ -15,23 +15,23 @@ build_script:
     cmake --build build --config Release
 
     cd build/Release
-        mkdir artifact
-        mv resources artifact
-        mv resources-repentogon artifact
-        if (Test-Path dsound.dll) { mv dsound.dll artifact }
-        if (Test-Path launcher.dll) { mv launcher.dll artifact }
-        if (Test-Path injector.exe) { mv injector.exe artifact }
-        mv libzhl.dll artifact
-        mv zhlREPENTOGON.dll artifact
-        mv Lua5.4.dll artifact
-        mv freetype.dll artifact
-        cp ../../changelog.txt artifact/rgon_changelog.txt
+    mkdir artifact
+    mv resources artifact
+    mv resources-repentogon artifact
+    if (Test-Path dsound.dll) { mv dsound.dll artifact }
+    if (Test-Path launcher.dll) { mv launcher.dll artifact }
+    if (Test-Path injector.exe) { mv injector.exe artifact }
+    mv libzhl.dll artifact
+    mv zhlREPENTOGON.dll artifact
+    mv Lua5.4.dll artifact
+    mv freetype.dll artifact
+    cp ../../changelog.txt artifact/rgon_changelog.txt
 
     cd artifact
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
     Push-AppveyorArtifact REPENTOGON.zip
     
-- ps: >-
+- ps: |
     cd Launcher
 
     $version = Get-Content version.txt -Raw
