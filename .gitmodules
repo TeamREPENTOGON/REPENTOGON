@@ -18,14 +18,14 @@
 	url = https://github.com/vinniefalco/LuaBridge
 [submodule "libs/antlr4"]
 	path = libs/antlr4
-	url = https://github.com/IsaacZHL/antlr4
+	url = https://github.com/TeamREPENTOGON/antlr4
 	branch = stable
 [submodule "libs/rapidjson"]
 	path = libs/rapidjson
 	url = https://github.com/Tencent/rapidjson
 [submodule "libs/lua"]
 	path = libs/lua
-	url = https://github.com/IsaacZHL/lua
+	url = https://github.com/TeamREPENTOGON/lua
 [submodule "libs/mINI"]
 	path = libs/mINI
 	url = https://github.com/pulzed/mINI
