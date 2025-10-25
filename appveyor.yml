@@ -5,51 +5,76 @@ image: Visual Studio 2022
 build_script:
 - ps: |
     git --version
+- ps: |
     git submodule update --init --recursive
     echo "I fuckin' love appveyor [citation needed]"
-
 - ps: |
     dir
+- ps: |
     $version = Get-Content version.txt -Raw
+- ps: |
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
-
+- ps: |
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
+- ps: |
     cmake --build build --config Release
-
+- ps: |
     cd build/Release
+- ps: |
     dir
+- ps: |
     mkdir artifact
+- ps: |
     mv resources artifact
+- ps: |
     mv resources-repentogon artifact
+- ps: |
     if (Test-Path dsound.dll) { mv dsound.dll artifact }
+- ps: |
     if (Test-Path launcher.dll) { mv launcher.dll artifact }
+- ps: |
     if (Test-Path injector.exe) { mv injector.exe artifact }
+- ps: |
     mv libzhl.dll artifact
+- ps: |
     mv zhlREPENTOGON.dll artifact
+- ps: |
     mv Lua5.4.dll artifact
+- ps: |
     mv freetype.dll artifact
+- ps: |
     cp ../../changelog.txt artifact/rgon_changelog.txt
-
+- ps: |
     cd artifact
+- ps: |
     dir
+- ps: |
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
+- ps: |
     Push-AppveyorArtifact REPENTOGON.zip
-
 - ps: |
     cd ../../../Launcher
-
+- ps: |
     $version = Get-Content version.txt -Raw
+- ps: |
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_LAUNCHER_VERSION="$version"
+- ps: |
     cmake --build build --config Reelease
-
+- ps: |
     cd build/Release
+- ps: |
     dir
+- ps: |
     mkdir artifact
+- ps: |
     mv *.dll REPENTOGONLauncher.exe artifact
-
+- ps: |
     cd artifact
+- ps: |
     dir
+- ps: |
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o".." "REPENTOGONLauncher.zip" "." -aoa
+- ps: |
     Push-AppveyorArtifact REPENTOGONLauncher.zip
 
 deploy:
