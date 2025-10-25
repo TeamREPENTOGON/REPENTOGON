@@ -4,79 +4,77 @@ only_commits:
 image: Visual Studio 2022
 build_script:
 - ps: |
-    $global:ErrorActionPreference = "Continue"
-- ps: |
+    echo "git --version"
     git --version
-- ps: |
+    echo "git submodule update --init --recursive"
     git submodule update --init --recursive
-    echo "I fuckin' love appveyor [citation needed]"
-- ps: |
+    echo "dir"
     dir
-- ps: |
+    echo "$version = Get-Content version.txt -Raw"
     $version = Get-Content version.txt -Raw
-- ps: |
+    echo "(gc repentogon/resources/scripts/main_ex.lua) -replace '\[\"Version\"\] = \"dev build\"', \"[`\"Version`\"] = `\"$version`\"\" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua"
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
-- ps: |
+    echo "cmake -G \"Visual Studio 17 2022\" -A \"Win32\" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION=\"$version\" -DCMAKE_REPENTOGON_VERSION=\"$version\""
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
-- ps: |
+    echo "cmake --build build --config Release"
     cmake --build build --config Release
-- ps: |
+    echo "cd build/Release"
     cd build/Release
-- ps: |
+    echo "dir"
     dir
-- ps: |
+    echo "mkdir artifact"
     mkdir artifact
-- ps: |
+    echo "mv resources artifact"
     mv resources artifact
-- ps: |
+    echo "mv resources-repentogon artifact"
     mv resources-repentogon artifact
-- ps: |
+    echo "if (Test-Path dsound.dll) { mv dsound.dll artifact }"
     if (Test-Path dsound.dll) { mv dsound.dll artifact }
-- ps: |
+    echo "if (Test-Path launcher.dll) { mv launcher.dll artifact }"
     if (Test-Path launcher.dll) { mv launcher.dll artifact }
-- ps: |
+    echo "if (Test-Path injector.exe) { mv injector.exe artifact }"
     if (Test-Path injector.exe) { mv injector.exe artifact }
-- ps: |
+    echo "mv libzhl.dll artifact"
     mv libzhl.dll artifact
-- ps: |
+    echo "mv zhlREPENTOGON.dll artifact"
     mv zhlREPENTOGON.dll artifact
-- ps: |
+    echo "mv Lua5.4.dll artifact"
     mv Lua5.4.dll artifact
-- ps: |
+    echo "mv freetype.dll artifact"
     mv freetype.dll artifact
-- ps: |
+    echo "cp ../../changelog.txt artifact/rgon_changelog.txt"
     cp ../../changelog.txt artifact/rgon_changelog.txt
-- ps: |
+    echo "cd artifact"
     cd artifact
-- ps: |
+    echo "dir"
     dir
-- ps: |
+    echo "& \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -aoa"
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
-- ps: |
+    echo "Push-AppveyorArtifact REPENTOGON.zip"
     Push-AppveyorArtifact REPENTOGON.zip
-- ps: |
+    echo "cd ../../../Launcher"
     cd ../../../Launcher
-- ps: |
+    echo "$version = Get-Content version.txt -Raw"
     $version = Get-Content version.txt -Raw
-- ps: |
+    echo "cmake -G \"Visual Studio 17 2022\" -A \"Win32\" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_LAUNCHER_VERSION=\"$version\""
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_LAUNCHER_VERSION="$version"
-- ps: |
+    echo "cmake --build build --config Reelease"
     cmake --build build --config Reelease
-- ps: |
+    echo "cd build/Release"
     cd build/Release
-- ps: |
+    echo "dir"
     dir
-- ps: |
+    echo "mkdir artifact"
     mkdir artifact
-- ps: |
+    echo "mv *.dll REPENTOGONLauncher.exe artifact"
     mv *.dll REPENTOGONLauncher.exe artifact
-- ps: |
+    echo "cd artifact"
     cd artifact
-- ps: |
+    echo "dir"
     dir
-- ps: |
+    echo "& \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\" \"REPENTOGONLauncher.zip\" \".\" -aoa"
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o".." "REPENTOGONLauncher.zip" "." -aoa
-- ps: |
+    echo "Push-AppveyorArtifact REPENTOGONLauncher.zip"
     Push-AppveyorArtifact REPENTOGONLauncher.zip
 
 deploy:
