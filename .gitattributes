@@ -1,2 +1,3 @@
 # Force LF ending for bash scripts to prevent bash from losing its mind
 *.sh text eof=lf
+appveyor.yml text eof=crlf
