@@ -6,6 +6,7 @@ build_script:
 - ps: |
     git --version
     git submodule update --init --recursive
+    echo "I fuckin' love appveyor [citation needed]"
 
 - ps: |
     $version = Get-Content version.txt -Raw
