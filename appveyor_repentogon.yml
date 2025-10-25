@@ -1,0 +1,60 @@
+version: 1.0.{build}
+only_commits:
+  message: "chore: release"
+image: Visual Studio 2022
+build_script:
+- ps: |
+    echo "> git --version"
+    git --version
+    echo "> git submodule update --init --recursive"
+    git submodule update --init --recursive
+    echo "> dir"
+    dir
+    echo "> $version = Get-Content version.txt -Raw"
+    $version = Get-Content version.txt -Raw
+    echo "> (gc repentogon/resources/scripts/main_ex.lua) -replace '\[\"Version\"\] = \"dev build\"', \"[`\"Version`\"] = `\"$version`\"\" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua"
+    (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
+    echo "> cmake -G \"Visual Studio 17 2022\" -A \"Win32\" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION=\"$version\" -DCMAKE_REPENTOGON_VERSION=\"$version\""
+    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
+    echo "> cmake --build build --config Release"
+    cmake --build build --config Release
+    echo "> cd build/Release"
+    cd build/Release
+    echo "> dir"
+    dir
+    echo "> mkdir artifact"
+    mkdir artifact
+    echo "> mv resources artifact"
+    mv resources artifact
+    echo "> mv resources-repentogon artifact"
+    mv resources-repentogon artifact
+    echo "> if (Test-Path dsound.dll) { mv dsound.dll artifact }"
+    if (Test-Path dsound.dll) { mv dsound.dll artifact }
+    echo "> if (Test-Path launcher.dll) { mv launcher.dll artifact }"
+    if (Test-Path launcher.dll) { mv launcher.dll artifact }
+    echo "> if (Test-Path injector.exe) { mv injector.exe artifact }"
+    if (Test-Path injector.exe) { mv injector.exe artifact }
+    echo "> mv libzhl.dll artifact"
+    mv libzhl.dll artifact
+    echo "> mv zhlREPENTOGON.dll artifact"
+    mv zhlREPENTOGON.dll artifact
+    echo "> mv Lua5.4.dll artifact"
+    mv Lua5.4.dll artifact
+    echo "> mv freetype.dll artifact"
+    mv freetype.dll artifact
+    echo "> cp ../../changelog.txt artifact/rgon_changelog.txt"
+    cp ../../changelog.txt artifact/rgon_changelog.txt
+    echo "> cd artifact"
+    cd artifact
+    echo "> dir"
+    dir
+    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -aoa"
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
+    echo "> Push-AppveyorArtifact REPENTOGON.zip"
+    Push-AppveyorArtifact REPENTOGON.zip
+
+deploy:
+- provider: Webhook
+  url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
+  authorization:
+     secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
