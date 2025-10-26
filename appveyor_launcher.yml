@@ -26,8 +26,8 @@ build_script:
     mkdir artifact
     echo "> mv *.dll REPENTOGONLauncher.exe artifact"
     mv *.dll,REPENTOGONLauncher.exe,steam_appid.txt,REPENTOGONLauncherUpdater.exe artifact
-    echo "> mv patch/* artifact/patch"
-    mv patch/* artifact/patch
+    echo "> mv patch artifact"
+    mv patch artifact
     echo "> cd artifact"
     cd artifact
     echo "> dir"
