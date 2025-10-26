@@ -249,6 +249,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerDeathSoundSoulOfLazarus();
 	ASMPatchPlayerDeathSoundLost();
 	ASMPatchPlayerDeathSoundAstralProjection();
+	ASMPatchPlayerLostSoulSkipPeePuddle();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();

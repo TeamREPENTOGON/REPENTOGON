@@ -25,3 +25,4 @@ void ASMPatchPlayerDeathSound();
 void ASMPatchPlayerDeathSoundSoulOfLazarus();
 void ASMPatchPlayerDeathSoundLost();
 void ASMPatchPlayerDeathSoundAstralProjection();
+void ASMPatchPlayerLostSoulSkipPeePuddle();

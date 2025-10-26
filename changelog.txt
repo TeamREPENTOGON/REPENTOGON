@@ -329,6 +329,7 @@ Modified:
 	- GetSmeltedTrinkets now accepts an optional table parameter, a list of trinket IDs, to use as a filter for better performance
 	- TryAddToBagOfCrafting now returns a boolean (true if something was added to the bag)
 	- UseActiveItem now returns a bitmask (UseActiveItemResultFlag.DISCHARGE and/or UseActiveItemResultFlag.REMOVE, or 0)
+	- Player no longer leaves a pee/blood puddle when entering a new room when the health type is set to HealthType.LOST/NO_HEALTH
 * EntityNPC:
 	- boolean ReplaceSpritesheet
 * Level:

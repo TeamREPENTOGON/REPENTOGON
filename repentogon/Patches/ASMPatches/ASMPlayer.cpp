@@ -306,3 +306,25 @@ void ASMPatchPlayerDeathSoundAstralProjection() {
 	RegisterCustomXMLAttr(XMLStuff.PlayerData, "deathsound", XMLStuff.SoundData); //this is so the parsing for all of the attribute nes is done only once and by the xmldata structure itself in a single place
 }
 
+bool __stdcall PlayerIsNotLostHeartType(Entity_Player* player) {
+	return player->GetHealthType() != 2;
+}
+
+void ASMPatchPlayerLostSoulSkipPeePuddle() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LostSoulHeartTypeSkipSpawnPuddle);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	const int skipJumpOffset = 0xD + *(int*)((char*)addr + 0x9);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // push Player
+		.AddInternalCall(PlayerIsNotLostHeartType)
+		.AddBytes("\x84\xC0")  // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + skipJumpOffset) // Skipping hearts gain
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore instructions that we overwrote
+		.AddRelativeJump((char*)addr + 0x7);
+
+	sASMPatcher.PatchAt(addr, &patch);
+
+}
