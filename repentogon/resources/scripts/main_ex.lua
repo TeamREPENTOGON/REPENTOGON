@@ -1726,6 +1726,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM] = RunAccumulateReturnTableCallback,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = RunPreAddCollectibleCallback,
 	[ModCallbacks.MC_PRE_ADD_TRINKET] = RunPreAddTrinketCallback,
+	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({
