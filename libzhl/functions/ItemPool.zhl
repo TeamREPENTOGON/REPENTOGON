@@ -61,6 +61,9 @@ __thiscall void ItemPool::GetItemPoolsForCollectible(int collectible, std_vector
 "558bec83e4f853568ada":
 static cleanup int ItemPool::GetSeededCollectible(uint32_t seed<ecx>, bool noDecrease<edx>, RoomDescriptor* roomDesc);
 
+"558bec83e4f851a1????????53568b75":
+__thiscall int ItemPool::GetPillEffect(unsigned int pillColor, Entity_Player* player);
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }

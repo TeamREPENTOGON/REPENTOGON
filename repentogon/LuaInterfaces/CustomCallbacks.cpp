@@ -5574,3 +5574,35 @@ HOOK_METHOD(Entity_Player, DischargeActiveItem, (unsigned int slot, bool collect
 			.call(1);
 	}
 }
+
+//GET_PILL_EFFECT reimplementation (id: 65)
+HOOK_METHOD(ItemPool, GetPillEffect, (unsigned int pillColor, Entity_Player* player) -> int) {
+	int selectedPillEffect = super(pillColor, player);
+	const int callbackid = 65;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(selectedPillEffect)
+			.push(selectedPillEffect)
+			.push(pillColor & PILL_COLOR_MASK)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				const int resultEffect = (int)lua_tointeger(L, -1);
+				if (resultEffect != -1) {
+					selectedPillEffect = resultEffect;
+				}
+			}
+		}
+	}
+	return selectedPillEffect;
+}
+
+//nuke GET_PILL_EFFECT original implementation
+HOOK_STATIC(LuaEngine, GetPillEffect, (int pillEffect, int pillColor) -> int, __stdcall) { return -1; }

@@ -544,7 +544,7 @@ LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
 
 LUA_FUNCTION(Lua_ItemPoolUnidentifyPill) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	const int pillColor = ((int)luaL_checkinteger(L, 2)) & 0x7ff;
+	const int pillColor = ((int)luaL_checkinteger(L, 2)) & PILL_COLOR_MASK;
 	if (pillColor >= 0 && pillColor <= 14) {
 		itemPool->_idendifiedPillEffects[pillColor] = false;
 	}
