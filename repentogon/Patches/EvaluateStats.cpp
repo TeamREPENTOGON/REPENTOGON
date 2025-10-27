@@ -67,28 +67,29 @@ float CalculateStatChange(Entity_Player* player, const EvaluateStatStage stat) {
 	return totalChange;
 }
 
+inline float CalcStatMult(const float mult, const float n) {
+	if (mult > 0 && n > 0) {
+		return std::pow(mult, n);
+	}
+	return 1;
+}
 float CalculateStatMult(Entity_Player* player, const EvaluateStatStage stat) {
 	TemporaryEffects* effects = &player->_temporaryeffects;
 	float finalMult = 1;
-	for (const auto& [id, change] : XMLStuff.ItemData->statups[stat]) {
-		float mult = player->GetCollectibleNum(id, false) * change;
-		if (mult > 0) finalMult *= mult;
+	for (const auto& [id, mult] : XMLStuff.ItemData->statups[stat]) {
+		finalMult *= CalcStatMult(mult, player->GetCollectibleNum(id, false));
 	}
-	for (const auto& [id, change] : XMLStuff.ItemData->effectstatups[stat]) {
-		float mult = effects->GetCollectibleEffectNum(id) * change;
-		if (mult > 0) finalMult *= mult;
+	for (const auto& [id, mult] : XMLStuff.ItemData->effectstatups[stat]) {
+		finalMult *= CalcStatMult(mult, effects->GetCollectibleEffectNum(id));
 	}
-	for (const auto& [id, change] : XMLStuff.TrinketData->statups[stat]) {
-		float mult = player->GetTrinketMultiplier(id) * change;
-		if (mult > 0) finalMult *= mult;
+	for (const auto& [id, mult] : XMLStuff.TrinketData->statups[stat]) {
+		finalMult *= CalcStatMult(mult, player->GetTrinketMultiplier(id));
 	}
-	for (const auto& [id, change] : XMLStuff.TrinketData->effectstatups[stat]) {
-		float mult = effects->GetTrinketEffectNum(id) * change;
-		if (mult > 0) finalMult *= mult;
+	for (const auto& [id, mult] : XMLStuff.TrinketData->effectstatups[stat]) {
+		finalMult *= CalcStatMult(mult, effects->GetTrinketEffectNum(id));
 	}
-	for (const auto& [id, change] : XMLStuff.NullItemData->effectstatups[stat]) {
-		float mult = effects->GetNullEffectNum(id) * change;
-		if (mult > 0) finalMult *= mult;
+	for (const auto& [id, mult] : XMLStuff.NullItemData->effectstatups[stat]) {
+		finalMult *= CalcStatMult(mult, effects->GetNullEffectNum(id));
 	}
 	return finalMult;
 }
