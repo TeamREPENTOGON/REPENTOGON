@@ -264,7 +264,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
-		skip; // Kill
+        "558bec83e4f8568bf15780be????????00":
+        void Kill(EntityRef* Source);
 		
         "51568bf15780be????????00c686????????007507":
         void Remove(); 

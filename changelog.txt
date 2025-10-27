@@ -353,6 +353,8 @@ Modified:
 		Added PostLevelInitFinished argument
 	- MC_GET_PILL_EFFECT
 		Added EntityPlayer argument
+	- MC_POST_ENTITY_KILL
+		Added EntityRef argument (which entity killed this one)
 * reloadshaders command will now reload custom anm2 shaders
 * Daily goal path icon will now be displayed on Mega Satan daily runs.
 * Fixed "luareset" command executing scripts from not loaded mods

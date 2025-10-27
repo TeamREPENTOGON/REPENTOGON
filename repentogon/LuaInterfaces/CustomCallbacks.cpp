@@ -5606,3 +5606,28 @@ HOOK_METHOD(ItemPool, GetPillEffect, (unsigned int pillColor, Entity_Player* pla
 
 //nuke GET_PILL_EFFECT original implementation
 HOOK_STATIC(LuaEngine, GetPillEffect, (int pillEffect, int pillColor) -> int, __stdcall) { return -1; }
+
+EntityRef* lastSource = nullptr;
+
+HOOK_METHOD(Entity, Kill, (EntityRef* source) -> void) {
+	lastSource = source;
+	super(source);
+	lastSource = nullptr;
+}
+
+//POST_ENTITY_KILL reimplementation (id: 68)
+HOOK_STATIC(LuaEngine, PostEntityKill, (Entity* ent) -> void, __stdcall) {
+	const int callbackid = 68;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(ent->_type)
+			.push(ent, lua::Metatables::ENTITY)
+			.push(lastSource, lua::Metatables::ENTITY_REF)
+			.call(1);
+	}
+}
