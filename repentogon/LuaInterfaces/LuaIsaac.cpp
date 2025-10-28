@@ -787,6 +787,11 @@ LUA_FUNCTION(Lua_IsaacIsShuttingDown) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsaacGetButtonsSprite) {
+	lua::luabridge::UserdataPtr::push(L, &g_Manager->_buttonsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -844,6 +849,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
