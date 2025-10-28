@@ -1,0 +1,11 @@
+struct EntityDesc { {{
+	EntityDesc(unsigned int type = 0, unsigned int variant = 0, unsigned int subtype = 0, int champion = -1, float health = .0f, float maxHealth = .0f, bool playerControlled = false) : _type(type), _variant(variant), _subtype(subtype), _championId(champion), _health(health), _maxHealth(_maxHealth), _playerControlled(playerControlled) {}
+}}
+	unsigned int _type : 0x0;
+	unsigned int _variant : 0x4;
+	unsigned int _subtype : 0x8;
+	int _championId : 0xc;
+	float _health : 0x10;
+	float _maxHealth : 0x14;
+	bool _playerControlled : 0x18;
+} : 0x1c;

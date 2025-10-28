@@ -10,11 +10,20 @@ Additions:
 	- IsBeastPath
 * Game:
 	- ChainLightning(Vector Position, float BaseDamage = 3.5, TearFlags TearFlags = TearFlags.TEAR_NORMAL, Entity Spanwer = nil)
-* GridEntity
+* GridEntity:
 	- [Get/Set/Reset]WaterClipFlags
-* Entity
+* Entity:
 	- [Get/Set/Reset]WaterClipFlags
 	- CanDevolve
+* EntityDesc:
+	- EntityDesc(EntityType Type = 0, int Variant = 0, int Subtype = 0, ChampionColor ChampionId = -1, float Health = 0.0, float MaxHealth = 0.0, boolean PlayerControlled = false)
+	- [Get/Set]Type
+	- [Get/Set]Variant
+	- [Get/Set]Subtype
+	- [Get/Set]ChampionId
+	- [Get/Set]Health
+	- [Get/Set]MaxHealth
+	- [Is/Set]PlayerControlled
 * EntityPickup:
 	- GetMegaChest[Left/Right]Collectible
 		Returns the other EntityPickup for a Mega Chest

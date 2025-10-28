@@ -256,6 +256,7 @@ namespace lua {
         extern LIBZHL_API const char* LootListMT;
         extern LIBZHL_API const char* LootListEntryMT;
         extern LIBZHL_API const char* MinimapConfigMT;
+        extern LIBZHL_API const char* EntityDescMT;
     }
 
     LIBZHL_API void UnloadMetatables();

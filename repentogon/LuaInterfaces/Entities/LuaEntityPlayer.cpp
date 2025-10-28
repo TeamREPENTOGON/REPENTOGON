@@ -3092,6 +3092,23 @@ LUA_FUNCTION(Lua_PlayerHasCamoEffect) {
 		return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetFriendBallEnemy) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	EntityDesc* ud = (EntityDesc*)lua_newuserdata(L, sizeof(EntityDesc));
+
+	*ud = player->_friendBallEnemy;
+	luaL_setmetatable(L, lua::metatables::EntityDescMT);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetFriendBallEnemy) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_friendBallEnemy = *lua::GetRawUserdata<EntityDesc*>(L, 2, lua::metatables::EntityDescMT);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3374,4 +3391,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	// fix BabySkin Variable
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "BabySkin", Lua_PlayerGetBabySkin, Lua_PlayerSetBabySkin);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
 }

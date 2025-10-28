@@ -564,7 +564,7 @@ __thiscall bool Entity_Player::HasInvincibility(uint64_t damageFlags, EntityRef*
 "558bec6aff68????????64a1????????50b8dc190000":
 __thiscall void Entity_Player::UseActiveItem(short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData);
 
-struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput) : public Entity { {{
+struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -745,6 +745,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _maxBladderCharge : 0x18f0;
 	bool _isUrethraBlocked : 0x18f4;
 	int _nextUrethraBlockFrame : 0x18f8;
+	EntityDesc _friendBallEnemy : 0x18fc;
 	int _purityState : 0x1918;
 	int _immaculateConceptionState : 0x191c;
 	int _cambionConceptionState : 0x1920;
