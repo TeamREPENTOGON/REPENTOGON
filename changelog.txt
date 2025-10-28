@@ -34,6 +34,10 @@ Additions:
 	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- SetD8DamageModifier
+	- SetD8FireDelayModifier
+	- SetD8RangeModifier
+	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
 	- [Get/Set]RockBottomMoveSpeed

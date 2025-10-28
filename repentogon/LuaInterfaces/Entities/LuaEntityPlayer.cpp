@@ -854,11 +854,23 @@ LUA_FUNCTION(Lua_PlayerGetD8DamageModifier)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetD8DamageModifier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetD8DamageModifier() = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetD8SpeedModifier)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushnumber(L, *player->GetD8SpeedModifier());
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetD8SpeedModifier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetD8SpeedModifier() = (float)luaL_checknumber(L, 2);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetD8RangeModifier)
@@ -868,11 +880,23 @@ LUA_FUNCTION(Lua_PlayerGetD8RangeModifier)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetD8RangeModifier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetD8RangeModifier() = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetD8FireDelayModifier)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushnumber(L, *player->GetD8FireDelayModifier());
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetD8FireDelayModifier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetD8FireDelayModifier() = (float)luaL_checknumber(L, 2);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetEpiphoraCharge)
@@ -3175,9 +3199,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetWeaponModifiers", Lua_PlayerGetWeaponModifiers },
 		{ "EnableWeaponType", Lua_PlayerEnableWeaponType },
 		{ "GetD8DamageModifier", Lua_PlayerGetD8DamageModifier },
+		{ "SetD8DamageModifier", Lua_PlayerSetD8DamageModifier },
 		{ "GetD8SpeedModifier", Lua_PlayerGetD8SpeedModifier },
+		{ "SetD8SpeedModifier", Lua_PlayerSetD8SpeedModifier },
 		{ "GetD8RangeModifier", Lua_PlayerGetD8RangeModifier },
+		{ "SetD8RangeModifier", Lua_PlayerSetD8RangeModifier },
 		{ "GetD8FireDelayModifier", Lua_PlayerGetD8FireDelayModifier },
+		{ "SetD8FireDelayModifier", Lua_PlayerSetD8FireDelayModifier },
 		{ "GetEpiphoraCharge", Lua_PlayerGetEpiphoraCharge },
 		{ "GetPeeBurstCooldown", Lua_PlayerGetPeeBurstCooldown },
 		{ "GetMaxPeeBurstCooldown", Lua_PlayerGetMaxPeeBurstCooldown },
