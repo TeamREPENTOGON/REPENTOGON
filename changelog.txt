@@ -91,6 +91,8 @@ Additions:
 * PlayerManager:
 	- GetRandomCollectibleOwner
 	- GetRandomTrinketOwner
+* Isaac:
+	- GetButtonsSprite
 * ItemPool:
 	- AddCollectible
 	- AddTemporaryCollectible
