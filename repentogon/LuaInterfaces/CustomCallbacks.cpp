@@ -2140,8 +2140,23 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	postrenderbodyhead(1046, this, x);
 }
 
-//PRE_ROOM_TRIGGER_CLEAR (id: 1068)
-HOOK_METHOD(Room, TriggerClear, (bool playSound) -> void) {
+void ProcessPostTriggerRoomClear(bool silent) {
+	const int callbackid = 1143;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(silent)
+			.call(1);
+	}
+}
+
+//PRE/POST_ROOM_TRIGGER_CLEAR (id: 1068 / 1143)
+HOOK_METHOD(Room, TriggerClear, (bool silent) -> void) {
 	const int callbackid = 1068;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2151,13 +2166,14 @@ HOOK_METHOD(Room, TriggerClear, (bool playSound) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(playSound)
+			.push(silent)
 			.call(1);
 	}
-	super(playSound);
+	super(silent);
+	ProcessPostTriggerRoomClear(silent);
 }
 
-//PRE_PLAYER_TRIGGER_ROOM_CLEAR (id: 1069)
+//PRE/POST_PLAYER_TRIGGER_ROOM_CLEAR (id: 1069 / 1138)
 HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	const int callbackid = 1069;
 	if (CallbackState.test(callbackid - 1000)) {

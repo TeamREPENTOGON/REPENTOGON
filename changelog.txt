@@ -224,6 +224,7 @@ Additions:
 		Optional param: PickupVariant
 		Fires after a chest opened.
 	- MC_POST_DISCHARGE_ACTIVE_ITEM(CollectibleType, boolean CollectibleRemoved, EntityPlayer, ActiveSlot)
+	- MC_POST_ROOM_TRIGGER_CLEAR(boolean Silent)
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
