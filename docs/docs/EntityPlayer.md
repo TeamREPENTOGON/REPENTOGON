@@ -342,19 +342,19 @@ See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetD8DamageModifier () {: aria-label='Functions' }
-#### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
+#### float GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetD8FireDelayModifier () {: aria-label='Functions' }
-#### int GetD8FireDelayModifier ( ) {: .copyable aria-label='Functions' }
+#### float GetD8FireDelayModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetD8RangeModifier () {: aria-label='Functions' }
-#### int GetD8RangeModifier ( ) {: .copyable aria-label='Functions' }
+#### float GetD8RangeModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetD8SpeedModifier () {: aria-label='Functions' }
-#### int GetD8SpeedModifier ( ) {: .copyable aria-label='Functions' }
+#### float GetD8SpeedModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDamageModifier () {: aria-label='Functions' }
