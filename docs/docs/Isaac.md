@@ -131,6 +131,11 @@ ___
 #### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
+### GetButtonsSprite () {: aria-label='Modified Functions' }
+#### [Sprite](Sprite.md) GetButtonsSprite ( ) {: .copyable aria-label='Functions' }
+Controllers buttons sprite
+
+___
 ### GetClipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
@@ -360,7 +365,7 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
 ### SpawnBoss() {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) SpawnBoss( int Type, int Variant, int SubType, [Vector](Vector.md) Position,  [Vector](Vector.md) Velocity, [Entity](Entity.md) Spawner, int Seed = ?) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) SpawnBoss ( int Type, int Variant, int SubType, [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, [Entity](Entity.md) Spawner, int Seed = ? ) {: .copyable aria-label='Functions' }
 Spawns an NPC forcing it to be a Boss, returning true for IsBoss(), giving it a boss bar, playing the boss end single on kill in appropiate rooms and other qualities that you may expect from a boss entity, even if the entity is normally not a Boss.
 
 ___

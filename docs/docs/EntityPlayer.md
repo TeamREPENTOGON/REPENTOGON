@@ -64,8 +64,8 @@ ___
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
-### UseActiveItem () {: aria-label='Functions' }
-#### [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md) UseActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Item, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlag.html) UseFlags = 0, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = -1, int CustomVarData = 0 ) {: .copyable aria-label='Functions' }
+### UseActiveItem () {: aria-label=' Modified Functions' }
+#### [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md) UseActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Item, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlag.html) UseFlags = 0, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = -1, int CustomVarData = 0 ) {: .copyable aria-label='Modified Functions' }
 Now has a return value, a bitmask of [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md).
 
 ???+ note "Return behavior"
@@ -81,6 +81,12 @@ ___
 Same as default, but now returns a proper integer value instead of userdata.
 
 ___
+### FriendBallEnemy {: aria-label='Modified Variables' }
+#### [EntityDesc](EntityDesc.md) FriendBallEnemy  {: .copyable aria-label='Modified Variables' }
+Same as default, but now returns a proper class instead of userdata.
+
+___
+
 
 ## Functions
 
@@ -1090,6 +1096,22 @@ ___
 ### SetControllerIndex () {: aria-label='Functions' }
 #### void SetControllerIndex ( int Idx ) {: .copyable aria-label='Functions' }        
 Changes the player's controller index.
+
+___
+### SetD8DamageModifier () {: aria-label='Functions' }
+#### void SetD8DamageModifier ( float Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### SetD8FireDelayModifier () {: aria-label='Functions' }
+#### void SetD8FireDelayModifier ( float Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### SetD8RangeModifier () {: aria-label='Functions' }
+#### void SetD8RangeModifier ( float Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### SetD8SpeedModifier () {: aria-label='Functions' }
+#### void SetD8SpeedModifier ( float Modifier ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetDamageModifier () {: aria-label='Functions' }
