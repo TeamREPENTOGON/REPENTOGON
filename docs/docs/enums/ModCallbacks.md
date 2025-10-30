@@ -1068,11 +1068,11 @@ Accepts no return parameters.
 |1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([Giantbook](Giantbook.md) GiantbookID, <br>int Delay, <br>[EntityPlayer](../EntityPlayer.md) Player) | [Giantbook](Giantbook.md) | void |
 
 ### MC_POST_ITEM_OVERLAY_UPDATE {: .copyable }
-Accepts no return parameters.
+`SkipAnimation` returns `true` if the item overlay was skipped, `false` otherwise.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | void | [Giantbook](Giantbook.md) | void |
+|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | ([Giantbook](Giantbook.md) GiantbookID, <br>bool SkipAnimation) | [Giantbook](Giantbook.md) | void |
 
 ### MC_POST_KNIFE_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
