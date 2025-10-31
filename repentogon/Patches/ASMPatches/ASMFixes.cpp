@@ -104,6 +104,7 @@ static void fix_handle_collisions_playeronly_entity_class(const char* signature,
 static void fix_try_remove_smelted_trinket()
 {
     void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TryRemoveSmeltedTrinketIdCheck);
+    ZHL::Log("[REPENTOGON] Patching TryRemoveSmeltedTrinket TrinketType check @ %p\n", addr);
     ASMPatch patch;
     ByteBuffer buffer;
     buffer.AddByte('\x90', 8);
@@ -117,11 +118,53 @@ static void fix_try_remove_smelted_trinket()
 static void fix_force_add_pill_effect()
 {
     void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::ForceAddPillEffectIdCheck);
+    ZHL::Log("[REPENTOGON] Patching ForceAddPillEffect PillEffect check @ %p\n", addr);
     ASMPatch patch;
     ByteBuffer buffer;
     buffer.AddByte('\x90', 9);
     patch.AddBytes(buffer);
     sASMPatcher.FlatPatch(addr, &patch, true);
+}
+
+// Fix handling of invalid PillColors in a few places (the game sometimes treats them as a Gold Pill instead of just skipping/ignoring them).
+static void fix_render_pocket_item_pill_identified_check()
+{
+    void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderPocketItemPillIdentifiedCheck);
+    ZHL::Log("[REPENTOGON] Patching RenderPocketItem identified PillColor check @ %p\n", addr);
+    ASMPatch patch;
+    patch.AddBytes("\x3B\xC1")  // CMP EAX,ECX
+        .CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JA, (char*)addr + 0x13)  // Skip
+        .AddRelativeJump((char*)addr + 0x5);
+    sASMPatcher.PatchAt(addr, &patch);
+}
+static void fix_use_pill_identify_pill()
+{
+    void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::UsePillIdentifyPill);
+    ZHL::Log("[REPENTOGON] Patching UsePill PillColor identification @ %p\n", addr);
+    ASMPatch patch;
+    patch.AddBytes("\x3B\xC8")  // CMP ECX,EAX
+        .CopyRegister(ASMPatch::Registers::EAX, ASMPatch::Registers::ECX)
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JA, (char*)addr + 0xD)  // Skip
+        .AddRelativeJump((char*)addr + 0x5);
+    sASMPatcher.PatchAt(addr, &patch);
+}
+static void fix_itempool_getpilleffect()
+{
+    void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::ItemPoolGetPillEffect);
+
+    ZHL::Log("[REPENTOGON] Patching ItemPool::GetPillEffect @ %p\n", addr);
+
+    ASMPatch patch;
+    patch.Push(ASMPatch::Registers::EAX)
+        .AddBytes("\xB8\xFF\xFF\xFF\xFF")  //.MoveImmediate(ASMPatch::Registers::EAX, (int32_t)PILLEFFECT_NULL)
+        .AddBytes("\x83\xFE").AddBytes(ASMPatch::ToHexString((int8_t)NUM_PILLS))  // CMP ESI,NUM_PILLS
+        .AddBytes("\x0F\x43\xF0")  // CMOVAE ESI,EAX
+        .Pop(ASMPatch::Registers::EAX)
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JAE, (char*)addr + 0x7)  // Jump for invalid PillColor
+        .AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Place corresponding PillEffect in ESI
+        .AddRelativeJump((char*)addr + 0x7);
+    sASMPatcher.PatchAt(addr, &patch);
 }
 
 void ASMFixes()
@@ -131,4 +174,7 @@ void ASMFixes()
     fix_handle_collisions_playeronly_entity_class("83f80174??83f901", "Entity::handle_collisions");
     fix_try_remove_smelted_trinket();
     fix_force_add_pill_effect();
+    fix_render_pocket_item_pill_identified_check();
+    fix_use_pill_identify_pill();
+    fix_itempool_getpilleffect();
 }

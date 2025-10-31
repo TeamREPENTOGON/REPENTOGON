@@ -64,6 +64,12 @@ static cleanup int ItemPool::GetSeededCollectible(uint32_t seed<ecx>, bool noDec
 "558bec83e4f851a1????????53568b75":
 __thiscall int ItemPool::GetPillEffect(unsigned int pillColor, Entity_Player* player);
 
+"558bec8b45??33d225ff0700003bd01bd223d0b80e0000003bd00f42c2c684??????????01":
+__thiscall void ItemPool::IdentifyPill(uint32_t pillColor);
+
+"558bec8b45??33d225ff0700003bd01bd223d0b80e0000003bd00f42c28a84":
+__thiscall bool ItemPool::IsPillIdentified(uint32_t pillColor);
+
 struct ItemPool depends (ItemPool_Item, RNG) {
 	{{
 		inline std::vector<bool>* GetRemovedCollectibles() { return &this->_removedCollectibles; }

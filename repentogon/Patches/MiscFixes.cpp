@@ -59,6 +59,19 @@ HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor
 	}
 }
 
+// Do nothing for invalid PillColor values.
+HOOK_METHOD(ItemPool, IdentifyPill, (uint32_t pillColor) -> void) {
+	if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
+		super(pillColor);
+	}
+}
+HOOK_METHOD(ItemPool, IsPillIdentified, (uint32_t pillColor) -> bool) {
+	if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
+		return super(pillColor);
+	}
+	return false;
+}
+
 // Set patched out deselectable buttons on the online and daily menus to render at 0.5 alpha.
 HOOK_METHOD(Menu_Online, Render, () -> void) {
 	int layers[4] = {1, 2, 3, 14};
