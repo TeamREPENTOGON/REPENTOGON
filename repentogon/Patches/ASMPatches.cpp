@@ -22,6 +22,7 @@
 #include "XMLPlayerExtras.h"
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
+#include "SaveStateManagementPatches.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -269,6 +270,7 @@ void PerformASMPatches() {
 
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
+	SaveStateManagement::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

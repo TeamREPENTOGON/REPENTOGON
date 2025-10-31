@@ -564,6 +564,15 @@ __thiscall bool Entity_Player::HasInvincibility(uint64_t damageFlags, EntityRef*
 "558bec6aff68????????64a1????????50b8dc190000":
 __thiscall void Entity_Player::UseActiveItem(short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec800000005657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void Entity_Player::StoreGameState(GameStatePlayer* saveState, bool saveTemporaryFamiliars);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec40a1????????33c58945??5657508d45??64a3????????8bf9897d??83bf????????00":
+__thiscall void Entity_Player::RestoreGameState(GameStatePlayer* saveState);
+
+"558bec83e4f883ec6453568b75":
+__thiscall void Entity_Player::RestoreGameState_PostLevelInit(GameStatePlayer* saveState);
+
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
