@@ -9,6 +9,7 @@
 #include <string>
 #include "../Patches/ChallengesStuff.h"
 #include <dwmapi.h>
+#include <chrono>
 
 #include "../MiscFunctions.h"
 
@@ -792,6 +793,15 @@ LUA_FUNCTION(Lua_IsaacGetButtonsSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetNanoTime)
+{
+	using clock = std::chrono::high_resolution_clock;
+	auto now = clock::now().time_since_epoch();
+	lua_Integer luaValue = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
+	lua_pushinteger(L, luaValue);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -847,6 +857,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNanoTime", Lua_GetNanoTime);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
