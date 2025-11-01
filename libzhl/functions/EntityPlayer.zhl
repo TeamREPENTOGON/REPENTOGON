@@ -735,6 +735,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	ColorMod _footprintColor1 : 0x1814;
 	ColorMod _footprintColor2 : 0x1840;
 	int _ponyCharge : 0x1874;
+	int _planCKillCountdown : 0x1878;
 	int _epiphoraCharge : 0x1890;
 	uint32_t _deadEyeCharges : 0x189c;
 	uint32_t _deadEyeMisses : 0x18a0;
