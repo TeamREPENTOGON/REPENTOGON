@@ -1,7 +1,7 @@
 version: 1.0.{build}
 only_commits:
   message: "chore: release"
-image: Visual Studio 2022
+image: Previous Visual Studio 2022
 build_script:
 - ps: |
     echo "> git --version"
@@ -42,3 +42,4 @@ deploy:
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=Launcher
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
+
