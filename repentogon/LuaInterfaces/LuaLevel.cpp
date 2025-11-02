@@ -41,8 +41,10 @@ LUA_FUNCTION(Lua_LevelHasPhotoDoor)
 }
 
 LUA_FUNCTION(lua_LevelResetRoomList) {
+	bool unkInitFirstRoom = (bool)lua::luaL_checkboolean(L, 2);
+
 	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->reset_room_list(1);
+	level->reset_room_list(unkInitFirstRoom);
 
 	// Clean up the room list
 	for (size_t i = 0; i < 507; i++)

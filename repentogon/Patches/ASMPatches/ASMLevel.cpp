@@ -134,12 +134,6 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 	super(rng);
 }
 
-//HOOK_METHOD(Level, reset_room_list, (int a) -> void)
-//{
-//	KAGE::_LogMessage(0, "[SEX] Weird value: %d.\n", a);
-//	super(a);
-//}
-
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
 	// Always return true if we forced it via Room:TrySpawnSpecialQuestDoor
 	bool ret = roomASM.ForceSpecialQuestDoor;
