@@ -573,7 +573,7 @@ __thiscall void Entity_Player::RestoreGameState(GameStatePlayer* saveState);
 "558bec83e4f883ec6453568b75":
 __thiscall void Entity_Player::RestoreGameState_PostLevelInit(GameStatePlayer* saveState);
 
-struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc) : public Entity { {{
+struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -802,6 +802,8 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _wildCardItem : 0x2068;
 	bool _isCoopGhost : 0x207d;
 	PlayerHUD* _playerHUD : 0x20a8;
+	bool _hasUnlistedRestoreState : 0x20bc; // States if the _unlistedRestoreState is usable
+	GameStatePlayer _unlistedRestoreState : 0x20c0; // This state represents the state the player was in before being replaced by a player that was not in the player list (this is used by T.Lazarus and Esau Jr.)
 } : 0x2ea0;
 
 "68(????????)68????????f30f59c16a00":

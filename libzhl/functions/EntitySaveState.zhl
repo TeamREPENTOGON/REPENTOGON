@@ -28,7 +28,11 @@ struct EntitySaveState depends (Vector) {
 	unsigned int intStorage8: 0x5c; // 0x5c
 	int8_t byteStorage : 0x60; // 0x60
 
+
 	{{
+		static constexpr size_t EX_SIGNATURE_OFFSET = 0x20; // gridSpawnIdx
+		static constexpr size_t EX_ID = 0x30; // _intStorage7
+
 		struct Bomb;
 		struct Pickup;
 		struct NPC; // FIREPLACE and MOVABLE_TNT only
@@ -68,7 +72,7 @@ struct EntitySaveState depends (Vector) {
 		static inline int* GetSourcePoolType(EntitySaveState& saveState) { return (int*)&saveState.floatStorage1; }
 		static inline float* GetSpriteScale(EntitySaveState& saveState) { return (float*)&saveState.floatStorage2; }
 		static inline std::array<int, 8>* GetCycleCollectibles(EntitySaveState& saveState) { return *(std::array<int, 8>**)((char*)&saveState + 0x64); } // 0 is used as a terminator if < 8
-		static inline EntitySaveState* GetFlipSaveState(EntitySaveState& saveState) { return *(EntitySaveState**)((char*)&saveState + 0x6c); }
+		static inline EntitySaveState* GetFlipSaveState(const EntitySaveState& saveState) { return *(EntitySaveState**)((char*)&saveState + 0x6c); }
 	};
 
 	struct EntitySaveState::Slot
