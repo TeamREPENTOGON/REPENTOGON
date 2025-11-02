@@ -230,20 +230,20 @@ static void __stdcall clear_room_vector() noexcept
 
 static void Patch_RoomRestoreState_ClearVector() noexcept
 {
-   intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_RestoreState_ClearVector);
-   ZHL::Log("[REPENTOGON] Patching Room::RestoreState for SaveStateManagement at %p\n", addr);
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_RestoreState_ClearVector);
+    ZHL::Log("[REPENTOGON] Patching Room::RestoreState for SaveStateManagement at %p\n", addr);
 
-   ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-   ASMPatch patch;
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
 
-   intptr_t resumeAddr = addr + 6;
-   constexpr size_t RESTORED_BYTES = 6;
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
 
-   patch.PreserveRegisters(savedRegisters)
-                   .AddInternalCall(clear_room_vector)
-                   .RestoreRegisters(savedRegisters)
-                   .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
-                   .AddRelativeJump((void*)resumeAddr);
+    patch.PreserveRegisters(savedRegisters)
+        .AddInternalCall(clear_room_vector)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
 
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
@@ -255,20 +255,46 @@ static void __stdcall copy_myosotis_pickups() noexcept
 
 static void Patch_LevelInit_PostMyosotisEffect() noexcept
 {
-   intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Init_PostMyosotisEffect);
-   ZHL::Log("[REPENTOGON] Patching Level::Init for SaveStateManagement at %p\n", addr);
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Init_PostMyosotisEffect);
+    ZHL::Log("[REPENTOGON] Patching Level::Init for SaveStateManagement at %p\n", addr);
 
-   ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-   ASMPatch patch;
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
 
-   intptr_t resumeAddr = addr + 6;
-   constexpr size_t RESTORED_BYTES = 6;
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
 
-   patch.PreserveRegisters(savedRegisters)
-                   .AddInternalCall(copy_myosotis_pickups)
-                   .RestoreRegisters(savedRegisters)
-                   .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
-                   .AddRelativeJump((void*)resumeAddr);
+    patch.PreserveRegisters(savedRegisters)
+        .AddInternalCall(copy_myosotis_pickups)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void __stdcall clear_moving_box_vector(Entity_Player& player) noexcept
+{
+    ClearVector(player._movingBoxContents);
+}
+
+static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_MovingBox_ClearVector);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem for  at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EDI) // player
+        .AddInternalCall(clear_moving_box_vector)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
 
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
@@ -277,36 +303,57 @@ void EntitySaveStateManagement::ApplyPatches()
 {
     Patch_RoomRestoreState_ClearVector();
     Patch_LevelInit_PostMyosotisEffect();
+    Patch_PlayerUseActiveItem_MovingBoxClearVector();
 }
 
 #ifndef NDEBUG
 
 #include "chrono"
 
-static void check_stability()
-{
-    std::vector<bool> checks;
-    checks.resize(s_maxId, false);
+constexpr size_t ESAU_JR_PLAYERS = 4;
 
+static void check_run_stability(std::vector<bool>& checks)
+{
     const Game* game = g_Game;
     const RoomDescriptor* gridRooms = game->_gridRooms;
     size_t roomCount = game->_nbRooms;
-    
+
+    // Check Rooms
     for (size_t i = 0; i < roomCount; i++)
     {
         const RoomDescriptor& room = gridRooms[i];
         check_save_state_vector(checks, room.SavedEntities);
     }
-    
+
     for (size_t i = MAX_GRID_ROOMS; i < MAX_ROOMS; i++)
     {
         const RoomDescriptor& room = gridRooms[i];
         check_save_state_vector(checks, room.SavedEntities);
     }
-    
+
+    const BackwardsStageDesc* backwardsStages = game->_backwardsStages;
+
+    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+    {
+        const BackwardsStageDesc& backwardsStage = backwardsStages[i];
+
+        for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
+        {
+            const RoomDescriptor& room = backwardsStage._bossRooms[j];
+            check_save_state_vector(checks, room.SavedEntities);
+        }
+
+        for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
+        {
+            const RoomDescriptor& room = backwardsStage._treasureRooms[j];
+            check_save_state_vector(checks, room.SavedEntities);
+        }
+    }
+
     const std::vector<EntitySaveState>& myosotisPickups = game->_myosotisPickups;
     check_save_state_vector(checks, myosotisPickups);
 
+    // Check Players
     const PlayerManager& playerManager = game->_playerManager;
     const std::vector<Entity_Player*>& players =  playerManager._playerList;
 
@@ -333,7 +380,6 @@ static void check_stability()
     }
 
     const Entity_Player* const* esauJrStates = playerManager._esauJrState;
-    constexpr size_t ESAU_JR_PLAYERS = 4;
 
     for (size_t i = 0; i < 4; i++)
     {
@@ -357,8 +403,79 @@ static void check_stability()
             check_save_state_vector(checks, unlistedState._movingBoxContents);
         }
     }
+}
 
-    // TODO: Check GameState Ids
+static void check_game_state_stability(const GameState& gameState, std::vector<bool>& checks)
+{
+    const RoomDescriptor* rooms = gameState._rooms;
+    size_t roomCount = gameState._roomCount;
+
+    // Check Rooms
+    for (size_t i = 0; i < roomCount; i++)
+    {
+        const RoomDescriptor& room = rooms[i];
+        check_save_state_vector(checks, room.SavedEntities);
+    }
+
+    for (size_t i = MAX_GRID_ROOMS; i < MAX_ROOMS; i++)
+    {
+        const RoomDescriptor& room = rooms[i];
+        check_save_state_vector(checks, room.SavedEntities);
+    }
+
+    const BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
+
+    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+    {
+        const BackwardsStageDesc& backwardsStage = backwardsStages[i];
+
+        for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
+        {
+            const RoomDescriptor& room = backwardsStage._bossRooms[j];
+            check_save_state_vector(checks, room.SavedEntities);
+        }
+
+        for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
+        {
+            const RoomDescriptor& room = backwardsStage._treasureRooms[j];
+            check_save_state_vector(checks, room.SavedEntities);
+        }
+    }
+
+    // Check Players
+    const GameStatePlayer* players = gameState._players;
+    size_t playerCount = gameState._playerCount;
+
+    for (size_t i = 0; i < playerCount; i++)
+    {
+        const GameStatePlayer& player = players[i];
+        check_save_state_vector(checks, player._movingBoxContents);
+    }
+    
+    const GameStatePlayer* esauJrStates = gameState._esauJrStates;
+
+    for (size_t i = 0; i < ESAU_JR_PLAYERS; i++)
+    {
+        const GameStatePlayer& player = esauJrStates[i];
+        if (player._playerType == -1)
+        {
+            continue;
+        }
+
+        check_save_state_vector(checks, player._movingBoxContents);
+    }
+}
+
+static void check_stability()
+{
+    std::vector<bool> checks;
+    checks.resize(s_maxId, false);
+
+    check_run_stability(checks);
+
+    //check_game_state_stability(g_Manager->_gamestate, checks);
+    //check_game_state_stability(g_Game->_glowingHourglassStates[0]._gameState, checks);
+    //check_game_state_stability(g_Game->_glowingHourglassStates[1]._gameState, checks);
 
     // check reusable ids
     for (uint32_t reusableIdx : s_reusableIds)
