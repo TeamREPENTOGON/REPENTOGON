@@ -3147,6 +3147,20 @@ LUA_FUNCTION(Lua_PlayerSetPlanCKillCountdown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPotatoPillerCounter) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_potatoPeelerCounter);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetPotatoPillerCounter) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_potatoPeelerCounter = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3428,6 +3442,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasCamoEffect", Lua_PlayerHasCamoEffect },
 		{ "GetPlanCKillCountdown", Lua_PlayerGetPlanCKillCountdown },
 		{ "SetPlanCKillCountdown", Lua_PlayerSetPlanCKillCountdown },
+		{ "GetPotatoPillerUses", Lua_PlayerGetPotatoPillerCounter },
+		{ "SetPotatoPillerUses", Lua_PlayerSetPotatoPillerCounter },
 
 		{ NULL, NULL }
 	};
