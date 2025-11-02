@@ -84,6 +84,23 @@ void ASMPatchVoidGeneration() {
 
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
+	const int callbackId = 1193;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId).call(1);
+
+		if (!results) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
 	if (this->_stage == 12)
 	{
 		if (generateLevels.any())
@@ -116,6 +133,12 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 
 	super(rng);
 }
+
+//HOOK_METHOD(Level, reset_room_list, (int a) -> void)
+//{
+//	KAGE::_LogMessage(0, "[SEX] Weird value: %d.\n", a);
+//	super(a);
+//}
 
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
 	// Always return true if we forced it via Room:TrySpawnSpecialQuestDoor
