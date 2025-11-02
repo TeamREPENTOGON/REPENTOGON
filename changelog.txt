@@ -40,6 +40,9 @@ Additions:
 	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
+	- [Get/Set]PlanCKillCountdown
+	- [Get/Set]PotatoPeelerUses
+		Used to increment Cube of Meat familiar form
 	- [Get/Set]RockBottomMoveSpeed
 	- [Get/Set]RockBottomMaxFireDelay
 	- [Get/Set]RockBottomDamage

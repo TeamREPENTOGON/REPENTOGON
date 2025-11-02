@@ -3133,6 +3133,34 @@ LUA_FUNCTION(Lua_PlayerSetFriendBallEnemy) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPlanCKillCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_planCKillCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetPlanCKillCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_planCKillCountdown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetPotatoPeelerCounter) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_potatoPeelerCounter);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetPotatoPeelerCounter) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_potatoPeelerCounter = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3412,6 +3440,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasForcedCamoEffect", Lua_PlayerIsForceCamo },
 		{ "SetForceCamoEffect", Lua_PlayerSetForceCamo },
 		{ "HasCamoEffect", Lua_PlayerHasCamoEffect },
+		{ "GetPlanCKillCountdown", Lua_PlayerGetPlanCKillCountdown },
+		{ "SetPlanCKillCountdown", Lua_PlayerSetPlanCKillCountdown },
+		{ "GetPotatoPeelerUses", Lua_PlayerGetPotatoPeelerCounter },
+		{ "SetPotatoPeelerUses", Lua_PlayerSetPotatoPeelerCounter },
 
 		{ NULL, NULL }
 	};

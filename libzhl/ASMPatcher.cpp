@@ -680,10 +680,10 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 	return AddBytes(result);
 }
 
-ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
+ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate, bool forceimm32) {
 	char opcode = '\xB8';
 	ByteBuffer offset;
-	if (immediate >= -127 && immediate <= 127) {
+	if (!forceimm32 && immediate >= -127 && immediate <= 127) {
 		opcode = '\xB0';
 		offset = ToHexString((int8_t)immediate);
 	}
