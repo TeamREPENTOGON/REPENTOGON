@@ -84,7 +84,7 @@ void ASMPatchVoidGeneration() {
 
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
-	const int callbackId = 1193;
+	const int callbackId = 1340;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
