@@ -50,6 +50,11 @@ static uint32_t GetId(const EntitySaveState& data)
     return data._intStorage7;
 }
 
+static uint32_t SetId(EntitySaveState& data, uint32_t id)
+{
+    return data._intStorage7 = id;
+}
+
 static void ClearSaveId(uint32_t id)
 {
     ClearId(id);
@@ -140,6 +145,19 @@ static void CopyEntity(EntitySaveState& data)
     // copy entity
 }
 
+static void CopyVector(std::vector<EntitySaveState>& saveEntities)
+{
+    for (EntitySaveState& saveState : saveEntities)
+    {
+        assert(IsHijacked(saveState));
+        uint32_t sourceId = GetId(saveState);
+        uint32_t targetId = NewId();
+        SetId(saveState, targetId);
+        s_hijackedStates[targetId] = s_hijackedStates[sourceId];
+        // copy entity (either store entity id and deferr it for later or directly clear it)
+    }
+}
+
 HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savingMinecartEntity) -> bool)
 {
     assert(!IsHijacked(*data)); // these are always newly created so they should not be already hijacked
@@ -157,7 +175,9 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
 HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> void)
 {
     uint32_t id = UnHijack(*data);
+
     super(entity, data);
+
     Hijack(*data, id);
     RestoreEntity(entity, *data, id);
 }
@@ -165,7 +185,15 @@ HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> voi
 HOOK_METHOD(Room, SaveState, () -> void)
 {
     ClearVector(this->_descriptor->SavedEntities);
+
     super();
+}
+
+HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
+{
+    ClearVector(g_Game->_myosotisPickups);
+
+    super(resetLilPortalRoom);
 }
 
 HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
@@ -220,9 +248,35 @@ static void Patch_RoomRestoreState_ClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+static void __stdcall copy_myosotis_pickups() noexcept
+{
+    CopyVector(g_Game->_myosotisPickups);
+}
+
+static void Patch_LevelInit_PostMyosotisEffect() noexcept
+{
+   intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Init_PostMyosotisEffect);
+   ZHL::Log("[REPENTOGON] Patching Level::Init for SaveStateManagement at %p\n", addr);
+
+   ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+   ASMPatch patch;
+
+   intptr_t resumeAddr = addr + 6;
+   constexpr size_t RESTORED_BYTES = 6;
+
+   patch.PreserveRegisters(savedRegisters)
+                   .AddInternalCall(copy_myosotis_pickups)
+                   .RestoreRegisters(savedRegisters)
+                   .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+                   .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void EntitySaveStateManagement::ApplyPatches()
 {
     Patch_RoomRestoreState_ClearVector();
+    Patch_LevelInit_PostMyosotisEffect();
 }
 
 #ifndef NDEBUG
@@ -329,7 +383,7 @@ HOOK_METHOD(Game, Update, () -> void)
     auto end = clock::now();
 
     unsigned long long duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    KAGE::_LogMessage(0, "check_stability time taken: %llu", duration);
+    //KAGE::_LogMessage(0, "check_stability time taken: %llu\n", duration);
 }
 
 #endif

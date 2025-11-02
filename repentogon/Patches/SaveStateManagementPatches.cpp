@@ -584,6 +584,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
 
 void SaveStateManagement::ApplyPatches() noexcept
 {
+    /*
     Patch_LevelInit_MyosotisCopy();
     Patch_LevelGenerateDarkCloset_AddEntry();
     Patch_RoomSaveState_SaveMinecartEntity();
@@ -610,6 +611,7 @@ void SaveStateManagement::ApplyPatches() noexcept
     Patch_EntityPlayerRestoreGameStatePostLevelInit_RestoreFamiliar();
     Patch_EntityPickupHandleCollision_SaveEntity();
     Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom();
+    */
 }
 
 HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
