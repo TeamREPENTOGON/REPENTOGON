@@ -439,7 +439,7 @@ void PatchHudRenderCoins() {
 		.PreserveRegisters(savedRegisters)
 		.AddInternalCall(GetHudCoinsStringFormat)
 		.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX)
-		.MoveImmediate(ASMPatch::Registers::EAX, 0)
+		.MoveImmediate(ASMPatch::Registers::EAX, 0x0, true)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x17);
 	sASMPatcher.PatchAt(addr, &patch);

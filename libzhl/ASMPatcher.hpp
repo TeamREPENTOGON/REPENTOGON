@@ -354,7 +354,7 @@ public:
 	ASMPatch& MoveToMemory(Registers src, int32_t offset, Registers dst);
 
 	/* Move an immediate into a register. */
-	ASMPatch& MoveImmediate(Registers dst, int32_t immediate);
+	ASMPatch& MoveImmediate(Registers dst, int32_t immediate, bool forceimm32 = false);
 
 	/* Copy the value of one register into another.
 	 *

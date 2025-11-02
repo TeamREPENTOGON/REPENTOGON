@@ -157,7 +157,7 @@ static void fix_itempool_getpilleffect()
 
     ASMPatch patch;
     patch.Push(ASMPatch::Registers::EAX)
-        .AddBytes("\xB8\xFF\xFF\xFF\xFF")  //.MoveImmediate(ASMPatch::Registers::EAX, (int32_t)PILLEFFECT_NULL)
+        .MoveImmediate(ASMPatch::Registers::EAX, PILLEFFECT_NULL, true)
         .AddBytes("\x83\xFE").AddBytes(ASMPatch::ToHexString((int8_t)NUM_PILLS))  // CMP ESI,NUM_PILLS
         .AddBytes("\x0F\x43\xF0")  // CMOVAE ESI,EAX
         .Pop(ASMPatch::Registers::EAX)
