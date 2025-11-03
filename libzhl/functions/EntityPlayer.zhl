@@ -564,6 +564,9 @@ __thiscall bool Entity_Player::HasInvincibility(uint64_t damageFlags, EntityRef*
 "558bec6aff68????????64a1????????50b8dc190000":
 __thiscall void Entity_Player::UseActiveItem(short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData);
 
+"558bec83e4f883ec1453568bf157897424":
+__thiscall Entity_Pickup* Entity_Player::DropTrinket(Vector* DropPos, bool ReplaceTick);
+
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }

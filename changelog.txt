@@ -228,6 +228,9 @@ Additions:
 		Fires after a chest opened.
 	- MC_POST_DISCHARGE_ACTIVE_ITEM(CollectibleType, boolean CollectibleRemoved, EntityPlayer, ActiveSlot)
 	- MC_POST_ROOM_TRIGGER_CLEAR(boolean Silent)
+	- MC_POST_PLAYER_DROP_TRINKET(TrinketType, Vector DropPosition, EntityPlayer, boolean IsGolden, boolean ReplaceTick)
+		Optional param : TrinketType
+		Fires after player dropped trinket.
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
