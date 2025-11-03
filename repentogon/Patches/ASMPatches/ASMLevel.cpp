@@ -82,6 +82,7 @@ void ASMPatchVoidGeneration() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+//MC_PRE_GENERATE_DUNGEON(1340)
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
 	const int callbackId = 1340;
@@ -90,7 +91,11 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults results = lua::LuaCaller(L).push(callbackId).call(1);
+		lua::LuaResults results = lua::LuaCaller(L)
+			.push(callbackId)
+			.pushnil()
+			.push(rng, lua::Metatables::RNG)
+			.call(1);
 
 		if (!results) {
 			if (lua_isboolean(L, -1)) {
