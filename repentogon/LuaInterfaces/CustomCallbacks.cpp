@@ -5668,7 +5668,7 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
 			.push(maskedTrinket)
 			.push(maskedTrinket)
-			.push(DropPos, lua::Metatables::VECTOR)
+			.pushUserdataValue(*DropPos, lua::Metatables::VECTOR)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(isGoldenTrinket)
 			.push(ReplaceTick)
