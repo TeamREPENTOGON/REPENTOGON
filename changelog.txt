@@ -106,6 +106,8 @@ Additions:
 * HUD:
 	- GetStackedStreakSprite
 	- GetPlayerStreakSprite
+* Minimap:
+	- Refresh
 * PlayerHUD:
 	- GetIndex
 	- GetLayout
