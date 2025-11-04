@@ -11,6 +11,7 @@
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/PlayerFeatures.h"
 #include "../../Patches/XmlData.h"
+#include "../../Patches/ItemSpoofSystem.h"
 
 #include <algorithm>
 
@@ -157,7 +158,11 @@ LUA_FUNCTION(Lua_HasCollectible) {
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState = false;
 	}
+
+	ItemSpoofSystem::StartLuaRequest();
 	outbool = player->HasCollectible(itemID,ignoreModifiers);
+	ItemSpoofSystem::EndLuaRequest();
+
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState = true;
 	}
@@ -175,7 +180,11 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState=false;
 	}
+
+	ItemSpoofSystem::StartLuaRequest();
 	outnum = player->GetCollectibleNum(itemID, onlyCountTrueItems);
+	ItemSpoofSystem::EndLuaRequest();
+
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState = true;
 	}
@@ -2556,6 +2565,29 @@ LUA_FUNCTION(Lua_PlayerHasGoldenTrinket) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerHasTrinket) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
+
+	ItemSpoofSystem::StartLuaRequest();
+	lua_pushboolean(L, player->HasTrinket(trinket, ignoreModifiers));
+	ItemSpoofSystem::EndLuaRequest();
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTrinketMultiplier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+
+	ItemSpoofSystem::StartLuaRequest();
+	lua_pushinteger(L, player->GetTrinketMultiplier(trinket));
+	ItemSpoofSystem::EndLuaRequest();
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerGetHallowedGroundCountdown) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_hallowedGroundCountdown);
@@ -3386,6 +3418,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
 		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
+		{ "HasTrinket", Lua_PlayerHasTrinket },
+		{ "GetTrinketMultiplier", Lua_PlayerGetTrinketMultiplier },
 		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },

@@ -5647,3 +5647,33 @@ HOOK_STATIC(LuaEngine, PostEntityKill, (Entity* ent) -> void, __stdcall) {
 			.call(1);
 	}
 }
+
+//MC_POST_PLAYER_DROP_TRINKET (id : 1144)
+HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> Entity_Pickup*) {
+	Entity_Pickup* retTrinket = super(DropPos, ReplaceTick);
+
+	const int callbackid = 1144;
+
+	if (retTrinket && CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		const int trinketID = retTrinket->_subtype;
+
+		bool isGoldenTrinket = (trinketID & TrinketType::TRINKET_GOLDEN_FLAG) > 0;
+		const int maskedTrinket = trinketID & TrinketType::TRINKET_ID_MASK;
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(maskedTrinket)
+			.push(maskedTrinket)
+			.pushUserdataValue(*DropPos, lua::Metatables::VECTOR)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(isGoldenTrinket)
+			.push(ReplaceTick)
+			.call(1);
+	}
+
+	return retTrinket;
+}

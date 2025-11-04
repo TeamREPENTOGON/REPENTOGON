@@ -573,6 +573,9 @@ __thiscall void Entity_Player::RestoreGameState(GameStatePlayer* saveState);
 "558bec83e4f883ec6453568b75":
 __thiscall void Entity_Player::RestoreGameState_PostLevelInit(GameStatePlayer* saveState);
 
+"558bec83e4f883ec1453568bf157897424":
+__thiscall Entity_Pickup* Entity_Player::DropTrinket(Vector* DropPos, bool ReplaceTick);
+
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
