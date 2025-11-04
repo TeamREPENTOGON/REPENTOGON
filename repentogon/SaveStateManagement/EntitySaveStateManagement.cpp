@@ -55,20 +55,19 @@ static uint32_t SetId(EntitySaveState& data, uint32_t id)
     return data._intStorage7 = id;
 }
 
-static void ClearSaveId(uint32_t id)
+static void ClearSaveState(const EntitySaveState& saveState)
 {
+    assert(IsHijacked(saveState));
+    uint32_t id = GetId(saveState);
     ClearId(id);
-    // clear entity
+    // clear entity (either store entity id and deferr it for later or directly clear it)
 }
 
 static void ClearVector(const std::vector<EntitySaveState>& saveEntities)
 {
     for (const EntitySaveState& saveState : saveEntities)
     {
-        assert(IsHijacked(saveState));
-        uint32_t id = GetId(saveState);
-        ClearId(id);
-        // clear entity (either store entity id and deferr it for later or directly clear it)
+        ClearSaveState(saveState);
     }
 }
 
@@ -101,74 +100,118 @@ static uint32_t UnHijack(EntitySaveState& data)
     return id;
 }
 
-static void check_entity(std::vector<bool>& checks, const EntitySaveState& saveState)
+static void check_save_state(std::vector<uintptr_t>& checks, const EntitySaveState& saveState)
 {
     assert(IsHijacked(saveState)); // some entity was not hijacked
     uint32_t id = GetId(saveState);
     assert(id < s_maxId); // this is really messed up
 
-    assert(!checks[id]); // there is an unaccounted duplicate
-    checks[id] = true;
-
-    const EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(saveState);
-    if (!flipState)
+    uintptr_t checkPtr = checks[id];
+    uintptr_t saveStatePtr = (uintptr_t)&saveState;
+    if (checkPtr == saveStatePtr)
     {
         return;
     }
 
-    assert(IsHijacked(*flipState)); // some entity was not hijacked
-    id = GetId(*flipState);
-    assert(id < s_maxId); // this is really messed up
-    checks[id] = true; // this can be duplicate due to how the game is coded
-}
+    assert(checkPtr == 0); // there is an unaccounted duplicate
+    checks[id] = saveStatePtr;
 
-static void check_save_state_vector(std::vector<bool>& checks, const std::vector<EntitySaveState>& saveStates)
-{
-    for (const EntitySaveState& saveState : saveStates)
+    const EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(saveState);
+    if (flipState)
     {
-        check_entity(checks, saveState);
+        check_save_state(checks, *flipState);
     }
 }
 
-static void SaveEntity(Entity* entity, EntitySaveState& data, uint32_t id)
+static void check_save_state_vector(std::vector<uintptr_t>& checks, const std::vector<EntitySaveState>& saveStates)
+{
+    for (const EntitySaveState& saveState : saveStates)
+    {
+        check_save_state(checks, saveState);
+    }
+}
+
+static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id)
 {
     // save entity
 }
 
-static void RestoreEntity(Entity* entity, EntitySaveState& data, uint32_t id)
+static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
 {
     // restore entity
 }
 
-static void CopyEntity(EntitySaveState& data)
+static void CopySaveState(EntitySaveState& saveState)
 {
-    // copy entity
+    assert(IsHijacked(saveState));
+    uint32_t sourceId = GetId(saveState);
+    uint32_t targetId = NewId();
+    SetId(saveState, targetId);
+    s_hijackedStates[targetId] = s_hijackedStates[sourceId];
 }
 
 static void CopyVector(std::vector<EntitySaveState>& saveEntities)
 {
     for (EntitySaveState& saveState : saveEntities)
     {
-        assert(IsHijacked(saveState));
-        uint32_t sourceId = GetId(saveState);
-        uint32_t targetId = NewId();
-        SetId(saveState, targetId);
-        s_hijackedStates[targetId] = s_hijackedStates[sourceId];
+        CopySaveState(saveState);
         // copy entity (either store entity id and deferr it for later or directly clear it)
     }
 }
 
+static std::pair<Entity*, EntitySaveState*> s_minecartEntity = {nullptr, nullptr};
+
 HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savingMinecartEntity) -> bool)
 {
+    std::pair<Entity*, EntitySaveState*> minecartEntity = s_minecartEntity;
+    s_minecartEntity.first = nullptr; s_minecartEntity.second = nullptr;
+
     assert(!IsHijacked(*data)); // these are always newly created so they should not be already hijacked
     bool saved = super(entity, data, savingMinecartEntity);
 
-    if (saved)
+    if (!saved)
     {
-        uint32_t id = NewHijack(*data);
-        SaveEntity(entity, *data, id);
+        if (minecartEntity.first)
+        {
+            assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
+            EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
+            if (flipState)
+            {
+                UnHijack(*flipState);
+            }
+        }
+
+        return false;
     }
 
+    if (savingMinecartEntity)
+    {
+        s_minecartEntity.first = entity;
+        s_minecartEntity.second = data;
+        return true;
+    }
+
+    if (minecartEntity.first)
+    {
+        assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
+        EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
+        if (flipState)
+        {
+            CopySaveState(*flipState);
+        }
+
+        uint32_t id = NewHijack(*minecartEntity.second);
+        SaveEntity(*minecartEntity.first, *minecartEntity.second, id);
+    }
+
+    EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*data);
+    if (flipState)
+    {
+        CopySaveState(*flipState);
+    }
+
+    uint32_t id = NewHijack(*data);
+    SaveEntity(*entity, *data, id);
     return saved;
 }
 
@@ -179,7 +222,7 @@ HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> voi
     super(entity, data);
 
     Hijack(*data, id);
-    RestoreEntity(entity, *data, id);
+    RestoreEntity(*entity, *data, id);
 }
 
 HOOK_METHOD(Room, SaveState, () -> void)
@@ -222,7 +265,7 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
     super(resetLilPortalRoom);
 }
 
-static void __stdcall clear_room_vector() noexcept
+static void __stdcall asm_clear_room_vector() noexcept
 {
     RoomDescriptor& room = *g_Game->_room->_descriptor;
     ClearVector(room.SavedEntities);
@@ -240,7 +283,7 @@ static void Patch_RoomRestoreState_ClearVector() noexcept
     constexpr size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
-        .AddInternalCall(clear_room_vector)
+        .AddInternalCall(asm_clear_room_vector)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .AddRelativeJump((void*)resumeAddr);
@@ -248,7 +291,7 @@ static void Patch_RoomRestoreState_ClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall copy_myosotis_pickups() noexcept
+static void __stdcall asm_copy_myosotis_pickups() noexcept
 {
     CopyVector(g_Game->_myosotisPickups);
 }
@@ -265,7 +308,7 @@ static void Patch_LevelInit_PostMyosotisEffect() noexcept
     constexpr size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
-        .AddInternalCall(copy_myosotis_pickups)
+        .AddInternalCall(asm_copy_myosotis_pickups)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .AddRelativeJump((void*)resumeAddr);
@@ -273,7 +316,7 @@ static void Patch_LevelInit_PostMyosotisEffect() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall clear_moving_box_vector(Entity_Player& player) noexcept
+static void __stdcall asm_clear_moving_box_vector(Entity_Player& player) noexcept
 {
     ClearVector(player._movingBoxContents);
 }
@@ -291,7 +334,7 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
 
     patch.PreserveRegisters(savedRegisters)
         .Push(ASMPatch::Registers::EDI) // player
-        .AddInternalCall(clear_moving_box_vector)
+        .AddInternalCall(asm_clear_moving_box_vector)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .AddRelativeJump((void*)resumeAddr);
@@ -299,20 +342,128 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+// use fastcall to emulate thiscall
+static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState) noexcept
+{
+    if (IsHijacked(*saveState))
+    {
+        uint32_t id = GetId(*saveState);
+        ClearSaveState(*saveState);
+        //KAGE::_LogMessage(0, "[ESM] Smart pointer Cleared: %u\n", id);
+    }
+
+    saveState->destructor();
+}
+
+static void Patch_ReferenceCount_EntitySaveStateDestructor() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::KAGE_ReferenceCount_EntitySaveState_DecrementReference_SaveStateDestructor);
+    ZHL::Log("[REPENTOGON] Patching KAGE::ReferenceCount<EntitySaveState>::DecrementReference for SaveStateManagement at %p\n", addr);
+
+    ASMPatch patch;
+    patch.AddInternalCall(asm_clear_smart_pointer);
+
+    sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState) noexcept
+{
+    uint32_t id = NewHijack(saveState);
+    //KAGE::_LogMessage(0, "[ESM] New Flip State: %u\n", id);
+}
+
+static void Patch_PickupInitFlipState_CreateSaveState() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_InitFlipState_PostSaveStateConstructor);
+    ZHL::Log("[REPENTOGON] Patching Entity_Pickup::InitFlipState for SaveStateManagent at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EAX) // arg
+        .AddInternalCall(asm_hijack_new_flip_state)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState) noexcept
+{
+    RestoreEntity(entity, saveState, GetId(saveState));
+}
+
+static void Patch_PickupTryFlip_RestoreFlipState() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_TryFlip_PostRestoreFlipState);
+    ZHL::Log("[REPENTOGON] Patching Entity_Pickup::TryFlip for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 4;
+    constexpr size_t JNZ_OP_CODE_SIZE = 2;
+    constexpr intptr_t JNZ_OFFSET = 4;
+    intptr_t relativeJmpAddr = addr + (intptr_t)RESTORED_BYTES + (intptr_t)JNZ_OP_CODE_SIZE + JNZ_OFFSET;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EDI) // saveState
+        .Push(ASMPatch::Registers::ESI) // entity
+        .AddInternalCall(asm_flip_restore)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)relativeJmpAddr)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void EntitySaveStateManagement::ApplyPatches()
 {
+    Patch_ReferenceCount_EntitySaveStateDestructor();
     Patch_RoomRestoreState_ClearVector();
     Patch_LevelInit_PostMyosotisEffect();
     Patch_PlayerUseActiveItem_MovingBoxClearVector();
+    Patch_PickupInitFlipState_CreateSaveState();
+    Patch_PickupTryFlip_RestoreFlipState();
 }
 
 #ifndef NDEBUG
 
 #include "chrono"
 
+constexpr size_t MAX_PICKUPS = 512;
 constexpr size_t ESAU_JR_PLAYERS = 4;
 
-static void check_run_stability(std::vector<bool>& checks)
+static void check_entity_list_stability(std::vector<size_t>& checks)
+{
+    const EntityFactory* factory = g_Game->_entityFactory;
+    const Entity_Pickup* pickups = factory->_pickup;
+    
+    for (size_t i = 0; i < MAX_PICKUPS; i++)
+    {
+        const Entity_Pickup& pickup = pickups[i];
+        // if not added to list
+        if (!pickup._valid)
+        {
+            continue;
+        }
+
+        const EntitySaveState* flipState = pickup._flipSaveState.saveState;
+        if (flipState)
+        {
+            check_save_state(checks, *flipState);
+        }
+    }
+}
+
+static void check_run_stability(std::vector<uintptr_t>& checks)
 {
     const Game* game = g_Game;
     const RoomDescriptor* gridRooms = game->_gridRooms;
@@ -405,7 +556,7 @@ static void check_run_stability(std::vector<bool>& checks)
     }
 }
 
-static void check_game_state_stability(const GameState& gameState, std::vector<bool>& checks)
+static void check_game_state_stability(const GameState& gameState, std::vector<uintptr_t>& checks)
 {
     const RoomDescriptor* rooms = gameState._rooms;
     size_t roomCount = gameState._roomCount;
@@ -468,25 +619,25 @@ static void check_game_state_stability(const GameState& gameState, std::vector<b
 
 static void check_stability()
 {
-    std::vector<bool> checks;
-    checks.resize(s_maxId, false);
+    std::vector<size_t> checks;
+    checks.resize(s_maxId, 0);
+    
+    // will trigger a duplicate if it's still being used
+    for (uint32_t reusableIdx : s_reusableIds)
+    {
+        checks[reusableIdx] = 1;
+    }
 
+    check_entity_list_stability(checks);
     check_run_stability(checks);
 
     //check_game_state_stability(g_Manager->_gamestate, checks);
     //check_game_state_stability(g_Game->_glowingHourglassStates[0]._gameState, checks);
     //check_game_state_stability(g_Game->_glowingHourglassStates[1]._gameState, checks);
 
-    // check reusable ids
-    for (uint32_t reusableIdx : s_reusableIds)
+    for (uintptr_t check : checks)
     {
-        assert(!checks[reusableIdx]); // something is using a reusable id (Usually caused by either an Incorrect Clear, or a missed Copy)
-        checks[reusableIdx] = true;
-    }
-
-    for (bool check : checks)
-    {
-        assert(check); // one of the ids was not accounted for (Usually caused by missed Clear)
+        assert(check != 0); // one of the ids was not accounted for (Usually caused by missed Clear)
     }
 }
 
