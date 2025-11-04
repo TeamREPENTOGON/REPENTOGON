@@ -97,7 +97,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 	DungeonGenerator* generator = new DungeonGenerator();
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
-		.pushnil()
+		.push(dungeonType)
 		.push(generator, lua::metatables::DungeonGeneratorMT)
 		.push(rng, lua::Metatables::RNG)
 		.call(1);
@@ -139,7 +139,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
-	bool skip = ProcessGenerateDungeonCallback(this, rng, 1);
+	bool skip = ProcessGenerateDungeonCallback(this, rng, 0);
 	if (skip) {
 		return;
 	}
@@ -177,16 +177,25 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 	super(rng);
 }
 
-HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
+HOOK_METHOD(Level, generate_blue_womb, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 1);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
 	bool skip = ProcessGenerateDungeonCallback(this, NULL, 2);
 	if (skip) {
 		return;
 	}
-	
+
 	super();
 }
 
-HOOK_METHOD(Level, generate_blue_womb, () -> void) {
+HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
 	bool skip = ProcessGenerateDungeonCallback(this, NULL, 3);
 	if (skip) {
 		return;
@@ -204,17 +213,8 @@ HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
 	super();
 }
 
-HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 5);
-	if (skip) {
-		return;
-	}
-
-	super();
-}
-
 HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 6);
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 5);
 	if (skip) {
 		return;
 	}

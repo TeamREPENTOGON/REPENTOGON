@@ -3082,6 +3082,14 @@ UseActiveItemResultFlag = {
 	REMOVE = 1 << 8,
 }
 
+GenerateDungeonType = {
+	NORMAL = 0,
+	BLUE_WOMB = 1,
+	BACKWARDS = 2,
+	HOME = 3,
+	RED_REDEMPTION = 4,
+	GREED = 5
+}
 
 --deprecated enums
 
