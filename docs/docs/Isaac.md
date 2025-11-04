@@ -23,6 +23,14 @@ Same as vanilla, but much faster.
 ___
 ## Functions
 
+### GetNanoTime () {: aria-label='Functions'}
+#### int GetNanoTime ( ) {: .copyable aria-label='Functions' }
+Returns a high-resolution timestamp in nanoseconds. Useful for evaluating the performance cost of functions in a non-test environment or for high-precision clocks.
+
+???- info "Note"
+	The clock is precise enough to detect the time that passed between two subsequent calls of `Isaac.GetNanoTime()`
+
+___
 ### AllMarksFilled () {: aria-label='Functions' }
 #### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all marks and returns an integer representing the highest difficulty it was accomplished in.
@@ -355,6 +363,25 @@ ___
 ### SetWindowTitle () {: aria-label='Functions' }
 #### void SetWindowTitle ( string Title ) {: .copyable aria-label='Functions' }
 Sets the appended text on the game's window title.
+
+___
+### ReworkCollectible () {: aria-label='Functions' }
+#### void ReworkCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectible ) {: .copyable aria-label='Functions' }
+Marks the collectible as reworked, making the game not execute the item's original passive logic.
+Can only be set during mod load.
+**NOTE** Does not prevent the UseActiveItem logic from running.
+
+___
+### ReworkBirthright () {: aria-label='Functions' }
+#### void ReworkBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playerType ) {: .copyable aria-label='Functions' }
+Marks the player's birthright as reworked, making the game not execute the item's original passive logic.
+Can only be set during mod load.
+
+___
+### ReworkTrinket () {: aria-label='Functions' }
+#### void ReworkTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) trinket ) {: .copyable aria-label='Functions' }
+Marks the trinket as reworked, making the game not execute the trinket's original passive logic.
+Can only be set during mod load.
 
 ___
 ### ShowErrorDialog () {: aria-label='Functions' }
