@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
+#include "../Patches/ItemSpoofSystem.h"
 
 #include "Windows.h"
 #include <string>
@@ -13,8 +14,20 @@
 
 #include "../MiscFunctions.h"
 
+constexpr uint32_t CONSOLE_COLOR_WARN = 0xFFFCCA03;
+
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
+
+static bool s_modsLoaded = false;
+
+// make it so that the MC_POST_MODS_LOADED callback runs before marking mods as loaded
+HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -1, () -> void)
+{
+	s_modsLoaded = false;
+	super();
+	s_modsLoaded = true;
+}
 
 LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
@@ -802,6 +815,60 @@ LUA_FUNCTION(Lua_GetNanoTime)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ReworkCollectible)
+{
+	int collectible = (int)luaL_checkinteger(L, 1);
+	if (!(CollectibleType::COLLECTIBLE_NULL < collectible && collectible < CollectibleType::NUM_COLLECTIBLES))
+	{
+		return luaL_argerror(L, 1, "invalid CollectibleType");
+	}
+	
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkCollectible() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkCollectible(collectible);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ReworkBirthright)
+{
+	int playerType = (int)luaL_checkinteger(L, 1);
+	if (!(0 <= playerType && playerType < ePlayerType::NUM_PLAYER_TYPES))
+	{
+		return luaL_argerror(L, 1, "invalid PlayerType");
+	}
+
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkBirthright(playerType);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ReworkTrinket)
+{
+	int trinket = (int)luaL_checkinteger(L, 1);
+	if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
+	{
+		return luaL_argerror(L, 1, "invalid TrinketType");
+	}
+
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkTrinket() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkTrinket(trinket);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -858,6 +925,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNanoTime", Lua_GetNanoTime);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkCollectible", Lua_ReworkCollectible);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkBirthright", Lua_ReworkBirthright);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkTrinket", Lua_ReworkTrinket);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);

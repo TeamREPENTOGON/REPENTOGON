@@ -96,6 +96,13 @@ Additions:
 	- GetRandomTrinketOwner
 * Isaac:
 	- GetButtonsSprite
+	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
+	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
+	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
+	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
+	- ReworkCollectible(Collectible): marks the collectible as reworked, making the game not execute the item's original logic.
+	- ReworkBirthright(PlayerType): marks the birthright as reworked, making the game not execute the item's original logic.
+	- ReworkTrinket(Trinket): marks the trinket as reworked, making the game not execute the trinket's original logic.
 * ItemPool:
 	- AddCollectible
 	- AddTemporaryCollectible
@@ -117,6 +124,7 @@ Additions:
 	- GetTriggerChanceScale
 * Room:
 	- TriggerOutput(RoomEventOutput GroupIdx)
+	- GetWallColor()
 * RoomConfig:
 	- AddRooms
 * RoomConfigSet:
@@ -242,13 +250,6 @@ Additions:
 	- EvaluateStatStage
 	- SplitTearType
 	- UseActiveItemResultFlag
-* Room:
-	- GetWallColor()
-* Isaac:
-	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
-	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
-	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
-	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
 * Options:
 	- AimLockEnabled
 	- AscentVoiceOver
