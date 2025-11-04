@@ -40,30 +40,6 @@ LUA_FUNCTION(Lua_LevelHasPhotoDoor)
 	return 1;
 }
 
-LUA_FUNCTION(lua_LevelResetRoomList) {
-	bool unkInitFirstRoom = (bool)lua::luaL_checkboolean(L, 2);
-
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->reset_room_list(unkInitFirstRoom);
-
-	// Clean up the room list
-	for (size_t i = 0; i < 507; i++)
-	{
-		g_Game->_roomOffset[i] = -1;
-	}
-
-	// Clean up the number of rooms
-	g_Game->_nbRooms = 0;
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_LevelSetLastBossRoomListIndex) {
-	int listIndex = (int)luaL_checkinteger(L, 2);
-	g_Game->_lastBossRoomListIdx = listIndex;
-	return 1;
-}
-
 static std::string CustomStageName;
 
 LUA_FUNCTION(lua_LevelSetName) {
@@ -395,9 +371,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "FindValidRoomPlacementLocations", Lua_LevelFindValidRoomPlacementLocations },
 		{ "GetNeighboringRooms", Lua_LevelGetNeighboringRooms },
 		{ "GetGenerationRNG", Lua_LevelGetGenerationRNG },
-
-		{ "ResetRoomList", lua_LevelResetRoomList },
-		{ "SetLastBossRoomListIndex", lua_LevelSetLastBossRoomListIndex },
 
 		{ NULL, NULL }
 	};

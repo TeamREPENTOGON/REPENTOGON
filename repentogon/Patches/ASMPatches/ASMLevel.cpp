@@ -5,6 +5,7 @@
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
+#include "../../LuaInterfaces/LuaDungeonGenerator.h"
 
 std::bitset<36> generateLevels;
 
@@ -86,20 +87,59 @@ void ASMPatchVoidGeneration() {
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
 	const int callbackId = 1340;
-	if (CallbackState.test(callbackId - 1000)) {
+	if (CallbackState.test(callbackId - 1000))
+	{
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		DungeonGenerator generator = {};
+		KAGE::_LogMessage(0, "[SEX] Before callback: %d \n", generator.a);
 
 		lua::LuaResults results = lua::LuaCaller(L)
 			.push(callbackId)
 			.pushnil()
 			.push(rng, lua::Metatables::RNG)
+			.push(&generator, lua::metatables::DungeonGeneratorMT)
 			.call(1);
 
-		if (!results) {
-			if (lua_isboolean(L, -1)) {
-				if (lua_toboolean(L, -1)) {
+		KAGE::_LogMessage(0, "[SEX] After callback: %d \n", generator.a);
+
+		if (!results)
+		{
+			if (lua_isboolean(L, -1))
+			{
+				if (lua_toboolean(L, -1))
+				{
+					this->reset_room_list(false);
+
+					// Clean up the room list
+					for (size_t i = 0; i < 507; i++)
+					{
+						g_Game->_roomOffset[i] = -1;
+					}
+
+					// Clean up the number of rooms
+					g_Game->_nbRooms = 0;
+
+					for (size_t i = 0; i < 169; i++)
+					{
+						DungeonGeneratorRoom generator_room = generator.rooms[i];
+
+						if (generator_room.room != NULL) {
+							LevelGenerator_Room* level_generator_room = new LevelGenerator_Room();
+							level_generator_room->_gridColIdx = generator_room.col;
+							level_generator_room->_gridLineIdx = generator_room.row;
+							level_generator_room->_doors = 15;
+
+							g_Game->PlaceRoom(level_generator_room, generator_room.room, generator_room.seed, 0);
+
+							if (generator_room.is_final_boss) {
+								g_Game->_lastBossRoomListIdx = i;
+							}
+						}
+					}
+
 					return;
 				}
 			}
