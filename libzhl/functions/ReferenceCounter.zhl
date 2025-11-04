@@ -6,7 +6,7 @@ struct KAGE_ReferenceCount_ImageBase depends (KAGE_System_Mutex) {
     KAGE_Graphics_ImageBase* image : 0x14; // 0x14
 } : 0x18; // 0x18
 
-struct KAGE_SmartPointer_EntitySaveState depends (KAGE_System_Mutex) {
+struct KAGE_ReferenceCount_EntitySaveState depends (KAGE_System_Mutex) {
     void* vtable: 0x0; // 0x0
     uint16_t strong : 0x4; // 0x4
     uint16_t weak : 0x6; // 0x6
