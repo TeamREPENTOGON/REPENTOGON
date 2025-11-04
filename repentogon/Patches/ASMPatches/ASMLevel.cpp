@@ -93,17 +93,13 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		DungeonGenerator generator = {};
-		KAGE::_LogMessage(0, "[SEX] Before callback: %d \n", generator.a);
-
+		DungeonGenerator* generator = new DungeonGenerator();
 		lua::LuaResults results = lua::LuaCaller(L)
 			.push(callbackId)
 			.pushnil()
 			.push(rng, lua::Metatables::RNG)
-			.push(&generator, lua::metatables::DungeonGeneratorMT)
+			.push(generator, lua::metatables::DungeonGeneratorMT)
 			.call(1);
-
-		KAGE::_LogMessage(0, "[SEX] After callback: %d \n", generator.a);
 
 		if (!results)
 		{
@@ -122,9 +118,9 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 					// Clean up the number of rooms
 					g_Game->_nbRooms = 0;
 
-					for (size_t i = 0; i < 169; i++)
+					for (size_t i = 0; i < generator->num_rooms; i++)
 					{
-						DungeonGeneratorRoom generator_room = generator.rooms[i];
+						DungeonGeneratorRoom generator_room = generator->rooms[i];
 
 						if (generator_room.room != NULL) {
 							LevelGenerator_Room* level_generator_room = new LevelGenerator_Room();
@@ -135,7 +131,10 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 							g_Game->PlaceRoom(level_generator_room, generator_room.room, generator_room.seed, 0);
 
 							if (generator_room.is_final_boss) {
+								KAGE::_LogMessage(0, "[SEX] Setting boss room %d\n", i);
 								g_Game->_lastBossRoomListIdx = i;
+							} else {
+								KAGE::_LogMessage(0, "[SEX] Not Setting boss room %d\n", i);
 							}
 						}
 					}
