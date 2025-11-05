@@ -15,6 +15,7 @@
 #include "../Patches/MainMenuBlock.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/EntityPlus.h"
+#include "LuaDungeonGenerator.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -5646,4 +5647,114 @@ HOOK_STATIC(LuaEngine, PostEntityKill, (Entity* ent) -> void, __stdcall) {
 			.push(lastSource, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
+}
+
+
+//MC_PRE_GENERATE_DUNGEON(1340)
+bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
+	const int callbackId = 1340;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return false;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	DungeonGenerator* generator = new DungeonGenerator();
+	lua::LuaResults results = lua::LuaCaller(L)
+		.push(callbackId)
+		.push(dungeonType)
+		.push(generator, lua::metatables::DungeonGeneratorMT)
+		.push(rng, lua::Metatables::RNG)
+		.call(1);
+
+	if (results || !lua_isboolean(L, -1) || !lua_toboolean(L, -1))
+	{
+		return false;
+	}
+
+	level->reset_room_list(false);
+
+	for (size_t i = 0; i < 507; i++)
+	{
+		g_Game->_roomOffset[i] = -1;
+	}
+
+	g_Game->_nbRooms = 0;
+
+	for (size_t i = 0; i < generator->num_rooms; i++)
+	{
+		DungeonGeneratorRoom generator_room = generator->rooms[i];
+
+		if (generator_room.room != NULL) {
+			LevelGenerator_Room* level_generator_room = new LevelGenerator_Room();
+			level_generator_room->_gridColIdx = generator_room.col;
+			level_generator_room->_gridLineIdx = generator_room.row;
+			level_generator_room->_doors = 15;
+
+			g_Game->PlaceRoom(level_generator_room, generator_room.room, generator_room.seed, 0);
+
+			if (generator_room.is_final_boss) {
+				g_Game->_lastBossRoomListIdx = i;
+			}
+		}
+	}
+
+	return true;
+}
+
+HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
+{
+	bool skip = ProcessGenerateDungeonCallback(this, rng, 0);
+	if (skip) {
+		return;
+	}
+
+	super(rng);
+}
+
+HOOK_METHOD(Level, generate_blue_womb, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 1);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 2);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 3);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 4);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, NULL, 5);
+	if (skip) {
+		return;
+	}
+
+	super();
 }
