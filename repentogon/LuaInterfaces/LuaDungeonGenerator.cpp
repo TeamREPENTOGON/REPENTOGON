@@ -9,7 +9,7 @@ DungeonGenerator* GetDungeonGenerator(lua_State* L) {
 	return *lua::GetRawUserdata<DungeonGenerator**>(L, 1, lua::metatables::DungeonGeneratorMT);
 }
 
-LUA_FUNCTION(place_room) {
+LUA_FUNCTION(Lua_PlaceRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 3);
@@ -26,7 +26,7 @@ LUA_FUNCTION(place_room) {
 	return 1;
 }
 
-LUA_FUNCTION(set_final_boss_room) {
+LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 2);
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
@@ -50,8 +50,8 @@ LUA_FUNCTION(set_final_boss_room) {
 
 static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
-		{"PlaceRoom", place_room},
-		{"SetFinalBossRoom", set_final_boss_room},
+		{"PlaceRoom", Lua_PlaceRoom},
+		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
 		{ NULL, NULL }
 	};
 
