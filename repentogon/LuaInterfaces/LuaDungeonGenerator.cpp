@@ -21,6 +21,8 @@ LUA_FUNCTION(place_room) {
 
 	generator->num_rooms++;
 
+	lua_pushboolean(L, true);
+
 	return 1;
 }
 
@@ -43,7 +45,7 @@ LUA_FUNCTION(set_final_boss_room) {
 		}
 	}
 
-	return 1;
+	return 0;
 }
 
 static void RegisterDungeonGenerator(lua_State* L) {
