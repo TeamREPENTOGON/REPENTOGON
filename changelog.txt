@@ -129,6 +129,10 @@ Additions:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
+* ScoreSheet:
+	- GetBeastBonus
+	- GetDeliriumBonus
+	- GetMotherBonus
 * Seeds:
 	- SetStageSeed(LevelStage, Seed)
 * FXLayers:
