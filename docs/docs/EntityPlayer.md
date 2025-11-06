@@ -633,9 +633,18 @@ ___
 Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
 
 ___
+### GetPlanCKillCountdown () {: aria-label='Functions' }
+#### int GetPlanCKillCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 Returns the attack duration of the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+
+___
+### GetPotatoPeelerUses () {: aria-label='Functions' }
+#### int GetPotatoPeelerUses ( ) {: .copyable aria-label='Functions' }
+Used to increment [Cube of Meat](https://bindingofisaacrebirth.wiki.gg/wiki/Cube_of_Meat) familiar form.
 
 ___
 ### GetPlayerFormCounter () {: aria-label='Functions' }
@@ -1257,6 +1266,14 @@ ___
 ### SetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### void SetNextUrethraBlockFrame ( int Frame ) {: .copyable aria-label='Functions' }
 Sets the frame at which the player stops shooting and starts charging the Kidney Stone item.
+
+___
+### SetPlanCKillCountdown () {: aria-label='Functions' }
+#### void SetPlanCKillCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetPotatoPeelerUses () {: aria-label='Functions' }
+#### void SetPotatoPeelerUses ( int Amount ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPonyCharge () {: aria-label='Functions' }
