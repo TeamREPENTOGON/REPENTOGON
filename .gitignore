@@ -553,3 +553,6 @@ libzhl/IsaacRepentance.cpp
 updater/updater.rc
 updater_rsrc
 include/hooks.json
+
+docs/site
+docs/trace.json

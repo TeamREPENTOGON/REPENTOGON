@@ -8,6 +8,45 @@ extra:
   version:
     default: rep
     provider: mike
+  home:
+    tagline: A new era for Isaac modding begins now.
+    button1_icon: ''
+    button1_name: Install
+    button1_theme: md-button md-button--primary
+    button1_url: install.html
+    button2_name: Docs
+    button2_theme: md-button
+    button2_url: docs.html
+#    button3_name: Blog
+#    button3_theme: md-button
+#    button3_url: blog/index.html
+    cover_image: img/repentoMEGA.gif
+    description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
+     Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
+     on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
+     and performance enhancements. This is analogous to a "script extender" for other
+     games like Skyrim.
+
+     <br>
+
+     <br>
+
+     REPENTOGON is the result of thousands of hours of combined work by over a dozen
+     modders responsible for some of the most popular mods for Isaac. Frustrated with
+     the shortcomings of the API, we''ve decided to take matters into our own hands.
+
+     <br>
+
+     <br>
+
+     Thanks to our changes to the API, you can expect mods to run faster out of the box,
+     and our extra features empower mod developers to push the performance envelope for
+     mods further than ever before. Furthermore, highly requested features that were
+     previously impossible for a traditional mod, such as completion marks for modded
+     characters on the main menu and Devil and Planetarium room chance manipulation,
+     are all here. <strike>We even added 30+ rideable dragons!</strike>
+
+     '
 extra_css:
 - css/custom.css
 extra_javascript:
@@ -16,44 +55,6 @@ extra_javascript:
 - js/tablesort.number.min.js
 - js/customJS.js
 - js/jquery.mark.min.js
-home_button1_icon: ''
-home_button1_name: Install
-home_button1_theme: md-button md-button--primary
-home_button1_url: install.html
-home_button2_name: Docs
-home_button2_theme: md-button
-home_button2_url: docs.html
-home_button3_name: Blog
-home_button3_theme: md-button
-home_button3_url: blog/index.html
-home_cover_image: img/repentoMEGA.gif
-home_description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
-  Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
-  on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
-  and performance enhancements. This is analogous to a "script extender" for other
-  games like Skyrim.
-
-  <br>
-
-  <br>
-
-  REPENTOGON is the result of thousands of hours of combined work by over a dozen
-  modders responsible for some of the most popular mods for Isaac. Frustrated with
-  the shortcomings of the API, we''ve decided to take matters into our own hands.
-
-  <br>
-
-  <br>
-
-  Thanks to our changes to the API, you can expect mods to run faster out of the box,
-  and our extra features empower mod developers to push the performance envelope for
-  mods further than ever before. Furthermore, highly requested features that were
-  previously impossible for a traditional mod, such as completion marks for modded
-  characters on the main menu and Devil and Planetarium room chance manipulation,
-  are all here. <strike>We even added 30+ rideable dragons!</strike>
-
-  '
-home_tagline: A new era for Isaac modding begins now.
 markdown_extensions:
 - toc:
     permalink: "\u2693\uFE0E"
@@ -78,10 +79,10 @@ markdown_extensions:
     alternate_style: true
 - attr_list
 nav:
-- Home: ./index.md
-- Install: ./install.md
+- Home: index.md
+- Install: install.md
 - Docs:
-  - Home: ./docs.md
+  - Home: docs.md
   - Last visited:
     - ? ''
       : snippets/PLACEHOLDER.md
@@ -103,16 +104,19 @@ nav:
       : snippets/PLACEHOLDER.md
     - ? ''
       : snippets/PLACEHOLDER.md
+  # Directly linking the page here works around a behavior change in Zensical.
+  # In Zensical "Frequently Used" remains selected when navigating to the page, which means if the link is clicked again we 404.
+  # Navigating directly avoids this.
   - Frequently used:
-    - Isaac: Isaac.md
-    - Entity: Entity.md
-    - EntityPlayer: EntityPlayer.md
-    - EntityNPC: EntityNPC.md
-    - EntityEffect: EntityEffect.md
-    - Game: Game.md
-    - Room: Room.md
-    - Level: Level.md
-    - ModCallbacks: enums/ModCallbacks.md
+    - Isaac: https://repentogon.com/Isaac.html
+    - Entity: https://repentogon.com/Entity.html
+    - EntityPlayer: https://repentogon.com/EntityPlayer.html
+    - EntityNPC: https://repentogon.com/EntityNPC.html
+    - EntityEffect: https://repentogon.com/EntityEffect.html
+    - Game: https://repentogon.com/Game.html
+    - Room: https://repentogon.com/Room.html
+    - Level: https://repentogon.com/Level.html
+    - ModCallbacks: https://repentogon.com/enums/ModCallbacks.html
   - Enums:
     - Achievement: enums/Achievement.md
     - AddHealthType: enums/AddHealthType.md
@@ -350,8 +354,6 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
-- Blog:
-  - blog/index.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
@@ -373,7 +375,6 @@ nav:
   - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
-- Tags: tags.md
 - Example Mods:
   - Capsules: examples/Capsules.md
   - Deal Chance: examples/DealChance.md
@@ -382,14 +383,7 @@ nav:
   - Beams: examples/Beams.md
   - Color Modifiers: examples/ColorModifiers.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
-plugins:
-- blog:
-    authors: false
-    blog_toc: true
-- search:
-    separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
-- tags:
-    tags_file: tags.md
+
 repo_name: TeamREPENTOGON/REPENTOGON
 repo_url: https://github.com/TeamREPENTOGON/REPENTOGON
 site_name: 'BoI: REPENTOGON'
@@ -409,16 +403,21 @@ theme:
   logo: img/favicon.ico
   name: material
   palette:
-  - media: '(prefers-color-scheme: light)'
-    scheme: default
-    toggle:
-      icon: material/weather-night
-      name: Switch to dark mode
-  - accent: amber
-    media: '(prefers-color-scheme: dark)'
-    primary: amber
-    scheme: slate
-    toggle:
-      icon: material/weather-sunny
-      name: Switch to light mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+        
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+      
 use_directory_urls: false
