@@ -208,7 +208,6 @@ a.const.tooltip:after {
 
 
 /**** DARK MODE ****/
-
 [data-md-color-scheme="slate"] {
     --function-color: #405e9a;
     --function-color-light: #272938;
@@ -273,7 +272,9 @@ a.const.tooltip:after {
     --md-code-hl-keyword-color: hsla(219, 66%, 64%, 1);
     --md-code-hl-string-color: hsla(150, 58%, 44%, 1);
 }
-
+[data-md-color-scheme=slate][data-md-color-primary=indigo] {
+    --md-typeset-a-color: #ffc41e;
+}
 
 
 /**** TOOLTIP ****/
