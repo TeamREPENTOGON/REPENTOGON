@@ -157,7 +157,7 @@ ___
 Sets the wrap mode for the `x` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
 ???- info "Info"
-  Enums for these are pending.
+    Enums for these are pending.
 
 ___
 ### SetWrapTMode () {: aria-label='Functions' }
