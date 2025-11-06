@@ -156,7 +156,7 @@ ___
 #### void SetWrapSMode ( int Mode ) {: .copyable aria-label='Functions' }
 Sets the wrap mode for the `x` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
-???+ info "Info"
+???- info "Info"
   Enums for these are pending.
 
 ___
