@@ -353,7 +353,7 @@ nav:
   - Vector: Vector.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
-  - XMLData: XMLData.md
+  - XMLData: XMLData.html
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
