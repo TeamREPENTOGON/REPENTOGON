@@ -60,3 +60,9 @@ ___
 ___
 ### SetState () {: aria-label='Functions' }
 #### void SetState ( [MinimapState](./enums/MinimapState.md) State ) {: .copyable aria-label='Functions' }
+
+___
+### Refresh () {: aria-label='Functions' }
+#### void Refresh ( ) {: .copyable aria-label='Functions' }
+
+___
