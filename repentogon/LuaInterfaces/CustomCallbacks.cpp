@@ -5683,9 +5683,9 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 
 	g_Game->_nbRooms = 0;
 
-	generator->Generate();
+	bool correctGeneration = generator->Generate();
 
-	return true;
+	return correctGeneration;
 }
 
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)

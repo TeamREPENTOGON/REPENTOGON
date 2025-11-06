@@ -47,12 +47,12 @@ struct DungeonGenerator {
 		boss_room->is_final_boss = true;
 	}
 
-	void Generate() {
+	bool Generate() {
 		for (size_t i = 0; i < this->num_rooms; i++)
 		{
 			DungeonGeneratorRoom generator_room = this->rooms[i];
 
-			if (generator_room.room != NULL) {
+			if (generator_room.room != nullptr) {
 				LevelGenerator_Room* level_generator_room = &LevelGenerator_Room();
 				level_generator_room->_gridColIdx = generator_room.col;
 				level_generator_room->_gridLineIdx = generator_room.row;
@@ -65,5 +65,7 @@ struct DungeonGenerator {
 				}
 			}
 		}
+
+		return true;
 	}
 };
