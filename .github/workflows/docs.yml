@@ -60,5 +60,4 @@ jobs:
         - uses: actions/upload-pages-artifact@v4
           with:
             path: site
-          working-directory: ./docs
         - uses: actions/deploy-pages@v4
