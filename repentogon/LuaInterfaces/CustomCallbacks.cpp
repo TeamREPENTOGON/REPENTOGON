@@ -5661,7 +5661,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 	lua::LuaStackProtector protector(L);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	DungeonGenerator* generator = new DungeonGenerator();
+	DungeonGenerator* generator = &DungeonGenerator();
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push(dungeonType)
@@ -5683,23 +5683,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 
 	g_Game->_nbRooms = 0;
 
-	for (size_t i = 0; i < generator->num_rooms; i++)
-	{
-		DungeonGeneratorRoom generator_room = generator->rooms[i];
-
-		if (generator_room.room != NULL) {
-			LevelGenerator_Room* level_generator_room = new LevelGenerator_Room();
-			level_generator_room->_gridColIdx = generator_room.col;
-			level_generator_room->_gridLineIdx = generator_room.row;
-			level_generator_room->_doors = 15;
-
-			g_Game->PlaceRoom(level_generator_room, generator_room.room, generator_room.seed, 0);
-
-			if (generator_room.is_final_boss) {
-				g_Game->_lastBossRoomListIdx = i;
-			}
-		}
-	}
+	generator->Generate();
 
 	return true;
 }

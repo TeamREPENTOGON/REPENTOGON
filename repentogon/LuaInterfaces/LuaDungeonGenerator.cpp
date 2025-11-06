@@ -16,34 +16,20 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 4);
 	uint32_t seed = (uint32_t)luaL_checkinteger(L, 5);
 
-	DungeonGeneratorRoom* generatorRoom = new DungeonGeneratorRoom(config, row, col, seed);
-	generator->rooms[generator->num_rooms] = *generatorRoom;
+	DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, row, col, seed);
 
-	generator->num_rooms++;
-
-	lua_pushboolean(L, true);
+	DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+	*ud = generator_room;
+	luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
-	uint32_t row = (uint32_t)luaL_checkinteger(L, 2);
-	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
+	DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
 
-	for (size_t i = 0; i < generator->num_rooms; i++) {
-		DungeonGeneratorRoom* generator_room = &(generator->rooms[i]);
-		
-		if (generator_room->room != NULL) {
-			if (row == generator_room->row && col == generator_room->col) {
-				generator_room->is_final_boss = true;
-			} else {
-				generator_room->is_final_boss = false;
-			}
-		} else {
-			break;
-		}
-	}
+	generator->SetFinalBossRoom(generator_room);
 
 	return 0;
 }
@@ -58,7 +44,17 @@ static void RegisterDungeonGenerator(lua_State* L) {
 	lua::RegisterNewClass(L, lua::metatables::DungeonGeneratorMT, lua::metatables::DungeonGeneratorMT, functions);
 }
 
+static void RegisterDungeonGeneratorRoom(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ NULL, NULL }
+	};
+
+	lua::RegisterNewClass(L, lua::metatables::DungeonGeneratorRoomMT, lua::metatables::DungeonGeneratorRoomMT, functions);
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	RegisterDungeonGenerator(_state);
+	RegisterDungeonGeneratorRoom(_state);
 }
