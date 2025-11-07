@@ -272,10 +272,10 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 	unsigned int seed = (unsigned int)luaL_optinteger(L, 3, Random());
 	unsigned int defaultItem = (unsigned int)luaL_optinteger(L, 4, 25); //COLLECTIBLE_BREAKFAST
 	bool addToBlacklist = lua::luaL_optboolean(L, 5, true);
-	bool excludeLockedItems = lua::luaL_optboolean(L, 6, false);
+	bool excludeActiveItems = lua::luaL_optboolean(L, 6, false);
 
 	EnsureValidSeed(seed);
-	lua_pushinteger(L, itemPool->GetCollectibleFromList(list, length, seed, defaultItem, addToBlacklist, excludeLockedItems));
+	lua_pushinteger(L, itemPool->GetCollectibleFromList(list, length, seed, defaultItem, addToBlacklist, excludeActiveItems));
 
 	// delete the array
 	delete[] list;
