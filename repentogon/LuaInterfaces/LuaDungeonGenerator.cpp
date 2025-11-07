@@ -4,19 +4,95 @@
 #include "Exception.h"
 #include "Log.h"
 #include "LuaDungeonGenerator.h"
+#include "vector"
+
+#pragma region RoomCoords
+
+struct RoomCoords {
+	uint32_t col;
+	uint32_t row;
+
+	RoomCoords(uint32_t col, uint32_t row) {
+		this->col = col;
+		this->row = row;
+	}
+
+	bool IsValid() {
+		return row >= 0 && row <= 13 && col >= 0 && col <= 13;
+	}
+};
+
+#pragma endregion
+
+#pragma region Helpers
+
+std::vector<RoomCoords> GetOccupiedCoords(RoomCoords* base_coords, int shape) {
+	std::vector<RoomCoords> occupied_coords = {};
+
+	switch (shape)
+	{
+	case ROOMSHAPE_1x1:
+	case ROOMSHAPE_IH:
+	case ROOMSHAPE_IV:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		break;
+	case ROOMSHAPE_1x2:
+	case ROOMSHAPE_IIV:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		break;
+	case ROOMSHAPE_2x1:
+	case ROOMSHAPE_IIH:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		break;
+	case ROOMSHAPE_2x2:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		break;
+	case ROOMSHAPE_LTL:
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		break;
+	case ROOMSHAPE_LTR:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		break;
+	case ROOMSHAPE_LBL:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		break;
+	case ROOMSHAPE_LBR:
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		break;
+	default:
+		break;
+	}
+
+	return occupied_coords;
+}
+
+#pragma endregion
 
 #pragma region DungeonGeneratorRoom Impl
 
 DungeonGeneratorRoom::DungeonGeneratorRoom() {
 	this->room = nullptr;
-	this->row = -1;
 	this->col = -1;
+	this->row = -1;
 }
 
-DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t col, uint32_t row) {
 	this->room = room;
-	this->row = row;
 	this->col = col;
+	this->row = row;
 }
 
 #pragma endregion
@@ -28,8 +104,43 @@ DungeonGenerator::DungeonGenerator(RNG* rng) {
 	this->rng = rng;
 }
 
-DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col) {
-	this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, row, col);
+bool DungeonGenerator::CanRoomBePlaced(uint32_t row, uint32_t col, int room_shape, uint32_t doors) {
+	RoomCoords* base_coords = &RoomCoords(col, row);
+	if (!base_coords->IsValid()) {
+		KAGE::_LogMessage(0, "[SEX] Base coordinates aren't valid. %d-%d\n", base_coords->row, base_coords->col);
+		return false;
+	}
+
+	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(base_coords, room_shape);
+	for (RoomCoords coords : occupied_coords) {
+		if (!coords.IsValid()) {
+			KAGE::_LogMessage(0, "[SEX] Occupied coordinates aren't valid. %d-%d\n", base_coords->row, base_coords->col);
+			return false;
+		}
+	}
+
+	for (size_t i = 0; i < this->num_rooms; i++) {
+		DungeonGeneratorRoom room = this->rooms[i];
+
+		RoomCoords* other_base_coords = &RoomCoords(room.col, room.row);
+		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.room->Shape);
+
+		for (RoomCoords coords : occupied_coords) {
+			for (RoomCoords other_coords : other_occupied_coords) {
+				if (coords.col == other_coords.col && coords.row == other_coords.row) {
+					KAGE::_LogMessage(0, "[SEX] Occupied coordinates conflict with other. %d-%d\n", base_coords->row, base_coords->col);
+
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row) {
+	this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, col, row);
 	this->num_rooms++;
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[this->num_rooms - 1];
 
@@ -114,16 +225,23 @@ DungeonGenerator* GetDungeonGenerator(lua_State* L) {
 LUA_FUNCTION(Lua_PlaceRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	uint32_t row = (uint32_t)luaL_checkinteger(L, 3);
-	uint32_t col = (uint32_t)luaL_checkinteger(L, 4);
+	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
+	uint32_t row = (uint32_t)luaL_checkinteger(L, 4);
+	uint32_t doors = (uint32_t)luaL_checkinteger(L, 5);
 
-	DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, row, col);
+	doors = doors | config->Doors;
 
-	DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
-	*ud = generator_room;
-	luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+	if (generator->CanRoomBePlaced(row, col, config->Shape, doors)) {
+		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row);
 
-	return 1;
+		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+		*ud = generator_room;
+		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 LUA_FUNCTION(Lua_SetFinalBossRoom) {
