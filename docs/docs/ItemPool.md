@@ -103,21 +103,21 @@ Normally this function is tied to the same rules as Chaos, meaning that you can 
     ```
 
 ???+ example "Pick Pool From Vanilla"
-This code picks a random pool from any of the vanilla
+    This code picks a random pool from any of the vanilla
 
-```lua
-local itemPool = Game():GetItemPool()
+    ```lua
+    local itemPool = Game():GetItemPool()
 
-local CustomPools = {}
+    local CustomPools = {}
 
--- Put all custom pools within the Filter
-for i = 31, itemPool:GetNumItemPools() - 1 do
-	table.insert(CustomPools, i)
-end
+    -- Put all custom pools within the Filter
+    for i = 31, itemPool:GetNumItemPools() - 1 do
+        table.insert(CustomPools, i)
+    end
 
-local rng = RNG(Random()) -- replace this with your own rng
-local randomPool = Game():GetItemPool():GetRandomPool(rng, true, CustomPools, false)
-```
+    local rng = RNG(Random()) -- replace this with your own rng
+    local randomPool = Game():GetItemPool():GetRandomPool(rng, true, CustomPools, false)
+    ```
 
 ___
 ### GetRemovedCollectibles () {: aria-label='Functions' }
