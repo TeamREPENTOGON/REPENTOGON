@@ -30,7 +30,7 @@ struct RoomCoords {
 
 #pragma region Helpers
 
-std::vector<RoomCoords> GetOccupiedCoords(RoomCoords* base_coords, int shape) {
+std::vector<RoomCoords> GetOccupiedCoords(RoomCoords& base_coords, int shape) {
 	std::vector<RoomCoords> occupied_coords = {};
 
 	switch (shape)
@@ -38,43 +38,43 @@ std::vector<RoomCoords> GetOccupiedCoords(RoomCoords* base_coords, int shape) {
 	case ROOMSHAPE_1x1:
 	case ROOMSHAPE_IH:
 	case ROOMSHAPE_IV:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
 		break;
 	case ROOMSHAPE_1x2:
 	case ROOMSHAPE_IIV:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_2x1:
 	case ROOMSHAPE_IIH:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		break;
 	case ROOMSHAPE_2x2:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_LTL:
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_LTR:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_LBL:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_LBR:
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
-		occupied_coords.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
+		occupied_coords.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		break;
 	default:
 		break;
@@ -83,225 +83,225 @@ std::vector<RoomCoords> GetOccupiedCoords(RoomCoords* base_coords, int shape) {
 	return occupied_coords;
 }
 
-std::vector<RoomCoords> GetForbiddenNeighbors(RoomCoords* base_coords, int shape, int doors) {
+std::vector<RoomCoords> GetForbiddenNeighbors(RoomCoords& base_coords, int shape, int doors) {
 	std::vector<RoomCoords> forbidden_neighbors = {};
 
 	switch (shape)
 	{
 	case ROOMSHAPE_1x1:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		}
 		break;
 	case ROOMSHAPE_IH:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_IV:
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		}
 		break;
 	case ROOMSHAPE_1x2:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 2));
 		}
 		if ((doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		}
 		break;
 	case ROOMSHAPE_IIV:
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_2x1:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		}
 		break;
 	case ROOMSHAPE_IIH:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
-		forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
+		forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		break;
 	case ROOMSHAPE_2x2:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 2));
 		}
 		if ((doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 2));
 		}
 		break;
 	case ROOMSHAPE_LTL:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0 || (doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 2));
 		}
 		if ((doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 2));
 		}
 		break;
 	case ROOMSHAPE_LTR:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0 || (doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 2));
 		}
 		if ((doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 2));
 		}
 		break;
 	case ROOMSHAPE_LBL:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0 || (doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 2));
 		}
 		break;
 	case ROOMSHAPE_LBR:
 		if ((doors & (1 << DOOR_SLOT_LEFT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 2, base_coords->row));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 2, base_coords.row));
 		}
 		if ((doors & (1 << DOOR_SLOT_DOWN0)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col, base_coords->row + 2));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col, base_coords.row + 2));
 		}
 		if ((doors & (1 << DOOR_SLOT_LEFT1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col - 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col - 1, base_coords.row + 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_UP1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row - 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row - 1));
 		}
 		if ((doors & (1 << DOOR_SLOT_RIGHT1)) == 0 || (doors & (1 << DOOR_SLOT_DOWN1)) == 0) {
-			forbidden_neighbors.push_back(RoomCoords(base_coords->col + 1, base_coords->row + 1));
+			forbidden_neighbors.push_back(RoomCoords(base_coords.col + 1, base_coords.row + 1));
 		}
 		break;
 	default:
@@ -348,21 +348,21 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shap
 		return false;
 	}
 
-	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(&base_coords, room_shape);
+	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(base_coords, room_shape);
 	for (RoomCoords coords : occupied_coords) {
 		if (!coords.IsValid()) {
 			return false;
 		}
 	}
 
-	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(&base_coords, room_shape, doors);
+	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(base_coords, room_shape, doors);
 
 	for (int i = 0; i < this->num_rooms; i++) {
 		DungeonGeneratorRoom room = this->rooms[i];
 
 		RoomCoords other_base_coords(room.col, room.row);
-		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(&other_base_coords, room.shape);
-		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(&other_base_coords, room.shape, doors);
+		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.shape);
+		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(other_base_coords, room.shape, doors);
 
 		for (RoomCoords coords : occupied_coords) {
 			for (RoomCoords other_coords : other_occupied_coords) {
