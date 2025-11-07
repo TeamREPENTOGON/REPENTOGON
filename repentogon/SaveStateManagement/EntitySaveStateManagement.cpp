@@ -1,31 +1,30 @@
 /* FOR MAINTAINERS:
-*  - There is no single place in which the Level's rooms are reset or partially reset; each must be found and handled accordingly.
-*  - The main operators (like operator= or the destructor) for EntitySaveState have not been used as hook points, as there are a lot of temporary states created, and we do not need to signal their creation, copy or destruction.
-*  - There are places where EntitySaveStates are manually created and inserted into a EntitySaveState container, without the use of a constructor; each must be found and handled accordingly.
-*  - Due to the unreliable nature of the EntitySaveState methods, manual work is required when save states are copied or cleared by the game; as such all points in which EntitySaveState is used must be found.
-*     - The only exception is SmartPointers which have a single point of destruction, but their initialization and copy needs to be handled manually.
-*     - Because the destructor for EntitySaveState always attempts to call an unused global Notify function, you can use references to that memory address to find places in which EntitySaveState is used.
-*     - There are unhandled places in which EntitySaveState and GameStatePlayer are used, but they are all related to online play, as such they have not been handled.
-*  - To make clears fast, there is no mechanism that checks if an id is potentially cleared multiple times, as such we must ensure that this never occurs.
-      - We could implment this by potentially having a different marker when an EntitySaveState is cleared, so it's safer, but it wouldn't solve the problem for when there are accidental duplicates, due to missed Copies.
-*  - Because of SmartPointers it is not currently possible to fully clear the id generator, as some of them might still be around when resetting, and causing incorrect clears.
-*     - We might need to fully handle SmartPointers manually, if we want to allow this.
-*     - Enabling this feature will make the system able to resist "memory leaks" as the clear would fully reset all ids, but it might be subject to incorrect clears so we would still need to be careful.
-*  - It is assumed that every Entity Save is handled by the Room::save_entity function.
-*  - It is assumed that all places in which 'isSavingMinecartEntity' in Room::save_entity is set to true, are, when successful, immediately followed by another Room::save_entity and that there are no possible interruptions to this flow.
-*  - It is assumed that all Entity Restores are handled by the Room::restore_entity function, with Entity_Pickup::TryFlipState being the only exception.
-*  - It is assumed that GameState::SaveState's initial state is a cleared state.
-*  - It is assumed that when the GameState is read, it's in a cleared state.
-*  - It is assumed that everytime a game state is cleared GameState::Clear is called.
-*  - We are diverging in behavior compared to regular GameState store, when restoring grid rooms (the game copies every grid room, instead we only copy up till room count and off-grid), this shouldn't cause problems, but it's something to keep in mind.
-*  - Confirm that Level::RestoreGameState does not reset the LilPortalRoom in reset_room_list, as we are performing that clear manually, and it would cause a double clear otherwise.
-*  - It is assumed that Entity_Player::StoreGameState's initial state is akin to that of an initialized state or newly constructed state.
-*  - It is assumed that everytime a player's state is cleared GameStatePlayer::Init is called.
-*  - It is assumed that every player save and familiar save is handled by Entity_Player::StoreGameState.
-*  - It is assumed that every player restore is handled by Entity_Player::RestoreGameState.
-*  - It is assumed that every familiar restore is handled by Entity_Player::RestoreGameState_PostLevelInit.
-*  - A single place where familiar data was modified manually outside of the designated funtion; make sure all are found and handled properly.
-*     - This single occurrence happens when restoring the backup players in PlayerManager::RestoreGameState, which performs a copy of the data from the save state into the unlisted save state.
+*  - There is no single point where the Level's rooms are reset or partially reset; each case must be found and handled individually.
+*  - The main operators (like operator= or the destructor) for EntitySaveState have not been used as hook points, since many temporary states are created, and we do not need to signal their creation, copy or destruction.
+*  - Some places manually create and insert EntitySaveStates into a container, without using a constructor; each of these must be found and handled.
+*  - Due to the unreliable nature of the EntitySaveState methods, manual work is required when save states are copied or cleared by the game. As such, all points where EntitySaveState is used must be reviewed.
+*    - The only exception is SmartPointers, which have a single point of destruction, but their initialization and copy must still be handled manually.
+*    - Because the EntitySaveState destructor always attempts to call an unused global Notify function, references to that function's memory address can be used to locate uses of EntitySaveState.
+*    - There are unhandled cases where EntitySaveState and GameStatePlayer are used, but all of these are related to online play and have not been addressed.
+*  - There is no mechanism that checks if an ID is cleared multiple times. We must ensure this never occurs.
+*    - A possible improvement could involve marking cleared EntitySaveStates with a special flag to make detection safer. However, this would not prevent issues caused by duplicate, which are the main cause of multiple clears.
+*  - Because of SmartPointers, it is not currently possible to fully clear the ID generator, as some references would persist after reset, causing incorrect clears.
+*    - Full handling of SmartPointers would be required to safely enable full resets.
+*    - Enabling this would make the system resilient to “memory leaks”, but might still allow incorrect clears.
+*  - It is assumed that all Entity saves are handled by Room::save_entity().
+*  - It is assumed that every time Room::save_entity() is called with 'isSavingMinecartEntity' set to true, it is immediately followed by another call to Room::save_entity(), with no interruptions.
+*  - It is assumed that all Entity restores are handled by Room::restore_entity(), except for Entity_Pickup::TryFlipState.
+*  - It is assumed that GameState::SaveState's initial state is cleared.
+*  - It is assumed that GameState is in a cleared state when it is read.
+*  - It is assumed that every time a GameState is cleared, GameState::Clear() is called.
+*  - Confirm that Level::RestoreGameState does not reset the LilPortalRoom when calling reset_room_list, since we currently have to perform that clear manually.
+*  - It is assumed that Entity_Player::StoreGameState's initial state is equivalent to an initialized or newly constructed state.
+*  - It is assumed that every time a player's state is cleared, GameStatePlayer::Init() is called.
+*  - It is assumed that all player and familiar saves are handled by Entity_Player::StoreGameState().
+*  - It is assumed that all player restores are handled by Entity_Player::RestoreGameState().
+*  - It is assumed that all familiar restores are handled by Entity_Player::RestoreGameState_PostLevelInit().
+*  - There is one known case where familiar data is modified manually outside the designated function; ensure all such cases are identified and handled.
+*    - This specific case occurs when restoring backup players in PlayerManager::RestoreGameState(), which copies data from the save state into the unlisted save state.
 */
 
 #include "EntitySaveStateManagement.h"
