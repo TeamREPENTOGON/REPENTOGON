@@ -14,9 +14,8 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 3);
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 4);
-	uint32_t seed = (uint32_t)luaL_checkinteger(L, 5);
 
-	DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, row, col, seed);
+	DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, row, col);
 
 	DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
 	*ud = generator_room;

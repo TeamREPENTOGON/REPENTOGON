@@ -4,34 +4,33 @@ struct DungeonGeneratorRoom {
 	RoomConfig_Room* room;
 	uint32_t row;
 	uint32_t col;
-	uint32_t seed;
 	bool is_final_boss = false;
 	
 	DungeonGeneratorRoom() {
 		this->room = nullptr;
 		this->row = -1;
 		this->col = -1;
-		this->seed = -1;
 	}
 
-	DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col, uint32_t seed) {
+	DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col) {
 		this->room = room;
 		this->row = row;
 		this->col = col;
-		this->seed = seed;
 	}
 };
 
 struct DungeonGenerator {
 	int num_rooms;
 	DungeonGeneratorRoom rooms[169];
+	RNG* rng;
 
-	DungeonGenerator() {
+	DungeonGenerator(RNG* rng) {
 		num_rooms = 0;
+		this->rng = rng;
 	}
 
-	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col, uint32_t seed) {
-		this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, row, col, seed);
+	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col) {
+		this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, row, col);
 		this->num_rooms++;
 		DungeonGeneratorRoom* generatorRoom = &this->rooms[this->num_rooms - 1];
 
@@ -58,7 +57,9 @@ struct DungeonGenerator {
 				level_generator_room->_gridLineIdx = generator_room.row;
 				level_generator_room->_doors = 15;
 
-				g_Game->PlaceRoom(level_generator_room, generator_room.room, generator_room.seed, 0);
+				uint32_t seed = this->rng->Next();
+
+				g_Game->PlaceRoom(level_generator_room, generator_room.room, seed, 0);
 
 				if (generator_room.is_final_boss) {
 					g_Game->_lastBossRoomListIdx = i;

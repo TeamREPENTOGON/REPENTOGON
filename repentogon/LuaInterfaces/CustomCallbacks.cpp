@@ -5661,7 +5661,14 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 	lua::LuaStackProtector protector(L);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	DungeonGenerator* generator = &DungeonGenerator();
+	if (rng == nullptr) {
+		rng = &RNG();
+		
+		unsigned int stage_seed = g_Game->_seedEffects._stageSeeds[g_Game->_stage];
+		rng->SetSeed(stage_seed, 35);
+	}
+
+	DungeonGenerator* generator = &DungeonGenerator(rng);
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push(dungeonType)
@@ -5699,7 +5706,7 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 }
 
 HOOK_METHOD(Level, generate_blue_womb, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 1);
+	bool skip = ProcessGenerateDungeonCallback(this, nullptr, 1);
 	if (skip) {
 		return;
 	}
@@ -5708,7 +5715,7 @@ HOOK_METHOD(Level, generate_blue_womb, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 2);
+	bool skip = ProcessGenerateDungeonCallback(this, nullptr, 2);
 	if (skip) {
 		return;
 	}
@@ -5717,7 +5724,7 @@ HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 3);
+	bool skip = ProcessGenerateDungeonCallback(this, nullptr, 3);
 	if (skip) {
 		return;
 	}
@@ -5726,7 +5733,7 @@ HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 4);
+	bool skip = ProcessGenerateDungeonCallback(this, nullptr, 4);
 	if (skip) {
 		return;
 	}
@@ -5735,7 +5742,7 @@ HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, NULL, 5);
+	bool skip = ProcessGenerateDungeonCallback(this, nullptr, 5);
 	if (skip) {
 		return;
 	}
