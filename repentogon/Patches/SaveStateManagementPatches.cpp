@@ -688,7 +688,7 @@ HOOK_STATIC(Entity_NPC, moms_heart_mausoleum_death, () -> void, __cdecl)
     constexpr uint32_t STATE_MAUSOLEUM_HEART_KILLED_FLAG = 1 << (STATE_MAUSOLEUM_HEART_KILLED_FLAG_IDX % 32);
 
     Game* game = g_Game;
-    uint32_t bitset = *(uint32_t*)(uintptr_t)(game + STATE_MAUSOLEUM_HEART_KILLED_WORD_OFFSET);
+    uint32_t bitset = *(uint32_t*)((uintptr_t)game + STATE_MAUSOLEUM_HEART_KILLED_WORD_OFFSET);
 
     if (bitset & STATE_MAUSOLEUM_HEART_KILLED_FLAG)
     {

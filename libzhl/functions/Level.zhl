@@ -85,6 +85,9 @@ __thiscall void Level::DEBUG_goto_room(RoomConfig_Room* roomConfig);
 "558bec6aff68????????64a1????????5081ecc0000000a1????????33c58945??535657508d45??64a3????????8bc1":
 __thiscall void Level::reset_room_list(bool resetLilPortalRoom);
 
+"558bec83e4f883ec1c53568b75??8bd9":
+__thiscall void Level::RestoreGameState(GameState* gameState);
+
 struct Level {
 	uint32_t _stage : 0x0;
 	uint32_t _stageType : 0x4;

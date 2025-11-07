@@ -1,3 +1,6 @@
+"558bec83e4f083ec3833c0":
+__thiscall void GameStatePlayer::Init();
+
 struct GameStatePlayer depends (History, BagOfCraftingOutput) {
     int _playerType : 0x0;
     vector_EntitySaveState _movingBoxContents : 0x1d4;
