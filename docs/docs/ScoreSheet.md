@@ -25,8 +25,8 @@ ___
 #### void Calculate ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetBeastMonus () {: aria-label='Functions' }
-#### int GetBeastMonus ( ) {: .copyable aria-label='Functions' }
+### GetBeastBonus () {: aria-label='Functions' }
+#### int GetBeastBonus ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBlueBabyBonus () {: aria-label='Functions' }
