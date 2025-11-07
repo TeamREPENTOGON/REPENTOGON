@@ -25,7 +25,7 @@ struct DungeonGenerator {
 	RNG* rng;
 
 	DungeonGenerator(RNG* rng) {
-		num_rooms = 0;
+		this->num_rooms = 0;
 		this->rng = rng;
 	}
 
@@ -38,7 +38,7 @@ struct DungeonGenerator {
 	}
 
 	void SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
-		for (size_t i = 0; i < num_rooms; i++)
+		for (size_t i = 0; i < this->num_rooms; i++)
 		{
 			this->rooms[i].is_final_boss = false;
 		}
@@ -46,7 +46,33 @@ struct DungeonGenerator {
 		boss_room->is_final_boss = true;
 	}
 
-	bool Generate() {
+	bool ValidateFloor() {
+		bool has_final_room = false;
+
+		for (size_t i = 0; i < this->num_rooms; i++)
+		{
+			DungeonGeneratorRoom room = this->rooms[i];
+			if (room.is_final_boss) {
+				has_final_room = true;
+				break;
+			}
+		}
+
+		return has_final_room;
+	}
+
+	void CleanFloor(Level* level) {
+		level->reset_room_list(false);
+
+		for (size_t i = 0; i < 507; i++)
+		{
+			g_Game->_roomOffset[i] = -1;
+		}
+
+		g_Game->_nbRooms = 0;
+	}
+
+	void PlaceRoomsInFloor() {
 		for (size_t i = 0; i < this->num_rooms; i++)
 		{
 			DungeonGeneratorRoom generator_room = this->rooms[i];
@@ -66,6 +92,16 @@ struct DungeonGenerator {
 				}
 			}
 		}
+	}
+
+	bool Generate(Level* level) {
+		if (!this->ValidateFloor()) {
+			return false;
+		}
+
+		CleanFloor(level);
+
+		PlaceRoomsInFloor();
 
 		return true;
 	}

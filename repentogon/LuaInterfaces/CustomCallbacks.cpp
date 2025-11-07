@@ -5681,16 +5681,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 		return false;
 	}
 
-	level->reset_room_list(false);
-
-	for (size_t i = 0; i < 507; i++)
-	{
-		g_Game->_roomOffset[i] = -1;
-	}
-
-	g_Game->_nbRooms = 0;
-
-	bool correctGeneration = generator->Generate();
+	bool correctGeneration = generator->Generate(level);
 
 	return correctGeneration;
 }
