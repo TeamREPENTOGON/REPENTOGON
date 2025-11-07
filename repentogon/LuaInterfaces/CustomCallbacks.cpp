@@ -5674,6 +5674,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 		.push(dungeonType)
 		.push(&generator, lua::metatables::DungeonGeneratorMT)
 		.push(rng, lua::Metatables::RNG)
+		.push(dungeonType)
 		.call(1);
 
 	if (results || !lua_isboolean(L, -1) || !lua_toboolean(L, -1))
