@@ -343,26 +343,26 @@ DungeonGenerator::DungeonGenerator(RNG* rng) {
 }
 
 bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shape, int doors) {
-	RoomCoords* base_coords = &RoomCoords(col, row);
-	if (!base_coords->IsValid()) {
+	RoomCoords base_coords(col, row);
+	if (!base_coords.IsValid()) {
 		return false;
 	}
 
-	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(base_coords, room_shape);
+	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(&base_coords, room_shape);
 	for (RoomCoords coords : occupied_coords) {
 		if (!coords.IsValid()) {
 			return false;
 		}
 	}
 
-	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(base_coords, room_shape, doors);
+	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(&base_coords, room_shape, doors);
 
 	for (int i = 0; i < this->num_rooms; i++) {
 		DungeonGeneratorRoom room = this->rooms[i];
 
-		RoomCoords* other_base_coords = &RoomCoords(room.col, room.row);
-		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.shape);
-		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(other_base_coords, room.shape, doors);
+		RoomCoords other_base_coords(room.col, room.row);
+		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(&other_base_coords, room.shape);
+		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(&other_base_coords, room.shape, doors);
 
 		for (RoomCoords coords : occupied_coords) {
 			for (RoomCoords other_coords : other_occupied_coords) {
@@ -439,14 +439,14 @@ void DungeonGenerator::PlaceRoomsInFloor() {
 		DungeonGeneratorRoom generator_room = this->rooms[i];
 
 		if (generator_room.room != nullptr) {
-			LevelGenerator_Room* level_generator_room = &LevelGenerator_Room();
-			level_generator_room->_gridColIdx = generator_room.col;
-			level_generator_room->_gridLineIdx = generator_room.row;
-			level_generator_room->_doors = generator_room.doors;
+			LevelGenerator_Room level_generator_room;
+			level_generator_room._gridColIdx = generator_room.col;
+			level_generator_room._gridLineIdx = generator_room.row;
+			level_generator_room._doors = generator_room.doors;
 
 			uint32_t seed = this->rng->Next();
 
-			g_Game->PlaceRoom(level_generator_room, generator_room.room, seed, 0);
+			g_Game->PlaceRoom(&level_generator_room, generator_room.room, seed, 0);
 
 			if (generator_room.is_final_boss) {
 				g_Game->_lastBossRoomListIdx = i;

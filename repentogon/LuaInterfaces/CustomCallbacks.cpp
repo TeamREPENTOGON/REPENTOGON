@@ -5668,11 +5668,11 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 		rng->SetSeed(stage_seed, 35);
 	}
 
-	DungeonGenerator* generator = &DungeonGenerator(rng);
+	DungeonGenerator generator(rng);
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push(dungeonType)
-		.push(generator, lua::metatables::DungeonGeneratorMT)
+		.push(&generator, lua::metatables::DungeonGeneratorMT)
 		.push(rng, lua::Metatables::RNG)
 		.call(1);
 
@@ -5681,7 +5681,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG* rng, int dungeonType) {
 		return false;
 	}
 
-	bool correctGeneration = generator->Generate(level);
+	bool correctGeneration = generator.Generate(level);
 
 	return correctGeneration;
 }
