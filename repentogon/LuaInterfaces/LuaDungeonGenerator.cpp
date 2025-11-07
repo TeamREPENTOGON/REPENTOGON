@@ -326,6 +326,8 @@ DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t col, 
 	this->col = col;
 	this->row = row;
 	this->doors = doors;
+
+	this->shape = room->Shape;
 }
 
 #pragma endregion
@@ -337,17 +339,15 @@ DungeonGenerator::DungeonGenerator(RNG* rng) {
 	this->rng = rng;
 }
 
-bool DungeonGenerator::CanRoomBePlaced(uint32_t row, uint32_t col, int room_shape, uint32_t doors) {
+bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shape, uint32_t doors) {
 	RoomCoords* base_coords = &RoomCoords(col, row);
 	if (!base_coords->IsValid()) {
-		KAGE::_LogMessage(0, "[SEX] Base coordinates aren't valid. %d-%d\n", base_coords->row, base_coords->col);
 		return false;
 	}
 
 	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(base_coords, room_shape);
 	for (RoomCoords coords : occupied_coords) {
 		if (!coords.IsValid()) {
-			KAGE::_LogMessage(0, "[SEX] Occupied coordinates aren't valid. %d-%d\n", base_coords->row, base_coords->col);
 			return false;
 		}
 	}
@@ -358,8 +358,8 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t row, uint32_t col, int room_shap
 		DungeonGeneratorRoom room = this->rooms[i];
 
 		RoomCoords* other_base_coords = &RoomCoords(room.col, room.row);
-		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.room->Shape);
-		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(other_base_coords, room.room->Shape, doors);
+		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.shape);
+		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(other_base_coords, room.shape, doors);
 
 		for (RoomCoords coords : occupied_coords) {
 			for (RoomCoords other_coords : other_occupied_coords) {
@@ -480,7 +480,7 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	// Can't have more doors than what the config allows.
 	doors = doors & config->Doors;
 
-	if (generator->CanRoomBePlaced(row, col, config->Shape, doors)) {
+	if (generator->CanRoomBePlaced(col, row, config->Shape, doors)) {
 		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, doors);
 
 		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));

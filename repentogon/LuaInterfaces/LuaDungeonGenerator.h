@@ -5,6 +5,7 @@ struct DungeonGeneratorRoom {
 	uint32_t col;
 	uint32_t row;
 	uint32_t doors;
+	int shape;
 	bool is_final_boss = false;
 	
 	DungeonGeneratorRoom();
