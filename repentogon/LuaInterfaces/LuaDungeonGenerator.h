@@ -4,13 +4,13 @@ struct DungeonGeneratorRoom {
 	RoomConfig_Room* room;
 	uint32_t col;
 	uint32_t row;
-	uint32_t doors;
+	int doors;
 	int shape;
 	bool is_final_boss = false;
 	
 	DungeonGeneratorRoom();
 
-	DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col, uint32_t doors);
+	DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col, int doors);
 };
 
 struct DungeonGenerator {
@@ -20,9 +20,9 @@ struct DungeonGenerator {
 
 	DungeonGenerator(RNG* rng);
 
-	bool CanRoomBePlaced(uint32_t row, uint32_t col, int shape, uint32_t doors);
+	bool CanRoomBePlaced(uint32_t row, uint32_t col, int shape, int doors);
 
-	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col, uint32_t doors);
+	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col, int doors);
 
 	void SetFinalBossRoom(DungeonGeneratorRoom* boss_room);
 

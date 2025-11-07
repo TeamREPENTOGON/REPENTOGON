@@ -83,7 +83,7 @@ std::vector<RoomCoords> GetOccupiedCoords(RoomCoords* base_coords, int shape) {
 	return occupied_coords;
 }
 
-std::vector<RoomCoords> GetForbiddenNeighbors(RoomCoords* base_coords, int shape, uint32_t doors) {
+std::vector<RoomCoords> GetForbiddenNeighbors(RoomCoords* base_coords, int shape, int doors) {
 	std::vector<RoomCoords> forbidden_neighbors = {};
 
 	switch (shape)
@@ -319,9 +319,12 @@ DungeonGeneratorRoom::DungeonGeneratorRoom() {
 	this->room = nullptr;
 	this->col = -1;
 	this->row = -1;
+
+	this->doors = -1;
+	this->shape = -1;
 }
 
-DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t col, uint32_t row, uint32_t doors) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t col, uint32_t row, int doors) {
 	this->room = room;
 	this->col = col;
 	this->row = row;
@@ -339,7 +342,7 @@ DungeonGenerator::DungeonGenerator(RNG* rng) {
 	this->rng = rng;
 }
 
-bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shape, uint32_t doors) {
+bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shape, int doors) {
 	RoomCoords* base_coords = &RoomCoords(col, row);
 	if (!base_coords->IsValid()) {
 		return false;
@@ -354,7 +357,7 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shap
 
 	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(base_coords, room_shape, doors);
 
-	for (size_t i = 0; i < this->num_rooms; i++) {
+	for (int i = 0; i < this->num_rooms; i++) {
 		DungeonGeneratorRoom room = this->rooms[i];
 
 		RoomCoords* other_base_coords = &RoomCoords(room.col, room.row);
@@ -387,7 +390,7 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shap
 	return true;
 }
 
-DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, uint32_t doors) {
+DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, int doors) {
 	this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, col, row, doors);
 	this->num_rooms++;
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[this->num_rooms - 1];
@@ -396,7 +399,7 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, 
 }
 
 void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
-	for (size_t i = 0; i < this->num_rooms; i++)
+	for (int i = 0; i < this->num_rooms; i++)
 	{
 		this->rooms[i].is_final_boss = false;
 	}
@@ -407,7 +410,7 @@ void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
 bool DungeonGenerator::ValidateFloor() {
 	bool has_final_room = false;
 
-	for (size_t i = 0; i < this->num_rooms; i++)
+	for (int i = 0; i < this->num_rooms; i++)
 	{
 		DungeonGeneratorRoom room = this->rooms[i];
 		if (room.is_final_boss) {
@@ -431,7 +434,7 @@ void DungeonGenerator::CleanFloor(Level* level) {
 }
 
 void DungeonGenerator::PlaceRoomsInFloor() {
-	for (size_t i = 0; i < this->num_rooms; i++)
+	for (int i = 0; i < this->num_rooms; i++)
 	{
 		DungeonGeneratorRoom generator_room = this->rooms[i];
 
@@ -475,7 +478,7 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 4);
-	uint32_t doors = (uint32_t)luaL_checkinteger(L, 5);
+	int doors = (int)luaL_optinteger(L, 5, 255);
 
 	// Can't have more doors than what the config allows.
 	doors = doors & config->Doors;
@@ -493,6 +496,52 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	}
 }
 
+LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	int doors = (int)luaL_optinteger(L, 2, 15);
+
+	uint32_t col = 6;
+	uint32_t row = 6;
+
+	KAGE::_LogMessage(0, "[SEX] Before validation\n");
+	if (generator->CanRoomBePlaced(col, row, ROOMSHAPE_1x1, doors)) {
+		int required_doors = 0;
+
+		KAGE::_LogMessage(0, "[SEX] Before room config\n");
+		RoomConfig* room_config = g_Game->GetRoomConfig();
+		KAGE::_LogMessage(0, "[SEX] Before random room\n");
+		RoomConfig_Room* config = room_config->GetRandomRoom(
+			generator->rng->Next(),
+			false,
+			STB_SPECIAL_ROOMS,
+			ROOM_DEFAULT,
+			ROOMSHAPE_1x1,
+			2,
+			2,
+			0,
+			10,
+			(unsigned int*)&required_doors, // If I don't do it like this it shits itself
+			0,
+			-1
+		);
+
+		KAGE::_LogMessage(0, "[SEX] Before place room\n");
+
+		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, doors);
+
+		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+		*ud = generator_room;
+		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+
 LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
@@ -506,6 +555,7 @@ static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{"PlaceRoom", Lua_PlaceRoom},
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
+		{"PlaceDefaultStartingRoom", Lua_PlaceDefaultStartingRoom},
 		{ NULL, NULL }
 	};
 
