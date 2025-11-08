@@ -810,3 +810,8 @@ td>.copyButton>span::after {
 .mermaidDiagram > pre{
     visibility: hidden;
 }
+
+/* test */
+    .e {
+        height: auto !important;
+    }
