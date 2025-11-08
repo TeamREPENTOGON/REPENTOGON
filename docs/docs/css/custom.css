@@ -811,7 +811,4 @@ td>.copyButton>span::after {
     visibility: hidden;
 }
 
-/* test */
-    .e {
-        height: auto !important;
-    }
+
