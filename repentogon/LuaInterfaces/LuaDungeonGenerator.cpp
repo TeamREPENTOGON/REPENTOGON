@@ -80,7 +80,7 @@ void DungeonGenerator::FillOccupiedAndForbiddenIndexes(uint32_t row, uint32_t co
 	}
 
 	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(coords, shape, doors);
-	for (RoomCoords coords : occupied_coords) {
+	for (RoomCoords coords : forbidden_coords) {
 		this->forbidden_grid_indexes.set(coords.ToGridIndex());
 	}
 }
@@ -187,13 +187,12 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 	uint32_t col = 6;
 	uint32_t row = 6;
 
-	KAGE::_LogMessage(0, "[SEX] Before validation\n");
+	KAGE::_LogMessage(0, "[SEX] dungeon %d\n", doors);
+
 	if (generator->CanRoomBePlaced(col, row, ROOMSHAPE_1x1, doors)) {
 		int required_doors = 0;
 
-		KAGE::_LogMessage(0, "[SEX] Before room config\n");
 		RoomConfig* room_config = g_Game->GetRoomConfig();
-		KAGE::_LogMessage(0, "[SEX] Before random room\n");
 		RoomConfig_Room* config = room_config->GetRandomRoom(
 			generator->rng->Next(),
 			false,
@@ -208,8 +207,6 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 			0,
 			-1
 		);
-
-		KAGE::_LogMessage(0, "[SEX] Before place room\n");
 
 		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, doors);
 
