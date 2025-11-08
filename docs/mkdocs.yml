@@ -130,6 +130,7 @@ nav:
     - BossType: enums/BossType.md
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
     - CameraStyle: enums/CameraStyle.md
+    - CharacterMenuStatus: enums/CharacterMenuStatus.md
     - CompletionType: enums/CompletionType.md
     - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md

@@ -17,6 +17,10 @@ tags:
 
 ## Functions
 
+### GetActiveStatus () {: aria-label='Functions' }
+#### [CharacterMenuStatus](../enums/CharacterMenuStatus.md) GetActiveStatus ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBigCharPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetBigCharPageSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -99,6 +103,10 @@ ___
 ___
 ### GetWinStreakPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetWinStreakPageSprite ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetActiveStatus () {: aria-label='Functions' }
+#### void SetActiveStatus ( [CharacterMenuStatus](../enums/CharacterMenuStatus.md) Status ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharacterWheelDepth () {: aria-label='Functions' }
