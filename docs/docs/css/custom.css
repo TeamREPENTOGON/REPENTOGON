@@ -811,7 +811,7 @@ td>.copyButton>span::after {
     visibility: hidden;
 }
 
-/* 2nd attempt */
-.e {
-    height: 100vh !important;
+/* 3rd attempt */
+div[style*="position: fixed"][style*="z-index: 4"] {
+  height: 100%;
 }
