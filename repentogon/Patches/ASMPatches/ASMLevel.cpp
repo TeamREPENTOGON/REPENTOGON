@@ -5,7 +5,6 @@
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
-#include "../../LuaInterfaces/LuaDungeonGenerator.h"
 
 std::bitset<36> generateLevels;
 
