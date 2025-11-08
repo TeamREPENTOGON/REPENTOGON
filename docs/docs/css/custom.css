@@ -811,4 +811,7 @@ td>.copyButton>span::after {
     visibility: hidden;
 }
 
-
+/* 2nd attempt */
+.e {
+    height: 100vh !important;
+}
