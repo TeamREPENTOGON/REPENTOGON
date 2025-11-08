@@ -15,11 +15,12 @@ struct DungeonGeneratorRoom {
 	uint32_t row;
 	int doors;
 	int shape;
-	bool is_final_boss = false;
+
+	int list_index;
 	
 	DungeonGeneratorRoom();
 
-	DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t row, uint32_t col, int doors);
+	DungeonGeneratorRoom(int list_index, RoomConfig_Room* room, uint32_t row, uint32_t col, int doors);
 };
 
 struct DungeonGenerator {
@@ -28,6 +29,8 @@ struct DungeonGenerator {
 	RNG* rng;
 	std::bitset<169> occupied_grid_indexes;
 	std::bitset<169> forbidden_grid_indexes;
+
+	int final_boss_index = -1;
 
 	DungeonGenerator(RNG* rng);
 

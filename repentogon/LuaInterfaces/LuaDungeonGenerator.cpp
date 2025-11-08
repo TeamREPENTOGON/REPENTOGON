@@ -10,6 +10,8 @@
 #pragma region DungeonGeneratorRoom Impl
 
 DungeonGeneratorRoom::DungeonGeneratorRoom() {
+	this->list_index = -1;
+
 	this->room = nullptr;
 	this->col = -1;
 	this->row = -1;
@@ -18,7 +20,9 @@ DungeonGeneratorRoom::DungeonGeneratorRoom() {
 	this->shape = -1;
 }
 
-DungeonGeneratorRoom::DungeonGeneratorRoom(RoomConfig_Room* room, uint32_t col, uint32_t row, int doors) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, RoomConfig_Room* room, uint32_t col, uint32_t row, int doors) {
+	this->list_index = list_index;
+
 	this->room = room;
 	this->col = col;
 	this->row = row;
@@ -82,9 +86,11 @@ void DungeonGenerator::FillOccupiedAndForbiddenIndexes(uint32_t row, uint32_t co
 }
 
 DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, int doors) {
-	this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, col, row, doors);
+	int new_room_list_index = this->num_rooms;
+
+	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, room_config, col, row, doors);
 	this->num_rooms++;
-	DungeonGeneratorRoom* generatorRoom = &this->rooms[this->num_rooms - 1];
+	DungeonGeneratorRoom* generatorRoom = &this->rooms[new_room_list_index];
 
 	FillOccupiedAndForbiddenIndexes(row, col, room_config->Shape, doors);
 
@@ -92,25 +98,11 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, 
 }
 
 void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
-	for (int i = 0; i < this->num_rooms; i++)
-	{
-		this->rooms[i].is_final_boss = false;
-	}
-
-	boss_room->is_final_boss = true;
+	this->final_boss_index = boss_room->list_index;
 }
 
 bool DungeonGenerator::ValidateFloor() {
-	bool has_final_room = false;
-
-	for (int i = 0; i < this->num_rooms; i++)
-	{
-		DungeonGeneratorRoom room = this->rooms[i];
-		if (room.is_final_boss) {
-			has_final_room = true;
-			break;
-		}
-	}
+	bool has_final_room = this->final_boss_index >= 0;
 
 	return has_final_room;
 }
@@ -140,12 +132,10 @@ void DungeonGenerator::PlaceRoomsInFloor() {
 			uint32_t seed = this->rng->Next();
 
 			g_Game->PlaceRoom(&level_generator_room, generator_room.room, seed, 0);
-
-			if (generator_room.is_final_boss) {
-				g_Game->_lastBossRoomListIdx = i;
-			}
 		}
 	}
+
+	g_Game->_lastBossRoomListIdx = this->final_boss_index;
 }
 
 bool DungeonGenerator::Generate(Level* level) {
