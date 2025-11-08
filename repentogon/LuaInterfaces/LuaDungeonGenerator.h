@@ -1,5 +1,14 @@
 #pragma once
 
+enum DungeonGenerationType {
+	DEFAULT,
+	BLUE_WOMB,
+	BACKWARDS,
+	HOME,
+	RED_REDEMPTION,
+	GREED,
+};
+
 struct DungeonGeneratorRoom {
 	RoomConfig_Room* room;
 	uint32_t col;

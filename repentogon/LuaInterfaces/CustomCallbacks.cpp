@@ -5651,7 +5651,7 @@ HOOK_STATIC(LuaEngine, PostEntityKill, (Entity* ent) -> void, __stdcall) {
 
 
 //MC_PRE_GENERATE_DUNGEON(1340)
-bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, int dungeonType) {
+bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationType dungeonType) {
 	const int callbackId = 1340;
 	if (!CallbackState.test(callbackId - 1000)) {
 		return false;
@@ -5682,7 +5682,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, int dungeonType) {
 
 HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 {
-	bool skip = ProcessGenerateDungeonCallback(this, *rng, 0);
+	bool skip = ProcessGenerateDungeonCallback(this, *rng, DEFAULT);
 	if (skip) {
 		return;
 	}
@@ -5691,7 +5691,7 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 }
 
 HOOK_METHOD(Level, generate_blue_womb, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, 1);
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, BLUE_WOMB);
 	if (skip) {
 		return;
 	}
@@ -5700,7 +5700,7 @@ HOOK_METHOD(Level, generate_blue_womb, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, 2);
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, BACKWARDS);
 	if (skip) {
 		return;
 	}
@@ -5709,7 +5709,7 @@ HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, 3);
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, HOME);
 	if (skip) {
 		return;
 	}
@@ -5718,7 +5718,7 @@ HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, 4);
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, RED_REDEMPTION);
 	if (skip) {
 		return;
 	}
@@ -5727,7 +5727,7 @@ HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
 }
 
 HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
-	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, 5);
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, GREED);
 	if (skip) {
 		return;
 	}
