@@ -40,6 +40,8 @@ Additions:
 	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
+	- [Get/Set]MawOfTheVoidCharge
+	- [Get/Set]MontezumaRevengeCharge
 	- [Get/Set]PlanCKillCountdown
 	- [Get/Set]PotatoPeelerUses
 		Used to increment Cube of Meat familiar form
