@@ -21,6 +21,10 @@ struct RoomCoords {
 		return row >= 0 && row <= 13 && col >= 0 && col <= 13;
 	}
 
+	int ToGridIndex() {
+		return col + row * 13;
+	}
+
 	bool operator==(RoomCoords const& other) const {
 		return this->row == other.row && this->col == other.col;
 	}
@@ -353,47 +357,46 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shap
 		if (!coords.IsValid()) {
 			return false;
 		}
+
+		int gridIndex = coords.ToGridIndex();
+
+		if (this->occupied_grid_indexes[gridIndex] || this->forbidden_grid_indexes[gridIndex]) {
+			return false;
+		}
 	}
 
 	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(base_coords, room_shape, doors);
+	for (RoomCoords coords : forbidden_coords) {
+		int gridIndex = coords.ToGridIndex();
 
-	for (int i = 0; i < this->num_rooms; i++) {
-		DungeonGeneratorRoom room = this->rooms[i];
-
-		RoomCoords other_base_coords(room.col, room.row);
-		std::vector<RoomCoords> other_occupied_coords = GetOccupiedCoords(other_base_coords, room.shape);
-		std::vector<RoomCoords> other_forbidden_coords = GetForbiddenNeighbors(other_base_coords, room.shape, doors);
-
-		for (RoomCoords coords : occupied_coords) {
-			for (RoomCoords other_coords : other_occupied_coords) {
-				if (coords == other_coords) {
-					return false;
-				}
-
-				for (RoomCoords forbidden_coord : forbidden_coords)
-				{
-					if (forbidden_coord == other_coords) {
-						return false;
-					}
-				}
-			}
-
-			for (RoomCoords other_forbidden_coord : other_forbidden_coords)
-			{
-				if (other_forbidden_coord == coords) {
-					return false;
-				}
-			}
+		if (this->occupied_grid_indexes[gridIndex]) {
+			return false;
 		}
 	}
 
 	return true;
 }
 
+void DungeonGenerator::FillOccupiedAndForbiddenIndexes(uint32_t row, uint32_t col, int shape, int doors) {
+	RoomCoords coords(col, row);
+
+	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(coords, shape);
+	for (RoomCoords coords : occupied_coords) {
+		this->occupied_grid_indexes.set(coords.ToGridIndex());
+	}
+
+	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(coords, shape, doors);
+	for (RoomCoords coords : occupied_coords) {
+		this->forbidden_grid_indexes.set(coords.ToGridIndex());
+	}
+}
+
 DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, int doors) {
 	this->rooms[this->num_rooms] = DungeonGeneratorRoom(room_config, col, row, doors);
 	this->num_rooms++;
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[this->num_rooms - 1];
+
+	FillOccupiedAndForbiddenIndexes(row, col, room_config->Shape, doors);
 
 	return generatorRoom;
 }
