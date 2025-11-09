@@ -21,12 +21,15 @@ struct DungeonGeneratorRoom {
 	DungeonGeneratorRoom();
 
 	DungeonGeneratorRoom(int list_index, RoomConfig_Room* room, uint32_t row, uint32_t col, int doors);
+
+	RoomConfig_Room* GetRoomConfig(uint32_t seed, int required_doors);
 };
 
 struct DungeonGenerator {
 	int num_rooms;
 	DungeonGeneratorRoom rooms[169];
 	RNG* rng;
+	LevelGenerator level_generator;
 	std::bitset<169> occupied_grid_indexes;
 	std::bitset<169> forbidden_grid_indexes;
 
@@ -34,9 +37,9 @@ struct DungeonGenerator {
 
 	DungeonGenerator(RNG* rng);
 
-	bool CanRoomBePlaced(uint32_t row, uint32_t col, int shape, int doors);
+	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected);
 
-	void FillOccupiedAndForbiddenIndexes(uint32_t row, uint32_t col, int shape, int doors);
+	void BlockPositionsFromAllowedDoords(XY& base_coords, int shape, int allowed_doors);
 
 	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col, int doors);
 
@@ -46,7 +49,7 @@ struct DungeonGenerator {
 
 	void CleanFloor(Level* level);
 
-	void DungeonGenerator::PlaceRoomsInFloor();
+	bool DungeonGenerator::PlaceRoomsInFloor();
 
 	bool Generate(Level* level);
 };

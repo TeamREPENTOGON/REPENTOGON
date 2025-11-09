@@ -31,6 +31,14 @@ DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, RoomConfig_Room* room
 	this->shape = room->Shape;
 }
 
+RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, int required_doors) {
+	if (this->room != nullptr) {
+		return this->room;
+	}
+
+	return nullptr;
+}
+
 #pragma endregion
 
 #pragma region DungeonGenerator Impl
@@ -38,32 +46,35 @@ DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, RoomConfig_Room* room
 DungeonGenerator::DungeonGenerator(RNG* rng) {
 	this->num_rooms = 0;
 	this->rng = rng;
+
+	this->level_generator._rng = *rng;
+	std::fill_n(this->level_generator._roomMap, 169, -1);
+	std::fill_n(this->level_generator._blockedPositions, 169, false);
+	this->level_generator._isChapter6 = false;
+	this->level_generator._isStageVoid = false;
+	this->level_generator._isXL = false;
 }
 
-bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shape, int doors) {
-	RoomCoords base_coords(col, row);
-	if (!base_coords.IsValid()) {
+bool DungeonGenerator::CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected) {
+	int base_grid_index = base_coords.ToGridIdx();
+	if (!this->level_generator.IsPositionInBounds(base_coords)) {
 		return false;
 	}
 
-	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(base_coords, room_shape);
-	for (RoomCoords coords : occupied_coords) {
-		if (!coords.IsValid()) {
-			return false;
-		}
+	if (!this->level_generator.is_pos_free(&base_coords, shape)) {
+		return false;
+	}
 
-		int gridIndex = coords.ToGridIndex();
-
-		if (this->occupied_grid_indexes[gridIndex] || this->forbidden_grid_indexes[gridIndex]) {
+	if (!allow_unconnected) {
+		if (!this->level_generator.is_placement_valid((unsigned int*)&base_grid_index, shape)) {
 			return false;
 		}
 	}
 
-	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(base_coords, room_shape, doors);
-	for (RoomCoords coords : forbidden_coords) {
-		int gridIndex = coords.ToGridIndex();
-
-		if (this->occupied_grid_indexes[gridIndex]) {
+	std::vector<XY> forbbidden_neighbors = GetForbiddenNeighbors(base_coords, shape, allowed_doors);
+	for (XY coords : forbbidden_neighbors) {
+		int grid_index = coords.ToGridIdx();
+		if (this->level_generator._roomMap[grid_index] > -1) {
 			return false;
 		}
 	}
@@ -71,28 +82,27 @@ bool DungeonGenerator::CanRoomBePlaced(uint32_t col, uint32_t row, int room_shap
 	return true;
 }
 
-void DungeonGenerator::FillOccupiedAndForbiddenIndexes(uint32_t row, uint32_t col, int shape, int doors) {
-	RoomCoords coords(col, row);
-
-	std::vector<RoomCoords> occupied_coords = GetOccupiedCoords(coords, shape);
-	for (RoomCoords coords : occupied_coords) {
-		this->occupied_grid_indexes.set(coords.ToGridIndex());
-	}
-
-	std::vector<RoomCoords> forbidden_coords = GetForbiddenNeighbors(coords, shape, doors);
-	for (RoomCoords coords : forbidden_coords) {
-		this->forbidden_grid_indexes.set(coords.ToGridIndex());
+void DungeonGenerator::BlockPositionsFromAllowedDoords(XY& base_coords, int shape, int allowed_doors) {
+	std::vector<XY> forbbidden_neighbors = GetForbiddenNeighbors(base_coords, shape, allowed_doors);
+	for (XY coords : forbbidden_neighbors) {
+		this->level_generator.BlockPosition(coords);
 	}
 }
 
 DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, int doors) {
-	int new_room_list_index = this->num_rooms;
+	LevelGenerator_Room level_generator_room;
+	level_generator_room._gridColIdx = col;
+	level_generator_room._gridLineIdx = row;
+	level_generator_room._shape = room_config->Shape;
+	bool result = this->level_generator.place_room(&level_generator_room);
+
+	LevelGenerator_Room placed_room = this->level_generator._rooms.at(this->level_generator._rooms.size() - 1);
+
+	int new_room_list_index = placed_room._generationIndex;
 
 	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, room_config, col, row, doors);
 	this->num_rooms++;
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[new_room_list_index];
-
-	FillOccupiedAndForbiddenIndexes(row, col, room_config->Shape, doors);
 
 	return generatorRoom;
 }
@@ -118,36 +128,44 @@ void DungeonGenerator::CleanFloor(Level* level) {
 	g_Game->_nbRooms = 0;
 }
 
-void DungeonGenerator::PlaceRoomsInFloor() {
-	for (int i = 0; i < this->num_rooms; i++)
+bool DungeonGenerator::PlaceRoomsInFloor() {
+	this->level_generator.calc_required_doors();
+
+	for (LevelGenerator_Room room : this->level_generator._rooms)
 	{
-		DungeonGeneratorRoom generator_room = this->rooms[i];
+		DungeonGeneratorRoom generator_room = this->rooms[room._generationIndex];
+		RoomConfig_Room* room_config = generator_room.GetRoomConfig(this->rng->Next(), room._doors);
 
-		if (generator_room.room != nullptr) {
-			LevelGenerator_Room level_generator_room;
-			level_generator_room._gridColIdx = generator_room.col;
-			level_generator_room._gridLineIdx = generator_room.row;
-			level_generator_room._doors = generator_room.doors;
-
-			uint32_t seed = this->rng->Next();
-
-			g_Game->PlaceRoom(&level_generator_room, generator_room.room, seed, 0);
+		if (room_config == nullptr) {
+			return false;
 		}
+
+		uint32_t seed = this->rng->Next();
+
+		g_Game->PlaceRoom(&room, room_config, seed, 0);
 	}
 
 	g_Game->_lastBossRoomListIdx = this->final_boss_index;
+
+	return true;
 }
 
 bool DungeonGenerator::Generate(Level* level) {
 	if (!this->ValidateFloor()) {
+		KAGE::_LogMessage(1, "[WARN] Failed to validate custom floor, not placing rooms.\n");
+
 		return false;
 	}
 
 	CleanFloor(level);
 
-	PlaceRoomsInFloor();
+	bool could_place_rooms = PlaceRoomsInFloor();
+	if (!could_place_rooms) {
+		KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
+		CleanFloor(level);
+	}
 
-	return true;
+	return could_place_rooms;
 }
 
 #pragma endregion
@@ -161,13 +179,15 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 4);
-	int doors = (int)luaL_optinteger(L, 5, 255);
+	int allowed_doors = (int)luaL_optinteger(L, 5, 255);
 
 	// Can't have more doors than what the config allows.
-	doors = doors & config->Doors;
+	allowed_doors = allowed_doors & config->Doors;
 
-	if (generator->CanRoomBePlaced(col, row, config->Shape, doors)) {
-		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, doors);
+	XY coords(col, row);
+
+	if (generator->CanRoomBePlaced(coords, config->Shape, allowed_doors, true)) {
+		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, allowed_doors);
 
 		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
 		*ud = generator_room;
@@ -187,9 +207,9 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 	uint32_t col = 6;
 	uint32_t row = 6;
 
-	KAGE::_LogMessage(0, "[SEX] dungeon %d\n", doors);
+	XY coords(col, row);
 
-	if (generator->CanRoomBePlaced(col, row, ROOMSHAPE_1x1, doors)) {
+	if (generator->CanRoomBePlaced(coords, ROOMSHAPE_1x1, doors, true)) {
 		int required_doors = 0;
 
 		RoomConfig* room_config = g_Game->GetRoomConfig();
