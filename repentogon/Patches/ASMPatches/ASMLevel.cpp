@@ -1,4 +1,5 @@
 #include "HookSystem.h"
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
@@ -37,10 +38,15 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 	if (g_Game->GetDimension() != 2) {
 		// to include Void portal rooms
 		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
-		for (int id = 0; id < 36; ++id) {
-			if (generateLevels.test(id)) {
-				//ZHL::Log("Adding stage id %d\n", id + 1);
-				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id + 1, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+		for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
+			if (generateLevels.test(id - 1)) {
+				//ZHL::Log("Adding stage id %d\n", id);
+				int getRoomsSubtype = subtype;
+				if (id == STB_THE_VOID && subtype == 0) {
+					// Allow any subtype to be pulled from `26.The Void_ex.xml` 
+					getRoomsSubtype = -1;
+				}
+				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, getRoomsSubtype, mode);
 				rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 			}
 		}
@@ -91,7 +97,7 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 			RoomConfig* roomConfig = &g_Game->_roomConfig;
 			if (roomConfig != nullptr) {
 				uint8_t mode = g_Game->IsGreedMode();
-				for (int id = 1; id < 37; ++id) {
+				for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
 					if (generateLevels.test(id - 1))
 						roomConfig->ResetRoomWeights(id, mode);
 				}
@@ -99,15 +105,15 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 			generateLevels.reset();
 		}
 		
-		for (int id = 1; id < 37; ++id) {
+		for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
 			if (repentogonOptions.betterVoidGeneration) {
-				if ((id > 17 && id < 26) || id == 34 || id == 35 || !IsFloorUnlocked(id))
+				if ((id >= STB_UNUSED1 && id <= STB_ULTRA_GREED) || id == STB_MORTIS || id == STB_HOME || !IsFloorUnlocked(id))
 					continue;
 			}
 			else
 			{
 				// mimic default generation (except for letting void rooms be added)
-				if ((id > 17 && id != 26) || id == 13)
+				if ((id > STB_CHEST && id != STB_THE_VOID) || id == STB_BLUE_WOMB)
 					continue;
 			}
 			generateLevels.set(id-1, true);
@@ -115,6 +121,39 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 	}
 
 	super(rng);
+}
+
+// Set the backdrop of rooms from the void_ex stb based on their subtype.
+// If the subtype is 0, or does not correspond to a vanilla backdrop, falls back to the
+// default behaviour of picking a random backdrop (the game already did this selection).
+// Custom backdrops not supported for now.
+int __stdcall PickVoidRoomBackdrop(Room* room, const int randomBackdrop) {
+	auto* roomConfig = room->_descriptor->Data;
+	if (roomConfig && roomConfig->StageId == STB_THE_VOID) {
+		const int subt = roomConfig->Subtype;
+		if (subt > 0 && subt < 63) {
+			return subt;
+		}
+	}
+	return randomBackdrop;
+}
+void ASMPatchVoidBackdropSelection() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidBackdropSelection);
+	const int8_t jumpOffset = *(int8_t*)((char*)addr + 0x4) + 0x5;
+
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for Void @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore LEA ESI,[EAX+0x1]
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // BackdropType
+		.Push(ASMPatch::Registers::EDI)  // Room*
+		.AddInternalCall(PickVoidRoomBackdrop)
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
