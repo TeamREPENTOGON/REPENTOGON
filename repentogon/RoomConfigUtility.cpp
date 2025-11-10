@@ -481,7 +481,7 @@ std::optional<RoomEntry> RoomConfigUtility::BuildSpawnEntryFromLua(lua_State* L,
 
 #pragma region Json
 
-constexpr uint32_t ROOM_SERIALIZATION_VERSION = 1;
+constexpr uint32_t ROOM_SERIALIZATION_VERSION = 2;
 constexpr uint32_t SPAWN_SERIALIZATION_VERSION = 1;
 constexpr uint32_t SPAWN_ENTRY_SERIALIZATION_VERSION = 1;
 
@@ -501,6 +501,7 @@ rapidjson::Value RoomConfigUtility::SerializeRoom(const RoomConfig_Room& room, r
 	jsonRoom.AddMember("Name", name, allocator);
 	jsonRoom.AddMember("Difficulty", room.Difficulty, allocator);
 	jsonRoom.AddMember("Weight", room.InitialWeight, allocator);
+	jsonRoom.AddMember("Doors", room.Doors, allocator);
 	jsonRoom.AddMember("Shape", room.Shape, allocator);
 
 	rapidjson::Value jsonSpawns(rapidjson::kArrayType);
@@ -658,13 +659,17 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 	room.Name = LogUtility::Json::ReadStringMember(roomNode, "Name", logContext, false).value_or("");
 	room.Difficulty = LogUtility::Json::ReadIntegerMember<int>(roomNode, "Difficulty", logContext, false).value_or(0);
 	room.Weight = LogUtility::Json::ReadNumberMember<float>(roomNode, "Weight", logContext, false).value_or(0.0f);
-
+	room.InitialWeight = room.Weight;
+	
 	if (room.Weight < 0.0f)
 	{
 		LogUtility::Json::LogInvalidArg(logContext, "weight cannot be negative", "Weight");
+		room.InitialWeight = 0.0f;
 		room.Weight = 0.0f;
 	}
-
+	
+	room.Doors = LogUtility::Json::ReadIntegerMember<uint32_t>(roomNode, "Doors", logContext, false).value_or(0);
+	
 	room.Shape = LogUtility::Json::ReadIntegerMember<int>(roomNode, "Shape", logContext, false).value_or(ROOMSHAPE_1x1);
 
 	if (!IsShapeValid(room.Shape))
