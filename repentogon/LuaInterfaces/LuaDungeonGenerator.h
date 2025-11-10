@@ -30,8 +30,6 @@ struct DungeonGenerator {
 	DungeonGeneratorRoom rooms[169];
 	RNG* rng;
 	LevelGenerator level_generator;
-	std::bitset<169> occupied_grid_indexes;
-	std::bitset<169> forbidden_grid_indexes;
 
 	int final_boss_index = -1;
 
