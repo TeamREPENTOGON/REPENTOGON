@@ -1,4 +1,4 @@
-v1.0.x -
+v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
 Additions:
