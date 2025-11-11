@@ -5661,7 +5661,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	lua::LuaStackProtector protector(L);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	DungeonGenerator generator(&rng);
+	DungeonGenerator generator(&rng, level);
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push((int)dungeonType)
@@ -5675,7 +5675,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 		return false;
 	}
 
-	bool correctGeneration = generator.Generate(level);
+	bool correctGeneration = generator.Generate();
 
 	return correctGeneration;
 }

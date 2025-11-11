@@ -1687,6 +1687,21 @@ local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity
 	return recentRet
 end
 
+local function RunPreGenerateDungeonCallback(callbackID, param, dungeonGenerator, rng, dungeonType)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
+
+		if type(ret) == "boolean" and ret then
+			local canGenerate = dungeonGenerator:Validate()
+			if canGenerate then
+				return true
+			else
+				dungeonGenerator:Reset()
+			end
+		end
+	end
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1728,6 +1743,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_ADD_TRINKET] = RunPreAddTrinketCallback,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PLAYER_GET_HEART_LIMIT] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_GENERATE_DUNGEON] = RunPreGenerateDungeonCallback
 }
 
 for _, callback in ipairs({

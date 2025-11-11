@@ -26,14 +26,14 @@ struct DungeonGeneratorRoom {
 };
 
 struct DungeonGenerator {
-	int num_rooms;
 	DungeonGeneratorRoom rooms[169];
 	RNG* rng;
+	Level* level;
 	LevelGenerator level_generator;
 
 	int final_boss_index = -1;
 
-	DungeonGenerator(RNG* rng);
+	DungeonGenerator(RNG* rng, Level* level);
 
 	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected);
 
@@ -45,9 +45,13 @@ struct DungeonGenerator {
 
 	bool ValidateFloor();
 
-	void CleanFloor(Level* level);
+	void CleanFloor();
 
 	bool DungeonGenerator::PlaceRoomsInFloor();
 
-	bool Generate(Level* level);
+	bool Generate();
+
+	void Reset();
+
+	void ResetLevelGenerator();
 };

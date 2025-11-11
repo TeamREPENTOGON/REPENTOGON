@@ -43,16 +43,15 @@ RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, int required
 
 #pragma region DungeonGenerator Impl
 
-DungeonGenerator::DungeonGenerator(RNG* rng) {
-	this->num_rooms = 0;
+DungeonGenerator::DungeonGenerator(RNG* rng, Level* level) {
 	this->rng = rng;
+	this->level = level;
 
 	this->level_generator._rng = *rng;
-	std::fill_n(this->level_generator._roomMap, 169, -1);
-	std::fill_n(this->level_generator._blockedPositions, 169, false);
 	this->level_generator._isChapter6 = false;
 	this->level_generator._isStageVoid = false;
 	this->level_generator._isXL = false;
+	this->ResetLevelGenerator();
 }
 
 bool DungeonGenerator::CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected) {
@@ -101,7 +100,6 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, 
 	int new_room_list_index = placed_room._generationIndex;
 
 	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, room_config, col, row, doors);
-	this->num_rooms++;
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[new_room_list_index];
 
 	return generatorRoom;
@@ -114,11 +112,29 @@ void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
 bool DungeonGenerator::ValidateFloor() {
 	bool has_final_room = this->final_boss_index >= 0;
 
+	// Check if all rooms can fetch a room config
+	int initial_seed = this->rng->_seed;
+
+	for (LevelGenerator_Room room : this->level_generator._rooms)
+	{
+		DungeonGeneratorRoom generator_room = this->rooms[room._generationIndex];
+		RoomConfig_Room* room_config = generator_room.GetRoomConfig(this->rng->Next(), room._doors);
+
+		if (room_config == nullptr) {
+			return false;
+		}
+		
+		// When placing the rooms the rng is advanced here too.
+		this->rng->Next();
+	}
+	
+	this->rng->_seed = initial_seed;
+
 	return has_final_room;
 }
 
-void DungeonGenerator::CleanFloor(Level* level) {
-	level->reset_room_list(false);
+void DungeonGenerator::CleanFloor() {
+	this->level->reset_room_list(false);
 
 	for (size_t i = 0; i < 507; i++)
 	{
@@ -126,6 +142,25 @@ void DungeonGenerator::CleanFloor(Level* level) {
 	}
 
 	g_Game->_nbRooms = 0;
+}
+
+void DungeonGenerator::ResetLevelGenerator() {
+	std::fill_n(this->level_generator._roomMap, 169, -1);
+	std::fill_n(this->level_generator._blockedPositions, 169, false);
+
+	this->level_generator._rooms.clear();
+}
+
+void DungeonGenerator::Reset() {
+	this->CleanFloor();
+
+	this->ResetLevelGenerator();
+
+	this->final_boss_index = -1;
+	for (size_t i = 0; i < 169; i++)
+	{
+		this->rooms[i] = DungeonGeneratorRoom();
+	}
 }
 
 bool DungeonGenerator::PlaceRoomsInFloor() {
@@ -150,19 +185,20 @@ bool DungeonGenerator::PlaceRoomsInFloor() {
 	return true;
 }
 
-bool DungeonGenerator::Generate(Level* level) {
+bool DungeonGenerator::Generate() {
 	if (!this->ValidateFloor()) {
 		KAGE::_LogMessage(1, "[WARN] Failed to validate custom floor, not placing rooms.\n");
+		Reset();
 
 		return false;
 	}
 
-	CleanFloor(level);
+	CleanFloor();
 
 	bool could_place_rooms = PlaceRoomsInFloor();
 	if (!could_place_rooms) {
 		KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
-		CleanFloor(level);
+		Reset();
 	}
 
 	return could_place_rooms;
@@ -259,6 +295,24 @@ LUA_FUNCTION(Lua_BlockIndex) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Validate) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	bool result = generator->ValidateFloor();
+
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Reset) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	generator->Reset();
+
+	return 0;
+}
+
 
 static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
@@ -266,6 +320,8 @@ static void RegisterDungeonGenerator(lua_State* L) {
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
 		{"PlaceDefaultStartingRoom", Lua_PlaceDefaultStartingRoom},
 		{"BlockIndex", Lua_BlockIndex},
+		{"Validate", Lua_Validate},
+		{"Reset", Lua_Reset},
 		{ NULL, NULL }
 	};
 
