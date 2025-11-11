@@ -34,6 +34,7 @@ void __stdcall LoadCustomMinimapANM2(ModEntry* mod) {
         if (ex != nullptr) {
 			ex->_customMinimapANM2.Load(path, true);
         }
+		delete[] expanded;
     }
 }
 
