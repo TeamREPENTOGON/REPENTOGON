@@ -233,12 +233,12 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
 		*ud = generator_room;
 		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-
-		return 1;
 	}
 	else {
-		return 0;
+		lua_pushnil(L);
 	}
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_SetFinalBossRoom) {
