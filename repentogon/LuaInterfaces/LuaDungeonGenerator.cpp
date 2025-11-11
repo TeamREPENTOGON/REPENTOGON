@@ -210,7 +210,7 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 	XY coords(col, row);
 
 	if (generator->CanRoomBePlaced(coords, ROOMSHAPE_1x1, doors, true)) {
-		int required_doors = 0;
+		unsigned int required_doors = 0;
 
 		RoomConfig* room_config = g_Game->GetRoomConfig();
 		RoomConfig_Room* config = room_config->GetRandomRoom(
@@ -223,7 +223,7 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 			2,
 			0,
 			10,
-			(unsigned int*)&required_doors, // If I don't do it like this it shits itself
+			&required_doors, // If I don't do it like this it shits itself
 			0,
 			-1
 		);
@@ -241,7 +241,6 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 	}
 }
 
-
 LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
@@ -251,11 +250,22 @@ LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BlockIndex) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+	int grid_index = (int)luaL_checkinteger(L, 2);
+
+	generator->level_generator.BlockPosition(grid_index);
+
+	return 0;
+}
+
+
 static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{"PlaceRoom", Lua_PlaceRoom},
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
 		{"PlaceDefaultStartingRoom", Lua_PlaceDefaultStartingRoom},
+		{"BlockIndex", Lua_BlockIndex},
 		{ NULL, NULL }
 	};
 
