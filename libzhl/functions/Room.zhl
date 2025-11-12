@@ -137,6 +137,9 @@ __thiscall void Room::SpawnGreedModeWave(bool unusedBool);
 "558bec83e4f851538b5d??56578bf9":
 __thiscall void Room::TriggerOutput(unsigned int outputGroupdIdx);
 
+"8b41??85c074??8b40??85c074??8b00":
+__thiscall int Room::GetRoomConfigStage();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }

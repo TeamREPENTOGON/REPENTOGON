@@ -215,7 +215,7 @@ void PerformASMPatches() {
 	// Level
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
-	ASMPatchVoidBackdropSelection();
+	ASMPatchesForVoidExSubtype();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();  // This was disabled prior to rep+, ignore it!

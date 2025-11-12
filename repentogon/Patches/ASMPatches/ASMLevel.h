@@ -2,7 +2,7 @@
 
 void ASMPatchBlueWombCurse();
 void ASMPatchVoidGeneration();
-void ASMPatchVoidBackdropSelection();
+void ASMPatchesForVoidExSubtype();
 void PatchSpecialQuest();
 void ASMPatchDealRoomVariants();
 void PatchOverrideDataHandling();

@@ -123,37 +123,80 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 	super(rng);
 }
 
-// Set the backdrop of rooms from the void_ex stb based on their subtype.
-// If the subtype is 0, or does not correspond to a vanilla backdrop, falls back to the
-// default behaviour of picking a random backdrop (the game already did this selection).
-// Custom backdrops not supported for now.
-int __stdcall PickVoidRoomBackdrop(Room* room, const int randomBackdrop) {
-	auto* roomConfig = room->_descriptor->Data;
-	if (roomConfig && roomConfig->StageId == STB_THE_VOID) {
-		const int subt = roomConfig->Subtype;
-		if (subt > 0 && subt < 63) {
-			return subt;
+bool IsVoidExRoom() {
+	Room* room = g_Game->_room;
+	if (room->_descriptor && room->_descriptor->Data) {
+		RoomConfig_Room* roomConfig = room->_descriptor->Data;
+		return roomConfig->StageId == STB_THE_VOID;
+	}
+	return false;
+}
+int GetVoidExRoomStageId() {
+	if (IsVoidExRoom()) {
+		RoomConfig_Room* roomConfig = g_Game->_room->_descriptor->Data;
+		if (roomConfig->Subtype > 0 && roomConfig->Subtype < NUM_STB) {
+			return roomConfig->Subtype;
 		}
 	}
-	return randomBackdrop;
+	return STB_THE_VOID;
 }
-void ASMPatchVoidBackdropSelection() {
-	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidBackdropSelection);
-	const int8_t jumpOffset = *(int8_t*)((char*)addr + 0x4) + 0x5;
 
-	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for Void @ %p\n", addr);
+// Interpret the subtype of void_ex rooms as an StbType, and load the backdrop/fx appropriate for that stage.
+int __stdcall LoadBackdropGraphicsVoidExTrampoline(const int original) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return original;
+}
+void PatchLoadBackdropGraphicsVoidEx(void* addr, const bool ecx) {
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for void_ex @ %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~(ecx ? ASMPatch::SavedRegisters::Registers::ECX : ASMPatch::SavedRegisters::Registers::EAX), true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x3))  // Restore LEA ESI,[EAX+0x1]
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overwritten bytes
 		.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ESI)  // BackdropType
-		.Push(ASMPatch::Registers::EDI)  // Room*
-		.AddInternalCall(PickVoidRoomBackdrop)
-		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
+		.Push(ecx ? ASMPatch::Registers::ECX : ASMPatch::Registers::EAX)
+		.AddInternalCall(LoadBackdropGraphicsVoidExTrampoline);
+	if (ecx) {
+		patch.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX);
+	}
+	patch.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+int __stdcall RoomInitVoidExTrampoline(const bool unused) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return g_Game->GetStageID(unused);
+}
+void PatchRoomInitVoidEx() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RoomInit_VoidEx);
+
+	ZHL::Log("[REPENTOGON] Patching Room::Init for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::ECX)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(RoomInitVoidExTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void ASMPatchesForVoidExSubtype() {
+	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx1), true);
+	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx2), false);
+	PatchRoomInitVoidEx();
+}
+
+// This function is used to determine Portal (enemy) spawns and certain floor-specific enemy replacements.
+HOOK_METHOD(Room, GetRoomConfigStage, () -> int) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return super();
 }
 
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
