@@ -73,6 +73,9 @@ static RoomConfig_Room* Level::read_room_config(GameStateRoomConfig* room, std_d
 "558bec83e4f883ec148b55":
 static void Level::write_room_config(RoomConfig_Room* roomConfig, GameStateRoomConfig* gameStateRoom, std_deque_RoomConfigRoom* deque);
 
+"8b0d????????8b81????????8b80????????83f81f":
+static int Level::GetStageID();
+
 struct Level {
 	uint32_t _stage : 0x0;
 	uint32_t _stageType : 0x4;

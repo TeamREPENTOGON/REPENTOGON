@@ -24,6 +24,9 @@ void ASMPatchBlueWombCurse() {
 }
 
 bool IsFloorUnlocked(unsigned int stageId) {
+	if ((stageId >= STB_UNUSED1 && stageId <= STB_ULTRA_GREED) || stageId >= STB_BACKWARDS) {
+		return false;
+	}
 	int achievement = stageidToAchievement[stageId];
 	if (achievement != -1) {
 		PersistentGameData* pgd = &g_Manager->_persistentGameData;
@@ -39,7 +42,7 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 		// to include Void portal rooms
 		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
 		for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
-			if (generateLevels.test(id - 1)) {
+			if (id == STB_THE_VOID || generateLevels.test(id - 1)) {
 				//ZHL::Log("Adding stage id %d\n", id);
 				int getRoomsSubtype = subtype;
 				if (id == STB_THE_VOID && subtype == 0) {
@@ -47,7 +50,16 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 					getRoomsSubtype = -1;
 				}
 				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, getRoomsSubtype, mode);
-				rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+				if (id == STB_THE_VOID && subtype == 0) {
+					// Respect `generateLevels` for void_ex room subtypes.
+					for (RoomConfig_Room* room : stageRooms) {
+						if (room->Subtype == 0 || room->Subtype == STB_THE_VOID || (room->Subtype > 0 && room->Subtype < NUM_STB && generateLevels.test(room->Subtype - 1))) {
+							rooms->push_back(room);
+						}
+					}
+				} else {
+					rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+				}
 			}
 		}
 		return true;
@@ -133,9 +145,20 @@ bool IsVoidExRoom() {
 }
 int GetVoidExRoomStageId() {
 	if (IsVoidExRoom()) {
-		RoomConfig_Room* roomConfig = g_Game->_room->_descriptor->Data;
-		if (roomConfig->Subtype > 0 && roomConfig->Subtype < NUM_STB) {
+		RoomDescriptor* roomDesc = g_Game->_room->_descriptor;
+		RoomConfig_Room* roomConfig = roomDesc->Data;
+		if ((roomConfig->Subtype >= STB_BASEMENT && roomConfig->Subtype <= STB_CHEST) || (roomConfig->Subtype >= STB_DOWNPOUR && roomConfig->Subtype <= STB_HOME)) {
 			return roomConfig->Subtype;
+		} else {
+			RNG rng;
+			rng.SetSeed(roomDesc->DecorationSeed, 7);
+			if (repentogonOptions.betterVoidGeneration && rng.RandomInt(3) == 0) {
+				const int id = STB_DOWNPOUR + rng.RandomInt(1 + STB_CORPSE - STB_DOWNPOUR);
+				if (IsFloorUnlocked(id)) {
+					return id;
+				}
+			}
+			return rng.RandomInt(STB_CHEST) + 1;
 		}
 	}
 	return STB_THE_VOID;
@@ -193,6 +216,14 @@ void ASMPatchesForVoidExSubtype() {
 
 // This function is used to determine Portal (enemy) spawns and certain floor-specific enemy replacements.
 HOOK_METHOD(Room, GetRoomConfigStage, () -> int) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return super();
+}
+
+// Used for a few things including hasFloorAlt skins.
+HOOK_STATIC(Level, GetStageID, () -> int, _stdcall) {
 	if (IsVoidExRoom()) {
 		return GetVoidExRoomStageId();
 	}
