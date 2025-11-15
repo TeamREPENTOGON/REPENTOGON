@@ -208,10 +208,91 @@ void PatchRoomInitVoidEx() {
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+int __stdcall PortalsVoidExTrampoline1(const int levelStage, bool* isNonBaseStageType) {
+	if (g_Game->_stage == STAGE7) {
+		int stage = g_Game->_room->GetRoomConfigStage();
+		if (stage == STB_MINES || stage == STB_ASHPIT) {
+			return STAGE2_1;
+		} else if (stage == STB_MAUSOLEUM || stage == STB_GEHENNA) {
+			return STAGE3_1;
+		} else if (stage == STB_MORTIS || stage == STB_CORPSE) {
+			return STAGE4_1;
+		} else if (stage == STB_CHEST || stage == STB_DARK_ROOM) {
+			*isNonBaseStageType = (stage == STB_CHEST);
+			return STAGE5;
+		} else if (stage == STB_BLUE_WOMB) {
+			return STAGE4_1;
+		} else if (stage >= STB_HOME) {
+			*isNonBaseStageType = false;
+			return STAGE1_1;
+		}
+	} else if (levelStage == STAGE4_3) {
+		return STAGE4_1;
+	} else if (levelStage == STAGE6) {
+		return STAGE5;
+	} else if (levelStage >= STAGE8) {
+		*isNonBaseStageType = false;
+		return STAGE1_1;
+	}
+	return levelStage;
+}
+void PatchPortalsVoidEx1() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Portals_VoidEx1);
+
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore overwritten bytes
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::ESP)
+		.PreserveRegisters(savedRegisters)
+		.AddBytes("\x8D\x46\x4F")
+		.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(PortalsVoidExTrampoline1)
+		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+int __stdcall PortalsVoidExTrampoline2(const int stageType) {
+	if (g_Game->_stage == STAGE7) {
+		int stage = g_Game->_room->GetRoomConfigStage();
+		if (stage == STB_DOWNPOUR) {
+			return STAGETYPE_REPENTANCE;
+		} else if (stage == STB_DROSS) {
+			return STAGETYPE_REPENTANCE_B;
+		}
+	}
+	return stageType;
+}
+void PatchPortalsVoidEx2() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Portals_VoidEx2);
+
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore overwritten bytes
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(PortalsVoidExTrampoline2)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xA);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchPortalUnaliveSelf() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PortalUnaliveSelf);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal self destruction @ %p\n", addr);
+	sASMPatcher.FlatPatch((char*)addr, "\x90\x90\x90", 3);
+}
 void ASMPatchesForVoidExSubtype() {
 	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx1), true);
 	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx2), false);
 	PatchRoomInitVoidEx();
+	PatchPortalsVoidEx1();
+	PatchPortalsVoidEx2();
+	PatchPortalUnaliveSelf();
 }
 
 // This function is used to determine Portal (enemy) spawns and certain floor-specific enemy replacements.
