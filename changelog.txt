@@ -102,6 +102,7 @@ Additions:
 	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
 	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
 	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
+	- RenderCollectionItem(CollectilbeType Collectible, Vector Position, Vector Scale = Vector.One, Color Color = Color.Default)
 	- ReworkCollectible(Collectible): marks the collectible as reworked, making the game not execute the item's original logic.
 	- ReworkBirthright(PlayerType): marks the birthright as reworked, making the game not execute the item's original logic.
 	- ReworkTrinket(Trinket): marks the trinket as reworked, making the game not execute the trinket's original logic.

@@ -869,6 +869,39 @@ LUA_FUNCTION(Lua_ReworkTrinket)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RenderCollectionItem)
+{
+	const int itemID = (int)luaL_checkinteger(L, 1);
+
+	if (!g_Manager->_itemConfig.GetCollectible(itemID)) {
+		return luaL_argerror(L, 1, "Invalid collectible ID");
+	}
+
+	Vector posVec = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	Vector scaleVec;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		scaleVec = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	}
+	else {
+		scaleVec = Vector(1, 1);
+	}
+
+	ColorMod color;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+	}
+	else {
+		color = ColorMod();
+	}
+
+	BlendMode blendMode = BlendMode(1);
+
+	g_Game->_gameOver.RenderItemSprite(itemID, &posVec, &color, &scaleVec, &blendMode);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -931,6 +964,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
