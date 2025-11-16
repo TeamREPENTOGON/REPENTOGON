@@ -132,6 +132,9 @@ Additions:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
+* RoomDescriptor:
+	- [Get/Set]TaintedKeeperCoinSpawns
+		Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
 * ScoreSheet:
 	- GetBeastBonus
 	- GetDeliriumBonus
