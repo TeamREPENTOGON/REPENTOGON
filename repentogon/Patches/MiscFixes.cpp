@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "LuaCore.h"
+#include <filesystem>
 
 // The GameOver class stores an EntityConfig_Entity reference for the modded entity that the player dies to,
 // in order to access the mod's death portraits. However, it does not clear this reference when the
@@ -51,6 +52,23 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 	}
 	super();
 };
+
+// Fix mods folder redir for fonts
+HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
+	std::string newPath = path;
+	std::string lower = newPath;
+	std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+	if (lower._Starts_with("mods/") || lower._Starts_with("mods\\"))
+	{
+		char buffer[MAX_PATH];
+		DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+		std::filesystem::path newerPath = std::filesystem::path(std::string(buffer, len));
+		newPath = newerPath.parent_path().parent_path().string() + "/" + newPath;
+		return super(newPath.c_str(), unusedIsLoading);
+	}
+	super(path, unusedIsLoading);
+}
+
 
 // Fix crash if nil is passed as the string from luaside.
 HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
