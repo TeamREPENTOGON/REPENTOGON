@@ -365,6 +365,10 @@ ___
 Sets the appended text on the game's window title.
 
 ___
+### RenderCollectionItem () {: aria-label='Functions' }
+#### void RenderCollectionItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position, [Vector](Vector.md) Scale = Vector.One, [Color](Color.md) Color = Color.Default ) {: .copyable aria-label='Functions' }
+Renders item collection sprite from collection menu/death screen. 
+___
 ### ReworkCollectible () {: aria-label='Functions' }
 #### void ReworkCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectible ) {: .copyable aria-label='Functions' }
 Marks the collectible as reworked, making the game not execute the item's original passive logic.

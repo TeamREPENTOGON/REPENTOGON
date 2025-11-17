@@ -72,8 +72,17 @@ ___
 #### int[] GetRestrictedGridIndexes ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetTaintedKeeperCoinSpawns () {: aria-label='Functions' }
+#### int GetTaintedKeeperCoinSpawns ( ) {: .copyable aria-label='Functions' }
+Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
+
+___
 ### InitSeeds () {: aria-label='Functions' }
 #### void InitSeeds ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+
+___
+### SetTaintedKeeperCoinSpawns () {: aria-label='Functions' }
+#### void SetTaintedKeeperCoinSpawns ( int Num ) {: .copyable aria-label='Functions' }
 
 ___
 
