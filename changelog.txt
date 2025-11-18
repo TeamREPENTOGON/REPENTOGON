@@ -1,4 +1,4 @@
-v1.0.x -
+v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
 Additions:
@@ -40,6 +40,8 @@ Additions:
 	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
+	- [Get/Set]MawOfTheVoidCharge
+	- [Get/Set]MontezumaRevengeCharge
 	- [Get/Set]PlanCKillCountdown
 	- [Get/Set]PotatoPeelerUses
 		Used to increment Cube of Meat familiar form
@@ -100,6 +102,7 @@ Additions:
 	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
 	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
 	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
+	- RenderCollectionItem(CollectibleType Collectible, Vector Position, Vector Scale = Vector.One, Color Color = Color.Default)
 	- ReworkCollectible(Collectible): marks the collectible as reworked, making the game not execute the item's original logic.
 	- ReworkBirthright(PlayerType): marks the birthright as reworked, making the game not execute the item's original logic.
 	- ReworkTrinket(Trinket): marks the trinket as reworked, making the game not execute the trinket's original logic.
@@ -129,6 +132,13 @@ Additions:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
+* RoomDescriptor:
+	- [Get/Set]TaintedKeeperCoinSpawns
+		Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
+* ScoreSheet:
+	- GetBeastBonus
+	- GetDeliriumBonus
+	- GetMotherBonus
 * Seeds:
 	- SetStageSeed(LevelStage, Seed)
 * FXLayers:

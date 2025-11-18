@@ -394,7 +394,7 @@ string getFileName(const string& filePath) {
 
 //Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
 HOOK_METHOD(MenuManager, Update, ()-> void) {
-	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19) {
+	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19 || g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
 		g_MenuManager->_selectedMenuID = 1;
 	}
 	super();

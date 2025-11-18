@@ -9,8 +9,8 @@
 // By default, the void path is "rooms/01.Basement.xml" which is not ideal!
 // Redirect to "rooms/26.The Void_ex.xml" since the game already has a "rooms/26.The Void.xml" that hasn't been tested.
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
-	if (Stage == 26 && g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath == "rooms/01.Basement.xml")
-		g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath = "rooms/26.The Void_ex.xml";
+	if (Stage == STB_THE_VOID && g_Game->GetRoomConfig()->_stages[STB_THE_VOID]._rooms[Mode]._filepath == "rooms/01.Basement.xml")
+		g_Game->GetRoomConfig()->_stages[STB_THE_VOID]._rooms[Mode]._filepath = "rooms/26.The Void_ex.xml";
 	super(Stage, Mode);
 }
 

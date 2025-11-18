@@ -208,7 +208,6 @@ a.const.tooltip:after {
 
 
 /**** DARK MODE ****/
-
 [data-md-color-scheme="slate"] {
     --function-color: #405e9a;
     --function-color-light: #272938;
@@ -273,7 +272,9 @@ a.const.tooltip:after {
     --md-code-hl-keyword-color: hsla(219, 66%, 64%, 1);
     --md-code-hl-string-color: hsla(150, 58%, 44%, 1);
 }
-
+[data-md-color-scheme=slate][data-md-color-primary=indigo] {
+    --md-typeset-a-color: #ffc41e;
+}
 
 
 /**** TOOLTIP ****/
@@ -376,6 +377,11 @@ details>summary {
     line-height: 2.3;
 }
 
+.md-tabs {
+    background-color: var(--md-primary-fg-color) !important;
+    color: white !important;
+}
+
 .md-tabs__link {
     /* smaller top bar */
     margin-top: 0;
@@ -386,9 +392,31 @@ details>summary {
     height: 1.4rem;
 }
 
+.md-header {
+    background-color: var(--md-primary-fg-color) !important;
+    color: white !important;
+}
+
 .md-header-nav__source {
     /* lesser padding to github top bar entry */
     width: 10rem;
+}
+
+.md-nav__title .md-ellipsis {
+    color: white !important;
+}
+
+.md-search__button::before {
+    background: white !important;
+}
+
+.md-search__button {
+    color: white !important;
+    background: hsla(232, 75%, 90%, 0.12) !important;
+}
+
+.md-search__button::after {
+    background: hsla(232, 15%, 21%, 0.54) !important;
 }
 
 .md-main__inner {
@@ -781,4 +809,9 @@ td>.copyButton>span::after {
 /*** Hide diagrams in their "codeblock" version, which exists on page load **/
 .mermaidDiagram > pre{
     visibility: hidden;
+}
+
+/* 3rd attempt */
+div[style*="position: fixed"][style*="z-index: 4"] {
+  height: 100%;
 }

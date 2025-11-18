@@ -439,11 +439,11 @@ struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 		int j = 1;
 		for (size_t i = 0; i < ud->data->size(); ++i) {
 			EntitySaveState const& st = (*ud->data)[i];
-			if (st.type == type && st.variant == variant && st.subtype == subtype) {
+			if (st.type == type && (variant == -1 || st.variant == variant) && (subtype == -1 || st.subtype == subtype)) {
 				lua_pushinteger(L, j);
 				Lua_EntitySaveStateAPI* result = lua::place<Lua_EntitySaveStateAPI>(L, lua::metatables::EntitySaveStateMT);
 				result->vec = ud->data;
-				result->index = j;
+				result->index = i;
 				lua_rawset(L, -3);
 
 				++j;

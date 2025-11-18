@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	int stage = (int)luaL_checkinteger(L, 1);
 
-	if (stage < 0 || stage > 36) {
+	if (stage < 0 || stage >= NUM_STB) {
 		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
 	}
 
@@ -54,7 +54,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	bool reduceWeight = lua::luaL_checkboolean(L, 2);
 
 	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
+	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
 		return luaL_error(L, "Invalid stage %d\n", stage);
 	}
 

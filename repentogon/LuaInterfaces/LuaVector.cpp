@@ -97,7 +97,7 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else {
-		luaL_error(L, "Invalid types for division: %s * %s\n", lua_typename(L, t1), lua_typename(L, t2));
+		luaL_error(L, "Invalid types for division: %s / %s\n", lua_typename(L, t1), lua_typename(L, t2));
 	}
 
 	return 1;

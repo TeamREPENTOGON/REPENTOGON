@@ -73,7 +73,7 @@ ___
 Returns the wrap mode for the `x` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
 ???+ info "Info"
-  Enums for these are pending.
+    Enums for these are pending.
 
 ___
 ### GetWrapTMode () {: aria-label='Functions' }
@@ -81,7 +81,7 @@ ___
 Returns the wrap mode for the `y` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
 ???+ info "Info"
-  Enums for these are pending.
+    Enums for these are pending.
 
 ___
 ### HasCustomChampionShader () {: aria-label='Functions' }
@@ -157,7 +157,7 @@ ___
 Sets the wrap mode for the `x` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
 ???+ info "Info"
-  Enums for these are pending.
+    Enums for these are pending.
 
 ___
 ### SetWrapTMode () {: aria-label='Functions' }
@@ -165,6 +165,6 @@ ___
 Sets the wrap mode for the `y` coordinate. See [this website](https://open.gl/textures) for a general overview.
 
 ???+ info "Info"
-  Enums for these are pending.
+    Enums for these are pending.
 
 ___

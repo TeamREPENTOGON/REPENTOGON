@@ -40,7 +40,7 @@ More sophisticated version of [ItemPool:GetCard()](https://wofsauge.github.io/Is
 
 ___
 ### GetCollectibleFromList () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeActiveItems = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCollectiblesFromPool () {: aria-label='Functions' }
@@ -103,21 +103,21 @@ Normally this function is tied to the same rules as Chaos, meaning that you can 
     ```
 
 ???+ example "Pick Pool From Vanilla"
-This code picks a random pool from any of the vanilla
+    This code picks a random pool from any of the vanilla
 
-```lua
-local itemPool = Game():GetItemPool()
+    ```lua
+    local itemPool = Game():GetItemPool()
 
-local CustomPools = {}
+    local CustomPools = {}
 
--- Put all custom pools within the Filter
-for i = 31, itemPool:GetNumItemPools() - 1 do
-	table.insert(CustomPools, i)
-end
+    -- Put all custom pools within the Filter
+    for i = 31, itemPool:GetNumItemPools() - 1 do
+        table.insert(CustomPools, i)
+    end
 
-local rng = RNG(Random()) -- replace this with your own rng
-local randomPool = Game():GetItemPool():GetRandomPool(rng, true, CustomPools, false)
-```
+    local rng = RNG(Random()) -- replace this with your own rng
+    local randomPool = Game():GetItemPool():GetRandomPool(rng, true, CustomPools, false)
+    ```
 
 ___
 ### GetRemovedCollectibles () {: aria-label='Functions' }
@@ -183,19 +183,19 @@ The table contains the following fields:
 | isUnlocked | boolean | |
 
 ???+ info "Differences with GetCollectible"
-For reference GetCollectible() **Gives Up** after either this function has failed to pick an Unlocked collectible 20 times in a row or has failed to produce any result at all (nil).
-
-- Does not generate a [Glitched Item](ProceduralItem.md) when having the `CollectibleType.COLLECTIBLE_TMTRAINER` effect.
-
-- Does not randomize the pool when having the `CollectibleType.COLLECTIBLE_CHAOS` effect.
-
-- Does not attempt to get a collectible from `ItemPoolType.POOL_TREASURE` if **Giving up**.
-
-- Does not morph the collectible into `CollectibleType.COLLECTIBLE_BREAKFAST` if **Giving up**.
-
-- Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
-
-- Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
+    For reference GetCollectible() **Gives Up** after either this function has failed to pick an Unlocked collectible 20 times in a row or has failed to produce any result at all (nil).
+    
+    - Does not generate a [Glitched Item](ProceduralItem.md) when having the `CollectibleType.COLLECTIBLE_TMTRAINER` effect.
+    
+    - Does not randomize the pool when having the `CollectibleType.COLLECTIBLE_CHAOS` effect.
+    
+    - Does not attempt to get a collectible from `ItemPoolType.POOL_TREASURE` if **Giving up**.
+    
+    - Does not morph the collectible into `CollectibleType.COLLECTIBLE_BREAKFAST` if **Giving up**.
+    
+    - Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
+    
+    - Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
 
 ___
 ### ResetCollectible () {: aria-label='Functions' }

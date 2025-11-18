@@ -3193,6 +3193,34 @@ LUA_FUNCTION(Lua_PlayerSetPotatoPeelerCounter) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetMawOfTheVoidCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_mawOfTheVoidChargeTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMawOfTheVoidCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_mawOfTheVoidChargeTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetMontezumaRevengeCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_montezumaChargeTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMontezumaRevengeCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_montezumaChargeTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3478,6 +3506,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetPlanCKillCountdown", Lua_PlayerSetPlanCKillCountdown },
 		{ "GetPotatoPeelerUses", Lua_PlayerGetPotatoPeelerCounter },
 		{ "SetPotatoPeelerUses", Lua_PlayerSetPotatoPeelerCounter },
+		{ "GetMawOfTheVoidCharge", Lua_PlayerGetMawOfTheVoidCharge },
+		{ "SetMawOfTheVoidCharge", Lua_PlayerSetMawOfTheVoidCharge },
+		{ "GetMontezumaRevengeCharge", Lua_PlayerGetMontezumaRevengeCharge },
+		{ "SetMontezumaRevengeCharge", Lua_PlayerSetMontezumaRevengeCharge },
 
 		{ NULL, NULL }
 	};
