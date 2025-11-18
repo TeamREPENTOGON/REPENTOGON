@@ -470,17 +470,6 @@ HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> voi
     RestoreEntity(*entity, *data, id);
 }
 
-HOOK_METHOD(Room, SaveState, () -> void)
-{
-    RoomDescriptor* desc = this->_descriptor;
-    if (desc->GridIndex != eGridRooms::ROOM_DEBUG_IDX)
-    {
-        ClearVector(this->_descriptor->SavedEntities);
-    }
-
-    super();
-}
-
 HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 {
     ClearVector(g_Game->_myosotisPickups);
@@ -489,8 +478,8 @@ HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 
 HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
 {
-    Game& game = *g_Game;
-    RoomDescriptor* roomList = game._gridRooms;
+    Game* game = g_Game;
+    RoomDescriptor* roomList = game->_gridRooms;
     constexpr size_t LIL_PORTAL_IDX = MAX_GRID_ROOMS + (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
 
     for (size_t i = 0; i < MAX_ROOMS; i++)
@@ -505,6 +494,43 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
     }
 
     super(resetLilPortalRoom);
+}
+
+HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
+{
+    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_DEBUG_IDX) - 1;
+
+    Game* game = g_Game;
+    RoomDescriptor& room = game->_gridRooms[LIST_IDX];
+    ClearVector(room.SavedEntities);
+
+    super(roomConfig);
+}
+
+HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
+{
+    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_GENESIS_IDX) - 1;
+
+    Game* game = g_Game;
+    RoomDescriptor& room = game->_gridRooms[LIST_IDX];
+    ClearVector(room.SavedEntities);
+
+    super();
+}
+
+HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, int direction) -> bool)
+{
+    constexpr uint32_t FLAG_BLUE_REDIRECT = 1 << 18;
+    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_BLUE_ROOM_IDX) - 1;
+
+    if ((direction != -1 && currentIdx >= 0) && (g_Game->GetRoomByIdx(destinationIdx, -1)->Flags & FLAG_BLUE_REDIRECT) != 0)
+    {
+        Game* game = g_Game;
+        RoomDescriptor& room = game->_gridRooms[LIST_IDX];
+        ClearVector(room.SavedEntities);
+    }
+
+    return super(currentIdx, destinationIdx, direction);
 }
 
 HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
@@ -658,6 +684,26 @@ static void __stdcall asm_clear_room_vector() noexcept
 {
     RoomDescriptor& room = *g_Game->_room->_descriptor;
     ClearVector(room.SavedEntities);
+}
+
+static void Patch_RoomSaveState_ClearVector() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SaveState_ClearVector);
+    ZHL::Log("[REPENTOGON] Patching Room::SaveState for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
+
+    patch.PreserveRegisters(savedRegisters)
+        .AddInternalCall(asm_clear_room_vector)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
 static void Patch_RoomRestoreState_ClearVector() noexcept
@@ -902,18 +948,48 @@ static void Patch_PickupTryFlip_RestoreFlipState() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+static void __stdcall change_mineshaft_room(size_t listIdx) noexcept
+{
+    Game* game = g_Game;
+    RoomDescriptor& room = game->_gridRooms[listIdx];
+    ClearVector(room.SavedEntities);
+}
+
+static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_ai_mothers_shadow_ChangeMineshaftRoom);
+    ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_mothers_shadow for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 5;
+    constexpr size_t RESTORED_BYTES = 5;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EBP, -0x48) // listIdx
+        .AddInternalCall(change_mineshaft_room)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void EntitySaveStateManagement::ApplyPatches()
 {
     Patch_ReferenceCount_EntitySaveStateDestructor();
-    Patch_RoomRestoreState_ClearVector();
     Patch_LevelInit_PostMyosotisEffect();
     Patch_LevelRestoreGameState_PreRoomLoad();
     Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector();
     Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector();
+    Patch_RoomSaveState_ClearVector();
+    Patch_RoomRestoreState_ClearVector();
     Patch_GameRestoreState_PostBackwardsStageDescRestore();
     Patch_PlayerUseActiveItem_MovingBoxClearVector();
     Patch_PickupInitFlipState_CreateSaveState();
     Patch_PickupTryFlip_RestoreFlipState();
+    Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom();
 }
 
 #ifndef NDEBUG
