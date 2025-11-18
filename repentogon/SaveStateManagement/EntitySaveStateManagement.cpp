@@ -25,6 +25,8 @@
 *  - It is assumed that all familiar restores are handled by Entity_Player::RestoreGameState_PostLevelInit().
 *  - There is one known case where familiar data is modified manually outside the designated function; ensure all such cases are identified and handled.
 *    - This specific case occurs when restoring backup players in PlayerManager::RestoreGameState(), which copies data from the save state into the unlisted save state.
+*  - To avoid having to iterate over non "initialized" RoomDescriptors in BackwardsStage, when resetting the game's state, we diverge from the game's behavior by actually clearing the ids.
+*    - In contrast, the game keeps the vector around and simply sets the room count to 0, only properly clearing it when saving a new RoomDescriptor.
 */
 
 #include "EntitySaveStateManagement.h"
@@ -67,7 +69,7 @@ constexpr short HIJACK_MARKER = 0x5247;
 constexpr short WRITTEN_MARKER = 0x5246;
 
 template <typename Func, typename... Args>
-static void ForEachRoomSaveState(Func&& func, Args&&... args)
+static void ForEachSaveState_AllRooms(Func&& func, Args&&... args)
 {
     Game* game = g_Game;
     RoomDescriptor* roomList = game->_gridRooms;
@@ -79,7 +81,23 @@ static void ForEachRoomSaveState(Func&& func, Args&&... args)
 }
 
 template <typename Func, typename... Args>
-static void ForEachBackwardsStageSaveState(Func&& func, Args&&... args)
+static void ForEachSaveState_BackwardsStage(BackwardsStageDesc& backwardsStage, Func&& func, Args&&... args)
+{
+    for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
+    {
+        RoomDescriptor& room = backwardsStage._bossRooms[i];
+        func(room.SavedEntities, std::forward<Args>(args)...);
+    }
+
+    for (size_t i = 0; i < backwardsStage._treasureRoomsCount; i++)
+    {
+        RoomDescriptor& room = backwardsStage._treasureRooms[i];
+        func(room.SavedEntities, std::forward<Args>(args)...);
+    }
+}
+
+template <typename Func, typename... Args>
+static void ForEachSaveState_AllBackwardsStages(Func&& func, Args&&... args)
 {
     Game* game = g_Game;
     BackwardsStageDesc* backwardsStages = game->_backwardsStages;
@@ -87,20 +105,12 @@ static void ForEachBackwardsStageSaveState(Func&& func, Args&&... args)
     for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
     {
         BackwardsStageDesc& backwardsStage = backwardsStages[i];
-        for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
-        {
-            func(backwardsStage._bossRooms[j].SavedEntities, std::forward<Args>(args)...);
-        }
-
-        for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
-        {
-            func(backwardsStage._treasureRooms[j].SavedEntities, std::forward<Args>(args)...);
-        }
+        ForEachSaveState_BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
     }
 }
 
 template <typename Func, typename... Args>
-static void ForEachPlayerSaveState(Func&& func, Args&&... args)
+static void ForEachSaveState_AllPlayers(Func&& func, Args&&... args)
 {
     Game* game = g_Game;
     // Player data
@@ -139,7 +149,7 @@ static void ForEachPlayerSaveState(Func&& func, Args&&... args)
 }
 
 template <typename Func, typename... Args>
-static void ForEachGameStateRoomSaveState(GameState& gameState, Func&& func, Args&&... args)
+static void ForEachSaveState_GameState_AllRooms(GameState& gameState, Func&& func, Args&&... args)
 {
     RoomDescriptor* rooms = gameState._rooms;
 
@@ -151,30 +161,19 @@ static void ForEachGameStateRoomSaveState(GameState& gameState, Func&& func, Arg
 }
 
 template <typename Func, typename... Args>
-static void ForEachGameStateBackwardsStageSaveState(GameState& gameState, Func&& func, Args&&... args)
+static void ForEachSaveState_GameState_AllBackwardsStages(GameState& gameState, Func&& func, Args&&... args)
 {
     BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
 
     for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
     {
         BackwardsStageDesc& backwardsStage = backwardsStages[i];
-
-        for (size_t j = 0; j < backwardsStage._bossRoomsCount; j++)
-        {
-            RoomDescriptor& room = backwardsStage._bossRooms[j];
-            func(room.SavedEntities, std::forward<Args>(args)...);
-        }
-
-        for (size_t j = 0; j < backwardsStage._treasureRoomsCount; j++)
-        {
-            RoomDescriptor& room = backwardsStage._treasureRooms[j];
-            func(room.SavedEntities, std::forward<Args>(args)...);
-        }
+        ForEachSaveState_BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
     }
 }
 
 template <typename Func, typename... Args>
-static void ForEachGameStatePlayerSaveState(GameState& gameState, Func&& func, Args&&... args)
+static void ForEachSaveState_GameState_AllPlayers(GameState& gameState, Func&& func, Args&&... args)
 {
     GameStatePlayer* players = gameState._players;
     size_t playerCount = gameState._playerCount;
@@ -200,21 +199,21 @@ static void ForEachGameStatePlayerSaveState(GameState& gameState, Func&& func, A
 }
 
 template <typename Func, typename... Args>
-static void ForEachRunSaveState(Func&& func, Args&&... args)
+static void ForEachSaveState_Game(Func&& func, Args&&... args)
 {
     Game* game = g_Game;
-    ForEachRoomSaveState(std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_AllRooms(std::forward<Func>(func), std::forward<Args>(args)...);
     func(game->_myosotisPickups, std::forward<Args>(args)...);
-    ForEachBackwardsStageSaveState(std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachPlayerSaveState(std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_AllBackwardsStages(std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_AllPlayers(std::forward<Func>(func), std::forward<Args>(args)...);
 }
 
 template <typename Func, typename... Args>
-static void ForEachGameStateSaveState(GameState& gameState, Func&& func, Args&&... args)
+static void ForEachSaveState_GameState(GameState& gameState, Func&& func, Args&&... args)
 {
-    ForEachGameStateRoomSaveState(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachGameStateBackwardsStageSaveState(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachGameStatePlayerSaveState(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_GameState_AllRooms(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_GameState_AllBackwardsStages(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+    ForEachSaveState_GameState_AllPlayers(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
 }
 
 static uint32_t NewId()
@@ -367,6 +366,8 @@ static void CopySaveState(EntitySaveState& saveState)
     uint32_t targetId = NewId();
     SetId(saveState, targetId);
     s_hijackedStates[targetId] = s_hijackedStates[sourceId];
+    LogDebug("[ESM] New ID: %u\n", targetId);
+    LogDebug("[ESM] Copied %d -> %d\n", sourceId, targetId);
 }
 
 static void CopyVector(std::vector<EntitySaveState>& saveEntities)
@@ -506,48 +507,65 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
     super(resetLilPortalRoom);
 }
 
+HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
+{
+    BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
+    ForEachSaveState_BackwardsStage(backwardsStage, ClearVectorLambda);
+
+	super(stage);
+
+    ForEachSaveState_BackwardsStage(backwardsStage, CopyVectorLambda);
+}
+
+// Clear backwards stage save state, even though the game simply sets room count to 0, to avoid having to iterate "uninitialized" RoomDescriptors in the BackwardsStage. 
+HOOK_METHOD(Game, ResetState, () -> void)
+{
+    ForEachSaveState_AllBackwardsStages(ClearVectorLambda);
+	super();
+}
+
 static void WriteGameState()
 {
     Manager* manager = g_Manager;
     GameState& gameState = manager->_gamestate;
 
-    ForEachGameStateSaveState(gameState, WriteVectorLambda);
+    ForEachSaveState_GameState(gameState, WriteVectorLambda);
 }
 
 HOOK_METHOD(GameState, Clear, () -> void)
 {
-    LogDebug("Start GameState::Clear\n");
+    LogDebug("[ESM] Start GameState::Clear\n");
 
-    ForEachGameStateRoomSaveState(*this, ClearSaveVectorLambda);
-    ForEachGameStateBackwardsStageSaveState(*this, ClearSaveVectorLambda);
+    ForEachSaveState_GameState_AllRooms(*this, ClearSaveVectorLambda);
+    ForEachSaveState_GameState_AllBackwardsStages(*this, ClearSaveVectorLambda);
     // player methods are handled by GameStatePlayer::Init
     super();
 
-    LogDebug("End GameState::Clear\n");
+    LogDebug("[ESM] End GameState::Clear\n");
 }
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-    LogDebug("Start Game::SaveState\n");
+    LogDebug("[ESM] Start Game::SaveState\n");
 
     // there is no need to clear the state since SaveState always calls Clear before saving
 	super(state);
-    ForEachGameStateRoomSaveState(*state, CopyVectorLambda);
-    ForEachGameStateBackwardsStageSaveState(*state, CopyVectorLambda);
+    ForEachSaveState_GameState_AllRooms(*state, CopyVectorLambda);
+    ForEachSaveState_GameState_AllBackwardsStages(*state, CopyVectorLambda);
     // players are handled in their appropriate methods, since we would be clearing twice otherwise
 
-    LogDebug("End Game::SaveState\n");
+    LogDebug("[ESM] End Game::SaveState\n");
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-    LogDebug("Start Game::RestoreState\n");
+    LogDebug("[ESM] Start Game::RestoreState\n");
 
-    ForEachBackwardsStageSaveState(ClearVectorLambda);
+    ForEachSaveState_AllBackwardsStages(ClearVectorLambda);
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
-    LogDebug("End Game::RestoreState\n");
+    LogDebug("[ESM] End Game::RestoreState\n");
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
@@ -613,7 +631,7 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** gameStateIO) -> bool)
 
 static void __stdcall restore_game_state_backwards_rooms() noexcept
 {
-    ForEachBackwardsStageSaveState(CopyVectorLambda);
+    ForEachSaveState_AllBackwardsStages(CopyVectorLambda);
 }
 
 static void Patch_GameRestoreState_PostBackwardsStageDescRestore() noexcept
@@ -689,7 +707,7 @@ static void Patch_LevelInit_PostMyosotisEffect() noexcept
 
 static void __stdcall restore_level_game_state() noexcept
 {
-    ForEachRoomSaveState(CopyVectorLambda);
+    ForEachSaveState_AllRooms(CopyVectorLambda);
 }
 
 static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
@@ -707,6 +725,70 @@ static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
         .PreserveRegisters(savedRegisters)
         .AddInternalCall(restore_level_game_state)
         .RestoreRegisters(savedRegisters)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
+{
+    ClearVector(*saveStateVector);
+}
+
+static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
+{
+    CopyVector(*saveStateVector);
+}
+
+static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_place_rooms_backwards_Boss_AssignEntitySaveStateVector);
+    ZHL::Log("[REPENTOGON] Patching Level::place_rooms_backwards for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t callAddr = addr + 8;
+    intptr_t resumeAddr = callAddr + 5;
+    constexpr size_t RESTORED_BYTES = 8;
+    int32_t call_rel32 = *(int32_t*)(callAddr + 1);
+    intptr_t calleeAddress = callAddr + 5 + call_rel32;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::ECX) // saveStateVector
+        .AddInternalCall(asm_clear_vector_pre_backwards_assign)
+        .RestoreRegisters(savedRegisters) 
+        .Push(ASMPatch::Registers::ECX) // saveStateVector (for asm_copy_vector_post_backwards_assign)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddInternalCall((void*)calleeAddress) // restore call to assign
+        .AddInternalCall((void*)asm_copy_vector_post_backwards_assign)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_place_rooms_backwards_Treasure_AssignEntitySaveStateVector);
+    ZHL::Log("[REPENTOGON] Patching Level::place_rooms_backwards for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t callAddr = addr + 10;
+    intptr_t resumeAddr = callAddr + 5;
+    constexpr size_t RESTORED_BYTES = 10;
+    int32_t call_rel32 = *(int32_t*)(callAddr + 1);
+    intptr_t calleeAddress = callAddr + 5 + call_rel32;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EDX) // saveStateVector
+        .AddInternalCall(asm_clear_vector_pre_backwards_assign)
+        .RestoreRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::EDX) // saveStateVector (for asm_copy_vector_post_backwards_assign)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddInternalCall((void*)calleeAddress) // restore call to assign
+        .AddInternalCall((void*)asm_copy_vector_post_backwards_assign)
         .AddRelativeJump((void*)resumeAddr);
 
     sASMPatcher.PatchAt((void*)addr, &patch);
@@ -826,6 +908,8 @@ void EntitySaveStateManagement::ApplyPatches()
     Patch_RoomRestoreState_ClearVector();
     Patch_LevelInit_PostMyosotisEffect();
     Patch_LevelRestoreGameState_PreRoomLoad();
+    Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector();
+    Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector();
     Patch_GameRestoreState_PostBackwardsStageDescRestore();
     Patch_PlayerUseActiveItem_MovingBoxClearVector();
     Patch_PickupInitFlipState_CreateSaveState();
@@ -857,12 +941,12 @@ static void check_entity_list_stability(std::vector<size_t>& checks)
 
 static void check_run_stability(std::vector<uintptr_t>& checks)
 {
-    ForEachRunSaveState(check_vector_lambda, checks);
+    ForEachSaveState_Game(check_vector_lambda, checks);
 }
 
 static void check_game_state_stability(GameState& gameState, std::vector<uintptr_t>& checks)
 {
-    ForEachGameStateSaveState(gameState, check_vector_lambda, checks);
+    ForEachSaveState_GameState(gameState, check_vector_lambda, checks);
 }
 
 static void check_stability()
