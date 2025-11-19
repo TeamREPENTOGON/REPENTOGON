@@ -15,7 +15,7 @@ build_script:
     echo "> (gc repentogon/resources/scripts/main_ex.lua) -replace '\[\"Version\"\] = \"dev build\"', \"[`\"Version`\"] = `\"$version`\"\" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua"
     (gc repentogon/resources/scripts/main_ex.lua) -replace '\["Version"\] = "dev build"', "[`"Version`"] = `"$version`"" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
     echo "> cmake -G \"Visual Studio 17 2022\" -A \"Win32\" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION=\"$version\" -DCMAKE_REPENTOGON_VERSION=\"$version\""
-    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version"
+    cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_ZHL_VERSION="$version" -DCMAKE_REPENTOGON_VERSION="$version" -DCMAKE_CXX_FLAGS_RELEASE="/Zi" -DCMAKE_C_FLAGS_RELEASE="/Zi" -DCMAKE_EXE_LINKER_FLAGS_RELEASE="/DEBUG"
     echo "> cmake --build build --config Release"
     cmake --build build --config Release
     echo "> cd build/Release"
@@ -44,19 +44,26 @@ build_script:
     mv Lua5.4.dll artifact
     echo "> mv freetype.dll artifact"
     mv freetype.dll artifact
+    echo "> mv *.pdb artifact"
+    mv *.pdb artifact"
     echo "> cp ../../changelog.txt artifact/rgon_changelog.txt"
     cp ../../changelog.txt artifact/rgon_changelog.txt
     echo "> cd artifact"
     cd artifact
     echo "> dir"
     dir
-    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -aoa"
-    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
+    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -xr!*.pdb -aoa"
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -xr!*.pdb -aoa
+    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON-symbols.zip\" \"*.pdb\" -aoa"
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON-symbols.zip" "*.pdb" -aoa
     echo "> Push-AppveyorArtifact REPENTOGON.zip"
     Push-AppveyorArtifact REPENTOGON.zip
+    echo "> Push-AppveyorArtifact REPENTOGON-symbols.zip"
+    Push-AppveyorArtifact REPENTOGON-symbols.zip
 
 deploy:
 - provider: Webhook
+  artifact: REPENTOGON.zip
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
