@@ -1,7 +1,7 @@
 version: 1.0.{build}
 only_commits:
   message: "chore: release"
-image: Visual Studio 2022
+image: Visual Studio 2019
 build_script:
 - ps: |
     echo "> git --version"
@@ -52,12 +52,21 @@ build_script:
     cd artifact
     echo "> dir"
     dir
-    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -xr!*.pdb -aoa"
-    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -xr!*.pdb -aoa
-    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON-symbols.zip\" \"*.pdb\" -aoa"
-    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON-symbols.zip" "*.pdb" -aoa
+    echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\\" \"REPENTOGON.zip\" \".\\\" -xr!*.pdb -aoa"
+    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\\" "REPENTOGON.zip" ".\\" -xr!*.pdb -aoa
+
+    $pdbs = Get-ChildItem . -Filter *.pdb
+    if ($pdbs.Count -gt 0) {
+        echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\\" \"REPENTOGON-symbols.zip\" $($pdbs.FullName -join ' ') -aoa"
+        & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\\" "REPENTOGON-symbols.zip" $($pdbs.FullName -join ' ') -aoa
+    }
+    else {
+        Write-Warning "No PDB files found. Skipping symbols ZIP."
+    }
+
     echo "> Push-AppveyorArtifact REPENTOGON.zip"
     Push-AppveyorArtifact REPENTOGON.zip
+
     echo "> Push-AppveyorArtifact REPENTOGON-symbols.zip"
     Push-AppveyorArtifact REPENTOGON-symbols.zip
 
@@ -67,5 +76,3 @@ deploy:
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
-
-
