@@ -257,14 +257,14 @@ static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int fra
 		return;
 	}
 
-	LayerState& state = anm2._layerState[layer._layerID];
-	if (!state._visible)
+	int frameCount = layer._numFrames; // dont change the order of these checks, it prevents being Nicalis'd - Guantol
+	if (!(0 <= frameIndex && frameIndex < frameCount))
 	{
 		return;
 	}
 
-	int frameCount = layer._numFrames;
-	if (!(0 <= frameIndex && frameIndex < frameCount))
+	LayerState& state = anm2._layerState[layer._layerID];
+	if (!state._visible)
 	{
 		return;
 	}
