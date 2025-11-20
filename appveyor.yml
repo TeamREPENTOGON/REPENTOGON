@@ -38,6 +38,8 @@ build_script:
     mv libzhl.dll artifact
     echo "> mv zhlREPENTOGON.dll artifact"
     mv zhlREPENTOGON.dll artifact
+    echo "> mv zhlREPENTOGON.pdb artifact"
+    mv zhlREPENTOGON.pdb artifact
     echo "> mv zhlLoader.dll artifact"
     mv zhlLoader.dll artifact
     echo "> mv Lua5.4.dll artifact"
@@ -50,18 +52,6 @@ build_script:
     cd artifact
     echo "> dir"
     dir
-    echo "> Moving PDBs out of artifact"
-    cd ..
-    mkdir artifact-pdb
-    mv artifact\*.pdb artifact-pdb
-    cd artifact
-
-    echo "> Creating PDB zip"
-    & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON-PDB.zip" "..\artifact-pdb\" -aoa
-
-    echo "> Push-AppveyorArtifact REPENTOGON-PDB.zip"
-    Push-AppveyorArtifact REPENTOGON-PDB.zip
-    
     echo "> & \"C:\Program Files\7-Zip\7z.exe\" a -tzip -o\"..\\" \"REPENTOGON.zip\" \".\\" -aoa"
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
     echo "> Push-AppveyorArtifact REPENTOGON.zip"
@@ -72,4 +62,3 @@ deploy:
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
-
