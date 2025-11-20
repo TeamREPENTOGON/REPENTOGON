@@ -14,6 +14,8 @@ if (NOT CMAKE_REPENTOGON_VERSION)
 endif ()
 
 project(RepExtender)
+add_compile_options("$<$<CONFIG:Release>:/Zi>")
+add_link_options("$<$<CONFIG:Release>:/DEBUG>")
 
 find_package(OpenGL REQUIRED)
 
