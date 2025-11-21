@@ -83,12 +83,12 @@ void initreversenum() {
 
 
 constexpr inline int GetOfflineMark(int mark) {
-	return mark & 0b11;
+	return mark & 0b10;
 };
 
 
 constexpr inline int SetOfflineMark(int mark,int setmark) {
-	return (mark & ~0b11) | (setmark & 0b11);
+	return (mark & ~0b10) | (setmark & 0b10);
 };
 
 unordered_map<int, unordered_map<int, int>> MarksToEvents;
