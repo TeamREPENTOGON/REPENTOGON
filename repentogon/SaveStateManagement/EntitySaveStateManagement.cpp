@@ -38,12 +38,21 @@
 #include "Log.h"
 #include "../MiscFunctions.h"
 
+#include <fstream>
+#include <algorithm>
+
+#undef max
 #define DEBUG_MSG true
 
 namespace {
     struct HijackedState {
         int intStorage7 = 0;
         short gridSpawnIdx = 0;
+    };
+
+    struct SaveFile
+    {
+        std::vector<HijackedState> entities;
     };
 };
 
@@ -61,10 +70,13 @@ namespace {
     static void LogDebug(const char* format, ...) {};
 #endif
 
+#define ESSM EntitySaveStateManagement
+
 static std::vector<uint32_t> s_reusableIds;
 static uint32_t s_maxId = 0;
 static std::vector<HijackedState> s_hijackedStates; 
 
+constexpr short READ_MARKER = 0x5248;
 constexpr short HIJACK_MARKER = 0x5247;
 constexpr short WRITTEN_MARKER = 0x5246;
 
@@ -234,7 +246,7 @@ static uint32_t NewId()
 static void ClearId(uint32_t id)
 {
     s_reusableIds.push_back(id);
-    LogDebug("[ESM] Cleared ID: %u\n", id);
+    LogDebug("[ESSM] Cleared ID: %u\n", id);
 }
 
 static bool IsHijacked(const EntitySaveState& data)
@@ -242,9 +254,29 @@ static bool IsHijacked(const EntitySaveState& data)
     return data.gridSpawnIdx == HIJACK_MARKER;
 }
 
-static bool IsSaved(const EntitySaveState& data)
+static bool IsWritten(const EntitySaveState& data)
 {
     return data.gridSpawnIdx == WRITTEN_MARKER;
+}
+
+static bool IsRead(const EntitySaveState& data)
+{
+    return data.gridSpawnIdx == READ_MARKER;
+}
+
+static void SetHijacked(EntitySaveState& data)
+{
+    data.gridSpawnIdx = HIJACK_MARKER;
+}
+
+static void SetWritten(EntitySaveState& data)
+{
+    data.gridSpawnIdx = WRITTEN_MARKER;
+}
+
+static void SetRead(EntitySaveState& data)
+{
+    data.gridSpawnIdx = READ_MARKER;
 }
 
 static uint32_t GetId(const EntitySaveState& data)
@@ -252,9 +284,9 @@ static uint32_t GetId(const EntitySaveState& data)
     return data._intStorage7;
 }
 
-static uint32_t SetId(EntitySaveState& data, uint32_t id)
+static void SetId(EntitySaveState& data, uint32_t id)
 {
-    return data._intStorage7 = id;
+    data._intStorage7 = id;
 }
 
 static void Hijack(EntitySaveState& data, uint32_t id)
@@ -270,34 +302,29 @@ static uint32_t NewHijack(EntitySaveState& data)
 {
     assert(!IsHijacked(data));
     uint32_t id = NewId();
-    LogDebug("[ESM] New ID: %u\n", id);
-    LogDebug("[ESM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
+    LogDebug("[ESSM] New ID: %u\n", id);
+    LogDebug("[ESSM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
     Hijack(data, id);
     return id;
+}
+
+static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState)
+{
+    data.gridSpawnIdx = hijackedState.gridSpawnIdx;
+    data._intStorage7 = hijackedState.intStorage7;
 }
 
 static uint32_t UnHijack(EntitySaveState& data)
 {
     assert(IsHijacked(data));
     uint32_t id = GetId(data);
-    HijackedState& hijackedState = s_hijackedStates[id];
-    data.gridSpawnIdx = hijackedState.gridSpawnIdx;
-    data._intStorage7 = hijackedState.intStorage7;
-    return id;
-}
-
-static uint32_t MarkAsWritten(EntitySaveState& data)
-{
-    assert(IsHijacked(data));
-    uint32_t id = GetId(data);
-    ClearId(id);
-    data.gridSpawnIdx = WRITTEN_MARKER;
+    RestoreHijack(data, s_hijackedStates[id]);
     return id;
 }
 
 static void check_save_state(std::vector<uintptr_t>& checks, const EntitySaveState& saveState)
 {
-    bool isSaved = IsSaved(saveState);
+    bool isSaved = IsWritten(saveState);
     assert(IsHijacked(saveState) || isSaved); // some entity is neither hijacked or saved
     if (isSaved)
     {
@@ -348,17 +375,6 @@ static void ClearVector(const std::vector<EntitySaveState>& saveEntities)
     }
 }
 
-static void ClearSaveVector(const std::vector<EntitySaveState>& saveEntities)
-{
-    for (const EntitySaveState& saveState : saveEntities)
-    {
-        if (IsHijacked(saveState))
-        {
-            ClearSaveState(saveState);
-        }
-    }
-}
-
 static void CopySaveState(EntitySaveState& saveState)
 {
     assert(IsHijacked(saveState));
@@ -366,8 +382,8 @@ static void CopySaveState(EntitySaveState& saveState)
     uint32_t targetId = NewId();
     SetId(saveState, targetId);
     s_hijackedStates[targetId] = s_hijackedStates[sourceId];
-    LogDebug("[ESM] New ID: %u\n", targetId);
-    LogDebug("[ESM] Copied %d -> %d\n", sourceId, targetId);
+    LogDebug("[ESSM] New ID: %u\n", targetId);
+    LogDebug("[ESSM] Copied %d -> %d\n", sourceId, targetId);
 }
 
 static void CopyVector(std::vector<EntitySaveState>& saveEntities)
@@ -376,15 +392,6 @@ static void CopyVector(std::vector<EntitySaveState>& saveEntities)
     {
         CopySaveState(saveState);
         // copy entity (either store entity id and defer it for later or directly clear it)
-    }
-}
-
-static void WriteVector(std::vector<EntitySaveState>& saveEntities)
-{
-    for (EntitySaveState& saveState : saveEntities)
-    {
-        uint32_t id = MarkAsWritten(saveState);
-        // serialize the entity
     }
 }
 
@@ -400,9 +407,471 @@ static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
 
 static auto check_vector_lambda = [](const std::vector<EntitySaveState>& vec, std::vector<uintptr_t>& checks) { check_save_state_vector(checks, vec); };
 static auto ClearVectorLambda = [](const std::vector<EntitySaveState>& vec) { ClearVector(vec); };
-static auto ClearSaveVectorLambda = [](const std::vector<EntitySaveState>& vec) { ClearSaveVector(vec); };
 static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) { CopyVector(vec); };
-static auto WriteVectorLambda = [](std::vector<EntitySaveState>& vec) { WriteVector(vec); };
+
+namespace ESSM::SaveData
+{
+    constexpr uint32_t SAVE_VERSION = 1;
+
+    namespace Section
+    {
+        constexpr uint32_t ENTITY_START = 0x73454E54; // sENT
+        constexpr uint32_t ENTITY_END = 0x65454E54; // eENT
+        constexpr uint32_t ENTITY_SIZE = 6;
+        constexpr uint32_t MAX_ENTITY_COUNT = 0xFFFF;
+    }
+
+    namespace Operations
+    {
+        static void ClearSaveVector(const std::vector<EntitySaveState>& saveEntities)
+        {
+            for (const EntitySaveState& saveState : saveEntities)
+            {
+                if (IsHijacked(saveState))
+                {
+                    ClearSaveState(saveState);
+                }
+            }
+        }
+
+        static void write_entity_smart_pointer(EntitySaveState& data, ESSM::SaveData::WriteState& writeState)
+        {
+            assert(IsHijacked(data) || IsWritten(data));
+            if (IsHijacked(data))
+            {
+                auto& writtenSaveStates = writeState.writtenSaveStates;
+                uint32_t writeId = writtenSaveStates.size();
+    
+                uint32_t id = GetId(data);
+                SetWritten(data);
+                SetId(data, writeId);
+    
+                writtenSaveStates.emplace_back(&data, id);
+            }
+            else if (!IsWritten(data))
+            {
+                throw std::runtime_error("invalid EntitySaveState state during write");
+            }
+    
+            EntitySaveState* innerSmartPointer = data.entitySaveState.saveState;
+            if (innerSmartPointer)
+            {
+                write_entity_smart_pointer(*innerSmartPointer, writeState);
+            }
+        }
+    
+        static void write_save_state(EntitySaveState& data, ESSM::SaveData::WriteState& writeState)
+        {
+            assert(IsHijacked(data));
+            if (!IsHijacked(data))
+            {
+                throw std::runtime_error("invalid EntitySaveState state during write");
+            }
+
+            auto& writtenSaveStates = writeState.writtenSaveStates;
+            uint32_t writeId = writtenSaveStates.size();
+    
+            uint32_t id = GetId(data);
+            SetWritten(data);
+            SetId(data, writeId);
+    
+            writtenSaveStates.emplace_back(&data, id);
+    
+            EntitySaveState* smartPointer = data.entitySaveState.saveState;
+            if (smartPointer)
+            {
+                write_entity_smart_pointer(*smartPointer, writeState);
+            }
+        }
+    
+        static void read_save_state(EntitySaveState& data, ReadState& readState)
+        {
+            if (!IsWritten(data))
+            {
+                if (!IsRead(data))
+                {
+                    readState.errors.set(0); // invalid EntitySaveState state during read
+                }
+            }
+            else
+            {
+                // Due to how flip state are implemented, there can be duplicate ids. As such finding a duplicate here is not an error.
+                uint32_t readId = GetId(data);
+                readState.maxId = std::max(readState.maxId, readId);
+                readState.readSaveStates.push_back(&data);
+            }
+            
+            SetRead(data);
+            EntitySaveState* smartPointer = data.entitySaveState.saveState;
+            if (smartPointer)
+            {
+                read_save_state(*smartPointer, readState);
+            }
+        }
+    
+        static void write_vector(std::vector<EntitySaveState>& saveEntities, ESSM::SaveData::WriteState& writeState)
+        {
+            for (EntitySaveState& saveState : saveEntities)
+            {
+                write_save_state(saveState, writeState);
+            }
+        }
+    
+        static void read_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState)
+        {
+            for (EntitySaveState& saveState : saveEntities)
+            {
+                read_save_state(saveState, readState);
+            }
+        }
+    
+        static auto ClearSaveVectorLambda = [](const std::vector<EntitySaveState>& vec) { ClearSaveVector(vec); };
+        static auto WriteVectorLambda = [](std::vector<EntitySaveState>& vec, ESSM::SaveData::WriteState& writeState) { write_vector(vec, writeState); };
+        static auto ReadVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) { read_vector(vec, readState); };
+    }
+
+    static void resolve_read_errors(ReadState& readState) noexcept
+    {
+        if (readState.errors.test(0))
+        {
+            ZHL::Log("[ERROR] [ESSM] - invalid EntitySaveState state during read\n");
+        }
+    }
+
+    template <typename T>
+    static void write_binary(std::ofstream& ofs, const T& value)
+    {
+        static_assert(std::is_trivially_copyable_v<T>, "write_binary can only serialize trivially copyable types");
+        ofs.write(reinterpret_cast<const char*>(&value), sizeof(T));
+
+        if (!ofs)
+        {
+            throw std::runtime_error("Failed to write data");
+        }
+    }
+
+    template <typename T>
+    static void read_binary(std::ifstream& ifs, T& value)
+    {
+        static_assert(std::is_trivially_copyable_v<T>, "read_binary can only deserialize trivially copyable types");
+        ifs.read(reinterpret_cast<char*>(&value), sizeof(value));;
+
+        if (!ifs)
+        {
+            throw std::runtime_error("Failed to read data");
+        }
+    }
+
+    static std::string get_save_data_path(const std::string& fileName) noexcept
+    {
+        return REPENTOGON::StringFormat("%s/EntitySaveStateManagement/%s.dat", REPENTOGON::GetRepentogonDataPath(), fileName.c_str());
+    }
+
+    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
+    {
+        std::filesystem::path directory = filePath.parent_path();
+
+        std::error_code errorCode;
+        if (!directory.empty() && !std::filesystem::exists(directory, errorCode))
+        {
+            if (errorCode)
+            {
+                return false;
+            }
+
+            std::filesystem::create_directories(directory, errorCode);
+            if (errorCode)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static void remove_file(const std::filesystem::path& filePath) noexcept
+    {
+        std::error_code errorCode;
+        std::filesystem::remove(filePath, errorCode);
+        if (errorCode)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to delete file at \"%s\"\n", filePath.string().c_str());
+        }
+    }
+
+    WriteState WriteGameState() noexcept
+    {
+        Manager* manager = g_Manager;
+        GameState& gameState = manager->_gamestate;
+    
+        WriteState writeState = WriteState();
+        ForEachSaveState_GameState(gameState, Operations::WriteVectorLambda, writeState);
+        // serialize entities from write State
+        return writeState;
+    }
+
+    ReadState ReadGameState() noexcept
+    {
+        Manager* manager = g_Manager;
+        GameState& gameState = manager->_gamestate;
+    
+        ReadState readState = ReadState();
+        ForEachSaveState_GameState(gameState, Operations::ReadVectorLambda, readState);
+        resolve_read_errors(readState);
+        return readState;
+    }
+
+    void RestoreWrittenStates(WriteState& writeState) noexcept
+    {
+        for (std::pair<EntitySaveState*, uint32_t> writtenSaveState : writeState.writtenSaveStates)
+        {
+            EntitySaveState& saveState = *writtenSaveState.first;
+            uint32_t id = writtenSaveState.second;
+    
+            assert(IsWritten(saveState));
+            SetHijacked(saveState);
+            SetId(saveState, id);
+        }
+    }
+
+    void hijack_read_states(ReadState& readState, SaveFile& saveFile) noexcept
+    {
+        std::vector<HijackedState>& entities = saveFile.entities;
+        uint32_t maxId = entities.size() - 1;
+
+        for (EntitySaveState* readSaveState : readState.readSaveStates)
+        {
+            EntitySaveState& saveState = *readSaveState;
+
+            assert(IsRead(saveState));
+            uint32_t readId = GetId(saveState);
+            // all previous steps should have guaranteed this
+            assert(readId <= maxId);
+            
+            uint32_t id = NewId();
+            SetHijacked(saveState);
+            SetId(saveState, id);
+            s_hijackedStates[id] = entities[readId];
+
+            readState.restoredSaveStates.emplace_back(readId, id);
+        }
+    }
+
+    static void serialize_entities(std::ofstream& file, const WriteState& writeState)
+    {
+        uint32_t size = static_cast<uint32_t>(writeState.writtenSaveStates.size());
+        if (size > Section::MAX_ENTITY_COUNT)
+        {
+            throw std::runtime_error("Too many entities to serialize");
+        }
+
+        write_binary(file, Section::ENTITY_START);
+        write_binary(file, size);
+
+        for (auto& saveState : writeState.writtenSaveStates)
+        {
+            uint32_t id = saveState.second;
+            HijackedState& hijackedState = s_hijackedStates[id];
+
+            write_binary(file, hijackedState.intStorage7); // UNHIJACKED_ID
+            write_binary(file, hijackedState.gridSpawnIdx); // UNHIJACKED_MARKER
+        }
+
+        write_binary(file, Section::ENTITY_END);
+    }
+
+    static void deserialize_entities(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    {
+        std::vector<HijackedState>& entities = saveFile.entities;
+    
+        uint32_t sectionHeader = 0;
+        read_binary(file, sectionHeader);
+        if (sectionHeader != Section::ENTITY_START)
+        {
+            throw std::runtime_error("Incorrect section header");
+        }
+
+        uint32_t fileCount = 0;
+        read_binary(file, fileCount);
+
+        if (fileCount <= readState.maxId)
+        {
+            throw std::runtime_error("Not enough entities in save data");
+        }
+
+        if (fileCount > Section::MAX_ENTITY_COUNT)
+        {
+            throw std::runtime_error("Entity count too large");
+        }
+
+        // validate file array size
+        auto pos = file.tellg();
+        file.seekg(0, std::ios::end);
+        std::streamoff fileSize = file.tellg();
+        file.seekg(pos); // restore
+
+        std::streamoff requiredSize = std::streamoff(pos) + std::streamoff(fileCount) * Section::ENTITY_SIZE + 4; // + footer
+        if (fileSize < requiredSize)
+        {
+            throw std::runtime_error("File truncated or corrupt");
+        }
+
+        uint32_t neededCount = std::max(fileCount, readState.maxId + 1);
+        try {
+            entities.reserve(neededCount);
+        }
+        catch (const std::bad_alloc&) {
+            throw std::runtime_error("Out of memory");
+        }
+
+        uint32_t remaining = fileCount - neededCount;
+
+        for (uint32_t i = 0; i < neededCount; ++i)
+        {
+            HijackedState& hijackedState = entities.emplace_back();
+            read_binary(file, hijackedState.intStorage7); // UNHIJACKED_ID
+            read_binary(file, hijackedState.gridSpawnIdx); // UNHIJACKED_MARKER
+        }
+
+        file.seekg(remaining * Section::ENTITY_SIZE, std::ios::cur);
+        if (!file)
+        {
+            throw std::runtime_error("Failed to skip extra entity data");
+        }
+
+        uint32_t sectionFooter = 0;
+        read_binary(file, sectionFooter);
+        if (sectionFooter != Section::ENTITY_END)
+        {
+            throw std::runtime_error("Incorrect section footer");
+        }
+    }
+
+    static void serialize_save(std::ofstream& file, const WriteState& writeState)
+    {
+        uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+
+        write_binary(file, SAVE_VERSION);
+        write_binary(file, gameChecksum);
+
+        serialize_entities(file, writeState);
+    }
+
+    static void deserialize_save(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    {
+        uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+
+        uint32_t saveVersion = 0;
+        read_binary(file, saveVersion);
+        if (saveVersion != SAVE_VERSION)
+        {
+            throw std::runtime_error(REPENTOGON::StringFormat("unsupported save version %u\n", saveVersion));
+        }
+
+        uint32_t saveChecksum = 0;
+        read_binary(file, saveChecksum);
+        if (saveChecksum != gameChecksum)
+        {
+            throw std::runtime_error("save checksum mismatch\n");
+        }
+
+        deserialize_entities(file, readState, saveFile);
+    }
+
+    void Serialize(const std::string& fileName, const WriteState& writeState) noexcept
+    {
+        std::filesystem::path filePath = get_save_data_path(fileName);
+        bool exists = guarantee_parent_path_exists(filePath);
+        if (!exists)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
+            return;
+        }
+
+        std::ofstream file = std::ofstream(filePath, std::ios::binary);
+        if (!file.is_open())
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to open save file for writing at \"%s\"\n", filePath.string().c_str());
+            return;
+        }
+
+        try
+        {
+            serialize_save(file, writeState);
+            file.flush();
+
+            if (!file)
+            {
+                throw std::runtime_error("flush failed");
+            }
+        }
+        catch(const std::runtime_error& e)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to serialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            file.close();
+            remove_file(filePath);
+            return;
+        }
+
+        ZHL::Log("[INFO] [ESSM] - successfully saved %s to \"%s\"\n", fileName.c_str(), filePath.string().c_str());
+    }
+
+    static bool deserialize(const std::string& fileName, ReadState& readState) noexcept
+    {
+        // we should have never entered with errors here in the first place
+        if (readState.errors.any())
+        {
+            ZHL::Log("[ERROR] [ESSM] - pre-existing errors in read state when deserializing\n");
+            return false;
+        }
+
+        if (!NeedsHandling(readState))
+        {
+            return true;
+        }
+
+        std::filesystem::path filePath = get_save_data_path(fileName);
+        std::error_code errorCode;
+        if (!std::filesystem::exists(filePath, errorCode))
+        {
+            return false;
+        }
+
+        std::ifstream file = std::ifstream(filePath, std::ios::binary);
+        if (!file.is_open())
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to open save file for reading at \"%s\"\n", filePath.string().c_str());
+            return false;
+        }
+
+        SaveFile saveFile;
+        try
+        {
+            deserialize_save(file, readState, saveFile);
+        }
+        catch(const std::runtime_error& e)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to deserialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            return false;
+        }
+
+        file.close();
+        hijack_read_states(readState, saveFile);
+        // TODO: Send Deserialize Event
+        ZHL::Log("[INFO] [ESSM] - successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
+        return true;
+    }
+
+    bool Deserialize(const std::string& fileName, ReadState& readState) noexcept
+    {
+        bool success = deserialize(fileName, readState);
+
+        // free the memory since we no longer need it
+        readState.readSaveStates.clear();
+
+        return success;
+    }
+}
 
 static std::pair<Entity*, EntitySaveState*> s_minecartEntity = {nullptr, nullptr};
 
@@ -550,29 +1019,21 @@ HOOK_METHOD(Game, ResetState, () -> void)
 	super();
 }
 
-static void WriteGameState()
-{
-    Manager* manager = g_Manager;
-    GameState& gameState = manager->_gamestate;
-
-    ForEachSaveState_GameState(gameState, WriteVectorLambda);
-}
-
 HOOK_METHOD(GameState, Clear, () -> void)
 {
-    LogDebug("[ESM] Start GameState::Clear\n");
+    LogDebug("[ESSM] Start GameState::Clear\n");
 
-    ForEachSaveState_GameState_AllRooms(*this, ClearSaveVectorLambda);
-    ForEachSaveState_GameState_AllBackwardsStages(*this, ClearSaveVectorLambda);
+    ForEachSaveState_GameState_AllRooms(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
+    ForEachSaveState_GameState_AllBackwardsStages(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
     // player methods are handled by GameStatePlayer::Init
     super();
 
-    LogDebug("[ESM] End GameState::Clear\n");
+    LogDebug("[ESSM] End GameState::Clear\n");
 }
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-    LogDebug("[ESM] Start Game::SaveState\n");
+    LogDebug("[ESSM] Start Game::SaveState\n");
 
     // there is no need to clear the state since SaveState always calls Clear before saving
 	super(state);
@@ -580,18 +1041,18 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
     ForEachSaveState_GameState_AllBackwardsStages(*state, CopyVectorLambda);
     // players are handled in their appropriate methods, since we would be clearing twice otherwise
 
-    LogDebug("[ESM] End Game::SaveState\n");
+    LogDebug("[ESSM] End Game::SaveState\n");
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-    LogDebug("[ESM] Start Game::RestoreState\n");
+    LogDebug("[ESSM] Start Game::RestoreState\n");
 
     ForEachSaveState_AllBackwardsStages(ClearVectorLambda);
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
-    LogDebug("[ESM] End Game::RestoreState\n");
+    LogDebug("[ESSM] End Game::RestoreState\n");
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
@@ -604,7 +1065,7 @@ HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 
 HOOK_METHOD(GameStatePlayer, Init, () -> void)
 {
-    ClearSaveVector(this->_movingBoxContents);
+    ESSM::SaveData::Operations::ClearSaveVector(this->_movingBoxContents);
     super();
 }
 
@@ -619,40 +1080,6 @@ HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> vo
     ClearVector(this->_movingBoxContents);
     super(saveState);
     CopyVector(this->_movingBoxContents);
-}
-
-HOOK_METHOD(GameState, write, (GameStateIO** gameStateIO) -> bool)
-{
-    WriteGameState();
-    return super(gameStateIO);
-}
-
-HOOK_METHOD(GameState, write_rerun, (GameStateIO** gameStateIO) -> bool)
-{
-    WriteGameState();
-    return super(gameStateIO);
-}
-
-HOOK_METHOD(GameState, read, (GameStateIO** gameStateIO, bool isLocalRun) -> bool)
-{
-    // disable for now
-    if (true)
-    {
-        return false;
-    }
-
-    return super(gameStateIO, isLocalRun);
-}
-
-HOOK_METHOD(GameState, read_rerun, (GameStateIO** gameStateIO) -> bool)
-{
-    // disable for now
-    if (true)
-    {
-        return false;
-    }
-
-    return super(gameStateIO);
 }
 
 static void __stdcall restore_game_state_backwards_rooms() noexcept
@@ -873,7 +1300,7 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState) noexc
     {
         uint32_t id = GetId(*saveState);
         ClearSaveState(*saveState);
-        LogDebug("[ESM] Smart pointer Cleared: %u\n", id);
+        LogDebug("[ESSM] Smart pointer Cleared: %u\n", id);
     }
 
     saveState->destructor();
@@ -893,7 +1320,7 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor() noexcept
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState) noexcept
 {
     uint32_t id = NewHijack(saveState);
-    LogDebug("[ESM] New Flip State: %u\n", id);
+    LogDebug("[ESSM] New Flip State: %u\n", id);
 }
 
 static void Patch_PickupInitFlipState_CreateSaveState() noexcept
@@ -976,7 +1403,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void EntitySaveStateManagement::ApplyPatches()
+void ESSM::ApplyPatches()
 {
     Patch_ReferenceCount_EntitySaveStateDestructor();
     Patch_LevelInit_PostMyosotisEffect();

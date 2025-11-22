@@ -7,6 +7,10 @@
 #include "ItemPoolManager.h"
 #include "VirtualRoomSets.h"
 
+#include "../SaveStateManagement/EntitySaveStateManagement.h"
+
+namespace ESSM = EntitySaveStateManagement;
+
 #pragma region Helpers
 
 static GameStateSlot get_game_state_slot(GameState* state) noexcept
@@ -183,7 +187,11 @@ HOOK_METHOD(GameState, Clear, () -> void)
 
 HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 {
-	if (!super(io))
+	ESSM::SaveData::WriteState state = ESSM::SaveData::WriteGameState();
+	bool success = super(io);
+	ESSM::SaveData::RestoreWrittenStates(state);
+
+	if (!success)
 	{
 		return false;
 	}
@@ -201,12 +209,17 @@ HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 		return true;
 	}
 
+	ESSM::SaveData::Serialize(fileName, state);
 	return write_save(fileName, false);
 }
 
 HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 {
-	if (!super(io))
+	ESSM::SaveData::WriteState state = ESSM::SaveData::WriteGameState();
+	bool success = super(io);
+	ESSM::SaveData::RestoreWrittenStates(state);
+
+	if (!success)
 	{
 		return false;
 	}
@@ -218,27 +231,43 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 		return true;
 	}
 
+	ESSM::SaveData::Serialize(fileName, state);
 	return write_save(fileName, true);
 }
 
 HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 {
-	if (!super(io, isLocalRun))
+	bool originalSuccess = super(io, isLocalRun);
+	ESSM::SaveData::ReadState essmReadState = ESSM::SaveData::ReadGameState();
+	bool success = originalSuccess && !ESSM::SaveData::CheckErrors(essmReadState);
+
+	if (!success)
 	{
+		if (originalSuccess)
+		{
+			ZHL::Log("[ERROR] [GameStateManagement] GameState failed internal validation on read.\n");
+		}
 		return false;
 	}
+
+	bool needsHandling = ESSM::SaveData::NeedsHandling(essmReadState);
 
 	if (!isLocalRun) // This occurs when loading a game state upon joining an already existing match.
 	{
 		ZHL::Log("[INFO] [GameStateManagement] reading non save file GameState, skipping read.\n");
-		return true;
+		return !needsHandling;
 	}
 
 	auto fileName = get_state_file_name(this, *io, false);
 	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
-		return true;
+		return !needsHandling;
+	}
+
+	if (!ESSM::SaveData::Deserialize(fileName, essmReadState))
+	{
+		return false;
 	}
 
 	return read_save(fileName, false);
@@ -246,16 +275,31 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 
 HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 {
-	if (!super(io))
+	bool originalSuccess = super(io);
+	ESSM::SaveData::ReadState essmReadState = ESSM::SaveData::ReadGameState();
+	bool success = originalSuccess && !ESSM::SaveData::CheckErrors(essmReadState);
+
+	if (!success)
 	{
+		if (originalSuccess)
+		{
+			ZHL::Log("[ERROR] [GameStateManagement] GameState failed internal validation on read.\n");
+		}
 		return false;
 	}
+
+	bool needsHandling = ESSM::SaveData::NeedsHandling(essmReadState);
 
 	auto fileName = get_state_file_name(this, *io, true);
 	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
-		return true;
+		return !needsHandling;
+	}
+
+	if (!ESSM::SaveData::Deserialize(fileName, essmReadState))
+	{
+		return false;
 	}
 
 	return read_save(fileName, true);
