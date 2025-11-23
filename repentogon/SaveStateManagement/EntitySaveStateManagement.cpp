@@ -1473,6 +1473,37 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+static void __fastcall hijack_dark_closet_collectible(EntitySaveState& saveState) noexcept
+{
+    ESSM::HijackManager::NewHijack(saveState);
+}
+
+static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_generate_dark_closet_PostGenerateCollectibleSaveState);
+    ZHL::Log("[REPENTOGON] Patching Level::generate_dark_closet for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 7;
+    intptr_t disp8Addr = addr + 2;
+    constexpr size_t RESTORED_BYTES = 7;
+    constexpr int32_t FIELD_OFFSET = offsetof(EntitySaveState, _intStorage7);
+    
+    int8_t disp8 = *(int8_t*)disp8Addr;
+    int32_t saveStateOffset_EBP = disp8 - FIELD_OFFSET;
+
+    patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .PreserveRegisters(savedRegisters)
+        .LoadEffectiveAddress(ASMPatch::Registers::EBP, saveStateOffset_EBP, ASMPatch::Registers::ECX) // LEA ECX, [EBP + saveStateOffset_EBP]
+        .AddInternalCall(hijack_dark_closet_collectible)
+        .RestoreRegisters(savedRegisters)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 static void __stdcall asm_clear_moving_box_vector(Entity_Player& player) noexcept
 {
     ESSM::BaseOperations::ClearVector(player._movingBoxContents);
@@ -1616,6 +1647,7 @@ void ESSM::ApplyPatches() noexcept
     Patch_LevelRestoreGameState_PreRoomLoad();
     Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector();
     Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector();
+    Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState();
     Patch_RoomSaveState_ClearVector();
     Patch_RoomRestoreState_ClearVector();
     Patch_GameRestoreState_PostBackwardsStageDescRestore();
