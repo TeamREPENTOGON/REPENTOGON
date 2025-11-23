@@ -42,6 +42,7 @@
 #include <algorithm>
 
 #undef max
+#undef ERROR_INVALID_STATE
 #define DEBUG_MSG true
 
 namespace {
@@ -49,15 +50,10 @@ namespace {
         int intStorage7 = 0;
         short gridSpawnIdx = 0;
     };
-
-    struct SaveFile
-    {
-        std::vector<HijackedState> entities;
-    };
 };
 
 #if DEBUG_MSG
-    static void LogDebug(const char* format, ...)
+    static void LogDebug(const char* format, ...) noexcept
     {
         va_list args;
         va_start(args, format);
@@ -67,351 +63,522 @@ namespace {
         KAGE::_LogMessage(0, message.c_str());
     }
 #else
-    static void LogDebug(const char* format, ...) {};
+    static void LogDebug(const char* format, ...) noexcept {};
 #endif
 
 #define ESSM EntitySaveStateManagement
 
-static std::vector<uint32_t> s_reusableIds;
-static uint32_t s_maxId = 0;
-static std::vector<HijackedState> s_hijackedStates; 
-
-constexpr short READ_MARKER = 0x5248;
-constexpr short HIJACK_MARKER = 0x5247;
-constexpr short WRITTEN_MARKER = 0x5246;
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_AllRooms(Func&& func, Args&&... args)
+namespace ESSM
 {
-    Game* game = g_Game;
-    RoomDescriptor* roomList = game->_gridRooms;
-
-    for (size_t i = 0; i < MAX_ROOMS; i++)
+    struct Data
     {
-        func(roomList[i].SavedEntities, std::forward<Args>(args)...);
-    }
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_BackwardsStage(BackwardsStageDesc& backwardsStage, Func&& func, Args&&... args)
-{
-    for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
-    {
-        RoomDescriptor& room = backwardsStage._bossRooms[i];
-        func(room.SavedEntities, std::forward<Args>(args)...);
-    }
-
-    for (size_t i = 0; i < backwardsStage._treasureRoomsCount; i++)
-    {
-        RoomDescriptor& room = backwardsStage._treasureRooms[i];
-        func(room.SavedEntities, std::forward<Args>(args)...);
-    }
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_AllBackwardsStages(Func&& func, Args&&... args)
-{
-    Game* game = g_Game;
-    BackwardsStageDesc* backwardsStages = game->_backwardsStages;
-
-    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
-    {
-        BackwardsStageDesc& backwardsStage = backwardsStages[i];
-        ForEachSaveState_BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
-    }
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_AllPlayers(Func&& func, Args&&... args)
-{
-    Game* game = g_Game;
-    // Player data
-    const PlayerManager& playerManager = game->_playerManager;
-    const auto& players = playerManager._playerList;
-
-    auto handlePlayer = [&](const Entity_Player* player)
-    {
-        if (!player)
-        {
-            return;
-        }
-
-        func(player->_movingBoxContents, std::forward<Args>(args)...);
-
-        if (player->_backupPlayer)
-        {
-            func(player->_backupPlayer->_movingBoxContents, std::forward<Args>(args)...);
-        }
-
-        if (player->_hasUnlistedRestoreState)
-        {
-            func(player->_unlistedRestoreState._movingBoxContents, std::forward<Args>(args)...);
-        }
+        std::vector<uint32_t> reusableIds;
+        uint32_t totalIds = 0;
+        std::vector<HijackedState> hijackedStates; 
     };
 
-    for (const Entity_Player* player : players)
-    {
-        handlePlayer(player);
-    }
-
-    for (size_t i = 0; i < 4; i++)
-    {
-        handlePlayer(playerManager._esauJrState[i]);
-    }
+    static Data s_systemData;
 }
 
-template <typename Func, typename... Args>
-static void ForEachSaveState_GameState_AllRooms(GameState& gameState, Func&& func, Args&&... args)
+namespace ESSM::EntityIterators
 {
-    RoomDescriptor* rooms = gameState._rooms;
+    constexpr size_t ESAU_JR_PLAYERS = 4;
 
-    for (size_t i = 0; i < MAX_ROOMS; i++)
+    namespace Structure
     {
-        RoomDescriptor& room = rooms[i];
-        func(room.SavedEntities, std::forward<Args>(args)...);
-    }
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_GameState_AllBackwardsStages(GameState& gameState, Func&& func, Args&&... args)
-{
-    BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
-
-    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
-    {
-        BackwardsStageDesc& backwardsStage = backwardsStages[i];
-        ForEachSaveState_BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
-    }
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_GameState_AllPlayers(GameState& gameState, Func&& func, Args&&... args)
-{
-    GameStatePlayer* players = gameState._players;
-    size_t playerCount = gameState._playerCount;
-
-    for (size_t i = 0; i < playerCount; i++)
-    {
-        GameStatePlayer& player = players[i];
-        func(player._movingBoxContents, std::forward<Args>(args)...);
-    }
-
-    GameStatePlayer* esauJrStates = gameState._esauJrStates;
-
-    for (size_t i = 0; i < ESAU_JR_PLAYERS; i++)
-    {
-        GameStatePlayer& player = esauJrStates[i];
-        if (player._playerType == -1)
+        template <typename Func, typename... Args>
+        static void BackwardsStage(BackwardsStageDesc& backwardsStage, Func&& func, Args&&... args)
         {
-            continue;
+            for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
+            {
+                RoomDescriptor& room = backwardsStage._bossRooms[i];
+                func(room.SavedEntities, std::forward<Args>(args)...);
+            }
+
+            for (size_t i = 0; i < backwardsStage._treasureRoomsCount; i++)
+            {
+                RoomDescriptor& room = backwardsStage._treasureRooms[i];
+                func(room.SavedEntities, std::forward<Args>(args)...);
+            }
+        }
+    }
+    
+    namespace InGame
+    {
+        template <typename Func, typename... Args>
+        static void AllRooms(Func&& func, Args&&... args)
+        {
+            Game* game = g_Game;
+            RoomDescriptor* roomList = game->_gridRooms;
+        
+            for (size_t i = 0; i < MAX_ROOMS; i++)
+            {
+                func(roomList[i].SavedEntities, std::forward<Args>(args)...);
+            }
         }
 
-        func(player._movingBoxContents, std::forward<Args>(args)...);
+        template <typename Func, typename... Args>
+        static void AllBackwardsStages(Func&& func, Args&&... args)
+        {
+            Game* game = g_Game;
+            BackwardsStageDesc* backwardsStages = game->_backwardsStages;
+        
+            for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+            {
+                BackwardsStageDesc& backwardsStage = backwardsStages[i];
+                ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
+            }
+        }
+
+        template <typename Func, typename... Args>
+        static void AllPlayers(Func&& func, Args&&... args)
+        {
+            Game* game = g_Game;
+            // Player data
+            const PlayerManager& playerManager = game->_playerManager;
+            const auto& players = playerManager._playerList;
+        
+            auto handlePlayer = [&](Entity_Player* player)
+            {
+                if (!player)
+                {
+                    return;
+                }
+        
+                func(player->_movingBoxContents, std::forward<Args>(args)...);
+        
+                if (player->_backupPlayer)
+                {
+                    func(player->_backupPlayer->_movingBoxContents, std::forward<Args>(args)...);
+                }
+        
+                if (player->_hasUnlistedRestoreState)
+                {
+                    func(player->_unlistedRestoreState._movingBoxContents, std::forward<Args>(args)...);
+                }
+            };
+        
+            for (Entity_Player* player : players)
+            {
+                handlePlayer(player);
+            }
+        
+            for (size_t i = 0; i < 4; i++)
+            {
+                handlePlayer(playerManager._esauJrState[i]);
+            }
+        }
+
+        template <typename Func, typename... Args>
+        static void All(Func&& func, Args&&... args)
+        {
+            Game* game = g_Game;
+            AllRooms(std::forward<Func>(func), std::forward<Args>(args)...);
+            func(game->_myosotisPickups, std::forward<Args>(args)...);
+            AllBackwardsStages(std::forward<Func>(func), std::forward<Args>(args)...);
+            AllPlayers(std::forward<Func>(func), std::forward<Args>(args)...);
+        }
+    }
+    
+    namespace InGameState
+    {
+        template <typename Func, typename... Args>
+        static void AllRooms(GameState& gameState, Func&& func, Args&&... args)
+        {
+            RoomDescriptor* rooms = gameState._rooms;
+        
+            for (size_t i = 0; i < MAX_ROOMS; i++)
+            {
+                RoomDescriptor& room = rooms[i];
+                func(room.SavedEntities, std::forward<Args>(args)...);
+            }
+        }
+
+        template <typename Func, typename... Args>
+        static void AllBackwardsStages(GameState& gameState, Func&& func, Args&&... args)
+        {
+            BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
+        
+            for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+            {
+                BackwardsStageDesc& backwardsStage = backwardsStages[i];
+                ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
+            }
+        }
+
+        template <typename Func, typename... Args>
+        static void AllPlayers(GameState& gameState, Func&& func, Args&&... args)
+        {
+            GameStatePlayer* players = gameState._players;
+            size_t playerCount = gameState._playerCount;
+        
+            for (size_t i = 0; i < playerCount; i++)
+            {
+                GameStatePlayer& player = players[i];
+                func(player._movingBoxContents, std::forward<Args>(args)...);
+            }
+        
+            GameStatePlayer* esauJrStates = gameState._esauJrStates;
+        
+            for (size_t i = 0; i < ESAU_JR_PLAYERS; i++)
+            {
+                GameStatePlayer& player = esauJrStates[i];
+                if (player._playerType == -1)
+                {
+                    continue;
+                }
+        
+                func(player._movingBoxContents, std::forward<Args>(args)...);
+            }
+        }
+
+        template <typename Func, typename... Args>
+        static void All(GameState& gameState, Func&& func, Args&&... args)
+        {
+            AllRooms(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            AllBackwardsStages(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            AllPlayers(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+        }
     }
 }
 
-template <typename Func, typename... Args>
-static void ForEachSaveState_Game(Func&& func, Args&&... args)
+namespace ESSM::IdManager
 {
-    Game* game = g_Game;
-    ForEachSaveState_AllRooms(std::forward<Func>(func), std::forward<Args>(args)...);
-    func(game->_myosotisPickups, std::forward<Args>(args)...);
-    ForEachSaveState_AllBackwardsStages(std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachSaveState_AllPlayers(std::forward<Func>(func), std::forward<Args>(args)...);
-}
-
-template <typename Func, typename... Args>
-static void ForEachSaveState_GameState(GameState& gameState, Func&& func, Args&&... args)
-{
-    ForEachSaveState_GameState_AllRooms(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachSaveState_GameState_AllBackwardsStages(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-    ForEachSaveState_GameState_AllPlayers(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-}
-
-static uint32_t NewId()
-{
-    if (s_reusableIds.size() > 0)
+    static uint32_t NewId() noexcept
     {
-        uint32_t id = s_reusableIds.back();
-        s_reusableIds.pop_back();
+        if (s_systemData.reusableIds.size() > 0)
+        {
+            uint32_t id = s_systemData.reusableIds.back();
+            s_systemData.reusableIds.pop_back();
+            LogDebug("[ESSM] New ID: %u\n", id);
+            return id;
+        }
+    
+        uint32_t id = s_systemData.totalIds;
+        s_systemData.totalIds++;
+        s_systemData.hijackedStates.emplace_back();
+        LogDebug("[ESSM] New ID: %u\n", id);
         return id;
     }
 
-    uint32_t id = s_maxId;
-    s_maxId++;
-    s_hijackedStates.emplace_back();
-    return id;
-}
-
-static void ClearId(uint32_t id)
-{
-    s_reusableIds.push_back(id);
-    LogDebug("[ESSM] Cleared ID: %u\n", id);
-}
-
-static bool IsHijacked(const EntitySaveState& data)
-{
-    return data.gridSpawnIdx == HIJACK_MARKER;
-}
-
-static bool IsWritten(const EntitySaveState& data)
-{
-    return data.gridSpawnIdx == WRITTEN_MARKER;
-}
-
-static bool IsRead(const EntitySaveState& data)
-{
-    return data.gridSpawnIdx == READ_MARKER;
-}
-
-static void SetHijacked(EntitySaveState& data)
-{
-    data.gridSpawnIdx = HIJACK_MARKER;
-}
-
-static void SetWritten(EntitySaveState& data)
-{
-    data.gridSpawnIdx = WRITTEN_MARKER;
-}
-
-static void SetRead(EntitySaveState& data)
-{
-    data.gridSpawnIdx = READ_MARKER;
-}
-
-static uint32_t GetId(const EntitySaveState& data)
-{
-    return data._intStorage7;
-}
-
-static void SetId(EntitySaveState& data, uint32_t id)
-{
-    data._intStorage7 = id;
-}
-
-static void Hijack(EntitySaveState& data, uint32_t id)
-{
-    HijackedState& hijackedState = s_hijackedStates[id];
-    hijackedState.gridSpawnIdx = data.gridSpawnIdx;
-    data.gridSpawnIdx = HIJACK_MARKER;
-    hijackedState.intStorage7 = data._intStorage7;
-    data._intStorage7 = id;
-}
-
-static uint32_t NewHijack(EntitySaveState& data)
-{
-    assert(!IsHijacked(data));
-    uint32_t id = NewId();
-    LogDebug("[ESSM] New ID: %u\n", id);
-    LogDebug("[ESSM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
-    Hijack(data, id);
-    return id;
-}
-
-static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState)
-{
-    data.gridSpawnIdx = hijackedState.gridSpawnIdx;
-    data._intStorage7 = hijackedState.intStorage7;
-}
-
-static uint32_t UnHijack(EntitySaveState& data)
-{
-    assert(IsHijacked(data));
-    uint32_t id = GetId(data);
-    RestoreHijack(data, s_hijackedStates[id]);
-    return id;
-}
-
-static void check_save_state(std::vector<uintptr_t>& checks, const EntitySaveState& saveState)
-{
-    bool isSaved = IsWritten(saveState);
-    assert(IsHijacked(saveState) || isSaved); // some entity is neither hijacked or saved
-    if (isSaved)
+    static void ClearId(uint32_t id) noexcept
     {
-        return;
-    }
-
-    uint32_t id = GetId(saveState);
-    assert(id < s_maxId); // this is really messed up
-
-    uintptr_t checkPtr = checks[id];
-    uintptr_t saveStatePtr = (uintptr_t)&saveState;
-    if (checkPtr == saveStatePtr)
-    {
-        return;
-    }
-
-    assert(checkPtr == 0); // there is an unaccounted duplicate
-    checks[id] = saveStatePtr;
-
-    const EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(saveState);
-    if (flipState)
-    {
-        check_save_state(checks, *flipState);
+        s_systemData.reusableIds.push_back(id);
+        LogDebug("[ESSM] Cleared ID: %u\n", id);
     }
 }
 
-static void check_save_state_vector(std::vector<uintptr_t>& checks, const std::vector<EntitySaveState>& saveStates)
+namespace ESSM::HijackManager
 {
-    for (const EntitySaveState& saveState : saveStates)
+    constexpr short READ_MARKER = 0x5248;
+    constexpr short HIJACK_MARKER = 0x5247;
+    constexpr short WRITTEN_MARKER = 0x5246;
+
+    static bool IsHijacked(const EntitySaveState& data) noexcept
     {
-        check_save_state(checks, saveState);
+        return data.gridSpawnIdx == HIJACK_MARKER;
+    }
+    
+    static bool IsWritten(const EntitySaveState& data) noexcept
+    {
+        return data.gridSpawnIdx == WRITTEN_MARKER;
+    }
+    
+    static bool IsRead(const EntitySaveState& data) noexcept
+    {
+        return data.gridSpawnIdx == READ_MARKER;
+    }
+    
+    static void SetHijacked(EntitySaveState& data) noexcept
+    {
+        data.gridSpawnIdx = HIJACK_MARKER;
+    }
+    
+    static void SetWritten(EntitySaveState& data) noexcept
+    {
+        data.gridSpawnIdx = WRITTEN_MARKER;
+    }
+    
+    static void SetRead(EntitySaveState& data) noexcept
+    {
+        data.gridSpawnIdx = READ_MARKER;
+    }
+    
+    static uint32_t GetId(const EntitySaveState& data) noexcept
+    {
+        return data._intStorage7;
+    }
+    
+    static void SetId(EntitySaveState& data, uint32_t id) noexcept
+    {
+        data._intStorage7 = id;
+    }
+    
+    static void Hijack(EntitySaveState& data, uint32_t id) noexcept
+    {
+        HijackedState& hijackedState = s_systemData.hijackedStates[id];
+        hijackedState.gridSpawnIdx = data.gridSpawnIdx;
+        data.gridSpawnIdx = HIJACK_MARKER;
+        hijackedState.intStorage7 = data._intStorage7;
+        data._intStorage7 = id;
+    }
+    
+    static uint32_t NewHijack(EntitySaveState& data) noexcept
+    {
+        assert(!IsHijacked(data));
+        uint32_t id = ESSM::IdManager::NewId();
+        LogDebug("[ESSM] New ID: %u\n", id);
+        LogDebug("[ESSM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
+        Hijack(data, id);
+        return id;
+    }
+
+    static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState) noexcept
+    {
+        data.gridSpawnIdx = hijackedState.gridSpawnIdx;
+        data._intStorage7 = hijackedState.intStorage7;
+    }
+    
+    static uint32_t UnHijack(EntitySaveState& data) noexcept
+    {
+        assert(IsHijacked(data));
+        uint32_t id = GetId(data);
+        RestoreHijack(data, s_systemData.hijackedStates[id]);
+        return id;
     }
 }
 
-static void ClearSaveState(const EntitySaveState& saveState)
+namespace ESSM
 {
-    assert(IsHijacked(saveState));
-    uint32_t id = GetId(saveState);
-    ClearId(id);
-    // clear entity (either store entity id and defer it for later or directly clear it)
-}
-
-static void ClearVector(const std::vector<EntitySaveState>& saveEntities)
-{
-    for (const EntitySaveState& saveState : saveEntities)
+    class StabilityChecker
     {
-        ClearSaveState(saveState);
-    }
+        private: enum BasicErrors
+        {
+            ERROR_DOUBLE_CLEAR = 0,
+            ERROR_INVALID_STATE = 1,
+            ERROR_INVALID_ID = 2,
+            ERROR_DUPLICATE = 3,
+            ERROR_INCORRECT_CLEAR = 4,
+            ERROR_LEAK = 5,
+
+            NUM_ERRORS
+        };
+
+        private: struct CheckData
+        {
+            private: std::vector<uintptr_t> m_checks;
+            private: std::vector<EntitySaveState*> m_invalidStates;
+            private: std::vector<EntitySaveState*> m_invalidId;
+            private: std::vector<EntitySaveState*> m_duplicates;
+            private: std::vector<EntitySaveState*> m_incorrectClears;
+            private: std::vector<uint32_t> m_leakedIds;
+            private: std::bitset<NUM_ERRORS> m_errors;
+
+            friend StabilityChecker;
+        };
+
+        private: static void check_save_state(CheckData& checks, EntitySaveState& saveState) noexcept
+        {
+            bool validState = HijackManager::IsHijacked(saveState);
+            assert(validState); // written and read states are treated as invalid, because they should only be marked as such in an isolated moment.
+            if (!validState)
+            {
+                checks.m_invalidStates.emplace_back(&saveState);
+                checks.m_errors.set(BasicErrors::ERROR_INVALID_STATE, true);
+                return;
+            }
+
+            uint32_t id = HijackManager::GetId(saveState);
+            bool validId = id < s_systemData.totalIds;
+            assert(validId); // this is really messed up
+            if (!validId)
+            {
+                checks.m_invalidId.emplace_back(&saveState);
+                checks.m_errors.set(BasicErrors::ERROR_INVALID_ID, true);
+                return;
+            }
+
+            uintptr_t checkPtr = checks.m_checks[id];
+            uintptr_t saveStatePtr = (uintptr_t)&saveState;
+            if (checkPtr == saveStatePtr) // because of smartPointers we might visit the same state twice, so this is not an error
+            {
+                return;
+            }
+
+            bool isUnique = checkPtr == 0;
+            assert(isUnique); // there is an unaccounted duplicate
+            if (!isUnique)
+            {
+                if (checkPtr == 1) // is a cleared id
+                {
+                    checks.m_incorrectClears.emplace_back(&saveState);
+                    checks.m_errors.set(BasicErrors::ERROR_INCORRECT_CLEAR, true);
+                }
+                else
+                {
+                    checks.m_duplicates.emplace_back(&saveState);
+                    checks.m_errors.set(BasicErrors::ERROR_DUPLICATE, true);
+                }
+                return;
+            }
+
+            checks.m_checks[id] = saveStatePtr;
+
+            EntitySaveState* innerSaveState = saveState.entitySaveState.saveState;
+            if (innerSaveState)
+            {
+                check_save_state(checks, *innerSaveState);
+            }
+        }
+
+        private: static void check_save_state_vector(CheckData& checks, std::vector<EntitySaveState>& saveStates) noexcept
+        {
+            for (EntitySaveState& saveState : saveStates)
+            {
+                check_save_state(checks, saveState);
+            }
+        }
+
+        private: static constexpr auto check_vector_lambda = [](std::vector<EntitySaveState>& vec, CheckData& checks) noexcept(noexcept(check_save_state_vector(checks, vec))) { check_save_state_vector(checks, vec); };
+
+        private: static constexpr size_t MAX_PICKUPS = 512;
+        private: static void check_entity_list_stability(CheckData& checks) noexcept
+        {
+            const EntityFactory* factory = g_Game->_entityFactory;
+            const Entity_Pickup* pickups = factory->_pickup;
+
+            for (size_t i = 0; i < MAX_PICKUPS; i++)
+            {
+                const Entity_Pickup& pickup = pickups[i];
+                EntitySaveState* flipState = pickup._flipSaveState.saveState;
+                if (flipState)
+                {
+                    check_save_state(checks, *flipState);
+                }
+            }
+        }
+
+        private: static void check_run_stability(CheckData& checks) noexcept
+        {
+            ESSM::EntityIterators::InGame::All(check_vector_lambda, checks);
+        }
+
+        private: static void check_game_state_stability(GameState& gameState, CheckData& checks) noexcept
+        {
+            ESSM::EntityIterators::InGameState::All(gameState, check_vector_lambda, checks);
+        }
+
+        public: static void CheckStability() noexcept
+        {
+            CheckData checks = CheckData();
+            checks.m_checks.resize(s_systemData.totalIds, 0);
+
+            std::vector<uint32_t>& reusableIds = s_systemData.reusableIds;
+            for (size_t i = reusableIds.size(); i != 0; i--)
+            {
+                size_t it = i - 1;
+                uint32_t reusableId = reusableIds[it];
+
+                bool doubleClear = checks.m_checks[reusableId] != 0;
+                assert(!doubleClear); // An id was cleared twice
+                if (doubleClear)
+                {
+                    reusableIds[it] = reusableIds.back();
+                    reusableIds.pop_back();
+                    checks.m_errors.set(BasicErrors::ERROR_DOUBLE_CLEAR, true);
+                }
+
+                checks.m_checks[reusableId] = 1; // using 1 as it can't be a valid pointer
+            }
+
+            Manager* manager = g_Manager;
+            Game* game = g_Game;
+
+            check_entity_list_stability(checks);
+            check_run_stability(checks);
+
+            check_game_state_stability(manager->_gamestate, checks);
+            check_game_state_stability(game->_glowingHourglassStates[0]._gameState, checks);
+            check_game_state_stability(game->_glowingHourglassStates[1]._gameState, checks);
+
+            size_t checksCount = checks.m_checks.size();
+            for (size_t i = 0; i < checksCount; i++)
+            {
+                uintptr_t check = checks.m_checks[i];
+                bool leaked = check == 0;
+                assert(!leaked); // one of the ids was not accounted for (Usually caused by missed Clear)
+                if (leaked)
+                {
+                    checks.m_leakedIds.push_back(i);
+                    checks.m_errors.set(BasicErrors::ERROR_LEAK, true);
+                }
+            }
+
+            // TODO: Handle errors
+        }
+    };
 }
 
-static void CopySaveState(EntitySaveState& saveState)
+namespace ESSM::BaseOperations
 {
-    assert(IsHijacked(saveState));
-    uint32_t sourceId = GetId(saveState);
-    uint32_t targetId = NewId();
-    SetId(saveState, targetId);
-    s_hijackedStates[targetId] = s_hijackedStates[sourceId];
-    LogDebug("[ESSM] New ID: %u\n", targetId);
-    LogDebug("[ESSM] Copied %d -> %d\n", sourceId, targetId);
-}
-
-static void CopyVector(std::vector<EntitySaveState>& saveEntities)
-{
-    for (EntitySaveState& saveState : saveEntities)
+    static void ClearSaveState(const EntitySaveState& saveState) noexcept
     {
-        CopySaveState(saveState);
-        // copy entity (either store entity id and defer it for later or directly clear it)
+        assert(HijackManager::IsHijacked(saveState));
+        uint32_t id = HijackManager::GetId(saveState);
+        IdManager::ClearId(id);
+        // clear entity (either store entity id and defer it for later or directly clear it)
     }
+    
+    static void ClearVector(const std::vector<EntitySaveState>& saveEntities) noexcept
+    {
+        for (const EntitySaveState& saveState : saveEntities)
+        {
+            ClearSaveState(saveState);
+        }
+    }
+
+    static void CopySaveState(EntitySaveState& saveState) noexcept
+    {
+        assert(HijackManager::IsHijacked(saveState));
+        uint32_t sourceId = HijackManager::GetId(saveState);
+        uint32_t targetId = IdManager::NewId();
+        HijackManager::SetId(saveState, targetId);
+        s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
+        LogDebug("[ESSM] New ID: %u\n", targetId);
+        LogDebug("[ESSM] Copied %d -> %d\n", sourceId, targetId);
+    }
+
+    static void CopyVector(std::vector<EntitySaveState>& saveEntities) noexcept
+    {
+        for (EntitySaveState& saveState : saveEntities)
+        {
+            CopySaveState(saveState);
+            // copy entity (either store entity id and defer it for later or directly clear it)
+        }
+    }
+
+    static auto ClearVectorLambda = [](const std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearVector(vec))) { ClearVector(vec); };
+    static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(CopyVector(vec))) { CopyVector(vec); };
 }
 
-static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id)
+static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id) noexcept
 {
-    // save entity
+    // TODO: save entity
 }
 
-static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
+static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id) noexcept
 {
-    // restore entity
+    // TODO: restore entity
 }
-
-static auto check_vector_lambda = [](const std::vector<EntitySaveState>& vec, std::vector<uintptr_t>& checks) { check_save_state_vector(checks, vec); };
-static auto ClearVectorLambda = [](const std::vector<EntitySaveState>& vec) { ClearVector(vec); };
-static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) { CopyVector(vec); };
 
 namespace ESSM::SaveData
 {
     constexpr uint32_t SAVE_VERSION = 1;
+
+    struct SaveFile
+    {
+        std::vector<HijackedState> entities;
+    };
 
     namespace Section
     {
@@ -421,34 +588,49 @@ namespace ESSM::SaveData
         constexpr uint32_t MAX_ENTITY_COUNT = 0xFFFF;
     }
 
+    enum ReadErrors
+    {
+        ERROR_INVALID_STATE = 0,
+        TRIGGERED_EXCEPTION = 1,
+
+        NUM_ERRORS
+    };
+
+    template<typename T> struct bitset_size;
+    template<std::size_t N> struct bitset_size<std::bitset<N>> {
+        static constexpr std::size_t value = N;
+    };
+
+    static_assert(bitset_size<decltype(ReadState::errors)>::value == NUM_ERRORS, "NUM_ERRORS doesn't match ReadState errors");
+
     namespace Operations
     {
-        static void ClearSaveVector(const std::vector<EntitySaveState>& saveEntities)
+        static void ClearSaveVector(const std::vector<EntitySaveState>& saveEntities) noexcept
         {
             for (const EntitySaveState& saveState : saveEntities)
             {
-                if (IsHijacked(saveState))
+                if (ESSM::HijackManager::IsHijacked(saveState))
                 {
-                    ClearSaveState(saveState);
+                    ESSM::BaseOperations::ClearSaveState(saveState);
                 }
             }
         }
 
-        static void write_entity_smart_pointer(EntitySaveState& data, ESSM::SaveData::WriteState& writeState)
+        static void write_entity_smart_pointer(EntitySaveState& data, WriteState& writeState)
         {
-            assert(IsHijacked(data) || IsWritten(data));
-            if (IsHijacked(data))
+            assert(HijackManager::IsHijacked(data) || HijackManager::IsWritten(data));
+            if (HijackManager::IsHijacked(data))
             {
                 auto& writtenSaveStates = writeState.writtenSaveStates;
                 uint32_t writeId = writtenSaveStates.size();
     
-                uint32_t id = GetId(data);
-                SetWritten(data);
-                SetId(data, writeId);
+                uint32_t id = HijackManager::GetId(data);
+                HijackManager::SetWritten(data);
+                HijackManager::SetId(data, writeId);
     
                 writtenSaveStates.emplace_back(&data, id);
             }
-            else if (!IsWritten(data))
+            else if (!HijackManager::IsWritten(data))
             {
                 throw std::runtime_error("invalid EntitySaveState state during write");
             }
@@ -460,10 +642,10 @@ namespace ESSM::SaveData
             }
         }
     
-        static void write_save_state(EntitySaveState& data, ESSM::SaveData::WriteState& writeState)
+        static void write_save_state(EntitySaveState& data, WriteState& writeState)
         {
-            assert(IsHijacked(data));
-            if (!IsHijacked(data))
+            assert(HijackManager::IsHijacked(data));
+            if (!HijackManager::IsHijacked(data))
             {
                 throw std::runtime_error("invalid EntitySaveState state during write");
             }
@@ -471,9 +653,9 @@ namespace ESSM::SaveData
             auto& writtenSaveStates = writeState.writtenSaveStates;
             uint32_t writeId = writtenSaveStates.size();
     
-            uint32_t id = GetId(data);
-            SetWritten(data);
-            SetId(data, writeId);
+            uint32_t id = HijackManager::GetId(data);
+            HijackManager::SetWritten(data);
+            HijackManager::SetId(data, writeId);
     
             writtenSaveStates.emplace_back(&data, id);
     
@@ -484,24 +666,24 @@ namespace ESSM::SaveData
             }
         }
     
-        static void read_save_state(EntitySaveState& data, ReadState& readState)
+        static void read_save_state(EntitySaveState& data, ReadState& readState) noexcept
         {
-            if (!IsWritten(data))
+            if (!HijackManager::IsWritten(data))
             {
-                if (!IsRead(data))
+                if (!HijackManager::IsRead(data))
                 {
-                    readState.errors.set(0); // invalid EntitySaveState state during read
+                    readState.errors.set(ReadErrors::ERROR_INVALID_STATE); // invalid EntitySaveState state during read
                 }
             }
             else
             {
                 // Due to how flip state are implemented, there can be duplicate ids. As such finding a duplicate here is not an error.
-                uint32_t readId = GetId(data);
+                uint32_t readId = HijackManager::GetId(data);
                 readState.maxId = std::max(readState.maxId, readId);
                 readState.readSaveStates.push_back(&data);
             }
             
-            SetRead(data);
+            HijackManager::SetRead(data);
             EntitySaveState* smartPointer = data.entitySaveState.saveState;
             if (smartPointer)
             {
@@ -509,7 +691,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static void write_vector(std::vector<EntitySaveState>& saveEntities, ESSM::SaveData::WriteState& writeState)
+        static void write_vector(std::vector<EntitySaveState>& saveEntities, WriteState& writeState) noexcept(noexcept(write_save_state(EntitySaveState(), writeState)))
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -517,7 +699,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static void read_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState)
+        static void read_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState) noexcept(noexcept(read_save_state(EntitySaveState(), readState)))
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -525,17 +707,22 @@ namespace ESSM::SaveData
             }
         }
     
-        static auto ClearSaveVectorLambda = [](const std::vector<EntitySaveState>& vec) { ClearSaveVector(vec); };
-        static auto WriteVectorLambda = [](std::vector<EntitySaveState>& vec, ESSM::SaveData::WriteState& writeState) { write_vector(vec, writeState); };
-        static auto ReadVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) { read_vector(vec, readState); };
+        static auto ClearSaveVectorLambda = [](const std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearSaveVector(vec))) { ClearSaveVector(vec); };
+        static auto WriteVectorLambda = [](std::vector<EntitySaveState>& vec, WriteState& writeState) noexcept(noexcept(write_vector(vec, writeState))) { write_vector(vec, writeState); };
+        static auto ReadVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) noexcept(noexcept(read_vector(vec, readState))) { read_vector(vec, readState); };
     }
 
     static void resolve_read_errors(ReadState& readState) noexcept
     {
-        if (readState.errors.test(0))
+        if (readState.errors.test(ReadErrors::ERROR_INVALID_STATE))
         {
             ZHL::Log("[ERROR] [ESSM] - invalid EntitySaveState state during read\n");
         }
+    }
+
+    static void clear_write_state(WriteState& writeState) noexcept
+    {
+        writeState.writtenSaveStates.clear();
     }
 
     template <typename T>
@@ -567,7 +754,7 @@ namespace ESSM::SaveData
         return REPENTOGON::StringFormat("%s/EntitySaveStateManagement/%s.dat", REPENTOGON::GetRepentogonDataPath(), fileName.c_str());
     }
 
-    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
+    static bool guarantee_parent_path_exists(std::filesystem::path filePath) noexcept
     {
         std::filesystem::path directory = filePath.parent_path();
 
@@ -605,7 +792,17 @@ namespace ESSM::SaveData
         GameState& gameState = manager->_gamestate;
     
         WriteState writeState = WriteState();
-        ForEachSaveState_GameState(gameState, Operations::WriteVectorLambda, writeState);
+        try
+        {
+            ESSM::EntityIterators::InGameState::All(gameState, Operations::WriteVectorLambda, writeState);
+        }
+        catch(const std::runtime_error& e)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to write game state : %s\n", e.what());
+            clear_write_state(writeState);
+            return writeState;
+        }
+
         // serialize entities from write State
         return writeState;
     }
@@ -616,7 +813,16 @@ namespace ESSM::SaveData
         GameState& gameState = manager->_gamestate;
     
         ReadState readState = ReadState();
-        ForEachSaveState_GameState(gameState, Operations::ReadVectorLambda, readState);
+        try
+        {
+            ESSM::EntityIterators::InGameState::All(gameState, Operations::ReadVectorLambda, readState);
+        }
+        catch(const std::runtime_error& e)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to read game state : %s\n", e.what());
+            readState.errors.set(ReadErrors::TRIGGERED_EXCEPTION);
+        }
+
         resolve_read_errors(readState);
         return readState;
     }
@@ -628,9 +834,9 @@ namespace ESSM::SaveData
             EntitySaveState& saveState = *writtenSaveState.first;
             uint32_t id = writtenSaveState.second;
     
-            assert(IsWritten(saveState));
-            SetHijacked(saveState);
-            SetId(saveState, id);
+            assert(HijackManager::IsWritten(saveState));
+            HijackManager::SetHijacked(saveState);
+            HijackManager::SetId(saveState, id);
         }
     }
 
@@ -643,15 +849,15 @@ namespace ESSM::SaveData
         {
             EntitySaveState& saveState = *readSaveState;
 
-            assert(IsRead(saveState));
-            uint32_t readId = GetId(saveState);
+            assert(HijackManager::IsRead(saveState));
+            uint32_t readId = HijackManager::GetId(saveState);
             // all previous steps should have guaranteed this
             assert(readId <= maxId);
             
-            uint32_t id = NewId();
-            SetHijacked(saveState);
-            SetId(saveState, id);
-            s_hijackedStates[id] = entities[readId];
+            uint32_t id = ESSM::IdManager::NewId();
+            HijackManager::SetHijacked(saveState);
+            HijackManager::SetId(saveState, id);
+            s_systemData.hijackedStates[id] = entities[readId];
 
             readState.restoredSaveStates.emplace_back(readId, id);
         }
@@ -671,7 +877,7 @@ namespace ESSM::SaveData
         for (auto& saveState : writeState.writtenSaveStates)
         {
             uint32_t id = saveState.second;
-            HijackedState& hijackedState = s_hijackedStates[id];
+            HijackedState& hijackedState = s_systemData.hijackedStates[id];
 
             write_binary(file, hijackedState.intStorage7); // UNHIJACKED_ID
             write_binary(file, hijackedState.gridSpawnIdx); // UNHIJACKED_MARKER
@@ -880,7 +1086,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
     std::pair<Entity*, EntitySaveState*> minecartEntity = s_minecartEntity;
     s_minecartEntity.first = nullptr; s_minecartEntity.second = nullptr;
 
-    assert(!IsHijacked(*data)); // these are always newly created so they should not be already hijacked
+    assert(!ESSM::HijackManager::IsHijacked(*data)); // these are always newly created so they should not be already hijacked
     bool saved = super(entity, data, savingMinecartEntity);
 
     if (!saved)
@@ -891,7 +1097,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
             EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
             if (flipState)
             {
-                UnHijack(*flipState);
+                ESSM::HijackManager::UnHijack(*flipState);
             }
         }
 
@@ -911,37 +1117,37 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
         EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
         if (flipState)
         {
-            CopySaveState(*flipState);
+            ESSM::BaseOperations::CopySaveState(*flipState);
         }
 
-        uint32_t id = NewHijack(*minecartEntity.second);
+        uint32_t id = ESSM::HijackManager::NewHijack(*minecartEntity.second);
         SaveEntity(*minecartEntity.first, *minecartEntity.second, id);
     }
 
     EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*data);
     if (flipState)
     {
-        CopySaveState(*flipState);
+        ESSM::BaseOperations::CopySaveState(*flipState);
     }
 
-    uint32_t id = NewHijack(*data);
+    uint32_t id = ESSM::HijackManager::NewHijack(*data);
     SaveEntity(*entity, *data, id);
     return saved;
 }
 
 HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> void)
 {
-    uint32_t id = UnHijack(*data);
+    uint32_t id = ESSM::HijackManager::UnHijack(*data);
 
     super(entity, data);
 
-    Hijack(*data, id);
+    ESSM::HijackManager::Hijack(*data, id);
     RestoreEntity(*entity, *data, id);
 }
 
 HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 {
-    ClearVector(g_Game->_myosotisPickups);
+    ESSM::BaseOperations::ClearVector(g_Game->_myosotisPickups);
     super(resetLilPortalRoom);
 }
 
@@ -959,7 +1165,7 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
         }
 
         const RoomDescriptor& room = roomList[i];
-        ClearVector(room.SavedEntities);
+        ESSM::BaseOperations::ClearVector(room.SavedEntities);
     }
 
     super(resetLilPortalRoom);
@@ -971,7 +1177,7 @@ HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-    ClearVector(room.SavedEntities);
+    ESSM::BaseOperations::ClearVector(room.SavedEntities);
 
     super(roomConfig);
 }
@@ -982,7 +1188,7 @@ HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-    ClearVector(room.SavedEntities);
+    ESSM::BaseOperations::ClearVector(room.SavedEntities);
 
     super();
 }
@@ -996,7 +1202,7 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
     {
         Game* game = g_Game;
         RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-        ClearVector(room.SavedEntities);
+        ESSM::BaseOperations::ClearVector(room.SavedEntities);
     }
 
     return super(currentIdx, destinationIdx, direction);
@@ -1005,17 +1211,17 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
 HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
 {
     BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
-    ForEachSaveState_BackwardsStage(backwardsStage, ClearVectorLambda);
+    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::BaseOperations::ClearVectorLambda);
 
 	super(stage);
 
-    ForEachSaveState_BackwardsStage(backwardsStage, CopyVectorLambda);
+    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::BaseOperations::CopyVectorLambda);
 }
 
 // Clear backwards stage save state, even though the game simply sets room count to 0, to avoid having to iterate "uninitialized" RoomDescriptors in the BackwardsStage. 
 HOOK_METHOD(Game, ResetState, () -> void)
 {
-    ForEachSaveState_AllBackwardsStages(ClearVectorLambda);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::BaseOperations::ClearVectorLambda);
 	super();
 }
 
@@ -1023,8 +1229,8 @@ HOOK_METHOD(GameState, Clear, () -> void)
 {
     LogDebug("[ESSM] Start GameState::Clear\n");
 
-    ForEachSaveState_GameState_AllRooms(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
-    ForEachSaveState_GameState_AllBackwardsStages(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
+    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
+    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::SaveData::Operations::ClearSaveVectorLambda);
     // player methods are handled by GameStatePlayer::Init
     super();
 
@@ -1037,8 +1243,8 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 
     // there is no need to clear the state since SaveState always calls Clear before saving
 	super(state);
-    ForEachSaveState_GameState_AllRooms(*state, CopyVectorLambda);
-    ForEachSaveState_GameState_AllBackwardsStages(*state, CopyVectorLambda);
+    ESSM::EntityIterators::InGameState::AllRooms(*state, ESSM::BaseOperations::CopyVectorLambda);
+    ESSM::EntityIterators::InGameState::AllBackwardsStages(*state, ESSM::BaseOperations::CopyVectorLambda);
     // players are handled in their appropriate methods, since we would be clearing twice otherwise
 
     LogDebug("[ESSM] End Game::SaveState\n");
@@ -1048,7 +1254,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
     LogDebug("[ESSM] Start Game::RestoreState\n");
 
-    ForEachSaveState_AllBackwardsStages(ClearVectorLambda);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::BaseOperations::ClearVectorLambda);
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
@@ -1059,7 +1265,7 @@ HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 {
     // Manual clear the lil portal room
     constexpr size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
-    ClearVector(g_Game->_negativeGridRooms[LIL_PORTAL_IDX].SavedEntities);
+    ESSM::BaseOperations::ClearVector(g_Game->_negativeGridRooms[LIL_PORTAL_IDX].SavedEntities);
     super(state);
 }
 
@@ -1072,19 +1278,19 @@ HOOK_METHOD(GameStatePlayer, Init, () -> void)
 HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void)
 {
     super(saveState, saveTemporaryFamiliars);
-    CopyVector(saveState->_movingBoxContents);
+    ESSM::BaseOperations::CopyVector(saveState->_movingBoxContents);
 }
 
 HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> void)
 {
-    ClearVector(this->_movingBoxContents);
+    ESSM::BaseOperations::ClearVector(this->_movingBoxContents);
     super(saveState);
-    CopyVector(this->_movingBoxContents);
+    ESSM::BaseOperations::CopyVector(this->_movingBoxContents);
 }
 
 static void __stdcall restore_game_state_backwards_rooms() noexcept
 {
-    ForEachSaveState_AllBackwardsStages(CopyVectorLambda);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::BaseOperations::CopyVectorLambda);
 }
 
 static void Patch_GameRestoreState_PostBackwardsStageDescRestore() noexcept
@@ -1110,7 +1316,7 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore() noexcept
 static void __stdcall asm_clear_room_vector() noexcept
 {
     RoomDescriptor& room = *g_Game->_room->_descriptor;
-    ClearVector(room.SavedEntities);
+    ESSM::BaseOperations::ClearVector(room.SavedEntities);
 }
 
 static void Patch_RoomSaveState_ClearVector() noexcept
@@ -1155,7 +1361,7 @@ static void Patch_RoomRestoreState_ClearVector() noexcept
 
 static void __stdcall asm_copy_myosotis_pickups() noexcept
 {
-    CopyVector(g_Game->_myosotisPickups);
+    ESSM::BaseOperations::CopyVector(g_Game->_myosotisPickups);
 }
 
 static void Patch_LevelInit_PostMyosotisEffect() noexcept
@@ -1180,7 +1386,7 @@ static void Patch_LevelInit_PostMyosotisEffect() noexcept
 
 static void __stdcall restore_level_game_state() noexcept
 {
-    ForEachSaveState_AllRooms(CopyVectorLambda);
+    ESSM::EntityIterators::InGame::AllRooms(ESSM::BaseOperations::CopyVectorLambda);
 }
 
 static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
@@ -1205,12 +1411,12 @@ static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
 
 static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
 {
-    ClearVector(*saveStateVector);
+    ESSM::BaseOperations::ClearVector(*saveStateVector);
 }
 
 static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
 {
-    CopyVector(*saveStateVector);
+    ESSM::BaseOperations::CopyVector(*saveStateVector);
 }
 
 static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector() noexcept
@@ -1269,7 +1475,7 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
 
 static void __stdcall asm_clear_moving_box_vector(Entity_Player& player) noexcept
 {
-    ClearVector(player._movingBoxContents);
+    ESSM::BaseOperations::ClearVector(player._movingBoxContents);
 }
 
 static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
@@ -1296,10 +1502,10 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
 // use fastcall to emulate thiscall
 static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState) noexcept
 {
-    if (IsHijacked(*saveState))
+    if (ESSM::HijackManager::IsHijacked(*saveState))
     {
-        uint32_t id = GetId(*saveState);
-        ClearSaveState(*saveState);
+        uint32_t id = ESSM::HijackManager::GetId(*saveState);
+        ESSM::BaseOperations::ClearSaveState(*saveState);
         LogDebug("[ESSM] Smart pointer Cleared: %u\n", id);
     }
 
@@ -1319,7 +1525,7 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor() noexcept
 
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState) noexcept
 {
-    uint32_t id = NewHijack(saveState);
+    uint32_t id = ESSM::HijackManager::NewHijack(saveState);
     LogDebug("[ESSM] New Flip State: %u\n", id);
 }
 
@@ -1346,7 +1552,7 @@ static void Patch_PickupInitFlipState_CreateSaveState() noexcept
 
 static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState) noexcept
 {
-    RestoreEntity(entity, saveState, GetId(saveState));
+    RestoreEntity(entity, saveState, ESSM::HijackManager::GetId(saveState));
 }
 
 static void Patch_PickupTryFlip_RestoreFlipState() noexcept
@@ -1379,7 +1585,7 @@ static void __stdcall change_mineshaft_room(size_t listIdx) noexcept
 {
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[listIdx];
-    ClearVector(room.SavedEntities);
+    ESSM::BaseOperations::ClearVector(room.SavedEntities);
 }
 
 static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
@@ -1403,7 +1609,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void ESSM::ApplyPatches()
+void ESSM::ApplyPatches() noexcept
 {
     Patch_ReferenceCount_EntitySaveStateDestructor();
     Patch_LevelInit_PostMyosotisEffect();
@@ -1423,70 +1629,13 @@ void ESSM::ApplyPatches()
 
 #include "chrono"
 
-constexpr size_t MAX_PICKUPS = 512;
-constexpr size_t ESAU_JR_PLAYERS = 4;
-
-static void check_entity_list_stability(std::vector<size_t>& checks)
-{
-    const EntityFactory* factory = g_Game->_entityFactory;
-    const Entity_Pickup* pickups = factory->_pickup;
-    
-    for (size_t i = 0; i < MAX_PICKUPS; i++)
-    {
-        const Entity_Pickup& pickup = pickups[i];
-        const EntitySaveState* flipState = pickup._flipSaveState.saveState;
-        if (flipState)
-        {
-            check_save_state(checks, *flipState);
-        }
-    }
-}
-
-static void check_run_stability(std::vector<uintptr_t>& checks)
-{
-    ForEachSaveState_Game(check_vector_lambda, checks);
-}
-
-static void check_game_state_stability(GameState& gameState, std::vector<uintptr_t>& checks)
-{
-    ForEachSaveState_GameState(gameState, check_vector_lambda, checks);
-}
-
-static void check_stability()
-{
-    std::vector<uintptr_t> checks;
-    checks.resize(s_maxId, 0);
-    
-    // will trigger a duplicate if it's still being used
-    for (uint32_t reusableIdx : s_reusableIds)
-    {
-        assert(checks[reusableIdx] == 0); // An id was cleared twice
-        checks[reusableIdx] = 1;
-    }
-
-    Manager* manager = g_Manager;
-    Game* game = g_Game;
-
-    check_entity_list_stability(checks);
-    check_run_stability(checks);
-
-    check_game_state_stability(manager->_gamestate, checks);
-    check_game_state_stability(game->_glowingHourglassStates[0]._gameState, checks);
-    check_game_state_stability(game->_glowingHourglassStates[1]._gameState, checks);
-
-    for (uintptr_t check : checks)
-    {
-        assert(check != 0); // one of the ids was not accounted for (Usually caused by missed Clear)
-    }
-}
-
 HOOK_STATIC(Manager, Update, (bool unk) -> void, __stdcall)
 {
     super(unk);
 
     using clock = std::chrono::high_resolution_clock;
     auto start = clock::now();
-    check_stability();
+    ESSM::StabilityChecker::CheckStability();
     auto end = clock::now();
 
     unsigned long long duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();

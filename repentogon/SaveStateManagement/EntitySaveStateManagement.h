@@ -16,7 +16,7 @@ namespace EntitySaveStateManagement
             std::vector<EntitySaveState*> readSaveStates;
             std::vector<std::pair<uint32_t, uint32_t>> restoredSaveStates; // readId, id
             uint32_t maxId = 0;
-            std::bitset<1> errors;
+            std::bitset<2> errors;
         };
 
         WriteState WriteGameState() noexcept;
@@ -32,5 +32,5 @@ namespace EntitySaveStateManagement
         bool Deserialize(const std::string& fileName, ReadState& readState) noexcept;
     }
 
-    void ApplyPatches();
+    void ApplyPatches() noexcept;
 }
