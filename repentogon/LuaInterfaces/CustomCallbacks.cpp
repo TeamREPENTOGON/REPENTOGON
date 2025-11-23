@@ -2781,8 +2781,8 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 	super(grid, offset);
 }
 
-//MC_PRE_ENTITY_LIGHTING_RENDER
-HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
+static bool MC_PRE_ENTITY_LIGHT_RENDER(Entity* ent, Vector& offset)
+{
 	const int callbackid = 1152;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2799,7 +2799,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 		if (!result) {
 			if (lua_isboolean(L, -1)) {
 				if (!lua_toboolean(L, -1)) {
-					return;
+					return true;
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
@@ -2807,6 +2807,22 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 			}
 		}
 	}
+
+	return false;
+}
+
+//MC_PRE_ENTITY_LIGHTING_RENDER
+HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
+	
+	ANM2::StartLightRendering();
+	bool skip = MC_PRE_ENTITY_LIGHT_RENDER(ent, offset);
+	ANM2::EndLightRendering();
+
+	if (skip)
+	{
+		return;
+	}
+
 	super(ent, offset);
 }
 

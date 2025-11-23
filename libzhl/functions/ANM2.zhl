@@ -87,6 +87,9 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
 	{
 		this->constructor();
 	}
+
+    static inline void StartLightRendering() { g_ANM2_LightRendering = true; }
+    static inline void EndLightRendering() { g_ANM2_LightRendering = false; }
 }} 
     std_string _filename : 0x0;
     std_string _animDefaultName : 0x18;
