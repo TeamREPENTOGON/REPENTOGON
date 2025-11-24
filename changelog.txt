@@ -32,6 +32,9 @@ Additions:
 	- GetFlipCollectible
 		Returns CollectibleType if flip save state exists, nil otherwise.
 	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
+	- ReloadGraphics(boolean IgnoreBlind)
+	- SetupCollectibleGraphics(Sprite Sprite, integer Layer, CollectibleType Collectible, boolean Blind, integer Seed = Random(), boolean LoadGraphics)
+		Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
 	- SetD8DamageModifier
