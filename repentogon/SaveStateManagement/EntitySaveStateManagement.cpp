@@ -147,15 +147,14 @@ namespace ESSM::EntityIterators
         
                 func(player->_movingBoxContents, std::forward<Args>(args)...);
         
-                if (player->_backupPlayer)
+                Entity_Player* backupPlayer = player->_backupPlayer;
+                if (backupPlayer)
                 {
-                    func(player->_backupPlayer->_movingBoxContents, std::forward<Args>(args)...);
+                    func(backupPlayer->_movingBoxContents, std::forward<Args>(args)...);
+                    func(backupPlayer->_unlistedRestoreState._movingBoxContents, std::forward<Args>(args)...);
                 }
         
-                if (player->_hasUnlistedRestoreState)
-                {
-                    func(player->_unlistedRestoreState._movingBoxContents, std::forward<Args>(args)...);
-                }
+                func(player->_unlistedRestoreState._movingBoxContents, std::forward<Args>(args)...);
             };
         
             for (Entity_Player* player : players)
@@ -327,7 +326,6 @@ namespace ESSM::HijackManager
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
-        LogDebug("[ESSM] New ID: %u\n", id);
         LogDebug("[ESSM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
         Hijack(data, id);
         return id;
@@ -521,7 +519,7 @@ namespace ESSM
 
 namespace ESSM::BaseOperations
 {
-    static void ClearSaveState(const EntitySaveState& saveState) noexcept
+    static void ClearSaveState(EntitySaveState& saveState) noexcept
     {
         assert(HijackManager::IsHijacked(saveState));
         uint32_t id = HijackManager::GetId(saveState);
@@ -529,9 +527,9 @@ namespace ESSM::BaseOperations
         // clear entity (either store entity id and defer it for later or directly clear it)
     }
     
-    static void ClearVector(const std::vector<EntitySaveState>& saveEntities) noexcept
+    static void ClearVector(std::vector<EntitySaveState>& saveEntities) noexcept
     {
-        for (const EntitySaveState& saveState : saveEntities)
+        for (EntitySaveState& saveState : saveEntities)
         {
             ClearSaveState(saveState);
         }
@@ -544,7 +542,6 @@ namespace ESSM::BaseOperations
         uint32_t targetId = IdManager::NewId();
         HijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug("[ESSM] New ID: %u\n", targetId);
         LogDebug("[ESSM] Copied %d -> %d\n", sourceId, targetId);
     }
 
@@ -557,7 +554,7 @@ namespace ESSM::BaseOperations
         }
     }
 
-    static auto ClearVectorLambda = [](const std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearVector(vec))) { ClearVector(vec); };
+    static auto ClearVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearVector(vec))) { ClearVector(vec); };
     static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(CopyVector(vec))) { CopyVector(vec); };
 }
 
@@ -605,9 +602,9 @@ namespace ESSM::SaveData
 
     namespace Operations
     {
-        static void ClearSaveVector(const std::vector<EntitySaveState>& saveEntities) noexcept
+        static void ClearSaveVector(std::vector<EntitySaveState>& saveEntities) noexcept
         {
-            for (const EntitySaveState& saveState : saveEntities)
+            for (EntitySaveState& saveState : saveEntities)
             {
                 if (ESSM::HijackManager::IsHijacked(saveState))
                 {
@@ -707,7 +704,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static auto ClearSaveVectorLambda = [](const std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearSaveVector(vec))) { ClearSaveVector(vec); };
+        static auto ClearSaveVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearSaveVector(vec))) { ClearSaveVector(vec); };
         static auto WriteVectorLambda = [](std::vector<EntitySaveState>& vec, WriteState& writeState) noexcept(noexcept(write_vector(vec, writeState))) { write_vector(vec, writeState); };
         static auto ReadVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) noexcept(noexcept(read_vector(vec, readState))) { read_vector(vec, readState); };
     }
@@ -1164,7 +1161,7 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
             continue;
         }
 
-        const RoomDescriptor& room = roomList[i];
+        RoomDescriptor& room = roomList[i];
         ESSM::BaseOperations::ClearVector(room.SavedEntities);
     }
 
@@ -1275,6 +1272,13 @@ HOOK_METHOD(GameStatePlayer, Init, () -> void)
     super();
 }
 
+HOOK_METHOD(Entity_Player, destructor, () -> void)
+{
+    ESSM::BaseOperations::ClearVector(this->_movingBoxContents);
+    ESSM::BaseOperations::ClearVector(this->_unlistedRestoreState._movingBoxContents);
+    super();
+}
+
 HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void)
 {
     super(saveState, saveTemporaryFamiliars);
@@ -1283,6 +1287,12 @@ HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool sav
 
 HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> void)
 {
+    // if this player was replaced then don't restore the state
+    if (this->_replacedPlayer)
+    {
+        return super(saveState);
+    }
+
     ESSM::BaseOperations::ClearVector(this->_movingBoxContents);
     super(saveState);
     ESSM::BaseOperations::CopyVector(this->_movingBoxContents);

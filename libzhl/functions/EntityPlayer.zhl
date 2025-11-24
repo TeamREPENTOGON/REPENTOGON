@@ -8,6 +8,9 @@ __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *pa
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec085657a1????????33c5508d45??64a3????????8bf9":
 __thiscall void Entity_Player::constructor();
 
+"558bec6aff68????????64a1????????5051535657a1????????33c5508d45??64a3????????8bf98b8f":
+__thiscall void Entity_Player::destructor();
+
 "558bec83e4f8a1????????83ec1483b8????????02":
 __thiscall void Entity_Player::update_red_hearts();
 
@@ -809,6 +812,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	PlayerHUD* _playerHUD : 0x20a8;
 	bool _hasUnlistedRestoreState : 0x20bc; // States if the _unlistedRestoreState is usable
 	GameStatePlayer _unlistedRestoreState : 0x20c0; // This state represents the state the player was in before being replaced by a player that was not in the player list (this is used by T.Lazarus and Esau Jr.)
+	Entity_Player* _replacedPlayer : 0x267c; // The other player in the last PlayerManager::ReplacePlayer for this player
 } : 0x2ea0;
 
 "68(????????)68????????f30f59c16a00":
