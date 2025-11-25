@@ -293,7 +293,7 @@ static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int fra
 
 	BlendMode blendMode = ANM2Utils::GetFrameBlendMode(state);
 	ColorMod color = ANM2Utils::GetFrameColor(anm2, state, frame, flags);
-	SourceQuad sourceQuad = ANM2Utils::GetFrameSourceQuad(frame, state, topLeftClamp, bottomRightClamp, anm2);
+	SourceQuad sourceQuad = ANM2Utils::GetFrameSourceQuad(frame, state, topLeftClamp, bottomRightClamp, anm2, image);
 	DestinationQuad destQuad = ANM2Utils::GetFrameDestinationQuad(frame, position, state, topLeftClamp, bottomRightClamp, anm2);
 
 	KAGE_Graphics_Manager& manager = g_KAGE_Graphics_Manager;

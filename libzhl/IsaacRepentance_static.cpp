@@ -661,17 +661,17 @@ void DestinationQuad::RotateRadians(const Vector& pivot, float radians) noexcept
 	_bottomRight -= pivot;
 
 	// apply rotation
-	_topLeft.x = cos * _topLeft.x - sin * _topLeft.y;
-	_topLeft.y = sin * _topLeft.x + cos * _topLeft.y;
+	auto rotate = [](auto& p, float sin, float cos) {
+		float x = p.x;
+		float y = p.y;
+		p.x =  cos * x - sin * y;
+		p.y =  sin * x + cos * y;
+	};
 
-	_topRight.x = cos * _topRight.x - sin * _topRight.y;
-	_topRight.y = sin * _topRight.x + cos * _topRight.y;
-
-	_bottomLeft.x = cos * _bottomLeft.x - sin * _bottomLeft.y;
-	_bottomLeft.y = sin * _bottomLeft.x + cos * _bottomLeft.y;
-
-	_bottomRight.x = cos * _bottomRight.x - sin * _bottomRight.y;
-	_bottomRight.y = sin * _bottomRight.x + cos * _bottomRight.y;
+	rotate(_topLeft, sin, cos);
+	rotate(_topRight, sin, cos);
+	rotate(_bottomLeft, sin, cos);
+	rotate(_bottomRight, sin, cos);
 
 	// undo translation
 	_topLeft += pivot;
