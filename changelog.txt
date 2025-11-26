@@ -37,10 +37,14 @@ Additions:
 		Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]BlinkLockTime - how long player's head will play fired frame sprite
+	- GetBodySprite
+		Temporary copy of body player sprite while null animation is active.
 	- SetD8DamageModifier
 	- SetD8FireDelayModifier
 	- SetD8RangeModifier
 	- SetD8SpeedModifier
+	- [Get/Set]FireBlockTime - how long player will not able to fire from weapon
 	- [Get/Set]ForgottenSwapFormCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
 	- [Get/Set]MawOfTheVoidCharge
@@ -71,6 +75,8 @@ Additions:
 	- HasForcedCamoEffect
 	- SetForceCamoEffect
 	- HasCamoEffect
+	- PlayItemNullAnimation
+		Returns true if animation was set successfully, false otherwise. Useful for item state/hold items.
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium

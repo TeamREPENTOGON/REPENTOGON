@@ -3221,6 +3221,50 @@ LUA_FUNCTION(Lua_PlayerSetMontezumaRevengeCharge) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBodySprite) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::luabridge::UserdataPtr::push(L, &player->_bodySprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerPlayItemNullAnimation) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const char* animName = (const char*)luaL_checkstring(L, 2);
+
+	lua_pushboolean(L, player->PlayItemNullAnimation(animName));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBlinkLockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_blinkTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBlinkLockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_blinkTime = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetFireBlockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_fireBlockTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetFireBlockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_fireBlockTime = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3510,6 +3554,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMawOfTheVoidCharge", Lua_PlayerSetMawOfTheVoidCharge },
 		{ "GetMontezumaRevengeCharge", Lua_PlayerGetMontezumaRevengeCharge },
 		{ "SetMontezumaRevengeCharge", Lua_PlayerSetMontezumaRevengeCharge },
+		{ "GetBodySprite", Lua_PlayerGetBodySprite },
+		{ "PlayItemNullAnimation", Lua_PlayerPlayItemNullAnimation },
+		{ "GetBlinkLockTime", Lua_PlayerGetBlinkLockTime },
+		{ "SetBlinkLockTime", Lua_PlayerSetBlinkLockTime },
+		{ "GetFireBlockTime", Lua_PlayerGetFireBlockTime },
+		{ "SetFireBlockTime", Lua_PlayerSetFireBlockTime },
 
 		{ NULL, NULL }
 	};

@@ -432,6 +432,9 @@ __thiscall bool Entity_Player::CanCrushRocks();
 "558bec83e4f88b0d????????83ec14":
 __thiscall void Entity_Player::GetEnterPosition(Vector * buffer);
 
+"558bec81ec1c01000056":
+__thiscall bool Entity_Player::PlayItemNullAnimation(const char* animName);
+
 /*
 "558bec83e4f851566a006a6a":
 __thiscall float<xmm0> Entity_Player::GetExplosionRadiusModifier(BitSet128 flags);
@@ -680,6 +683,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
     }}
 
+	ANM2 _bodySprite : 0x41c;
 	ANM2 _heldSprite : 0xff8;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1220;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x122c;
@@ -721,6 +725,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int8_t _tearDisplacement : 0x156c;
 	float _tearPoisonDamage : 0x1570;
 	ActiveItemDesc _activeDesc[4] : 0x1574;
+	int _fireBlockTime : 0x15f8;
 	uint32_t _vampireCharmKills : 0x15fc;
 	int _bombPlaceDelay : 0x1604;
 	int _forgottenSwapFormCooldown : 0x1608;
