@@ -3251,16 +3251,16 @@ LUA_FUNCTION(Lua_PlayerSetBlinkLockTime) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_PlayerGetFireBlockTime) {
+LUA_FUNCTION(Lua_PlayerGetItemStateCooldown) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushinteger(L, player->_fireBlockTime);
+	lua_pushinteger(L, player->_itemStateCooldown);
 
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerSetFireBlockTime) {
+LUA_FUNCTION(Lua_PlayerSetItemStateCooldown) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->_fireBlockTime = (int)luaL_checkinteger(L, 2);
+	player->_itemStateCooldown = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -3558,8 +3558,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "PlayItemNullAnimation", Lua_PlayerPlayItemNullAnimation },
 		{ "GetBlinkLockTime", Lua_PlayerGetBlinkLockTime },
 		{ "SetBlinkLockTime", Lua_PlayerSetBlinkLockTime },
-		{ "GetFireBlockTime", Lua_PlayerGetFireBlockTime },
-		{ "SetFireBlockTime", Lua_PlayerSetFireBlockTime },
+		{ "GetItemStateCooldown", Lua_PlayerGetItemStateCooldown },
+		{ "SetItemStateCooldown", Lua_PlayerSetItemStateCooldown },
 
 		{ NULL, NULL }
 	};

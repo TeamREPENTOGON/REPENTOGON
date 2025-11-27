@@ -44,8 +44,8 @@ Additions:
 	- SetD8FireDelayModifier
 	- SetD8RangeModifier
 	- SetD8SpeedModifier
-	- [Get/Set]FireBlockTime - how long player will not able to fire from weapon
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]ItemStateCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
 	- [Get/Set]MawOfTheVoidCharge
 	- [Get/Set]MontezumaRevengeCharge
