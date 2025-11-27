@@ -50,9 +50,7 @@ namespace delirium {
 	}
 
 	void PatchVadeRetro() {
-		SigScan scanner("8b80d800000083e008");
-		scanner.Scan();
-		void* addr = scanner.GetAddress();
+		void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::DeliriumVadeRetro);
 
 		using Reg = ASMPatch::Registers;
 		using Save = ASMPatch::SavedRegisters;
