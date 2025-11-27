@@ -282,6 +282,11 @@ ___
 Returns the current charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetBlinkLockTime () {: aria-label='Functions' }
+#### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
+How long player's head will play fired frame sprite?
+
+___
 ### GetBloodLustCounter () {: aria-label='Functions' }
 #### int GetBloodLustCounter ( ) {: .copyable aria-label='Functions' }
 
@@ -293,6 +298,11 @@ ___
 ### GetBombPlaceDelay () {: aria-label='Functions' }
 #### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
 Default bomb place delay is `30 frames`.
+
+___
+### GetBodySprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetBodySprite ( ) {: .copyable aria-label='Functions' }
+Temporary copy of body player sprite while null animation is active.
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -471,6 +481,11 @@ ___
 ### GetEveSumptoriumCharge () {: aria-label='Functions' }
 #### int GetEveSumptoriumCharge ( ) {: .copyable aria-label='Functions' }
 Returns the current charge of Tainted Eve's innate Sumptorium ability.
+
+___
+### GetFireBlockTime () {: aria-label='Functions' }
+#### int GetFireBlockTime ( ) {: .copyable aria-label='Functions' }
+How long player will not able to fire from weapon?
 
 ___
 ### GetFireDelayModifier () {: aria-label='Functions' }
@@ -998,6 +1013,11 @@ ___
 Plays a sound effect after a delay.
 
 ___
+### PlayItemNullAnimation () {: aria-label='Functions' }
+#### boolean PlayItemNullAnimation ( string AnimationName ) {: .copyable aria-label='Functions' }
+Returns ``true`` if animation was set successfully, ``false`` otherwise. Useful for item state/hold items.
+
+___
 ### RemoveCollectibleByHistoryIndex () {: aria-label='Functions' }
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 Removes the collectible from the player associated with the specified history index.
@@ -1071,6 +1091,10 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
 
 ???+ bug "Bug"
     The player's head turns pitch black when this function is used without Kidney Stone.
+
+___
+### SetBlinkLockTime () {: aria-label='Functions' }
+#### void SetBlinkLockTime ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBloodLustCounter () {: aria-label='Functions' }
@@ -1165,6 +1189,10 @@ ___
 ### SetEveSumptoriumCharge () {: aria-label='Functions' }
 #### void SetEveSumptoriumCharge ( int ChargeNum ) {: .copyable aria-label='Functions' }
 Sets the current charge of Tainted Eve's innate Sumptorium ability.
+
+___
+### SetFireBlockTime  () {: aria-label='Functions' }
+#### void SetFireBlockTime  ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetFireDelayModifier () {: aria-label='Functions' }
