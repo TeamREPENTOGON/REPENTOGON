@@ -483,11 +483,6 @@ ___
 Returns the current charge of Tainted Eve's innate Sumptorium ability.
 
 ___
-### GetFireBlockTime () {: aria-label='Functions' }
-#### int GetFireBlockTime ( ) {: .copyable aria-label='Functions' }
-How long player will not able to fire from weapon?
-
-___
 ### GetFireDelayModifier () {: aria-label='Functions' }
 #### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
 Used for Experimental Treatment and for stat boosts from Void.
@@ -566,6 +561,10 @@ ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
 Returns how many hearts have been collected with the Immaculate Conception item. Resets to 0 after spawning a familiar/soul heart.
+
+___
+### GetItemStateCooldown () {: aria-label='Functions' }
+#### int GetItemStateCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
@@ -1191,10 +1190,6 @@ ___
 Sets the current charge of Tainted Eve's innate Sumptorium ability.
 
 ___
-### SetFireBlockTime  () {: aria-label='Functions' }
-#### void SetFireBlockTime  ( int Time ) {: .copyable aria-label='Functions' }
-
-___
 ### SetFireDelayModifier () {: aria-label='Functions' }
 #### void SetFireDelayModifier ( int Modifier ) {: .copyable aria-label='Functions' }
 Used for Experimental Treatment and for stat boosts from Void.
@@ -1248,6 +1243,10 @@ ___
 ### SetItemState () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Changes the player's item state to the specified collectible. This is usually used for collectibles that the player holds above their head before activating (i.e: Bob's Rotten Head, Glass Cannon).
+
+___
+### SetItemStateCooldown  () {: aria-label='Functions' }
+#### void SetItemStateCooldown  ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetKeepersSackBonus () {: aria-label='Functions' }
