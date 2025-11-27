@@ -1281,6 +1281,7 @@ HOOK_METHOD(Entity_Player, destructor, () -> void)
 
 HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void)
 {
+    // Familiar data is handled in separate hooks
     super(saveState, saveTemporaryFamiliars);
     ESSM::BaseOperations::CopyVector(saveState->_movingBoxContents);
 }
@@ -1296,6 +1297,12 @@ HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> vo
     ESSM::BaseOperations::ClearVector(this->_movingBoxContents);
     super(saveState);
     ESSM::BaseOperations::CopyVector(this->_movingBoxContents);
+}
+
+HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
+{
+    // TODO
+    super(saveState);
 }
 
 static void __stdcall restore_game_state_backwards_rooms() noexcept
@@ -1522,7 +1529,7 @@ static void __stdcall asm_clear_moving_box_vector(Entity_Player& player) noexcep
 static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_MovingBox_ClearVector);
-    ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem for  at %p\n", addr);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem for SaveStateManagement at %p\n", addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -1535,6 +1542,97 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
         .AddInternalCall(asm_clear_moving_box_vector)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void __fastcall store_familiar_data(FamiliarData& saveState, size_t persistentELIndex) noexcept
+{
+    // TODO
+}
+
+static void Patch_PlayerStoreGameState_FamiliarStoreState() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_StoreGameState_FamiliarStoreState);
+    ZHL::Log("[REPENTOGON] Patching EntityPlayer::StoreGameState for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 6;
+    constexpr size_t RESTORED_BYTES = 6;
+
+    patch.PreserveRegisters(savedRegisters)
+        .MoveFromMemory(ASMPatch::Registers::EBP, -0x28, ASMPatch::Registers::EDX)
+        .LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x90, ASMPatch::Registers::ECX)
+        .AddInternalCall(store_familiar_data)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveStateVector) noexcept
+{
+    // TODO
+}
+
+static void __stdcall asm_copy_familiar_vector(std::vector<FamiliarData>* saveStateVector) noexcept
+{
+    // TODO
+}
+
+static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_StoreGameState_AssignUnlistedFamiliarData);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::StoreGameState for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t callAddr = addr + 8;
+    intptr_t resumeAddr = callAddr + 5;
+    constexpr size_t RESTORED_BYTES = 8;
+    int32_t call_rel32 = *(int32_t*)(callAddr + 1);
+    intptr_t calleeAddress = callAddr + 5 + call_rel32;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::ECX) // saveStateVector
+        .AddInternalCall(asm_clear_familiar_vector)
+        .RestoreRegisters(savedRegisters) 
+        .Push(ASMPatch::Registers::ECX) // saveStateVector (for asm_copy_familiar_vector)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddInternalCall((void*)calleeAddress) // restore call to assign
+        .AddInternalCall((void*)asm_copy_familiar_vector)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData() noexcept
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PlayerManager_RestoreGameState_AssignBackupFamiliarData);
+    ZHL::Log("[REPENTOGON] Patching PlayerManager::RestoreGameState for SaveStateManagement at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t callAddr = addr + 15;
+    intptr_t resumeAddr = callAddr + 5;
+    constexpr size_t RESTORED_BYTES = 15;
+    int32_t call_rel32 = *(int32_t*)(callAddr + 1);
+    intptr_t calleeAddress = callAddr + 5 + call_rel32;
+
+    patch.PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::ECX) // saveStateVector
+        .AddInternalCall(asm_clear_familiar_vector)
+        .RestoreRegisters(savedRegisters) 
+        .Push(ASMPatch::Registers::ECX) // saveStateVector (for asm_copy_familiar_vector)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddInternalCall((void*)calleeAddress) // restore call to assign
+        .AddInternalCall((void*)asm_copy_familiar_vector)
         .AddRelativeJump((void*)resumeAddr);
 
     sASMPatcher.PatchAt((void*)addr, &patch);
@@ -1661,6 +1759,9 @@ void ESSM::ApplyPatches() noexcept
     Patch_RoomSaveState_ClearVector();
     Patch_RoomRestoreState_ClearVector();
     Patch_GameRestoreState_PostBackwardsStageDescRestore();
+    Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData();
+    Patch_PlayerStoreGameState_FamiliarStoreState();
+    Patch_PlayerStoreGameState_AssignUnlistedFamiliarData();
     Patch_PlayerUseActiveItem_MovingBoxClearVector();
     Patch_PickupInitFlipState_CreateSaveState();
     Patch_PickupTryFlip_RestoreFlipState();

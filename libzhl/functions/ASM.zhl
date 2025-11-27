@@ -204,7 +204,10 @@ asm Level_place_rooms_backwards_Treasure_AssignEntitySaveStateVector "ff75??8bca
 asm Level_generate_dark_closet_PostGenerateCollectibleSaveState "c745??010000008bc2";
 asm Room_SaveState_ClearVector "8b4e??83c174";
 asm Room_RestoreState_ClearVector "8b78??8b70??3bf7";
+asm PlayerManager_RestoreGameState_AssignBackupFamiliarData "ff75??ffb3";
 asm EntityPlayer_UseActiveItem_MovingBox_ClearVector "8d8f????????e8????????6a006848020000";
+asm EntityPlayer_StoreGameState_FamiliarStoreState "8b8e????????3b8e";
+asm EntityPlayer_StoreGameState_AssignUnlistedFamiliarData "ff75??ff70??ff30e8????????e9";
 asm EntityPickup_InitFlipState_PostSaveStateConstructor "8db7????????508bcee8????????8b0e";
 asm EntityPickup_TryFlip_PostRestoreFlipState "837d??0075??33c0";
 asm EntityNPC_ai_mothers_shadow_ChangeMineshaftRoom "8b41??6aff";
