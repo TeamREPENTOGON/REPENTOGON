@@ -95,7 +95,13 @@ add_library(Lua5.4 SHARED ${LUA_SRC})
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 LIST(APPEND ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes)
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND
+  zhlparser --output-header="${CMAKE_SOURCE_DIR}/include/IsaacRepentance.h"
+            --output-impl="${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp"
+            --output-hooks="${CMAKE_SOURCE_DIR}/libzhl/hooks.json"
+            --folder="${CMAKE_SOURCE_DIR}/libzhl/functions"
+            --file="${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes"
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
 
 # ZHL
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.h)
@@ -104,7 +110,7 @@ add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
-add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/include/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
+add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
