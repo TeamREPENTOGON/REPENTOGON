@@ -2,6 +2,8 @@ v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
 Additions:
+* GridEntityLock
+	- TryUnlock(EntityPlayer player, bool force)
 * Camera:
 	- Update(bool Interpolated = false)
 	- SetClampEnabled(bool clamped)
