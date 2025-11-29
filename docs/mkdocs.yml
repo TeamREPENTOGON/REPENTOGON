@@ -21,9 +21,9 @@ extra:
 #    button3_theme: md-button
 #    button3_url: blog/index.html
     cover_image: img/repentoMEGA.gif
-    description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
-     Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
-     on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
+    description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/3353470/The_Binding_of_Isaac_Repentance/>The
+     Binding of Isaac: Repentance+</a> version v1.9.7.12 (installation can also be performed using the current latest version
+     of Repentance+ from Steam) that extends the Lua API with much-needed bug fixes, extra functionality,
      and performance enhancements. This is analogous to a "script extender" for other
      games like Skyrim.
 
