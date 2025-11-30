@@ -3,6 +3,7 @@
 
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "ASMDefinition.h"
 
 bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std::string& targetFile, ModEntry** modEntry, RedirectedPath* redirectPath) {
 	auto* manager = g_Manager->GetModManager();
@@ -32,15 +33,16 @@ bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std
 	};
 
 	// Check for "resources-repentogon.langCode"
-	if (buildAndCheckPath("-repentogon", true)) return true;
+	//if (buildAndCheckPath("-repentogon", true)) return true;
 
 	// Check for "resources-repentogon" (without langCode)
 	if (buildAndCheckPath("-repentogon", false)) return true;
 
 	// Check for "resources-dlc3.langCode"
-	if (buildAndCheckPath("-dlc3", true)) return true;
+	//if (buildAndCheckPath("-dlc3", true)) return true;
 
 	// Check for "resources.langCode" (original behavior)
+	/*
 	if (g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
 		std::string originalPath = resFileString + "." + langCode + "/" + targetFile;
 		if (g_ContentManager.GetMountedFilePath(originalPath.c_str()) != NULL) {
@@ -51,7 +53,8 @@ bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std
 			return true;
 		}
 	}
-
+	*/
+	
 	return false;
 }
 
@@ -59,10 +62,7 @@ void ASMPatchRedirectToLocalizedResources() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 
-	SigScan signature("6a0668????????8d4d??c645??01");
-	signature.Scan();
-
-	void* addr = signature.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RedirectToLocalizedResources);
 	printf("[REPENTOGON] Patching ModManager::TryRedirectPath for resources folder redirect at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
@@ -159,15 +159,16 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 	};
 
 	// Check for "content-repentogon.langCode"
-	if (buildAndCheckPath("-repentogon", true)) return;
+	//if (buildAndCheckPath("-repentogon", true)) return;
 
 	// Check for "content-repentogon" (without langCode)
 	if (buildAndCheckPath("-repentogon", false)) return;
 
 	// Check for "content-dlc3.langCode"
-	if (buildAndCheckPath("-dlc3", true)) return;
+	//if (buildAndCheckPath("-dlc3", true)) return;
 
 	// Check for "content.langCode" (original behavior)
+	/*
 	if (g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
 		auto copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
 		std::string originalPath = copyOfContentDirectory + "." + langCode + "/" + *targetFile;
@@ -177,6 +178,8 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 			return;
 		}
 	}
+	*/
+	
 }
 
 void ASMPatchRedirectToLocalizationFolders() {

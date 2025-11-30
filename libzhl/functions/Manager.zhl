@@ -78,7 +78,7 @@ __thiscall void Manager::destructor();
 "a1????????8b80????????83f813":
 static char* Manager::GetLanguage();
 
-struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, KAGE_SmartPointer_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
 	inline int GetState() { return this->_state; }
 	inline PersistentGameData* GetPersistentGameData() { return &this->_persistentGameData; }
 	inline NightmareScene* GetNightmareScene() { return &this->_nightmareScene; }
