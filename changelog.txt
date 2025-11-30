@@ -2,6 +2,8 @@ v1.1.0a -
 Fixes:
 * Isaac:
 	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+* Vector:
+	Lerp now returns a reference to the modified vector like it now does in vanilla.
 /newline/
 /versionseparator/
 v1.1.0 -
