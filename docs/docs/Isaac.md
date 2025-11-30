@@ -23,14 +23,6 @@ Same as vanilla, but much faster.
 ___
 ## Functions
 
-### GetNanoTime () {: aria-label='Functions'}
-#### int GetNanoTime ( ) {: .copyable aria-label='Functions' }
-Returns a high-resolution timestamp in nanoseconds. Useful for evaluating the performance cost of functions in a non-test environment or for high-precision clocks.
-
-???- info "Note"
-	The clock is precise enough to detect the time that passed between two subsequent calls of `Isaac.GetNanoTime()`
-
-___
 ### AllMarksFilled () {: aria-label='Functions' }
 #### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all marks and returns an integer representing the highest difficulty it was accomplished in.
@@ -70,11 +62,6 @@ ___
 ### ClearChallenge () {: aria-label='Functions' }
 #### void ClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
 Sets the challenge of the corresponding `challengeid` to completed.
-
-___
-### UnClearChallenge () {: aria-label='Functions' }
-#### void UnClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
-Sets the challenge of the corresponding `challengeid` to not completed. While it does work with vanilla challenges, it is not recommended to use it on those, as there are no instances of challenges being uncompleted in vanilla, so it could lead to unexpected behaviour in specific scenarios. 
 
 ___
 ### ClearCompletionMarks () {: aria-label='Functions' }
@@ -126,6 +113,11 @@ ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
 #### int GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
+___
+### GetAllowedDoorsMaskForRoomShape () {: aria-label='Functions' }
+#### [DoorMask](enums/DoorMask.md) GetAllowedDoorsMaskForRoomShape ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape ) {: .copyable aria-label='Functions' }
+Returns a [DoorMask](enums/DoorMask.md) representing all [DoorSlots](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) allowed for the given [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html).
+
 ___
 ### GetAxisAlignedUnitVectorFromDir () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetAxisAlignedUnitVectorFromDir ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = -1 ) {: .copyable aria-label='Functions' }
@@ -205,11 +197,6 @@ ___
 Gets the Cutscene ID By Name.
 
 ___
-### GetAllowedDoorsMaskForRoomShape () {: aria-label='Functions' }
-#### [DoorMask](enums/DoorMask.md) GetAllowedDoorsMaskForRoomShape ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape ) {: .copyable aria-label='Functions' }
-Returns a [DoorMask](enums/DoorMask.md) representing all [DoorSlots](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) allowed for the given [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html).
-
-___
 ### GetDwmWindowAttribute () {: aria-label='Functions' }
 #### [DwmWindowAttribute](enums/DwmWindowAttribute.md) GetDwmWindowAttribute ( ) {: .copyable aria-label='Functions' }
 
@@ -238,6 +225,14 @@ ___
 ### GetModChallengeClearCount () {: aria-label='Functions' }
 #### int GetModChallengeClearCount ( int challengeid ) {: .copyable aria-label='Functions' }
 Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
+___
+### GetNanoTime () {: aria-label='Functions'}
+#### int GetNanoTime ( ) {: .copyable aria-label='Functions' }
+Returns a high-resolution timestamp in nanoseconds. Useful for evaluating the performance cost of functions in a non-test environment or for high-precision clocks.
+
+???- info "Note"
+	The clock is precise enough to detect the time that passed between two subsequent calls of `Isaac.GetNanoTime()`
+
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( string NullItemName ) {: .copyable aria-label='Functions' }
@@ -289,6 +284,29 @@ ___
 ### PlayCutscene () {: aria-label='Functions' }
 #### int PlayCutscene ( int ID, boolean ClearGameState = false ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
+
+___
+### RenderCollectionItem () {: aria-label='Functions' }
+#### void RenderCollectionItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position, [Vector](Vector.md) Scale = Vector.One, [Color](Color.md) Color = Color.Default ) {: .copyable aria-label='Functions' }
+Renders item collection sprite from collection menu/death screen. 
+___
+### ReworkBirthright () {: aria-label='Functions' }
+#### void ReworkBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playerType ) {: .copyable aria-label='Functions' }
+Marks the player's birthright as reworked, making the game not execute the item's original passive logic.
+Can only be set during mod load.
+
+___
+### ReworkCollectible () {: aria-label='Functions' }
+#### void ReworkCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectible ) {: .copyable aria-label='Functions' }
+Marks the collectible as reworked, making the game not execute the item's original passive logic.
+Can only be set during mod load.
+**NOTE** Does not prevent the UseActiveItem logic from running.
+
+___
+### ReworkTrinket () {: aria-label='Functions' }
+#### void ReworkTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) trinket ) {: .copyable aria-label='Functions' }
+Marks the trinket as reworked, making the game not execute the trinket's original passive logic.
+Can only be set during mod load.
 
 ___
 ### SetClipboard () {: aria-label='Functions' }
@@ -365,29 +383,6 @@ ___
 Sets the appended text on the game's window title.
 
 ___
-### RenderCollectionItem () {: aria-label='Functions' }
-#### void RenderCollectionItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position, [Vector](Vector.md) Scale = Vector.One, [Color](Color.md) Color = Color.Default ) {: .copyable aria-label='Functions' }
-Renders item collection sprite from collection menu/death screen. 
-___
-### ReworkCollectible () {: aria-label='Functions' }
-#### void ReworkCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectible ) {: .copyable aria-label='Functions' }
-Marks the collectible as reworked, making the game not execute the item's original passive logic.
-Can only be set during mod load.
-**NOTE** Does not prevent the UseActiveItem logic from running.
-
-___
-### ReworkBirthright () {: aria-label='Functions' }
-#### void ReworkBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playerType ) {: .copyable aria-label='Functions' }
-Marks the player's birthright as reworked, making the game not execute the item's original passive logic.
-Can only be set during mod load.
-
-___
-### ReworkTrinket () {: aria-label='Functions' }
-#### void ReworkTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) trinket ) {: .copyable aria-label='Functions' }
-Marks the trinket as reworked, making the game not execute the trinket's original passive logic.
-Can only be set during mod load.
-
-___
 ### ShowErrorDialog () {: aria-label='Functions' }
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
@@ -395,7 +390,7 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 ???- info "Note"
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
-### SpawnBoss() {: aria-label='Functions' }
+### SpawnBoss () {: aria-label='Functions' }
 #### [EntityNPC](EntityNPC.md) SpawnBoss ( int Type, int Variant, int SubType, [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, [Entity](Entity.md) Spawner, int Seed = ? ) {: .copyable aria-label='Functions' }
 Spawns an NPC forcing it to be a Boss, returning true for IsBoss(), giving it a boss bar, playing the boss end single on kill in appropiate rooms and other qualities that you may expect from a boss entity, even if the entity is normally not a Boss.
 
@@ -408,6 +403,11 @@ ___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
 Simulates a window resize, useful to refresh some option changes like `MaxRenderScale`.
+
+___
+### UnClearChallenge () {: aria-label='Functions' }
+#### void UnClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
+Sets the challenge of the corresponding `challengeid` to not completed. While it does work with vanilla challenges, it is not recommended to use it on those, as there are no instances of challenges being uncompleted in vanilla, so it could lead to unexpected behaviour in specific scenarios. 
 
 ___
 ### WorldToMenuPosition () {: aria-label='Functions' }

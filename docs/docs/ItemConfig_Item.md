@@ -6,14 +6,14 @@ tags:
 
 ## Functions
 
-### AddCustomTag () {: aria-label='Functions' }
-#### AddCustomTag ( string Tag ) {: .copyable aria-label='Functions' }
-Adds the provided string to the table of custom tags. See [items.xml](xml/items.md) for more information on `customtags`.
+### AddCustomCacheTag () {: aria-label='Functions' }
+#### void AddCustomCacheTag ( string Tag ) {: .copyable aria-label='Functions' }
+Adds the provided string to the table of custom cache tags. See [items.xml](xml/items.md) for more information on `customcache`.
 
 ___
-### AddCustomCacheTag () {: aria-label='Functions' }
-#### AddCustomCacheTag ( string Tag ) {: .copyable aria-label='Functions' }
-Adds the provided string to the table of custom cache tags. See [items.xml](xml/items.md) for more information on `customcache`.
+### AddCustomTag () {: aria-label='Functions' }
+#### void AddCustomTag ( string Tag ) {: .copyable aria-label='Functions' }
+Adds the provided string to the table of custom tags. See [items.xml](xml/items.md) for more information on `customtags`.
 
 ___
 ### GetCustomCacheTags () {: aria-label='Functions' }
@@ -36,13 +36,13 @@ ___
 Returns true if the items has the provided string specified in its `customtags` attribute in [items.xml](xml/items.md). Capitalization does not matter. See [items.xml](xml/items.md) for more information on `customtags`.
 
 ___
-### RemoveCustomTag () {: aria-label='Functions' }
-#### RemoveCustomTag ( string Tag ) {: .copyable aria-label='Functions' }
-Removes the provided string from the table of custom tags. See [items.xml](xml/items.md) for more information on `customtags`.
+### RemoveCustomCacheTag () {: aria-label='Functions' }
+#### void RemoveCustomCacheTag ( string Tag ) {: .copyable aria-label='Functions' }
+Removes the provided string from the table of custom cache tags. See [items.xml](xml/items.md) for more information on `customcache`.
 
 ___
-### RemoveCustomCacheTag () {: aria-label='Functions' }
-#### RemoveCustomCacheTag ( string Tag ) {: .copyable aria-label='Functions' }
-Removes the provided string from the table of custom cache tags. See [items.xml](xml/items.md) for more information on `customcache`.
+### RemoveCustomTag () {: aria-label='Functions' }
+#### void RemoveCustomTag ( string Tag ) {: .copyable aria-label='Functions' }
+Removes the provided string from the table of custom tags. See [items.xml](xml/items.md) for more information on `customtags`.
 
 ___

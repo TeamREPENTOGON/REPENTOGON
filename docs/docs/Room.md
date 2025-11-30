@@ -175,15 +175,6 @@ ___
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
 
 ___
-### TriggerOutput () {: aria-label='Functions' }
-#### void TriggerOutput ( [RoomEventOutput](enums/RoomEventOutput.md) GroupIdx) {: .copyable aria-label='Functions' }
-
-___
-### TriggerRestock () {: aria-label='Functions' }
-#### void TriggerRestock ( int GridIndex, int ShopItemIdx) {: .copyable aria-label='Functions' }
-Sets up the shop item to be spawned with an increased price upon the next call of ShopRestockPartial.
-
-___
 ### SaveState () {: aria-label='Functions' }
 #### void SaveState ( ) {: .copyable aria-label='Functions' }
 Saves the current state of the room
@@ -254,6 +245,15 @@ Sets the strength of the water current in the room. Current sounds and particles
 The game typically uses `1` or `-1` for its values depending on current strength and direction. You can technically go higher than this for some interesting results. Arbitrary directions are fully supported as well.
 
 `Vector(0, 0)` will remove the current.
+___
+### TriggerOutput () {: aria-label='Functions' }
+#### void TriggerOutput ( [RoomEventOutput](enums/RoomEventOutput.md) GroupIdx) {: .copyable aria-label='Functions' }
+
+___
+### TriggerRestock () {: aria-label='Functions' }
+#### void TriggerRestock ( int GridIndex, int ShopItemIdx) {: .copyable aria-label='Functions' }
+Sets up the shop item to be spawned with an increased price upon the next call of ShopRestockPartial.
+
 ___
 ### TryGetShopDiscount () {: aria-label='Functions' }
 #### int TryGetShopDiscount ( int ShopItemIdx, int Price ) {: .copyable aria-label='Functions' }

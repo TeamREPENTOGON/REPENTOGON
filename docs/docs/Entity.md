@@ -37,6 +37,10 @@ ___
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### CanDevolve () {: aria-label='Functions' }
+#### boolean CanDevolve ( ) {: .copyable aria-label='Functions' }
+
+___
 ### ClearHitList () {: aria-label='Functions' }
 #### void ClearHitList ( ) {: .copyable aria-label='Functions' }
 Clears the tear's hit list, allowing it to hit previously hit enemies again.
@@ -115,10 +119,6 @@ Note that this is NOT the same as the player's invincibility frames (`EntityPlay
 ___
 ### GetDebugShape () {: aria-label='Functions' }
 #### [Shape](renderer/Shape.md) GetDebugShape ( boolean Unknown ) {: .copyable aria-label='Functions' }
-
-___
-### CanDevolve () {: aria-label='Functions' }
-#### boolean CanDevolve ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEntityConfigEntity () {: aria-label='Functions' }
