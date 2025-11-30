@@ -1,3 +1,9 @@
+v1.1.0a -
+Fixes:
+* Isaac:
+	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+/newline/
+/versionseparator/
 v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
@@ -137,6 +143,7 @@ Additions:
 	- GetScore
 	- GetTriggerChanceScale
 * Room:
+	- ClearBossHazards(boolean IgnoreNPCs = true, EntityNPC Entity = nil)
 	- TriggerOutput(RoomEventOutput GroupIdx)
 	- GetWallColor()
 * RoomConfig:
