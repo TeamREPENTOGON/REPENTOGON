@@ -151,6 +151,11 @@ ___
 Returns `true` if the current run is a rerun.
 
 ___
+### IsStartingFromState () {: aria-label='Functions' }
+#### boolean IsStartingFromState ( ) {: .copyable aria-label='Functions' }
+Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+
+___
 ### RecordPlayerCompletion () {: aria-label='Functions' }
 #### void RecordPlayerCompletion ( [CompletionType](enums/CompletionType.md) Type ) {: .copyable aria-label='Functions' }
 Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
