@@ -283,7 +283,7 @@ Returns the current charge for when the player stops shooting and charges the Ki
 
 ___
 ### GetBlinkLockTime () {: aria-label='Functions' }
-#### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
+#### int GetBlinkLockTime ( ) {: .copyable aria-label='Functions' }
 How long player's head will play fired frame sprite?
 
 ___

@@ -126,7 +126,7 @@ Returns the new pickup index.
 ___
 ### SetupCollectibleGraphics () {: aria-label='Functions' }
 [ ](#){: .static .tooltip .badge }
-#### static void SetupCollectibleGraphics ( [Sprite](Sprite.md) Sprite, integer Layer, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean Blind, integer Seed = Random(), boolean LoadGraphics  ) {: .copyable aria-label='Functions' }
+#### static void SetupCollectibleGraphics ( [Sprite](Sprite.md) Sprite, integer Layer, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean Blind = false, integer Seed = Random(), boolean LoadGraphics = false  ) {: .copyable aria-label='Functions' }
 Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
 
 ___
