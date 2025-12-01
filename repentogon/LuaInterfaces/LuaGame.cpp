@@ -359,6 +359,13 @@ LUA_FUNCTION(Lua_ChainLightning) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsStartingFromState) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->_isStartingFromState);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -400,6 +407,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RecordPlayerCompletion", Lua_RecordPlayerCompletion},
 		{ "GetGenericPrompt", Lua_GetGenericPrompt},
 		{ "ChainLightning", Lua_ChainLightning},
+		{ "IsStartingFromState", Lua_IsStartingFromState},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

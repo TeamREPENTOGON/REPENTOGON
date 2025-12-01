@@ -1,4 +1,9 @@
 v1.1.0a -
+Added:
+* Game:
+	- IsStartingFromState
+		Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+/newline/
 Fixes:
 * Isaac:
 	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
