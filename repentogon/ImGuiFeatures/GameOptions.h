@@ -32,9 +32,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
     const char* saveImportExportSlots[4] = { "ALL", "1", "2", "3"};
     int selectedSaveImportExportSlot = 0;
     bool saveManagementResetMenu = false;
-    std::optional<bool> saveManagementSyncResult = std::nullopt;
-    std::optional<bool> saveManagementImportResult = std::nullopt;
-    std::optional<bool> saveManagementExportResult = std::nullopt;
+    std::optional<SaveSyncing::ImportExportResult> saveManagementSyncResult = std::nullopt;
+    std::optional<SaveSyncing::ImportExportResult> saveManagementImportResult = std::nullopt;
+    std::optional<SaveSyncing::ImportExportResult> saveManagementExportResult = std::nullopt;
 
     void InitAfterLanguageAvaliable(){
         extraHudModes[0] = LANG.OPT_EXTRA_HUD_MODES_OFF;
@@ -92,7 +92,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
         ImGui::TableSetColumnIndex(0);
     }
 
-    void AddSaveManagementButton(const char* label, const char* mark, const char* prompt, std::optional<bool>& result, std::function<bool()> buttonClickedFunc) {
+    void AddSaveManagementButton(const char* label, const char* mark, const char* prompt, const int slot, std::optional<SaveSyncing::ImportExportResult>& result, std::function<SaveSyncing::ImportExportResult()> buttonClickedFunc) {
         ImGui::BeginDisabled(result.has_value());
         AddNewTableRow();
         if (ImGui::Button(label)) {
@@ -106,10 +106,17 @@ struct GameOptionsWindow : ImGuiWindowObject {
         HelpMarker(mark);
         ImGui::EndDisabled();
         if (result.has_value()) {
-            const bool success = *result;
             ImGui::SameLine();
-            ImGui::PushStyleColor(ImGuiCol_Text, success ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255));
-            ImGui::Text(success ? LANG.OPT_SAVE_MANAGEMENT_SUCCESS : LANG.OPT_SAVE_MANAGEMENT_FAILED);
+            if (*result == SaveSyncing::IMPORT_EXPORT_SUCCESS) {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                ImGui::Text(LANG.OPT_SAVE_MANAGEMENT_SUCCESS);
+            } else if (*result == SaveSyncing::IMPORT_EXPORT_NOT_FOUND) {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 0, 255));
+                ImGui::Text(slot == 0 ? LANG.OPT_SAVE_MANAGEMENT_SUCCESS_NOT_FOUND : LANG.OPT_SAVE_MANAGEMENT_NOT_FOUND);
+            } else {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+                ImGui::Text(LANG.OPT_SAVE_MANAGEMENT_FAILED);
+            }
             ImGui::PopStyleColor();
         }
     }
@@ -438,8 +445,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
                             LANG.OPT_SAVE_MANAGEMENT_SYNC,
                             LANG.OPT_SAVE_MANAGEMENT_SYNC_MARK,
                             LANG.OPT_SAVE_MANAGEMENT_SYNC_PROMPT,
+                            0,
                             saveManagementSyncResult,
-                            []() { return SaveSyncing::PerformVanillaSaveSynchronization(false); });
+                            []() { return SaveSyncing::PerformVanillaSaveSynchronization(false) ? SaveSyncing::IMPORT_EXPORT_SUCCESS : SaveSyncing::IMPORT_EXPORT_FAILED; });
 
                         AddNewTableRow();
                         ImGui::SeparatorText(LANG.OPT_SAVE_MANAGEMENT_IMPORT_EXPORT);
@@ -455,12 +463,14 @@ struct GameOptionsWindow : ImGuiWindowObject {
                             LANG.OPT_SAVE_MANAGEMENT_IMPORT_FROM_REPENTANCE,
                             LANG.OPT_SAVE_MANAGEMENT_IMPORT_FROM_REPENTANCE_MARK,
                             LANG.OPT_SAVE_MANAGEMENT_IMPORT_FROM_REPENTANCE_PROMPT,
+                            selectedSaveImportExportSlot,
                             saveManagementImportResult,
                             [this]() { return SaveSyncing::ImportFrom(SaveSyncing::REPENTANCE, selectedSaveImportExportSlot); });
                         AddSaveManagementButton(
                             LANG.OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE,
                             LANG.OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_MARK,
                             LANG.OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_PROMPT,
+                            selectedSaveImportExportSlot,
                             saveManagementExportResult,
                             [this]() { return SaveSyncing::ExportTo(SaveSyncing::REPENTANCE, selectedSaveImportExportSlot); });
 

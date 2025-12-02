@@ -86,10 +86,10 @@ std::string GetPersistentGameDataPath(const GameVersion version, const int slot,
 	return std::regex_replace(std::filesystem::weakly_canonical(pathBuffer.get()).string(), std::regex(R"(\\)"), "/");
 }
 
-bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
+ImportExportResult ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
 	if (slot < 1 || slot > 3) {
 		ZHL::Log("[SaveSyncing] Cannot import unknown slot %d\n", slot);
-		return false;
+		return IMPORT_EXPORT_FAILED;
 	}
 	ZHL::Log("[SaveSyncing] Attempting to import slot %d from %s to %s\n", slot, SAVE_DATA_PATHS.at(srcVersion).name, SAVE_DATA_PATHS.at(dstVersion).name);
 
@@ -104,53 +104,55 @@ bool ImportSlot(const GameVersion srcVersion, const GameVersion dstVersion, cons
 	const SaveFile srcSave(srcPath.c_str(), steamCloudEnabled);
 	if (!srcSave.OpenedFile()) {
 		ZHL::Log("[SaveSyncing] Failed to open %s\n", srcPath.c_str());
-		return false;
+		return IMPORT_EXPORT_NOT_FOUND;
 	}
 	if (!srcSave.IsValid()) {
 		ZHL::Log("[SaveSyncing] Failed to validate %s\n", srcPath.c_str());
-		return false;
+		return IMPORT_EXPORT_FAILED;
 	}
 
 	SaveFile dstSave(dstPath.c_str(), steamCloudEnabled);
 	if (!dstSave.OpenedFile()) {
 		ZHL::Log("[SaveSyncing] Failed to open %s\n", dstPath.c_str());
-		return false;
+		return IMPORT_EXPORT_NOT_FOUND;
 	}
 	if (!dstSave.IsValid()) {
 		ZHL::Log("[SaveSyncing] Failed to validate %s\n", dstPath.c_str());
-		return false;
+		return IMPORT_EXPORT_FAILED;
 	}
 
 	if (!dstSave.Sync(srcSave, mode)) {
 		ZHL::Log("[SaveSyncing] Import failed.\n");
-		return false;
+		return IMPORT_EXPORT_FAILED;
 	}
 	if (!dstSave.Save()) {
 		ZHL::Log("[SaveSyncing] Failed to write modified save %s\n", dstPath.c_str());
-		return false;
+		return IMPORT_EXPORT_FAILED;
 	}
 
 	ZHL::Log("[SaveSyncing] Import successful!\n");
-	return true;
+	return IMPORT_EXPORT_SUCCESS;
 }
 
-bool ImportAll(const GameVersion srcVersion, const GameVersion dstVersion, const SaveSyncMode mode) {
+ImportExportResult ImportAll(const GameVersion srcVersion, const GameVersion dstVersion, const SaveSyncMode mode) {
+	ImportExportResult overallResult = IMPORT_EXPORT_SUCCESS;
 	for (int slot = 1; slot <= 3; slot++) {
-		if (!ImportSlot(srcVersion, dstVersion, slot, mode)) {
-			return false;
+		const ImportExportResult slotResult = ImportSlot(srcVersion, dstVersion, slot, mode);
+		if (slotResult != IMPORT_EXPORT_SUCCESS && overallResult == IMPORT_EXPORT_SUCCESS) {
+			overallResult = slotResult;
 		}
 	}
-	return true;
+	return overallResult;
 }
 
-bool ImportFrom(const GameVersion srcVersion, const int slot, const SaveSyncMode mode) {
+ImportExportResult ImportFrom(const GameVersion srcVersion, const int slot, const SaveSyncMode mode) {
 	if (slot == 0) {
 		return ImportAll(srcVersion, REPENTOGON, mode);
 	}
 	return ImportSlot(srcVersion, REPENTOGON, slot, mode);
 }
 
-bool ExportTo(const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
+ImportExportResult ExportTo(const GameVersion dstVersion, const int slot, const SaveSyncMode mode) {
 	if (slot == 0) {
 		return ImportAll(REPENTOGON, dstVersion, mode);
 	}
@@ -404,7 +406,7 @@ void TryInitRepentogonSaveFile(const int slot) {
 
 	// Attempt to overwrite with achievements/progress from the corresponding vanilla Rep+ save file.
 	ZHL::Log("[SaveSyncing] Attempting to import progress from Repentance+...\n");
-	if (!ImportFrom(REPENTANCE_PLUS, slot, SAVE_SYNC_OVERWRITE)) {
+	if (ImportFrom(REPENTANCE_PLUS, slot, SAVE_SYNC_OVERWRITE) != IMPORT_EXPORT_SUCCESS) {
 		ZHL::Log("[SaveSyncing] Could not import progress from Repentance+.\n");
 	}
 
