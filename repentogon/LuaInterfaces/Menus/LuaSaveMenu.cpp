@@ -109,7 +109,7 @@ LUA_FUNCTION(Lua_SaveMenu_SetSlotSprite)
 		CustomSaveSlotSprite3 = customSprite;
 	}
 
-	return 1;
+	return 0;
 }
 
 void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
