@@ -278,6 +278,10 @@ Additions:
 	- MC_POST_PLAYER_DROP_TRINKET(TrinketType, Vector DropPosition, EntityPlayer, boolean IsGolden, boolean ReplaceTick)
 		Optional param : TrinketType
 		Fires after player dropped trinket.
+	- MC_POST_PLAYER_ADD_EFFECT(EntityPlayer, ItemConfigItem, boolean addCostume, int count)
+		Optional param: ItemConfigItem
+	- MC_POST_ROOM_ADD_EFFECT(ItemConfigItem)
+		Optional param: ItemConfigItem
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
@@ -404,6 +408,9 @@ Modified:
 * ModCallbacks:
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
 		Added Count argument (how many instances of this effect were removed)
+		Can now use ItemConfigItem as an optional param.
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED
+		Can now use ItemConfigItem as an optional param.
 	- MC_PRE_MOD_UNLOAD(Mod, bool ShuttingDown)
 		Added boolean argument that identifies if it is running due to game shutdown
 		Now runs earlier during shutdown, so code is less likely to crash
