@@ -5693,3 +5693,23 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 
 	return retTrinket;
 }
+
+// MC_POST_REPLACE_SAVE_SLOT_GRAPHICS (id : 1330)
+HOOK_METHOD(Menu_Save, replace_slot_graphics, (ANM2* sprite) -> void) {
+	super(sprite);
+
+	const int callbackid = 1330;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(sprite, lua::Metatables::SPRITE)
+			.push(g_Manager->_currentSaveSlot)
+			.call(1);
+	}
+}
