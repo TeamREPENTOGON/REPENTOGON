@@ -89,6 +89,49 @@ LUA_FUNCTION(Lua_SaveMenu_IsDeleteActive)
 	return 1;
 }
 
+static std::string CustomSaveSlotSprite1;
+static std::string CustomSaveSlotSprite2;
+static std::string CustomSaveSlotSprite3;
+
+LUA_FUNCTION(Lua_SaveMenu_SetSlotSprite)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
+	Menu_Save* menu = g_MenuManager->GetMenuSave();
+	
+	int number = (int)luaL_checkinteger(L, 1);
+	const char* customSprite = luaL_checkstring(L, 2);
+
+	if (g_Manager->_currentSaveSlot == 1) {
+		CustomSaveSlotSprite1 = customSprite;
+	} else if (g_Manager->_currentSaveSlot == 2) {
+		CustomSaveSlotSprite2 = customSprite;
+	} else if (g_Manager->_currentSaveSlot == 3) {
+		CustomSaveSlotSprite3 = customSprite;
+	}
+
+	return 1;
+}
+
+void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
+	if (!customSprite.empty()) {
+		sprite->ReplaceSpritesheet(0, customSprite);
+		sprite->ReplaceSpritesheet(1, customSprite);
+		sprite->LoadGraphics(false);
+	}
+}
+
+HOOK_METHOD(Menu_Save, replace_slot_graphics, (ANM2* sprite) -> void) {
+	super(sprite);
+
+	if (g_Manager->_currentSaveSlot == 1) {
+		TryReplaceSlotGraphic(sprite, CustomSaveSlotSprite1);
+	} else if (g_Manager->_currentSaveSlot == 2) {
+		TryReplaceSlotGraphic(sprite, CustomSaveSlotSprite2);
+	} else if (g_Manager->_currentSaveSlot == 3) {
+		TryReplaceSlotGraphic(sprite, CustomSaveSlotSprite3);
+	}
+}
+
 static void RegisterSaveMenuGame(lua_State* L)
 {
 	lua_newtable(L);
@@ -101,6 +144,7 @@ static void RegisterSaveMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSelectedElement", Lua_SaveMenu_GetSelectedSave);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_SaveMenu_SetSelectedSave);
 	lua::TableAssoc(L, "IsDeleteActive", Lua_SaveMenu_IsDeleteActive);
+	lua::TableAssoc(L, "SetSlotSprite", Lua_SaveMenu_SetSlotSprite);
 	lua_setglobal(L, lua::metatables::SaveMenuMT);
 }
 
