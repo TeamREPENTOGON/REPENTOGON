@@ -113,11 +113,23 @@ LUA_FUNCTION(Lua_SaveMenu_SetSlotSpritesheet)
 }
 
 void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
-	if (!customSprite.empty()) {
-		sprite->ReplaceSpritesheet(0, customSprite);
-		sprite->ReplaceSpritesheet(1, customSprite);
-		sprite->LoadGraphics(false);
+	if (customSprite.empty()) {
+		return;
 	}
+
+	bool success = sprite->ReplaceSpritesheet(0, customSprite);
+	if (!success) {
+		return;
+	}
+	
+	for (int i = 1; i < sprite->GetLayerCount(); i++) {
+		LayerState* layer = sprite->GetLayer(i);
+		if (layer != nullptr) {
+			layer->_visible = false;
+		}
+	}
+
+	sprite->LoadGraphics(false);
 }
 
 HOOK_METHOD(Menu_Save, replace_slot_graphics, (ANM2* sprite) -> void) {
