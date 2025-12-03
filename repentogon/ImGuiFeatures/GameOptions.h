@@ -69,7 +69,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     }
 
     template <typename T>
-    void AddResetButton(int id, T& valueRef, T defaultValue)
+    bool AddResetButton(int id, T& valueRef, T defaultValue)
     {
         bool disable = valueRef == defaultValue;
         if (disable) {
@@ -77,7 +77,8 @@ struct GameOptionsWindow : ImGuiWindowObject {
         }
         ImGui::TableSetColumnIndex(1);
         ImGui::PushID("RESET_" + id);
-        if (ImGui::SmallButton(ICON_FA_ROTATE_LEFT)) {
+        const bool clicked = ImGui::SmallButton(ICON_FA_ROTATE_LEFT);
+        if (clicked) {
             valueRef = defaultValue;
         }
         ImGui::SetItemTooltip(LANG.OPT_RESET_BTN_HINT);
@@ -85,6 +86,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
         if (disable) {
           ImGui::EndDisabled();
         }
+        return clicked;
     }
     void AddNewTableRow()
     {
@@ -138,8 +140,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SliderFloat(LANG.OPT_SFX_VOLUME, &g_Manager->GetOptions()->_sfxVolume, 0.0f, 1.0f, "%.2f");
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_sfxVolume, 0.3f);
                         AddNewTableRow();
-                        ImGui::SliderFloat(LANG.OPT_MUSIC_VOLUME, &g_Manager->GetOptions()->_musicVolume, 0.0f, 1.0f, "%.2f");
-                        AddResetButton(++resetCounter, g_Manager->GetOptions()->_musicVolume, 0.3f);
+                        if (ImGui::SliderFloat(LANG.OPT_MUSIC_VOLUME, &g_Manager->GetOptions()->_musicVolume, 0.0f, 1.0f, "%.2f") || AddResetButton(++resetCounter, g_Manager->GetOptions()->_musicVolume, 0.3f)) {
+                            // Calling this function allows the volume change to take effect on currently-playing music immediately.
+                            g_Manager->GetOptions()->SetMusicVolume(g_Manager->GetOptions()->_musicVolume);
+                        }
                         AddNewTableRow();
                         ImGui::SliderFloat(LANG.OPT_MAP_OPACITY, &g_Manager->GetOptions()->_mapOpacity, 0.0f, 1.0f, "%.2f");
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_mapOpacity, 0.3f);
