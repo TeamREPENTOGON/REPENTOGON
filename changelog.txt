@@ -3,6 +3,11 @@ Added:
 * Game:
 	- IsStartingFromState
 		Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+* EntityBomb
+	- Get/SetFallSpeed
+		Formerly mislabeled as Get/SetHeight
+	- Get/SetFallAcceleration
+		Formlery mislabeled as Get/SetFallingSpeed
 /newline/
 Fixes:
 * Isaac:
