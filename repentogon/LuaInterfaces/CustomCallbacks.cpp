@@ -5382,7 +5382,7 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 
 }
 
-// MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1491)
+// MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1492)
 HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 	const int preCallbackId = 1491;
 	const int postCallbackId = 1492;
