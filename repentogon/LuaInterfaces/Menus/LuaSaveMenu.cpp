@@ -93,7 +93,7 @@ static std::string CustomSaveSlotSprite1;
 static std::string CustomSaveSlotSprite2;
 static std::string CustomSaveSlotSprite3;
 
-LUA_FUNCTION(Lua_SaveMenu_SetSlotSprite)
+LUA_FUNCTION(Lua_SaveMenu_SetSlotSpritesheet)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
@@ -144,7 +144,7 @@ static void RegisterSaveMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSelectedElement", Lua_SaveMenu_GetSelectedSave);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_SaveMenu_SetSelectedSave);
 	lua::TableAssoc(L, "IsDeleteActive", Lua_SaveMenu_IsDeleteActive);
-	lua::TableAssoc(L, "SetSlotSprite", Lua_SaveMenu_SetSlotSprite);
+	lua::TableAssoc(L, "SetSlotSpritesheet", Lua_SaveMenu_SetSlotSpritesheet);
 	lua_setglobal(L, lua::metatables::SaveMenuMT);
 }
 
