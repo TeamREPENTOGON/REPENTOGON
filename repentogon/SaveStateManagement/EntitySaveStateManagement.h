@@ -8,15 +8,23 @@ namespace EntitySaveStateManagement
     {
         struct WriteState
         {
-            std::vector<std::pair<EntitySaveState*, uint32_t>> writtenSaveStates;
+            std::vector<std::pair<GameStatePlayer*, uint32_t>> writtenPlayerStates;
+            std::vector<std::pair<FamiliarData*, uint32_t>> writtenFamiliarData;
+            std::vector<std::pair<EntitySaveState*, uint32_t>> writtenEntitySaveStates;
         };
 
         struct ReadState
         {
-            std::vector<EntitySaveState*> readSaveStates;
-            std::vector<std::pair<uint32_t, uint32_t>> restoredSaveStates; // readId, id
-            uint32_t maxId = 0;
-            std::bitset<2> errors;
+            std::vector<EntitySaveState*> readEntitySaveStates;
+            std::vector<std::pair<uint32_t, uint32_t>> restoredEntitySaveStates; // readId, id
+            uint32_t minReadEntities = 0;
+            std::vector<GameStatePlayer*> readPlayerStates;
+            std::vector<std::pair<uint32_t, uint32_t>> restoredPlayerStates; // readId, id
+            uint32_t minReadPlayers = 0;
+            std::vector<FamiliarData*> readFamiliarData;
+            std::vector<std::pair<uint32_t, uint32_t>> restoredFamiliarData; // readId, id
+            uint32_t minReadFamiliars = 0;
+            std::bitset<3> errors;
         };
 
         WriteState WriteGameState() noexcept;
@@ -28,7 +36,7 @@ namespace EntitySaveStateManagement
         */
         ReadState ReadGameState() noexcept;
         inline bool CheckErrors(const ReadState& readState) noexcept { return readState.errors.any(); }
-        inline bool NeedsHandling(const ReadState& readState) noexcept { return !readState.readSaveStates.empty(); }
+        inline bool NeedsHandling(const ReadState& readState) noexcept { return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();  }
         bool Deserialize(const std::string& fileName, ReadState& readState) noexcept;
     }
 
