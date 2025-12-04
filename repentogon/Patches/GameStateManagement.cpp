@@ -139,6 +139,7 @@ static inline void delete_save(const std::string& fileName, bool isRerun) noexce
 {
 	ItemPoolManager::__DeleteGameState(fileName);
 	VirtualRoomSetManager::__DeleteSave(fileName, isRerun);
+	ESSM::SaveData::DeleteGameState(fileName);
 }
 
 #pragma region Hooks

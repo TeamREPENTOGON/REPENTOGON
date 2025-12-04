@@ -38,6 +38,8 @@ namespace EntitySaveStateManagement
         inline bool CheckErrors(const ReadState& readState) noexcept { return readState.errors.any(); }
         inline bool NeedsHandling(const ReadState& readState) noexcept { return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();  }
         bool Deserialize(const std::string& fileName, ReadState& readState) noexcept;
+
+        void DeleteGameState(const std::string& fileName) noexcept;
     }
 
     void ApplyPatches() noexcept;

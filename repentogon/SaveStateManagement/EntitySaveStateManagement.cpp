@@ -2137,6 +2137,26 @@ namespace ESSM::SaveData
 
         return success;
     }
+
+    void DeleteGameState(const std::string& fileName) noexcept
+    {
+        std::filesystem::path filePath = get_save_data_path(fileName);
+        std::error_code errorCode;
+        if (!std::filesystem::exists(filePath, errorCode))
+        {
+            return;
+        }
+
+        std::filesystem::remove(filePath, errorCode);
+        if (errorCode)
+        {
+            ZHL::Log("[ERROR] [ESSM] - unable to delete file at \"%s\"\n", filePath.string().c_str());
+        }
+        else
+        {
+            ZHL::Log("[INFO] [ESSM] - deleted file at \"%s\"\n", filePath.string().c_str());
+        }
+    }
 }
 
 static std::pair<Entity*, EntitySaveState*> s_minecartEntity = {nullptr, nullptr};
