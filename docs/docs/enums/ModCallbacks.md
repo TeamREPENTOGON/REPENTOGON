@@ -2570,7 +2570,7 @@ This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/E
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1486 |MC_PRE_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean OR [Color](../Color.md) |
+|1486 |MC_PRE_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>[Color](../Color.md) Color, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean OR [Color](../Color.md) |
 
 ### MC_POST_ENTITY_SET_COLOR {: .copyable }
 Fires when Entity:SetColor is called
@@ -2579,7 +2579,7 @@ This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/E
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1487 |MC_POST_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1487 |MC_POST_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>[Color](../Color.md) Color, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_POST_START_AMBUSH_WAVE {: .copyable }
 Fires at the start of a challenge/boss rush room wave.
