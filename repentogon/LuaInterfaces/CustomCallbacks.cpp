@@ -4762,7 +4762,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
-			.push(color)
+			.push(color, lua::Metatables::COLOR)
 			.push(duration)
 			.push(priority)
 			.push(fadeOut)
