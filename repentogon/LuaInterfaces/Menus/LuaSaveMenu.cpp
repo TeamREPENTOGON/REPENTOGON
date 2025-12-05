@@ -93,26 +93,7 @@ static std::string CustomSaveSlotSprite1;
 static std::string CustomSaveSlotSprite2;
 static std::string CustomSaveSlotSprite3;
 
-LUA_FUNCTION(Lua_SaveMenu_SetSlotSpritesheet)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
-	Menu_Save* menu = g_MenuManager->GetMenuSave();
-	
-	int number = (int)luaL_checkinteger(L, 1);
-	const char* customSprite = luaL_checkstring(L, 2);
-
-	if (g_Manager->_currentSaveSlot == 1) {
-		CustomSaveSlotSprite1 = customSprite;
-	} else if (g_Manager->_currentSaveSlot == 2) {
-		CustomSaveSlotSprite2 = customSprite;
-	} else if (g_Manager->_currentSaveSlot == 3) {
-		CustomSaveSlotSprite3 = customSprite;
-	}
-
-	return 0;
-}
-
-void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
+void TryReplaceSlotGraphic(ANM2* sprite, std::string& customSprite) {
 	if (customSprite.empty()) {
 		return;
 	}
@@ -121,7 +102,7 @@ void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
 	if (!success) {
 		return;
 	}
-	
+
 	for (int i = 1; i < sprite->GetLayerCount(); i++) {
 		LayerState* layer = sprite->GetLayer(i);
 		if (layer != nullptr) {
@@ -130,6 +111,28 @@ void TryReplaceSlotGraphic(ANM2* sprite, std::string &customSprite) {
 	}
 
 	sprite->LoadGraphics(false);
+}
+
+LUA_FUNCTION(Lua_SaveMenu_SetSlotSpritesheet)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
+	Menu_Save* menu = g_MenuManager->GetMenuSave();
+	
+	int slot = (int)luaL_checkinteger(L, 1);
+	const char* customSprite = luaL_checkstring(L, 2);
+
+	if (slot == 1) {
+		CustomSaveSlotSprite1 = customSprite;
+		TryReplaceSlotGraphic(&menu->Save1DrawingSprite, CustomSaveSlotSprite1);
+	} else if (slot == 2) {
+		CustomSaveSlotSprite2 = customSprite;
+		TryReplaceSlotGraphic(&menu->Save2DrawingSprite, CustomSaveSlotSprite2);
+	} else if (slot == 3) {
+		CustomSaveSlotSprite3 = customSprite;
+		TryReplaceSlotGraphic(&menu->Save3DrawingSprite, CustomSaveSlotSprite3);
+	}
+
+	return 0;
 }
 
 HOOK_METHOD(Menu_Save, replace_slot_graphics, (ANM2* sprite) -> void) {
