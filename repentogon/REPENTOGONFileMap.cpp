@@ -14,6 +14,7 @@ namespace REPENTOGONFileMap {
 	std::vector<std::wstring> _stringByFType = {
 		L"resources",
 		L"resources-dlc3",
+		L"resources-repentogon"
 		L"",
 	};
 	std::wstring _modsPath = L"";

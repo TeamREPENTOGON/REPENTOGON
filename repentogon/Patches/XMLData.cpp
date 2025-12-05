@@ -275,7 +275,7 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	else {
 		lastmodid = "BaseGame";
 	}
-	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
+	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-repentogon/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
 		iscontent = true;
 	}
 	else {
@@ -289,7 +289,10 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 			last = path.find("/resources");
 		}
 		else if (last <= 0) {
-			last = path.find("/content-dlc3");
+			size_t repentogonPos = path.find("/content-repentogon");
+			size_t dlc3Pos = path.find("/content-dlc3");
+			last = (repentogonPos != string::npos && (dlc3Pos == string::npos || repentogonPos < dlc3Pos))
+				? repentogonPos : dlc3Pos;
 		}
 		path = path.substr(first, last - first); //when the id is null(which it can fucking be) just use the folder name as ID...
 		lastmodid = new char[path.length() + 1]; //this is the sort of stuff I dont like about C++
