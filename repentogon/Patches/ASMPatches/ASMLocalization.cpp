@@ -6,8 +6,8 @@
 #include "ASMDefinition.h"
 
 bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std::string& targetFile, ModEntry** modEntry, RedirectedPath* redirectPath) {
-	auto* manager = g_Manager->GetModManager();
-	auto* langCode = g_Manager->GetLanguage();
+	ModManager* manager = g_Manager->GetModManager();
+	char* langCode = g_Manager->GetLanguage();
 
 	if (targetFile[0] == '\0') {
 		return false;
@@ -26,7 +26,6 @@ bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std
 			resFileString = potentialPath;
 			redirectPath->_modEntry = *modEntry;
 			redirectPath->_filePath = resFileString;
-			std::cout << "[REPENTOGON] Patched " << resFileString << std::endl;
 			return true;
 		}
 		return false;
@@ -42,7 +41,6 @@ void ASMPatchRedirectToLocalizedResources() {
 	ASMPatch patch;
 
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RedirectToLocalizedResources);
-	printf("[REPENTOGON] Patching ModManager::TryRedirectPath for resources folder redirect at %p\n", addr);
 
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EBP, -0xa0) // RedirectedPath*
@@ -60,15 +58,15 @@ void ASMPatchRedirectToLocalizedResources() {
 
 HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::string* targetFile) -> void) {
 	super(resFileString, targetFile);
-	auto* manager = g_Manager->GetModManager();
-	auto* langCode = g_Manager->GetLanguage();
+	ModManager* manager = g_Manager->GetModManager();
+	char* langCode = g_Manager->GetLanguage();
 
 	if (targetFile->empty()) {
 		return;
 	}
 
 	auto buildAndCheckPath = [&](const std::string& postfix, bool useLangCode) -> bool {
-		auto copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
+		std::string copyOfContentDirectory = _contentDirectory.substr(0, _contentDirectory.length() - 1);
 		std::string potentialPath = copyOfContentDirectory + postfix;
 
 		if (useLangCode && g_Manager->_stringTable.language != 0 && langCode && langCode[0] != '\0') {
@@ -79,7 +77,6 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 
 		if (g_ContentManager.GetMountedFilePath(potentialPath.c_str()) != NULL) {
 			*resFileString = potentialPath;
-			std::cout << "[REPENTOGON] Patched path: " << *resFileString << std::endl;
 			return true;
 		}
 		return false;
