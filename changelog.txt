@@ -1,4 +1,4 @@
-v1.1.0a -
+v1.1.1 -
 Added:
 * Game:
 	- IsStartingFromState
@@ -7,7 +7,10 @@ Added:
 	- Get/SetFallSpeed
 		Formerly mislabeled as Get/SetHeight
 	- Get/SetFallAcceleration
-		Formlery mislabeled as Get/SetFallingSpeed
+		Formerly mislabeled as Get/SetFallingSpeed
+* MenuSave
+	- SetSlotSpritesheet(int slot, string pngfilename)
+		Overrides the spritesheet used for a save file drawing. MC_POST_SAVESLOT_LOAD is a good place to use this.
 /newline/
 Fixes:
 * Isaac:
@@ -16,6 +19,8 @@ Fixes:
 	Lerp now returns a reference to the modified vector like it now does in vanilla.
 * RoomDescriptor:
 	Fixed GetNeighboringRooms returning a number instead of a table.
+* ModCallbacks:
+	Fixed broken color userdata in MC_POST_ENTITY_SET_COLOR
 * Dear ImGui Console Menus:
 	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
 	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
