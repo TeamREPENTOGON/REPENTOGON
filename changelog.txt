@@ -14,8 +14,11 @@ Fixes:
 	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
 * Vector:
 	Lerp now returns a reference to the modified vector like it now does in vanilla.
-* Save Management:
-	"Import from Repentance" no longer "fails" if a file doesn't exist.
+* RoomDescriptor:
+	Fixed GetNeighboringRooms returning a number instead of a table.
+* Dear ImGui Console Menus:
+	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
+	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
 /newline/
 /versionseparator/
 v1.1.0 -

@@ -271,7 +271,7 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 		{ "GetGridEntitiesSaveState", Lua_GetGridEntitiesSaveState },
 		{ "InitSeeds", Lua_InitSeeds },
 		{ "GetDimension", Lua_GetDimension },
-		{ "GetNeighboringRooms", Lua_GetTaintedKeeperCoinSpawns },
+		{ "GetNeighboringRooms", Lua_GetNeighboringRooms },
 		{ "GetTaintedKeeperCoinSpawns", Lua_GetTaintedKeeperCoinSpawns },
 		{ "SetTaintedKeeperCoinSpawns", Lua_SetTaintedKeeperCoinSpawns },
 		{ NULL, NULL }
