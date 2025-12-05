@@ -20,12 +20,19 @@
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
 std::bitset<75> VanillaCallbackState;  // For vanilla callbacks & reimplementations of them.
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)-> void, __cdecl){
-	if (callbackid > 1000) {
-		CallbackState.set(callbackid - 1000, enable);
+	size_t id = static_cast<size_t>(callbackid);
+
+	if (id < VanillaCallbackState.size())
+	{
+		VanillaCallbackState.set(id, enable);
+		super(id, enable);
+		return;
 	}
-	else {
-		VanillaCallbackState.set(callbackid, enable);
-		super(callbackid, enable);
+
+	id = id - 1000;
+	if (id < CallbackState.size())
+	{
+		CallbackState.set(id, enable);
 	}
 }
 
