@@ -42,8 +42,8 @@ build_script:
     mv zhlREPENTOGON.pdb artifact
     echo "> mv zhlLoader.dll artifact"
     mv zhlLoader.dll artifact
-    echo "> mv Lua5.4.dll artifact"
-    mv Lua5.4.dll artifact
+    echo "> mv Lua5.3.3r.dll artifact"
+    mv Lua5.3.3r.dll artifact
     echo "> mv freetype.dll artifact"
     mv freetype.dll artifact
     echo "> cp ../../changelog.txt artifact/rgon_changelog.txt"
