@@ -148,6 +148,13 @@ Now passes EntityPlayer as an argument.
 |:--|:--|:--|:--|:--|:--|
 |65 |MC_GET_PILL_EFFECT {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) SelectedPillEffect, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) PillColor, [EntityPlayer](../EntityPlayer.md) Player) | - | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) |
 
+### MC_POST_ENTITY_KILL
+Now passes **Kill Source** as an argument.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+|68 |MC_POST_ENTITY_KILL {: .copyable } | ([Entity](../Entity.md) Entity, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) KillSource) | - | void |
+
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE {: .copyable }
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
