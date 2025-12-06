@@ -29,12 +29,6 @@
 [submodule "libs/mINI"]
 	path = libs/mINI
 	url = https://github.com/pulzed/mINI
-[submodule "libs/curl"]
-	path = libs/curl
-	url = https://github.com/curl/curl
-[submodule "libs/cryptopp-cmake"]
-	path = libs/cryptopp-cmake
-	url = https://github.com/abdes/cryptopp-cmake
 [submodule "libs/imgui"]
 	path = libs/imgui
 	url = https://github.com/TeamREPENTOGON/imgui
