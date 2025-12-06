@@ -4,6 +4,7 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "../SaveSyncing/SaveSyncing.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
@@ -164,6 +165,7 @@ void PerformASMPatches() {
 	ASMPatchConsoleRunCommand();
 
 	// Callbacks
+	CustomCallbacks::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
 	PatchPreEntityTakeDamageCallbacks();

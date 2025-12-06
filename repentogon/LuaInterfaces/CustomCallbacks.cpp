@@ -15,6 +15,9 @@
 #include "../Patches/MainMenuBlock.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/EntityPlus.h"
+#include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
+#include "CustomCallbacks.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -2916,8 +2919,26 @@ HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> 
 	super(musicId, unusedInt, unusedBool);
 }
 
+enum class eTriggerCollectibleRemovedFlags
+{
+	FLAG_REMOVE_FROM_PLAYER_FORM = 0,
+	FLAG_WISP = 1,
+
+	NUM_FLAGS
+};
+
+static constexpr uint32_t MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_REMOVE_FROM_PLAYER_FORM;
+static constexpr uint32_t MC_TCR_FLAG_WISP = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_WISP;
+static constexpr uint32_t MC_TCR_NUM_FLAGS = (uint32_t)eTriggerCollectibleRemovedFlags::NUM_FLAGS;
+
+static constexpr std::bitset<MC_TCR_NUM_FLAGS> DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT = 1 << MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM;
+static auto s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
+
 //POST_TRIGGER_COLLECTIBLE_REMOVED (1095) 
 HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleID) -> void) {
+	const auto flags = s_TriggerCollectibleRemovedContext;
+	s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
+
 	super(collectibleID);
 	const int callbackid = 1095;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2930,8 +2951,55 @@ HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleI
 			.push(collectibleID)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(collectibleID)
+			.push(flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM))
+			.push(flags.test(MC_TCR_FLAG_WISP))
 			.call(1);
 	}
+}
+
+// __fastcall to simulate __thiscall
+static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, uint32_t collectibleID) noexcept
+{
+	s_TriggerCollectibleRemovedContext.reset();
+	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM, removeFromPlayerForm);
+	player.TriggerCollectibleRemoved(collectibleID);
+}
+
+static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved() noexcept
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RemoveCollectible_TriggerCollectibleRemoved);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::RemoveCollectible for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
+
+	ASMPatch patch;
+
+	intptr_t resumeAddr = addr + 5;
+	constexpr size_t REMOVE_FROM_PLAYER_FORM_PARAM_NUMBER = 4;
+	constexpr size_t REMOVE_FROM_PLAYER_FORM_EBP_OFFSET = REMOVE_FROM_PLAYER_FORM_PARAM_NUMBER * 4 + 4; // stack offset + function prologue
+
+	patch.MoveFromMemory(ASMPatch::Registers::EBP, REMOVE_FROM_PLAYER_FORM_EBP_OFFSET, ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_add_remove_collectible_context)
+		.AddRelativeJump((void*)resumeAddr);
+
+	sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+// __fastcall to simulate __thiscall
+static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, uint32_t collectibleID) noexcept
+{
+	s_TriggerCollectibleRemovedContext.reset();
+	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_WISP, true);
+	player.TriggerCollectibleRemoved(collectibleID);
+}
+
+static void Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved() noexcept
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RecomputeWispCollectibles_TriggerCollectibleRemoved);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::RecomputeWispCollectibles for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_add_remove_wisp_collectible_context);
+
+	sASMPatcher.FlatPatch((void*)addr, &patch);
 }
 
 //POST_TRIGGER_TRINKET_ADDED (1096) 
@@ -5699,4 +5767,10 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 	}
 
 	return retTrinket;
+}
+
+void CustomCallbacks::ApplyPatches() noexcept
+{
+	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
+	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
 }
