@@ -1,46 +1,6 @@
 [submodule "libs/luafilesystem"]
 	path = libs/luafilesystem
 	url = https://github.com/lunarmodules/luafilesystem
-[submodule "libs/zydis"]
-	path = libs/zydis
-	url = https://github.com/zyantific/zydis.git
-[submodule "libs/NaturalSort"]
-	path = libs/NaturalSort
-	url = https://github.com/scopeInfinity/NaturalSort
-[submodule "libs/freetype"]
-	path = libs/freetype
-	url = https://github.com/freetype/freetype.git
-[submodule "libs/rapidxml"]
-	path = libs/rapidxml
-	url = https://github.com/discord/rapidxml
-[submodule "libs/LuaBridge"]
-	path = libs/LuaBridge
-	url = https://github.com/vinniefalco/LuaBridge
-[submodule "libs/antlr4"]
-	path = libs/antlr4
-	url = https://github.com/TeamREPENTOGON/antlr4
-	branch = stable
-[submodule "libs/rapidjson"]
-	path = libs/rapidjson
-	url = https://github.com/Tencent/rapidjson
-[submodule "libs/lua"]
-	path = libs/lua
-	url = https://github.com/TeamREPENTOGON/lua
-[submodule "libs/mINI"]
-	path = libs/mINI
-	url = https://github.com/pulzed/mINI
-[submodule "libs/curl"]
-	path = libs/curl
-	url = https://github.com/curl/curl
-[submodule "libs/cryptopp-cmake"]
-	path = libs/cryptopp-cmake
-	url = https://github.com/abdes/cryptopp-cmake
-[submodule "libs/imgui"]
-	path = libs/imgui
-	url = https://github.com/TeamREPENTOGON/imgui
 [submodule "Launcher"]
 	path = Launcher
 	url = https://github.com/TeamREPENTOGON/Launcher.git
-[submodule "libs/injector"]
-	path = libs/injector
-	url = https://github.com/TeamREPENTOGON/injector.git
