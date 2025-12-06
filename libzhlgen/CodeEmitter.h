@@ -13,7 +13,8 @@ namespace fs = std::filesystem;
 
 class CodeEmitter {
 public:
-	CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, bool test);
+	CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
+		std::string const& outputImpl, std::string const& outputHooks);
 
 	bool ProcessZHLFiles(fs::path const& base);
 	bool ProcessFile(fs::path const& path);

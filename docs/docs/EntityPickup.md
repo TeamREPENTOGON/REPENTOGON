@@ -29,9 +29,29 @@ ___
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetFlipCollectible () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetFlipCollectible ( ) {: .copyable aria-label='Functions' }
+Returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) if Flip save state exists, `nil` otherwise.
+
+___
 ### GetLootList () {: aria-label='Functions' }
 #### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
+
+___
+### GetMegaChestLeftCollectible () {: aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md) GetMegaChestLeftCollectible ( ) {: .copyable aria-label='Functions' }
+If called on an EntityPickup for the right-side of an open Mega Chest, returns the left-side collectible. Otherwise returns `nil`.
+
+___
+### GetMegaChestOtherCollectible () {: aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md), boolean GetMegaChestRightCollectible ( ) {: .copyable aria-label='Functions' }
+If called on an EntityPickup belonging to an open Mega Chest, returns the other collectible and a boolean indicating if this collectible is on the right-side. Otherwise, returns `nil`.
+
+___
+### GetMegaChestRightCollectible () {: aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md) GetMegaChestRightCollectible ( ) {: .copyable aria-label='Functions' }
+If called on an EntityPickup for the left-side of an open Mega Chest, returns the right-side collectible. Otherwise returns `nil`.
 
 ___
 ### GetPickupGhost () {: aria-label='Functions' }
@@ -57,6 +77,16 @@ ___
 #### int GetVarData ( ) {: .copyable aria-label='Functions' }
 
 ___
+### HasFlipData () {: aria-label='Functions' }
+#### boolean HasFlipData ( ) {: .copyable aria-label='Functions' }
+Returns `true` if pickup is collectible and has Flip save state.
+
+___
+### InitFlipState () {: aria-label='Functions' }
+#### void InitFlipState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) = CollectibleType.COLLECTIBLE_NULL, boolean SetupCollectibleGraphics = true ) {: .copyable aria-label='Functions' }
+Initiates the flip state for the pickup with the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html).
+
+___
 ### IsBlind () {: aria-label='Functions' }
 #### boolean IsBlind ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the pickup is a collectible pedestal and is hidden. Always returns `false` for non-collectible EntityPickups.
@@ -66,6 +96,10 @@ Returns `true` if the pickup is a collectible pedestal and is hidden. Always ret
 ___
 ### MakeShopItem () {: aria-label='Functions' }
 #### void MakeShopItem ( int ShopItemID ) {: .copyable aria-label='Functions' }
+
+___
+### ReloadGraphics () {: aria-label='Functions' }
+#### void ReloadGraphics ( boolean IgnoreBlind ) {: .copyable aria-label='Functions' }
 
 ___
 ### RemoveCollectibleCycle () {: aria-label='Functions' }
@@ -89,6 +123,12 @@ ___
 ### SetNewOptionsPickupIndex () {: aria-label='Functions' }
 #### int SetNewOptionsPickupIndex ( ) {: .copyable aria-label='Functions' }
 Returns the new pickup index.
+___
+### SetupCollectibleGraphics () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static void SetupCollectibleGraphics ( [Sprite](Sprite.md) Sprite, integer Layer, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean Blind = false, integer Seed = Random(), boolean LoadGraphics = false  ) {: .copyable aria-label='Functions' }
+Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
+
 ___
 ### SetVarData () {: aria-label='Functions' }
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }

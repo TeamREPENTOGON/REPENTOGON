@@ -55,6 +55,10 @@ ___
 Adds the amount of shops the player has entered this run.
 
 ___
+### ChainLightning () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) ChainLightning ( [Vector](Vector.md) Position, float BaseDamage = 3.5, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags = TearFlags.TEAR_NORMAL, [Entity](Entity.md) Spawner = nil ) {: .copyable aria-label='Functions' }
+
+___
 ### ClearErasedEnemies () {: aria-label='Functions' }
 #### void ClearErasedEnemies ( ) {: .copyable aria-label='Functions' }
 Clears out all enemies listed as an erased enemy, allowing them to spawn again.

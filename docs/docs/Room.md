@@ -41,6 +41,11 @@ ___
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
+### ClearBossHazards () {: aria-label='Functions' }
+#### void ClearBossHazards ( boolean IgnoreNPCs = true, [Entity](Entity.md) Source = nil ) {: .copyable aria-label='Functions' }
+Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if `IgnoreNPCs` is false.
+
+___
 ### DoLightningStrike () {: aria-label='Functions' }
 #### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
 Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
@@ -73,6 +78,10 @@ ___
 #### [Color](Color.md) GetFloorColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetFXLayers () {: aria-label='Functions' }
+#### [FXLayers](FXLayers.md) GetFXLayers ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetFXParams () {: aria-label='Functions' }
 #### [FXParams](FXParams.md) GetFXParams ( ) {: .copyable aria-label='Functions' }
 
@@ -87,7 +96,7 @@ ___
 
 ___
 ### GetItemPool () {: aria-label='Functions' }
-#### [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType GetItemPool ( int Seed, boolean Raw ) {: .copyable aria-label='Functions' }
+#### [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType GetItemPool ( int Seed = Random(), boolean Raw = false ) {: .copyable aria-label='Functions' }
 Retrieves the [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) the game would use to generate random collectibles in the current room. Unlike [ItemPool.GetPoolForRoom()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getpoolforroom), this takes into account the pool set using [SetItemPool()](Room.md#setitempool), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
 
 If `Raw` is set to `true` and the pool is set to `POOL_NULL` then `POOL_NULL` will be returned, instead of running the game's pool selection code.
@@ -128,6 +137,10 @@ ___
 ### GetShopItemPrice () {: aria-label='Functions' }
 #### int GetShopItemPrice ( int EntityVariant, int EntitySubType, int ShopItemID ) {: .copyable aria-label='Functions' }
 Returns the price of the item.
+
+___
+### GetWallColor () {: aria-label='Functions' }
+#### [Color](Color.md) GetWallColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetWaterAmount () {: aria-label='Functions' }
@@ -232,6 +245,15 @@ Sets the strength of the water current in the room. Current sounds and particles
 The game typically uses `1` or `-1` for its values depending on current strength and direction. You can technically go higher than this for some interesting results. Arbitrary directions are fully supported as well.
 
 `Vector(0, 0)` will remove the current.
+___
+### TriggerOutput () {: aria-label='Functions' }
+#### void TriggerOutput ( [RoomEventOutput](enums/RoomEventOutput.md) GroupIdx) {: .copyable aria-label='Functions' }
+
+___
+### TriggerRestock () {: aria-label='Functions' }
+#### void TriggerRestock ( int GridIndex, int ShopItemIdx) {: .copyable aria-label='Functions' }
+Sets up the shop item to be spawned with an increased price upon the next call of ShopRestockPartial.
+
 ___
 ### TryGetShopDiscount () {: aria-label='Functions' }
 #### int TryGetShopDiscount ( int ShopItemIdx, int Price ) {: .copyable aria-label='Functions' }

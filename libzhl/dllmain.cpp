@@ -112,6 +112,7 @@ extern "C" {
 			auto const& missing = Definition::GetMissing();
 			if (missing.size() == 1) {
 				MessageBox(0, FunctionDefinition::GetLastError(), "Error", MB_ICONERROR);
+				ExitProcess(0); //to prevent launching vanilla
 			}
 			else {
 				std::ofstream out("repentogon.log");

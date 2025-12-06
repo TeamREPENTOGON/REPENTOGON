@@ -59,6 +59,11 @@ ___
 #### [Vector](../Vector.md) GetViewPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsActive () {: aria-label='Functions' }
+#### void IsActive () {: .copyable aria-label='Functions' }
+Returns True when MenuManager is ready to be used a.k.a if you can use the menuman/mainmenu functionality (normally, if you are at the main menu).
+
+___
 ### SetActiveMenu () {: aria-label='Functions' }
 #### int SetActiveMenu ([MainMenuType](../enums/MainMenuType.md) Menu ) {: .copyable aria-label='Functions' }
 Changes the active menu on the main menu to match the given `MainMenuType`.

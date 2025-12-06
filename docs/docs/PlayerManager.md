@@ -57,7 +57,7 @@ ___
 
 ___
 ### FirstTrinketOwner () {: aria-label='Functions' }
-#### [EntityPlayer](EntityPlayer.md) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, [RNG](RNG.md) RNG = nil, boolean LazSharedGlobalTag = true ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean LazSharedGlobalTag = true ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified trinket has never been picked up.
 
 ___
@@ -74,6 +74,28 @@ ___
 #### [EntityPlayer](EntityPlayer.md)[] GetPlayers ( ) {: .copyable aria-label='Functions' }
 Returns a table containing all players.
 
+___
+### GetRandomCollectibleOwner () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetRandomCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Seed ) {: .copyable aria-label='Functions' }
+Also returns the [Collectible RNG Object](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getcollectiblerng) associated with this collectible from the player.
+
+Both will be nil if no player has the collectible.
+
+???+ example "Example Code"
+    ```lua
+    local player, rng = PlayerManager.GetRandomCollectibleOwner(CollectibleType.COLLECTIBLE_POOP, seed)
+    ```
+___
+### GetRandomTrinketOwner () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetRandomTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, int Seed ) {: .copyable aria-label='Functions' }
+Also returns the [Trinket RNG Object](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#gettrinketrng) associated with this collectible from the player.
+
+Both will be nil if no player has the trinket.
+
+???+ example "Example Code"
+    ```lua
+    local player, rng = PlayerManager.GetRandomTrinketOwner(TrinketType.TRINKET_PETRIFIED_POOP, seed)
+    ```
 ___
 ### GetTotalTrinketMultiplier () {: aria-label='Functions' }
 #### int GetTotalTrinketMultiplier ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }

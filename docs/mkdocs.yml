@@ -21,9 +21,9 @@ extra:
 #    button3_theme: md-button
 #    button3_url: blog/index.html
     cover_image: img/repentoMEGA.gif
-    description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
-     Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
-     on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
+    description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/3353470/The_Binding_of_Isaac_Repentance/>The
+     Binding of Isaac: Repentance+</a> version v1.9.7.12 (installation can also be performed using the current latest version
+     of Repentance+ from Steam) that extends the Lua API with much-needed bug fixes, extra functionality,
      and performance enhancements. This is analogous to a "script extender" for other
      games like Skyrim.
 
@@ -134,6 +134,7 @@ nav:
     - CompletionType: enums/CompletionType.md
     - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md
+    - CustomCacheTag: enums/CustomCacheTag.md
     - DebugFlag: enums/DebugFlag.md
     - DeliriumCallbacks: enums/DeliriumCallbacks.md
     - DialogButtons: enums/DialogButtons.md
@@ -141,10 +142,12 @@ nav:
     - DialogReturn: enums/DialogReturn.md
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
+    - DoorMask: enums/DoorMask.md
     - DwmWindowAttribute: enums/DwmWindowAttribute.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EntityTag: enums/EntityTag.md
+    - EvaluateStatStage: enums/EvaluateStatStage.md
     - EventCounter: enums/EventCounter.md
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
@@ -157,9 +160,11 @@ nav:
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
     - ImGuiColor: enums/ImGuiColor.md
+    - ImGuiChildFlags: enums/ImGuiChildFlags.md
     - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
     - ImGuiNotificationType: enums/ImGuiNotificationType.md
+    - ImGuiWindowFlags: enums/ImGuiWindowFlags.md
     - ItemAnim: enums/ItemAnim.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
@@ -173,6 +178,7 @@ nav:
     - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
+    - PlayerHUDLayout: enums/PlayerHUDLayout.md
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
@@ -181,10 +187,13 @@ nav:
     - ProjectileMode: enums/ProjectileMode.md
     - PurityState: enums/PurityState.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
+    - RoomEventOutput: enums/RoomEventOutput.md
     - RoomSubType: enums/RoomSubType.md
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
     - SpecialQuest: enums/SpecialQuest.md
+    - SplitTearType: enums/SplitTearType.md
+    - StatusEffect: enums/StatusEffect.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
     - StbRailVariant: enums/StbRailVariant.md
@@ -193,6 +202,8 @@ nav:
     - StbType: enums/StbType.md
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - UseActiveItemResultFlag: enums/UseActiveItemResultFlag.md
+    - WaterClipFlag: enums/WaterClipFlag.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
     - XMLNode: enums/XMLNode.md
@@ -232,7 +243,9 @@ nav:
     - EntityConfigBaby: EntityConfigBaby.md
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
+  - EntityDesc: EntityDesc.md
   - Font: Font.md
+  - FXLayers: FXLayers.md
   - FXParams: FXParams.md
   - Game: Game.md
   - GenericPrompt: GenericPrompt.md
@@ -268,6 +281,7 @@ nav:
     - ItemConfig - Item: ItemConfig_Item.md
     - ItemConfig - PillEffect: ItemConfig_PillEffect.md
     - ItemConfig - Card: ItemConfig_Card.md
+    - ItemConfig - Costume: ItemConfig_Costume.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Input: Input.md
@@ -304,6 +318,7 @@ nav:
   - MusicManager: MusicManager.md
   - NightmareScene: NightmareScene.md
   - Options: Options.md
+  - Pathfinder: Pathfinder.md
   - PersistentGameData: PersistentGameData.md
   - PlayerManager: PlayerManager.md
   - Procedural Items:
@@ -337,7 +352,6 @@ nav:
     - RoomConfig: RoomConfig.md
     - RoomConfigStage: RoomConfigStage.md
     - GridEntitiesSaveStateVector: GridEntitiesSaveStateVector.md
-    - RoomConfigHolder: RoomConfigHolder.md
     - RoomConfigRoom: RoomConfigRoom.md
     - RoomDescriptor: RoomDescriptor.md
     - EntitiesSaveState: EntitiesSaveState.md

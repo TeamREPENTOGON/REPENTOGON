@@ -471,23 +471,22 @@ int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleI
 // MC_PRE_M_MORPH_ACTIVE
 // This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
 void ASMPatchPreMMorphActiveCallback() {
-	SigScan scanner("85f674??6a016a00");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreMMorphCallback);
+	void* jumpAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreMMorphJump);
 
 	ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerActiveItemUsed at %p\n", addr);
 
-	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(registers)
 		.Push(ASMPatch::Registers::ESI) // push the item id
-		.Push(ASMPatch::Registers::EDI) // push the player
+		.Push(ASMPatch::Registers::EBX) // push the player
 		.AddInternalCall(RunPreMMorphActiveCallback) // run MC_PRE_M_MORPH_ACTIVE
-		.AddBytes("\x89\xC6") // mov esi, eax
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
 		.AddBytes("\x85\xF6") // test esi, esi
 		.RestoreRegisters(registers)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x27) // jump for 0 (don't reroll the active)
-		.AddBytes(ByteBuffer().AddAny((char*)addr + 4, 0x2)) // restore the instruction we overwrote
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, jumpAddr) // jump for 0 (don't reroll the active)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6)) // restore the instructions we overwrote
 		.AddRelativeJump((char*)addr + 0x6); // jump for everything else (reroll the active)
 
 	sASMPatcher.PatchAt(addr, &patch);

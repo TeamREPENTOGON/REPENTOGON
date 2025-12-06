@@ -16,6 +16,13 @@ ___
 
 ## Functions
 
+### FireSplitTear () {: aria-label='Functions' }
+#### [EntityTear](EntityTear.md) FireSplitTear ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, float DamageMultiplier = 0.5, float SizeMultiplier = 0.6, int Variant = 0, [SplitTearType](enums/SplitTearType.md) splitType = SplitTearType.SPLIT_GENERIC ) {: .copyable aria-label='Functions' }
+Fire a new tear that inherits many attributes from this laser (flags, damage, size, color, etc).
+
+This will also trigger the `MC_POST_FIRE_SPLIT_TEAR` callback. For custom effects, a string may be passed in place of the [SplitTearType](enums/SplitTearType.md).
+
+___
 ### GetDamageMultiplier () {: aria-label='Functions' }
 #### float GetDamageMultiplier ( ) {: .copyable aria-label='Functions' }
 
@@ -26,6 +33,7 @@ ___
 ___
 ### GetHitList () {: aria-label='Functions' }
 #### int GetHitList ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
 
 ___
 ### GetOneHit () {: aria-label='Functions' }

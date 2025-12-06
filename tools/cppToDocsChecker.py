@@ -193,7 +193,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
                         
                     textPart = line.split("\"")
                     if len(textPart) > 2:
-                        if line.strip().startswith("//") or "deprecated" in line.lower(): # ignore functions that are commented out
+                        if line.strip().startswith("//") or "deprecated" in line.lower() or "[NO_DOCS]" in line or "depreciated" in line: # ignore functions that are commented out
                             funcsToRemove.append(func)
                             continue
                         func[0] = textPart[-2]
@@ -208,9 +208,13 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
             referencedClasses[i] = cppMetatableToDocumentation[className].lower()
 
     # search in own documentation and the parent documentation
+    firstFileMatch = ""
+
     for file in glob.glob(DOCS_FOLDER_PATH+"\**\*.md", recursive=True):
         filename = file.split("\\")[-1].replace(".md","").lower()
         if filename in referencedClasses:
+            if firstFileMatch == "":
+                firstFileMatch = file
             searchInDocFile(file, luaFunctions)
 
     # Print missing matches
@@ -238,8 +242,18 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
 
             titleStr = "### "+func[0]+ " () {: aria-label='Functions' }"
             funcStr = ("#### "+returnVal+" "+func[0]+ " ( "+args+" ) {: .copyable aria-label='Functions' }").replace("  "," ")
+            
+            #Append generated documentation
+            if os.path.isfile(firstFileMatch):
+                docFile = open(firstFileMatch, 'a', encoding="utf-8")
+                docFile.write(titleStr+"\n")
+                docFile.write(funcStr+"\n")
+                docFile.write("\n___\n")
 
-            print(titleStr)
-            print(funcStr)
-            print("\n___")
+                print("\t ----> Added to file: "+firstFileMatch+"\n")
+            else:
+                print(titleStr)
+                print(funcStr)
+                print("\n___")
+            
         

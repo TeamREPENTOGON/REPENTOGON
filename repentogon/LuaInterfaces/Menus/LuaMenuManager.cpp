@@ -66,11 +66,19 @@ LUA_FUNCTION(Lua_MenuManager_GetSelectWidgetSprite)
 }
 */
 
+int luaactivemenulie = 0;
+
 LUA_FUNCTION(Lua_GetSelectedMenuID)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	lua_pushinteger(L, menuManager->_selectedMenuID);
+	if (menuManager->_selectedMenuID == 0) {
+		lua_pushinteger(L, luaactivemenulie);
+	}
+	else {
+		lua_pushinteger(L, menuManager->_selectedMenuID);
+		luaactivemenulie = 0;
+	}
 	return 1;
 }
 
@@ -78,7 +86,15 @@ LUA_FUNCTION(Lua_SetSelectedMenuID)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 1);
+	int target = (int)luaL_checkinteger(L, 1);
+	if ((target < 1) || (target > 22)) {
+		luaactivemenulie = target;
+		menuManager->_selectedMenuID = 0;
+	}
+	else {
+		menuManager->_selectedMenuID = target;
+	}
+
 	return 1;
 }
 

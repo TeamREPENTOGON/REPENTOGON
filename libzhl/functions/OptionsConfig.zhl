@@ -7,6 +7,9 @@ __thiscall void OptionsConfig::Save();
 "558bec53568bf15780be????????00":
 __thiscall void OptionsConfig::SetFullScreen(bool value);
 
+"558becf30f104d??0f57c0":
+__thiscall void OptionsConfig::SetMusicVolume(float volume);
+
 struct OptionsConfig depends (Game) {
 {{
 	inline bool ModsEnabled() { return _enableMods; }

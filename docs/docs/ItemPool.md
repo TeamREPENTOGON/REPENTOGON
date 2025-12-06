@@ -20,6 +20,47 @@ ___
 #### void AddBibleUpgrade ( int Add, [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
 
 ___
+### AddCollectible () {: aria-label='Functions' }
+#### void AddCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, table | table[] PoolItems ) {: .copyable aria-label='Functions' }
+
+Adds the provided Lua PoolItem objects to the specified Pool permanently, as if they were defined in a `itempools.xml` file.
+
+The `PoolItems` parameter can be either a single Lua PoolItem object or an array of them.
+
+???- info "Lua PoolItem format"
+    |Field|Type|Comment|
+    |:--|:--|:--|
+    | itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | `Default = COLLECTIBLE_NULL` |
+    | name | string | `Optional`<br /> Alternative to `itemID` |
+    | weight | float | `Default = 1.0` |
+    | decreaseBy | float | `Default = 0.5` |
+    | removeOn | float | `Default = 0.1` |
+
+    All field names are case insensitive
+
+___
+### AddTemporaryCollectible () {: aria-label='Functions' }
+#### void AddTemporaryCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, table | table[] PoolItems ) {: .copyable aria-label='Functions' }
+
+Adds the provided Lua PoolItem objects to the specified Pool, but only for the current run.
+
+The `PoolItems` parameter can be either a single Lua PoolItem object or an array of them.
+
+???- info "Lua PoolItem format"
+    |Field|Type|Comment|
+    |:--|:--|:--|
+    | itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | `Default = COLLECTIBLE_NULL` |
+    | name | string | `Optional`<br /> Alternative to `itemID` |
+    | weight | float | `Default = 1.0` |
+    | decreaseBy | float | `Default = 0.5` |
+    | removeOn | float | `Default = 0.1` |
+
+    All field names are case insensitive
+
+???- info "Temporary Collectible behavior"
+    Temporary Collectibles are automatically Added and Removed on Run Continue/Exit; as well as when returning to a previous state that had/didn't have the Collectible when using Glowing Hourglass.
+
+___
 ### CanSpawnCollectible () {: aria-label='Functions' }
 #### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean ignoreLocked ) {: .copyable aria-label='Functions' }
 
@@ -196,6 +237,27 @@ The table contains the following fields:
     - Does not attempt to morph the collectible into `CollectibleType.COLLECTIBLE_BIBLE`, `CollectibleType.COLLECTIBLE_MAGIC_SKIN` or `CollectibleType.COLLECTIBLE_ROSARY`
     
     - Does not trigger the [MC_PRE_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) and [MC_POST_GET_COLLECTIBLE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=modcall#mc_post_get_collectible) callback.
+
+___
+### RemoveTemporaryCollectible () {: aria-label='Functions' }
+#### void RemoveTemporaryCollectible ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType, table | table[] PoolItems ) {: .copyable aria-label='Functions' }
+
+Removes the provided Temporary Collectibles from the specified Pool, assuming they exist.
+
+The PoolItem object **MUST** be equal (in terms of field values) to the one that was added in [AddTemporaryCollectible](ItemPool.md#addtemporarycollectible)
+
+The `PoolItems` parameter can be either a single Lua PoolItem object or an array of them.
+
+???- info "Lua PoolItem format"
+    |Field|Type|Comment|
+    |:--|:--|:--|
+    | itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | `Default = COLLECTIBLE_NULL` |
+    | name | string | `Optional`<br /> Alternative to `itemID` |
+    | weight | float | `Default = 1.0` |
+    | decreaseBy | float | `Default = 0.5` |
+    | removeOn | float | `Default = 0.1` |
+
+    All field names are case insensitive
 
 ___
 ### ResetCollectible () {: aria-label='Functions' }

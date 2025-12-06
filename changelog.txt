@@ -1,7 +1,45 @@
+v1.1.x -
+Added: 
+Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon -> resources-dlc3 -> resources).
+/newline/
+Fixes:
+* Fixed crash caused by ScoreSheet:AddFinishedStage
+/newline/
+/versionseparator/
+v1.1.1 -
+Added:
+* Game:
+	- IsStartingFromState
+		Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+* EntityBomb
+	- Get/SetFallSpeed
+		Formerly mislabeled as Get/SetHeight
+	- Get/SetFallAcceleration
+		Formerly mislabeled as Get/SetFallingSpeed
+* MenuSave
+	- SetSlotSpritesheet(int slot, string pngfilename)
+		Overrides the spritesheet used for a save file drawing. MC_POST_SAVESLOT_LOAD is a good place to use this.
+/newline/
+Fixes:
+* Isaac:
+	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+* Vector:
+	Lerp now returns a reference to the modified vector like it now does in vanilla.
+* RoomDescriptor:
+	Fixed GetNeighboringRooms returning a number instead of a table.
+* ModCallbacks:
+	Fixed broken color userdata in MC_POST_ENTITY_SET_COLOR
+* Dear ImGui Console Menus:
+	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
+	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
+/newline/
+/versionseparator/
 v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
 Additions:
+* GridEntityLock
+	- TryUnlock(EntityPlayer player, bool force)
 * Camera:
 	- Update(bool Interpolated = false)
 	- SetClampEnabled(bool clamped)
@@ -32,13 +70,20 @@ Additions:
 	- GetFlipCollectible
 		Returns CollectibleType if flip save state exists, nil otherwise.
 	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
+	- ReloadGraphics(boolean IgnoreBlind)
+	- SetupCollectibleGraphics(Sprite Sprite, integer Layer, CollectibleType Collectible, boolean Blind, integer Seed = Random(), boolean LoadGraphics)
+		Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]BlinkLockTime - how long player's head will play fired frame sprite
+	- GetBodySprite
+		Temporary copy of body player sprite while null animation is active.
 	- SetD8DamageModifier
 	- SetD8FireDelayModifier
 	- SetD8RangeModifier
 	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]ItemStateCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
 	- [Get/Set]MawOfTheVoidCharge
 	- [Get/Set]MontezumaRevengeCharge
@@ -68,6 +113,8 @@ Additions:
 	- HasForcedCamoEffect
 	- SetForceCamoEffect
 	- HasCamoEffect
+	- PlayItemNullAnimation
+		Returns true if animation was set successfully, false otherwise. Useful for item state/hold items.
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -126,6 +173,7 @@ Additions:
 	- GetScore
 	- GetTriggerChanceScale
 * Room:
+	- ClearBossHazards(boolean IgnoreNPCs = true, EntityNPC Entity = nil)
 	- TriggerOutput(RoomEventOutput GroupIdx)
 	- GetWallColor()
 * RoomConfig:
@@ -251,6 +299,10 @@ Additions:
 	- MC_POST_PLAYER_DROP_TRINKET(TrinketType, Vector DropPosition, EntityPlayer, boolean IsGolden, boolean ReplaceTick)
 		Optional param : TrinketType
 		Fires after player dropped trinket.
+	- MC_POST_PLAYER_ADD_EFFECT(EntityPlayer, ItemConfigItem, boolean addCostume, int count)
+		Optional param: ItemConfigItem
+	- MC_POST_ROOM_ADD_EFFECT(ItemConfigItem)
+		Optional param: ItemConfigItem
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
@@ -377,6 +429,9 @@ Modified:
 * ModCallbacks:
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
 		Added Count argument (how many instances of this effect were removed)
+		Can now use ItemConfigItem as an optional param.
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED
+		Can now use ItemConfigItem as an optional param.
 	- MC_PRE_MOD_UNLOAD(Mod, bool ShuttingDown)
 		Added boolean argument that identifies if it is running due to game shutdown
 		Now runs earlier during shutdown, so code is less likely to crash

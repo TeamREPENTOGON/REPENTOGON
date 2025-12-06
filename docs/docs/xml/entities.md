@@ -13,6 +13,9 @@ tags:
 | coinvalue | int | How much this coin pickup is worth when using GetCoinValue (either by the game or a lua call). |
 | customtags | string | Space-separated list of strings. See "CustomTags" section below. |
 | nosplit | boolean | Allows preventing this NPC from being split by Meat Cleaver. |
+| bagofcrafting | string | Pickups only. Space-separated list of ingredients to add to Bag of Crafting when collected, up to 8. Example: `bagofcrafting="penny bomb key"` Accepted values: [none, redheart, soulheart, blackheart, eternalheart, goldheart, boneheart, rottenheart, penny, nickel, dime, luckypenny, key, goldkey, chargedkey, bomb, goldbomb, gigabomb, minibattery, battery, megabattery, card, pill, rune, diceshard, crackedkey, goldpenny, goldpill, goldbattery, poop] |
+| meleecollide | boolean | Pickups only. Whether or not to trigger a collision with the player when hit with a Bone Club / Spirit Sword / etc. |
+| boomerang | boolean | Pickups only. Whether to allow this pickup to be "grabbed" by Boomerang and Jawbone. |
 
 ## CustomTags
 

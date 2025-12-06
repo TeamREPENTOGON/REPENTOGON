@@ -36,10 +36,12 @@ ___
 ### GetCharacterWheelDepth () {: aria-label='Functions' }
 #### float GetCharacterWheelDepth ( ) {: .copyable aria-label='Functions' }
 Returns the depth of the character selection wheel object.
+
 ___
 ### GetCharacterWheelWidth () {: aria-label='Functions' }
 #### float GetCharacterWheelWidth ( ) {: .copyable aria-label='Functions' }
 Returns the width of the character selection wheel object.
+
 ___
 ### GetDifficulty () {: aria-label='Functions' }
 #### int GetDifficulty ( ) {: .copyable aria-label='Functions' }
@@ -51,10 +53,11 @@ ___
 ___
 ### GetDifficultyOverlaySprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetDifficultyOverlaySprite ( ) {: .copyable aria-label='Functions' }
-The blood stain when selecting Hard mode / Greedier
+The blood stain when selecting Hard mode / Greedier.
+
 ___
-### GetEastereggPageSprite () {: aria-label='Functions' }
-#### [Sprite](../Sprite.md) GetEastereggPageSprite ( ) {: .copyable aria-label='Functions' }
+### GetEasterEggPageSprite () {: aria-label='Functions' }
+#### [Sprite](../Sprite.md) GetEasterEggPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetIsCharacterUnlocked () {: aria-label='Functions' }
@@ -63,19 +66,27 @@ ___
 ___
 ### GetGreedDecoSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetGreedDecoSprite ( ) {: .copyable aria-label='Functions' }
-Displayed when greedmode is selected
+Displayed when greedmode is selected.
+
 ___
 ### GetNumCharacters () {: aria-label='Functions' }
 #### int GetNumCharacters ( ) {: .copyable aria-label='Functions' }
 Number of characters in the wheel. 
+
 ___
 ### GetPageSwapWidgetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetPageSwapWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPlayerTypeFromCharacterMenuID () {: aria-label='Functions' }
+#### [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) GetPlayerTypeFromCharacterMenuID ( int CharacterMenuID, boolean Tainted ) {: .copyable aria-label='Functions' }
+`Tainted` boolean defaults to current menu if unspecified.
+
+___
 ### GetScrollSpeed () {: aria-label='Functions' }
 #### float GetScrollSpeed ( ) {: .copyable aria-label='Functions' }
 Returns the speed of the animation playing when rotating the character selection wheel.
+
 ___
 ### GetSeedEntrySprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSeedEntrySprite ( ) {: .copyable aria-label='Functions' }
@@ -91,7 +102,8 @@ ___
 ___
 ### GetSelectedCharacterMenu () {: aria-label='Functions' }
 #### int GetSelectedCharacterMenu ( ) {: .copyable aria-label='Functions' }
-0 for Normal, 1 for Tainted
+`0` for Normal, `1` for Tainted.
+
 ___
 ### GetSelectedCharacterID () {: aria-label='Functions' }
 #### int GetSelectedCharacterID ( ) {: .copyable aria-label='Functions' }
@@ -112,10 +124,12 @@ ___
 ### SetCharacterWheelDepth () {: aria-label='Functions' }
 #### void SetCharacterWheelDepth ( float Value ) {: .copyable aria-label='Functions' }
 Set the depth of the character selection wheel object.
+
 ___
 ### SetCharacterWheelWidth () {: aria-label='Functions' }
 #### void SetCharacterWheelWidth ( float Value ) {: .copyable aria-label='Functions' }
 Set the width of the character selection wheel object.
+
 ___
 ### SetDifficulty () {: aria-label='Functions' }
 #### void SetDifficulty ( [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Difficulty ) {: .copyable aria-label='Functions' }
@@ -128,10 +142,12 @@ ___
 ### SetScrollSpeed () {: aria-label='Functions' }
 #### void SetScrollSpeed ( float Speed ) {: .copyable aria-label='Functions' }
 Set the speed of the animation playing when rotating the character selection wheel.
+
 ___
 ### SetSelectedCharacterMenu () {: aria-label='Functions' }
 #### void SetSelectedCharacterMenu ( int Menu ) {: .copyable aria-label='Functions' }
-0 for Normal, 1 for Tainted
+`0` for Normal, `1` for Tainted.
+
 ___
 ### SetSelectedCharacterID () {: aria-label='Functions' }
 #### void SetSelectedCharacterID ( int CharacterID ) {: .copyable aria-label='Functions' }

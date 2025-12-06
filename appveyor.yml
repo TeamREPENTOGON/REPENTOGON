@@ -38,10 +38,12 @@ build_script:
     mv libzhl.dll artifact
     echo "> mv zhlREPENTOGON.dll artifact"
     mv zhlREPENTOGON.dll artifact
+    echo "> mv zhlREPENTOGON.pdb artifact"
+    mv zhlREPENTOGON.pdb artifact
     echo "> mv zhlLoader.dll artifact"
     mv zhlLoader.dll artifact
-    echo "> mv Lua5.4.dll artifact"
-    mv Lua5.4.dll artifact
+    echo "> mv Lua5.3.3r.dll artifact"
+    mv Lua5.3.3r.dll artifact
     echo "> mv freetype.dll artifact"
     mv freetype.dll artifact
     echo "> cp ../../changelog.txt artifact/rgon_changelog.txt"
@@ -60,4 +62,3 @@ deploy:
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
-

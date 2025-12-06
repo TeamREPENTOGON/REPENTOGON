@@ -28,6 +28,18 @@ ___
 #### boolean CanCharm ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetActiveWeaponEntity () {: aria-label='Functions' }
+#### [Entity](Entity.md) GetActiveWeaponEntity ( ) {: .copyable aria-label='Functions' }
+Returns the Entity associated with the familiar's active [Weapon](Weapon.md).
+
+Returns `nil` if it cannot be found.
+
+___
+### GetActiveWeaponNumFired () {: aria-label='Functions' }
+#### int GetActiveWeaponNumFired ( ) {: .copyable aria-label='Functions' }
+Returns the amount of times the familiar's active [Weapon](Weapon.md) has been fired.
+
+___
 ### GetDirtColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 
@@ -58,8 +70,14 @@ Returns the "multiplier" for the familiar, from effects such as **BFFS!** or **H
     - **Tainted Lazarus Birthright**: x0.25
 
 ___
-### GetPathFinder () {: aria-label='Functions' }
-#### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
+### GetPathfinder () {: aria-label='Functions' }
+#### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathfinder ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRandomWisp () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetRandomWisp ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+???+ warning "Warning"
+    This is a static function and must be called via `EntityFamiliar.GetRandomWisp(RNG)`.
 
 ___
 ### GetWeapon () {: aria-label='Functions' }
@@ -76,8 +94,16 @@ ___
 #### boolean IsCharmed ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsLilDelirium () {: aria-label='Functions' }
+#### boolean IsLilDelirium ( ) {: .copyable aria-label='Functions' }
+
+___
 ### RemoveFromPlayer () {: aria-label='Functions' }
 #### void RemoveFromPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetLilDelirium () {: aria-label='Functions' }
+#### void SetLilDelirium ( boolean isLilDelirium ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetMoveDelayNum () {: aria-label='Functions' }
@@ -90,8 +116,13 @@ ___
 
 ___
 ### TryAimAtMarkedTarget () {: aria-label='Functions' }
-#### [Vector](Vector.md) TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction) {: .copyable aria-label='Functions' }
-Returns `nil` if unsuccessful.
+#### [Vector](Vector.md) TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = Direction.NO_DIRECTION ) {: .copyable aria-label='Functions' }
+#### boolean, table TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection = nil, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = Direction.NO_DIRECTION, [Vector](Vector.md) TargetPos = nil ) {: .copyable aria-label='Functions' }
+Return `true` if player's mark from Marked or Eye of the Occult/Gello target exists, `false` otherwise.
+Return a table containing the changed AimDirection, Direction, and TargetPos.
+
+Legacy version returns modified TargetPos, `nil` if unsuccessful.
+
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }

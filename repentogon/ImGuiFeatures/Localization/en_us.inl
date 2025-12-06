@@ -462,6 +462,8 @@ I(OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_MARK, u8"Unlocks any achievements you
 I(OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_PROMPT, u8"This will export any new achievements/progress you've earned in your REPENTOGON/Repentance+ save file back to your base Repentance save file.\n\nWould you like to continue?")
 I(OPT_SAVE_MANAGEMENT_SUCCESS, u8"Success!")
 I(OPT_SAVE_MANAGEMENT_FAILED, u8"Failed. See 'repentogon.log' for details.")
+I(OPT_SAVE_MANAGEMENT_SUCCESS_NOT_FOUND, u8"Success, but some files not found.")
+I(OPT_SAVE_MANAGEMENT_NOT_FOUND, u8"Save file not found.")
 
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")

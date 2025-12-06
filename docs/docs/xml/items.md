@@ -15,6 +15,24 @@ With REPENTOGON, the following xml attributes have changed functionality for reg
 |:--|:--|:--|
 | achievement | int or string | Ties the item/trinket to be unlocked by an achievement. For modded achievements use the corresponding `name` xml attribute value. |
 
+## Item stats
+
+With REPENTOGON, you can now add stats to modded items right in the XML; no lua required! These stat changes behave similarly to those of vanilla items, which was difficult to do using `MC_EVALUATE_CACHE`.
+
+Examples:
+- `tears="0.7"` will behave like Sad Onion
+- `flattears="0.5"` will behave like Pisces
+- `damage="1"` will behave like Pentagram
+- `flatdamage="2"` will behave like Curved Horn
+
+Supported attributes: `tears`, `flattears`, `tearsmult`, `damage`, `flatdamage`, `damagemult`, `shotspeed`, `speed`, `range`, `luck`
+
+You do not need to also add the `cache` attribute values corresponding to these stats - they are automatically applied by these attributes.
+
+Prepending "effect" to the attribute will assign the stat change to the corresponding [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) instead of the item itself (ie: `effecttears="0.7"`). This is useful for temporary/stacking effects and active items.
+
+Fully supported for items, trinkets, and null items.
+
 ## "Null" Items
 
 With REPENTOGON, you can now define custom "null" items. "Null" items are not typical items that can be spawned or visually seen in-game. They are typically used by the game to handle various costumes, buffs and effects (both temporary and persistent).
@@ -66,13 +84,13 @@ Example Code:
 ```lua
 local item = Isaac.GetItemConfig():GetCollectible(id)
 
--- Returns true if the entity has the tag string specified.
+-- Returns true if the item has the tag string specified.
 -- Capitalization does not matter.
 if item:HasCustomTag("yourcustomtag") then
   -- ...
 end
 
--- Returns a table containing all customtags specified for this entity.
+-- Returns a table containing all customtags specified for this item.
 -- Tags are provided in all lowercase.
 local customTags = item:GetCustomTags()
 ```
@@ -86,6 +104,7 @@ Repentogon itself adds some tags that can be used to apply certain features to i
 | reviveeffect | Same as "revive" but instead applies to the corresponding TemporaryEffect of the collectible or trinket. You may want to specify `persistent="true"` on the collectible/trinket to make its TemporaryEffect persist between rooms. There is no difference between "revive" and "reviveeffect" for null items. |
 | chancerevive | If the "revive" or "reviveeffect" tag is present, also displays a "?" next to the extra life count, like Guppy's Collar. |
 | hiddenrevive | If the "revive" or "reviveeffect" tag is present, this prevents it from being counted on the hud. Overrides "chancerevive". |
+| noexpansionpack | Prevents the active item (with 1 or 2 max charges) from being picked by Expansion Pack trinket. |
 
 Sample revive XML:
 ```xml
@@ -138,10 +157,6 @@ customcache="mycustomcache familiarmultiplier"
 
 Example Code:
 ```lua
--- Returns a table containing all customtags specified for this entity.
--- Tags are provided in all lowercase.
-local customTags = item:GetCustomCacheTags()
-
 -- Triggers evaluation for the customcache immediately.
 player:AddCustomCacheTag("mycustomcache", true)
 
@@ -160,6 +175,10 @@ local item = Isaac.GetItemConfig():GetCollectible(id)
 if item:HasCustomCacheTag("mycustomcache") then
   -- ...
 end
+
+-- Returns a table containing all customcache tags specified for this item.
+-- Tags are provided in all lowercase.
+local customCaches = item:GetCustomCacheTags()
 ```
 
 Repentogon itself adds some tags that can be used to apply certain features to items with minimal lua code:
@@ -170,6 +189,9 @@ Repentogon itself adds some tags that can be used to apply certain features to i
 | maxcoins | Triggers re-evaluation of the max coins for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max coins, the callback only runs for player 1. |
 | maxkeys | Triggers re-evaluation of the max keys for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max keys, the callback only runs for player 1. |
 | maxbombs | Triggers re-evaluation of the max bombs for all players, which can be modified using MC_EVALUATE_CUSTOM_CACHE for this tag. Note that since all players share max bombs, the callback only runs for player 1. |
+| healthtype | Triggers re-evaluation of the player's [HealthType](../enums/HealthType.md). |
+| tearscap | Triggers re-evaluation of the the player's maximum tears-per-second before flat modifiers and multipliers. Triggers a CACHE_FIREDELAY eval when changed. |
+| statmultiplier | Triggers re-evaluation of the the player's stats gained from items (the same one used for Cracked Crown and Tainted Bethany). Triggers standard cache evals for the relevant stats when changed. |
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/items.html). 

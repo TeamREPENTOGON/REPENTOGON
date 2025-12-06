@@ -902,6 +902,23 @@ LUA_FUNCTION(Lua_RenderCollectionItem)
 	return 0;
 }
 
+//Deprecated methods
+
+
+LUA_FUNCTION(Lua_IsaacClearBossHazards) {
+	if (g_Game == nullptr || g_Game->_room == nullptr) {
+		return luaL_error(L, "Must be in a room to use this!");
+	}
+	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);
+
+	Entity_NPC* entity = nullptr;
+	entity->ClearBossHazards(ignoreNPCs);
+	
+	g_Game->GetConsole()->Print("[WARN] Isaac.ClearBossHazards is deprecated. Use Room:ClearBossHazards instead", CONSOLE_COLOR_WARN, 0x96u);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -965,6 +982,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
+
+	//deprecated methods
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearBossHazards", Lua_IsaacClearBossHazards);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

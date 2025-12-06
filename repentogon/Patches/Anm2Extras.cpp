@@ -257,14 +257,14 @@ static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int fra
 		return;
 	}
 
-	LayerState& state = anm2._layerState[layer._layerID];
-	if (!state._visible)
+	int frameCount = layer._numFrames; // dont change the order of these checks, it prevents being Nicalis'd - Guantol
+	if (!(0 <= frameIndex && frameIndex < frameCount))
 	{
 		return;
 	}
 
-	int frameCount = layer._numFrames;
-	if (!(0 <= frameIndex && frameIndex < frameCount))
+	LayerState& state = anm2._layerState[layer._layerID];
+	if (!state._visible)
 	{
 		return;
 	}
@@ -293,7 +293,7 @@ static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int fra
 
 	BlendMode blendMode = ANM2Utils::GetFrameBlendMode(state);
 	ColorMod color = ANM2Utils::GetFrameColor(anm2, state, frame, flags);
-	SourceQuad sourceQuad = ANM2Utils::GetFrameSourceQuad(frame, state, topLeftClamp, bottomRightClamp, anm2);
+	SourceQuad sourceQuad = ANM2Utils::GetFrameSourceQuad(frame, state, topLeftClamp, bottomRightClamp, anm2, image);
 	DestinationQuad destQuad = ANM2Utils::GetFrameDestinationQuad(frame, position, state, topLeftClamp, bottomRightClamp, anm2);
 
 	KAGE_Graphics_Manager& manager = g_KAGE_Graphics_Manager;

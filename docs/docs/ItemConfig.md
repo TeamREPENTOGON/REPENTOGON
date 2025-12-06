@@ -19,3 +19,6 @@ ___
 Returns a table of [ItemConfig_Item](ItemConfig_Item.md) objects with the given tags
 
 ___
+### IsValidTrinket () {: aria-label='Functions' }
+#### boolean IsValidTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) TrinketType ) {: .copyable aria-label='Functions' }
+

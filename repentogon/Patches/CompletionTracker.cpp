@@ -82,8 +82,14 @@ void initreversenum() {
 }
 
 
+constexpr inline int GetOfflineMark(int mark) {
+	return mark & 0b11;
+};
 
 
+constexpr inline int SetOfflineMark(int mark,int setmark) {
+	return (mark & ~0b11) | (setmark & 0b11);
+};
 
 unordered_map<int, unordered_map<int, int>> MarksToEvents;
 unordered_map<int, int> EventsToPlayerType;
@@ -1026,8 +1032,9 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		for (int i = 0; i < 12; i++) {
 			if ((marks[actualmarks[i]] == 0) || PreMarksCallbackTrigger(actualmarks[i], playertype)) {
+				int curmark_state = PData->GetEventCounter(MarksToEvents[playertype][actualmarks[i]]);
 				PData->IncreaseEventCounter(MarksToEvents[playertype][actualmarks[i]], -PData->GetEventCounter(MarksToEvents[playertype][actualmarks[i]]));
-				PData->IncreaseEventCounter(MarksToEvents[playertype][actualmarks[i]], marks[actualmarks[i]]);
+				PData->IncreaseEventCounter(MarksToEvents[playertype][actualmarks[i]], SetOfflineMark(curmark_state,marks[actualmarks[i]]));
 				if (marks[actualmarks[i]] > 0) {
 					PostMarksCallbackTrigger(actualmarks[i], playertype);
 				}
@@ -1039,16 +1046,16 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 
 LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 {
-	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
+	if (!initializedrendercmpl) { lua_pushinteger(L, 2); return 0; }
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
-		lua_pushnumber(L, marks[completiontype]);
+		lua_pushinteger(L, marks[completiontype]);
 	}
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][completiontype]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][completiontype])));
 	}
 	return 1;
 }
@@ -1076,7 +1083,7 @@ LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 
 LUA_FUNCTION(Lua_IsaacFillCompletionMarks)
 {
-	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
+	if (!initializedrendercmpl) { lua_pushinteger(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1103,7 +1110,7 @@ LUA_FUNCTION(Lua_IsaacFillCompletionMarks)
 			}
 		}
 	}
-	lua_pushnumber(L, cmpldif);
+	lua_pushinteger(L, cmpldif);
 	return 1;
 }
 
@@ -1112,7 +1119,7 @@ array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,Completio
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
 LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 {
-	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
+	if (!initializedrendercmpl) { lua_pushinteger(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int group = (int)luaL_checkinteger(L, 2);
 	array g = tboth;
@@ -1139,14 +1146,14 @@ LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 			}
 		}
 	}
-	lua_pushnumber(L, cmpldif);
+	lua_pushinteger(L, cmpldif);
 	return 1;
 }
 
 
 LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 {
-	if (!initializedrendercmpl) { lua_pushnumber(L, 2); return 0; }
+	if (!initializedrendercmpl) { lua_pushinteger(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1169,7 +1176,7 @@ LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 			}
 		}
 	}
-	lua_pushnumber(L, cmpldif);
+	lua_pushinteger(L, cmpldif);
 	return 1;
 }
 
@@ -1179,7 +1186,7 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int value = (int)luaL_checkinteger(L, 3);
-	if ((value < 0) || (value > 2)) {
+	if (value < 0 || value > 2) {
 		return luaL_error(L, "Invalid Completion Marks value!(%d)", value);
 	}
 	if (playertype > 40) {
@@ -1198,8 +1205,9 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 	else {
 		if ((value == 0) || (PreMarksCallbackTrigger(completiontype, playertype))) {
 			PersistentGameData* PData = g_Manager->GetPersistentGameData();
+			int curmark_state=PData->GetEventCounter(MarksToEvents[playertype][completiontype]);
 			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], -PData->GetEventCounter(MarksToEvents[playertype][completiontype]));
-			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], value);
+			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], SetOfflineMark(curmark_state,value));
 			if (value > 0) {
 				RunTrackersForMark(completiontype, playertype);
 				PostMarksCallbackTrigger(completiontype, playertype);
@@ -1217,46 +1225,46 @@ LUA_FUNCTION(Lua_IsaacGetCharacterMarks)
 		array<int, 15> marks = GetMarksForPlayer(playertype);
 		lua_newtable(L);
 		lua_pushstring(L, "PlayerType");
-		lua_pushnumber(L, playertype);
+		lua_pushinteger(L, playertype);
 		lua_settable(L, -3);
 		lua_pushstring(L, "MomsHeart");
-		lua_pushnumber(L, marks[0]);
+		lua_pushinteger(L, marks[0]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Isaac");
-		lua_pushnumber(L, marks[1]);
+		lua_pushinteger(L, marks[1]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Satan");
-		lua_pushnumber(L, marks[2]);
+		lua_pushinteger(L, marks[2]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "BossRush");
-		lua_pushnumber(L, marks[3]);
+		lua_pushinteger(L, marks[3]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "BlueBaby");
-		lua_pushnumber(L, marks[4]);
+		lua_pushinteger(L, marks[4]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Lamb");
-		lua_pushnumber(L, marks[5]);
+		lua_pushinteger(L, marks[5]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "MegaSatan");
-		lua_pushnumber(L, marks[6]);
+		lua_pushinteger(L, marks[6]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "UltraGreed");
-		lua_pushnumber(L, marks[7]);
+		lua_pushinteger(L, marks[7]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Hush");
-		lua_pushnumber(L, marks[9]);
+		lua_pushinteger(L, marks[9]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "UltraGreedier");
-		lua_pushnumber(L, marks[11]);
+		lua_pushinteger(L, marks[11]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Delirium");
-		lua_pushnumber(L, marks[12]);
+		lua_pushinteger(L, marks[12]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Mother");
-		lua_pushnumber(L, marks[13]);
+		lua_pushinteger(L, marks[13]);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Beast");
-		lua_pushnumber(L, marks[14]);
+		lua_pushinteger(L, marks[14]);
 		lua_settable(L, -3);
 
 	}
@@ -1265,46 +1273,46 @@ LUA_FUNCTION(Lua_IsaacGetCharacterMarks)
 		array<int, 15> marks = GetMarksForPlayer(playertype);
 		lua_newtable(L);
 		lua_pushstring(L, "PlayerType");
-		lua_pushnumber(L, playertype);
+		lua_pushinteger(L, playertype);
 		lua_settable(L, -3);
 		lua_pushstring(L, "MomsHeart");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MOMS_HEART]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MOMS_HEART])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Isaac");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::ISAAC]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::ISAAC])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Satan");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::SATAN]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::SATAN])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "BossRush");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BOSS_RUSH]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BOSS_RUSH])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "BlueBaby");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BLUE_BABY]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BLUE_BABY])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Lamb");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::LAMB]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::LAMB])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "MegaSatan");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MEGA_SATAN]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MEGA_SATAN])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "UltraGreed");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::ULTRA_GREED]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::ULTRA_GREED])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Hush");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::HUSH]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::HUSH])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "UltraGreedier");
-		lua_pushnumber(L, 0);
+		lua_pushinteger(L, 0);
 		lua_settable(L, -3);
 		lua_pushstring(L, "Delirium");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::DELIRIUM]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::DELIRIUM])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Mother");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MOTHER]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::MOTHER])));
 		lua_settable(L, -3);
 		lua_pushstring(L, "Beast");
-		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BEAST]));
+		lua_pushinteger(L, GetOfflineMark(PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BEAST])));
 		lua_settable(L, -3);
 
 	}

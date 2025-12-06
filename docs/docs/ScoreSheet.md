@@ -25,12 +25,20 @@ ___
 #### void Calculate ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetBeastBonus () {: aria-label='Functions' }
+#### int GetBeastBonus ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBlueBabyBonus () {: aria-label='Functions' }
 #### int GetBlueBabyBonus ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDamagePenalty () {: aria-label='Functions' }
 #### int GetDamagePenalty ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetDeliriumBonus () {: aria-label='Functions' }
+#### int GetDeliriumBonus ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetExplorationBonus () {: aria-label='Functions' }
@@ -47,6 +55,10 @@ ___
 ___
 ### GetMegaSatanBonus () {: aria-label='Functions' }
 #### int GetMegaSatanBonus ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetMotherBonus () {: aria-label='Functions' }
+#### int GetMotherBonus ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRunEnding () {: aria-label='Functions' }

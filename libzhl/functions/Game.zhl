@@ -306,6 +306,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	int _lastLevelWithoutHalfHp : 0x25f38;
 	uint32_t _difficulty : 0x25f40;
 	int _lastLevelWithDamage : 0x25f44;
+	bool _isStartingFromState : 0x25f61;
 	bool _isStoringGlowingHourglassState : 0x25f62;
 	bool _isRestoringGlowingHourglassState : 0x25f63;
 	GlowingHourglassState _glowingHourglassStates[2] : 0x25f64;
