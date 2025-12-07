@@ -1047,9 +1047,12 @@ Accepts no return parameters.
 ### MC_POST_GRID_ROCK_DESTROY {: .copyable }
 Accepts no return parameters.
 
+???+ note
+	`Source` can be `nil` if [GridEntity:Destroy](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html#destroy) is called instead of [GridEntity:DestroyWithSource](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html#destroywithsource).
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1011 |MC_POST_GRID_ROCK_DESTROY {: .copyable } | ([GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock, <br>[GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, <br>boolean Immediate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1011 |MC_POST_GRID_ROCK_DESTROY {: .copyable } | ([GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock, <br>[GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, <br>boolean Immediate, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_HUD_RENDER {: .copyable }
 Accepts no return parameters.
@@ -2176,7 +2179,7 @@ Called before a ghost pickup of the loot content is applied to the pickup. Retur
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1334 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1334 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, boolea ShouldAdvance) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_POST_PLAYER_ADD_EFFECT {: .copyable }
 Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is added to a player.
@@ -2775,6 +2778,13 @@ Called after a player drops a pill onto the ground from their inventory.
 |:--|:--|:--|:--|:--|
 |1361 |MC_POST_PLAYER_DROP_PILL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityPickup](../EntityPickup.md) Pickup, [PillCardSlot](PillCardSlot.md) Slot) | [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) | void |
 
+### MC_POST_PLAYER_DROP_TRINKET {: .copyable }
+Called after a player drops a trinket onto the ground from their inventory.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1144 |MC_POST_PLAYER_DROP_TRINKET {: .copyable } | ([TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html), [Vector](../Vector.md) DropPos, [EntityPlayer](../EntityPlayer.md) Player, boolean IsGoldenTrinket, boolean ReplaceTick) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+
 ### MC_PRE_PLAYER_GIVE_BIRTH_CAMBION {: .copyable }
 Called before Cambion Conception spawns a familiar after the player takes damage.
 
@@ -2859,12 +2869,12 @@ Fires before a chest is opened. Return false to prevent it from opening.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1491 |MC_PRE_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html)) | boolean |
+|1491 |MC_PRE_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_POST_OPEN_CHEST {: .copyable }
 Fires after a chest opened.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1492 |MC_POST_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html)) | void |
+|1492 |MC_POST_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
 
