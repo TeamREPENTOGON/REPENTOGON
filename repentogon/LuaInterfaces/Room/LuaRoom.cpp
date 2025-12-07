@@ -424,7 +424,7 @@ LUA_FUNCTION(Lua_RoomSetItemPool) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	const int poolType = (int)luaL_checkinteger(L, 2);
 
-	if (poolType < POOL_NULL || (uint32_t)poolType >= ItemPoolManager::GetNumItemPools()) {
+	if (poolType < POOL_NULL || poolType >= (int)ItemPoolManager::GetNumItemPools()) {
 		return luaL_argerror(L, 2, "Invalid ItemPoolType");
 	}
 
