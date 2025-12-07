@@ -75,7 +75,10 @@ public:
 	static ItemPool* GetItemPool(uint32_t id) noexcept;
 	static RNG& GetRNG() noexcept { return Get().m_RNG; }
 	static const std::vector<std::unique_ptr<ItemPool>>& GetItemPools() noexcept { return Get().m_ItemPools; }
-	static size_t GetNumItemPools() noexcept { return Get().m_ItemPools.size(); }
+	/* not marked as noexcept as it causes a crash in some lua functions when erroring
+	   due to a weird noexcept + longjmp interactions when the function is inlined
+	*/
+	static size_t GetNumItemPools() { return Get().m_ItemPools.size(); }
 	static int GetPoolIdByName(const std::string& name) noexcept;
 
 private:
