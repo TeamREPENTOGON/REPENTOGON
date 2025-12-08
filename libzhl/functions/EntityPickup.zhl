@@ -86,9 +86,9 @@ struct Entity_Pickup depends (ANM2, KAGE_SmartPointer_EntitySaveState) : public 
 	inline int* GetDropDelay() { return &this->_dropDelay; }
 	inline int* GetVarData() { return &this->_varData; }
 
-	static inline bool ShouldIgnoreModifiers() noexcept { return s_EntityPickup_IgnoreModifiers != 0; }
-	static inline void BeginIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers++; }
-	static inline void EndIgnoreModifiers() noexcept { s_EntityPickup_IgnoreModifiers--; }
+	static inline bool ShouldIgnoreModifiers() { return s_EntityPickup_IgnoreModifiers != 0; }
+	static inline void BeginIgnoreModifiers() { s_EntityPickup_IgnoreModifiers++; }
+	static inline void EndIgnoreModifiers() { s_EntityPickup_IgnoreModifiers--; }
 	
 	void LIBZHL_API Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollectibleGraphics);
 }} 

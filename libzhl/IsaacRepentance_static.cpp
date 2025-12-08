@@ -646,7 +646,7 @@ void Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollect
 	return;
 }
 
-void DestinationQuad::RotateRadians(const Vector& pivot, float radians) noexcept
+void DestinationQuad::RotateRadians(const Vector& pivot, float radians)
 {
 	if (radians == 0.0)
 	{

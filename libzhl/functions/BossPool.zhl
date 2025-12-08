@@ -8,7 +8,7 @@ struct BossPool depends (BossPool_Pool) {
 } : 0x8cc;
 
 {{
-	inline bool BossPool::WasBossRemoved(uint32_t bossId) noexcept
+	inline bool BossPool::WasBossRemoved(uint32_t bossId)
 	{
 		return _removedBosses[bossId] || _levelBlacklist[bossId];
 	}

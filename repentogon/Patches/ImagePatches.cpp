@@ -27,7 +27,7 @@
  *  invalidating the last batch.
 */
 
-static void patch_invalidate_last_transparent_render_batch() noexcept
+static void patch_invalidate_last_transparent_render_batch()
 {
     ASMPatch patch;
 
@@ -68,7 +68,7 @@ static void patch_invalidate_last_transparent_render_batch() noexcept
  *  It is also safe for us to act as if the vector was empty, as the code path does not make assumption based on this fact.
 */
 
-static bool __stdcall try_find_reusable_transparent_batch(KAGE_Graphics_ImageBase& image) noexcept
+static bool __stdcall try_find_reusable_transparent_batch(KAGE_Graphics_ImageBase& image)
 {
     uint16_t vertexStride = image._vertexFormatStride;
     std::vector<KAGE_Graphics_RenderBatch*>& batches = image._reusableTransparentRenderBatches;
@@ -86,7 +86,7 @@ static bool __stdcall try_find_reusable_transparent_batch(KAGE_Graphics_ImageBas
     return false;
 }
 
-static void patch_try_find_reusable_transparent_batch() noexcept
+static void patch_try_find_reusable_transparent_batch()
 {
     constexpr size_t JE_REL32_LENGTH = 6;
     constexpr size_t REUSABLE_TRANSPARENT_BATCHES_OFFSET = offsetof(KAGE_Graphics_ImageBase, _reusableTransparentRenderBatches);
@@ -116,7 +116,7 @@ static void patch_try_find_reusable_transparent_batch() noexcept
 
 #pragma endregion
 
-void ImagePatches::ApplyPatches() noexcept
+void ImagePatches::ApplyPatches()
 {
     patch_invalidate_last_transparent_render_batch();
     patch_try_find_reusable_transparent_batch();

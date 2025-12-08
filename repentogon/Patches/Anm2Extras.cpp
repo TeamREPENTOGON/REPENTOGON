@@ -250,7 +250,7 @@ static KAGE_Graphics_Shader* get_color_offset_shader(LayerState* layerState, con
 	return __ptr_g_AllShaders[champion ? SHADER_COLOR_OFFSET_CHAMPION : SHADER_COLOR_OFFSET];
 }
 
-static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int frameIndex, const Vector& topLeftClamp, const Vector& bottomRightClamp, ANM2& anm2) noexcept
+static void RenderFrameEx(AnimationLayer& layer, const Vector& position, int frameIndex, const Vector& topLeftClamp, const Vector& bottomRightClamp, ANM2& anm2)
 {
 	if (!layer._visible)
 	{

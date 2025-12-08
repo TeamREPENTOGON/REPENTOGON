@@ -2,7 +2,7 @@
 
 #include "ShaderUtils.h"
 
-inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor) noexcept
+inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor)
 {
     size_t i = 0;
     unsigned int format = descriptor[i].format;
@@ -16,7 +16,7 @@ inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_Vertex
     return i;
 }
 
-inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes) noexcept
+inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     uint32_t stride = 0;
 
@@ -28,12 +28,12 @@ inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_ImageBase_VertexAttribu
     return stride;
 }
 
-inline uint32_t ShaderUtils::GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes) noexcept
+inline uint32_t ShaderUtils::GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     return GetVertexSize(descriptor, numAttributes) * sizeof(float);
 }
 
-inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor, size_t numAttributes) noexcept
+inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor, size_t numAttributes)
 {
     for (size_t i = 0; i < numAttributes; i++)
     {
@@ -41,7 +41,7 @@ inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_
     }
 }
 
-inline void ShaderUtils::ColorOffset::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod) noexcept
+inline void ShaderUtils::ColorOffset::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod)
 {
     assert(vertexBuffer != nullptr);
 
@@ -81,7 +81,7 @@ inline void ShaderUtils::ColorOffset::FillVertices(float* vertexBuffer, KAGE_Gra
     }
 }
 
-inline void ShaderUtils::ColorOffsetChampion::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod, const ColorMod& championColor) noexcept
+inline void ShaderUtils::ColorOffsetChampion::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod, const ColorMod& championColor)
 {
     assert(vertexBuffer != nullptr);
 

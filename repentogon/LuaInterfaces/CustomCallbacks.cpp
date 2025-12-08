@@ -2958,14 +2958,14 @@ HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleI
 }
 
 // __fastcall to simulate __thiscall
-static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, uint32_t collectibleID) noexcept
+static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, uint32_t collectibleID)
 {
 	s_TriggerCollectibleRemovedContext.reset();
 	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM, removeFromPlayerForm);
 	player.TriggerCollectibleRemoved(collectibleID);
 }
 
-static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved() noexcept
+static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved()
 {
 	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RemoveCollectible_TriggerCollectibleRemoved);
 	ZHL::Log("[REPENTOGON] Patching Entity_Player::RemoveCollectible for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
@@ -2984,14 +2984,14 @@ static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved() noexcept
 }
 
 // __fastcall to simulate __thiscall
-static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, uint32_t collectibleID) noexcept
+static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, uint32_t collectibleID)
 {
 	s_TriggerCollectibleRemovedContext.reset();
 	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_WISP, true);
 	player.TriggerCollectibleRemoved(collectibleID);
 }
 
-static void Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved() noexcept
+static void Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved()
 {
 	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RecomputeWispCollectibles_TriggerCollectibleRemoved);
 	ZHL::Log("[REPENTOGON] Patching Entity_Player::RecomputeWispCollectibles for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
@@ -5769,7 +5769,7 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 	return retTrinket;
 }
 
-void CustomCallbacks::ApplyPatches() noexcept
+void CustomCallbacks::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();

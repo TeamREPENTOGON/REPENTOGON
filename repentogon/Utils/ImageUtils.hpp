@@ -14,14 +14,14 @@ namespace ImageUtils
     }
 }
 
-inline ImageUtils::ShaderRenderData::ShaderRenderData(const KAGE_Graphics_Shader& shader) noexcept
+inline ImageUtils::ShaderRenderData::ShaderRenderData(const KAGE_Graphics_Shader& shader)
     : imageVertexDescriptor(std::make_unique<uint8_t[]>(shader._shaderBase._numVertexAttributes)),
     vertexStride(ShaderUtils::GetVertexStride(shader._shaderBase._vertexAttributes, shader._shaderBase._numVertexAttributes))
 {
     ShaderUtils::ToImageVertexDescriptor(this->imageVertexDescriptor.get(), shader._shaderBase._vertexAttributes, shader._shaderBase._numVertexAttributes);
 }
 
-inline float* ImageUtils::SubmitQuadForShader(KAGE_Graphics_ImageBase &image, KAGE_Graphics_Shader& shader, const ImageUtils::ShaderRenderData& shaderData, const SourceQuad& sourceQuad, const DestinationQuad& destinationQuad, const ImageUtils::QuadColor& color) noexcept
+inline float* ImageUtils::SubmitQuadForShader(KAGE_Graphics_ImageBase &image, KAGE_Graphics_Shader& shader, const ImageUtils::ShaderRenderData& shaderData, const SourceQuad& sourceQuad, const DestinationQuad& destinationQuad, const ImageUtils::QuadColor& color)
 {
     KAGE_Graphics_Manager& manager = g_KAGE_Graphics_Manager;
 

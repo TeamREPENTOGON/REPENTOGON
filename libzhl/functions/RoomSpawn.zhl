@@ -8,7 +8,7 @@ struct RoomSpawn depends (RoomEntry)
 
     {{
     private:
-        void copy(const RoomSpawn& other) noexcept
+        void copy(const RoomSpawn& other)
         {
             assert(this != &other);
 
@@ -29,7 +29,7 @@ struct RoomSpawn depends (RoomEntry)
             }
         }
 
-        void move(RoomSpawn&& other) noexcept
+        void move(RoomSpawn&& other)
         {
             assert(this != &other);
 
@@ -61,17 +61,17 @@ struct RoomSpawn depends (RoomEntry)
             SumWeights = 0.0f;
         }
 
-        RoomSpawn(const RoomSpawn& other) noexcept
+        RoomSpawn(const RoomSpawn& other)
         {
             this->copy(other);
         }
 
-        RoomSpawn(RoomSpawn&& other) noexcept
+        RoomSpawn(RoomSpawn&& other)
         {
             this->move(std::move(other));
         }
 
-        RoomSpawn& operator=(const RoomSpawn& other) noexcept
+        RoomSpawn& operator=(const RoomSpawn& other)
         {
             if (this != &other)
             {
@@ -82,7 +82,7 @@ struct RoomSpawn depends (RoomEntry)
             return *this;
         }
 
-        RoomSpawn& operator=(RoomSpawn&& other) noexcept
+        RoomSpawn& operator=(RoomSpawn&& other)
         {
             if (this != &other)
             {
