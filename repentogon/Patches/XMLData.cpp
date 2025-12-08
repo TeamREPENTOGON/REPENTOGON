@@ -2793,15 +2793,14 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };
 	if (Node.empty() || (Node["type"].length() == 0)) {
 		lua_pushnil(L);
-		return 0;
 	}
 	else{
 		if (Node.end() != Node.begin()) {
 			Childs = XMLStuff.EntityData->childs[idx];
 		}
-	Lua_PushXMLNode(L, Node, Childs);
-	return 1;
+		Lua_PushXMLNode(L, Node, Childs);
 	}
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
@@ -2811,15 +2810,15 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 	int evar = (int)luaL_optnumber(L ,2 ,0);
 	int esub = (int)luaL_optnumber(L, 3, 0);
 	tuple idx = { etype,evar };
-		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
-			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-			if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
-				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
-				return 1;
-			}
+	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
+		vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
+		if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
+			Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
+			return 1;
 		}
-			lua_pushnil(L);
-			return 0;
+	}
+	lua_pushnil(L);
+	return 1;
 	
 }
 
@@ -2892,10 +2891,8 @@ LUA_FUNCTION(Lua_GetFromEntity)
 		}
 		else { Childs = XMLChilds(); }
 	}
-	if (Lua_PushXMLNode(L, Node, Childs)) {
-		return 1;
-	}
-	else { return 0; }
+	Lua_PushXMLNode(L, Node, Childs);
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetModByIdXML)
@@ -2903,10 +2900,11 @@ LUA_FUNCTION(Lua_GetModByIdXML)
 	string id = luaL_checkstring(L, 1);
 	if (XMLStuff.ModData->byid.find(id) != XMLStuff.ModData->byid.end()) {
 		Lua_PushXMLNode(L, XMLStuff.ModData->nodes[XMLStuff.ModData->byid[id]], XMLChilds());
-		return 1;
 	}
-	lua_pushnil(L);
-	return 0;
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 
@@ -2926,14 +2924,11 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 			else { Childs = XMLChilds(); }
 			daddychild = tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
-	else {
-
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsById(id);
 	}
-	if (Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild))) {
-		return 1;
-	}
-	else { return 0; }
+	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetEntryByNameXML)
@@ -2946,7 +2941,7 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByName(entityname);
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByName(entityname);
 	}
 	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
@@ -2963,7 +2958,7 @@ LUA_FUNCTION(Lua_GetEntryByOrderXML)
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByOrder(order);
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByOrder(order);
 	}
 	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
@@ -2981,8 +2976,11 @@ LUA_FUNCTION(Lua_GetNumEntries)
 	if (nodetype == 1) {
 		lua_pushinteger(L, XMLStuff.EntityData->nodes.size());
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		lua_pushinteger(L, xmlnodetypetodata[nodetype]->nodes.size());
+	}
+	else {
+		lua_pushinteger(L, 0);
 	}
 	return 1;
 }
