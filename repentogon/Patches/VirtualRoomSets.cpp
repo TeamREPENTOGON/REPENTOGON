@@ -2,7 +2,7 @@
 
 #include "../RoomConfigUtility.h"
 #include "HookSystem.h"
-#include "GameStateManagerment.h"
+#include "GameStateManagement.h"
 #include "writer.h" // rapidjson
 #include "stringbuffer.h" // rapidjson
 #include <map>

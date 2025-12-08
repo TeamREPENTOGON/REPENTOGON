@@ -1,4 +1,4 @@
-#include "GameStateManagerment.h"
+#include "GameStateManagement.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "Log.h"

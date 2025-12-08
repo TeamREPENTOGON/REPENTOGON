@@ -1,3 +1,5 @@
+#pragma once
+
 namespace ItemSpoofSystem
 {
     void StartLuaRequest() noexcept;

@@ -7,7 +7,7 @@
 #include "../MiscFunctions.h"
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
-#include "GameStateManagerment.h"
+#include "GameStateManagement.h"
 
 #include "rapidxml.hpp"
 #include "writer.h" // rapidjson
