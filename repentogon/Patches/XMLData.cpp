@@ -2241,7 +2241,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.NullCostumeData->byfilepathmulti.tab[currpath].push_back(idnull);
 				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
 				XMLStuff.NullCostumeData->nodes[idnull] = costume;
-				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = id;
+				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = idnull;
 				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
 			
 			}
