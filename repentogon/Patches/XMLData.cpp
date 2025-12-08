@@ -157,6 +157,13 @@ vector <XMLDataHolder*> xmlnodetypetodata = {
 };
 
 
+std::string GetXMLDataLastModId() {
+	if (lastmodid) {
+		return lastmodid;
+	}
+	return "BaseGame";
+}
+
 void ClearXMLData() {
 	XMLStuff.PlayerData->Clear();
 	XMLStuff.ItemData->Clear();
