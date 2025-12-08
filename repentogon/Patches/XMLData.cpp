@@ -338,21 +338,17 @@ ModEntry* GetModEntryByDir(const string &Dir) {
 }
 
 ModEntry* GetModEntryByContentPath(const string &path) {
-	if ((path.find("/content/") != string::npos) && (path.find("/mods/") != string::npos)) {
-		std::regex regex("/mods/(.*?)/content/");
-		std::smatch match;
-		if (std::regex_search(path, match, regex)) {
-			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
-				return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
-			}
-		}
+	if (path.find("/mods/") == string::npos) {
+		return NULL;
 	}
-	else if ((path.find("/content-dlc3/") != string::npos) && (path.find("/mods/") != string::npos)) {
-		std::regex regex("/mods/(.*?)/content-dlc3/");
-		std::smatch match;
-		if (std::regex_search(path, match, regex)) {
-			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
-				return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
+	for (const std::string& contentfolder : std::vector<std::string>({ "/content-repentogon/", "/content-dlc3/", "/content/" })) {
+		if (path.find(contentfolder) != string::npos) {
+			std::regex regex("/mods/(.*?)" + contentfolder);
+			std::smatch match;
+			if (std::regex_search(path, match, regex)) {
+				if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
+					return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
+				}
 			}
 		}
 	}
@@ -3368,6 +3364,15 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = string(&g_ModsDirectory) + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
+
+			string rgoncontentsdir = dir + "\\content-repentogon\\" + filename;
+			string dlc3contentsdir = dir + "\\content-dlc3\\" + filename;
+			if (std::filesystem::exists(rgoncontentsdir)) {
+				contentsdir = rgoncontentsdir;
+			} else if (std::filesystem::exists(dlc3contentsdir)) {
+				contentsdir = dlc3contentsdir;
+			}
+
 			// Skip this mod if it does not even have the corresponding XML, to save time and memory during startup.
 			// However, DON'T skip if we are in the middle of hijacking a cutscenes XML reload as part of the custom cutscenes support,
 			// since that messes things up and causes all cutscenes to become the intro cutscene.
