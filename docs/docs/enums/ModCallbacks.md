@@ -1777,6 +1777,24 @@ Return `false` to stop the player from using a bomb.
 |:--|:--|:--|:--|:--|
 |1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityBomb](../EntityBomb.md) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
 
+### MC_POST_BOMB_DAMAGE {: .copyable }
+Called after [Game():BombDamage()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombdamage) is called, used by the game to damage entities within a radius for explosions and similar effects.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1275 |MC_POST_BOMB_DAMAGE {: .copyable } | (Vector Position, float Damage, float Radius, bool LineCheck, [Entity](../Entity.md) Source, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, bool DamageSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_POST_BOMB_TEARFLAG_EFFECTS {: .copyable }
+Called after [Game():BombTearflagEffects()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombtearflageffects) is called, used by the game when [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html)-based effects are triggered from an explosion.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1276 |MC_POST_BOMB_TEARFLAG_EFFECTS {: .copyable } | (Vector Position, float Radius, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float RadiusMult) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
 ### MC_POST_PROJECTILE_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
