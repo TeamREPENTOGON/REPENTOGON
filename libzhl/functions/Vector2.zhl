@@ -60,7 +60,7 @@ struct Vector { {{
 		return *this;
 	}
 
-	friend void swap(Vector& a, Vector& b) noexcept
+	friend void swap(Vector& a, Vector& b)
 	{
 		std::swap(a.x, b.x);
 		std::swap(a.y, b.y);

@@ -35,9 +35,10 @@ Returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/Collect
 
 ___
 ### GetLootList () {: aria-label='Functions' }
-#### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
+#### [LootList](LootList.md) GetLootList ( boolean shouldAdvance = false ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
 
+`shouldAdvance` determines if the loot RNG should advance or not.
 ___
 ### GetMegaChestLeftCollectible () {: aria-label='Functions' }
 #### [EntityPickup](EntityPickup.md) GetMegaChestLeftCollectible ( ) {: .copyable aria-label='Functions' }

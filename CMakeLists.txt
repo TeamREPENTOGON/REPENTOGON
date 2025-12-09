@@ -78,6 +78,7 @@ LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURC
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
+target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
@@ -162,6 +163,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_options(zhlREPENTOGON PRIVATE "/EHs")
 target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
 
 # Delirium
@@ -175,6 +177,7 @@ endforeach()
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
 target_compile_options(zhlDelirium PUBLIC "/MD")
+target_compile_options(zhlDelirium PRIVATE "/EHs")
 
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources")
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources-repentogon")

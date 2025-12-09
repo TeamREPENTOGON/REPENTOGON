@@ -84,6 +84,10 @@ inline string stringlower(const char* str)
 	return s;
 }
 
+// Returns the ID string of the current mod being processed, or "BaseGame" for vanilla XMLs.
+// Only relevant at times where XMLs are actually being loaded by the game.
+std::string GetXMLDataLastModId();
+
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;

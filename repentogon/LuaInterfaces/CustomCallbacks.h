@@ -1,4 +1,6 @@
+#pragma once
+
 namespace CustomCallbacks
 {
-    void ApplyPatches() noexcept;
+    void ApplyPatches();
 }

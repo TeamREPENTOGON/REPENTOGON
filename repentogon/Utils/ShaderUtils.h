@@ -5,16 +5,16 @@
 namespace ShaderUtils
 {
     // size is expressed in number of floats
-    constexpr size_t GetFormatSize(uint32_t format) noexcept;
-    constexpr size_t GetFormatStride(uint32_t format) noexcept;
-    size_t GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor) noexcept;
+    constexpr size_t GetFormatSize(uint32_t format);
+    constexpr size_t GetFormatStride(uint32_t format);
+    size_t GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor);
     // size is expressed in number of floats
-    uint32_t GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes) noexcept;
-    uint32_t GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes) noexcept;
-    void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes) noexcept;
+    uint32_t GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    uint32_t GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
 }
 
-inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format) noexcept
+inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format)
 {
     switch (format)
     {
@@ -35,7 +35,7 @@ inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format) noexcept
     }
 }
 
-inline constexpr size_t ShaderUtils::GetFormatStride(uint32_t format) noexcept
+inline constexpr size_t ShaderUtils::GetFormatStride(uint32_t format)
 {
     return ShaderUtils::GetFormatSize(format) * sizeof(float);
 }
@@ -55,7 +55,7 @@ namespace ShaderUtils
         constexpr size_t VERTEX_SIZE = CLIP_PANE_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::VEC_3);
         constexpr size_t VERTEX_STRIDE = VERTEX_SIZE * sizeof(float);
 
-        void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod) noexcept;
+        void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod);
     }
 
     namespace ColorOffsetChampion
@@ -72,6 +72,6 @@ namespace ShaderUtils
         constexpr size_t VERTEX_SIZE = CHAMPION_COLOR_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::VEC_4);
         constexpr size_t VERTEX_STRIDE = VERTEX_SIZE * sizeof(float);
 
-        void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod, const ColorMod& championColor) noexcept;
+        void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod, const ColorMod& championColor);
     }
 }

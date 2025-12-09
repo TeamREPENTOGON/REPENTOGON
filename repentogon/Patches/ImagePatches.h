@@ -2,5 +2,5 @@
 
 namespace ImagePatches
 {
-    void ApplyPatches() noexcept;
+    void ApplyPatches();
 }

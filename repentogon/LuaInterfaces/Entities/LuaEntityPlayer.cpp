@@ -2217,7 +2217,7 @@ int ValidatePool(lua_State* L, unsigned int pos)
 	return ret;
 }
 
-static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pickup, int pool, RNG* rng) noexcept
+static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pickup, int pool, RNG* rng)
 {
 	rng = rng ? rng : &pickup._dropRNG;
 	player.SalvageCollectible(pickup.GetPosition(), pickup._subtype, rng->Next(), pool);
@@ -2227,7 +2227,7 @@ static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pic
 	pickup._timeout = 2;
 }
 
-static void salvage_collectible(Entity_Player& player, int subType, int pool, Vector* position, RNG* rng) noexcept
+static void salvage_collectible(Entity_Player& player, int subType, int pool, Vector* position, RNG* rng)
 {
 	position = position ? position : player.GetPosition();
 	rng = rng ? rng : &player._dropRNG;
