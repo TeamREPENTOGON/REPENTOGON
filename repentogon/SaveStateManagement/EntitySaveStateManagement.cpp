@@ -53,7 +53,7 @@ namespace {
 };
 
 #if DEBUG_MSG
-    static void LogDebug(const char* format, ...) noexcept
+    static void LogDebug(const char* format, ...)
     {
         va_list args;
         va_start(args, format);
@@ -63,7 +63,7 @@ namespace {
         KAGE::_LogMessage(0, message.c_str());
     }
 #else
-    static void LogDebug(const char* format, ...) noexcept {};
+    static void LogDebug(const char* format, ...) {};
 #endif
 
 #define ESSM EntitySaveStateManagement
@@ -341,7 +341,7 @@ namespace ESSM::EntityIterators
 
 namespace ESSM::IdManager
 {
-    static uint32_t NewId() noexcept
+    static uint32_t NewId()
     {
         if (s_systemData.reusableIds.size() > 0)
         {
@@ -358,7 +358,7 @@ namespace ESSM::IdManager
         return id;
     }
 
-    static void ClearId(uint32_t id) noexcept
+    static void ClearId(uint32_t id)
     {
         s_systemData.reusableIds.push_back(id);
         LogDebug("[ESSM] Cleared ID: %u\n", id);
@@ -382,7 +382,7 @@ namespace ESSM::EntityHijackManager
     }
 
     // only used if unable to get a HijackedState
-    static void DefaultRestore(EntitySaveState& data) noexcept
+    static void DefaultRestore(EntitySaveState& data)
     {
         data.gridSpawnIdx = (short)-1;
         data._intStorage7 = 0;
@@ -398,52 +398,52 @@ namespace ESSM::EntityHijackManager
         return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
     }
 
-    static bool IsHijacked(const EntitySaveState& data) noexcept
+    static bool IsHijacked(const EntitySaveState& data)
     {
         return get_marker_value(data) == HIJACK_MARKER;
     }
     
-    static bool IsWritten(const EntitySaveState& data) noexcept
+    static bool IsWritten(const EntitySaveState& data)
     {
         return get_marker_value(data) == WRITTEN_MARKER;
     }
     
-    static bool IsRead(const EntitySaveState& data) noexcept
+    static bool IsRead(const EntitySaveState& data)
     {
         return get_marker_value(data) == READ_MARKER;
     }
     
-    static bool HasMarker(const EntitySaveState& data) noexcept
+    static bool HasMarker(const EntitySaveState& data)
     {
         return IsHijacked(data) || IsWritten(data) || IsRead(data);
     }
 
-    static void SetHijacked(EntitySaveState& data) noexcept
+    static void SetHijacked(EntitySaveState& data)
     {
         get_marker_value(data) = HIJACK_MARKER;
     }
     
-    static void SetWritten(EntitySaveState& data) noexcept
+    static void SetWritten(EntitySaveState& data)
     {
         get_marker_value(data) = WRITTEN_MARKER;
     }
     
-    static void SetRead(EntitySaveState& data) noexcept
+    static void SetRead(EntitySaveState& data)
     {
         get_marker_value(data) = READ_MARKER;
     }
     
-    static uint32_t GetId(const EntitySaveState& data) noexcept
+    static uint32_t GetId(const EntitySaveState& data)
     {
         return get_id_value(data);
     }
     
-    static void SetId(EntitySaveState& data, uint32_t id) noexcept
+    static void SetId(EntitySaveState& data, uint32_t id)
     {
         get_id_value(data) = id;
     }
     
-    static void Hijack(EntitySaveState& data, uint32_t id) noexcept
+    static void Hijack(EntitySaveState& data, uint32_t id)
     {
         HijackedState& hijackedState = s_systemData.hijackedStates[id];
         hijackedState.marker = get_marker_value(data);
@@ -452,7 +452,7 @@ namespace ESSM::EntityHijackManager
         SetId(data, id);
     }
     
-    static uint32_t NewHijack(EntitySaveState& data) noexcept
+    static uint32_t NewHijack(EntitySaveState& data)
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
@@ -461,13 +461,13 @@ namespace ESSM::EntityHijackManager
         return id;
     }
 
-    static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState) noexcept
+    static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState)
     {
         get_marker_value(data) = hijackedState.marker;
         get_id_value(data) = hijackedState.id;
     }
     
-    static uint32_t UnHijack(EntitySaveState& data) noexcept
+    static uint32_t UnHijack(EntitySaveState& data)
     {
         assert(IsHijacked(data));
         uint32_t id = GetId(data);
@@ -494,7 +494,7 @@ namespace ESSM::PlayerHijackManager
     }
 
     // only used if unable to get a HijackedState
-    static void DefaultRestore(GameStatePlayer& data) noexcept
+    static void DefaultRestore(GameStatePlayer& data)
     {
         data._immaculateConceptionState = 0;
         data._cambionConceptionState = 0;
@@ -510,62 +510,62 @@ namespace ESSM::PlayerHijackManager
         return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
     }
 
-    static bool IsHijacked(const GameStatePlayer& data) noexcept
+    static bool IsHijacked(const GameStatePlayer& data)
     {
         return get_marker_value(data) == HIJACK_MARKER;
     }
     
-    static bool IsWritten(const GameStatePlayer& data) noexcept
+    static bool IsWritten(const GameStatePlayer& data)
     {
         return get_marker_value(data) == WRITTEN_MARKER;
     }
     
-    static bool IsRead(const GameStatePlayer& data) noexcept
+    static bool IsRead(const GameStatePlayer& data)
     {
         return get_marker_value(data) == READ_MARKER;
     }
 
-    static bool IsCleared(const GameStatePlayer& data) noexcept
+    static bool IsCleared(const GameStatePlayer& data)
     {
         return get_marker_value(data) == CLEARED_MARKER;
     }
     
-    static bool HasMarker(const GameStatePlayer& data) noexcept
+    static bool HasMarker(const GameStatePlayer& data)
     {
         return IsHijacked(data) || IsWritten(data) || IsRead(data) || IsCleared(data);
     }
 
-    static void SetHijacked(GameStatePlayer& data) noexcept
+    static void SetHijacked(GameStatePlayer& data)
     {
         get_marker_value(data) = HIJACK_MARKER;
     }
     
-    static void SetWritten(GameStatePlayer& data) noexcept
+    static void SetWritten(GameStatePlayer& data)
     {
         get_marker_value(data) = WRITTEN_MARKER;
     }
     
-    static void SetRead(GameStatePlayer& data) noexcept
+    static void SetRead(GameStatePlayer& data)
     {
         get_marker_value(data) = READ_MARKER;
     }
 
-    static void SetCleared(GameStatePlayer& data) noexcept
+    static void SetCleared(GameStatePlayer& data)
     {
         get_marker_value(data) = CLEARED_MARKER;
     }
     
-    static uint32_t GetId(const GameStatePlayer& data) noexcept
+    static uint32_t GetId(const GameStatePlayer& data)
     {
         return get_id_value(data);
     }
     
-    static void SetId(GameStatePlayer& data, uint32_t id) noexcept
+    static void SetId(GameStatePlayer& data, uint32_t id)
     {
         get_id_value(data) = id;
     }
     
-    static void Hijack(GameStatePlayer& data, uint32_t id) noexcept
+    static void Hijack(GameStatePlayer& data, uint32_t id)
     {
         HijackedState& hijackedState = s_systemData.hijackedStates[id];
         hijackedState.marker = get_marker_value(data);
@@ -574,7 +574,7 @@ namespace ESSM::PlayerHijackManager
         SetId(data, id);
     }
     
-    static uint32_t NewHijack(GameStatePlayer& data) noexcept
+    static uint32_t NewHijack(GameStatePlayer& data)
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
@@ -583,13 +583,13 @@ namespace ESSM::PlayerHijackManager
         return id;
     }
 
-    static void RestoreHijack(GameStatePlayer& data, HijackedState& hijackedState) noexcept
+    static void RestoreHijack(GameStatePlayer& data, HijackedState& hijackedState)
     {
         get_marker_value(data) = hijackedState.marker;
         get_id_value(data) = hijackedState.id;
     }
     
-    static uint32_t UnHijack(GameStatePlayer& data) noexcept
+    static uint32_t UnHijack(GameStatePlayer& data)
     {
         assert(IsHijacked(data));
         uint32_t id = GetId(data);
@@ -615,7 +615,7 @@ namespace ESSM::FamiliarHijackManager
     }
 
     // only used if unable to get a HijackedState
-    static void DefaultRestore(FamiliarData& data) noexcept
+    static void DefaultRestore(FamiliarData& data)
     {
         data._state = 0;
         data._roomClearCount = 0;
@@ -631,52 +631,52 @@ namespace ESSM::FamiliarHijackManager
         return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
     }
 
-    static bool IsHijacked(const FamiliarData& data) noexcept
+    static bool IsHijacked(const FamiliarData& data)
     {
         return get_marker_value(data) == HIJACK_MARKER;
     }
     
-    static bool IsWritten(const FamiliarData& data) noexcept
+    static bool IsWritten(const FamiliarData& data)
     {
         return get_marker_value(data) == WRITTEN_MARKER;
     }
     
-    static bool IsRead(const FamiliarData& data) noexcept
+    static bool IsRead(const FamiliarData& data)
     {
         return get_marker_value(data) == READ_MARKER;
     }
     
-    static bool HasMarker(const FamiliarData& data) noexcept
+    static bool HasMarker(const FamiliarData& data)
     {
         return IsHijacked(data) || IsWritten(data) || IsRead(data);
     }
 
-    static void SetHijacked(FamiliarData& data) noexcept
+    static void SetHijacked(FamiliarData& data)
     {
         get_marker_value(data) = HIJACK_MARKER;
     }
     
-    static void SetWritten(FamiliarData& data) noexcept
+    static void SetWritten(FamiliarData& data)
     {
         get_marker_value(data) = WRITTEN_MARKER;
     }
     
-    static void SetRead(FamiliarData& data) noexcept
+    static void SetRead(FamiliarData& data)
     {
         get_marker_value(data) = READ_MARKER;
     }
     
-    static uint32_t GetId(const FamiliarData& data) noexcept
+    static uint32_t GetId(const FamiliarData& data)
     {
         return get_id_value(data);
     }
     
-    static void SetId(FamiliarData& data, uint32_t id) noexcept
+    static void SetId(FamiliarData& data, uint32_t id)
     {
         get_id_value(data) = id;
     }
     
-    static void Hijack(FamiliarData& data, uint32_t id) noexcept
+    static void Hijack(FamiliarData& data, uint32_t id)
     {
         HijackedState& hijackedState = s_systemData.hijackedStates[id];
         hijackedState.marker = get_marker_value(data);
@@ -685,7 +685,7 @@ namespace ESSM::FamiliarHijackManager
         SetId(data, id);
     }
     
-    static uint32_t NewHijack(FamiliarData& data) noexcept
+    static uint32_t NewHijack(FamiliarData& data)
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
@@ -694,13 +694,13 @@ namespace ESSM::FamiliarHijackManager
         return id;
     }
 
-    static void RestoreHijack(FamiliarData& data, HijackedState& hijackedState) noexcept
+    static void RestoreHijack(FamiliarData& data, HijackedState& hijackedState)
     {
         get_marker_value(data) = hijackedState.marker;
         get_id_value(data) = hijackedState.id;
     }
     
-    static uint32_t UnHijack(FamiliarData& data) noexcept
+    static uint32_t UnHijack(FamiliarData& data)
     {
         assert(IsHijacked(data));
         uint32_t id = GetId(data);
@@ -712,7 +712,7 @@ namespace ESSM::FamiliarHijackManager
 // These are base operations, signals should not be sent from here
 namespace ESSM::PlayerOperations
 {
-    static void ClearSaveState(GameStatePlayer& saveState) noexcept
+    static void ClearSaveState(GameStatePlayer& saveState)
     {
         assert(PlayerHijackManager::IsHijacked(saveState));
         uint32_t id = PlayerHijackManager::GetId(saveState);
@@ -720,7 +720,7 @@ namespace ESSM::PlayerOperations
         // TODO: Callers should send signals
     }
 
-    static void CopySaveState(GameStatePlayer& saveState) noexcept
+    static void CopySaveState(GameStatePlayer& saveState)
     {
         assert(PlayerHijackManager::IsHijacked(saveState));
         uint32_t sourceId = PlayerHijackManager::GetId(saveState);
@@ -734,7 +734,7 @@ namespace ESSM::PlayerOperations
 
 namespace ESSM::FamiliarOperations
 {
-    static void ClearSaveState(FamiliarData& saveState) noexcept
+    static void ClearSaveState(FamiliarData& saveState)
     {
         assert(FamiliarHijackManager::IsHijacked(saveState));
         uint32_t id = FamiliarHijackManager::GetId(saveState);
@@ -742,7 +742,7 @@ namespace ESSM::FamiliarOperations
         // TODO: Callers should send signals
     }
     
-    static void ClearVector(std::vector<FamiliarData>& saveEntities) noexcept
+    static void ClearVector(std::vector<FamiliarData>& saveEntities)
     {
         for (FamiliarData& saveState : saveEntities)
         {
@@ -750,7 +750,7 @@ namespace ESSM::FamiliarOperations
         }
     }
 
-    static void CopySaveState(FamiliarData& saveState) noexcept
+    static void CopySaveState(FamiliarData& saveState)
     {
         assert(FamiliarHijackManager::IsHijacked(saveState));
         uint32_t sourceId = FamiliarHijackManager::GetId(saveState);
@@ -761,7 +761,7 @@ namespace ESSM::FamiliarOperations
         // TODO: Callers should send signals
     }
 
-    static void CopyVector(std::vector<FamiliarData>& saveEntities) noexcept
+    static void CopyVector(std::vector<FamiliarData>& saveEntities)
     {
         for (FamiliarData& saveState : saveEntities)
         {
@@ -769,13 +769,13 @@ namespace ESSM::FamiliarOperations
         }
     }
 
-    static auto ClearVectorLambda = [](std::vector<FamiliarData>& vec) noexcept(noexcept(ClearVector(vec))) { ClearVector(vec); };
-    static auto CopyVectorLambda = [](std::vector<FamiliarData>& vec) noexcept(noexcept(CopyVector(vec))) { CopyVector(vec); };
+    static auto ClearVectorLambda = [](std::vector<FamiliarData>& vec) { ClearVector(vec); };
+    static auto CopyVectorLambda = [](std::vector<FamiliarData>& vec) { CopyVector(vec); };
 }
 
 namespace ESSM::EntityOperations
 {
-    static void ClearSaveState(EntitySaveState& saveState) noexcept
+    static void ClearSaveState(EntitySaveState& saveState)
     {
         assert(EntityHijackManager::IsHijacked(saveState));
         uint32_t id = EntityHijackManager::GetId(saveState);
@@ -783,7 +783,7 @@ namespace ESSM::EntityOperations
         // TODO: Callers should send signals
     }
     
-    static void ClearVector(std::vector<EntitySaveState>& saveEntities) noexcept
+    static void ClearVector(std::vector<EntitySaveState>& saveEntities)
     {
         for (EntitySaveState& saveState : saveEntities)
         {
@@ -791,7 +791,7 @@ namespace ESSM::EntityOperations
         }
     }
 
-    static void CopySaveState(EntitySaveState& saveState) noexcept
+    static void CopySaveState(EntitySaveState& saveState)
     {
         assert(EntityHijackManager::IsHijacked(saveState));
         uint32_t sourceId = EntityHijackManager::GetId(saveState);
@@ -802,7 +802,7 @@ namespace ESSM::EntityOperations
         // TODO: Callers should send signals
     }
 
-    static void CopyVector(std::vector<EntitySaveState>& saveEntities) noexcept
+    static void CopyVector(std::vector<EntitySaveState>& saveEntities)
     {
         for (EntitySaveState& saveState : saveEntities)
         {
@@ -810,8 +810,8 @@ namespace ESSM::EntityOperations
         }
     }
 
-    static auto ClearVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearVector(vec))) { ClearVector(vec); };
-    static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(CopyVector(vec))) { CopyVector(vec); };
+    static auto ClearVectorLambda = [](std::vector<EntitySaveState>& vec) { ClearVector(vec); };
+    static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) { CopyVector(vec); };
 }
 
 namespace ESSM
@@ -872,7 +872,7 @@ namespace ESSM
             friend StabilityChecker;
         };
 
-        private: static void check_entity_save_state(CheckData& checks, EntitySaveState& saveState) noexcept
+        private: static void check_entity_save_state(CheckData& checks, EntitySaveState& saveState)
         {
             InvalidEntities& invalidEntities = checks.m_invalidEntities;
             bool validState = EntityHijackManager::IsHijacked(saveState);
@@ -927,7 +927,7 @@ namespace ESSM
             }
         }
 
-        private: static void check_player_save_state(CheckData& checks, GameStatePlayer& saveState) noexcept
+        private: static void check_player_save_state(CheckData& checks, GameStatePlayer& saveState)
         {
             InvalidPlayers& invalidPlayers = checks.m_invalidPlayers;
             bool cleared = PlayerHijackManager::IsCleared(saveState);
@@ -982,7 +982,7 @@ namespace ESSM
             checks.m_checks[id] = saveStatePtr;
         }
 
-        private: static void check_familiar_data(CheckData& checks, FamiliarData& saveState) noexcept
+        private: static void check_familiar_data(CheckData& checks, FamiliarData& saveState)
         {
             InvalidFamiliars& invalidFamiliars = checks.m_invalidFamiliars;
             bool validState = FamiliarHijackManager::IsHijacked(saveState);
@@ -1031,7 +1031,7 @@ namespace ESSM
             checks.m_checks[id] = saveStatePtr;
         }
 
-        private: static void check_entity_save_state_vector(CheckData& checks, std::vector<EntitySaveState>& saveStates) noexcept
+        private: static void check_entity_save_state_vector(CheckData& checks, std::vector<EntitySaveState>& saveStates)
         {
             for (EntitySaveState& saveState : saveStates)
             {
@@ -1039,7 +1039,7 @@ namespace ESSM
             }
         }
 
-        private: static void check_familiar_data_vector(CheckData& checks, std::vector<FamiliarData>& saveStates) noexcept
+        private: static void check_familiar_data_vector(CheckData& checks, std::vector<FamiliarData>& saveStates)
         {
             for (FamiliarData& saveState : saveStates)
             {
@@ -1047,12 +1047,12 @@ namespace ESSM
             }
         }
 
-        private: static constexpr auto check_player_lambda = [](GameStatePlayer& state, CheckData& checks) noexcept(noexcept(check_player_save_state(checks, state))) { check_player_save_state(checks, state); };
-        private: static constexpr auto check_familiar_vector_lambda = [](std::vector<FamiliarData>& vec, CheckData& checks) noexcept(noexcept(check_familiar_data_vector(checks, vec))) { check_familiar_data_vector(checks, vec); };
-        private: static constexpr auto check_entity_vector_lambda = [](std::vector<EntitySaveState>& vec, CheckData& checks) noexcept(noexcept(check_entity_save_state_vector(checks, vec))) { check_entity_save_state_vector(checks, vec); };
+        private: static constexpr auto check_player_lambda = [](GameStatePlayer& state, CheckData& checks) { check_player_save_state(checks, state); };
+        private: static constexpr auto check_familiar_vector_lambda = [](std::vector<FamiliarData>& vec, CheckData& checks) { check_familiar_data_vector(checks, vec); };
+        private: static constexpr auto check_entity_vector_lambda = [](std::vector<EntitySaveState>& vec, CheckData& checks) { check_entity_save_state_vector(checks, vec); };
 
         private: static constexpr size_t MAX_PICKUPS = 512;
-        private: static void check_entity_list_stability(CheckData& checks) noexcept
+        private: static void check_entity_list_stability(CheckData& checks)
         {
             const EntityFactory* factory = g_Game->_entityFactory;
             const Entity_Pickup* pickups = factory->_pickup;
@@ -1068,21 +1068,21 @@ namespace ESSM
             }
         }
 
-        private: static void check_run_stability(CheckData& checks) noexcept
+        private: static void check_run_stability(CheckData& checks)
         {
             ESSM::PlayerIterators::InGame::All(check_player_lambda, checks);
             ESSM::FamiliarIterators::InGame::All(check_familiar_vector_lambda, checks);
             ESSM::EntityIterators::InGame::All(check_entity_vector_lambda, checks);
         }
 
-        private: static void check_game_state_stability(GameState& gameState, CheckData& checks) noexcept
+        private: static void check_game_state_stability(GameState& gameState, CheckData& checks)
         {
             ESSM::PlayerIterators::InGameState::All(gameState, check_player_lambda, checks);
             ESSM::FamiliarIterators::InGameState::All(gameState, check_familiar_vector_lambda, checks);
             ESSM::EntityIterators::InGameState::All(gameState, check_entity_vector_lambda, checks);
         }
 
-        private: static void handle_errors(CheckData& checks) noexcept
+        private: static void handle_errors(CheckData& checks)
         {
             InvalidPlayers& players = checks.m_invalidPlayers;
             InvalidFamiliars& familiars = checks.m_invalidFamiliars;
@@ -1195,7 +1195,7 @@ namespace ESSM
             }
         }
 
-        public: static void CheckStability() noexcept
+        public: static void CheckStability()
         {
             CheckData checks = CheckData();
             checks.m_checks.resize(s_systemData.totalIds, 0);
@@ -1246,12 +1246,12 @@ namespace ESSM
     };
 }
 
-static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id) noexcept
+static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id)
 {
     // TODO: save entity
 }
 
-static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id) noexcept
+static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
 {
     // TODO: restore entity
 }
@@ -1303,7 +1303,7 @@ namespace ESSM::SaveData
 
     namespace Operations
     {
-        static void ClearEntitySaveVector(std::vector<EntitySaveState>& saveEntities) noexcept
+        static void ClearEntitySaveVector(std::vector<EntitySaveState>& saveEntities)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -1314,7 +1314,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void ClearPlayerSave(GameStatePlayer& saveState) noexcept
+        static void ClearPlayerSave(GameStatePlayer& saveState)
         {
             if (ESSM::PlayerHijackManager::IsHijacked(saveState))
             {
@@ -1322,7 +1322,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void ClearFamiliarSaveVector(std::vector<FamiliarData>& saveEntities) noexcept
+        static void ClearFamiliarSaveVector(std::vector<FamiliarData>& saveEntities)
         {
             for (FamiliarData& saveState : saveEntities)
             {
@@ -1419,7 +1419,7 @@ namespace ESSM::SaveData
             writtenSaveStates.emplace_back(&data, id);
         }
     
-        static void read_entity(EntitySaveState& data, ReadState& readState) noexcept
+        static void read_entity(EntitySaveState& data, ReadState& readState)
         {
             if (!EntityHijackManager::IsWritten(data))
             {
@@ -1444,7 +1444,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void read_player(GameStatePlayer& data, ReadState& readState) noexcept
+        static void read_player(GameStatePlayer& data, ReadState& readState)
         {
             if (!PlayerHijackManager::IsWritten(data))
             {
@@ -1464,7 +1464,7 @@ namespace ESSM::SaveData
             PlayerHijackManager::SetRead(data);
         }
 
-        static void read_familiar(FamiliarData& data, ReadState& readState) noexcept
+        static void read_familiar(FamiliarData& data, ReadState& readState)
         {
             if (!FamiliarHijackManager::IsWritten(data))
             {
@@ -1484,7 +1484,7 @@ namespace ESSM::SaveData
             FamiliarHijackManager::SetRead(data);
         }
     
-        static void write_entity_vector(std::vector<EntitySaveState>& saveEntities, WriteState& writeState) noexcept(noexcept(write_entity(EntitySaveState(), writeState)))
+        static void write_entity_vector(std::vector<EntitySaveState>& saveEntities, WriteState& writeState)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -1492,7 +1492,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static void read_entity_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState) noexcept(noexcept(read_entity(EntitySaveState(), readState)))
+        static void read_entity_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -1500,7 +1500,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void write_familiar_vector(std::vector<FamiliarData>& saveEntities, WriteState& writeState) noexcept(noexcept(write_familiar(FamiliarData(), writeState)))
+        static void write_familiar_vector(std::vector<FamiliarData>& saveEntities, WriteState& writeState)
         {
             for (FamiliarData& saveState : saveEntities)
             {
@@ -1508,7 +1508,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void read_familiar_vector(std::vector<FamiliarData>& saveEntities, ReadState& readState) noexcept(noexcept(read_familiar(FamiliarData(), readState)))
+        static void read_familiar_vector(std::vector<FamiliarData>& saveEntities, ReadState& readState)
         {
             for (FamiliarData& saveState : saveEntities)
             {
@@ -1516,16 +1516,16 @@ namespace ESSM::SaveData
             }
         }
     
-        static auto ClearEntitySaveVectorLambda = [](std::vector<EntitySaveState>& vec) noexcept(noexcept(ClearEntitySaveVector(vec))) { ClearEntitySaveVector(vec); };
-        static auto WriteEntityVectorLambda = [](std::vector<EntitySaveState>& vec, WriteState& writeState) noexcept(noexcept(write_entity_vector(vec, writeState))) { write_entity_vector(vec, writeState); };
-        static auto WriteFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, WriteState& writeState) noexcept(noexcept(write_familiar_vector(vec, writeState))) { write_familiar_vector(vec, writeState); };
-        static auto WritePlayerLambda = [](GameStatePlayer& player, WriteState& writeState) noexcept(noexcept(write_player(player, writeState))) { write_player(player, writeState); };
-        static auto ReadEntityVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) noexcept(noexcept(read_entity_vector(vec, readState))) { read_entity_vector(vec, readState); };
-        static auto ReadFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, ReadState& readState) noexcept(noexcept(read_familiar_vector(vec, readState))) { read_familiar_vector(vec, readState); };
-        static auto ReadPlayerLambda = [](GameStatePlayer& player, ReadState& readState) noexcept(noexcept(read_player(player, readState))) { read_player(player, readState); };
+        static auto ClearEntitySaveVectorLambda = [](std::vector<EntitySaveState>& vec) { ClearEntitySaveVector(vec); };
+        static auto WriteEntityVectorLambda = [](std::vector<EntitySaveState>& vec, WriteState& writeState) { write_entity_vector(vec, writeState); };
+        static auto WriteFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, WriteState& writeState) { write_familiar_vector(vec, writeState); };
+        static auto WritePlayerLambda = [](GameStatePlayer& player, WriteState& writeState) { write_player(player, writeState); };
+        static auto ReadEntityVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) { read_entity_vector(vec, readState); };
+        static auto ReadFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, ReadState& readState) { read_familiar_vector(vec, readState); };
+        static auto ReadPlayerLambda = [](GameStatePlayer& player, ReadState& readState) { read_player(player, readState); };
     }
 
-    static void resolve_read_errors(ReadState& readState) noexcept
+    static void resolve_read_errors(ReadState& readState)
     {
         if (readState.errors.test(ReadErrors::ERROR_INVALID_STATE))
         {
@@ -1538,7 +1538,7 @@ namespace ESSM::SaveData
         }
     }
 
-    static void clear_write_state(WriteState& writeState) noexcept
+    static void clear_write_state(WriteState& writeState)
     {
         writeState.writtenPlayerStates.clear();
         writeState.writtenFamiliarData.clear();
@@ -1586,12 +1586,12 @@ namespace ESSM::SaveData
         return endPosition;
     }
 
-    static std::string get_save_data_path(const std::string& fileName) noexcept
+    static std::string get_save_data_path(const std::string& fileName)
     {
         return REPENTOGON::StringFormat("%s/EntitySaveStateManagement/%s.dat", REPENTOGON::GetRepentogonDataPath(), fileName.c_str());
     }
 
-    static bool guarantee_parent_path_exists(std::filesystem::path filePath) noexcept
+    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
     {
         std::filesystem::path directory = filePath.parent_path();
 
@@ -1613,7 +1613,7 @@ namespace ESSM::SaveData
         return true;
     }
 
-    static void remove_file(const std::filesystem::path& filePath) noexcept
+    static void remove_file(const std::filesystem::path& filePath)
     {
         std::error_code errorCode;
         std::filesystem::remove(filePath, errorCode);
@@ -1623,7 +1623,7 @@ namespace ESSM::SaveData
         }
     }
 
-    WriteState WriteGameState() noexcept
+    WriteState WriteGameState()
     {
         Manager* manager = g_Manager;
         GameState& gameState = manager->_gamestate;
@@ -1646,7 +1646,7 @@ namespace ESSM::SaveData
         return writeState;
     }
 
-    ReadState ReadGameState() noexcept
+    ReadState ReadGameState()
     {
         Manager* manager = g_Manager;
         GameState& gameState = manager->_gamestate;
@@ -1669,7 +1669,7 @@ namespace ESSM::SaveData
         return readState;
     }
 
-    void RestoreWrittenStates(WriteState& writeState) noexcept
+    void RestoreWrittenStates(WriteState& writeState)
     {
         for (std::pair<EntitySaveState*, uint32_t> writtenSaveState : writeState.writtenEntitySaveStates)
         {
@@ -1702,7 +1702,7 @@ namespace ESSM::SaveData
         }
     }
 
-    void hijack_read_entity_states(ReadState& readState, SaveFile& saveFile) noexcept
+    void hijack_read_entity_states(ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& entities = saveFile.entities;
         int maxId = entities.size() - 1;
@@ -1725,7 +1725,7 @@ namespace ESSM::SaveData
         }
     }
 
-    void hijack_read_player_states(ReadState& readState, SaveFile& saveFile) noexcept
+    void hijack_read_player_states(ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& players = saveFile.players;
         int maxId = players.size() - 1;
@@ -1748,7 +1748,7 @@ namespace ESSM::SaveData
         }
     }
 
-    void hijack_read_familiar_states(ReadState& readState, SaveFile& saveFile) noexcept
+    void hijack_read_familiar_states(ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& familiars = saveFile.familiars;
         int maxId = familiars.size() - 1;
@@ -2040,7 +2040,7 @@ namespace ESSM::SaveData
         deserialize_familiars(file, readState, saveFile);
     }
 
-    void Serialize(const std::string& fileName, const WriteState& writeState) noexcept
+    void Serialize(const std::string& fileName, const WriteState& writeState)
     {
         std::filesystem::path filePath = get_save_data_path(fileName);
         bool exists = guarantee_parent_path_exists(filePath);
@@ -2078,7 +2078,7 @@ namespace ESSM::SaveData
         ZHL::Log("[INFO] [ESSM] - successfully saved %s to \"%s\"\n", fileName.c_str(), filePath.string().c_str());
     }
 
-    static bool deserialize(const std::string& fileName, ReadState& readState) noexcept
+    static bool deserialize(const std::string& fileName, ReadState& readState)
     {
         // we should have never entered with errors here in the first place
         if (readState.errors.any())
@@ -2126,7 +2126,7 @@ namespace ESSM::SaveData
         return true;
     }
 
-    bool Deserialize(const std::string& fileName, ReadState& readState) noexcept
+    bool Deserialize(const std::string& fileName, ReadState& readState)
     {
         bool success = deserialize(fileName, readState);
 
@@ -2138,7 +2138,7 @@ namespace ESSM::SaveData
         return success;
     }
 
-    void DeleteGameState(const std::string& fileName) noexcept
+    void DeleteGameState(const std::string& fileName)
     {
         std::filesystem::path filePath = get_save_data_path(fileName);
         std::error_code errorCode;
@@ -2421,12 +2421,12 @@ HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
     ESSM::FamiliarHijackManager::Hijack(*saveState, id);
 }
 
-static void __stdcall restore_game_state_backwards_rooms() noexcept
+static void __stdcall restore_game_state_backwards_rooms()
 {
     ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::CopyVectorLambda);
 }
 
-static void Patch_GameRestoreState_PostBackwardsStageDescRestore() noexcept
+static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_RestoreState_PostBackwardsStageDescRestore);
     ZHL::Log("[REPENTOGON] Patching Game::RestoreState for SaveStateManagement at %p\n", addr);
@@ -2446,13 +2446,13 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_clear_room_vector() noexcept
+static void __stdcall asm_clear_room_vector()
 {
     RoomDescriptor& room = *g_Game->_room->_descriptor;
     ESSM::EntityOperations::ClearVector(room.SavedEntities);
 }
 
-static void Patch_RoomSaveState_ClearVector() noexcept
+static void Patch_RoomSaveState_ClearVector()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SaveState_ClearVector);
     ZHL::Log("[REPENTOGON] Patching Room::SaveState for SaveStateManagement at %p\n", addr);
@@ -2472,7 +2472,7 @@ static void Patch_RoomSaveState_ClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void Patch_RoomRestoreState_ClearVector() noexcept
+static void Patch_RoomRestoreState_ClearVector()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_RestoreState_ClearVector);
     ZHL::Log("[REPENTOGON] Patching Room::RestoreState for SaveStateManagement at %p\n", addr);
@@ -2492,12 +2492,12 @@ static void Patch_RoomRestoreState_ClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_copy_myosotis_pickups() noexcept
+static void __stdcall asm_copy_myosotis_pickups()
 {
     ESSM::EntityOperations::CopyVector(g_Game->_myosotisPickups);
 }
 
-static void Patch_LevelInit_PostMyosotisEffect() noexcept
+static void Patch_LevelInit_PostMyosotisEffect()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Init_PostMyosotisEffect);
     ZHL::Log("[REPENTOGON] Patching Level::Init for SaveStateManagement at %p\n", addr);
@@ -2517,12 +2517,12 @@ static void Patch_LevelInit_PostMyosotisEffect() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall restore_level_game_state() noexcept
+static void __stdcall restore_level_game_state()
 {
     ESSM::EntityIterators::InGame::AllRooms(ESSM::EntityOperations::CopyVectorLambda);
 }
 
-static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
+static void Patch_LevelRestoreGameState_PreRoomLoad()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_RestoreGameState_PreRoomLoad);
     ZHL::Log("[REPENTOGON] Patching Level::RestoreGameState for SaveStateManagement at %p\n", addr);
@@ -2542,17 +2542,17 @@ static void Patch_LevelRestoreGameState_PreRoomLoad() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
+static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
     ESSM::EntityOperations::ClearVector(*saveStateVector);
 }
 
-static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector) noexcept
+static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
     ESSM::EntityOperations::CopyVector(*saveStateVector);
 }
 
-static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector() noexcept
+static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_place_rooms_backwards_Boss_AssignEntitySaveStateVector);
     ZHL::Log("[REPENTOGON] Patching Level::place_rooms_backwards for SaveStateManagement at %p\n", addr);
@@ -2579,7 +2579,7 @@ static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector() no
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector() noexcept
+static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_place_rooms_backwards_Treasure_AssignEntitySaveStateVector);
     ZHL::Log("[REPENTOGON] Patching Level::place_rooms_backwards for SaveStateManagement at %p\n", addr);
@@ -2606,12 +2606,12 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall hijack_dark_closet_collectible(EntitySaveState& saveState) noexcept
+static void __fastcall hijack_dark_closet_collectible(EntitySaveState& saveState)
 {
     ESSM::EntityHijackManager::NewHijack(saveState);
 }
 
-static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState() noexcept
+static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_generate_dark_closet_PostGenerateCollectibleSaveState);
     ZHL::Log("[REPENTOGON] Patching Level::generate_dark_closet for SaveStateManagement at %p\n", addr);
@@ -2637,12 +2637,12 @@ static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState() noe
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_clear_moving_box_vector(Entity_Player& player) noexcept
+static void __stdcall asm_clear_moving_box_vector(Entity_Player& player)
 {
     ESSM::EntityOperations::ClearVector(player._movingBoxContents);
 }
 
-static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
+static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_UseActiveItem_MovingBox_ClearVector);
     ZHL::Log("[REPENTOGON] Patching Entity_Player::UseActiveItem for SaveStateManagement at %p\n", addr);
@@ -2663,13 +2663,13 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall store_familiar_data(FamiliarData& saveState, size_t persistentELIndex) noexcept
+static void __fastcall store_familiar_data(FamiliarData& saveState, size_t persistentELIndex)
 {
     ESSM::FamiliarHijackManager::NewHijack(saveState);
     // TODO: Send Store command
 }
 
-static void Patch_PlayerStoreGameState_FamiliarStoreState() noexcept
+static void Patch_PlayerStoreGameState_FamiliarStoreState()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_StoreGameState_FamiliarStoreState);
     ZHL::Log("[REPENTOGON] Patching EntityPlayer::StoreGameState for SaveStateManagement at %p\n", addr);
@@ -2691,17 +2691,17 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveStateVector) noexcept
+static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
     ESSM::FamiliarOperations::ClearVector(*saveStateVector);
 }
 
-static void __stdcall asm_copy_familiar_vector(std::vector<FamiliarData>* saveStateVector) noexcept
+static void __stdcall asm_copy_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
     ESSM::FamiliarOperations::CopyVector(*saveStateVector);
 }
 
-static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData() noexcept
+static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_StoreGameState_AssignUnlistedFamiliarData);
     ZHL::Log("[REPENTOGON] Patching Entity_Player::StoreGameState for SaveStateManagement at %p\n", addr);
@@ -2728,7 +2728,7 @@ static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData() noexcept
+static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PlayerManager_RestoreGameState_AssignBackupFamiliarData);
     ZHL::Log("[REPENTOGON] Patching PlayerManager::RestoreGameState for SaveStateManagement at %p\n", addr);
@@ -2756,7 +2756,7 @@ static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData() noexc
 }
 
 // use fastcall to emulate thiscall
-static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState) noexcept
+static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
 {
     if (ESSM::EntityHijackManager::IsHijacked(*saveState))
     {
@@ -2768,7 +2768,7 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState) noexc
     saveState->destructor();
 }
 
-static void Patch_ReferenceCount_EntitySaveStateDestructor() noexcept
+static void Patch_ReferenceCount_EntitySaveStateDestructor()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::KAGE_ReferenceCount_EntitySaveState_DecrementReference_SaveStateDestructor);
     ZHL::Log("[REPENTOGON] Patching KAGE::ReferenceCount<EntitySaveState>::DecrementReference for SaveStateManagement at %p\n", addr);
@@ -2779,13 +2779,13 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor() noexcept
     sASMPatcher.FlatPatch((void*)addr, &patch);
 }
 
-static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState) noexcept
+static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState)
 {
     uint32_t id = ESSM::EntityHijackManager::NewHijack(saveState);
     LogDebug("[ESSM] New Flip State: %u\n", id);
 }
 
-static void Patch_PickupInitFlipState_CreateSaveState() noexcept
+static void Patch_PickupInitFlipState_CreateSaveState()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_InitFlipState_PostSaveStateConstructor);
     ZHL::Log("[REPENTOGON] Patching Entity_Pickup::InitFlipState for SaveStateManagent at %p\n", addr);
@@ -2806,12 +2806,12 @@ static void Patch_PickupInitFlipState_CreateSaveState() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState) noexcept
+static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState)
 {
     RestoreEntity(entity, saveState, ESSM::EntityHijackManager::GetId(saveState));
 }
 
-static void Patch_PickupTryFlip_RestoreFlipState() noexcept
+static void Patch_PickupTryFlip_RestoreFlipState()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_TryFlip_PostRestoreFlipState);
     ZHL::Log("[REPENTOGON] Patching Entity_Pickup::TryFlip for SaveStateManagement at %p\n", addr);
@@ -2837,14 +2837,14 @@ static void Patch_PickupTryFlip_RestoreFlipState() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall change_mineshaft_room(size_t listIdx) noexcept
+static void __stdcall change_mineshaft_room(size_t listIdx)
 {
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[listIdx];
     ESSM::EntityOperations::ClearVector(room.SavedEntities);
 }
 
-static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
+static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_ai_mothers_shadow_ChangeMineshaftRoom);
     ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_mothers_shadow for SaveStateManagement at %p\n", addr);
@@ -2865,7 +2865,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void ESSM::ApplyPatches() noexcept
+void ESSM::ApplyPatches()
 {
     Patch_ReferenceCount_EntitySaveStateDestructor();
     Patch_LevelInit_PostMyosotisEffect();

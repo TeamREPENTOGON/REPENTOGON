@@ -27,20 +27,20 @@ namespace EntitySaveStateManagement
             std::bitset<3> errors;
         };
 
-        WriteState WriteGameState() noexcept;
-        void Serialize(const std::string& fileName, const WriteState& writeState) noexcept;
-        void RestoreWrittenStates(WriteState& writeState) noexcept;
+        WriteState WriteGameState();
+        void Serialize(const std::string& fileName, const WriteState& writeState);
+        void RestoreWrittenStates(WriteState& writeState);
 
         /** Collects EntitySaveStates to be restored, also fixes them so GameState::Clear doesn't create problems.
          *  This should always run after a GameState is read, and should not be skipped.
         */
-        ReadState ReadGameState() noexcept;
-        inline bool CheckErrors(const ReadState& readState) noexcept { return readState.errors.any(); }
-        inline bool NeedsHandling(const ReadState& readState) noexcept { return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();  }
-        bool Deserialize(const std::string& fileName, ReadState& readState) noexcept;
+        ReadState ReadGameState();
+        inline bool CheckErrors(const ReadState& readState) { return readState.errors.any(); }
+        inline bool NeedsHandling(const ReadState& readState) { return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();  }
+        bool Deserialize(const std::string& fileName, ReadState& readState);
 
-        void DeleteGameState(const std::string& fileName) noexcept;
+        void DeleteGameState(const std::string& fileName);
     }
 
-    void ApplyPatches() noexcept;
+    void ApplyPatches();
 }
