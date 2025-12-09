@@ -73,3 +73,8 @@ ___
 Sets if the tear was created through the Angelic Prism effect.
 
 ___
+### SetInitSound () {: aria-label='Functions' }
+#### void SetInitSound ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/SoundEffect.html) SoundID ) {: .copyable aria-label='Functions' }
+Sets the sound that will be automatically played when the tear is spawned. Can be set to `SoundEffect.SOUND_NULL` to make no sound play.
+
+___
