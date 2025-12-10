@@ -1591,7 +1591,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 			inheritdaddyatts(daddy, &achievement);
 			//string oldid = achievement["id"];
-			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && (XMLStuff.AchievementData->maxid < 637)) {
+			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && (XMLStuff.AchievementData->maxid < static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 				id = toint(achievement["id"]);
 			}
 			else {
