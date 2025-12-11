@@ -3104,6 +3104,7 @@ BloodClotSubtype = {
 	GOLD = 4,
 	BONE = 5,
 	ROTTEN = 6,
+	LIL_CLOT = 7,
 }
 
 RoomDisplayFlags = {
