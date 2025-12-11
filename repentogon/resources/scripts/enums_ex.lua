@@ -3086,6 +3086,32 @@ UseActiveItemResultFlag = {
 	REMOVE = 1 << 8,
 }
 
+SlotState = {
+	IDLE = 1,
+	CHOICE = 2, -- Shell Game & Hell Game only, choose a skull
+	REWARD = 2,
+	DESTROYED = 3,
+	PAYOUT = 4,
+	REWARD_SHELL_GAME = 5,
+	REWARD_HELL_GAME = 5,
+}
+
+BloodClotSubtype = {
+	RED = 0,
+	SOUL = 1,
+	BLACK = 2,
+	ETERNAL = 3,
+	GOLD = 4,
+	BONE = 5,
+	ROTTEN = 6,
+}
+
+RoomDisplayFlags = {
+	INVISIBLE = 1 << -1,
+	VISIBLE = 1 << 0,
+	SHOW_LOCK = 1 << 1,
+	SHOW_ICON = 1 << 2,
+}
 
 --deprecated enums
 
