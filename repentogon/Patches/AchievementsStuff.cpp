@@ -515,6 +515,9 @@ HOOK_METHOD(Menu_Stats, UpdateSecrets, () -> void) {
 	//UpdateSecretsSprites(false);
 
 	if (secretssource != "BaseGame") {
+		if (!this->_isAchievementScreenVisible) {
+			ChangeCurrentSecrets(9999);
+		}
 		int trgtachv = _selectedAchievmentId;
 		if (this->_achievementsSprite.IsPlaying(&string("Appear"))) {
 			trgtachv -= 1;

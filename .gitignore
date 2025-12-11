@@ -557,3 +557,6 @@ include/hooks.json
 
 docs/site
 docs/trace.json
+Launcher/
+libs/cryptopp-cmake/
+libs/curl/
