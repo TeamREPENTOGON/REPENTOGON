@@ -752,8 +752,8 @@ struct XMLData {
 	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLBossPortrait* BossPortraitData = new XMLBossPortrait();
 	XMLTrinket* TrinketData = new XMLTrinket();
-	XMLMusic* MusicData = new XMLMusic(118);
-	XMLSound* SoundData = new XMLSound(832);
+	XMLMusic* MusicData = new XMLMusic(119);
+	XMLSound* SoundData = new XMLSound(914);
 	XMLPill* PillData = new XMLPill();
 	XMLCard* CardData = new XMLCard();
 	XMLChallenge* ChallengeData = new XMLChallenge();
