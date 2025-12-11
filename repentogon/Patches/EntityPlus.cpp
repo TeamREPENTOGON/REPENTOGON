@@ -260,7 +260,7 @@ static void Patch_InitTear_PlaySound()
 		.PreserveRegisters(savedRegisters)
 		.AddBytes("\x89\xF9") // MOV ECX, EDI
 		.AddInternalCall(asm_try_play_custom_init_sound)
-		.AddBytes("\x85\xC0") // TEST EAX, EAX
+		.AddBytes("\x84\xC0") // TEST AL, AL
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)skipAddr)
 		.AddRelativeJump((void*)resumeAddr);
