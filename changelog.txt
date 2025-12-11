@@ -20,6 +20,7 @@ Added:
 Fixes:
 * Isaac:
 	- Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+	- Fixed possible crashes involving ClearChallenge and MarkChallengeAsNotDone.
 * Vector:
 	- Lerp now returns a reference to the modified vector like it now does in vanilla.
 * RoomDescriptor:
@@ -36,6 +37,7 @@ Fixes:
 * Dear ImGui Console Menus:
 	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
 	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
+* Fixed possible crash on the secrets menu.
 * Fixed the custom challenges menu resetting when any console command is executed.
 /newline/
 /versionseparator/
