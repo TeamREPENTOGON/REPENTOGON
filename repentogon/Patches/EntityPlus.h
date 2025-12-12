@@ -33,6 +33,11 @@ public:
 	uintptr_t cachedMultiplierPlayer = 0;
 };
 
+// Attributes for EntityTear
+class EntityTearPlus : public EntityPlus {
+	public: std::optional<uint32_t> initSound = std::nullopt;
+};
+
 // Attributes for EntityLaser.
 class EntityLaserPlus : public EntityPlus {
   public:
@@ -53,6 +58,7 @@ EntityPlus* GetEntityPlus(Entity* entity);
 // Will return nullptr if somehow called for the wrong entity type, or if the entity is not properly initialized.
 EntityPlayerPlus* GetEntityPlayerPlus(Entity_Player* player);
 EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar);
+EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
 EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife);
 

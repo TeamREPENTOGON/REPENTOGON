@@ -1,15 +1,6 @@
-v1.1.x -
-Added: 
-Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon -> resources-dlc3 -> resources).
-* ModCallbacks:
-	- Added "RemoveFromPlayerForm" and "Wisp" args to MC_POST_TRIGGER_COLLECTIBLE_REMOVED.
-/newline/
-Fixes:
-* Fixed crash caused by ScoreSheet:AddFinishedStage
-/newline/
-/versionseparator/
 v1.1.1 -
 Added:
+* Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon > resources-dlc3 > resources).
 * Game:
 	- IsStartingFromState
 		Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
@@ -18,22 +9,36 @@ Added:
 		Formerly mislabeled as Get/SetHeight
 	- Get/SetFallAcceleration
 		Formerly mislabeled as Get/SetFallingSpeed
+* EntityTear
+	- SetInitSound(SoundEffect sound)
 * MenuSave
 	- SetSlotSpritesheet(int slot, string pngfilename)
 		Overrides the spritesheet used for a save file drawing. MC_POST_SAVESLOT_LOAD is a good place to use this.
+* ModCallbacks:
+	- Added "RemoveFromPlayerForm" and "Wisp" args to MC_POST_TRIGGER_COLLECTIBLE_REMOVED.
 /newline/
 Fixes:
 * Isaac:
-	Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+	- Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+	- Fixed possible crashes involving ClearChallenge and MarkChallengeAsNotDone.
 * Vector:
-	Lerp now returns a reference to the modified vector like it now does in vanilla.
+	- Lerp now returns a reference to the modified vector like it now does in vanilla.
 * RoomDescriptor:
-	Fixed GetNeighboringRooms returning a number instead of a table.
+	- Fixed GetNeighboringRooms returning a number instead of a table.
+* Room:
+	- SetItemPool no longer crashes or errors on POOL_NULL
+* ScoreSheet:
+	- Fixed crash related to AddFinishedStage
 * ModCallbacks:
-	Fixed broken color userdata in MC_POST_ENTITY_SET_COLOR
+	- Fixed broken color userdata in MC_POST_ENTITY_SET_COLOR
+* XMLData:
+	- Fixed GetEntryByOrder results for XMLNode.NULLCOSTUME
+	- Fixed crashes on invalid node types
 * Dear ImGui Console Menus:
 	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
 	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
+* Fixed possible crash on the secrets menu.
+* Fixed the custom challenges menu resetting when any console command is executed.
 /newline/
 /versionseparator/
 v1.1.0 -

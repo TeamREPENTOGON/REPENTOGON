@@ -384,6 +384,7 @@ vector <string> SourcesWithAchiev;
 int curridx = 0;
 int currmax = 0;
 int modmax = 0;
+int basegameid = 0;
 
 void PlayIfNotPlaying(ANM2* sprite,string* anim, bool force = false) {
 	if (force || !sprite->IsPlaying(anim)) {
@@ -459,7 +460,9 @@ void UpdateSecretsSprites(bool justpaper) {
 
 void ChangeCurrentSecrets(int dir) {
 	int tgrtdir = curridx + dir;
-	if (tgrtdir < 0) {
+	if (dir == 9999) {
+		tgrtdir = basegameid;
+	}else if (tgrtdir < 0) {
 		tgrtdir = SourcesWithAchiev.size() - 1;
 	}else if (tgrtdir >= (int)SourcesWithAchiev.size()) {
 		tgrtdir = 0;
@@ -482,6 +485,7 @@ void ChangeCurrentSecrets(int dir) {
 	}
 }
 
+
 void SetUpReverseSourcesVec() {
 		if (!sourceswithachievset) {
 			Menu_Stats* menstats = g_MenuManager->GetMenuStats();
@@ -491,6 +495,7 @@ void SetUpReverseSourcesVec() {
 				SourcesWithAchiev.push_back(entry.first);
 				if (entry.first == secretssource) {
 					curridx = SourcesWithAchiev.size() - 1;
+					basegameid = curridx;
 				}
 			}
 			currmax = XMLStuff.ModData->achievlistpermod[secretssource].size();
@@ -515,6 +520,9 @@ HOOK_METHOD(Menu_Stats, UpdateSecrets, () -> void) {
 	//UpdateSecretsSprites(false);
 
 	if (secretssource != "BaseGame") {
+		if (!this->_isAchievementScreenVisible) {
+			ChangeCurrentSecrets(9999);
+		}
 		int trgtachv = _selectedAchievmentId;
 		if (this->_achievementsSprite.IsPlaying(&string("Appear"))) {
 			trgtachv -= 1;

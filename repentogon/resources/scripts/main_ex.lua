@@ -1946,9 +1946,9 @@ end
 LuaWrappersToRemove = nil
 
 
-pcall(require("repentogon_extras/changelog"))
-pcall(require("repentogon_extras/daily_stats"))
-pcall(require("repentogon_extras/stats_menu"))
-pcall(require("repentogon_extras/bestiary_menu"))
--- pcall(require("repentogon_extras/onlinestub")) let's not load it
-pcall(require("repentogon_extras/mods_menu_tweaks"))
+pcall(require, "repentogon_extras/changelog")
+pcall(require, "repentogon_extras/daily_stats")
+pcall(require, "repentogon_extras/stats_menu")
+pcall(require, "repentogon_extras/bestiary_menu")
+-- pcall(require, "repentogon_extras/onlinestub") let's not load it
+pcall(require, "repentogon_extras/mods_menu_tweaks")
