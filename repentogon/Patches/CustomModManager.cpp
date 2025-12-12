@@ -5,12 +5,6 @@
 
 #include "CustomModManager.h"
 
-struct CurseSpriteData {
-	ModEntryEx* modEx;
-	ANM2* customANM2;
-	uint32_t frameNum;
-};
-
 static std::map<uint32_t, CurseSpriteData> curseSpriteMap;
 static ModEntry* lastModEntry = nullptr;
 static uint32_t currentFrameNum = 0;
@@ -196,4 +190,9 @@ void ASMPatchesForCustomModManager() {
 	ASMPatchRegisterCurseSprite();
 	ASMPatchAssignCustomFrame();
 	ASMPatchRenderCustomCurses();
+}
+
+std::map<uint32_t, CurseSpriteData> GetCurseSpriteMap()
+{
+	return curseSpriteMap;
 }
