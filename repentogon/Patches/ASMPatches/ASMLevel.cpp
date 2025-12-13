@@ -518,41 +518,36 @@ void PatchOverrideDataHandling() {
 	sASMPatcher.FlatPatch(patchAddr, &patch2);
 }
 
-// https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
-void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls(const char* sig, const char* reg) {
-	SigScan scanner(sig);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
-
-	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
-	for (int i = 0; i < 5; i++) {
-		void* subAddr = (char*)addr + ((7 * i) + 1);
-		ASMPatch patch;
-		patch.AddBytes(reg);
-		sASMPatcher.FlatPatch(subAddr, &patch);
+// See https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
+int __stdcall TryResizeEndroomDoorSlotFix(int* doorSlotsToCheck, int idx) {
+	if (doorSlotsToCheck[2] != doorSlotsToCheck[0]) {
+		// Need to fix the values for large rooms, which are populated wrong.
+		for (int i = 1; i <= 5; i++) {
+			std::swap(doorSlotsToCheck[i * 2], doorSlotsToCheck[i * 2 + 1]);
+		}
 	}
-}
-void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
-	SigScan scanner("8b94??????????b801000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
-
-	// If we attempt to read from index 13 in the DoorSlot array (which seems to be reading outside the bounds of the array) read from index 12 instead.
-	ASMPatch patch;
-	patch.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::ESI)
-		.AddBytes("\x83\xfa\x0d")  // cmp edx, 13
-		.AddBytes("\x0f\x85\x01").AddZeroes(3)  // jne (skips the next command if edx != 13)
-		.AddBytes("\x4a")  // dec edx (skipped if the jump happened)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // mov edx, dword ptr [esp + edx*0x4 + 0x??]
-		.AddRelativeJump((char*)addr + 0x7);
-	sASMPatcher.PatchAt(addr, &patch);
+	// The game may attempt to read outside the bounds of the array with an index of 13.
+	if (idx > 12) {
+		idx = 12;
+	}
+	return doorSlotsToCheck[idx];
 }
 void PatchLevelGeneratorTryResizeEndroom() {
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898c24????????898c24????????898c24????????898c24????????898c24????????898c24????????8b4c24", "\x84");  // Replace ECX with EAX
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898424????????898424????????898424????????898424????????898424", "\x8C");  // Replace EAX with ECX
-	PatchTryResizeEndroomMissingLongThinRoomDoorSlot();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LevelGenerator_TryResizeEndroom_Fix);
+	const int espOffset = *(int*)((char*)addr + 0x3);
+
+	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
+	ASMPatch patch;
+	patch.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::ESP)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)
+		.LoadEffectiveAddress(ASMPatch::Registers::EDX, espOffset, ASMPatch::Registers::EDX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(TryResizeEndroomDoorSlotFix)
+		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x7);;
+	sASMPatcher.PatchAt(addr, &patch);
 }
