@@ -1,9 +1,16 @@
 #pragma once
 
 #include "IsaacRepentance.h"
+#include "LuaCore.h"
 
 namespace EntitySaveStateManagement
 {
+    namespace Init
+    {
+        void RegisterLuaInternals(lua_State* L);
+        void BindLuaCallbacks(lua_State* L, int tbl);
+    }
+
     namespace SaveData
     {
         struct WriteState

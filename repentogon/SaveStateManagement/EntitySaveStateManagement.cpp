@@ -37,6 +37,7 @@
 #include "ASMDefinition.h"
 #include "Log.h"
 #include "../MiscFunctions.h"
+#include "../LuaInterfaces/LuaEntitySaveState.h"
 
 #include <fstream>
 #include <algorithm>
@@ -77,7 +78,66 @@ namespace ESSM
         std::vector<HijackedState> hijackedStates; 
     };
 
+    struct LuaCallbacks
+    {
+        int storeEntity = LUA_NOREF;
+        int restoreEntity = LUA_NOREF;
+        int clearSaveStates = LUA_NOREF;
+        int copySaveStates = LUA_NOREF;
+        int serialize = LUA_NOREF;
+        int deserialize = LUA_NOREF;
+    };
+
     static Data s_systemData;
+    static LuaCallbacks s_luaCallbacks;
+}
+
+void ESSM::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
+{
+    assert(L == g_LuaEngine->_state);
+
+    tblIdx = lua_absindex(L, tblIdx);
+    if (!lua_istable(L, tblIdx))
+    {
+        ZHL::Log("[ERROR] ESSM::BindLuaCallbacks: expected a table\n");
+        assert(false);
+        return;
+    }
+
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.storeEntity);
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.restoreEntity);
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.clearSaveStates);
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.copySaveStates);
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.serialize);
+    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.deserialize);
+
+    s_luaCallbacks.storeEntity = LUA_NOREF; 
+    s_luaCallbacks.restoreEntity = LUA_NOREF; 
+    s_luaCallbacks.clearSaveStates = LUA_NOREF; 
+    s_luaCallbacks.copySaveStates = LUA_NOREF; 
+    s_luaCallbacks.serialize = LUA_NOREF; 
+    s_luaCallbacks.deserialize = LUA_NOREF;
+
+    auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
+    {
+        lua_getfield(L, tblIdx, fieldName);
+        if (!lua_isfunction(L, -1))
+        {
+            ZHL::Log("[ERROR] ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+            lua_pop(L, 1);
+            assert(false);
+            return;
+        }
+
+        outRef = luaL_ref(L, LUA_REGISTRYINDEX);
+    };
+
+    bindCallback(L, tblIdx, "StoreEntity", s_luaCallbacks.storeEntity);
+    bindCallback(L, tblIdx, "RestoreEntity", s_luaCallbacks.restoreEntity);
+    bindCallback(L, tblIdx, "ClearStates", s_luaCallbacks.clearSaveStates);
+    bindCallback(L, tblIdx, "CopyStates", s_luaCallbacks.copySaveStates);
+    bindCallback(L, tblIdx, "Serialize", s_luaCallbacks.serialize);
+    bindCallback(L, tblIdx, "Deserialize", s_luaCallbacks.deserialize);
 }
 
 constexpr size_t ESAU_JR_PLAYERS = 4;
@@ -2883,6 +2943,61 @@ void ESSM::ApplyPatches()
     Patch_PickupInitFlipState_CreateSaveState();
     Patch_PickupTryFlip_RestoreFlipState();
     Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom();
+}
+
+namespace ESSM::LuaFunctions
+{
+    static ModReference& get_mod_reference(lua_State* L, int idx)
+    {
+        if (!lua_istable(L, idx))
+        {
+            luaL_argerror(L, idx, "Expected a table.");
+        }
+
+        ModReference* modRef = g_LuaEngine->GetModRefByTable(idx);
+        if (!modRef)
+        {
+            luaL_argerror(L, idx, "Invalid ModReference.");
+        }
+
+        return *modRef;
+    }
+
+    LUA_FUNCTION(GetEntitySaveStateId)
+    {
+        EntitySaveState& state = Lua_EntitySaveState::GetEntitySaveState(L, 1);
+
+        lua_pushinteger(L, EntityHijackManager::GetId(state));
+        return 1;
+    }
+
+
+    LUA_FUNCTION(SaveData)
+    {
+        ModReference& modReference = get_mod_reference(L, 1);
+        std::string fileName = luaL_checkstring(L, 2);
+        std::string data = luaL_checkstring(L, 3);
+
+        // TODO: Save Data
+        return 0;
+    }
+
+    LUA_FUNCTION(LoadData)
+    {
+        ModReference& modReference = get_mod_reference(L, 1);
+        std::string fileName = luaL_checkstring(L, 2);
+
+        // TODO: Load Data
+        lua_pushstring(L, "");
+        return 1;
+    }
+}
+
+void ESSM::Init::RegisterLuaInternals(lua_State *L)
+{
+    lua::TableAssoc(L, "GetEntitySaveStateId", LuaFunctions::GetEntitySaveStateId);
+    lua::TableAssoc(L, "SaveData", LuaFunctions::SaveData);
+    lua::TableAssoc(L, "LoadData", LuaFunctions::LoadData);
 }
 
 #ifndef NDEBUG

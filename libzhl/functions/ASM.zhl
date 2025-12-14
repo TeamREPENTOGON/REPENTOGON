@@ -193,3 +193,10 @@ asm EntityPlayer_StoreGameState_AssignUnlistedFamiliarData "ff75??ff70??ff30e8??
 asm EntityPickup_InitFlipState_PostSaveStateConstructor "8db7????????508bcee8????????8b0e";
 asm EntityPickup_TryFlip_PostRestoreFlipState "837d??0075??33c0";
 asm EntityNPC_ai_mothers_shadow_ChangeMineshaftRoom "8b41??6aff";
+
+// EntityLifecycle
+asm EntityList_destructor_RemoveEntityMainEL "8b0c??8b01ff50??463b77??72??33f6";
+asm EntityList_destructor_RemoveEntityPersistentEL "8b0c??8b01ff50??463b77??72??8d9f";
+asm EntityList_Reset_RemoveNonPersistentEntity "8b0c??8b01ff50??463b73";
+asm EntityList_Update_RemoveEntityMainEL "8b028bcaff50??8b47";
+asm EntityList_Update_RemoveEntityPersistentEL "8a82????????8bca";

@@ -23,6 +23,7 @@
 #include "XMLPlayerExtras.h"
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
+#include "EntityLifecycle.h"
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
@@ -275,6 +276,7 @@ void PerformASMPatches() {
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
 	EntitySaveStateManagement::ApplyPatches();
+	EntityLifecycle::Patches::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

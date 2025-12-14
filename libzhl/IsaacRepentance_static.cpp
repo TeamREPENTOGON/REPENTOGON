@@ -681,3 +681,25 @@ void DestinationQuad::RotateRadians(const Vector& pivot, float radians)
 	_bottomLeft += pivot;
 	_bottomRight += pivot;
 }
+
+ModReference* LuaEngine::GetModRefByTable(int tblIdx)
+{
+	lua_State* L = this->_state;
+	int tblAbsIdx = lua_absindex(L, tblIdx);
+	std::list<ModReference>& mods = g_Mods;
+
+	for (ModReference& mod : mods)
+	{
+		int modRefTbl = mod._luaTableRef->_ref;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, modRefTbl);
+		bool eq = lua_rawequal(L, tblAbsIdx, -1);
+		lua_pop(L, 1);
+
+		if (eq)
+		{
+			return &mod;
+		}
+	}
+
+	return nullptr;
+}

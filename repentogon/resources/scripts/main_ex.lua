@@ -7,8 +7,6 @@ REPENTOGON = {
 
 collectgarbage("generational")
 
-
-
 local function MeetsVersion(targetVersion)
 	if (REPENTOGON.Version == "dev build") then return true end
     local version = {}
@@ -1952,3 +1950,56 @@ pcall(require, "repentogon_extras/stats_menu")
 pcall(require, "repentogon_extras/bestiary_menu")
 -- pcall(require, "repentogon_extras/onlinestub") let's not load it
 pcall(require, "repentogon_extras/mods_menu_tweaks")
+
+---@type boolean, REPENTOGON._Internals.ESSM
+local essmSuccess, ESSM = pcall(include, "repentogon_extras.entity_save_state_manager")
+if not essmSuccess then
+	error(string.format("[ERROR] Failed to load ESSM script: %s", ESSM))
+end
+
+local ESSM_OnNewEntity = ESSM._OnNewEntity
+local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
+
+---@class REPENTOGON._LuaBindings
+---@field ESSM REPENTOGON._LuaBindings.ESSM
+---@field EntityLifecycle REPENTOGON._LuaBindings.EntityLifecycle
+
+---@class REPENTOGON._LuaBindings.ESSM
+---@field StoreEntity fun(entityId: integer, saveStateId: integer)
+---@field RestoreEntity fun(entityId: integer, saveStateId: integer)
+---@field ClearStates fun(saveStateIds: integer[])
+---@field CopyStates fun(sourceIds: integer[], destIds: integer[])
+---@field Serialize fun(idMap: table<integer, integer>)
+---@field Deserialize fun(idMap: table<integer, integer>)
+
+---@class REPENTOGON._LuaBindings.EntityLifecycle
+---@field NewEntity fun(entityId: integer)
+---@field DeleteEntity fun(entityId: integer)
+
+---@type REPENTOGON._LuaBindings.EntityLifecycle
+local _EntityLifecycle = {
+	NewEntity = function (entityId)
+		ESSM_OnNewEntity(entityId)
+	end,
+	DeleteEntity = function (entityId)
+		ESSM_OnDeleteEntity(entityId)
+	end,
+}
+
+---@type REPENTOGON._LuaBindings.ESSM
+local _ESSM = {
+	StoreEntity = ESSM._OnStoreEntity,
+	RestoreEntity = ESSM._OnRestoreEntity,
+	ClearStates = ESSM._OnClearSaveStates,
+	CopyStates = ESSM._OnCopySaveStates,
+	Serialize = function (idMap)
+	end,
+	Deserialize = function (idMap)
+	end
+}
+
+---@type REPENTOGON._LuaBindings
+_LuaBindings = {
+	EntityLifecycle = _EntityLifecycle,
+	ESSM = _ESSM,
+}

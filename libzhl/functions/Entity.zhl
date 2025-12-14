@@ -193,6 +193,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     bool _visible : 0x171;
     bool _exists : 0x172;
     bool _dead : 0x173;
+	bool _removedByFactory : 0x177;
     int _entityGridCollisionClass : 0x184;
     int _entityCollisionClass : 0x188;
     // 0x18c is a boolean related to collisions. Seems to be essentially a "_collidesWithEntity"
@@ -279,7 +280,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
 		
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
+
+		"558bec515356578bf98b8f":
+		void ClearReferences();
+
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget
