@@ -3265,16 +3265,6 @@ LUA_FUNCTION(Lua_PlayerSetItemStateCooldown) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_PlayerGetLaserOffset) {
-	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const int laserOffsetID = luaL_checkinteger(L, 2);
-	Vector aimDirection = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	Vector result;
-	player->GetLaserOffset(&result, laserOffsetID, &aimDirection);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), result);
-	return 1;
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3570,7 +3560,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBlinkLockTime", Lua_PlayerSetBlinkLockTime },
 		{ "GetItemStateCooldown", Lua_PlayerGetItemStateCooldown },
 		{ "SetItemStateCooldown", Lua_PlayerSetItemStateCooldown },
-		{ "GetLaserOffset", Lua_PlayerGetLaserOffset },
 
 		{ NULL, NULL }
 	};
