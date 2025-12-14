@@ -16,12 +16,12 @@ ___
 #### int GetExplosionCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetFallingSpeed () {: aria-label='Functions' }
-#### float GetFallingSpeed ( ) {: .copyable aria-label='Functions' }
+### GetFallAcceleration () {: aria-label='Functions' }
+#### float GetFallAcceleration ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetHeight () {: aria-label='Functions' }
-#### float GetHeight ( ) {: .copyable aria-label='Functions' }
+### GetFallSpeed () {: aria-label='Functions' }
+#### float GetFallSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetHitList () {: aria-label='Functions' }
@@ -53,12 +53,12 @@ ___
 Returns if the bomb was created through the Angelic Prism effect.
 
 ___
-### SetFallingSpeed () {: aria-label='Functions' }
-#### void SetFallingSpeed ( float Speed ) {: .copyable aria-label='Functions' }
+### SetFallAcceleration () {: aria-label='Functions' }
+#### void SetFallAcceleration ( float Acceleration ) {: .copyable aria-label='Functions' }
 
 ___
-### SetHeight () {: aria-label='Functions' }
-#### void SetHeight ( float Height ) {: .copyable aria-label='Functions' }
+### SetFallSpeed () {: aria-label='Functions' }
+#### void SetFallSpeed ( float Speed ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetLoadCostumes () {: aria-label='Functions' }
