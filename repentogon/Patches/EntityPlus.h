@@ -16,7 +16,7 @@ class EntityPlus {
 
 // Attributes for EntityPlayer.
 class EntityPlayerPlus : public EntityPlus {
-public:
+  public:
 	std::set<std::string> customCacheTags;
 	std::unordered_map<std::string, double> customCacheResults;
 	bool customCacheRequiresEvaluateItemsCall = false;
@@ -35,18 +35,20 @@ public:
 
 // Attributes for EntityTear
 class EntityTearPlus : public EntityPlus {
-	public: std::optional<uint32_t> initSound = std::nullopt;
+  public:
+	std::optional<uint32_t> initSound = std::nullopt;
 };
 
 // Attributes for EntityLaser.
 class EntityLaserPlus : public EntityPlus {
   public:
 	bool recalculateSamplesNextUpdate = false;
+	std::optional<uint32_t> initSound = std::nullopt;
 };
 
 // Attributes for EntityKnife.
 class EntityKnifePlus : public EntityPlus {
-public:
+  public:
 	EntityPtr hitboxSource;
 };
 
