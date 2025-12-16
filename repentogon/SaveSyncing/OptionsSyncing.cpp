@@ -4,6 +4,7 @@
 #include "HookSystem.h"
 #include "ini.h"
 #include "Log.h"
+#include "../ImGuiFeatures/Lang.h"
 
 /*
 * Allows REPENTOGON to use a separate file from the vanilla `options.ini`, and keep the options synced between it and the vanilla options file.
@@ -20,6 +21,29 @@ std::string GetVanillaOptionsIniPath() {
 
 std::string GetRgonVanillaOptionsIniPath() {
 	return std::string(&g_SaveDataPath) + "repentogon/vanilla_options.ini";
+}
+
+// Checks if the read-only flag is set on options.ini, and if it is, attempts to remove it.
+// Prompt the user on failure (likely due to admin/permissions issues).
+void CheckReadOnlyFlag(const std::string& filePath) {
+	DWORD attr = GetFileAttributes(filePath.c_str());
+
+	if (attr == INVALID_FILE_ATTRIBUTES) {
+		return;
+	}
+
+	if (attr & FILE_ATTRIBUTE_READONLY) {
+		DWORD dwNewAttribs = attr & ~FILE_ATTRIBUTE_READONLY;
+
+		if (SetFileAttributes(filePath.c_str(), dwNewAttribs)) {
+			ZHL::Log("[OptionsSyncing::Save] Removed read-only flag from `%s`\n", filePath.c_str());
+		} else {
+			ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to remove read-only flag from `%s`\n", filePath.c_str());
+			std::stringstream err;
+			err << LANG.ERROR_OPTIONS_FILE_READONLY << "\n" << filePath;
+			MessageBox(0, err.str().c_str(), "REPENTOGON", MB_ICONERROR);
+		}
+	}
 }
 
 // For all fields that are present in both src and dst, copies the values from src to dst.
@@ -61,6 +85,8 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 	if (std::filesystem::exists(vanillaPath) && std::filesystem::exists(rgonPath)) {
 		ZHL::Log("[OptionsSyncing::Load] Syncing vanilla options from `%s` to `%s`...\n", vanillaPath.c_str(), rgonPath.c_str());
 
+		CheckReadOnlyFlag(rgonPath);
+
 		mINI::INIFile vanillaFile(vanillaPath);
 		mINI::INIStructure vanillaData;
 		if (!vanillaFile.read(vanillaData)) {
@@ -75,7 +101,7 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 			return;
 		}
 		CopySharedOptions(vanillaData, rgonData);
-		if (!rgonFile.write(rgonData)) {
+		if (!rgonFile.generate(rgonData)) {
 			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to write rgon INI data to `%s`\n", rgonPath.c_str());
 			return;
 		}
@@ -107,11 +133,16 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 		}
 
 		if (!std::filesystem::exists(vanillaPath)) {
+			ZHL::Log("[OptionsSyncing::Save] No vanilla options.ini found. Copying rgon file `%s` to vanillaPath `%s`\n", rgonPath.c_str(), vanillaPath.c_str());
 			if (!std::filesystem::copy_file(rgonPath, vanillaPath)) {
 				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to copy rgonPath `%s` to vanillaPath `%s`\n", rgonPath.c_str(), vanillaPath.c_str());
 				return;
 			}
 		} else {
+			ZHL::Log("[OptionsSyncing::Save] Updating `%s`...\n", vanillaPath.c_str());
+
+			CheckReadOnlyFlag(vanillaPath);
+
 			mINI::INIFile vanillaFile(vanillaPath);
 			mINI::INIStructure vanillaData;
 			if (!vanillaFile.read(vanillaData)) {
@@ -119,12 +150,13 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 				return;
 			}
 			CopySharedOptions(rgonData, vanillaData);
-			if (!vanillaFile.write(vanillaData)) {
+			if (!vanillaFile.generate(vanillaData)) {
 				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write vanilla INI data to `%s`\n", vanillaPath.c_str());
 				return;
 			}
 		}
 
+		ZHL::Log("[OptionsSyncing::Save] Updating %s...\n", rgonPath.c_str());
 		// Insert a disclaimer message at the beginning of the rgon file to clarify that modifying it may have no effect.
 		mINI::INIStructure updatedRgonData;
 		updatedRgonData[DISCLAIMER];
