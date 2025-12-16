@@ -21,12 +21,24 @@ local s_saveStateData = {}
 
 --#endregion
 
+local json = require("json")
+
 local type = type
 local pairs = pairs
+local error = error
+local pcall = pcall
+local tostring = tostring
+local getmetatable = getmetatable
 local string_format = string.format
+local json_encode = json.encode
+local json_decode = json.decode
 local GetPtrHash = GetPtrHash
+local Isaac_DebugString = Isaac.DebugString
 local GetModId = _CBindings.GetModId
 local GetEntitySaveStateId = _CBindings.ESSM.GetEntitySaveStateId
+local SaveEntityData = _CBindings.ESSM.SaveData
+local LoadEntityData = _CBindings.ESSM.LoadData
+local DeleteEntityData = _CBindings.ESSM.DeleteData
 
 ---@param tbl table
 ---@param memoTable table<table, table>
@@ -69,28 +81,165 @@ end
 
 --#region Internals
 
-local function _OnNewEntity()
+---@param entityId integer
+local function _OnDeleteEntity(entityId)
+    local exists = s_validEntities[entityId] ~= nil
+    s_validEntities[entityId] = nil
+
+    if not exists then
+        return
+    end
+
+    for _, entityTbl in pairs(s_entityData) do
+        entityTbl[entityId] = nil
+    end
 end
 
-local function _OnDeleteEntity()
+---@param entityId integer
+local function _OnNewEntity(entityId)
+    if s_validEntities[entityId] then
+        _OnDeleteEntity(entityId)
+    end
+
+    s_validEntities[entityId] = true
 end
 
-local function _OnStoreEntity()
+---@param entityId integer
+---@param saveStateId integer
+local function _OnStoreEntity(entityId, saveStateId)
+    for mod, entityTbl in pairs(s_entityData) do
+        local entityData = entityTbl[entityId]
+        if entityData then
+            s_saveStateData[mod][saveStateId] = deep_copy(entityData)
+        end
+    end
 end
 
-local function _OnRestoreEntity()
+---@param entityId integer
+---@param saveStateId integer
+local function _OnRestoreEntity(entityId, saveStateId)
+    for mod, saveStateTbl in pairs(s_saveStateData) do
+        local stateData = saveStateTbl[saveStateId]
+        if stateData then
+            s_entityData[mod][entityId] = deep_copy(stateData)
+        end
+    end
 end
 
-local function _OnCopySaveStates()
+---@param saveStateIds integer[]
+local function _OnClearSaveStates(saveStateIds)
+    for _, saveStateTbl in pairs(s_saveStateData) do
+        for i = 1, #saveStateIds, 1 do
+            local id = saveStateIds[i]
+            saveStateTbl[id] = nil
+        end
+    end
 end
 
-local function _OnClearSaveStates()
+---@param sourceIds integer[]
+---@param destIds integer[]
+local function _OnCopySaveStates(sourceIds, destIds)
+    assert(#sourceIds == #destIds)
+    for _, saveStateTbl in pairs(s_saveStateData) do
+        for i = 1, #sourceIds, 1 do
+            local sourceTbl = saveStateTbl[sourceIds[i]]
+            local dest = sourceIds[i]
+            if sourceTbl then
+                saveStateTbl[dest] = deep_copy(sourceTbl)
+            end
+        end
+    end
 end
 
-local function _Serialize()
+---@param saveStateTbl table<integer, table>
+---@param idMap table<integer, integer>
+---@param checksum integer
+---@return string data
+local function serialize_data(saveStateTbl, idMap, checksum)
+    local serializedData = {}
+    for serializationId, id in pairs(idMap) do
+        local stateTbl = saveStateTbl[id]
+        if stateTbl then
+            serializedData[serializationId] = deep_copy(stateTbl)
+        end
+    end
+
+    -- guard against json being bad with just number keys
+    serializedData["json_guard"] = true
+
+    local saveData = {
+        checksum = checksum,
+        data = serializedData,
+    }
+
+    local data = json_encode(saveData)
+    return data
 end
 
-local function _Deserialize()
+---@param idMap table<integer, integer>
+---@param fileName string
+---@param checksum integer
+local function _Serialize(idMap, fileName, checksum)
+    for mod, saveStateTbl in pairs(s_saveStateData) do
+        local success, result = pcall(serialize_data, saveStateTbl, idMap, checksum)
+        if not success then
+            Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to save data for Mod '%s' in '%s': %s", mod.Name, fileName, result))
+            DeleteEntityData(fileName)
+        else
+            SaveEntityData(mod, fileName, result)
+        end
+    end
+end
+
+---@param idMap table<integer, integer>
+---@param data string
+---@param checksum integer
+---@param outData table
+---@return boolean, string
+local function deserialize_data(idMap, data, checksum, outData)
+    if type(data) ~= "table" then
+        return false, "data is not a table"
+    end
+
+    local success, serializedData = pcall(json_decode, data)
+    if not success then
+        return false, string_format("Unable to decode data: %s", serializedData)
+    end
+
+    local tblChecksum = data.checksum
+    if not tblChecksum or tblChecksum ~= checksum then
+        return false, "checksum mismatch"
+    end
+
+    for serializationId, id in pairs(idMap) do
+        local stateData = serializedData[serializationId]
+        if type(stateData) == "table" then
+            outData[id] = deep_copy(stateData)
+        end
+    end
+
+    return true, "success"
+end
+
+---@param idMap table<integer, integer>
+---@param fileName string
+---@param checksum integer
+local function _Deserialize(idMap, fileName, checksum)
+    for mod, saveStateTbl in pairs(s_saveStateData) do
+        local data = LoadEntityData(mod, fileName)
+
+        if not data then
+            Isaac_DebugString(string_format("[INFO] [ESSM] Mod '%s' does not have any data for '%s'", mod.Name, fileName))
+            goto continue
+        end
+
+        local success, err = deserialize_data(idMap, data, checksum, saveStateTbl)
+        if not success then
+            Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to load data for Mod '%s' in '%s': %s", mod.Name, fileName, tostring(err)))
+            DeleteEntityData(fileName)
+        end
+        ::continue::
+    end
 end
 
 --#endregion
@@ -109,8 +258,8 @@ local function RegisterMod(mod)
     end
 
     s_registeredMods[modId] = true
-    s_entityData[modId] = {}
-    s_saveStateData[modId] = {}
+    s_entityData[mod] = {}
+    s_saveStateData[mod] = {}
 end
 
 local VALID_ENTITY_USERDATA = {
@@ -163,7 +312,8 @@ local function GetEntityData(mod, entity)
     local id = GetPtrHash(entity)
     if not s_validEntities[id] then
         local specificError
-        local userdataName = getmetatable(entity).__name
+        local metatable = getmetatable(entity)
+        local userdataName = metatable.__name or metatable.__type
         if not VALID_ENTITY_USERDATA[userdataName] then
             specificError = string_format("got %s", userdataName)
         else
