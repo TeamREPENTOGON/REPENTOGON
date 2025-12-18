@@ -1970,7 +1970,7 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 ---@field ClearStates fun(saveStateIds: integer[])
 ---@field CopyStates fun(sourceIds: integer[], destIds: integer[]) -- sourceIds and destIds must have the same size
 ---@field Serialize fun(idMap: table<integer, integer>, fileName: string, checksum: integer) -- first integer is the serializationId, second integer is the actualId
----@field Deserialize fun(idMap: table<integer, integer>, fileName: string, checksum: integer) -- first integer is the serializationId, second integer is the actualId
+---@field Deserialize fun(serializedIds: integer[], destIds: integer[], fileName: string, checksum: integer) -- serializedIds and destIds must have the same size
 
 ---@class REPENTOGON._LuaBindings.EntityLifecycle
 ---@field NewEntity fun(entityId: integer)

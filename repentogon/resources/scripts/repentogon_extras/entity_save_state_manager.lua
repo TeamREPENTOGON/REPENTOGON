@@ -184,19 +184,20 @@ local function _Serialize(idMap, fileName, checksum)
         local success, result = pcall(serialize_data, saveStateTbl, idMap, checksum)
         if not success then
             Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to save data for Mod '%s' in '%s': %s", mod.Name, fileName, result))
-            DeleteEntityData(fileName)
+            DeleteEntityData(mod, fileName)
         else
             SaveEntityData(mod, fileName, result)
         end
     end
 end
 
----@param idMap table<integer, integer>
+---@param serializedIds integer[]
+---@param destIds integer[]
 ---@param data string
 ---@param checksum integer
 ---@param outData table
 ---@return boolean, string
-local function deserialize_data(idMap, data, checksum, outData)
+local function deserialize_data(serializedIds, destIds, data, checksum, outData)
     if type(data) ~= "table" then
         return false, "data is not a table"
     end
@@ -211,20 +212,23 @@ local function deserialize_data(idMap, data, checksum, outData)
         return false, "checksum mismatch"
     end
 
-    for serializationId, id in pairs(idMap) do
-        local stateData = serializedData[serializationId]
-        if type(stateData) == "table" then
-            outData[id] = deep_copy(stateData)
+    for i = 1, #serializedIds, 1 do
+        local deserialized = serializedData[serializedIds[i]]
+        if type(deserialized) == "table" then
+            local id = destIds[i]
+            outData[id] = deep_copy(deserialized)
         end
     end
 
     return true, "success"
 end
 
----@param idMap table<integer, integer>
+---@param serializedIds integer[]
+---@param destIds integer[]
 ---@param fileName string
 ---@param checksum integer
-local function _Deserialize(idMap, fileName, checksum)
+local function _Deserialize(serializedIds, destIds, fileName, checksum)
+    assert(#serializedIds, #destIds)
     for mod, saveStateTbl in pairs(s_saveStateData) do
         local data = LoadEntityData(mod, fileName)
 
@@ -233,10 +237,10 @@ local function _Deserialize(idMap, fileName, checksum)
             goto continue
         end
 
-        local success, err = deserialize_data(idMap, data, checksum, saveStateTbl)
+        local success, err = deserialize_data(serializedIds, destIds, data, checksum, saveStateTbl)
         if not success then
             Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to load data for Mod '%s' in '%s': %s", mod.Name, fileName, tostring(err)))
-            DeleteEntityData(fileName)
+            DeleteEntityData(mod, fileName)
         end
         ::continue::
     end

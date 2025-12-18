@@ -8,7 +8,7 @@ error("This file should not have been included")
 ---@field GetEntitySaveStateId fun(ess: EntitiesSaveState): integer
 ---@field SaveData fun(mod: ModReference, fileName: string, data: string)
 ---@field LoadData fun(mod: ModReference, fileName: string): string?
----@field DeleteData fun(fileName: string)
+---@field DeleteData fun(mod: ModReference, fileName: string)
 
 ---@type REPENTOGON._CBindings
 ---@diagnostic disable-next-line: missing-fields

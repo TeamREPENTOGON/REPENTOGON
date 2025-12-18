@@ -46,6 +46,10 @@
 #undef ERROR_INVALID_STATE
 #define DEBUG_MSG true
 
+#define __LOG_DEBUG_HEADER__ "[DEBUG] [ESSM] - "
+#define __LOG_INFO_HEADER__ "[INFO] [ESSM] - "
+#define __LOG_ERROR_HEADER__ "[ERROR] [ESSM] - "
+
 namespace {
     struct HijackedState {
         int id = 0;
@@ -78,66 +82,34 @@ namespace ESSM
         std::vector<HijackedState> hijackedStates; 
     };
 
-    struct LuaCallbacks
+    class LuaCallbacks
     {
-        int storeEntity = LUA_NOREF;
-        int restoreEntity = LUA_NOREF;
-        int clearSaveStates = LUA_NOREF;
-        int copySaveStates = LUA_NOREF;
-        int serialize = LUA_NOREF;
-        int deserialize = LUA_NOREF;
+        private: int m_storeEntity = LUA_NOREF;
+        private: int m_restoreEntity = LUA_NOREF;
+        private: int m_clearSaveStates = LUA_NOREF;
+        private: int m_copySaveStates = LUA_NOREF;
+        private: int m_serialize = LUA_NOREF;
+        private: int m_deserialize = LUA_NOREF;
+
+        public: void BindLuaCallbacks(lua_State* L, int tblIdx);
+        public: void StoreEntity(const Entity& entity, uint32_t saveStateId);
+        public: void RestoreEntity(const Entity& entity, uint32_t saveStateId);
+        public: void ClearStates(const std::vector<uint32_t>& saveStateIds);
+        public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>> copyIds);
+        public: void Serialize(const SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
+        public: void Deserialize(const SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
     };
 
     static Data s_systemData;
     static LuaCallbacks s_luaCallbacks;
 }
 
-void ESSM::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
+namespace ESSM::Init
 {
-    assert(L == g_LuaEngine->_state);
-
-    tblIdx = lua_absindex(L, tblIdx);
-    if (!lua_istable(L, tblIdx))
+    void BindLuaCallbacks(lua_State* L, int tblIdx)
     {
-        ZHL::Log("[ERROR] ESSM::BindLuaCallbacks: expected a table\n");
-        assert(false);
-        return;
+        s_luaCallbacks.BindLuaCallbacks(L, tblIdx);
     }
-
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.storeEntity);
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.restoreEntity);
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.clearSaveStates);
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.copySaveStates);
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.serialize);
-    luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.deserialize);
-
-    s_luaCallbacks.storeEntity = LUA_NOREF; 
-    s_luaCallbacks.restoreEntity = LUA_NOREF; 
-    s_luaCallbacks.clearSaveStates = LUA_NOREF; 
-    s_luaCallbacks.copySaveStates = LUA_NOREF; 
-    s_luaCallbacks.serialize = LUA_NOREF; 
-    s_luaCallbacks.deserialize = LUA_NOREF;
-
-    auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
-    {
-        lua_getfield(L, tblIdx, fieldName);
-        if (!lua_isfunction(L, -1))
-        {
-            ZHL::Log("[ERROR] ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
-            lua_pop(L, 1);
-            assert(false);
-            return;
-        }
-
-        outRef = luaL_ref(L, LUA_REGISTRYINDEX);
-    };
-
-    bindCallback(L, tblIdx, "StoreEntity", s_luaCallbacks.storeEntity);
-    bindCallback(L, tblIdx, "RestoreEntity", s_luaCallbacks.restoreEntity);
-    bindCallback(L, tblIdx, "ClearStates", s_luaCallbacks.clearSaveStates);
-    bindCallback(L, tblIdx, "CopyStates", s_luaCallbacks.copySaveStates);
-    bindCallback(L, tblIdx, "Serialize", s_luaCallbacks.serialize);
-    bindCallback(L, tblIdx, "Deserialize", s_luaCallbacks.deserialize);
 }
 
 constexpr size_t ESAU_JR_PLAYERS = 4;
@@ -407,21 +379,21 @@ namespace ESSM::IdManager
         {
             uint32_t id = s_systemData.reusableIds.back();
             s_systemData.reusableIds.pop_back();
-            LogDebug("[ESSM] New ID: %u\n", id);
+            LogDebug(__LOG_DEBUG_HEADER__ "New ID: %u\n", id);
             return id;
         }
     
         uint32_t id = s_systemData.totalIds;
         s_systemData.totalIds++;
         s_systemData.hijackedStates.emplace_back();
-        LogDebug("[ESSM] New ID: %u\n", id);
+        LogDebug(__LOG_DEBUG_HEADER__ "New ID: %u\n", id);
         return id;
     }
 
     static void ClearId(uint32_t id)
     {
         s_systemData.reusableIds.push_back(id);
-        LogDebug("[ESSM] Cleared ID: %u\n", id);
+        LogDebug(__LOG_DEBUG_HEADER__ "Cleared ID: %u\n", id);
     }
 }
 
@@ -516,7 +488,7 @@ namespace ESSM::EntityHijackManager
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
-        LogDebug("[ESSM] Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
+        LogDebug(__LOG_DEBUG_HEADER__ "Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
         Hijack(data, id);
         return id;
     }
@@ -638,7 +610,7 @@ namespace ESSM::PlayerHijackManager
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
-        LogDebug("[ESSM] Player Saved %d\n", data._playerType);
+        LogDebug(__LOG_DEBUG_HEADER__ "Player Saved %d\n", data._playerType);
         Hijack(data, id);
         return id;
     }
@@ -749,7 +721,7 @@ namespace ESSM::FamiliarHijackManager
     {
         assert(!IsHijacked(data));
         uint32_t id = ESSM::IdManager::NewId();
-        LogDebug("[ESSM] Familiar Saved %d, %d\n", data._variant, data._subtype);
+        LogDebug(__LOG_DEBUG_HEADER__ "Familiar Saved %d, %d\n", data._variant, data._subtype);
         Hijack(data, id);
         return id;
     }
@@ -766,6 +738,228 @@ namespace ESSM::FamiliarHijackManager
         uint32_t id = GetId(data);
         RestoreHijack(data, s_systemData.hijackedStates[id]);
         return id;
+    }
+}
+
+// Lua Callbacks
+namespace ESSM
+{
+    void LuaCallbacks::BindLuaCallbacks(lua_State* L, int tblIdx)
+    {
+        assert(L == g_LuaEngine->_state);
+    
+        tblIdx = lua_absindex(L, tblIdx);
+        if (!lua_istable(L, tblIdx))
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "ESSM::BindLuaCallbacks: expected a table\n");
+            assert(false);
+            return;
+        }
+    
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_storeEntity);
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_restoreEntity);
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_clearSaveStates);
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_copySaveStates);
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_serialize);
+        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_deserialize);
+    
+        s_luaCallbacks.m_storeEntity = LUA_NOREF; 
+        s_luaCallbacks.m_restoreEntity = LUA_NOREF; 
+        s_luaCallbacks.m_clearSaveStates = LUA_NOREF; 
+        s_luaCallbacks.m_copySaveStates = LUA_NOREF; 
+        s_luaCallbacks.m_serialize = LUA_NOREF; 
+        s_luaCallbacks.m_deserialize = LUA_NOREF;
+    
+        auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
+        {
+            lua_getfield(L, tblIdx, fieldName);
+            if (!lua_isfunction(L, -1))
+            {
+                ZHL::Log(__LOG_ERROR_HEADER__ "ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+                lua_pop(L, 1);
+                assert(false);
+                return;
+            }
+    
+            outRef = luaL_ref(L, LUA_REGISTRYINDEX);
+        };
+    
+        bindCallback(L, tblIdx, "StoreEntity", s_luaCallbacks.m_storeEntity);
+        bindCallback(L, tblIdx, "RestoreEntity", s_luaCallbacks.m_restoreEntity);
+        bindCallback(L, tblIdx, "ClearStates", s_luaCallbacks.m_clearSaveStates);
+        bindCallback(L, tblIdx, "CopyStates", s_luaCallbacks.m_copySaveStates);
+        bindCallback(L, tblIdx, "Serialize", s_luaCallbacks.m_serialize);
+        bindCallback(L, tblIdx, "Deserialize", s_luaCallbacks.m_deserialize);
+    }
+    
+    void LuaCallbacks::StoreEntity(const Entity& entity, uint32_t saveStateId)
+    {
+        LuaEngine* lua = g_LuaEngine;
+        lua_State* L = lua->_state;
+    
+        uint32_t entityId = lua->GetMaskedPointer((uintptr_t)&entity);
+    
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_storeEntity);
+        lua_pushinteger(L, entityId);
+        lua_pushinteger(L, saveStateId);
+    
+        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::StoreEntity: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+    
+    void LuaCallbacks::RestoreEntity(const Entity& entity, uint32_t saveStateId)
+    {
+        LuaEngine* lua = g_LuaEngine;
+        lua_State* L = lua->_state;
+    
+        uint32_t entityId = lua->GetMaskedPointer((uintptr_t)&entity);
+    
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_restoreEntity);
+        lua_pushinteger(L, entityId);
+        lua_pushinteger(L, saveStateId);
+    
+        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::RestoreEntity: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+    
+    void LuaCallbacks::ClearStates(const std::vector<uint32_t>& saveStateIds)
+    {
+        lua_State* L = g_LuaEngine->_state;
+    
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_clearSaveStates);
+    
+        // push_vector
+        size_t size = saveStateIds.size();
+        lua_createtable(L, size, 0);
+        for (size_t i = 0; i < size; i++)
+        {
+            lua_pushinteger(L, saveStateIds[i]);
+            lua_rawseti(L, -2, i + 1);
+        }
+    
+        if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::ClearStates: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+    
+    void LuaCallbacks::CopyStates(const std::vector<std::pair<uint32_t, uint32_t>> copyIds)
+    {
+        lua_State* L = g_LuaEngine->_state;
+    
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_copySaveStates);
+    
+        // push sourceIds and destIds
+        size_t size = copyIds.size();
+        lua_createtable(L, size, 0); // sourceIds
+        lua_createtable(L, size, 0); // destIds
+    
+        int sourceIds = lua_absindex(L, -2);
+        int destIds = lua_absindex(L, -1);
+    
+        for (size_t i = 0; i < size; ++i)
+        {
+            const auto& copyId = copyIds[i];
+            lua_pushinteger(L, copyId.first);
+            lua_rawseti(L, sourceIds, i + 1);
+    
+            lua_pushinteger(L, copyId.second);
+            lua_rawseti(L, destIds, i + 1);
+        }
+    
+        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::CopyStates: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+    
+    void LuaCallbacks::Serialize(const SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum)
+    {
+        lua_State* L = g_LuaEngine->_state;
+
+        const auto& entityStates = writeState.writeEntityIdPairs;
+        const auto& playerStates = writeState.writePlayerIdPairs;
+        const auto& familiarStates = writeState.writeFamiliarIdPairs;
+        
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_serialize);
+
+        // push IdMap
+        size_t size = entityStates.size() + playerStates.size() + familiarStates.size();
+        lua_createtable(L, size, 0);
+        int idMap = lua_absindex(L, -1);
+
+        auto push_ids = [&](const std::vector<std::pair<uint32_t, uint32_t>>& ids)
+        {
+            for (size_t i = 0; i < ids.size(); ++i)
+            {
+                const auto& id = ids[i];
+                lua_pushinteger(L, id.second);
+                lua_rawseti(L, idMap, id.first + 1);
+            }
+        };
+
+        push_ids(entityStates);
+        push_ids(playerStates);
+        push_ids(familiarStates);
+
+        lua_pushlstring(L, filename.c_str(), filename.size());
+        lua_pushinteger(L, checksum);
+
+        if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::Serialize: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+    
+    void LuaCallbacks::Deserialize(const SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum)
+    {
+        lua_State* L = g_LuaEngine->_state;
+
+        const auto& entityStates = readState.restoreEntityIdPairs;
+        const auto& playerStates = readState.restorePlayerIdPairs;
+        const auto& familiarStates = readState.restoreFamiliarIdPairs;
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_deserialize);
+
+        // push serializedIds and destIds
+        size_t size = entityStates.size() + playerStates.size() + familiarStates.size();
+        lua_createtable(L, size, 0); // serializedIds
+        lua_createtable(L, size, 0); // destIds
+
+        int serializedIds = lua_absindex(L, -2);
+        int destIds = lua_absindex(L, -1);
+
+        auto push_ids = [&](const std::vector<std::pair<uint32_t, uint32_t>>& ids)
+        {
+            for (size_t i = 0; i < ids.size(); ++i)
+            {
+                const auto& id = ids[i];
+                lua_pushinteger(L, id.first);
+                lua_rawseti(L, serializedIds, i + 1);
+
+                lua_pushinteger(L, id.second);
+                lua_rawseti(L, destIds, i + 1);
+            }
+        };
+
+        push_ids(entityStates);
+        push_ids(playerStates);
+        push_ids(familiarStates);
+
+        if (lua_pcall(L, 4, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::Deserialize: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
     }
 }
 
@@ -787,7 +981,7 @@ namespace ESSM::PlayerOperations
         uint32_t targetId = IdManager::NewId();
         PlayerHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug("[ESSM] Copied Player %d -> %d\n", sourceId, targetId);
+        LogDebug(__LOG_DEBUG_HEADER__ "Copied Player %d -> %d\n", sourceId, targetId);
         // TODO: Callers should send signals
     }
 }
@@ -817,7 +1011,7 @@ namespace ESSM::FamiliarOperations
         uint32_t targetId = IdManager::NewId();
         FamiliarHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug("[ESSM] Copied Familiar %d -> %d\n", sourceId, targetId);
+        LogDebug(__LOG_DEBUG_HEADER__ "Copied Familiar %d -> %d\n", sourceId, targetId);
         // TODO: Callers should send signals
     }
 
@@ -858,7 +1052,7 @@ namespace ESSM::EntityOperations
         uint32_t targetId = IdManager::NewId();
         EntityHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug("[ESSM] Copied Entity %d -> %d\n", sourceId, targetId);
+        LogDebug(__LOG_DEBUG_HEADER__ "Copied Entity %d -> %d\n", sourceId, targetId);
         // TODO: Callers should send signals
     }
 
@@ -1359,7 +1553,7 @@ namespace ESSM::SaveData
         static constexpr std::size_t value = N;
     };
 
-    static_assert(bitset_size<decltype(ReadState::errors)>::value == NUM_ERRORS, "NUM_ERRORS doesn't match ReadState errors");
+    static_assert(bitset_size<decltype(_ReadState::errors)>::value == NUM_ERRORS, "NUM_ERRORS doesn't match _ReadState errors");
 
     namespace Operations
     {
@@ -1393,7 +1587,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void write_entity_smart_pointer(EntitySaveState& data, WriteState& writeState)
+        static void write_entity_smart_pointer(EntitySaveState& data, _WriteState& writeState)
         {
             assert(EntityHijackManager::IsHijacked(data) || EntityHijackManager::IsWritten(data));
             if (EntityHijackManager::IsHijacked(data))
@@ -1419,7 +1613,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static void write_entity(EntitySaveState& data, WriteState& writeState)
+        static void write_entity(EntitySaveState& data, _WriteState& writeState)
         {
             assert(EntityHijackManager::IsHijacked(data));
             if (!EntityHijackManager::IsHijacked(data))
@@ -1443,7 +1637,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void write_player(GameStatePlayer& data, WriteState& writeState)
+        static void write_player(GameStatePlayer& data, _WriteState& writeState)
         {
             assert(PlayerHijackManager::IsHijacked(data));
             if (!PlayerHijackManager::IsHijacked(data))
@@ -1461,7 +1655,7 @@ namespace ESSM::SaveData
             writtenSaveStates.emplace_back(&data, id);
         }
 
-        static void write_familiar(FamiliarData& data, WriteState& writeState)
+        static void write_familiar(FamiliarData& data, _WriteState& writeState)
         {
             assert(FamiliarHijackManager::IsHijacked(data));
             if (!FamiliarHijackManager::IsHijacked(data))
@@ -1479,7 +1673,7 @@ namespace ESSM::SaveData
             writtenSaveStates.emplace_back(&data, id);
         }
     
-        static void read_entity(EntitySaveState& data, ReadState& readState)
+        static void read_entity(EntitySaveState& data, _ReadState& readState)
         {
             if (!EntityHijackManager::IsWritten(data))
             {
@@ -1504,7 +1698,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void read_player(GameStatePlayer& data, ReadState& readState)
+        static void read_player(GameStatePlayer& data, _ReadState& readState)
         {
             if (!PlayerHijackManager::IsWritten(data))
             {
@@ -1524,7 +1718,7 @@ namespace ESSM::SaveData
             PlayerHijackManager::SetRead(data);
         }
 
-        static void read_familiar(FamiliarData& data, ReadState& readState)
+        static void read_familiar(FamiliarData& data, _ReadState& readState)
         {
             if (!FamiliarHijackManager::IsWritten(data))
             {
@@ -1544,7 +1738,7 @@ namespace ESSM::SaveData
             FamiliarHijackManager::SetRead(data);
         }
     
-        static void write_entity_vector(std::vector<EntitySaveState>& saveEntities, WriteState& writeState)
+        static void write_entity_vector(std::vector<EntitySaveState>& saveEntities, _WriteState& writeState)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -1552,7 +1746,7 @@ namespace ESSM::SaveData
             }
         }
     
-        static void read_entity_vector(std::vector<EntitySaveState>& saveEntities, ReadState& readState)
+        static void read_entity_vector(std::vector<EntitySaveState>& saveEntities, _ReadState& readState)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
@@ -1560,7 +1754,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void write_familiar_vector(std::vector<FamiliarData>& saveEntities, WriteState& writeState)
+        static void write_familiar_vector(std::vector<FamiliarData>& saveEntities, _WriteState& writeState)
         {
             for (FamiliarData& saveState : saveEntities)
             {
@@ -1568,7 +1762,7 @@ namespace ESSM::SaveData
             }
         }
 
-        static void read_familiar_vector(std::vector<FamiliarData>& saveEntities, ReadState& readState)
+        static void read_familiar_vector(std::vector<FamiliarData>& saveEntities, _ReadState& readState)
         {
             for (FamiliarData& saveState : saveEntities)
             {
@@ -1577,32 +1771,47 @@ namespace ESSM::SaveData
         }
     
         static auto ClearEntitySaveVectorLambda = [](std::vector<EntitySaveState>& vec) { ClearEntitySaveVector(vec); };
-        static auto WriteEntityVectorLambda = [](std::vector<EntitySaveState>& vec, WriteState& writeState) { write_entity_vector(vec, writeState); };
-        static auto WriteFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, WriteState& writeState) { write_familiar_vector(vec, writeState); };
-        static auto WritePlayerLambda = [](GameStatePlayer& player, WriteState& writeState) { write_player(player, writeState); };
-        static auto ReadEntityVectorLambda = [](std::vector<EntitySaveState>& vec, ReadState& readState) { read_entity_vector(vec, readState); };
-        static auto ReadFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, ReadState& readState) { read_familiar_vector(vec, readState); };
-        static auto ReadPlayerLambda = [](GameStatePlayer& player, ReadState& readState) { read_player(player, readState); };
+        static auto WriteEntityVectorLambda = [](std::vector<EntitySaveState>& vec, _WriteState& writeState) { write_entity_vector(vec, writeState); };
+        static auto WriteFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, _WriteState& writeState) { write_familiar_vector(vec, writeState); };
+        static auto WritePlayerLambda = [](GameStatePlayer& player, _WriteState& writeState) { write_player(player, writeState); };
+        static auto ReadEntityVectorLambda = [](std::vector<EntitySaveState>& vec, _ReadState& readState) { read_entity_vector(vec, readState); };
+        static auto ReadFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, _ReadState& readState) { read_familiar_vector(vec, readState); };
+        static auto ReadPlayerLambda = [](GameStatePlayer& player, _ReadState& readState) { read_player(player, readState); };
     }
 
-    static void resolve_read_errors(ReadState& readState)
+    static void resolve_read_errors(_ReadState& readState)
     {
         if (readState.errors.test(ReadErrors::ERROR_INVALID_STATE))
         {
-            ZHL::Log("[ERROR] [ESSM] - invalid EntitySaveState state during read\n");
+            ZHL::Log(__LOG_ERROR_HEADER__ "invalid EntitySaveState state during read\n");
         }
 
         if (readState.errors.test(ReadErrors::ERROR_DUPLICATE_ID))
         {
-            ZHL::Log("[ERROR] [ESSM] - duplicate id found during read\n");
+            ZHL::Log(__LOG_ERROR_HEADER__ "duplicate id found during read\n");
         }
     }
 
-    static void clear_write_state(WriteState& writeState)
+    static void clear_write_state(_WriteState& writeState)
     {
         writeState.writtenPlayerStates.clear();
         writeState.writtenFamiliarData.clear();
         writeState.writtenEntitySaveStates.clear();
+    }
+
+    bool CheckErrors(const ReadState& readState)
+    {
+        return readState.m_readState.errors.any();
+    }
+
+    static bool needs_handling(const _ReadState& readState)
+    {
+        return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();
+    }
+
+    bool NeedsHandling(const ReadState& readState)
+    {
+        return needs_handling(readState.m_readState);
     }
 
     template <typename T>
@@ -1679,7 +1888,7 @@ namespace ESSM::SaveData
         std::filesystem::remove(filePath, errorCode);
         if (errorCode)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to delete file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete file at \"%s\"\n", filePath.string().c_str());
         }
     }
 
@@ -1689,16 +1898,17 @@ namespace ESSM::SaveData
         GameState& gameState = manager->_gamestate;
     
         WriteState writeState = WriteState();
+        _WriteState& _writeState = writeState.m_writeState;
         try
         {
-            ESSM::EntityIterators::InGameState::All(gameState, Operations::WriteEntityVectorLambda, writeState);
-            ESSM::PlayerIterators::InGameState::All(gameState, Operations::WritePlayerLambda, writeState);
-            ESSM::FamiliarIterators::InGameState::All(gameState, Operations::WriteFamiliarVectorLambda, writeState);
+            ESSM::EntityIterators::InGameState::All(gameState, Operations::WriteEntityVectorLambda, _writeState);
+            ESSM::PlayerIterators::InGameState::All(gameState, Operations::WritePlayerLambda, _writeState);
+            ESSM::FamiliarIterators::InGameState::All(gameState, Operations::WriteFamiliarVectorLambda, _writeState);
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to write game state : %s\n", e.what());
-            clear_write_state(writeState);
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to write game state : %s\n", e.what());
+            clear_write_state(_writeState);
             return writeState;
         }
 
@@ -1712,57 +1922,72 @@ namespace ESSM::SaveData
         GameState& gameState = manager->_gamestate;
 
         ReadState readState = ReadState();
+        _ReadState& _readState = readState.m_readState;
 
         try
         {
-            ESSM::EntityIterators::InGameState::All(gameState, Operations::ReadEntityVectorLambda, readState);
-            ESSM::PlayerIterators::InGameState::All(gameState, Operations::ReadPlayerLambda, readState);
-            ESSM::FamiliarIterators::InGameState::All(gameState, Operations::ReadFamiliarVectorLambda, readState);
+            ESSM::EntityIterators::InGameState::All(gameState, Operations::ReadEntityVectorLambda, _readState);
+            ESSM::PlayerIterators::InGameState::All(gameState, Operations::ReadPlayerLambda, _readState);
+            ESSM::FamiliarIterators::InGameState::All(gameState, Operations::ReadFamiliarVectorLambda, _readState);
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to read game state : %s\n", e.what());
-            readState.errors.set(ReadErrors::TRIGGERED_EXCEPTION);
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to read game state : %s\n", e.what());
+            _readState.errors.set(ReadErrors::TRIGGERED_EXCEPTION);
         }
 
-        resolve_read_errors(readState);
+        resolve_read_errors(_readState);
         return readState;
     }
 
     void RestoreWrittenStates(WriteState& writeState)
     {
-        for (std::pair<EntitySaveState*, uint32_t> writtenSaveState : writeState.writtenEntitySaveStates)
+        _WriteState& _writeState = writeState.m_writeState;
+
+        _writeState.writeEntityIdPairs.reserve(_writeState.writtenEntitySaveStates.size());
+        for (std::pair<EntitySaveState*, uint32_t> writtenSaveState : _writeState.writtenEntitySaveStates)
         {
             EntitySaveState& saveState = *writtenSaveState.first;
             uint32_t id = writtenSaveState.second;
     
             assert(EntityHijackManager::IsWritten(saveState));
             EntityHijackManager::SetHijacked(saveState);
+            uint32_t writeId = EntityHijackManager::GetId(saveState);
             EntityHijackManager::SetId(saveState, id);
+
+            _writeState.writeEntityIdPairs.emplace_back(writeId, id);
         }
 
-        for (std::pair<GameStatePlayer*, uint32_t> writtenSaveState : writeState.writtenPlayerStates)
+        _writeState.writePlayerIdPairs.reserve(_writeState.writtenPlayerStates.size());
+        for (std::pair<GameStatePlayer*, uint32_t> writtenSaveState : _writeState.writtenPlayerStates)
         {
             GameStatePlayer& saveState = *writtenSaveState.first;
             uint32_t id = writtenSaveState.second;
 
             assert(PlayerHijackManager::IsWritten(saveState));
             PlayerHijackManager::SetHijacked(saveState);
+            uint32_t writeId = PlayerHijackManager::GetId(saveState);
             PlayerHijackManager::SetId(saveState, id);
+
+            _writeState.writePlayerIdPairs.emplace_back(writeId, id);
         }
 
-        for (std::pair<FamiliarData*, uint32_t> writtenSaveState : writeState.writtenFamiliarData)
+        _writeState.writeFamiliarIdPairs.reserve(_writeState.writtenFamiliarData.size());
+        for (std::pair<FamiliarData*, uint32_t> writtenSaveState : _writeState.writtenFamiliarData)
         {
             FamiliarData& saveState = *writtenSaveState.first;
             uint32_t id = writtenSaveState.second;
 
             assert(FamiliarHijackManager::IsWritten(saveState));
             FamiliarHijackManager::SetHijacked(saveState);
+            uint32_t writeId = FamiliarHijackManager::GetId(saveState);
             FamiliarHijackManager::SetId(saveState, id);
+
+            _writeState.writeFamiliarIdPairs.emplace_back(writeId, id);
         }
     }
 
-    void hijack_read_entity_states(ReadState& readState, SaveFile& saveFile)
+    void hijack_read_entity_states(_ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& entities = saveFile.entities;
         int maxId = entities.size() - 1;
@@ -1781,11 +2006,11 @@ namespace ESSM::SaveData
             EntityHijackManager::SetId(saveState, id);
             s_systemData.hijackedStates[id] = entities[readId];
 
-            readState.restoredEntitySaveStates.emplace_back(readId, id);
+            readState.restoreEntityIdPairs.emplace_back(readId, id);
         }
     }
 
-    void hijack_read_player_states(ReadState& readState, SaveFile& saveFile)
+    void hijack_read_player_states(_ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& players = saveFile.players;
         int maxId = players.size() - 1;
@@ -1804,11 +2029,11 @@ namespace ESSM::SaveData
             PlayerHijackManager::SetId(saveState, id);
             s_systemData.hijackedStates[id] = players[readId];
 
-            readState.restoredPlayerStates.emplace_back(readId, id);
+            readState.restorePlayerIdPairs.emplace_back(readId, id);
         }
     }
 
-    void hijack_read_familiar_states(ReadState& readState, SaveFile& saveFile)
+    void hijack_read_familiar_states(_ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& familiars = saveFile.familiars;
         int maxId = familiars.size() - 1;
@@ -1827,11 +2052,11 @@ namespace ESSM::SaveData
             FamiliarHijackManager::SetId(saveState, id);
             s_systemData.hijackedStates[id] = familiars[readId];
 
-            readState.restoredPlayerStates.emplace_back(readId, id);
+            readState.restoreFamiliarIdPairs.emplace_back(readId, id);
         }
     }
 
-    static void serialize_entities(std::ofstream& file, const WriteState& writeState)
+    static void serialize_entities(std::ofstream& file, const _WriteState& writeState)
     {
         uint32_t size = static_cast<uint32_t>(writeState.writtenEntitySaveStates.size());
         if (size > Section::MAX_ENTITY_COUNT)
@@ -1854,7 +2079,7 @@ namespace ESSM::SaveData
         write_binary(file, Section::ENTITY_END);
     }
 
-    static void deserialize_entities(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    static void deserialize_entities(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& entities = saveFile.entities;
 
@@ -1909,7 +2134,7 @@ namespace ESSM::SaveData
         }
     }
 
-    static void serialize_players(std::ofstream& file, const WriteState& writeState)
+    static void serialize_players(std::ofstream& file, const _WriteState& writeState)
     {
         uint32_t size = static_cast<uint32_t>(writeState.writtenPlayerStates.size());
         if (size > Section::MAX_PLAYER_COUNT)
@@ -1932,7 +2157,7 @@ namespace ESSM::SaveData
         write_binary(file, Section::PLAYER_END);
     }
 
-    static void deserialize_players(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    static void deserialize_players(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& players = saveFile.players;
 
@@ -1987,7 +2212,7 @@ namespace ESSM::SaveData
         }
     }
 
-    static void serialize_familiars(std::ofstream& file, const WriteState& writeState)
+    static void serialize_familiars(std::ofstream& file, const _WriteState& writeState)
     {
         uint32_t size = static_cast<uint32_t>(writeState.writtenFamiliarData.size());
         if (size > Section::MAX_FAMILIAR_COUNT)
@@ -2010,7 +2235,7 @@ namespace ESSM::SaveData
         write_binary(file, Section::FAMILIAR_END);
     }
 
-    static void deserialize_familiars(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    static void deserialize_familiars(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
     {
         std::vector<HijackedState>& familiars = saveFile.familiars;
 
@@ -2065,7 +2290,7 @@ namespace ESSM::SaveData
         }
     }
 
-    static void serialize_save(std::ofstream& file, const WriteState& writeState)
+    static void serialize_save(std::ofstream& file, const _WriteState& writeState)
     {
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
 
@@ -2077,7 +2302,7 @@ namespace ESSM::SaveData
         serialize_familiars(file, writeState);
     }
 
-    static void deserialize_save(std::ifstream& file, ReadState& readState, SaveFile& saveFile)
+    static void deserialize_save(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
     {
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
 
@@ -2100,20 +2325,20 @@ namespace ESSM::SaveData
         deserialize_familiars(file, readState, saveFile);
     }
 
-    void Serialize(const std::string& fileName, const WriteState& writeState)
+    static void serialize(const std::string& filename, const _WriteState& writeState)
     {
-        std::filesystem::path filePath = get_save_data_path(fileName);
+        std::filesystem::path filePath = get_save_data_path(filename);
         bool exists = guarantee_parent_path_exists(filePath);
         if (!exists)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
             return;
         }
 
         std::ofstream file = std::ofstream(filePath, std::ios::binary);
         if (!file.is_open())
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to open save file for writing at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open save file for writing at \"%s\"\n", filePath.string().c_str());
             return;
         }
 
@@ -2129,25 +2354,34 @@ namespace ESSM::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to serialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to serialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
             file.close();
             remove_file(filePath);
             return;
         }
 
-        ZHL::Log("[INFO] [ESSM] - successfully saved %s to \"%s\"\n", fileName.c_str(), filePath.string().c_str());
+        // TODO: Send Serialize Signal
+        ZHL::Log(__LOG_INFO_HEADER__ "successfully saved %s to \"%s\"\n", filename.c_str(), filePath.string().c_str());
     }
 
-    static bool deserialize(const std::string& fileName, ReadState& readState)
+    void Serialize(const std::string& fileName, WriteState& writeState)
+    {
+        _WriteState& _writeState = writeState.m_writeState;
+        serialize(fileName, _writeState);
+
+        _writeState.FreeMemory();
+    }
+
+    static bool deserialize(const std::string& fileName, _ReadState& readState)
     {
         // we should have never entered with errors here in the first place
         if (readState.errors.any())
         {
-            ZHL::Log("[ERROR] [ESSM] - pre-existing errors in read state when deserializing\n");
+            ZHL::Log(__LOG_ERROR_HEADER__ "pre-existing errors in read state when deserializing\n");
             return false;
         }
 
-        if (!NeedsHandling(readState))
+        if (!needs_handling(readState))
         {
             return true;
         }
@@ -2162,7 +2396,7 @@ namespace ESSM::SaveData
         std::ifstream file = std::ifstream(filePath, std::ios::binary);
         if (!file.is_open())
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to open save file for reading at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open save file for reading at \"%s\"\n", filePath.string().c_str());
             return false;
         }
 
@@ -2173,7 +2407,7 @@ namespace ESSM::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to deserialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to deserialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
             return false;
         }
 
@@ -2181,20 +2415,18 @@ namespace ESSM::SaveData
         hijack_read_entity_states(readState, saveFile);
         hijack_read_player_states(readState, saveFile);
         hijack_read_familiar_states(readState, saveFile);
+        ZHL::Log(__LOG_INFO_HEADER__ "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
         // TODO: Send Deserialize Event
-        ZHL::Log("[INFO] [ESSM] - successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
         return true;
     }
 
     bool Deserialize(const std::string& fileName, ReadState& readState)
     {
-        bool success = deserialize(fileName, readState);
+        _ReadState& _readState = readState.m_readState;
+        bool success = deserialize(fileName, _readState);
 
         // free the memory since we no longer need it
-        readState.readEntitySaveStates.clear();
-        readState.restoredPlayerStates.clear();
-        readState.restoredFamiliarData.clear();
-
+        _readState.FreeMemory();
         return success;
     }
 
@@ -2210,11 +2442,11 @@ namespace ESSM::SaveData
         std::filesystem::remove(filePath, errorCode);
         if (errorCode)
         {
-            ZHL::Log("[ERROR] [ESSM] - unable to delete file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete file at \"%s\"\n", filePath.string().c_str());
         }
         else
         {
-            ZHL::Log("[INFO] [ESSM] - deleted file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(__LOG_INFO_HEADER__ "deleted file at \"%s\"\n", filePath.string().c_str());
         }
     }
 }
@@ -2367,19 +2599,19 @@ HOOK_METHOD(Game, ResetState, () -> void)
 
 HOOK_METHOD(GameState, Clear, () -> void)
 {
-    LogDebug("[ESSM] Start GameState::Clear\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "Start GameState::Clear\n");
 
     ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::SaveData::Operations::ClearEntitySaveVectorLambda);
     ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::SaveData::Operations::ClearEntitySaveVectorLambda);
     // player save states are handled by GameStatePlayer::Init
     super();
 
-    LogDebug("[ESSM] End GameState::Clear\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "End GameState::Clear\n");
 }
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-    LogDebug("[ESSM] Start Game::SaveState\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "Start Game::SaveState\n");
 
     // There is no need to clear the state since SaveState always calls GameState::Clear before saving
 	super(state);
@@ -2387,18 +2619,18 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
     ESSM::EntityIterators::InGameState::AllBackwardsStages(*state, ESSM::EntityOperations::CopyVectorLambda);
     // players are handled by Entity_Player::Init
 
-    LogDebug("[ESSM] End Game::SaveState\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "End Game::SaveState\n");
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-    LogDebug("[ESSM] Start Game::RestoreState\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "Start Game::RestoreState\n");
 
     ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::ClearVectorLambda);
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
-    LogDebug("[ESSM] End Game::RestoreState\n");
+    LogDebug(__LOG_DEBUG_HEADER__ "End Game::RestoreState\n");
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
@@ -2822,7 +3054,7 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
     {
         uint32_t id = ESSM::EntityHijackManager::GetId(*saveState);
         ESSM::EntityOperations::ClearSaveState(*saveState);
-        LogDebug("[ESSM] Smart pointer Cleared: %u\n", id);
+        LogDebug(__LOG_DEBUG_HEADER__ "Smart pointer Cleared: %u\n", id);
     }
 
     saveState->destructor();
@@ -2842,7 +3074,7 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor()
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState)
 {
     uint32_t id = ESSM::EntityHijackManager::NewHijack(saveState);
-    LogDebug("[ESSM] New Flip State: %u\n", id);
+    LogDebug(__LOG_DEBUG_HEADER__ "New Flip State: %u\n", id);
 }
 
 static void Patch_PickupInitFlipState_CreateSaveState()
@@ -2971,25 +3203,87 @@ namespace ESSM::LuaFunctions
         return 1;
     }
 
+    static std::filesystem::path get_save_data_path(const ModReference& mod, const std::string& filename)
+    {
+        return std::filesystem::path(mod._dataDirectory) / "EntitySaveStateManagement" / filename;
+    }
 
     LUA_FUNCTION(SaveData)
     {
         ModReference& modReference = get_mod_reference(L, 1);
-        std::string fileName = luaL_checkstring(L, 2);
-        std::string data = luaL_checkstring(L, 3);
+        std::string filename = luaL_checkstring(L, 2);
+        size_t len;
+        // there is no need to copy the string
+        const char* data = luaL_checklstring(L, 3, &len);
 
-        // TODO: Save Data
+        std::filesystem::path filePath = get_save_data_path(modReference, filename);
+        if (!std::filesystem::exists(filePath))
+        {
+            return 0;
+        }
+
+        std::ofstream file = std::ofstream(filePath, std::ios::binary);
+        if (!file)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open Mod file for writing at \"%s\"\n", filePath.string().c_str());
+            return 0;
+        }
+
+        file.write(data, len);
         return 0;
     }
 
     LUA_FUNCTION(LoadData)
     {
         ModReference& modReference = get_mod_reference(L, 1);
-        std::string fileName = luaL_checkstring(L, 2);
+        std::string filename = luaL_checkstring(L, 2);
 
-        // TODO: Load Data
-        lua_pushstring(L, "");
+        std::filesystem::path filePath = get_save_data_path(modReference, filename);
+        if (!std::filesystem::exists(filePath))
+        {
+            lua_pushnil(L);
+            return 1;
+        }
+
+        std::ifstream file = std::ifstream(filePath, std::ios::binary);
+        if (!file)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open Mod file for reading at \"%s\"\n", filePath.string().c_str());
+            lua_pushnil(L);
+            return 1;
+        }
+
+        file.seekg(0, std::ios::end);
+        size_t len = file.tellg();
+        file.seekg(0);
+
+        std::string data(len, '\0');
+        file.read(data.data(), len);
+
+        lua_pushlstring(L, data.data(), data.size());
         return 1;
+    }
+
+    LUA_FUNCTION(DeleteData)
+    {
+        ModReference& modReference = get_mod_reference(L, 1);
+        std::string filename = luaL_checkstring(L, 2);
+
+        std::filesystem::path filePath = get_save_data_path(modReference, filename);
+        if (!std::filesystem::exists(filePath))
+        {
+            return 0;
+        }
+
+        std::error_code errorCode;
+        std::filesystem::remove(filePath, errorCode);
+
+        if (errorCode)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete Mod file at \"%s\"\n", filePath.string().c_str());
+        }
+
+        return 0;
     }
 }
 
@@ -2998,6 +3292,7 @@ void ESSM::Init::RegisterLuaInternals(lua_State *L)
     lua::TableAssoc(L, "GetEntitySaveStateId", LuaFunctions::GetEntitySaveStateId);
     lua::TableAssoc(L, "SaveData", LuaFunctions::SaveData);
     lua::TableAssoc(L, "LoadData", LuaFunctions::LoadData);
+    lua::TableAssoc(L, "DeleteData", LuaFunctions::DeleteData);
 }
 
 #ifndef NDEBUG
