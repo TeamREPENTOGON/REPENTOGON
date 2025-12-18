@@ -886,29 +886,24 @@ namespace ESSM
         lua_State* L = g_LuaEngine->_state;
 
         const auto& entityStates = writeState.writeEntityIdPairs;
-        const auto& playerStates = writeState.writePlayerIdPairs;
-        const auto& familiarStates = writeState.writeFamiliarIdPairs;
         
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_serialize);
 
+        /* ASSUMPTION: All written ids are unique.
+        *  This should, currently, always be true as all ids are based on the size of the vector before push.
+        */
+
         // push IdMap
-        size_t size = entityStates.size() + playerStates.size() + familiarStates.size();
+        size_t size = entityStates.size();
         lua_createtable(L, size, 0);
         int idMap = lua_absindex(L, -1);
 
-        auto push_ids = [&](const std::vector<std::pair<uint32_t, uint32_t>>& ids)
+        for (size_t i = 0; i < entityStates.size(); ++i)
         {
-            for (size_t i = 0; i < ids.size(); ++i)
-            {
-                const auto& id = ids[i];
-                lua_pushinteger(L, id.second);
-                lua_rawseti(L, idMap, id.first + 1);
-            }
-        };
-
-        push_ids(entityStates);
-        push_ids(playerStates);
-        push_ids(familiarStates);
+            const auto& id = entityStates[i];
+            lua_pushinteger(L, id.second);
+            lua_rawseti(L, idMap, id.first + 1);
+        }
 
         lua_pushlstring(L, filename.c_str(), filename.size());
         lua_pushinteger(L, checksum);
@@ -925,35 +920,26 @@ namespace ESSM
         lua_State* L = g_LuaEngine->_state;
 
         const auto& entityStates = readState.restoreEntityIdPairs;
-        const auto& playerStates = readState.restorePlayerIdPairs;
-        const auto& familiarStates = readState.restoreFamiliarIdPairs;
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_deserialize);
 
         // push serializedIds and destIds
-        size_t size = entityStates.size() + playerStates.size() + familiarStates.size();
+        size_t size = entityStates.size();
         lua_createtable(L, size, 0); // serializedIds
         lua_createtable(L, size, 0); // destIds
 
         int serializedIds = lua_absindex(L, -2);
         int destIds = lua_absindex(L, -1);
 
-        auto push_ids = [&](const std::vector<std::pair<uint32_t, uint32_t>>& ids)
+        for (size_t i = 0; i < entityStates.size(); ++i)
         {
-            for (size_t i = 0; i < ids.size(); ++i)
-            {
-                const auto& id = ids[i];
-                lua_pushinteger(L, id.first);
-                lua_rawseti(L, serializedIds, i + 1);
+            const auto& id = entityStates[i];
+            lua_pushinteger(L, id.first);
+            lua_rawseti(L, serializedIds, i + 1);
 
-                lua_pushinteger(L, id.second);
-                lua_rawseti(L, destIds, i + 1);
-            }
-        };
-
-        push_ids(entityStates);
-        push_ids(playerStates);
-        push_ids(familiarStates);
+            lua_pushinteger(L, id.second);
+            lua_rawseti(L, destIds, i + 1);
+        }
 
         if (lua_pcall(L, 4, 0, 0) != LUA_OK)
         {
@@ -1526,17 +1512,7 @@ namespace ESSM::SaveData
         constexpr uint32_t ENTITY_START = 0x73454E54; // sENT
         constexpr uint32_t ENTITY_END = 0x65454E54; // eENT
         constexpr uint32_t ENTITY_SIZE = 4 + 4;
-        constexpr uint32_t MAX_ENTITY_COUNT = 0xFFFF;
-
-        constexpr uint32_t PLAYER_START = 0x73504C59; // sPLY
-        constexpr uint32_t PLAYER_END = 0x65504C59; // ePLY
-        constexpr uint32_t PLAYER_SIZE = 4 + 4;
-        constexpr uint32_t MAX_PLAYER_COUNT = 0x20;
-
-        constexpr uint32_t FAMILIAR_START = 0x7346414D; // sFAM
-        constexpr uint32_t FAMILIAR_END = 0x6546414D; // eFAM
-        constexpr uint32_t FAMILIAR_SIZE = 4 + 4;
-        constexpr uint32_t MAX_FAMILIAR_COUNT = MAX_PLAYER_COUNT * 64;
+        constexpr uint32_t MAX_ENTITY_COUNT = 0x1FFFF;
     }
 
     enum ReadErrors
@@ -1645,7 +1621,7 @@ namespace ESSM::SaveData
                 throw std::runtime_error("invalid GameStatePlayer state during write");
             }
 
-            auto& writtenSaveStates = writeState.writtenPlayerStates;
+            auto& writtenSaveStates = writeState.writtenEntitySaveStates;
             uint32_t writeId = writtenSaveStates.size();
 
             uint32_t id = PlayerHijackManager::GetId(data);
@@ -1663,7 +1639,7 @@ namespace ESSM::SaveData
                 throw std::runtime_error("invalid FamiliarData state during write");
             }
 
-            auto& writtenSaveStates = writeState.writtenFamiliarData;
+            auto& writtenSaveStates = writeState.writtenEntitySaveStates;
             uint32_t writeId = writtenSaveStates.size();
 
             uint32_t id = FamiliarHijackManager::GetId(data);
@@ -1711,8 +1687,8 @@ namespace ESSM::SaveData
             {
                 // IMPROVEMENT: we may want to detect if there is a duplicate id, however this currently does not cause problems
                 uint32_t readId = PlayerHijackManager::GetId(data);
-                readState.minReadPlayers = std::max(readState.minReadPlayers, readId + 1);
-                readState.readPlayerStates.push_back(&data);
+                readState.minReadEntities = std::max(readState.minReadEntities, readId + 1);
+                readState.readEntitySaveStates.push_back(&data);
             }
 
             PlayerHijackManager::SetRead(data);
@@ -1731,8 +1707,8 @@ namespace ESSM::SaveData
             {
                 // IMPROVEMENT: we may want to detect if there is a duplicate id, however this currently does not cause problems
                 uint32_t readId = FamiliarHijackManager::GetId(data);
-                readState.minReadFamiliars = std::max(readState.minReadFamiliars, readId + 1);
-                readState.readFamiliarData.push_back(&data);
+                readState.minReadEntities = std::max(readState.minReadEntities, readId + 1);
+                readState.readEntitySaveStates.push_back(&data);
             }
 
             FamiliarHijackManager::SetRead(data);
@@ -1794,8 +1770,6 @@ namespace ESSM::SaveData
 
     static void clear_write_state(_WriteState& writeState)
     {
-        writeState.writtenPlayerStates.clear();
-        writeState.writtenFamiliarData.clear();
         writeState.writtenEntitySaveStates.clear();
     }
 
@@ -1806,7 +1780,7 @@ namespace ESSM::SaveData
 
     static bool needs_handling(const _ReadState& readState)
     {
-        return !readState.readEntitySaveStates.empty() || !readState.readPlayerStates.empty() || !readState.readFamiliarData.empty();
+        return !readState.readEntitySaveStates.empty();
     }
 
     bool NeedsHandling(const ReadState& readState)
@@ -1945,45 +1919,42 @@ namespace ESSM::SaveData
         _WriteState& _writeState = writeState.m_writeState;
 
         _writeState.writeEntityIdPairs.reserve(_writeState.writtenEntitySaveStates.size());
-        for (std::pair<EntitySaveState*, uint32_t> writtenSaveState : _writeState.writtenEntitySaveStates)
+        for (auto& writtenSaveState : _writeState.writtenEntitySaveStates)
         {
-            EntitySaveState& saveState = *writtenSaveState.first;
+            StatePtr& saveState = writtenSaveState.first;
             uint32_t id = writtenSaveState.second;
     
-            assert(EntityHijackManager::IsWritten(saveState));
-            EntityHijackManager::SetHijacked(saveState);
-            uint32_t writeId = EntityHijackManager::GetId(saveState);
-            EntityHijackManager::SetId(saveState, id);
+            uint32_t writeId;
+            std::visit([&](auto* ptr)
+            {
+                using T = std::decay_t<decltype(ptr)>;
+                constexpr bool Type_Entity = std::is_same_v<T, EntitySaveState*>;
+                constexpr bool Type_Player = std::is_same_v<T, GameStatePlayer*>;
+                constexpr bool Type_Familiar = std::is_same_v<T, FamiliarData*>;
 
+                static_assert(Type_Entity || Type_Player || Type_Familiar, "Unhandled variant");
+
+                if constexpr (Type_Entity) {
+                    assert(EntityHijackManager::IsWritten(*ptr));
+                    EntityHijackManager::SetHijacked(*ptr);
+                    writeId = EntityHijackManager::GetId(*ptr);
+                    EntityHijackManager::SetId(*ptr, id);
+                }
+                else if constexpr (Type_Player) {
+                    assert(PlayerHijackManager::IsWritten(*ptr));
+                    PlayerHijackManager::SetHijacked(*ptr);
+                    writeId = PlayerHijackManager::GetId(*ptr);
+                    PlayerHijackManager::SetId(*ptr, id);
+                }
+                else if constexpr (Type_Familiar) {
+                    assert(FamiliarHijackManager::IsWritten(*ptr));
+                    FamiliarHijackManager::SetHijacked(*ptr);
+                    writeId = FamiliarHijackManager::GetId(*ptr);
+                    FamiliarHijackManager::SetId(*ptr, id);
+                }
+            }, saveState);
+            
             _writeState.writeEntityIdPairs.emplace_back(writeId, id);
-        }
-
-        _writeState.writePlayerIdPairs.reserve(_writeState.writtenPlayerStates.size());
-        for (std::pair<GameStatePlayer*, uint32_t> writtenSaveState : _writeState.writtenPlayerStates)
-        {
-            GameStatePlayer& saveState = *writtenSaveState.first;
-            uint32_t id = writtenSaveState.second;
-
-            assert(PlayerHijackManager::IsWritten(saveState));
-            PlayerHijackManager::SetHijacked(saveState);
-            uint32_t writeId = PlayerHijackManager::GetId(saveState);
-            PlayerHijackManager::SetId(saveState, id);
-
-            _writeState.writePlayerIdPairs.emplace_back(writeId, id);
-        }
-
-        _writeState.writeFamiliarIdPairs.reserve(_writeState.writtenFamiliarData.size());
-        for (std::pair<FamiliarData*, uint32_t> writtenSaveState : _writeState.writtenFamiliarData)
-        {
-            FamiliarData& saveState = *writtenSaveState.first;
-            uint32_t id = writtenSaveState.second;
-
-            assert(FamiliarHijackManager::IsWritten(saveState));
-            FamiliarHijackManager::SetHijacked(saveState);
-            uint32_t writeId = FamiliarHijackManager::GetId(saveState);
-            FamiliarHijackManager::SetId(saveState, id);
-
-            _writeState.writeFamiliarIdPairs.emplace_back(writeId, id);
         }
     }
 
@@ -1992,67 +1963,51 @@ namespace ESSM::SaveData
         std::vector<HijackedState>& entities = saveFile.entities;
         int maxId = entities.size() - 1;
 
-        for (EntitySaveState* readSaveState : readState.readEntitySaveStates)
+        for (StatePtr& readSaveState : readState.readEntitySaveStates)
         {
-            EntitySaveState& saveState = *readSaveState;
-
-            assert(EntityHijackManager::IsRead(saveState));
-            uint32_t readId = EntityHijackManager::GetId(saveState);
-            // all previous steps should have guaranteed this
-            assert((int)readId <= maxId);
-            
             uint32_t id = ESSM::IdManager::NewId();
-            EntityHijackManager::SetHijacked(saveState);
-            EntityHijackManager::SetId(saveState, id);
+            uint32_t readId;
+
+            std::visit([&](auto* ptr)
+            {
+                using T = std::decay_t<decltype(ptr)>;
+                constexpr bool Type_Entity = std::is_same_v<T, EntitySaveState*>;
+                constexpr bool Type_Player = std::is_same_v<T, GameStatePlayer*>;
+                constexpr bool Type_Familiar = std::is_same_v<T, FamiliarData*>;
+
+                static_assert(Type_Entity || Type_Player || Type_Familiar, "Unhandled variant");
+
+                if constexpr (Type_Entity) {
+                    assert(EntityHijackManager::IsRead(*ptr));
+                    readId = EntityHijackManager::GetId(*ptr);
+                    // all previous steps should have guaranteed this
+                    assert((int)readId <= maxId);
+
+                    EntityHijackManager::SetHijacked(*ptr);
+                    EntityHijackManager::SetId(*ptr, id);
+                }
+                else if constexpr (Type_Player) {
+                    assert(PlayerHijackManager::IsRead(*ptr));
+                    readId = PlayerHijackManager::GetId(*ptr);
+                    // all previous steps should have guaranteed this
+                    assert((int)readId <= maxId);
+
+                    PlayerHijackManager::SetHijacked(*ptr);
+                    PlayerHijackManager::SetId(*ptr, id);
+                }
+                else if constexpr (Type_Familiar) {
+                    assert(FamiliarHijackManager::IsRead(*ptr));
+                    readId = FamiliarHijackManager::GetId(*ptr);
+                    // all previous steps should have guaranteed this
+                    assert((int)readId <= maxId);
+
+                    FamiliarHijackManager::SetHijacked(*ptr);
+                    FamiliarHijackManager::SetId(*ptr, id);
+                }
+            }, readSaveState);
+
             s_systemData.hijackedStates[id] = entities[readId];
-
             readState.restoreEntityIdPairs.emplace_back(readId, id);
-        }
-    }
-
-    void hijack_read_player_states(_ReadState& readState, SaveFile& saveFile)
-    {
-        std::vector<HijackedState>& players = saveFile.players;
-        int maxId = players.size() - 1;
-
-        for (GameStatePlayer* readSaveState : readState.readPlayerStates)
-        {
-            GameStatePlayer& saveState = *readSaveState;
-
-            assert(PlayerHijackManager::IsRead(saveState));
-            uint32_t readId = PlayerHijackManager::GetId(saveState);
-            // all previous steps should have guaranteed this
-            assert((int)readId <= maxId);
-
-            uint32_t id = ESSM::IdManager::NewId();
-            PlayerHijackManager::SetHijacked(saveState);
-            PlayerHijackManager::SetId(saveState, id);
-            s_systemData.hijackedStates[id] = players[readId];
-
-            readState.restorePlayerIdPairs.emplace_back(readId, id);
-        }
-    }
-
-    void hijack_read_familiar_states(_ReadState& readState, SaveFile& saveFile)
-    {
-        std::vector<HijackedState>& familiars = saveFile.familiars;
-        int maxId = familiars.size() - 1;
-
-        for (FamiliarData* readSaveState : readState.readFamiliarData)
-        {
-            FamiliarData& saveState = *readSaveState;
-
-            assert(FamiliarHijackManager::IsRead(saveState));
-            uint32_t readId = FamiliarHijackManager::GetId(saveState);
-            // all previous steps should have guaranteed this
-            assert((int)readId <= maxId);
-
-            uint32_t id = ESSM::IdManager::NewId();
-            FamiliarHijackManager::SetHijacked(saveState);
-            FamiliarHijackManager::SetId(saveState, id);
-            s_systemData.hijackedStates[id] = familiars[readId];
-
-            readState.restoreFamiliarIdPairs.emplace_back(readId, id);
         }
     }
 
@@ -2134,162 +2089,6 @@ namespace ESSM::SaveData
         }
     }
 
-    static void serialize_players(std::ofstream& file, const _WriteState& writeState)
-    {
-        uint32_t size = static_cast<uint32_t>(writeState.writtenPlayerStates.size());
-        if (size > Section::MAX_PLAYER_COUNT)
-        {
-            throw std::runtime_error("Too many players to serialize");
-        }
-
-        write_binary(file, Section::PLAYER_START);
-        write_binary(file, size);
-
-        for (auto& saveState : writeState.writtenPlayerStates)
-        {
-            uint32_t id = saveState.second;
-            HijackedState& hijackedState = s_systemData.hijackedStates[id];
-
-            write_binary(file, hijackedState.id);
-            write_binary(file, hijackedState.marker);
-        }
-
-        write_binary(file, Section::PLAYER_END);
-    }
-
-    static void deserialize_players(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
-    {
-        std::vector<HijackedState>& players = saveFile.players;
-
-        uint32_t sectionHeader = 0;
-        read_binary(file, sectionHeader);
-        if (sectionHeader != Section::PLAYER_START)
-        {
-            throw std::runtime_error("Incorrect section header");
-        }
-
-        uint32_t fileCount = 0;
-        read_binary(file, fileCount);
-
-        std::streamoff endPosition = validate_file_array_size(file, fileCount);
-
-        if (fileCount < readState.minReadPlayers)
-        {
-            throw std::runtime_error("Not enough players in save data");
-        }
-
-        if (fileCount > Section::MAX_PLAYER_COUNT)
-        {
-            throw std::runtime_error("Player count too large");
-        }
-
-        uint32_t neededCount = std::max(fileCount, readState.minReadPlayers);
-        try {
-            players.reserve(neededCount);
-        }
-        catch (const std::bad_alloc&) {
-            throw std::runtime_error("Out of memory");
-        }
-
-        for (uint32_t i = 0; i < neededCount; ++i)
-        {
-            HijackedState& hijackedState = players.emplace_back();
-            read_binary(file, hijackedState.id); // UNHIJACKED_ID
-            read_binary(file, hijackedState.marker); // UNHIJACKED_MARKER
-        }
-
-        file.seekg(endPosition);
-        if (!file)
-        {
-            throw std::runtime_error("Failed to skip to end of player data");
-        }
-
-        uint32_t sectionFooter = 0;
-        read_binary(file, sectionFooter);
-        if (sectionFooter != Section::PLAYER_END)
-        {
-            throw std::runtime_error("Incorrect section footer");
-        }
-    }
-
-    static void serialize_familiars(std::ofstream& file, const _WriteState& writeState)
-    {
-        uint32_t size = static_cast<uint32_t>(writeState.writtenFamiliarData.size());
-        if (size > Section::MAX_FAMILIAR_COUNT)
-        {
-            throw std::runtime_error("Too many familiars to serialize");
-        }
-
-        write_binary(file, Section::FAMILIAR_START);
-        write_binary(file, size);
-
-        for (auto& saveState : writeState.writtenFamiliarData)
-        {
-            uint32_t id = saveState.second;
-            HijackedState& hijackedState = s_systemData.hijackedStates[id];
-
-            write_binary(file, hijackedState.id);
-            write_binary(file, hijackedState.marker);
-        }
-
-        write_binary(file, Section::FAMILIAR_END);
-    }
-
-    static void deserialize_familiars(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
-    {
-        std::vector<HijackedState>& familiars = saveFile.familiars;
-
-        uint32_t sectionHeader = 0;
-        read_binary(file, sectionHeader);
-        if (sectionHeader != Section::FAMILIAR_START)
-        {
-            throw std::runtime_error("Incorrect section header");
-        }
-
-        uint32_t fileCount = 0;
-        read_binary(file, fileCount);
-
-        std::streamoff endPosition = validate_file_array_size(file, fileCount);
-
-        if (fileCount < readState.minReadFamiliars)
-        {
-            throw std::runtime_error("Not enough familiars in save data");
-        }
-
-        if (fileCount > Section::MAX_FAMILIAR_COUNT)
-        {
-            throw std::runtime_error("Familiar count too large");
-        }
-
-        uint32_t neededCount = std::max(fileCount, readState.minReadFamiliars);
-        try {
-            familiars.reserve(neededCount);
-        }
-        catch (const std::bad_alloc&) {
-            throw std::runtime_error("Out of memory");
-        }
-
-        for (uint32_t i = 0; i < neededCount; ++i)
-        {
-            HijackedState& hijackedState = familiars.emplace_back();
-            read_binary(file, hijackedState.id); // UNHIJACKED_ID
-            read_binary(file, hijackedState.marker); // UNHIJACKED_MARKER
-        }
-
-        file.seekg(endPosition);
-        if (!file)
-        {
-            throw std::runtime_error("Failed to skip to end of familiar data");
-        }
-
-        uint32_t sectionFooter = 0;
-        read_binary(file, sectionFooter);
-        if (sectionFooter != Section::FAMILIAR_END)
-        {
-            throw std::runtime_error("Incorrect section footer");
-        }
-    }
-
     static void serialize_save(std::ofstream& file, const _WriteState& writeState)
     {
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
@@ -2298,8 +2097,6 @@ namespace ESSM::SaveData
         write_binary(file, gameChecksum);
 
         serialize_entities(file, writeState);
-        serialize_players(file, writeState);
-        serialize_familiars(file, writeState);
     }
 
     static void deserialize_save(std::ifstream& file, _ReadState& readState, SaveFile& saveFile)
@@ -2321,8 +2118,6 @@ namespace ESSM::SaveData
         }
 
         deserialize_entities(file, readState, saveFile);
-        deserialize_players(file, readState, saveFile);
-        deserialize_familiars(file, readState, saveFile);
     }
 
     static void serialize(const std::string& filename, const _WriteState& writeState)
@@ -2413,8 +2208,6 @@ namespace ESSM::SaveData
 
         file.close();
         hijack_read_entity_states(readState, saveFile);
-        hijack_read_player_states(readState, saveFile);
-        hijack_read_familiar_states(readState, saveFile);
         ZHL::Log(__LOG_INFO_HEADER__ "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
         // TODO: Send Deserialize Event
         return true;

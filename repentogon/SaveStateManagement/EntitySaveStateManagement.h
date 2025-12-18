@@ -13,24 +13,18 @@ namespace EntitySaveStateManagement
 
     namespace SaveData
     {
+        using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>;
+
         struct _WriteState
         {
-            std::vector<std::pair<GameStatePlayer*, uint32_t>> writtenPlayerStates;
-            std::vector<std::pair<FamiliarData*, uint32_t>> writtenFamiliarData;
-            std::vector<std::pair<EntitySaveState*, uint32_t>> writtenEntitySaveStates;
+            std::vector<std::pair<StatePtr, uint32_t>> writtenEntitySaveStates;
             std::vector<std::pair<uint32_t, uint32_t>> writeEntityIdPairs; // write, id (for Lua Callbacks)
-            std::vector<std::pair<uint32_t, uint32_t>> writePlayerIdPairs; // write, id (for Lua Callbacks)
-            std::vector<std::pair<uint32_t, uint32_t>> writeFamiliarIdPairs; // write, id (for Lua Callbacks)
 
             // Free up memory after we are done
             public: void FreeMemory()
             {
-                this->writtenPlayerStates.clear();
-                this->writtenFamiliarData.clear();
                 this->writtenEntitySaveStates.clear();
                 this->writeEntityIdPairs.clear();
-                this->writePlayerIdPairs.clear();
-                this->writeFamiliarIdPairs.clear();
             }
 
             private: _WriteState() = default;
@@ -40,26 +34,16 @@ namespace EntitySaveStateManagement
 
         struct _ReadState
         {
-            std::vector<EntitySaveState*> readEntitySaveStates;
-            uint32_t minReadEntities = 0;
-            std::vector<GameStatePlayer*> readPlayerStates;
-            uint32_t minReadPlayers = 0;
-            std::vector<FamiliarData*> readFamiliarData;
-            uint32_t minReadFamiliars = 0;
+            std::vector<StatePtr> readEntitySaveStates;
             std::vector<std::pair<uint32_t, uint32_t>> restoreEntityIdPairs; // readId, id (for Lua Callbacks)
-            std::vector<std::pair<uint32_t, uint32_t>> restorePlayerIdPairs; // readId, id (for Lua Callbacks)
-            std::vector<std::pair<uint32_t, uint32_t>> restoreFamiliarIdPairs; // readId, id (for Lua Callbacks)
+            uint32_t minReadEntities = 0;
             std::bitset<3> errors;
 
             // Free up memory after we are done
             public: void FreeMemory()
             {
                 this->readEntitySaveStates.clear();
-                this->readPlayerStates.clear();
-                this->readFamiliarData.clear();
                 this->restoreEntityIdPairs.clear();
-                this->restorePlayerIdPairs.clear();
-                this->restoreFamiliarIdPairs.clear();
             }
 
             private: _ReadState() = default;
