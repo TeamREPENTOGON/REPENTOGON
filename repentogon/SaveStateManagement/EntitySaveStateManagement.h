@@ -5,6 +5,23 @@
 
 namespace EntitySaveStateManagement
 {
+    // Unhijacked values.
+    short& EntitySaveState_GetGridSpawnIdx(EntitySaveState& data);
+    uint32_t& EntitySaveState_GetI7(EntitySaveState& data);
+
+    uint32_t& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data);
+    uint32_t& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data);
+
+    uint32_t& FamiliarData_GetState(FamiliarData& data);
+    uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data);
+
+    // Clears all ids from the passed vector
+    // DOES NOT CLEAR THE VECTOR, IT MUST BE MANUALLY CLEARED AFTERWARDS!!!
+    void EntitySaveState_ClearVector(std::vector<EntitySaveState>& vector);
+}
+
+namespace EntitySaveStateManagement::detail
+{
     namespace Init
     {
         void RegisterLuaInternals(lua_State* L);
@@ -50,16 +67,16 @@ namespace EntitySaveStateManagement
 
             friend struct ReadState;
         };
-        
+
         struct WriteState
         {
             private: _WriteState m_writeState;
-            
+
             friend WriteState WriteGameState();
             friend void Serialize(const std::string& fileName, WriteState& writeState);
             friend void RestoreWrittenStates(WriteState& writeState);
         };
-        
+
         struct ReadState
         {
             private: _ReadState m_readState;
@@ -69,7 +86,7 @@ namespace EntitySaveStateManagement
             friend bool NeedsHandling(const ReadState& readState);
             friend bool Deserialize(const std::string& fileName, ReadState& readState);
         };
-        
+
         WriteState WriteGameState();
         void Serialize(const std::string& fileName, WriteState& writeState);
         void RestoreWrittenStates(WriteState& writeState);
@@ -85,5 +102,8 @@ namespace EntitySaveStateManagement
         void DeleteGameState(const std::string& fileName);
     }
 
-    void ApplyPatches();
+    namespace Patches
+    {
+        void ApplyPatches();
+    }
 }

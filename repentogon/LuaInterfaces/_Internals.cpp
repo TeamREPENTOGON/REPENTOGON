@@ -30,6 +30,6 @@ void LuaInternals::RegisterInternals(lua_State *L)
 	lua::TableAssoc(L, "GetModId", Lua_GetModId);
 
 	lua_newtable(L);
-	EntitySaveStateManagement::Init::RegisterLuaInternals(L);
+	EntitySaveStateManagement::detail::Init::RegisterLuaInternals(L);
 	lua_setfield(L, -2, "ESSM");
 }

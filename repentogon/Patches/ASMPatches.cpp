@@ -275,7 +275,7 @@ void PerformASMPatches() {
 
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
-	EntitySaveStateManagement::ApplyPatches();
+	EntitySaveStateManagement::detail::Patches::ApplyPatches();
 	EntityLifecycle::Patches::ApplyPatches();
 
 	// External

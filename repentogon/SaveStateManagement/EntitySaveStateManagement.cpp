@@ -44,8 +44,8 @@
 
 #undef max
 #undef ERROR_INVALID_STATE
-#define DEBUG_MSG true
 
+#define DEBUG_MSG false
 #define __LOG_DEBUG_HEADER__ "[DEBUG] [ESSM] - "
 #define __LOG_INFO_HEADER__ "[INFO] [ESSM] - "
 #define __LOG_ERROR_HEADER__ "[ERROR] [ESSM] - "
@@ -96,15 +96,15 @@ namespace ESSM
         public: void RestoreEntity(const Entity& entity, uint32_t saveStateId);
         public: void ClearStates(const std::vector<uint32_t>& saveStateIds);
         public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>> copyIds);
-        public: void Serialize(const SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
-        public: void Deserialize(const SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
+        public: void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
+        public: void Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
     };
 
     static Data s_systemData;
     static LuaCallbacks s_luaCallbacks;
 }
 
-namespace ESSM::Init
+namespace ESSM::detail::Init
 {
     void BindLuaCallbacks(lua_State* L, int tblIdx)
     {
@@ -741,6 +741,52 @@ namespace ESSM::FamiliarHijackManager
     }
 }
 
+// Unhijacked API
+namespace ESSM
+{
+    short& EntitySaveState_GetGridSpawnIdx(EntitySaveState& data)
+    {
+        assert(EntityHijackManager::IsHijacked(data));
+        uint32_t id = EntityHijackManager::GetId(data);
+        return *(short*)&s_systemData.hijackedStates[id].marker;
+    }
+
+    uint32_t& EntitySaveState_GetI7(EntitySaveState& data)
+    {
+        assert(EntityHijackManager::IsHijacked(data));
+        uint32_t id = EntityHijackManager::GetId(data);
+        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+    }
+
+    uint32_t& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data)
+    {
+        assert(PlayerHijackManager::IsHijacked(data));
+        uint32_t id = PlayerHijackManager::GetId(data);
+        return *(uint32_t*)&s_systemData.hijackedStates[id].marker;
+    }
+
+    uint32_t& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data)
+    {
+        assert(PlayerHijackManager::IsHijacked(data));
+        uint32_t id = PlayerHijackManager::GetId(data);
+        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+    }
+
+    uint32_t& FamiliarData_GetState(FamiliarData& data)
+    {
+        assert(FamiliarHijackManager::IsHijacked(data));
+        uint32_t id = FamiliarHijackManager::GetId(data);
+        return *(uint32_t*)&s_systemData.hijackedStates[id].marker;
+    }
+
+    uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data)
+    {
+        assert(FamiliarHijackManager::IsHijacked(data));
+        uint32_t id = FamiliarHijackManager::GetId(data);
+        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+    }
+}
+
 // Lua Callbacks
 namespace ESSM
 {
@@ -881,7 +927,7 @@ namespace ESSM
         }
     }
     
-    void LuaCallbacks::Serialize(const SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum)
+    void LuaCallbacks::Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum)
     {
         lua_State* L = g_LuaEngine->_state;
 
@@ -915,7 +961,7 @@ namespace ESSM
         }
     }
     
-    void LuaCallbacks::Deserialize(const SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum)
+    void LuaCallbacks::Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum)
     {
         lua_State* L = g_LuaEngine->_state;
 
@@ -1054,6 +1100,17 @@ namespace ESSM::EntityOperations
     static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) { CopyVector(vec); };
 }
 
+// Operations API
+namespace ESSM
+{
+    void EntitySaveState_ClearVector(std::vector<EntitySaveState>& vector)
+    {
+        EntityOperations::ClearVector(vector);
+        // TODO: Send signal
+    }
+}
+
+// Stability Checker
 namespace ESSM
 {
     class StabilityChecker
@@ -1496,7 +1553,7 @@ static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
     // TODO: restore entity
 }
 
-namespace ESSM::SaveData
+namespace ESSM::detail::SaveData
 {
     constexpr uint32_t SAVE_VERSION = 1;
 
@@ -2394,8 +2451,8 @@ HOOK_METHOD(GameState, Clear, () -> void)
 {
     LogDebug(__LOG_DEBUG_HEADER__ "Start GameState::Clear\n");
 
-    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::SaveData::Operations::ClearEntitySaveVectorLambda);
-    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::SaveData::Operations::ClearEntitySaveVectorLambda);
+    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda);
+    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda);
     // player save states are handled by GameStatePlayer::Init
     super();
 
@@ -2436,9 +2493,9 @@ HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 
 HOOK_METHOD(GameStatePlayer, Init, () -> void)
 {
-    ESSM::SaveData::Operations::ClearEntitySaveVector(this->_movingBoxContents);
-    ESSM::SaveData::Operations::ClearFamiliarSaveVector(this->_familiarData);
-    ESSM::SaveData::Operations::ClearPlayerSave(*this);
+    ESSM::detail::SaveData::Operations::ClearEntitySaveVector(this->_movingBoxContents);
+    ESSM::detail::SaveData::Operations::ClearFamiliarSaveVector(this->_familiarData);
+    ESSM::detail::SaveData::Operations::ClearPlayerSave(*this);
     super();
     // Doing this here since it makes the most sense, also means we won't have problems if a GameStatePlayer is accessed in between an Init and a Restore
     ESSM::PlayerHijackManager::SetCleared(*this);
@@ -2950,7 +3007,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void ESSM::ApplyPatches()
+void ESSM::detail::Patches::ApplyPatches()
 {
     Patch_ReferenceCount_EntitySaveStateDestructor();
     Patch_LevelInit_PostMyosotisEffect();
@@ -3080,7 +3137,7 @@ namespace ESSM::LuaFunctions
     }
 }
 
-void ESSM::Init::RegisterLuaInternals(lua_State *L)
+void ESSM::detail::Init::RegisterLuaInternals(lua_State *L)
 {
     lua::TableAssoc(L, "GetEntitySaveStateId", LuaFunctions::GetEntitySaveStateId);
     lua::TableAssoc(L, "SaveData", LuaFunctions::SaveData);
