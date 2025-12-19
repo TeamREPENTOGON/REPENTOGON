@@ -1,3 +1,10 @@
+v1.1.x -
+Modified:
+* EntityPlayer:
+	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
+		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+/newline/
+/versionseparator/
 v1.1.1 -
 Added:
 * Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon > resources-dlc3 > resources).

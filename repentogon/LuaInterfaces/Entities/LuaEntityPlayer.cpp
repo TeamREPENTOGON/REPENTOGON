@@ -2275,7 +2275,8 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int idx = (int)luaL_checkinteger(L, 2);
-	player->SetControllerIndex(idx);
+	bool includePlayerOwned = lua::luaL_checkboolean(L, 3);
+	player->SetControllerIndex(idx, includePlayerOwned);
 
 	return 0;
 }
