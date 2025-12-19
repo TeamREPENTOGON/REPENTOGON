@@ -1,3 +1,7 @@
+v1.1.1a -
+* Fixed inconsistent syncing of game options between vanilla and REPENTOGON.
+/newline/
+/versionseparator/
 v1.1.1 -
 Added:
 * Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon > resources-dlc3 > resources).
