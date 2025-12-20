@@ -2,9 +2,11 @@
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
-#include "ini.h"
 #include "Log.h"
 #include "../ImGuiFeatures/Lang.h"
+
+#define MINI_CASE_SENSITIVE
+#include "ini.h"
 
 /*
 * Allows REPENTOGON to use a separate file from the vanilla `options.ini`, and keep the options synced between it and the vanilla options file.
@@ -101,7 +103,7 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 			return;
 		}
 		CopySharedOptions(vanillaData, rgonData);
-		if (!rgonFile.generate(rgonData)) {
+		if (!rgonFile.write(rgonData)) {
 			ZHL::Log("[OptionsSyncing::Load] ERROR: Failed to write rgon INI data to `%s`\n", rgonPath.c_str());
 			return;
 		}
@@ -150,7 +152,7 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 				return;
 			}
 			CopySharedOptions(rgonData, vanillaData);
-			if (!vanillaFile.generate(vanillaData)) {
+			if (!vanillaFile.write(vanillaData)) {
 				ZHL::Log("[OptionsSyncing::Save] ERROR: Failed to write vanilla INI data to `%s`\n", vanillaPath.c_str());
 				return;
 			}
