@@ -402,348 +402,181 @@ namespace ESSM::IdManager
     }
 }
 
-namespace ESSM::EntityHijackManager
+// Hijack Manager
+namespace ESSM
 {
-    constexpr short READ_MARKER = 0x5248;
-    constexpr short HIJACK_MARKER = 0x5247;
-    constexpr short WRITTEN_MARKER = 0x5246;
+    template <typename Traits>
+    class HijackManager
+    {
+        using Data = typename Traits::DataType;
+        using Marker = typename Traits::MarkerType;
+        using Id = typename Traits::IdType;
 
-    const short& get_marker_value(const EntitySaveState& data)
-    {
-        return *(short*)&data.gridSpawnIdx;
-    }
-    
-    const uint32_t& get_id_value(const EntitySaveState& data)
-    {
-        return *(uint32_t*)&data._intStorage7;
-    }
+        private: static constexpr Marker CLEARED_MARKER = 0x5249;
+        private: static constexpr Marker READ_MARKER = 0x5248;
+        private: static constexpr Marker HIJACK_MARKER = 0x5247;
+        private: static constexpr Marker WRITTEN_MARKER = 0x5246;
 
-    // only used if unable to get a HijackedState
-    static void DefaultRestore(EntitySaveState& data)
-    {
-        data.gridSpawnIdx = (short)-1;
-        data._intStorage7 = 0;
-    }
-    
-    short& get_marker_value(EntitySaveState& data)
-    { 
-        return const_cast<short&>(get_marker_value(std::as_const(data)));
-    }
+        private: static const Marker& get_marker_value(const Data& data)
+        {
+            return data.*(Traits::marker_member);
+        }
 
-    uint32_t& get_id_value(EntitySaveState& data)
-    { 
-        return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
-    }
+        private: static Marker& get_marker_value(Data& data)
+        {
+            return const_cast<Marker&>(get_marker_value(std::as_const(data)));
+        }
 
-    static bool IsHijacked(const EntitySaveState& data)
-    {
-        return get_marker_value(data) == HIJACK_MARKER;
-    }
-    
-    static bool IsWritten(const EntitySaveState& data)
-    {
-        return get_marker_value(data) == WRITTEN_MARKER;
-    }
-    
-    static bool IsRead(const EntitySaveState& data)
-    {
-        return get_marker_value(data) == READ_MARKER;
-    }
-    
-    static bool HasMarker(const EntitySaveState& data)
-    {
-        return IsHijacked(data) || IsWritten(data) || IsRead(data);
-    }
+        private: static const Id& get_id_value(const Data& data)
+        {
+            return data.*(Traits::id_member);
+        }
 
-    static void SetHijacked(EntitySaveState& data)
-    {
-        get_marker_value(data) = HIJACK_MARKER;
-    }
-    
-    static void SetWritten(EntitySaveState& data)
-    {
-        get_marker_value(data) = WRITTEN_MARKER;
-    }
-    
-    static void SetRead(EntitySaveState& data)
-    {
-        get_marker_value(data) = READ_MARKER;
-    }
-    
-    static uint32_t GetId(const EntitySaveState& data)
-    {
-        return get_id_value(data);
-    }
-    
-    static void SetId(EntitySaveState& data, uint32_t id)
-    {
-        get_id_value(data) = id;
-    }
-    
-    static void Hijack(EntitySaveState& data, uint32_t id)
-    {
-        HijackedState& hijackedState = s_systemData.hijackedStates[id];
-        hijackedState.marker = get_marker_value(data);
-        hijackedState.id = get_id_value(data);
-        SetHijacked(data);
-        SetId(data, id);
-    }
-    
-    static uint32_t NewHijack(EntitySaveState& data)
-    {
-        assert(!IsHijacked(data));
-        uint32_t id = ESSM::IdManager::NewId();
-        LogDebug(__LOG_DEBUG_HEADER__ "Saved %d, %d, %d\n", data.type, data.variant, data.subtype);
-        Hijack(data, id);
-        return id;
-    }
+        private: static Id& get_id_value(Data& data)
+        {
+            return const_cast<Id&>(get_id_value(std::as_const(data)));
+        }
 
-    static void RestoreHijack(EntitySaveState& data, HijackedState& hijackedState)
-    {
-        get_marker_value(data) = hijackedState.marker;
-        get_id_value(data) = hijackedState.id;
-    }
-    
-    static uint32_t UnHijack(EntitySaveState& data)
-    {
-        assert(IsHijacked(data));
-        uint32_t id = GetId(data);
-        RestoreHijack(data, s_systemData.hijackedStates[id]);
-        return id;
-    }
-}
+        public: static void DefaultRestore(Data& d)
+        {
+            Traits::DefaultRestore(d);
+        }
 
-namespace ESSM::PlayerHijackManager
-{
-    constexpr short CLEARED_MARKER = 0x5249;
-    constexpr short READ_MARKER = 0x5248;
-    constexpr short HIJACK_MARKER = 0x5247;
-    constexpr short WRITTEN_MARKER = 0x5246;
+        public: static bool IsHijacked(const Data& data)
+        {
+            return get_marker_value(data) == HIJACK_MARKER;
+        }
 
-    const uint32_t& get_marker_value(const GameStatePlayer& data)
-    {
-        return *(uint32_t*)&data._immaculateConceptionState;
-    }
-    
-    const uint32_t& get_id_value(const GameStatePlayer& data)
-    {
-        return *(uint32_t*)&data._cambionConceptionState;
-    }
+        public: static bool IsWritten(const Data& data)
+        {
+            return get_marker_value(data) == WRITTEN_MARKER;
+        }
+        
+        public: static bool IsRead(const Data& data)
+        {
+            return get_marker_value(data) == READ_MARKER;
+        }
 
-    // only used if unable to get a HijackedState
-    static void DefaultRestore(GameStatePlayer& data)
-    {
-        data._immaculateConceptionState = 0;
-        data._cambionConceptionState = 0;
-    }
-    
-    uint32_t& get_marker_value(GameStatePlayer& data)
-    { 
-        return const_cast<uint32_t&>(get_marker_value(std::as_const(data)));
-    }
+        public: static bool IsCleared(const Data& data)
+        {
+            return get_marker_value(data) == CLEARED_MARKER;
+        }
 
-    uint32_t& get_id_value(GameStatePlayer& data)
-    { 
-        return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
-    }
+        public: static bool HasMarker(const Data& data)
+        {
+            return IsHijacked(data) || IsWritten(data) || IsRead(data) || IsCleared(data);
+        }
 
-    static bool IsHijacked(const GameStatePlayer& data)
-    {
-        return get_marker_value(data) == HIJACK_MARKER;
-    }
-    
-    static bool IsWritten(const GameStatePlayer& data)
-    {
-        return get_marker_value(data) == WRITTEN_MARKER;
-    }
-    
-    static bool IsRead(const GameStatePlayer& data)
-    {
-        return get_marker_value(data) == READ_MARKER;
-    }
+        public: static void SetHijacked(Data& data)
+        {
+            get_marker_value(data) = HIJACK_MARKER;
+        }
 
-    static bool IsCleared(const GameStatePlayer& data)
-    {
-        return get_marker_value(data) == CLEARED_MARKER;
-    }
-    
-    static bool HasMarker(const GameStatePlayer& data)
-    {
-        return IsHijacked(data) || IsWritten(data) || IsRead(data) || IsCleared(data);
-    }
+        public: static void SetWritten(Data& data)
+        {
+            get_marker_value(data) = WRITTEN_MARKER;
+        }
 
-    static void SetHijacked(GameStatePlayer& data)
-    {
-        get_marker_value(data) = HIJACK_MARKER;
-    }
-    
-    static void SetWritten(GameStatePlayer& data)
-    {
-        get_marker_value(data) = WRITTEN_MARKER;
-    }
-    
-    static void SetRead(GameStatePlayer& data)
-    {
-        get_marker_value(data) = READ_MARKER;
-    }
+        public: static void SetRead(Data& data)
+        {
+            get_marker_value(data) = READ_MARKER;
+        }
 
-    static void SetCleared(GameStatePlayer& data)
-    {
-        get_marker_value(data) = CLEARED_MARKER;
-    }
-    
-    static uint32_t GetId(const GameStatePlayer& data)
-    {
-        return get_id_value(data);
-    }
-    
-    static void SetId(GameStatePlayer& data, uint32_t id)
-    {
-        get_id_value(data) = id;
-    }
-    
-    static void Hijack(GameStatePlayer& data, uint32_t id)
-    {
-        HijackedState& hijackedState = s_systemData.hijackedStates[id];
-        hijackedState.marker = get_marker_value(data);
-        hijackedState.id = get_id_value(data);
-        SetHijacked(data);
-        SetId(data, id);
-    }
-    
-    static uint32_t NewHijack(GameStatePlayer& data)
-    {
-        assert(!IsHijacked(data));
-        uint32_t id = ESSM::IdManager::NewId();
-        LogDebug(__LOG_DEBUG_HEADER__ "Player Saved %d\n", data._playerType);
-        Hijack(data, id);
-        return id;
-    }
+        public: static void SetCleared(Data& data)
+        {
+            get_marker_value(data) = CLEARED_MARKER;
+        }
 
-    static void RestoreHijack(GameStatePlayer& data, HijackedState& hijackedState)
-    {
-        get_marker_value(data) = hijackedState.marker;
-        get_id_value(data) = hijackedState.id;
-    }
-    
-    static uint32_t UnHijack(GameStatePlayer& data)
-    {
-        assert(IsHijacked(data));
-        uint32_t id = GetId(data);
-        RestoreHijack(data, s_systemData.hijackedStates[id]);
-        return id;
-    }
-}
+        public: static size_t GetId(const Data& data)
+        {
+            return get_id_value(data);
+        }
 
-namespace ESSM::FamiliarHijackManager
-{
-    constexpr short READ_MARKER = 0x5248;
-    constexpr short HIJACK_MARKER = 0x5247;
-    constexpr short WRITTEN_MARKER = 0x5246;
+        public: static void SetId(Data& data, size_t id)
+        {
+            get_id_value(data) = id;
+        }
 
-    const uint32_t& get_marker_value(const FamiliarData& data)
-    {
-        return *(uint32_t*)&data._state;
-    }
-    
-    const uint32_t& get_id_value(const FamiliarData& data)
-    {
-        return *(uint32_t*)&data._roomClearCount;
-    }
+        public: static void Hijack(Data& data, size_t id)
+        {
+            HijackedState& hijackedState = s_systemData.hijackedStates[id];
+            hijackedState.marker = get_marker_value(data);
+            hijackedState.id = get_id_value(data);
+            SetHijacked(data);
+            SetId(data, id);
+        }
 
-    // only used if unable to get a HijackedState
-    static void DefaultRestore(FamiliarData& data)
-    {
-        data._state = 0;
-        data._roomClearCount = 0;
-    }
-    
-    uint32_t& get_marker_value(FamiliarData& data)
-    { 
-        return const_cast<uint32_t&>(get_marker_value(std::as_const(data)));
-    }
+        public: static size_t NewHijack(Data& data)
+        {
+            assert(!IsHijacked(data));
+            size_t id = ESSM::IdManager::NewId();
+            Hijack(data, id);
+            return id;
+        }
 
-    uint32_t& get_id_value(FamiliarData& data)
-    { 
-        return const_cast<uint32_t&>(get_id_value(std::as_const(data)));
-    }
+        public: static void RestoreHijack(Data& data, HijackedState& hijackedState)
+        {
+            get_marker_value(data) = hijackedState.marker;
+            get_id_value(data) = hijackedState.id;
+        }
 
-    static bool IsHijacked(const FamiliarData& data)
-    {
-        return get_marker_value(data) == HIJACK_MARKER;
-    }
-    
-    static bool IsWritten(const FamiliarData& data)
-    {
-        return get_marker_value(data) == WRITTEN_MARKER;
-    }
-    
-    static bool IsRead(const FamiliarData& data)
-    {
-        return get_marker_value(data) == READ_MARKER;
-    }
-    
-    static bool HasMarker(const FamiliarData& data)
-    {
-        return IsHijacked(data) || IsWritten(data) || IsRead(data);
-    }
+        public: static size_t UnHijack(Data& data)
+        {
+            assert(IsHijacked(data));
+            size_t id = GetId(data);
+            RestoreHijack(data, s_systemData.hijackedStates[id]);
+            return id;
+        }
+    };
 
-    static void SetHijacked(FamiliarData& data)
-    {
-        get_marker_value(data) = HIJACK_MARKER;
-    }
-    
-    static void SetWritten(FamiliarData& data)
-    {
-        get_marker_value(data) = WRITTEN_MARKER;
-    }
-    
-    static void SetRead(FamiliarData& data)
-    {
-        get_marker_value(data) = READ_MARKER;
-    }
-    
-    static uint32_t GetId(const FamiliarData& data)
-    {
-        return get_id_value(data);
-    }
-    
-    static void SetId(FamiliarData& data, uint32_t id)
-    {
-        get_id_value(data) = id;
-    }
-    
-    static void Hijack(FamiliarData& data, uint32_t id)
-    {
-        HijackedState& hijackedState = s_systemData.hijackedStates[id];
-        hijackedState.marker = get_marker_value(data);
-        hijackedState.id = get_id_value(data);
-        SetHijacked(data);
-        SetId(data, id);
-    }
-    
-    static uint32_t NewHijack(FamiliarData& data)
-    {
-        assert(!IsHijacked(data));
-        uint32_t id = ESSM::IdManager::NewId();
-        LogDebug(__LOG_DEBUG_HEADER__ "Familiar Saved %d, %d\n", data._variant, data._subtype);
-        Hijack(data, id);
-        return id;
-    }
+    struct EntityTraits {
+        using DataType = EntitySaveState;
+        using MarkerType = short;
+        using IdType = uint32_t;
 
-    static void RestoreHijack(FamiliarData& data, HijackedState& hijackedState)
-    {
-        get_marker_value(data) = hijackedState.marker;
-        get_id_value(data) = hijackedState.id;
-    }
-    
-    static uint32_t UnHijack(FamiliarData& data)
-    {
-        assert(IsHijacked(data));
-        uint32_t id = GetId(data);
-        RestoreHijack(data, s_systemData.hijackedStates[id]);
-        return id;
-    }
+        static constexpr MarkerType DataType::* marker_member = &EntitySaveState::gridSpawnIdx;
+        static constexpr IdType DataType::* id_member = &EntitySaveState::_intStorage7;
+
+        static void DefaultRestore(EntitySaveState& data)
+        {
+            data.gridSpawnIdx = -1;
+            data._intStorage7 = 0;
+        }
+    };
+
+    struct PlayerTraits {
+        using DataType = GameStatePlayer;
+        using MarkerType = int;
+        using IdType = int;
+
+        static constexpr MarkerType DataType::* marker_member = &GameStatePlayer::_immaculateConceptionState;
+        static constexpr IdType DataType::* id_member = &GameStatePlayer::_cambionConceptionState;
+
+        static void DefaultRestore(GameStatePlayer& data)
+        {
+            data._immaculateConceptionState = 0;
+            data._cambionConceptionState = 0;
+        }
+    };
+
+    struct FamiliarTraits {
+        using DataType = FamiliarData;
+        using MarkerType = int;
+        using IdType = int;
+
+        static constexpr MarkerType DataType::* marker_member = &FamiliarData::_state;
+        static constexpr IdType DataType::* id_member = &FamiliarData::_roomClearCount;
+
+        static void DefaultRestore(FamiliarData& data)
+        {
+            data._state = 0;
+            data._roomClearCount = 0;
+        }
+    };
+
+    using EntityHijackManager = HijackManager<EntityTraits>;
+    using PlayerHijackManager = HijackManager<PlayerTraits>;
+    using FamiliarHijackManager = HijackManager<FamiliarTraits>;
 }
 
 // Unhijacked API
@@ -3309,7 +3142,16 @@ namespace ESSM::LuaFunctions
         }
 
         file.seekg(0, std::ios::end);
-        size_t len = file.tellg();
+        std::streamoff lenoff = file.tellg();
+
+        if (lenoff < 0)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to get the length of Mod file at \"%s\"\n", filePath.string().c_str());
+            lua_pushnil(L);
+            return 1;
+        }
+
+        size_t len = static_cast<size_t>(lenoff);
         file.seekg(0);
 
         std::string data(len, '\0');
