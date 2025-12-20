@@ -26,6 +26,7 @@ local json = require("json")
 local type = type
 local pairs = pairs
 local error = error
+local assert = assert
 local pcall = pcall
 local tostring = tostring
 local getmetatable = getmetatable
@@ -143,7 +144,7 @@ local function _OnCopySaveStates(sourceIds, destIds)
     for _, saveStateTbl in pairs(s_saveStateData) do
         for i = 1, #sourceIds, 1 do
             local sourceTbl = saveStateTbl[sourceIds[i]]
-            local dest = sourceIds[i]
+            local dest = destIds[i]
             if sourceTbl then
                 saveStateTbl[dest] = deep_copy(sourceTbl)
             end
@@ -193,27 +194,33 @@ end
 
 ---@param serializedIds integer[]
 ---@param destIds integer[]
----@param data string
+---@param encodedData string
 ---@param checksum integer
 ---@param outData table
 ---@return boolean, string
-local function deserialize_data(serializedIds, destIds, data, checksum, outData)
-    if type(data) ~= "table" then
-        return false, "data is not a table"
-    end
-
-    local success, serializedData = pcall(json_decode, data)
+local function deserialize_data(serializedIds, destIds, encodedData, checksum, outData)
+    local success, decodedData = pcall(json_decode, encodedData)
     if not success then
-        return false, string_format("Unable to decode data: %s", serializedData)
+        return false, string_format("Unable to decode data: %s", decodedData)
     end
 
-    local tblChecksum = data.checksum
+    if type(decodedData) ~= "table" then
+        return false, "decoded data is not a table"
+    end
+
+    local tblChecksum = decodedData.checksum
     if not tblChecksum or tblChecksum ~= checksum then
         return false, "checksum mismatch"
     end
 
+    local data = decodedData.data
+    if type(data) ~= "table" then
+        return false, "entity data is not a table"
+    end
+
     for i = 1, #serializedIds, 1 do
-        local deserialized = serializedData[serializedIds[i]]
+        local sourceId = tostring(serializedIds[i]) -- thanks json.encode
+        local deserialized = data[sourceId]
         if type(deserialized) == "table" then
             local id = destIds[i]
             outData[id] = deep_copy(deserialized)

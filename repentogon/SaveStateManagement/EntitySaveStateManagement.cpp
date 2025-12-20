@@ -50,6 +50,11 @@
 #define __LOG_INFO_HEADER__ "[INFO] [ESSM] - "
 #define __LOG_ERROR_HEADER__ "[ERROR] [ESSM] - "
 
+using ClearedIds = std::vector<uint32_t>;
+using CopiedIds = std::vector<std::pair<uint32_t, uint32_t>>;
+constexpr size_t DEFAULT_CLEAR_RESERVE = (16'000 / sizeof(uint32_t)); // 16 KB should be enough to cover all cases.
+constexpr size_t DEFAULT_COPY_RESERVE = (16'000 / (sizeof(std::pair<uint32_t, uint32_t>))); // 16 KB should be enough to cover all cases.
+
 namespace {
     struct HijackedState {
         int id = 0;
@@ -95,7 +100,7 @@ namespace ESSM
         public: void StoreEntity(const Entity& entity, uint32_t saveStateId);
         public: void RestoreEntity(const Entity& entity, uint32_t saveStateId);
         public: void ClearStates(const std::vector<uint32_t>& saveStateIds);
-        public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>> copyIds);
+        public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds);
         public: void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
         public: void Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
     };
@@ -847,7 +852,7 @@ namespace ESSM
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_storeEntity);
         lua_pushinteger(L, entityId);
-        lua_pushinteger(L, saveStateId);
+        lua_pushinteger(L, saveStateId + 1); // Use 1-based indexing for Lua.
     
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
@@ -865,7 +870,7 @@ namespace ESSM
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_restoreEntity);
         lua_pushinteger(L, entityId);
-        lua_pushinteger(L, saveStateId);
+        lua_pushinteger(L, saveStateId + 1); // Use 1-based indexing for Lua.
     
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
@@ -876,6 +881,11 @@ namespace ESSM
     
     void LuaCallbacks::ClearStates(const std::vector<uint32_t>& saveStateIds)
     {
+        if (saveStateIds.size() == 0)
+        {
+            return;
+        }
+
         lua_State* L = g_LuaEngine->_state;
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_clearSaveStates);
@@ -885,7 +895,7 @@ namespace ESSM
         lua_createtable(L, size, 0);
         for (size_t i = 0; i < size; i++)
         {
-            lua_pushinteger(L, saveStateIds[i]);
+            lua_pushinteger(L, saveStateIds[i] + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, -2, i + 1);
         }
     
@@ -896,8 +906,13 @@ namespace ESSM
         }
     }
     
-    void LuaCallbacks::CopyStates(const std::vector<std::pair<uint32_t, uint32_t>> copyIds)
+    void LuaCallbacks::CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds)
     {
+        if (copyIds.size() == 0)
+        {
+            return;
+        }
+
         lua_State* L = g_LuaEngine->_state;
     
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_copySaveStates);
@@ -913,10 +928,10 @@ namespace ESSM
         for (size_t i = 0; i < size; ++i)
         {
             const auto& copyId = copyIds[i];
-            lua_pushinteger(L, copyId.first);
+            lua_pushinteger(L, copyId.first + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, sourceIds, i + 1);
-    
-            lua_pushinteger(L, copyId.second);
+
+            lua_pushinteger(L, copyId.second + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, destIds, i + 1);
         }
     
@@ -947,7 +962,7 @@ namespace ESSM
         for (size_t i = 0; i < entityStates.size(); ++i)
         {
             const auto& id = entityStates[i];
-            lua_pushinteger(L, id.second);
+            lua_pushinteger(L, id.second + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, idMap, id.first + 1);
         }
 
@@ -980,13 +995,16 @@ namespace ESSM
         for (size_t i = 0; i < entityStates.size(); ++i)
         {
             const auto& id = entityStates[i];
-            lua_pushinteger(L, id.first);
+            lua_pushinteger(L, id.first + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, serializedIds, i + 1);
 
-            lua_pushinteger(L, id.second);
+            lua_pushinteger(L, id.second + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, destIds, i + 1);
         }
 
+        lua_pushlstring(L, filename.c_str(), filename.size());
+        lua_pushinteger(L, checksum);
+            
         if (lua_pcall(L, 4, 0, 0) != LUA_OK)
         {
             ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::Deserialize: %s\n", lua_tostring(L, -1));
@@ -998,15 +1016,16 @@ namespace ESSM
 // These are base operations, signals should not be sent from here
 namespace ESSM::PlayerOperations
 {
-    static void ClearSaveState(GameStatePlayer& saveState)
+    static void ClearSaveState(GameStatePlayer& saveState, ClearedIds& clearedIds)
     {
         assert(PlayerHijackManager::IsHijacked(saveState));
         uint32_t id = PlayerHijackManager::GetId(saveState);
         IdManager::ClearId(id);
-        // TODO: Callers should send signals
+
+        clearedIds.emplace_back(id);
     }
 
-    static void CopySaveState(GameStatePlayer& saveState)
+    static std::pair<uint32_t, uint32_t> CopySaveState_NoBatch(GameStatePlayer& saveState)
     {
         assert(PlayerHijackManager::IsHijacked(saveState));
         uint32_t sourceId = PlayerHijackManager::GetId(saveState);
@@ -1014,29 +1033,36 @@ namespace ESSM::PlayerOperations
         PlayerHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
         LogDebug(__LOG_DEBUG_HEADER__ "Copied Player %d -> %d\n", sourceId, targetId);
-        // TODO: Callers should send signals
+
+        return std::make_pair(sourceId, targetId);
+    }
+
+    static void CopySaveState(GameStatePlayer& saveState, CopiedIds& copiedIds)
+    {
+        copiedIds.emplace_back(CopySaveState_NoBatch(saveState));
     }
 }
 
 namespace ESSM::FamiliarOperations
 {
-    static void ClearSaveState(FamiliarData& saveState)
+    static void ClearSaveState(FamiliarData& saveState, ClearedIds& clearedIds)
     {
         assert(FamiliarHijackManager::IsHijacked(saveState));
         uint32_t id = FamiliarHijackManager::GetId(saveState);
         IdManager::ClearId(id);
-        // TODO: Callers should send signals
+
+        clearedIds.emplace_back(id);
     }
     
-    static void ClearVector(std::vector<FamiliarData>& saveEntities)
+    static void ClearVector(std::vector<FamiliarData>& saveEntities, ClearedIds& clearedIds)
     {
         for (FamiliarData& saveState : saveEntities)
         {
-            ClearSaveState(saveState);
+            ClearSaveState(saveState, clearedIds);
         }
     }
 
-    static void CopySaveState(FamiliarData& saveState)
+    static std::pair<uint32_t, uint32_t> CopySaveState_NoBatch(FamiliarData& saveState)
     {
         assert(FamiliarHijackManager::IsHijacked(saveState));
         uint32_t sourceId = FamiliarHijackManager::GetId(saveState);
@@ -1044,40 +1070,47 @@ namespace ESSM::FamiliarOperations
         FamiliarHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
         LogDebug(__LOG_DEBUG_HEADER__ "Copied Familiar %d -> %d\n", sourceId, targetId);
-        // TODO: Callers should send signals
+
+        return std::make_pair(sourceId, targetId);
     }
 
-    static void CopyVector(std::vector<FamiliarData>& saveEntities)
+    static void CopySaveState(FamiliarData& saveState, CopiedIds& copiedIds)
+    {
+        copiedIds.emplace_back(CopySaveState_NoBatch(saveState));
+    }
+
+    static void CopyVector(std::vector<FamiliarData>& saveEntities, CopiedIds& copiedIds)
     {
         for (FamiliarData& saveState : saveEntities)
         {
-            CopySaveState(saveState);
+            CopySaveState(saveState, copiedIds);
         }
     }
 
-    static auto ClearVectorLambda = [](std::vector<FamiliarData>& vec) { ClearVector(vec); };
-    static auto CopyVectorLambda = [](std::vector<FamiliarData>& vec) { CopyVector(vec); };
+    static auto ClearVectorLambda = [](std::vector<FamiliarData>& vec, ClearedIds& clearedIds) { ClearVector(vec, clearedIds); };
+    static auto CopyVectorLambda = [](std::vector<FamiliarData>& vec, CopiedIds& copiedIds) { CopyVector(vec, copiedIds); };
 }
 
 namespace ESSM::EntityOperations
 {
-    static void ClearSaveState(EntitySaveState& saveState)
+    static void ClearSaveState(EntitySaveState& saveState, ClearedIds& clearedIds)
     {
         assert(EntityHijackManager::IsHijacked(saveState));
         uint32_t id = EntityHijackManager::GetId(saveState);
         IdManager::ClearId(id);
-        // TODO: Callers should send signals
+
+        clearedIds.emplace_back(id);
     }
     
-    static void ClearVector(std::vector<EntitySaveState>& saveEntities)
+    static void ClearVector(std::vector<EntitySaveState>& saveEntities, ClearedIds& clearedIds)
     {
         for (EntitySaveState& saveState : saveEntities)
         {
-            ClearSaveState(saveState);
+            ClearSaveState(saveState, clearedIds);
         }
     }
 
-    static void CopySaveState(EntitySaveState& saveState)
+    static std::pair<uint32_t, uint32_t> CopySaveState_NoBatch(EntitySaveState& saveState)
     {
         assert(EntityHijackManager::IsHijacked(saveState));
         uint32_t sourceId = EntityHijackManager::GetId(saveState);
@@ -1085,19 +1118,25 @@ namespace ESSM::EntityOperations
         EntityHijackManager::SetId(saveState, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
         LogDebug(__LOG_DEBUG_HEADER__ "Copied Entity %d -> %d\n", sourceId, targetId);
-        // TODO: Callers should send signals
+
+        return std::make_pair(sourceId, targetId);
     }
 
-    static void CopyVector(std::vector<EntitySaveState>& saveEntities)
+    static void CopySaveState(EntitySaveState& saveState, CopiedIds& copiedIds)
+    {
+        copiedIds.emplace_back(CopySaveState_NoBatch(saveState));
+    }
+
+    static void CopyVector(std::vector<EntitySaveState>& saveEntities, CopiedIds& copiedIds)
     {
         for (EntitySaveState& saveState : saveEntities)
         {
-            CopySaveState(saveState);
+            CopySaveState(saveState, copiedIds);
         }
     }
 
-    static auto ClearVectorLambda = [](std::vector<EntitySaveState>& vec) { ClearVector(vec); };
-    static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec) { CopyVector(vec); };
+    static auto ClearVectorLambda = [](std::vector<EntitySaveState>& vec, ClearedIds& clearedIds) { ClearVector(vec, clearedIds); };
+    static auto CopyVectorLambda = [](std::vector<EntitySaveState>& vec, CopiedIds& copiedIds) { CopyVector(vec, copiedIds); };
 }
 
 // Operations API
@@ -1105,8 +1144,10 @@ namespace ESSM
 {
     void EntitySaveState_ClearVector(std::vector<EntitySaveState>& vector)
     {
-        EntityOperations::ClearVector(vector);
-        // TODO: Send signal
+        ClearedIds clearedIds;
+        clearedIds.reserve(vector.size());
+        EntityOperations::ClearVector(vector, clearedIds);
+        s_luaCallbacks.ClearStates(clearedIds);
     }
 }
 
@@ -1449,46 +1490,50 @@ namespace ESSM
                 // should not send a copy signal since a clear was issued on that id.
                 for (auto* state : players.m_incorrectClears)
                 {
-                    PlayerOperations::CopySaveState(*state);
+                    PlayerOperations::CopySaveState_NoBatch(*state);
                 }
 
                 for (auto* state : familiars.m_incorrectClears)
                 {
-                    FamiliarOperations::CopySaveState(*state);
+                    FamiliarOperations::CopySaveState_NoBatch(*state);
                 }
 
                 for (auto* state : entities.m_incorrectClears)
                 {
-                    EntityOperations::CopySaveState(*state);
+                    EntityOperations::CopySaveState_NoBatch(*state);
                 }
             }
 
             if (checks.m_errors.test(eErrors::ERROR_DUPLICATE))
             {
-                // TODO: Send copy signals
-                for (auto* state : players.m_incorrectClears)
+                CopiedIds copiedIds;
+                copiedIds.reserve(players.m_duplicates.size() + familiars.m_duplicates.size() + entities.m_duplicates.size());
+                for (auto* state : players.m_duplicates)
                 {
-                    PlayerOperations::CopySaveState(*state);
+                    PlayerOperations::CopySaveState(*state, copiedIds);
                 }
 
-                for (auto* state : familiars.m_incorrectClears)
+                for (auto* state : familiars.m_duplicates)
                 {
-                    FamiliarOperations::CopySaveState(*state);
+                    FamiliarOperations::CopySaveState(*state, copiedIds);
                 }
 
-                for (auto* state : entities.m_incorrectClears)
+                for (auto* state : entities.m_duplicates)
                 {
-                    EntityOperations::CopySaveState(*state);
+                    EntityOperations::CopySaveState(*state, copiedIds);
                 }
+
+                s_luaCallbacks.CopyStates(copiedIds);
             }
 
             if (checks.m_errors.test(eErrors::ERROR_LEAK))
             {
-                // TODO: Send clear signal
                 for (uint32_t id : checks.m_leakedIds)
                 {
                     IdManager::ClearId(id);
                 }
+
+                s_luaCallbacks.ClearStates(checks.m_leakedIds);
             }
         }
 
@@ -1543,15 +1588,51 @@ namespace ESSM
     };
 }
 
-static void SaveEntity(Entity& entity, EntitySaveState& data, uint32_t id)
+namespace ESSM::Utils
 {
-    // TODO: save entity
+    static void ClearSingleEntityVector(std::vector<EntitySaveState>& vector)
+    {
+        ClearedIds clearedIds;
+        clearedIds.reserve(vector.size());
+        ESSM::EntityOperations::ClearVector(vector, clearedIds);
+        ESSM::s_luaCallbacks.ClearStates(clearedIds);
+    }
+
+    static void CopySingleEntityVector(std::vector<EntitySaveState>& vector)
+    {
+        CopiedIds copiedIds;
+        copiedIds.reserve(vector.size());
+        ESSM::EntityOperations::CopyVector(vector, copiedIds);
+        ESSM::s_luaCallbacks.CopyStates(copiedIds);
+    }
+
+    static void ClearSingleFamiliarVector(std::vector<FamiliarData>& vector)
+    {
+        ClearedIds clearedIds;
+        clearedIds.reserve(vector.size());
+        ESSM::FamiliarOperations::ClearVector(vector, clearedIds);
+        ESSM::s_luaCallbacks.ClearStates(clearedIds);
+    }
+
+    static void CopySingleFamiliarVector(std::vector<FamiliarData>& vector)
+    {
+        CopiedIds copiedIds;
+        copiedIds.reserve(vector.size());
+        ESSM::FamiliarOperations::CopyVector(vector, copiedIds);
+        ESSM::s_luaCallbacks.CopyStates(copiedIds);
+    }
+
+    static void SaveEntity(Entity& entity, uint32_t id)
+    {
+        s_luaCallbacks.StoreEntity(entity, id);
+    }
+    
+    static void RestoreEntity(Entity& entity, uint32_t id)
+    {
+        s_luaCallbacks.RestoreEntity(entity, id);
+    }
 }
 
-static void RestoreEntity(Entity& entity, EntitySaveState& data, uint32_t id)
-{
-    // TODO: restore entity
-}
 
 namespace ESSM::detail::SaveData
 {
@@ -1590,32 +1671,32 @@ namespace ESSM::detail::SaveData
 
     namespace Operations
     {
-        static void ClearEntitySaveVector(std::vector<EntitySaveState>& saveEntities)
+        static void ClearEntitySaveVector(std::vector<EntitySaveState>& saveEntities, ClearedIds& clearedIds)
         {
             for (EntitySaveState& saveState : saveEntities)
             {
                 if (ESSM::EntityHijackManager::IsHijacked(saveState))
                 {
-                    ESSM::EntityOperations::ClearSaveState(saveState);
+                    ESSM::EntityOperations::ClearSaveState(saveState, clearedIds);
                 }
             }
         }
 
-        static void ClearPlayerSave(GameStatePlayer& saveState)
+        static void ClearPlayerSave(GameStatePlayer& saveState, ClearedIds& clearedIds)
         {
             if (ESSM::PlayerHijackManager::IsHijacked(saveState))
             {
-                ESSM::PlayerOperations::ClearSaveState(saveState);
+                ESSM::PlayerOperations::ClearSaveState(saveState, clearedIds);
             }
         }
 
-        static void ClearFamiliarSaveVector(std::vector<FamiliarData>& saveEntities)
+        static void ClearFamiliarSaveVector(std::vector<FamiliarData>& saveEntities, ClearedIds& clearedIds)
         {
             for (FamiliarData& saveState : saveEntities)
             {
                 if (ESSM::FamiliarHijackManager::IsHijacked(saveState))
                 {
-                    ESSM::FamiliarOperations::ClearSaveState(saveState);
+                    ESSM::FamiliarOperations::ClearSaveState(saveState, clearedIds);
                 }
             }
         }
@@ -1802,8 +1883,8 @@ namespace ESSM::detail::SaveData
                 read_familiar(saveState, readState);
             }
         }
-    
-        static auto ClearEntitySaveVectorLambda = [](std::vector<EntitySaveState>& vec) { ClearEntitySaveVector(vec); };
+
+        static auto ClearEntitySaveVectorLambda = [](std::vector<EntitySaveState>& vec, ClearedIds& clearedIds) { ClearEntitySaveVector(vec, clearedIds); };
         static auto WriteEntityVectorLambda = [](std::vector<EntitySaveState>& vec, _WriteState& writeState) { write_entity_vector(vec, writeState); };
         static auto WriteFamiliarVectorLambda = [](std::vector<FamiliarData>& vec, _WriteState& writeState) { write_familiar_vector(vec, writeState); };
         static auto WritePlayerLambda = [](GameStatePlayer& player, _WriteState& writeState) { write_player(player, writeState); };
@@ -2212,8 +2293,10 @@ namespace ESSM::detail::SaveData
             return;
         }
 
-        // TODO: Send Serialize Signal
         ZHL::Log(__LOG_INFO_HEADER__ "successfully saved %s to \"%s\"\n", filename.c_str(), filePath.string().c_str());
+
+        uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+        s_luaCallbacks.Serialize(writeState, filename, gameChecksum);
     }
 
     void Serialize(const std::string& fileName, WriteState& writeState)
@@ -2266,7 +2349,9 @@ namespace ESSM::detail::SaveData
         file.close();
         hijack_read_entity_states(readState, saveFile);
         ZHL::Log(__LOG_INFO_HEADER__ "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
-        // TODO: Send Deserialize Event
+        
+        uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+        s_luaCallbacks.Deserialize(readState, fileName, gameChecksum);
         return true;
     }
 
@@ -2333,27 +2418,34 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
         return true;
     }
 
+    CopiedIds copiedIds;
     if (minecartEntity.first)
     {
         assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
         EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
         if (flipState)
         {
-            ESSM::EntityOperations::CopySaveState(*flipState);
+            copiedIds.clear();
+            copiedIds.reserve(1);
+            ESSM::EntityOperations::CopySaveState(*flipState, copiedIds);
+            ESSM::s_luaCallbacks.CopyStates(copiedIds);
         }
 
         uint32_t id = ESSM::EntityHijackManager::NewHijack(*minecartEntity.second);
-        SaveEntity(*minecartEntity.first, *minecartEntity.second, id);
+        ESSM::Utils::SaveEntity(*minecartEntity.first, id);
     }
 
     EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*data);
     if (flipState)
     {
-        ESSM::EntityOperations::CopySaveState(*flipState);
+        copiedIds.clear();
+        copiedIds.reserve(1);
+        ESSM::EntityOperations::CopySaveState(*flipState, copiedIds);
+        ESSM::s_luaCallbacks.CopyStates(copiedIds);
     }
 
     uint32_t id = ESSM::EntityHijackManager::NewHijack(*data);
-    SaveEntity(*entity, *data, id);
+    ESSM::Utils::SaveEntity(*entity, id);
     return saved;
 }
 
@@ -2364,12 +2456,18 @@ HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> voi
     super(entity, data);
 
     ESSM::EntityHijackManager::Hijack(*data, id);
-    RestoreEntity(*entity, *data, id);
+    ESSM::Utils::RestoreEntity(*entity, id);
 }
 
 HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 {
-    ESSM::EntityOperations::ClearVector(g_Game->_myosotisPickups);
+    auto& myosotisPickups = g_Game->_myosotisPickups;
+
+    ClearedIds clearedIds;
+    clearedIds.reserve(myosotisPickups.size());
+    ESSM::EntityOperations::ClearVector(myosotisPickups, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
     super(resetLilPortalRoom);
 }
 
@@ -2379,6 +2477,9 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
     RoomDescriptor* roomList = game->_gridRooms;
     constexpr size_t LIL_PORTAL_IDX = MAX_GRID_ROOMS + (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
 
+    ClearedIds clearedIds;
+    clearedIds.reserve(DEFAULT_CLEAR_RESERVE);
+
     for (size_t i = 0; i < MAX_ROOMS; i++)
     {
         if (i == LIL_PORTAL_IDX && !(resetLilPortalRoom))
@@ -2387,10 +2488,19 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
         }
 
         RoomDescriptor& room = roomList[i];
-        ESSM::EntityOperations::ClearVector(room.SavedEntities);
+        ESSM::EntityOperations::ClearVector(room.SavedEntities, clearedIds);
     }
 
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
     super(resetLilPortalRoom);
+}
+
+static void reset_single_room(RoomDescriptor& room)
+{
+    ClearedIds clearedIds;
+    clearedIds.reserve(room.SavedEntities.size());
+    ESSM::EntityOperations::ClearVector(room.SavedEntities, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
 }
 
 HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
@@ -2399,7 +2509,7 @@ HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-    ESSM::EntityOperations::ClearVector(room.SavedEntities);
+    reset_single_room(room);
 
     super(roomConfig);
 }
@@ -2410,7 +2520,7 @@ HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-    ESSM::EntityOperations::ClearVector(room.SavedEntities);
+    reset_single_room(room);
 
     super();
 }
@@ -2424,7 +2534,7 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
     {
         Game* game = g_Game;
         RoomDescriptor& room = game->_gridRooms[LIST_IDX];
-        ESSM::EntityOperations::ClearVector(room.SavedEntities);
+        reset_single_room(room);
     }
 
     return super(currentIdx, destinationIdx, direction);
@@ -2433,17 +2543,27 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
 HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
 {
     BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
-    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::EntityOperations::ClearVectorLambda);
+    ClearedIds clearedIds;
+    clearedIds.reserve(DEFAULT_CLEAR_RESERVE);
+    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::EntityOperations::ClearVectorLambda, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
 
 	super(stage);
 
-    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::EntityOperations::CopyVectorLambda);
+    CopiedIds copiedIds;
+    copiedIds.reserve(DEFAULT_COPY_RESERVE);
+    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::EntityOperations::CopyVectorLambda, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
 }
 
 // Clear backwards stage save state, even though the game simply sets room count to 0, to avoid having to iterate "uninitialized" RoomDescriptors in the BackwardsStage. 
 HOOK_METHOD(Game, ResetState, () -> void)
 {
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::ClearVectorLambda);
+    ClearedIds clearedIds;
+    clearedIds.reserve(DEFAULT_CLEAR_RESERVE);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::ClearVectorLambda, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
 	super();
 }
 
@@ -2451,8 +2571,12 @@ HOOK_METHOD(GameState, Clear, () -> void)
 {
     LogDebug(__LOG_DEBUG_HEADER__ "Start GameState::Clear\n");
 
-    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda);
-    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda);
+    ClearedIds clearedIds;
+    clearedIds.reserve(DEFAULT_CLEAR_RESERVE);
+    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda, clearedIds);
+    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::detail::SaveData::Operations::ClearEntitySaveVectorLambda, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
     // player save states are handled by GameStatePlayer::Init
     super();
 
@@ -2465,8 +2589,13 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 
     // There is no need to clear the state since SaveState always calls GameState::Clear before saving
 	super(state);
-    ESSM::EntityIterators::InGameState::AllRooms(*state, ESSM::EntityOperations::CopyVectorLambda);
-    ESSM::EntityIterators::InGameState::AllBackwardsStages(*state, ESSM::EntityOperations::CopyVectorLambda);
+
+    CopiedIds copiedIds;
+    copiedIds.reserve(DEFAULT_COPY_RESERVE);
+    ESSM::EntityIterators::InGameState::AllRooms(*state, ESSM::EntityOperations::CopyVectorLambda, copiedIds);
+    ESSM::EntityIterators::InGameState::AllBackwardsStages(*state, ESSM::EntityOperations::CopyVectorLambda, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
+
     // players are handled by Entity_Player::Init
 
     LogDebug(__LOG_DEBUG_HEADER__ "End Game::SaveState\n");
@@ -2476,7 +2605,11 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
     LogDebug(__LOG_DEBUG_HEADER__ "Start Game::RestoreState\n");
 
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::ClearVectorLambda);
+    ClearedIds clearedIds;
+    clearedIds.reserve(DEFAULT_CLEAR_RESERVE);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::ClearVectorLambda, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
@@ -2487,15 +2620,20 @@ HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 {
     // Manual clear the lil portal room
     constexpr size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
-    ESSM::EntityOperations::ClearVector(g_Game->_negativeGridRooms[LIL_PORTAL_IDX].SavedEntities);
+    reset_single_room(g_Game->_negativeGridRooms[LIL_PORTAL_IDX]);
     super(state);
 }
 
 HOOK_METHOD(GameStatePlayer, Init, () -> void)
 {
-    ESSM::detail::SaveData::Operations::ClearEntitySaveVector(this->_movingBoxContents);
-    ESSM::detail::SaveData::Operations::ClearFamiliarSaveVector(this->_familiarData);
-    ESSM::detail::SaveData::Operations::ClearPlayerSave(*this);
+    ClearedIds clearedIds;
+    clearedIds.reserve(this->_movingBoxContents.size() + this->_familiarData.size() + 1);
+    // Use the same logic as save data, as there is no guarantee that the GameStatePlayer is in a hijacked state before Init.
+    ESSM::detail::SaveData::Operations::ClearEntitySaveVector(this->_movingBoxContents, clearedIds);
+    ESSM::detail::SaveData::Operations::ClearFamiliarSaveVector(this->_familiarData, clearedIds);
+    ESSM::detail::SaveData::Operations::ClearPlayerSave(*this, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
     super();
     // Doing this here since it makes the most sense, also means we won't have problems if a GameStatePlayer is accessed in between an Init and a Restore
     ESSM::PlayerHijackManager::SetCleared(*this);
@@ -2511,16 +2649,20 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 
 HOOK_METHOD(Entity_Player, destructor, () -> void)
 {
-    ESSM::EntityOperations::ClearVector(this->_movingBoxContents);
-
     GameStatePlayer& playerState = this->_unlistedRestoreState;
-    ESSM::EntityOperations::ClearVector(playerState._movingBoxContents);
-    ESSM::FamiliarOperations::ClearVector(playerState._familiarData);
+
+    ClearedIds clearedIds;
+    clearedIds.reserve(this->_movingBoxContents.size() + playerState._movingBoxContents.size() + playerState._familiarData.size() + 1);
+    ESSM::EntityOperations::ClearVector(this->_movingBoxContents, clearedIds);
+    ESSM::EntityOperations::ClearVector(playerState._movingBoxContents, clearedIds);
+    ESSM::FamiliarOperations::ClearVector(playerState._familiarData, clearedIds);
 
     if (!ESSM::PlayerHijackManager::IsCleared(playerState))
     {
-        ESSM::PlayerOperations::ClearSaveState(playerState);
+        ESSM::PlayerOperations::ClearSaveState(playerState, clearedIds);
     }
+
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
 
     super();
 }
@@ -2532,9 +2674,14 @@ HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool sav
 
     super(saveState, saveTemporaryFamiliars);
 
-    ESSM::EntityOperations::CopyVector(saveState->_movingBoxContents);
+    CopiedIds copiedIds;
+    copiedIds.reserve(this->_movingBoxContents.size());
+    ESSM::EntityOperations::CopyVector(saveState->_movingBoxContents, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
+
     // Familiar data is handled in separate hooks
-    ESSM::PlayerHijackManager::NewHijack(*saveState);
+    uint32_t id = ESSM::PlayerHijackManager::NewHijack(*saveState);
+    ESSM::Utils::SaveEntity(*this, id);
 }
 
 HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> void)
@@ -2542,22 +2689,32 @@ HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> vo
     // if this player was replaced then don't restore the state
     if (this->_replacedPlayer)
     {
-
         return super(saveState);
     }
 
     // Familiars are handled by Entity_Familiar::RestoreState (which is in RestoreGameState_PostLevelInit anyway)
-    // TODO: Send Player restore signal
-    ESSM::EntityOperations::ClearVector(this->_movingBoxContents);
+    uint32_t saveStateId = ESSM::PlayerHijackManager::GetId(*saveState);
+    ESSM::s_luaCallbacks.RestoreEntity(*this, saveStateId);
+
+    ClearedIds clearedIds;
+    clearedIds.reserve(this->_movingBoxContents.size());
+    ESSM::EntityOperations::ClearVector(this->_movingBoxContents, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
     uint32_t id = ESSM::PlayerHijackManager::UnHijack(*saveState);
     super(saveState);
     ESSM::PlayerHijackManager::Hijack(*saveState, id);
-    ESSM::EntityOperations::CopyVector(this->_movingBoxContents);
+
+    CopiedIds copiedIds;
+    copiedIds.reserve(this->_movingBoxContents.size());
+    ESSM::EntityOperations::CopyVector(this->_movingBoxContents, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
 }
 
 HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
 {
-    // TODO: Send Familiar restore signal
+    ESSM::Utils::RestoreEntity(*this, ESSM::FamiliarHijackManager::GetId(*saveState));
+    
     uint32_t id = ESSM::FamiliarHijackManager::UnHijack(*saveState);
     super(saveState);
     ESSM::FamiliarHijackManager::Hijack(*saveState, id);
@@ -2565,7 +2722,10 @@ HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
 
 static void __stdcall restore_game_state_backwards_rooms()
 {
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::CopyVectorLambda);
+    CopiedIds copiedIds;
+    copiedIds.reserve(DEFAULT_CLEAR_RESERVE);
+    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::EntityOperations::CopyVectorLambda, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
 }
 
 static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
@@ -2591,7 +2751,11 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
 static void __stdcall asm_clear_room_vector()
 {
     RoomDescriptor& room = *g_Game->_room->_descriptor;
-    ESSM::EntityOperations::ClearVector(room.SavedEntities);
+
+    ClearedIds clearedIds;
+    clearedIds.reserve(room.SavedEntities.size());
+    ESSM::EntityOperations::ClearVector(room.SavedEntities, clearedIds);
+    ESSM::s_luaCallbacks.ClearStates(clearedIds);
 }
 
 static void Patch_RoomSaveState_ClearVector()
@@ -2636,7 +2800,10 @@ static void Patch_RoomRestoreState_ClearVector()
 
 static void __stdcall asm_copy_myosotis_pickups()
 {
-    ESSM::EntityOperations::CopyVector(g_Game->_myosotisPickups);
+    CopiedIds copiedIds;
+    copiedIds.reserve(g_Game->_myosotisPickups.size());
+    ESSM::EntityOperations::CopyVector(g_Game->_myosotisPickups, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
 }
 
 static void Patch_LevelInit_PostMyosotisEffect()
@@ -2661,7 +2828,10 @@ static void Patch_LevelInit_PostMyosotisEffect()
 
 static void __stdcall restore_level_game_state()
 {
-    ESSM::EntityIterators::InGame::AllRooms(ESSM::EntityOperations::CopyVectorLambda);
+    CopiedIds copiedIds;
+    copiedIds.reserve(DEFAULT_COPY_RESERVE);
+    ESSM::EntityIterators::InGame::AllRooms(ESSM::EntityOperations::CopyVectorLambda, copiedIds);
+    ESSM::s_luaCallbacks.CopyStates(copiedIds);
 }
 
 static void Patch_LevelRestoreGameState_PreRoomLoad()
@@ -2686,12 +2856,12 @@ static void Patch_LevelRestoreGameState_PreRoomLoad()
 
 static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
-    ESSM::EntityOperations::ClearVector(*saveStateVector);
+    ESSM::Utils::ClearSingleEntityVector(*saveStateVector);
 }
 
 static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
-    ESSM::EntityOperations::CopyVector(*saveStateVector);
+    ESSM::Utils::CopySingleEntityVector(*saveStateVector);
 }
 
 static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector()
@@ -2781,7 +2951,7 @@ static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState()
 
 static void __stdcall asm_clear_moving_box_vector(Entity_Player& player)
 {
-    ESSM::EntityOperations::ClearVector(player._movingBoxContents);
+    ESSM::Utils::ClearSingleEntityVector(player._movingBoxContents);
 }
 
 static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
@@ -2805,10 +2975,15 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall store_familiar_data(FamiliarData& saveState, size_t persistentELIndex)
+static void __fastcall store_familiar_data(FamiliarData& saveState, size_t updateELIndex)
 {
-    ESSM::FamiliarHijackManager::NewHijack(saveState);
-    // TODO: Send Store command
+    EntityList_EL& updateEL = *g_Game->_room->_entityList.GetUpdateEL();
+    assert(updateELIndex < updateEL._size);
+    Entity* entity = updateEL._data[updateELIndex];
+    assert(entity);
+
+    uint32_t id = ESSM::FamiliarHijackManager::NewHijack(saveState);
+    ESSM::Utils::SaveEntity(*entity, id);
 }
 
 static void Patch_PlayerStoreGameState_FamiliarStoreState()
@@ -2823,8 +2998,8 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState()
     constexpr size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
-        .MoveFromMemory(ASMPatch::Registers::EBP, -0x28, ASMPatch::Registers::EDX)
-        .LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x90, ASMPatch::Registers::ECX)
+        .MoveFromMemory(ASMPatch::Registers::EBP, -0x28, ASMPatch::Registers::EDX) // roomELIndex
+        .LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x90, ASMPatch::Registers::ECX) // saveState
         .AddInternalCall(store_familiar_data)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
@@ -2835,12 +3010,12 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState()
 
 static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
-    ESSM::FamiliarOperations::ClearVector(*saveStateVector);
+    ESSM::Utils::ClearSingleFamiliarVector(*saveStateVector);
 }
 
 static void __stdcall asm_copy_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
-    ESSM::FamiliarOperations::CopyVector(*saveStateVector);
+    ESSM::Utils::CopySingleFamiliarVector(*saveStateVector);
 }
 
 static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData()
@@ -2903,7 +3078,12 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
     if (ESSM::EntityHijackManager::IsHijacked(*saveState))
     {
         uint32_t id = ESSM::EntityHijackManager::GetId(*saveState);
-        ESSM::EntityOperations::ClearSaveState(*saveState);
+
+        ClearedIds clearedIds;
+        clearedIds.reserve(1);
+        ESSM::EntityOperations::ClearSaveState(*saveState, clearedIds);
+        ESSM::s_luaCallbacks.ClearStates(clearedIds);
+
         LogDebug(__LOG_DEBUG_HEADER__ "Smart pointer Cleared: %u\n", id);
     }
 
@@ -2950,7 +3130,7 @@ static void Patch_PickupInitFlipState_CreateSaveState()
 
 static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState)
 {
-    RestoreEntity(entity, saveState, ESSM::EntityHijackManager::GetId(saveState));
+    ESSM::Utils::RestoreEntity(entity, ESSM::EntityHijackManager::GetId(saveState));
 }
 
 static void Patch_PickupTryFlip_RestoreFlipState()
@@ -2983,7 +3163,7 @@ static void __stdcall change_mineshaft_room(size_t listIdx)
 {
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[listIdx];
-    ESSM::EntityOperations::ClearVector(room.SavedEntities);
+    ESSM::Utils::ClearSingleEntityVector(room.SavedEntities);
 }
 
 static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom()
@@ -3055,8 +3235,31 @@ namespace ESSM::LuaFunctions
 
     static std::filesystem::path get_save_data_path(const ModReference& mod, const std::string& filename)
     {
-        return std::filesystem::path(mod._dataDirectory) / "EntitySaveStateManagement" / filename;
+        return std::filesystem::path(mod._dataDirectory) / "EntitySaveStateManagement" / (filename + ".dat");
     }
+
+    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
+    {
+        std::filesystem::path directory = filePath.parent_path();
+
+        std::error_code errorCode;
+        if (!directory.empty() && !std::filesystem::exists(directory, errorCode))
+        {
+            if (errorCode)
+            {
+                return false;
+            }
+
+            std::filesystem::create_directories(directory, errorCode);
+            if (errorCode)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     LUA_FUNCTION(SaveData)
     {
@@ -3067,8 +3270,10 @@ namespace ESSM::LuaFunctions
         const char* data = luaL_checklstring(L, 3, &len);
 
         std::filesystem::path filePath = get_save_data_path(modReference, filename);
-        if (!std::filesystem::exists(filePath))
+        bool exists = guarantee_parent_path_exists(filePath);
+        if (!exists)
         {
+            ZHL::Log(__LOG_ERROR_HEADER__ "unable to create directory for Mod save file at \"%s\"\n", filePath.string().c_str());
             return 0;
         }
 
