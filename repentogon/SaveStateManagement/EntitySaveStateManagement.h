@@ -40,8 +40,8 @@ namespace EntitySaveStateManagement::detail
             // Free up memory after we are done
             public: void FreeMemory()
             {
-                this->writtenEntitySaveStates.clear();
-                this->writeEntityIdPairs.clear();
+                this->writtenEntitySaveStates = {};
+                this->writeEntityIdPairs = {};
             }
 
             private: _WriteState() = default;
@@ -59,8 +59,8 @@ namespace EntitySaveStateManagement::detail
             // Free up memory after we are done
             public: void FreeMemory()
             {
-                this->readEntitySaveStates.clear();
-                this->restoreEntityIdPairs.clear();
+                this->readEntitySaveStates = {};
+                this->restoreEntityIdPairs = {};
             }
 
             private: _ReadState() = default;
