@@ -414,6 +414,9 @@ __thiscall Entity_Laser* Entity_Player::FireTechLaser(const Vector& pos, unsigne
 "558bec83e4f881ec88000000a1????????33c4898424????????8b45":
 __thiscall Entity_Laser* Entity_Player::FireTechXLaser(const Vector& pos, const Vector& dir, float radius, Entity * source, float damageMultiplier);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec30a1????????33c58945??5657508d45??64a3????????8bf98b43":
+__thiscall void Entity_Player::GetLaserOffset(Vector* buffer, int laserOffsetID, Vector* direction);
+
 "558bec83e4f883ec0c568bf1f30f1086":
 __thiscall void Entity_Player::GetBodyMoveDirection(Vector * buffer);
 
@@ -500,7 +503,7 @@ __thiscall void Entity_Player::RevivePlayerGhost();
 __thiscall void Entity_Player::SalvageCollectible(Vector * pos, int subtype, unsigned int seed, int poolType);
 
 "558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8bf9ffb7":
-__thiscall void Entity_Player::SetControllerIndex(unsigned int index);
+__thiscall void Entity_Player::SetControllerIndex(unsigned int index, bool includePlayerOwned);
 
 // Allegedly the boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 "558bec566aff":

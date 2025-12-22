@@ -222,10 +222,23 @@ void PatchPlayerForceCamo() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+constexpr uint32_t SOUND_NULL = 0;
+
+HOOK_METHOD(Entity_Laser, PlayInitSound, () -> void) {
+	EntityLaserPlus* laserPlus = GetEntityLaserPlus(this);
+	assert(laserPlus);
+	if (laserPlus && laserPlus->initSound) {
+		const uint32_t customSound = laserPlus->initSound.value();
+		if (customSound != SOUND_NULL) {
+			g_Manager->_sfxManager.Play(customSound, 1.0, 2, false, 1.0, 0);
+		}
+	} else {
+		super();
+	}
+}
+
 static bool __fastcall asm_try_play_custom_init_sound(Entity_Tear* tear)
 {
-	constexpr uint32_t SOUND_NULL = 0;
-
 	EntityTearPlus* tearPlus = GetEntityTearPlus(tear);
 	assert(tearPlus);
 	

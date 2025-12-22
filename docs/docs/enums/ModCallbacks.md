@@ -1224,14 +1224,14 @@ Return `false` to cancel it.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1465 | MC_PRE_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int duration) | [StatusEffect](StatusEffect.md) | boolean |
+|1465 | MC_PRE_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int duration) | [StatusEffect](StatusEffect.md) | boolean |
 
 ### MC_POST_STATUS_EFFECT_APPLY {: .copyable }
 Triggers after applying a status effect to an Entity.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1466 | MC_POST_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int duration) | [StatusEffect](StatusEffect.md) | void |
+|1466 | MC_POST_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int duration) | [StatusEffect](StatusEffect.md) | void |
 
 ### MC_POST_MODS_LOADED {: .copyable }
 Called after all Lua scripts have been loaded. Ideal for running code that is expected to run after all mods are initialized, but without the need for load order idiocy!
@@ -2097,7 +2097,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean RemoveFromPlayerForm, <br>boolean Wisp ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable }
 Fires right before the game over screen, but BEFORE the game checks for vanilla revive effects like 1UP.

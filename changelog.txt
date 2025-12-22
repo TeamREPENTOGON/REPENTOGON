@@ -1,3 +1,10 @@
+v1.1.x -
+Modified:
+* EntityPlayer:
+	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
+		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+/newline/
+/versionseparator/
 v1.1.1 -
 Added:
 * Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon > resources-dlc3 > resources).
@@ -16,6 +23,10 @@ Added:
 		Overrides the spritesheet used for a save file drawing. MC_POST_SAVESLOT_LOAD is a good place to use this.
 * ModCallbacks:
 	- Added "RemoveFromPlayerForm" and "Wisp" args to MC_POST_TRIGGER_COLLECTIBLE_REMOVED.
+* Enums:
+	- SlotState
+	- BloodClotSubtype
+	- RoomDisplayFlags
 /newline/
 Fixes:
 * Isaac:
@@ -39,6 +50,7 @@ Fixes:
 	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
 * Fixed possible crash on the secrets menu.
 * Fixed the custom challenges menu resetting when any console command is executed.
+* Fixed the game potentially getting stuck trying to generate an ascent floor if a modded boss room has certain door layouts (again)
 /newline/
 /versionseparator/
 v1.1.0 -
