@@ -1970,6 +1970,7 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 ---@field ClearStates fun(saveStateIds: integer[])
 ---@field CopyStates fun(sourceIds: integer[], destIds: integer[]) -- sourceIds and destIds must have the same size
 ---@field Serialize fun(idMap: table<integer, integer>, fileName: string, checksum: integer) -- first integer is the serializationId, second integer is the actualId
+---@field PreDeserialize fun(mods: ModReference[], modIds: string[]) -- list mods that have data that could be deserialized
 ---@field Deserialize fun(serializedIds: integer[], destIds: integer[], fileName: string, checksum: integer) -- serializedIds and destIds must have the same size
 
 ---@class REPENTOGON._LuaBindings.EntityLifecycle
@@ -1993,6 +1994,7 @@ local _ESSM = {
 	ClearStates = ESSM._OnClearSaveStates,
 	CopyStates = ESSM._OnCopySaveStates,
 	Serialize = ESSM._Serialize,
+	PreDeserialize = ESSM._PreDeserialize,
 	Deserialize = ESSM._Deserialize,
 }
 
@@ -2003,7 +2005,8 @@ _LuaBindings = {
 }
 
 EntitySaveStateManager = {
-	RegisterMod = ESSM.RegisterMod,
 	GetEntityData = ESSM.GetEntityData,
 	GetEntitySaveStateData = ESSM.GetEntitySaveStateData,
+	TryGetEntityData = ESSM.TryGetEntityData,
+	TryGetEntitySaveStateData = ESSM.TryGetEntitySaveStateData,
 }

@@ -3,8 +3,12 @@ local Module = {}
 
 --#region Data
 
----Set of registered mod ids
----@type table<string, true|nil>
+---@class REPENTOGON._Internals.ESSM.ModLookup
+---@field entityData table<integer, table>
+---@field saveStateData table<integer, table>
+
+---Map of registered mod ids and the ModReference that will be used for save and load
+---@type table<string, ModReference>
 local s_registeredMods = {}
 
 ---Set of entities PtrHash that exist
@@ -12,12 +16,17 @@ local s_registeredMods = {}
 local s_validEntities = {}
 
 ---Persistent mod data for existing entities
----@type table<ModReference, table<integer, table>>
+---@type table<string, table<integer, table>>
 local s_entityData = {}
 
 ---Persistent mdo data for entity save states
----@type table<ModReference, table<integer, table>>
+---@type table<string, table<integer, table>>
 local s_saveStateData = {}
+
+---Lookup for individual ModReference.
+---mod references for the same mod point to the same data.
+---@type table<ModReference, REPENTOGON._Internals.ESSM.ModLookup>
+local s_modLookup = {}
 
 --#endregion
 
@@ -80,6 +89,45 @@ local function deep_copy(tbl)
     return _deep_copy(tbl, {})
 end
 
+---@param mod ModReference
+---@param modId string
+local function register_mod_id(mod, modId)
+    local exists = s_registeredMods[modId] ~= nil
+    local entityData
+    local saveStateData
+
+    if not exists then
+        s_registeredMods[modId] = mod
+        entityData = {}
+        saveStateData = {}
+        s_entityData[modId] = entityData
+        s_saveStateData[modId] = saveStateData
+    else
+        entityData = s_entityData[modId]
+        saveStateData = s_saveStateData[modId]
+    end
+
+    s_modLookup[mod] = {entityData = entityData, saveStateData = saveStateData}
+end
+
+---@param mod table
+---@return boolean, string
+local function register_mod(mod)
+    local varType = type(mod)
+    if varType ~= "table" then
+        return false, string_format("ModReference expected, got %s", varType)
+    end
+
+    local modId = GetModId(mod)
+    if not modId then
+        return false, "ModReference expected, got table"
+    end
+
+    register_mod_id(mod, modId)
+
+    return true, "success"
+end
+
 --#region Internals
 
 ---@param entityId integer
@@ -108,10 +156,10 @@ end
 ---@param entityId integer
 ---@param saveStateId integer
 local function _OnStoreEntity(entityId, saveStateId)
-    for mod, entityTbl in pairs(s_entityData) do
+    for modId, entityTbl in pairs(s_entityData) do
         local entityData = entityTbl[entityId]
         if entityData then
-            s_saveStateData[mod][saveStateId] = deep_copy(entityData)
+            s_saveStateData[modId][saveStateId] = deep_copy(entityData)
         end
     end
 end
@@ -119,10 +167,10 @@ end
 ---@param entityId integer
 ---@param saveStateId integer
 local function _OnRestoreEntity(entityId, saveStateId)
-    for mod, saveStateTbl in pairs(s_saveStateData) do
+    for modId, saveStateTbl in pairs(s_saveStateData) do
         local stateData = saveStateTbl[saveStateId]
         if stateData then
-            s_entityData[mod][entityId] = deep_copy(stateData)
+            s_entityData[modId][entityId] = deep_copy(stateData)
         end
     end
 end
@@ -181,13 +229,27 @@ end
 ---@param fileName string
 ---@param checksum integer
 local function _Serialize(idMap, fileName, checksum)
-    for mod, saveStateTbl in pairs(s_saveStateData) do
+    for modId, saveStateTbl in pairs(s_saveStateData) do
         local success, result = pcall(serialize_data, saveStateTbl, idMap, checksum)
+        local mod = s_registeredMods[modId]
         if not success then
             Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to save data for Mod '%s' in '%s': %s", mod.Name, fileName, result))
             DeleteEntityData(mod, fileName)
         else
             SaveEntityData(mod, fileName, result)
+        end
+    end
+end
+
+-- Register mods forcefully so that the system works as expected, even
+-- if a mod has not accessed any data yet.
+---@param mods ModReference[]
+---@param modIds string[]
+local function _PreDeserialize(mods, modIds)
+    for i = 1, #mods, 1 do
+        local modId = modIds[i]
+        if not s_registeredMods[modId] then
+            register_mod_id(mods[i], modId)
         end
     end
 end
@@ -236,7 +298,8 @@ end
 ---@param checksum integer
 local function _Deserialize(serializedIds, destIds, fileName, checksum)
     assert(#serializedIds, #destIds)
-    for mod, saveStateTbl in pairs(s_saveStateData) do
+    for modId, saveStateTbl in pairs(s_saveStateData) do
+        local mod = s_registeredMods[modId]
         local data = LoadEntityData(mod, fileName)
 
         if not data then
@@ -256,22 +319,6 @@ end
 --#endregion
 
 --#region API
-
----@param mod ModReference
-local function RegisterMod(mod)
-    local modId = GetModId(mod)
-    if not modId then
-        error("ModReference expected, got table", 2)
-    end
-
-    if s_registeredMods[modId] then
-        error("Mod has already been registered", 2)
-    end
-
-    s_registeredMods[modId] = true
-    s_entityData[mod] = {}
-    s_saveStateData[mod] = {}
-end
 
 local VALID_ENTITY_USERDATA = {
     ["Entity"] = true,
@@ -307,17 +354,22 @@ end
 
 ---@param mod ModReference
 ---@param entity Entity
----@return table
----@return boolean
-local function GetEntityData(mod, entity)
-    local entityDataTable = s_entityData[mod]
-    if not entityDataTable then
-        error("bad argument #1 (expected registered ModReference)", 2)
+---@param errLevel integer
+---@return table, integer
+local function get_entity_params(mod, entity, errLevel)
+    local modLookup = s_modLookup[mod]
+    if not modLookup then
+        local success, err = register_mod(mod)
+        modLookup = s_modLookup[mod]
+
+        if not success then
+            error(string_format("bad argument #1 (%s)", err), errLevel + 1)
+        end
     end
 
     local entityArgType = type(entity)
     if entityArgType ~= "userdata" then
-        error(string_format("bad argument #2 (expected userdata, got %s)", entityArgType), 2)
+        error(string_format("bad argument #2 (expected userdata, got %s)", entityArgType), errLevel + 1)
     end
 
     local id = GetPtrHash(entity)
@@ -330,10 +382,48 @@ local function GetEntityData(mod, entity)
         else
             specificError = "Entity no longer exists"
         end
-        error(string_format("bad argument #2 (got invalid Entity, %s)", specificError), 2)
+        error(string_format("bad argument #2 (got invalid Entity, %s)", specificError), errLevel + 1)
     end
 
-    return get_data(entityDataTable, id)
+    return modLookup.entityData, id
+end
+
+---@param mod ModReference
+---@param ess EntitiesSaveState
+---@param errLevel integer
+---@return table, integer
+local function get_entity_save_state_params(mod, ess, errLevel)
+    local modLookup = s_modLookup[mod]
+    if not modLookup then
+        local success, err = register_mod(mod)
+        modLookup = s_modLookup[mod]
+
+        if not success then
+            error(string_format("bad argument #1 (%s)", err), errLevel + 1)
+        end
+    end
+
+    local essArgType = type(ess)
+    if essArgType ~= "userdata" then
+        error(string_format("bad argument #2 (expected userdata, got %s)", essArgType), errLevel + 1)
+    end
+
+    local userdataName = getmetatable(ess).__name
+    if userdataName ~= "EntitySaveState" then
+        error(string_format("bad argument #2 (expected EntitySaveState, got %s)", userdataName), errLevel + 1)
+    end
+
+    ---@cast ess EntitiesSaveState
+    return modLookup.saveStateData, GetEntitySaveStateId(ess)
+end
+
+---@param mod ModReference
+---@param entity Entity
+---@return table
+---@return boolean
+local function GetEntityData(mod, entity)
+    local dataTable, id = get_entity_params(mod, entity, 2)
+    return get_data(dataTable, id)
 end
 
 ---@param mod ModReference
@@ -341,23 +431,24 @@ end
 ---@return table
 ---@return boolean
 local function GetEntitySaveStateData(mod, ess)
-    local saveStateTable = s_saveStateData[mod]
-    if not saveStateTable then
-        error("bad argument #1 (expected registered ModReference)", 2)
-    end
+    local dataTable, id = get_entity_save_state_params(mod, ess, 2)
+    return get_data(dataTable, id)
+end
 
-    local essArgType = type(ess)
-    if essArgType ~= "userdata" then
-        error(string_format("bad argument #2 (expected userdata, got %s)", essArgType), 2)
-    end
+---@param mod ModReference
+---@param entity Entity
+---@return table?
+local function TryGetEntityData(mod, entity)
+    local dataTable, id = get_entity_params(mod, entity, 2)
+    return dataTable[id]
+end
 
-    local userdataName = getmetatable(ess).__name
-    if userdataName ~= "EntitySaveState" then
-        error(string_format("bad argument #2 (expected EntitySaveState, got %s)", userdataName), 2)
-    end
-
-    ---@cast ess EntitiesSaveState
-    return get_data(mod, GetEntitySaveStateId(ess))
+---@param mod ModReference
+---@param ess EntitiesSaveState
+---@return table?
+local function TryGetEntitySaveStateData(mod, ess)
+    local dataTable, id = get_entity_save_state_params(mod, ess, 2)
+    return dataTable[id]
 end
 
 --#endregion
@@ -369,9 +460,11 @@ Module._OnRestoreEntity = _OnRestoreEntity
 Module._OnCopySaveStates = _OnCopySaveStates
 Module._OnClearSaveStates = _OnClearSaveStates
 Module._Serialize = _Serialize
+Module._PreDeserialize = _PreDeserialize
 Module._Deserialize = _Deserialize
-Module.RegisterMod = RegisterMod
 Module.GetEntityData = GetEntityData
 Module.GetEntitySaveStateData = GetEntitySaveStateData
+Module.TryGetEntityData = TryGetEntityData
+Module.TryGetEntitySaveStateData = TryGetEntitySaveStateData
 
 return Module

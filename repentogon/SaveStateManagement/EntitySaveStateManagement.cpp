@@ -97,6 +97,7 @@ namespace ESSM
         private: int m_clearSaveStates = LUA_NOREF;
         private: int m_copySaveStates = LUA_NOREF;
         private: int m_serialize = LUA_NOREF;
+        private: int m_preDeserialize = LUA_NOREF;
         private: int m_deserialize = LUA_NOREF;
 
         public: void BindLuaCallbacks(lua_State* L, int tblIdx);
@@ -105,11 +106,21 @@ namespace ESSM
         public: void ClearStates(const std::vector<uint32_t>& saveStateIds);
         public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds);
         public: void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
+        public: void PreDeserialize(const std::string& filename);
         public: void Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
     };
 
     static Data s_systemData;
     static LuaCallbacks s_luaCallbacks;
+}
+
+// forward declarations
+namespace ESSM
+{
+    namespace LuaFunctions
+    {
+        static std::filesystem::path GetLuaSaveDataPath(const ModReference& mod, const std::string& filename);
+    }
 }
 
 namespace ESSM::detail::Init
@@ -716,19 +727,21 @@ namespace ESSM
             return;
         }
     
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_storeEntity);
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_restoreEntity);
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_clearSaveStates);
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_copySaveStates);
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_serialize);
-        luaL_unref(L, LUA_REGISTRYINDEX, s_luaCallbacks.m_deserialize);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_storeEntity);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_restoreEntity);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_clearSaveStates);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_copySaveStates);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_serialize);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_preDeserialize);
+        luaL_unref(L, LUA_REGISTRYINDEX, this->m_deserialize);
     
-        s_luaCallbacks.m_storeEntity = LUA_NOREF; 
-        s_luaCallbacks.m_restoreEntity = LUA_NOREF; 
-        s_luaCallbacks.m_clearSaveStates = LUA_NOREF; 
-        s_luaCallbacks.m_copySaveStates = LUA_NOREF; 
-        s_luaCallbacks.m_serialize = LUA_NOREF; 
-        s_luaCallbacks.m_deserialize = LUA_NOREF;
+        this->m_storeEntity = LUA_NOREF; 
+        this->m_restoreEntity = LUA_NOREF; 
+        this->m_clearSaveStates = LUA_NOREF; 
+        this->m_copySaveStates = LUA_NOREF; 
+        this->m_serialize = LUA_NOREF;
+        this->m_preDeserialize = LUA_NOREF;
+        this->m_deserialize = LUA_NOREF;
     
         auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
         {
@@ -744,12 +757,13 @@ namespace ESSM
             outRef = luaL_ref(L, LUA_REGISTRYINDEX);
         };
     
-        bindCallback(L, tblIdx, "StoreEntity", s_luaCallbacks.m_storeEntity);
-        bindCallback(L, tblIdx, "RestoreEntity", s_luaCallbacks.m_restoreEntity);
-        bindCallback(L, tblIdx, "ClearStates", s_luaCallbacks.m_clearSaveStates);
-        bindCallback(L, tblIdx, "CopyStates", s_luaCallbacks.m_copySaveStates);
-        bindCallback(L, tblIdx, "Serialize", s_luaCallbacks.m_serialize);
-        bindCallback(L, tblIdx, "Deserialize", s_luaCallbacks.m_deserialize);
+        bindCallback(L, tblIdx, "StoreEntity", this->m_storeEntity);
+        bindCallback(L, tblIdx, "RestoreEntity", this->m_restoreEntity);
+        bindCallback(L, tblIdx, "ClearStates", this->m_clearSaveStates);
+        bindCallback(L, tblIdx, "CopyStates", this->m_copySaveStates);
+        bindCallback(L, tblIdx, "Serialize", this->m_serialize);
+        bindCallback(L, tblIdx, "PreDeserialize", this->m_preDeserialize);
+        bindCallback(L, tblIdx, "Deserialize", this->m_deserialize);
     }
     
     void LuaCallbacks::StoreEntity(const Entity& entity, uint32_t saveStateId)
@@ -885,6 +899,48 @@ namespace ESSM
         }
     }
     
+    void LuaCallbacks::PreDeserialize(const std::string& filename)
+    {
+        lua_State* L = g_LuaEngine->_state;
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_preDeserialize);
+
+        std::list<ModReference>& modReferences = g_Mods;
+
+        size_t size = modReferences.size();
+        lua_createtable(L, size, 0); // mods
+        lua_createtable(L, size, 0); // modIds
+
+        int mods = lua_absindex(L, -2);
+        int modIds = lua_absindex(L, -1);
+
+        size_t i = 0;
+        for (ModReference& modRef : modReferences)
+        {
+            std::filesystem::path filePath = LuaFunctions::GetLuaSaveDataPath(modRef, filename);
+            std::error_code errorCode;
+            if (!std::filesystem::exists(filePath, errorCode))
+            {
+                continue;
+            }
+
+            lua_rawgeti(L, LUA_REGISTRYINDEX, modRef._luaTableRef->_ref);
+            lua_rawseti(L, mods, i + 1);
+
+            std::string id = modRef._mainLuaPath;
+            lua_pushlstring(L, id.c_str(), id.size());
+            lua_rawseti(L, modIds, i + 1);
+
+            ++i;
+        }
+        
+        if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+        {
+            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::PreDeserialize: %s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        }
+    }
+
     void LuaCallbacks::Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum)
     {
         lua_State* L = g_LuaEngine->_state;
@@ -1918,6 +1974,7 @@ namespace ESSM::detail::SaveData
         ZHL::Log(__LOG_INFO_HEADER__ "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
         
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
+        s_luaCallbacks.PreDeserialize(fileName);
         s_luaCallbacks.Deserialize(readState, fileName, gameChecksum);
         return true;
     }
@@ -2822,7 +2879,7 @@ namespace ESSM::LuaFunctions
         return 1;
     }
 
-    static std::filesystem::path get_save_data_path(const ModReference& mod, const std::string& filename)
+    static std::filesystem::path GetLuaSaveDataPath(const ModReference& mod, const std::string& filename)
     {
         return std::filesystem::path(mod._dataDirectory) / "EntitySaveStateManagement" / (filename + ".dat");
     }
@@ -2858,7 +2915,7 @@ namespace ESSM::LuaFunctions
         // there is no need to copy the string
         const char* data = luaL_checklstring(L, 3, &len);
 
-        std::filesystem::path filePath = get_save_data_path(modReference, filename);
+        std::filesystem::path filePath = GetLuaSaveDataPath(modReference, filename);
         bool exists = guarantee_parent_path_exists(filePath);
         if (!exists)
         {
@@ -2882,8 +2939,9 @@ namespace ESSM::LuaFunctions
         ModReference& modReference = get_mod_reference(L, 1);
         std::string filename = luaL_checkstring(L, 2);
 
-        std::filesystem::path filePath = get_save_data_path(modReference, filename);
-        if (!std::filesystem::exists(filePath))
+        std::filesystem::path filePath = GetLuaSaveDataPath(modReference, filename);
+        std::error_code errorCode;
+        if (!std::filesystem::exists(filePath, errorCode))
         {
             lua_pushnil(L);
             return 1;
@@ -2922,13 +2980,13 @@ namespace ESSM::LuaFunctions
         ModReference& modReference = get_mod_reference(L, 1);
         std::string filename = luaL_checkstring(L, 2);
 
-        std::filesystem::path filePath = get_save_data_path(modReference, filename);
-        if (!std::filesystem::exists(filePath))
+        std::filesystem::path filePath = GetLuaSaveDataPath(modReference, filename);
+        std::error_code errorCode;
+        if (!std::filesystem::exists(filePath, errorCode))
         {
             return 0;
         }
 
-        std::error_code errorCode;
         std::filesystem::remove(filePath, errorCode);
 
         if (errorCode)
