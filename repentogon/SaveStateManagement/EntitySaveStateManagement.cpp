@@ -1968,7 +1968,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
         if (minecartEntity.first)
         {
             assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
-            EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
+            EntitySaveState* flipState = minecartEntity.second->entitySaveState.saveState;
             if (flipState)
             {
                 ESSM::EntityHijackManager::UnHijack(*flipState);
@@ -1988,7 +1988,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
     if (minecartEntity.first)
     {
         assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
-        EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*minecartEntity.second);
+        EntitySaveState* flipState = minecartEntity.second->entitySaveState.saveState;
         if (flipState)
         {
             CollectedStates collection = {flipState};
@@ -1999,7 +1999,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
         ESSM::Core::SaveEntity(*minecartEntity.first, id);
     }
 
-    EntitySaveState* flipState = EntitySaveState::Pickup::GetFlipSaveState(*data);
+    EntitySaveState* flipState = data->entitySaveState.saveState;
     if (flipState)
     {
         CollectedStates collection = {flipState};
