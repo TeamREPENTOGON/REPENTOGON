@@ -1,8 +1,20 @@
 v1.1.x -
+Added:
+* EntityLaser
+	- SetInitSound(SoundEffect sound)
+	- Get/SetNumChainedLasers
+		This is used by the Monstro's Lung + Technology synergy
 Modified:
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+Fixes:
+* ModCallbacks:
+	- Fixed MC_GET_STATUS_EFFECT_TARGET not running for the "shrink" status effect.
+/newline/
+/versionseparator/
+v1.1.1a -
+* Fixed inconsistent syncing of game options between vanilla and REPENTOGON.
 /newline/
 /versionseparator/
 v1.1.1 -
