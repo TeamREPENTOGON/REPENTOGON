@@ -47,7 +47,7 @@
             <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
@@ -57,7 +57,7 @@
             <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
@@ -67,7 +67,7 @@
             <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
@@ -77,7 +77,7 @@
             <string>Unrecognized Gamepad!</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>无法识别的手柄！</string>
             <string></string>
             <string></string>
             <string></string>
@@ -87,7 +87,7 @@
             <string>Please setup a key config for the connected controller</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>请为连接的手柄设置按键</string>
             <string></string>
             <string></string>
             <string></string>
@@ -97,7 +97,7 @@
             <string>Are you sure you want me to die?</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>你真的想让我去死吗？</string>
             <string></string>
             <string></string>
             <string></string>
@@ -107,7 +107,7 @@
             <string>Connection Failure!\n\nMake sure you are connected to the internet and Steam is running</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>连接失败！ 确保你已连接网络， 且Steam正在运行</string>
             <string></string>
             <string></string>
             <string></string>
@@ -117,7 +117,7 @@
             <string>Lost connection to Steam</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>失去Steam的连接</string>
             <string></string>
             <string></string>
             <string></string>
@@ -127,7 +127,7 @@
             <string>You must own The Binding of Isaac: Afterbirth and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>你必须拥有并安装 以撒的结合：胎衣， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>
@@ -137,7 +137,7 @@
             <string>You must own The Binding of Isaac: Afterbirth+ and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>你必须拥有并安装 以撒的结合：胎衣+， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>
@@ -147,7 +147,7 @@
             <string>You must own The Binding of Isaac: Repentance and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
             <string></string>
-            <string></string>
+            <string>你必须拥有并安装 以撒的结合：忏悔， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>
