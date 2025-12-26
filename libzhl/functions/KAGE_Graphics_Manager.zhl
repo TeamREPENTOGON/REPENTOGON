@@ -1,8 +1,15 @@
-struct UnkStructWithHWND {
-	void* HWND : 0x218;
-} : 0x21c;
+// this is the internal struct used by GLFW to represent the window.
+// we may want to use glfw methods directly instead of accessing this struct directly.
+// however it seems that the most recent version of glfw does not match with this structure
 
-struct KAGE_Graphics_Manager depends (BlendMode, UnkStructWithHWND){
+struct _GLFWwindow {
+    double virtualCursorPosX : 0x48;
+    double virtualCursorPosY : 0x50;
+    char mouseButtons[8] : 0x5c;
+	void* HWND : 0x218;
+} : 0x258;
+
+struct KAGE_Graphics_Manager depends (BlendMode, _GLFWwindow){
     BlendMode _blendMode : 0x4; // 0x4
     KAGE_Graphics_Shader* _shader : 0x18; // 0x18
     KAGE_Graphics_ImageBase* currentRenderTarget : 0x1c; // 0x1c
@@ -10,7 +17,7 @@ struct KAGE_Graphics_Manager depends (BlendMode, UnkStructWithHWND){
     KAGE_Graphics_ImageBase* _boundImage : 0xcc;
     // uint32_t openGLFramebufferID : 0x??; // 0xC8
 	//this struct pointer got shifted in rep+, be careful
-    UnkStructWithHWND* _unk_HWND : 0xe0;
+    _GLFWwindow* _window : 0xe0;
 
     "558bec518a45":
     void SetCurrentRenderTarget(KAGE_Graphics_ImageBase* target, bool usesScreenSize);

@@ -23,6 +23,7 @@
 #include "XMLPlayerExtras.h"
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
+#include "ExtraRenderSteps.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -284,6 +285,7 @@ void PerformASMPatches() {
 	ASMPatchesForCustomActiveGFX();
 	ASMPatches::__ItemPoolManager();
 	ASMPatches::__ItemPoolManagerExtra();
+	ExtraRenderSteps::detail::ApplyPatches();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();

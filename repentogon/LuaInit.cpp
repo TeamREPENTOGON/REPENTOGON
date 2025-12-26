@@ -9,6 +9,7 @@
 #include "HookSystem.h"
 #include "MiscFunctions.h"
 #include "CrashHandler.h"
+#include "LuaInterfaces/_Internals.h"
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -172,11 +173,20 @@ void NukeConstMetatables(lua_State* L) {
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
+	constexpr const char* C_BINDINGS_NAME = "_CBindings";
+
 	super(Debug);
+
+	lua_State* L = g_LuaEngine->_state;
 	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
 	lua_pop(g_LuaEngine->_state, 1);
 	luaL_requiref(g_LuaEngine->_state, "os", luaopen_os, 1);
 	lua_pop(g_LuaEngine->_state, 1);
+
+	lua_newtable(L);
+	LuaInternals::RegisterInternals(L);
+	lua_setglobal(L, C_BINDINGS_NAME);
+
 	lua_State* state = g_LuaEngine->runCallbackRegistry->state;
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
@@ -188,6 +198,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 	lua_getglobal(state, "_RunCallback");
 	g_LuaEngine->runCallbackRegistry->key = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	// "delete" C Bindings
+	lua_pushnil(L);
+	lua_setglobal(L, C_BINDINGS_NAME);
 
 	NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");

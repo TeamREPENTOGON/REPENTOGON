@@ -153,7 +153,7 @@ void EcoMode_toggle_qos(bool eco_state) {
 bool EcoMode_old_state = 0;
 HOOK_METHOD(Manager, Render, (void)->void) {
 	if (repentogonOptions.ecoMode) {
-		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_unk_HWND->HWND;
+		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_window->HWND;
 		bool EcoMode_new_state = IsIconic(hwnd);
 //		EcoMode_new_state = GetForegroundWindow() != hwnd;
 		if ((EcoMode_new_state ^ EcoMode_old_state) == 1) {
