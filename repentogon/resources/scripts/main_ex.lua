@@ -1239,11 +1239,17 @@ local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
 	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc, true) then
 		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc, false)
 		for param, paramCallbacks in pairs(callbackData.PARAM) do
-			RemoveCallbacksIf(paramCallbacks, removeConditionFunc, false)
+			if RemoveCallbacksIf(paramCallbacks, removeConditionFunc, false) and #paramCallbacks == 0 then
+				callbackData.PARAM[param] = nil
+			end
 		end
-		if #callbackData.ALL == 0 and type(callbackID) == "number" then
-			-- No more functions left, disable this callback
-			Isaac.SetBuiltInCallbackState(callbackID, false)
+		if #callbackData.ALL == 0 then
+			if type(callbackID) == "number" then
+				-- No more functions left, disable this callback
+				Isaac.SetBuiltInCallbackState(callbackID, false)
+			else
+				Callbacks[callbackID] = nil
+			end
 		end
 		return true
 	end
