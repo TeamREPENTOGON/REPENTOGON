@@ -60,8 +60,8 @@ HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
 	std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 	if (lower._Starts_with("mods/") || lower._Starts_with("mods\\"))
 	{
-		char buffer[MAX_PATH];
-		DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
+		char buffer[65535];
+		DWORD len = GetModuleFileNameA(NULL, buffer, 65535);
 		std::filesystem::path newerPath = std::filesystem::path(std::string(buffer, len));
 		newPath = newerPath.parent_path().parent_path().string() + "/" + newPath;
 		return super(newPath.c_str(), unusedIsLoading);
