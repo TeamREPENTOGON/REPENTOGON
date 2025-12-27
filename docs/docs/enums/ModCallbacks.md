@@ -209,17 +209,24 @@ Accepts an `integer` to change [BackdropType](https://wofsauge.github.io/IsaacDo
 |:--|:--|:--|:--|:--|
 |1141 | MC_PRE_BACKDROP_CHANGE {: .copyable } | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) | - | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) |
 
+### MC_POST_BACKDROP_CHANGE {: .copyable }
+Fires after the backdrop changes.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1142 | MC_POST_BACKDROP_CHANGE {: .copyable } | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) | [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) | void |
+
 ### MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1107 | MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+|1107 | MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable } | ([Color](../Color.md) Color) | - | void |
 
 ### MC_PRE_BACKDROP_RENDER_WALLS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1106 | MC_PRE_BACKDROP_RENDER_WALLS {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+|1106 | MC_PRE_BACKDROP_RENDER_WALLS {: .copyable } | ([Color](../Color.md) Color) | - | void |
 
 ### MC_PRE_BACKDROP_RENDER_WATER {: .copyable }
 
@@ -1316,7 +1323,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | (boolean Unknown) | - | void |
+|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | (boolean IsDogmaNightmare) | - | void |
 
 ### MC_POST_NPC_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
@@ -2190,14 +2197,14 @@ Called before the pickup determines its loot content. Accepts a [LootList](../Lo
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1333 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
+|1334 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
 
 ### MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable }
 Called before a ghost pickup of the loot content is applied to the pickup. Return `true` to apply pickup ghost to your pickup entity, `false` to cancel it.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1334 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, boolea ShouldAdvance) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1335 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup | void | boolean |
 
 ### MC_POST_PLAYER_ADD_EFFECT {: .copyable }
 Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is added to a player.
@@ -2426,7 +2433,7 @@ Called before the costume is added to the player. Return [ItemConfigItem](../Ite
 |1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
 
 ### MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
-Called before the costume is added to the player. Return `true` to cancel the removal.
+Called before the costume is removed to the player. Return `true` to cancel the removal.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -2803,6 +2810,15 @@ Called after a player drops a trinket onto the ground from their inventory.
 |:--|:--|:--|:--|:--|
 |1144 |MC_POST_PLAYER_DROP_TRINKET {: .copyable } | ([TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html), [Vector](../Vector.md) DropPos, [EntityPlayer](../EntityPlayer.md) Player, boolean IsGoldenTrinket, boolean ReplaceTick) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
+### MC_PRE_FAMILIAR_CAN_CHARM {: .copyable }
+Fires when `EntityFamiliar:CanCharm` is called. This is typically used by Siren's familiar charm attack.
+
+Return `false` to prevent the familiar from being charmed.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1473 |MC_PRE_FAMILIAR_CAN_CHARM {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean |
+
 ### MC_PRE_PLAYER_GIVE_BIRTH_CAMBION {: .copyable }
 Called before Cambion Conception spawns a familiar after the player takes damage.
 
@@ -2881,6 +2897,12 @@ Called after a pickup is successfully "added" to the player's Bag of Crafting.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1139 |MC_POST_ITEM_OVERLAY_RENDER  {: .copyable } | ([Giantbook](Giantbook.md) Giantbook) | [Giantbook](Giantbook.md) | void |
+
+### MC_POST_DISCHARGE_ACTIVE_ITEM {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1140 |MC_POST_DISCHARGE_ACTIVE_ITEM {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean CollectibleRemoved, [EntityPlayer](../EntityPlayer.md) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html?h=activeslot) slot) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_PRE_OPEN_CHEST {: .copyable }
 Fires before a chest is opened. Return false to prevent it from opening.
