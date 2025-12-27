@@ -153,7 +153,7 @@ Now passes **Kill Source** as an argument.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|:--|
-|68 |MC_POST_ENTITY_KILL {: .copyable } | ([Entity](../Entity.md) Entity, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) KillSource) | - | void |
+|68 |MC_POST_ENTITY_KILL {: .copyable } | ([Entity](../Entity.md) Entity, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) KillSource) | - | void |
 
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE {: .copyable }

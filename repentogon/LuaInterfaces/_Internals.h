@@ -1,3 +1,5 @@
+#pragma once
+
 #include "LuaCore.h"
 
 namespace LuaInternals

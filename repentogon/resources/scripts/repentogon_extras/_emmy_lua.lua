@@ -2,6 +2,7 @@ error("This file should not have been included")
 
 ---@class REPENTOGON._CBindings
 ---@field ESSM REPENTOGON._CBindings.ESSM
+---@field RaiseModError fun(modName: string)
 ---@field GetModId fun(mod: ModReference): string?
 
 ---@class REPENTOGON._CBindings.ESSM

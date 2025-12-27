@@ -9,15 +9,15 @@
 #include "HookSystem.h"
 #include "MiscFunctions.h"
 #include "CrashHandler.h"
+#include "Patches/EntityLifecycle.h"
+#include "SaveStateManagement/EntitySaveStateManagement.h"
+#include "LuaInterfaces/_Internals.h"
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <string>
 
 #include "LuaInit.h"
-#include "Patches/EntityLifecycle.h"
-#include "SaveStateManagement/EntitySaveStateManagement.h"
-#include "LuaInterfaces/_Internals.h"
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 
