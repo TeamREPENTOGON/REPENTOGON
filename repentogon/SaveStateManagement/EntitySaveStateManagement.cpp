@@ -38,6 +38,8 @@
 #include "Log.h"
 #include "../MiscFunctions.h"
 #include "../LuaInterfaces/LuaEntitySaveState.h"
+#include "../ImGuiFeatures/CustomImGui.h"
+#include "../Patches/ExtraRenderSteps.h"
 
 #include <fstream>
 #include <algorithm>
@@ -54,6 +56,7 @@ using ClearedIds = std::vector<uint32_t>;
 using CopiedIds = std::vector<std::pair<uint32_t, uint32_t>>;
 using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>;
 using CollectedStates = std::vector<StatePtr>;
+namespace ErrorDisplay = ExtraRenderSteps::ErrorDisplay;
 
 constexpr size_t DEFAULT_COLLECT_RESERVE = (16'000 / sizeof(StatePtr)); // 16 KB should be enough to cover all cases.
 
@@ -112,6 +115,7 @@ namespace ESSM
 
     static Data s_systemData;
     static LuaCallbacks s_luaCallbacks;
+    static bool s_checkerErrorShown;
 }
 
 // forward declarations
@@ -1258,12 +1262,94 @@ namespace ESSM
             ESSM::EntityIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
         }
 
+        private: static void print_errors(const std::array<const char*, eErrors::NUM_ERRORS>& strings, size_t numStrings)
+        {
+            constexpr char HEADER[] = "EntitySaveStateManagement Stability Checker:\n";
+            constexpr char NEW_LINE[] = "  ";
+            constexpr char FOOTER[] = "end\n";
+            constexpr size_t HEADER_SIZE = sizeof(HEADER) - 1;
+            constexpr size_t NEW_LINE_SIZE = sizeof(NEW_LINE) - 1;
+            constexpr size_t FOOTER_SIZE = sizeof(FOOTER) - 1;
+
+            size_t stringSize = HEADER_SIZE;
+            size_t stringSizes[eErrors::NUM_ERRORS] = {0};
+
+            for (size_t i = 0; i < numStrings; i++)
+            {
+                stringSizes[i] = std::strlen(strings[i]);
+                stringSize += NEW_LINE_SIZE + stringSizes[i] + 1; // newline character
+            }
+
+            stringSize += FOOTER_SIZE;
+ 
+            std::unique_ptr<char[]> consoleString = std::make_unique<char[]>(stringSize + 1); // + 1 for the null terminator
+            size_t consoleStringPos = 0;
+
+            std::memcpy(consoleString.get(), HEADER, HEADER_SIZE);
+            consoleStringPos += HEADER_SIZE;
+
+            for (size_t i = 0; i < numStrings; i++)
+            {
+                std::memcpy(consoleString.get() + consoleStringPos, NEW_LINE, NEW_LINE_SIZE);
+                consoleStringPos += NEW_LINE_SIZE;
+                std::memcpy(consoleString.get() + consoleStringPos, strings[i], stringSizes[i]);
+                consoleStringPos += stringSizes[i];
+                // add newline
+                consoleString[consoleStringPos] = '\n'; 
+                consoleStringPos += 1;
+            }
+            
+            std::memcpy(consoleString.get() + consoleStringPos, FOOTER, FOOTER_SIZE);
+            consoleStringPos += FOOTER_SIZE;
+
+            // null terminate
+            consoleString[consoleStringPos] = '\0';
+            assert(consoleStringPos == stringSize);
+
+            if (!s_checkerErrorShown)
+            {
+                ErrorDisplay::RaiseError("A core REPENTOGON system is failing!", ErrorDisplay::REPENTOGON_INTERNAL_PRIORITY);
+                // may want to create an ImGui display for REPENTOGON internals.
+                s_checkerErrorShown = true;
+            }
+
+            g_Game->GetConsole()->PrintError(consoleString.get());
+
+            // Log in ZHL differently, otherwise timestamps won't appear
+            ZHL::Log(__LOG_ERROR_HEADER__ "%s", HEADER);
+            for (size_t i = 0; i < numStrings; i++)
+            {
+                ZHL::Log(__LOG_ERROR_HEADER__ "  %s\n", strings[i]);
+            }
+            ZHL::Log(__LOG_ERROR_HEADER__ "%s", FOOTER);
+        }
+
         private: static void handle_errors(CheckData& checks)
         {
+            if (checks.m_errors.none())
+            {
+                return;
+            }
+
+            struct ErrorStrings
+            {
+                std::array<const char*, eErrors::NUM_ERRORS> strings = {};
+                size_t numStrings = 0;
+
+                void AddString(const char* string)
+                {
+                    assert(numStrings < eErrors::NUM_ERRORS);
+                    strings[numStrings] = string;
+                    numStrings++;
+                }
+            };
+
+            ErrorStrings errorStrings;
+
             // TODO: print error message for console
             if (checks.m_errors.test(eErrors::ERROR_DOUBLE_CLEAR))
             {
-                // double clears are handled during iterations
+                errorStrings.AddString("ERROR_DOUBLE_CLEAR: An id was cleared more than once.");
             }
 
             if (checks.m_errors.test(eErrors::ERROR_INVALID_STATE))
@@ -1283,6 +1369,8 @@ namespace ESSM
                         Manager::NewHijack(*s);
                     }, state);
                 }
+
+                errorStrings.AddString("ERROR_INVALID_STATE: A state has not been properly handled.");
             }
 
             if (checks.m_errors.test(eErrors::ERROR_INVALID_ID))
@@ -1299,6 +1387,8 @@ namespace ESSM
                         Manager::NewHijack(*s);
                     }, state);
                 }
+
+                errorStrings.AddString("ERROR_INVALID_ID: A non existent id has been used.");
             }
 
             if (checks.m_errors.test(eErrors::ERROR_INCORRECT_CLEAR))
@@ -1315,6 +1405,8 @@ namespace ESSM
                         Core::CopyState_NoBatch(s);
                     }, state);
                 }
+
+                errorStrings.AddString("ERROR_INCORRECT_CLEAR: An id was cleared incorrectly.");
             }
 
             if (checks.m_errors.test(eErrors::ERROR_DUPLICATE))
@@ -1322,6 +1414,7 @@ namespace ESSM
                 CopiedIds copiedIds;
                 copiedIds.reserve(checks.m_duplicates.size());
                 Core::CopySaveStates(checks.m_duplicates);
+                errorStrings.AddString("ERROR_DUPLICATE: Two or more states have the same id.");
             }
 
             if (checks.m_errors.test(eErrors::ERROR_LEAK))
@@ -1333,7 +1426,16 @@ namespace ESSM
 
                 // send callback just to be sure that lua states are also cleared
                 s_luaCallbacks.ClearStates(checks.m_leakedIds);
+                errorStrings.AddString("ERROR_LEAK: An active id was not found.");
             }
+
+            if (errorStrings.numStrings == 0)
+            {
+                errorStrings.AddString("ERROR_UNKNOWN: An error occurred but no handler was found.");
+                assert(false);
+            }
+
+            print_errors(errorStrings.strings, errorStrings.numStrings);
         }
 
         public: static void CheckStability()
