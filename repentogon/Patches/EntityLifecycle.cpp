@@ -215,9 +215,14 @@ static void Patch_EntityListUpdate_RemoveEntityMainEL()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall asm_delete_entity(Entity& entity)
+static void __fastcall asm_delete_persistent_el_entity(Entity& entity)
 {
-    EntityLifecycle::Core::DeleteEntity(entity);
+    // Players have unique handling when being deleted from persistent data
+    // If they are deleted they invoke free, which is then handled by the other hook.
+    if (entity._type != ENTITY_PLAYER)
+    {
+        EntityLifecycle::Core::DeleteEntity(entity);
+    }
 }
 
 static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
@@ -233,7 +238,7 @@ static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Restore + Move Entity into ECX
         .PreserveRegisters(savedRegisters)
-        .AddInternalCall(asm_delete_entity)
+        .AddInternalCall(asm_delete_persistent_el_entity)
         .RestoreRegisters(savedRegisters)
         .AddRelativeJump((void*)resumeAddr);
 

@@ -1,24 +1,48 @@
-/* FOR MAINTAINERS:
+/* SYSTEM OVERVIEW:
+*  This system is meant to provide a way to extend the various save state structures.
+*  This is done by assigning an id to each active structure, which can then be used by outside systems to correlate to the main structure.
+*  Because there isn't always free space in every type of structures, it was necessary to hijack the structures and replace one of the fields with the id.
+*    A second field is also used to confirm that the structure has been properly hijacked and, additionally, as a general marker to assist other operations.
+*    The fields that are chosen to be hijacked should be ones that are not actively read in operations that are not a Restore of the entity state.
+*      Additionally, for the marker, the original field should be one that has a high likelihood of not being naturally set to one of the marker values.
+*  Due to this it is necessary to store a copy of the original state of the non-hijacked values that is then restored prior to an entity Restore.
+*  
+*  The core operations of the system are:
+*  - Hijacking: Which involdes generating a new id copying the original values into a separate structure, then replacing the fields with the Id and the Hijacked Marker.
+*      Called on Save State Creation (or if preallocated when considered "active").
+*  - Storing: Which usually coincides with Hijacking, if not then it is the same as hijacking minus generating a new id.
+*  - Restoring: Replacing the marker and id value to their original non-hijacked values before calling the vanilla restore function, then restoring the marker and id.
+*  - Clearing: Deleting the id of the structure
+*      Called when the Save State is deleted (or if preallocated when going from "active" to "inactive").
+*  - Copy: Which involves generating a new id and copying the hijacked values from the source.
+*      Given that the id replaces one of the original field, the game copies that value for us, allowing us to not have to know where the source actually comes from, meaning
+*      we can simply read the current id as the id of the source, then replacing it with the newly generated one.
+*  - Serialize: We generate a new id (local to the serialization process) for each written structure in the game state, which will then be serialized by the game.
+*    We then serialize the non-hijacked values on our end, tying it to the local id. Then restore the original ids of the written structure
+*  - Deserialize: We read each id that was written on serialization then act as if all the read structures are newly created and Hijack each of them, taking the original
+*    non-hijacked values from our own save file.
+*      If we cannot find an associated id from our own save file then we make the game fail deserialization.
+*/
+
+/* IMPLEMENTATION NOTES:
 *  - There is no single point where the Level's rooms are reset or partially reset; each case must be found and handled individually.
 *  - The main operators (like operator= or the destructor) for EntitySaveState have not been used as hook points, since many temporary states are created, and we do not need to signal their creation, copy or destruction.
 *  - Some places manually create and insert EntitySaveStates into a container, without using a constructor; each of these must be found and handled.
-*  - Due to the unreliable nature of the EntitySaveState methods, manual work is required when save states are copied or cleared by the game. As such, all points where EntitySaveState is used must be reviewed.
-*    - The only exception is SmartPointers, which have a single point of destruction, but their initialization and copy must still be handled manually.
+*  - Due to this, manual work is required when save states created, copied or cleared by the game. As such, all points where an EntitySaveState is used must be reviewed.
+*    - The only exception are SmartPointers, which have a single point of destruction, but their initialization and copy must still be handled manually.
 *    - Because the EntitySaveState destructor always attempts to call an unused global Notify function, references to that function's memory address can be used to locate uses of EntitySaveState.
 *    - There are unhandled cases where EntitySaveState and GameStatePlayer are used, but all of these are related to online play and have not been addressed.
 *  - There is no mechanism that checks if an ID is cleared multiple times. We must ensure this never occurs.
-*    - A possible improvement could involve marking cleared EntitySaveStates with a special flag to make detection safer. However, this would not prevent issues caused by duplicate, which are the main cause of multiple clears.
+*    - A possible improvement could involve marking cleared EntitySaveStates with a special marker to make detection safer. However, this would not prevent issues caused by duplicates, which are the main cause of multiple clears.
 *  - Because of SmartPointers, it is not currently possible to fully clear the ID generator, as some references would persist after reset, causing incorrect clears.
 *    - Full handling of SmartPointers would be required to safely enable full resets.
 *    - Enabling this would make the system resilient to “memory leaks”, but might still allow incorrect clears.
-*  - It is assumed that all Entity saves are handled by Room::save_entity().
-*  - It is assumed that every time Room::save_entity() is called with 'isSavingMinecartEntity' set to true, it is immediately followed by another call to Room::save_entity(), with no interruptions.
+*    - The addition of the Stability checker has kind of rendered this point meaningless as it is capable of detecting "memory leaks" and properly fix them.
+*  - It is assumed that all Entity Stores are handled by Room::save_entity().
 *  - It is assumed that all Entity restores are handled by Room::restore_entity(), except for Entity_Pickup::TryFlipState.
-*  - It is assumed that GameState::SaveState's initial state is cleared.
 *  - It is assumed that GameState is in a cleared state when it is read.
 *  - It is assumed that every time a GameState is cleared, GameState::Clear() is called.
 *  - Confirm that Level::RestoreGameState does not reset the LilPortalRoom when calling reset_room_list, since we currently have to perform that clear manually.
-*  - It is assumed that Entity_Player::StoreGameState's initial state is equivalent to an initialized or newly constructed state.
 *  - It is assumed that every time a player's state is cleared, GameStatePlayer::Init() is called.
 *  - It is assumed that all player and familiar saves are handled by Entity_Player::StoreGameState().
 *  - It is assumed that all player restores are handled by Entity_Player::RestoreGameState().
@@ -27,6 +51,7 @@
 *    - This specific case occurs when restoring backup players in PlayerManager::RestoreGameState(), which copies data from the save state into the unlisted save state.
 *  - To avoid having to iterate over non "initialized" RoomDescriptors in BackwardsStage, when resetting the game's state, we diverge from the game's behavior by actually clearing the ids.
 *    - In contrast, the game keeps the vector around and simply sets the room count to 0, only properly clearing it when saving a new RoomDescriptor.
+*    - Hopefully this doesn't cause any issues, but, if we were to allow access to BackwardsStage, we still shouldn't grant access to the vector when the room technically doesn't exist.
 */
 
 #include "EntitySaveStateManagement.h"
@@ -48,9 +73,9 @@
 #undef ERROR_INVALID_STATE
 
 #define DEBUG_MSG false
-#define __LOG_DEBUG_HEADER__ "[DEBUG] [ESSM] - "
-#define __LOG_INFO_HEADER__ "[INFO] [ESSM] - "
-#define __LOG_ERROR_HEADER__ "[ERROR] [ESSM] - "
+#define LOG_DEBUG_HEADER "[DEBUG] [ESSM] - "
+#define LOG_INFO_HEADER "[INFO] [ESSM] - "
+#define LOG_ERROR_HEADER "[ERROR] [ESSM] - "
 
 using ClearedIds = std::vector<uint32_t>;
 using CopiedIds = std::vector<std::pair<uint32_t, uint32_t>>;
@@ -418,21 +443,21 @@ namespace ESSM::IdManager
         {
             uint32_t id = s_systemData.reusableIds.back();
             s_systemData.reusableIds.pop_back();
-            LogDebug(__LOG_DEBUG_HEADER__ "New ID: %u\n", id);
+            LogDebug(LOG_DEBUG_HEADER "New ID: %u\n", id);
             return id;
         }
     
         uint32_t id = s_systemData.totalIds;
         s_systemData.totalIds++;
         s_systemData.hijackedStates.emplace_back();
-        LogDebug(__LOG_DEBUG_HEADER__ "New ID: %u\n", id);
+        LogDebug(LOG_DEBUG_HEADER "New ID: %u\n", id);
         return id;
     }
 
     static void ClearId(uint32_t id)
     {
         s_systemData.reusableIds.push_back(id);
-        LogDebug(__LOG_DEBUG_HEADER__ "Cleared ID: %u\n", id);
+        LogDebug(LOG_DEBUG_HEADER "Cleared ID: %u\n", id);
     }
 }
 
@@ -726,7 +751,7 @@ namespace ESSM
         tblIdx = lua_absindex(L, tblIdx);
         if (!lua_istable(L, tblIdx))
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "ESSM::BindLuaCallbacks: expected a table\n");
+            ZHL::Log(LOG_ERROR_HEADER "ESSM::BindLuaCallbacks: expected a table\n");
             assert(false);
             return;
         }
@@ -752,7 +777,7 @@ namespace ESSM
             lua_getfield(L, tblIdx, fieldName);
             if (!lua_isfunction(L, -1))
             {
-                ZHL::Log(__LOG_ERROR_HEADER__ "ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+                ZHL::Log(LOG_ERROR_HEADER "ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
                 lua_pop(L, 1);
                 assert(false);
                 return;
@@ -783,7 +808,7 @@ namespace ESSM
     
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::StoreEntity: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::StoreEntity: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -801,7 +826,7 @@ namespace ESSM
     
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::RestoreEntity: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::RestoreEntity: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -828,7 +853,7 @@ namespace ESSM
     
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::ClearStates: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::ClearStates: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -864,7 +889,7 @@ namespace ESSM
     
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::CopyStates: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::CopyStates: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -898,7 +923,7 @@ namespace ESSM
 
         if (lua_pcall(L, 3, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::Serialize: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::Serialize: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -940,7 +965,7 @@ namespace ESSM
         
         if (lua_pcall(L, 2, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::PreDeserialize: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::PreDeserialize: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -976,7 +1001,7 @@ namespace ESSM
             
         if (lua_pcall(L, 4, 0, 0) != LUA_OK)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "LuaCallbacks::Deserialize: %s\n", lua_tostring(L, -1));
+            ZHL::Log(LOG_ERROR_HEADER "LuaCallbacks::Deserialize: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -1035,7 +1060,7 @@ namespace ESSM::Core
         uint32_t targetId = IdManager::NewId();
         Manager::SetId(*obj, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug(__LOG_DEBUG_HEADER__ "Copied Entity %d -> %d\n", sourceId, targetId);
+        LogDebug(LOG_DEBUG_HEADER "Copied Entity %d -> %d\n", sourceId, targetId);
 
         return std::make_pair(sourceId, targetId);
     };
@@ -1316,12 +1341,12 @@ namespace ESSM
             g_Game->GetConsole()->PrintError(consoleString.get());
 
             // Log in ZHL differently, otherwise timestamps won't appear
-            ZHL::Log(__LOG_ERROR_HEADER__ "%s", HEADER);
+            ZHL::Log(LOG_ERROR_HEADER "%s", HEADER);
             for (size_t i = 0; i < numStrings; i++)
             {
-                ZHL::Log(__LOG_ERROR_HEADER__ "  %s\n", strings[i]);
+                ZHL::Log(LOG_ERROR_HEADER "  %s\n", strings[i]);
             }
-            ZHL::Log(__LOG_ERROR_HEADER__ "%s", FOOTER);
+            ZHL::Log(LOG_ERROR_HEADER "%s", FOOTER);
         }
 
         private: static void handle_errors(CheckData& checks)
@@ -1644,12 +1669,12 @@ namespace ESSM::detail::SaveData
     {
         if (readState.errors.test(ReadErrors::ERROR_INVALID_STATE))
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "invalid save state during read\n");
+            ZHL::Log(LOG_ERROR_HEADER "invalid save state during read\n");
         }
 
         if (readState.errors.test(ReadErrors::ERROR_DUPLICATE_ID))
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "duplicate id found during read\n");
+            ZHL::Log(LOG_ERROR_HEADER "duplicate id found during read\n");
         }
     }
 
@@ -1747,7 +1772,7 @@ namespace ESSM::detail::SaveData
         std::filesystem::remove(filePath, errorCode);
         if (errorCode)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to delete file at \"%s\"\n", filePath.string().c_str());
         }
     }
 
@@ -1782,7 +1807,7 @@ namespace ESSM::detail::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to write game state : %s\n", e.what());
+            ZHL::Log(LOG_ERROR_HEADER "unable to write game state : %s\n", e.what());
             clear_write_state(_writeState);
             return writeState;
         }
@@ -1809,7 +1834,7 @@ namespace ESSM::detail::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to read game state : %s\n", e.what());
+            ZHL::Log(LOG_ERROR_HEADER "unable to read game state : %s\n", e.what());
             _readState.errors.set(ReadErrors::TRIGGERED_EXCEPTION);
         }
 
@@ -1989,14 +2014,14 @@ namespace ESSM::detail::SaveData
         bool exists = guarantee_parent_path_exists(filePath);
         if (!exists)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
             return;
         }
 
         std::ofstream file = std::ofstream(filePath, std::ios::binary);
         if (!file.is_open())
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open save file for writing at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to open save file for writing at \"%s\"\n", filePath.string().c_str());
             return;
         }
 
@@ -2012,13 +2037,13 @@ namespace ESSM::detail::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to serialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            ZHL::Log(LOG_ERROR_HEADER "unable to serialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
             file.close();
             remove_file(filePath);
             return;
         }
 
-        ZHL::Log(__LOG_INFO_HEADER__ "successfully saved %s to \"%s\"\n", filename.c_str(), filePath.string().c_str());
+        ZHL::Log(LOG_INFO_HEADER "successfully saved %s to \"%s\"\n", filename.c_str(), filePath.string().c_str());
 
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
         s_luaCallbacks.Serialize(writeState, filename, gameChecksum);
@@ -2037,7 +2062,7 @@ namespace ESSM::detail::SaveData
         // we should have never entered with errors here in the first place
         if (readState.errors.any())
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "pre-existing errors in read state when deserializing\n");
+            ZHL::Log(LOG_ERROR_HEADER "pre-existing errors in read state when deserializing\n");
             return false;
         }
 
@@ -2056,7 +2081,7 @@ namespace ESSM::detail::SaveData
         std::ifstream file = std::ifstream(filePath, std::ios::binary);
         if (!file.is_open())
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open save file for reading at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to open save file for reading at \"%s\"\n", filePath.string().c_str());
             return false;
         }
 
@@ -2067,13 +2092,13 @@ namespace ESSM::detail::SaveData
         }
         catch(const std::runtime_error& e)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to deserialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
+            ZHL::Log(LOG_ERROR_HEADER "unable to deserialize save file at \"%s\": %s\n", filePath.string().c_str(), e.what());
             return false;
         }
 
         file.close();
         hijack_read_entity_states(readState, saveFile);
-        ZHL::Log(__LOG_INFO_HEADER__ "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
+        ZHL::Log(LOG_INFO_HEADER "successfully loaded %s from \"%s\"\n", fileName.c_str(), filePath.string().c_str());
         
         uint32_t gameChecksum = g_Manager->_gamestate._checksum;
         s_luaCallbacks.PreDeserialize(fileName);
@@ -2103,17 +2128,21 @@ namespace ESSM::detail::SaveData
         std::filesystem::remove(filePath, errorCode);
         if (errorCode)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to delete file at \"%s\"\n", filePath.string().c_str());
         }
         else
         {
-            ZHL::Log(__LOG_INFO_HEADER__ "deleted file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_INFO_HEADER "deleted file at \"%s\"\n", filePath.string().c_str());
         }
     }
 }
 
+#pragma region Hooks
+
 static std::pair<Entity*, EntitySaveState*> s_minecartEntity = {nullptr, nullptr};
 
+// ASSUMPTION: It is assumed that every time a save_entity with 'isSavingMinecartEntity' set to true is successful, it is immediately followed by another call to save_entity,
+// with the saved entity being the minecart that holds the previous saved entity.
 HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savingMinecartEntity) -> bool)
 {
     std::pair<Entity*, EntitySaveState*> minecartEntity = s_minecartEntity;
@@ -2289,7 +2318,7 @@ HOOK_METHOD(Game, ResetState, () -> void)
 
 HOOK_METHOD(GameState, Clear, () -> void)
 {
-    LogDebug(__LOG_DEBUG_HEADER__ "Start GameState::Clear\n");
+    LogDebug(LOG_DEBUG_HEADER "Start GameState::Clear\n");
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2300,16 +2329,17 @@ HOOK_METHOD(GameState, Clear, () -> void)
     // player save states are handled by GameStatePlayer::Init
     super();
 
-    LogDebug(__LOG_DEBUG_HEADER__ "End GameState::Clear\n");
+    LogDebug(LOG_DEBUG_HEADER "End GameState::Clear\n");
 }
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-    LogDebug(__LOG_DEBUG_HEADER__ "Start Game::SaveState\n");
+    LogDebug(LOG_DEBUG_HEADER "Start Game::SaveState\n");
 
-    // There is no need to clear the state since SaveState always calls GameState::Clear before saving
+    // ASSUMPTION: It is assumed that the state has already been cleared.
+    // This is because SaveState always calls GameState::Clear before saving
 	super(state);
-
+    
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
     ESSM::EntityIterators::InGameState::AllRooms(*state, ESSM::Utils::CollectLambda, collection);
@@ -2318,12 +2348,12 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 
     // players are handled by Entity_Player::Init
 
-    LogDebug(__LOG_DEBUG_HEADER__ "End Game::SaveState\n");
+    LogDebug(LOG_DEBUG_HEADER "End Game::SaveState\n");
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-    LogDebug(__LOG_DEBUG_HEADER__ "Start Game::RestoreState\n");
+    LogDebug(LOG_DEBUG_HEADER "Start Game::RestoreState\n");
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2333,12 +2363,12 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 
-    LogDebug(__LOG_DEBUG_HEADER__ "End Game::RestoreState\n");
+    LogDebug(LOG_DEBUG_HEADER "End Game::RestoreState\n");
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 {
-    // Manual clear the lil portal room
+    // ASSUMPTION: Confirm that the function does not reset the LilPortalRoom when calling reset_room_list (through params), since we currently have to perform that clear manually.
     constexpr size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
     reset_single_room(g_Game->_negativeGridRooms[LIL_PORTAL_IDX]);
     super(state);
@@ -2389,9 +2419,10 @@ HOOK_METHOD(Entity_Player, destructor, () -> void)
 
 HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void)
 {
+    // ASSUMPTION: It is assumed that the initial state is equivalent to an initialized or newly constructed state.
     assert(ESSM::PlayerHijackManager::IsCleared(*saveState));
-    // ASSUMPTION: We don't need to clear the marker or the state, as the store will override them anyway with the correct values
 
+    // We don't need to clear the marker or the state, as the store will override them anyway with the correct values
     super(saveState, saveTemporaryFamiliars);
 
     CollectedStates collection;
@@ -2827,7 +2858,7 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
         CollectedStates collection = {saveState};
         ESSM::Core::ClearSaveStates(collection);
 
-        LogDebug(__LOG_DEBUG_HEADER__ "Smart pointer Cleared: %u\n", id);
+        LogDebug(LOG_DEBUG_HEADER "Smart pointer Cleared: %u\n", id);
     }
 
     saveState->destructor();
@@ -2847,7 +2878,7 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor()
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState)
 {
     uint32_t id = ESSM::EntityHijackManager::NewHijack(saveState);
-    LogDebug(__LOG_DEBUG_HEADER__ "New Flip State: %u\n", id);
+    LogDebug(LOG_DEBUG_HEADER "New Flip State: %u\n", id);
 }
 
 static void Patch_PickupInitFlipState_CreateSaveState()
@@ -2955,6 +2986,8 @@ void ESSM::detail::Patches::ApplyPatches()
     Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom();
 }
 
+#pragma endregion // Hooks
+
 namespace ESSM::LuaFunctions
 {
     static ModReference& get_mod_reference(lua_State* L, int idx)
@@ -2977,7 +3010,8 @@ namespace ESSM::LuaFunctions
     {
         EntitySaveState& state = Lua_EntitySaveState::GetEntitySaveState(L, 1);
 
-        lua_pushinteger(L, EntityHijackManager::GetId(state));
+        // lua ids are sent over as if they were 1-indexed
+        lua_pushinteger(L, EntityHijackManager::GetId(state) + 1);
         return 1;
     }
 
@@ -3021,14 +3055,14 @@ namespace ESSM::LuaFunctions
         bool exists = guarantee_parent_path_exists(filePath);
         if (!exists)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to create directory for Mod save file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to create directory for Mod save file at \"%s\"\n", filePath.string().c_str());
             return 0;
         }
 
         std::ofstream file = std::ofstream(filePath, std::ios::binary);
         if (!file)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open Mod file for writing at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to open Mod file for writing at \"%s\"\n", filePath.string().c_str());
             return 0;
         }
 
@@ -3052,7 +3086,7 @@ namespace ESSM::LuaFunctions
         std::ifstream file = std::ifstream(filePath, std::ios::binary);
         if (!file)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to open Mod file for reading at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to open Mod file for reading at \"%s\"\n", filePath.string().c_str());
             lua_pushnil(L);
             return 1;
         }
@@ -3062,7 +3096,7 @@ namespace ESSM::LuaFunctions
 
         if (lenoff < 0)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to get the length of Mod file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to get the length of Mod file at \"%s\"\n", filePath.string().c_str());
             lua_pushnil(L);
             return 1;
         }
@@ -3093,7 +3127,7 @@ namespace ESSM::LuaFunctions
 
         if (errorCode)
         {
-            ZHL::Log(__LOG_ERROR_HEADER__ "unable to delete Mod file at \"%s\"\n", filePath.string().c_str());
+            ZHL::Log(LOG_ERROR_HEADER "unable to delete Mod file at \"%s\"\n", filePath.string().c_str());
         }
 
         return 0;
@@ -3108,21 +3142,19 @@ void ESSM::detail::Init::RegisterLuaInternals(lua_State *L)
     lua::TableAssoc(L, "DeleteData", LuaFunctions::DeleteData);
 }
 
+// make it high priority so that it only checks stability after everything is done
+HOOK_METHOD_PRIORITY(Room, Init, -9999, (int param_1, RoomDescriptor * descriptor) -> void)
+{
+    super(param_1, descriptor);
+    ESSM::StabilityChecker::CheckStability();
+}
+
 #ifndef NDEBUG
 
-#include "chrono"
-
-HOOK_STATIC(Manager, Update, (bool unk) -> void, __stdcall)
+HOOK_STATIC_PRIORITY(Manager, Update, -9999, (bool unk) -> void, __stdcall)
 {
     super(unk);
-
-    using clock = std::chrono::high_resolution_clock;
-    auto start = clock::now();
     ESSM::StabilityChecker::CheckStability();
-    auto end = clock::now();
-
-    unsigned long long duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    //KAGE::_LogMessage(0, "check_stability time taken: %llu\n", duration);
 }
 
 #endif
