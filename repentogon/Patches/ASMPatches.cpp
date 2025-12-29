@@ -277,7 +277,7 @@ void PerformASMPatches() {
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
 	EntitySaveStateManagement::detail::Patches::ApplyPatches();
-	EntityLifecycle::Patches::ApplyPatches();
+	EntityLifecycle::detail::Patches::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

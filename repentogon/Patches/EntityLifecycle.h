@@ -4,13 +4,16 @@
 
 namespace EntityLifecycle
 {
-    namespace Init
+    namespace detail
     {
-        void BindLuaCallbacks(lua_State* L, int tblIdx);
-    }
-
-    namespace Patches
-    {
-        void ApplyPatches();
+        namespace Init
+        {
+            void BindLuaCallbacks(lua_State* L, int tblIdx);
+        }
+    
+        namespace Patches
+        {
+            void ApplyPatches();
+        }
     }
 }

@@ -186,7 +186,7 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 	}
 
 	lua_getfield(L, tblIdx, "EntityLifecycle");
-	EntityLifecycle::Init::BindLuaCallbacks(L, -1);
+	EntityLifecycle::detail::Init::BindLuaCallbacks(L, -1);
 	lua_pop(L, 1);
 	assert(lua_gettop(L) == stackTop);
 	lua_settop(L, stackTop);

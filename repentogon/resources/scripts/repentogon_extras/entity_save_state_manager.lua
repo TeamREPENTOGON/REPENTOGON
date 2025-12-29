@@ -7,6 +7,19 @@ local Module = {}
 ---@field entityData table<integer, table>
 ---@field saveStateData table<integer, table>
 
+---@class REPENTOGON._Internals.ESSM.SaveData
+---@field version integer
+---@field checksum integer
+---@field data REPENTOGON._Internals.ESSM.SerializedTable
+
+---@class REPENTOGON._Internals.ESSM.SerializedTable
+---@field _data table -- connects a string key to plain data
+---@field _links table -- connects a string key to a table id
+---@field _specialKeyData table -- connects a special key (number and boolean) to plain data
+---@field _specialKeyLinks table -- connects a special key (number and boolean) to a table id
+
+local SAVE_DATA_VERSION = 1
+
 ---Map of registered mod ids and the ModReference that will be used for save and load
 ---@type table<string, ModReference>
 local s_registeredMods = {}
@@ -40,6 +53,7 @@ local pcall = pcall
 local tostring = tostring
 local getmetatable = getmetatable
 local string_format = string.format
+local table_insert = table.insert
 local json_encode = json.encode
 local json_decode = json.decode
 local GetPtrHash = GetPtrHash
@@ -49,6 +63,19 @@ local GetEntitySaveStateId = _CBindings.ESSM.GetEntitySaveStateId
 local SaveEntityData = _CBindings.ESSM.SaveData
 local LoadEntityData = _CBindings.ESSM.LoadData
 local DeleteEntityData = _CBindings.ESSM.DeleteData
+
+local NON_SERIALIZABLE_KEYS = {
+    ["userdata"] = true,
+    ["table"] = true,
+    ["function"] = true,
+    ["thread"] = true,
+}
+
+local NON_SERIALIZABLE_VALUES = {
+    ["userdata"] = true,
+    ["function"] = true,
+    ["thread"] = true,
+}
 
 ---@param tbl table
 ---@param memoTable table<table, table>
@@ -66,13 +93,15 @@ local function _deep_copy(tbl, memoTable)
         local keyType = type(key)
         local valueType = type(value)
 
-        if keyType == "userdata" or keyType == "table" then
+        if NON_SERIALIZABLE_KEYS[keyType] then
             goto continue
         end
 
-        if valueType == "userdata" then
-            -- skip
-        elseif valueType == "table" then
+        if NON_SERIALIZABLE_VALUES[valueType] then
+            goto continue
+        end
+
+        if valueType == "table" then
             copy[key] = _deep_copy(value, memoTable)
         else
             copy[key] = value
@@ -200,27 +229,99 @@ local function _OnCopySaveStates(sourceIds, destIds)
     end
 end
 
+---@param tbl table
+---@param saveData REPENTOGON._Internals.ESSM.SerializedTable
+---@param memoTable table<table, integer>
+---@return integer
+local function _serialize_table(tbl, saveData, memoTable)
+    local memoId = memoTable[tbl]
+    if memoId then
+        return memoId
+    end
+
+    local tables = saveData._data
+    local id = #tables + 1
+    memoTable[tbl] = id
+
+    local plainData = {}
+    local links = {}
+    local specialKeyPlainData = {}
+    local specialKeyLinks = {}
+
+    table_insert(tables, plainData)
+    table_insert(saveData._links, links)
+    table_insert(saveData._specialKeyData, specialKeyPlainData)
+    table_insert(saveData._specialKeyLinks, specialKeyLinks)
+
+    for key, value in pairs(tbl) do
+        local keyType = type(key)
+        local valueType = type(value)
+
+        if NON_SERIALIZABLE_KEYS[keyType] then
+            goto continue
+        end
+
+        if NON_SERIALIZABLE_VALUES[valueType] then
+            goto continue
+        end
+
+        local dataTable
+        local specialKey = false
+
+        if valueType == "table" then
+            value = _serialize_table(value, saveData, memoTable)
+            if keyType == "number" or keyType == "boolean" then
+                dataTable = specialKeyLinks
+                specialKey = true
+            else
+                dataTable = links
+            end
+        else
+            if keyType == "number" or keyType == "boolean" then
+                dataTable = specialKeyPlainData
+                specialKey = true
+            else
+                dataTable = plainData
+            end
+        end
+
+        if specialKey then
+            table_insert(dataTable, {key, value})
+        else
+            dataTable[key] = value
+        end
+        ::continue::
+    end
+
+    return id
+end
+
 ---@param saveStateTbl table<integer, table>
 ---@param idMap table<integer, integer>
 ---@param checksum integer
 ---@return string data
 local function serialize_data(saveStateTbl, idMap, checksum)
-    local serializedData = {}
-    for serializationId, id in pairs(idMap) do
-        local stateTbl = saveStateTbl[id]
-        if stateTbl then
-            serializedData[serializationId] = deep_copy(stateTbl)
-        end
-    end
-
-    -- guard against json being bad with just number keys
-    serializedData["json_guard"] = true
-
-    local saveData = {
-        checksum = checksum,
-        data = serializedData,
+    ---@type REPENTOGON._Internals.ESSM.SerializedTable
+    local serializedTable = {
+        _data = {},
+        _specialKeyData = {},
+        _links = {},
+        _specialKeyLinks = {},
     }
 
+    local remappedData = {}
+    for serializationId, id in pairs(idMap) do
+        remappedData[serializationId] = saveStateTbl[id]
+    end
+
+    _serialize_table(remappedData, serializedTable, {})
+
+    ---@type REPENTOGON._Internals.ESSM.SaveData
+    local saveData = {
+        version = SAVE_DATA_VERSION,
+        checksum = checksum,
+        data = serializedTable,
+    }
     local data = json_encode(saveData)
     return data
 end
@@ -254,6 +355,53 @@ local function _PreDeserialize(mods, modIds)
     end
 end
 
+---@param serializeTable REPENTOGON._Internals.ESSM.SerializedTable
+local function _assert_serialized_table_size(serializeTable)
+    local size = #serializeTable._data
+    if size == #serializeTable._specialKeyData and
+        size == #serializeTable._links and
+        size == #serializeTable._specialKeyLinks then
+            return true
+    end
+
+    return false
+end
+
+---@param serializeTable REPENTOGON._Internals.ESSM.SerializedTable
+---@return table
+local function _deserialize_table(serializeTable)
+    assert(_assert_serialized_table_size(serializeTable), "table is corrupted (sizes don't match)")
+    local tables = serializeTable._data
+
+    print(#tables)
+    for key, value in pairs(tables[1]) do
+        print(key, value)
+    end
+
+    for i = 1, #tables, 1 do
+        local tbl = tables[i]
+        local specialTbl = serializeTable._specialKeyData[i]
+        local links = serializeTable._links[i]
+        local specialLinks = serializeTable._specialKeyLinks[i]
+
+        for j = 1, #specialTbl, 1 do
+            local keyVal = specialTbl[j]
+            tbl[keyVal[1]] = keyVal[2]
+        end
+
+        for k, v in pairs(links) do
+            tbl[k] = tables[v]
+        end
+
+        for j = 1, #specialLinks, 1 do
+            local keyVal = specialLinks[j]
+            tbl[keyVal[1]] = tables[keyVal[2]]
+        end
+    end
+
+    return tables[1]
+end
+
 ---@param serializedIds integer[]
 ---@param destIds integer[]
 ---@param encodedData string
@@ -261,8 +409,9 @@ end
 ---@param outData table
 ---@return boolean, string
 local function deserialize_data(serializedIds, destIds, encodedData, checksum, outData)
-    local success, decodedData = pcall(json_decode, encodedData)
-    if not success then
+    ---@type boolean, REPENTOGON._Internals.ESSM.SaveData
+    local decodeSuccess, decodedData = pcall(json_decode, encodedData)
+    if not decodeSuccess then
         return false, string_format("Unable to decode data: %s", decodedData)
     end
 
@@ -277,15 +426,20 @@ local function deserialize_data(serializedIds, destIds, encodedData, checksum, o
 
     local data = decodedData.data
     if type(data) ~= "table" then
-        return false, "entity data is not a table"
+        return false, "decoded data does not have any data"
+    end
+
+    local deserializeSuccess, deserializedData = pcall(_deserialize_table, data)
+    if not deserializeSuccess then
+        return false, string_format("Unable to deserialize data: %s", deserializedData)
     end
 
     for i = 1, #serializedIds, 1 do
-        local sourceId = tostring(serializedIds[i]) -- thanks json.encode
-        local deserialized = data[sourceId]
+        local sourceId = serializedIds[i]
+        local deserialized = deserializedData[sourceId]
         if type(deserialized) == "table" then
             local id = destIds[i]
-            outData[id] = deep_copy(deserialized)
+            outData[id] = deserialized
         end
     end
 

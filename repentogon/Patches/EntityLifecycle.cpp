@@ -13,7 +13,7 @@ namespace EntityLifecycle::Data
     static int s_luaDeleteEntityCallback = LUA_NOREF;
 }
 
-void EntityLifecycle::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
+void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
 {
     assert(L == g_LuaEngine->_state);
 
@@ -245,7 +245,7 @@ static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void EntityLifecycle::Patches::ApplyPatches()
+void EntityLifecycle::detail::Patches::ApplyPatches()
 {
     Patch_EntityListDestructor_RemoveMainEL();
     Patch_EntityListDestructor_RemovePersistentEL();
