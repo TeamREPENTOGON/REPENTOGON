@@ -881,6 +881,7 @@ inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, const string& 
 	xmllatepatches[XMLDataToUpdate][AttributeName] = XMLDataForIds;
 }
 
+
 inline bool MultiValXMLParamParseLATE() {
 	bool did = false;
 	for each (auto patch in xmllatepatches) {

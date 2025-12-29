@@ -121,10 +121,15 @@ namespace REPENTOGON {
 	}
 
 	static std::string GetRGONGfxAbsolutePath(const char* relpath) {
-		char buffer[MAX_PATH];
-		DWORD length = GetCurrentDirectoryA(MAX_PATH, buffer);
-		std::string base = std::string(buffer);
-		return base + "/resources-repentogon/" + std::string(relpath);
+		DWORD len = GetCurrentDirectoryW(0, nullptr);
+		if (len == 0)
+			return {};
+
+		std::wstring wbase(len, L'\0');
+		GetCurrentDirectoryW(len, wbase.data());
+		wbase.pop_back();
+		std::filesystem::path p = wbase;
+		return p.string() + "/resources-repentogon/" + std::string(relpath);
 	}
 
 	static const char* GetRepentogonDataPath() {
