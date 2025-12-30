@@ -14,7 +14,9 @@ Fixes:
 /newline/
 /versionseparator/
 v1.1.1a -
-* Fixed inconsistent syncing of game options between vanilla and REPENTOGON.
+* Fixed inconsistent syncing of game options (options.ini) between vanilla and REPENTOGON for some users.
+	- These options were intended to fully sync between vanilla and REPENTOGON. Being able to have different settings (such as the Mods Enabled setting) was a bug, but...
+	- Options Syncing can now be disabled in the Imgui Console's REPENTOGON Options menu (added toggles for "Sync Vanilla Game Options" & "Sync Mods Enabled Option")
 /newline/
 /versionseparator/
 v1.1.1 -
