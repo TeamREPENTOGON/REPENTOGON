@@ -15,95 +15,90 @@ namespace EntitySaveStateManagement
     uint32_t& FamiliarData_GetState(FamiliarData& data);
     uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data);
 
-    // Clears all ids from the passed vector
-    // DOES NOT CLEAR THE VECTOR, IT MUST BE MANUALLY CLEARED AFTERWARDS!!!
-    void EntitySaveState_ClearVector(std::vector<EntitySaveState>& vector);
+    void EntitySaveState_ClearBatch(const std::vector<EntitySaveState>& vector);
 }
 
-namespace EntitySaveStateManagement::detail
+namespace EntitySaveStateManagement::detail::Init
 {
-    namespace Init
+    void RegisterLuaInternals(lua_State* L, int tbl);
+    void BindLuaCallbacks(lua_State* L, int tbl);
+}
+
+namespace EntitySaveStateManagement::detail::Patches
+{
+    void ApplyPatches();
+}
+
+namespace EntitySaveStateManagement::detail::SaveData
+{
+    using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>;
+
+    struct _WriteState
     {
-        void RegisterLuaInternals(lua_State* L);
-        void BindLuaCallbacks(lua_State* L, int tbl);
-    }
+        std::vector<std::pair<StatePtr, uint32_t>> writtenEntitySaveStates;
+        std::vector<std::pair<uint32_t, uint32_t>> writeEntityIdPairs; // write, id (for Lua Callbacks)
 
-    namespace SaveData
+        // Free up memory after we are done
+        public: void FreeMemory()
+        {
+            this->writtenEntitySaveStates = {};
+            this->writeEntityIdPairs = {};
+        }
+
+        private: _WriteState() = default;
+
+        friend struct WriteState;
+    };
+
+    struct _ReadState
     {
-        using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>;
+        std::vector<StatePtr> readEntitySaveStates;
+        std::vector<std::pair<uint32_t, uint32_t>> restoreEntityIdPairs; // readId, id (for Lua Callbacks)
+        uint32_t minReadEntities = 0;
+        std::bitset<3> errors;
 
-        struct _WriteState
+        // Free up memory after we are done
+        public: void FreeMemory()
         {
-            std::vector<std::pair<StatePtr, uint32_t>> writtenEntitySaveStates;
-            std::vector<std::pair<uint32_t, uint32_t>> writeEntityIdPairs; // write, id (for Lua Callbacks)
+            this->readEntitySaveStates = {};
+            this->restoreEntityIdPairs = {};
+        }
 
-            // Free up memory after we are done
-            public: void FreeMemory()
-            {
-                this->writtenEntitySaveStates = {};
-                this->writeEntityIdPairs = {};
-            }
+        private: _ReadState() = default;
 
-            private: _WriteState() = default;
+        friend struct ReadState;
+    };
 
-            friend struct WriteState;
-        };
-
-        struct _ReadState
-        {
-            std::vector<StatePtr> readEntitySaveStates;
-            std::vector<std::pair<uint32_t, uint32_t>> restoreEntityIdPairs; // readId, id (for Lua Callbacks)
-            uint32_t minReadEntities = 0;
-            std::bitset<3> errors;
-
-            // Free up memory after we are done
-            public: void FreeMemory()
-            {
-                this->readEntitySaveStates = {};
-                this->restoreEntityIdPairs = {};
-            }
-
-            private: _ReadState() = default;
-
-            friend struct ReadState;
-        };
-
-        struct WriteState
-        {
-            private: _WriteState m_writeState;
-
-            friend WriteState WriteGameState();
-            friend void Serialize(const std::string& fileName, WriteState& writeState);
-            friend void RestoreWrittenStates(WriteState& writeState);
-        };
-
-        struct ReadState
-        {
-            private: _ReadState m_readState;
-
-            friend ReadState ReadGameState();
-            friend bool CheckErrors(const ReadState& readState);
-            friend bool NeedsHandling(const ReadState& readState);
-            friend bool Deserialize(const std::string& fileName, ReadState& readState);
-        };
-
-        WriteState WriteGameState();
-        void Serialize(const std::string& fileName, WriteState& writeState);
-        void RestoreWrittenStates(WriteState& writeState);
-
-        /** Collects EntitySaveStates to be restored, also fixes them so GameState::Clear doesn't create problems.
-         *  This should always run after a GameState is read, and should not be skipped.
-        */
-        ReadState ReadGameState();
-        bool CheckErrors(const ReadState& readState);
-        bool NeedsHandling(const ReadState& readState);
-        bool Deserialize(const std::string& fileName, ReadState& readState);
-
-        void DeleteGameState(const std::string& fileName);
-    }
-
-    namespace Patches
+    struct WriteState
     {
-        void ApplyPatches();
-    }
+        private: _WriteState m_writeState;
+
+        friend WriteState WriteGameState();
+        friend void Serialize(const std::string& fileName, WriteState& writeState);
+        friend void RestoreWrittenStates(WriteState& writeState);
+    };
+
+    struct ReadState
+    {
+        private: _ReadState m_readState;
+
+        friend ReadState ReadGameState();
+        friend bool CheckErrors(const ReadState& readState);
+        friend bool NeedsHandling(const ReadState& readState);
+        friend bool Deserialize(const std::string& fileName, ReadState& readState);
+    };
+
+    WriteState WriteGameState();
+    void Serialize(const std::string& fileName, WriteState& writeState);
+    void RestoreWrittenStates(WriteState& writeState);
+
+    /** Collects EntitySaveStates to be restored, also fixes them so GameState::Clear doesn't create problems.
+     *  This should always run after a GameState is read, and should not be skipped.
+    */
+    ReadState ReadGameState();
+    bool CheckErrors(const ReadState& readState);
+    bool NeedsHandling(const ReadState& readState);
+    bool Deserialize(const std::string& fileName, ReadState& readState);
+
+    void DeleteGameState(const std::string& fileName);
 }

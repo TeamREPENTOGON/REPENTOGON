@@ -459,7 +459,7 @@ struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 	LUA_FUNCTION(Lua_Clear) {
 		Lua_EntitiesSaveStateVectorAPI* ud = GetData(L, 1);
 		auto* vector = ud->data;
-		ESSM::EntitySaveState_ClearVector(*vector);
+		ESSM::EntitySaveState_ClearBatch(*vector);
 		vector->clear();
 
 		return 0;

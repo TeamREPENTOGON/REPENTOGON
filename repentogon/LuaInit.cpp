@@ -185,24 +185,25 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 		return;
 	}
 
-	lua_getfield(L, tblIdx, "EntityLifecycle");
-	EntityLifecycle::detail::Init::BindLuaCallbacks(L, -1);
-	lua_pop(L, 1);
-	assert(lua_gettop(L) == stackTop);
-	lua_settop(L, stackTop);
+	{
+		lua::LuaStackProtector protector(L);
+		lua_getfield(L, tblIdx, "EntityLifecycle");
+		EntityLifecycle::detail::Init::BindLuaCallbacks(L, -1);
+		lua_pop(L, 1);
+	}
 
-	lua_getfield(L, tblIdx, "ESSM");
-	EntitySaveStateManagement::detail::Init::BindLuaCallbacks(L, -1);
-	lua_pop(L, 1);
-	assert(lua_gettop(L) == stackTop);
-	lua_settop(L, stackTop);
+	{
+		lua::LuaStackProtector protector(L);
+		lua_getfield(L, tblIdx, "ESSM");
+		EntitySaveStateManagement::detail::Init::BindLuaCallbacks(L, -1);
+		lua_pop(L, 1);
+	}
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
-	constexpr const char* C_BINDINGS_NAME = "_CBindings";
-	constexpr const char* LUA_BINDINGS_NAME = "_LuaBindings";
+	const char* C_BINDINGS_NAME = "_CBindings";
+	const char* LUA_BINDINGS_NAME = "_LuaBindings";
 
-	int stackTop;
 	super(Debug);
 
 	lua_State* L = g_LuaEngine->_state;
@@ -227,12 +228,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_getglobal(state, "_RunCallback");
 	g_LuaEngine->runCallbackRegistry->key = luaL_ref(state, LUA_REGISTRYINDEX);
 
-	stackTop = lua_gettop(L);
-	lua_getglobal(L, LUA_BINDINGS_NAME);
-	bind_lua_internals(L, -1);
-	lua_pop(L, 1);
-	assert(lua_gettop(L) == stackTop);
-	lua_settop(L, stackTop);
+	{
+		lua::LuaStackProtector protector(L);
+		lua_getglobal(L, LUA_BINDINGS_NAME);
+		bind_lua_internals(L, -1);
+		lua_pop(L, 1);
+	}
 
 	// "delete" Lua Bindings
 	lua_pushnil(L);

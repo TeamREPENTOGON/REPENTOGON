@@ -160,14 +160,12 @@ namespace ESSM::detail::Init
     }
 }
 
-constexpr size_t ESAU_JR_PLAYERS = 4;
-
 namespace ESSM::PlayerIterators
 {
     namespace InGame
     {
         template <typename Func, typename... Args>
-        static void All(Func&& func, Args&&... args)
+        static void ForEach(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             // Player data
@@ -195,7 +193,8 @@ namespace ESSM::PlayerIterators
                 handlePlayer(player);
             }
 
-            for (size_t i = 0; i < 4; i++)
+            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
+            for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 handlePlayer(playerManager._esauJrState[i]);
             }
@@ -205,7 +204,7 @@ namespace ESSM::PlayerIterators
     namespace InGameState
     {
         template <typename Func, typename... Args>
-        static void All(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEach(GameState& gameState, Func&& func, Args&&... args)
         {
             GameStatePlayer* players = gameState._players;
             size_t playerCount = gameState._playerCount;
@@ -215,9 +214,10 @@ namespace ESSM::PlayerIterators
                 func(players[i], std::forward<Args>(args)...);
             }
 
+            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
             GameStatePlayer* esauJrStates = gameState._esauJrStates;
 
-            for (size_t i = 0; i < ESAU_JR_PLAYERS; i++)
+            for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 GameStatePlayer& player = esauJrStates[i];
                 if (player._playerType == -1)
@@ -236,7 +236,7 @@ namespace ESSM::FamiliarIterators
     namespace InGame
     {
         template <typename Func, typename... Args>
-        static void All(Func&& func, Args&&... args)
+        static void ForEach(Func&& func, Args&&... args)
         {
             auto lambda = [&](GameStatePlayer& player) {
                 for (auto& data : player._familiarData)
@@ -245,14 +245,14 @@ namespace ESSM::FamiliarIterators
                 }
             };
 
-            ESSM::PlayerIterators::InGame::All(lambda);
+            ESSM::PlayerIterators::InGame::ForEach(lambda);
         }
     }
 
     namespace InGameState
     {
         template <typename Func, typename... Args>
-        static void All(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEach(GameState& gameState, Func&& func, Args&&... args)
         {
             auto lambda = [&](GameStatePlayer& player) {
                 for (auto& data : player._familiarData)
@@ -261,7 +261,7 @@ namespace ESSM::FamiliarIterators
                 }
             };
 
-            ESSM::PlayerIterators::InGameState::All(gameState, lambda);
+            ESSM::PlayerIterators::InGameState::ForEach(gameState, lambda);
         }
     }
 }
@@ -283,7 +283,7 @@ namespace ESSM::EntityIterators
     namespace Structure
     {
         template <typename Func, typename... Args>
-        static void BackwardsStage(BackwardsStageDesc& backwardsStage, Func&& func, Args&&... args)
+        static void ForEachBackwardsStage(BackwardsStageDesc& backwardsStage, Func&& func, Args&&... args)
         {
             for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
             {
@@ -300,7 +300,7 @@ namespace ESSM::EntityIterators
     namespace InGame
     {
         template <typename Func, typename... Args>
-        static void AllRooms(Func&& func, Args&&... args)
+        static void ForEachRoom(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             RoomDescriptor* roomList = game->_gridRooms;
@@ -312,7 +312,7 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void AllBackwardsStages(Func&& func, Args&&... args)
+        static void ForBackwardsStage(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             BackwardsStageDesc* backwardsStages = game->_backwardsStages;
@@ -320,12 +320,12 @@ namespace ESSM::EntityIterators
             for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
             {
                 BackwardsStageDesc& backwardsStage = backwardsStages[i];
-                ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
+                ESSM::EntityIterators::Structure::ForEachBackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
             }
         }
 
         template <typename Func, typename... Args>
-        static void AllPlayers(Func&& func, Args&&... args)
+        static void ForEachPlayer(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             // Player data
@@ -356,27 +356,28 @@ namespace ESSM::EntityIterators
                 handlePlayer(player);
             }
         
-            for (size_t i = 0; i < 4; i++)
+            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
+            for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 handlePlayer(playerManager._esauJrState[i]);
             }
         }
 
         template <typename Func, typename... Args>
-        static void All(Func&& func, Args&&... args)
+        static void ForEach(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
-            AllRooms(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachRoom(std::forward<Func>(func), std::forward<Args>(args)...);
             detail::iterate_vector(game->_myosotisPickups, func, std::forward<Args>(args)...);
-            AllBackwardsStages(std::forward<Func>(func), std::forward<Args>(args)...);
-            AllPlayers(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForBackwardsStage(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachPlayer(std::forward<Func>(func), std::forward<Args>(args)...);
         }
     }
     
     namespace InGameState
     {
         template <typename Func, typename... Args>
-        static void AllRooms(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachRoom(GameState& gameState, Func&& func, Args&&... args)
         {
             RoomDescriptor* rooms = gameState._rooms;
         
@@ -388,19 +389,19 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void AllBackwardsStages(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachBackwardsStage(GameState& gameState, Func&& func, Args&&... args)
         {
             BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
         
             for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
             {
                 BackwardsStageDesc& backwardsStage = backwardsStages[i];
-                ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
+                ESSM::EntityIterators::Structure::ForEachBackwardsStage(backwardsStage, func, std::forward<Args>(args)...);
             }
         }
 
         template <typename Func, typename... Args>
-        static void AllPlayers(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachPlayer(GameState& gameState, Func&& func, Args&&... args)
         {
             GameStatePlayer* players = gameState._players;
             size_t playerCount = gameState._playerCount;
@@ -411,9 +412,10 @@ namespace ESSM::EntityIterators
                 detail::iterate_vector(player._movingBoxContents, func, std::forward<Args>(args)...);
             }
         
+            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
             GameStatePlayer* esauJrStates = gameState._esauJrStates;
         
-            for (size_t i = 0; i < ESAU_JR_PLAYERS; i++)
+            for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 GameStatePlayer& player = esauJrStates[i];
                 if (player._playerType == -1)
@@ -426,11 +428,11 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void All(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEach(GameState& gameState, Func&& func, Args&&... args)
         {
-            AllRooms(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-            AllBackwardsStages(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-            AllPlayers(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachRoom(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachBackwardsStage(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachPlayer(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
         }
     }
 }
@@ -1024,9 +1026,9 @@ namespace ESSM::Utils
 
 namespace ESSM::Core
 {
-    static auto ClearState = [](auto* obj, ClearedIds& clearedIds)
+    static auto ClearState = [](const auto* obj, ClearedIds& clearedIds)
     {
-        using T = std::remove_pointer_t<decltype(obj)>;
+        using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
         using Traits = ESSM::Traits::TraitsFor<T>;
         using Manager = typename Traits::Hijack;
 
@@ -1037,9 +1039,9 @@ namespace ESSM::Core
         clearedIds.emplace_back(id);
     };
 
-    static auto ClearState_HijackedOnly = [](auto* obj, ClearedIds& clearedIds)
+    static auto ClearState_HijackedOnly = [](const auto* obj, ClearedIds& clearedIds)
     {
-        using T = std::remove_pointer_t<decltype(obj)>;
+        using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
         using Traits = ESSM::Traits::TraitsFor<T>;
         using Manager = typename Traits::Hijack;
 
@@ -1051,7 +1053,7 @@ namespace ESSM::Core
 
     static auto CopyState_NoBatch = [](auto* obj) -> std::pair<uint32_t, uint32_t>
     {
-        using T = std::remove_pointer_t<decltype(obj)>;
+        using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
         using Traits = ESSM::Traits::TraitsFor<T>;
         using Manager = typename Traits::Hijack;
 
@@ -1117,7 +1119,7 @@ namespace ESSM::Core
 // Operations API
 namespace ESSM
 {
-    void EntitySaveState_ClearVector(std::vector<EntitySaveState>& vector)
+    void EntitySaveState_ClearBatch(const std::vector<EntitySaveState>& vector)
     {
         ClearedIds clearedIds;
         clearedIds.reserve(vector.size());
@@ -1275,16 +1277,16 @@ namespace ESSM
 
         private: static void collect_from_run(CollectedStates& collection)
         {
-            ESSM::PlayerIterators::InGame::All(Utils::CollectLambda, collection);
-            ESSM::FamiliarIterators::InGame::All(Utils::CollectLambda, collection);
-            ESSM::EntityIterators::InGame::All(Utils::CollectLambda, collection);
+            ESSM::PlayerIterators::InGame::ForEach(Utils::CollectLambda, collection);
+            ESSM::FamiliarIterators::InGame::ForEach(Utils::CollectLambda, collection);
+            ESSM::EntityIterators::InGame::ForEach(Utils::CollectLambda, collection);
         }
 
         private: static void collect_from_game_state(GameState& gameState, CollectedStates& collection)
         {
-            ESSM::PlayerIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
-            ESSM::FamiliarIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
-            ESSM::EntityIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
+            ESSM::PlayerIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
+            ESSM::FamiliarIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
+            ESSM::EntityIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
         }
 
         private: static void print_errors(const std::array<const char*, eErrors::NUM_ERRORS>& strings, size_t numStrings)
@@ -1779,9 +1781,9 @@ namespace ESSM::detail::SaveData
     static CollectedStates collect_save_entities(GameState& gameState)
     {
         CollectedStates collection;
-        ESSM::EntityIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
-        ESSM::PlayerIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
-        ESSM::FamiliarIterators::InGameState::All(gameState, Utils::CollectLambda, collection);
+        ESSM::EntityIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
+        ESSM::PlayerIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
+        ESSM::FamiliarIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
 
         return collection;
     }
@@ -2295,13 +2297,13 @@ HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
     BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::Structure::ForEachBackwardsStage(backwardsStage, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
 	super(stage);
 
     collection.clear();
-    ESSM::EntityIterators::Structure::BackwardsStage(backwardsStage, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::Structure::ForEachBackwardsStage(backwardsStage, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 }
 
@@ -2310,7 +2312,7 @@ HOOK_METHOD(Game, ResetState, () -> void)
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
 	super();
@@ -2322,8 +2324,8 @@ HOOK_METHOD(GameState, Clear, () -> void)
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGameState::AllRooms(*this, ESSM::Utils::CollectLambda, collection);
-    ESSM::EntityIterators::InGameState::AllBackwardsStages(*this, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachRoom(*this, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachBackwardsStage(*this, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates_HijackedOnly(collection);
 
     // player save states are handled by GameStatePlayer::Init
@@ -2342,8 +2344,8 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
     
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGameState::AllRooms(*state, ESSM::Utils::CollectLambda, collection);
-    ESSM::EntityIterators::InGameState::AllBackwardsStages(*state, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachRoom(*state, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachBackwardsStage(*state, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 
     // players are handled by Entity_Player::Init
@@ -2357,7 +2359,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
     super(state, startGame);
@@ -2473,7 +2475,7 @@ static void __stdcall restore_game_state_backwards_rooms()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::AllBackwardsStages(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 }
 
@@ -2581,7 +2583,7 @@ static void __stdcall restore_level_game_state()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::AllRooms(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForEachRoom(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 }
 
@@ -3134,12 +3136,14 @@ namespace ESSM::LuaFunctions
     }
 }
 
-void ESSM::detail::Init::RegisterLuaInternals(lua_State *L)
+void ESSM::detail::Init::RegisterLuaInternals(lua_State *L, int tbl)
 {
+    lua_pushvalue(L, tbl);
     lua::TableAssoc(L, "GetEntitySaveStateId", LuaFunctions::GetEntitySaveStateId);
     lua::TableAssoc(L, "SaveData", LuaFunctions::SaveData);
     lua::TableAssoc(L, "LoadData", LuaFunctions::LoadData);
     lua::TableAssoc(L, "DeleteData", LuaFunctions::DeleteData);
+    lua_pop(L, 1);
 }
 
 // make it high priority so that it only checks stability after everything is done

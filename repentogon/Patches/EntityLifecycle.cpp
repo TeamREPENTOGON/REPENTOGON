@@ -51,40 +51,32 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
 
 namespace EntityLifecycle::Core
 {
-    static void NewEntity(Entity& entity)
+    static void NotifyNewEntity(uintptr_t entityPtr)
     {
         LuaEngine* lua = g_LuaEngine;
-        if (!lua)
-        {
-            return;
-        }
 
         lua_State* L = lua->_state;
         lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaNewEntityCallback);
-        lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
+        lua_pushinteger(L, lua->GetMaskedPointer(entityPtr));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
-            ZHL::Log("[ERROR] EntityLifecycle::NewEntity Lua error: %s\n", lua_tostring(L, -1));
+            ZHL::Log("[ERROR] EntityLifecycle::NotifyNewEntity Lua error: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
 
-    static void DeleteEntity(Entity& entity)
+    static void NotifyDeleteEntity(uintptr_t entityPtr)
     {
         LuaEngine* lua = g_LuaEngine;
-        if (!lua)
-        {
-            return;
-        }
 
         lua_State* L = lua->_state;
         lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaDeleteEntityCallback);
-        lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
+        lua_pushinteger(L, lua->GetMaskedPointer(entityPtr));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
-            ZHL::Log("[ERROR] EntityLifecycle::DeleteEntity Lua error: %s\n", lua_tostring(L, -1));
+            ZHL::Log("[ERROR] EntityLifecycle::NotifyDeleteEntity Lua error: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -95,7 +87,7 @@ HOOK_METHOD(EntityFactory, Create, (unsigned int type, bool force) -> Entity*)
     Entity* entity = super(type, force);
     if (entity)
     {
-        EntityLifecycle::Core::NewEntity(*entity);
+        EntityLifecycle::Core::NotifyNewEntity((uintptr_t)entity);
     }
 
     return entity;
@@ -107,27 +99,27 @@ HOOK_METHOD(Entity, Remove, () -> void)
     super();
     if (this->_removedByFactory)
     {
-        EntityLifecycle::Core::DeleteEntity(*this);
+        EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)this);
     }
 }
 
 HOOK_METHOD(Entity_Player, constructor, () -> void)
 {
     super();
-    EntityLifecycle::Core::NewEntity(*this);
+    EntityLifecycle::Core::NotifyNewEntity((uintptr_t)this);
 }
 
 // Entity_Player should be the only necessary one but just to be safe.
 HOOK_METHOD(Entity, destructor, () -> void)
 {
-    EntityLifecycle::Core::DeleteEntity(*this);
+    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)this);
     super();
 }
 
 static void __fastcall asm_remove_and_delete_entity(Entity& entity)
 {
     entity.Remove(); // restore call to Remove
-    EntityLifecycle::Core::DeleteEntity(entity);
+    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
 }
 
 static void Patch_EntityListDestructor_RemoveMainEL()
@@ -139,7 +131,7 @@ static void Patch_EntityListDestructor_RemoveMainEL()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 8;
-    constexpr size_t RESTORED_BYTES = 3;
+    const size_t RESTORED_BYTES = 3;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Moves the entity into ECX
         .PreserveRegisters(savedRegisters)
@@ -159,7 +151,7 @@ static void Patch_EntityListDestructor_RemovePersistentEL()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 8;
-    constexpr size_t RESTORED_BYTES = 3;
+    const size_t RESTORED_BYTES = 3;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Moves the entity into ECX
         .PreserveRegisters(savedRegisters)
@@ -179,7 +171,7 @@ static void Patch_EntityListReset_RemoveNonPersistentEntity()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 8;
-    constexpr size_t RESTORED_BYTES = 3;
+    const size_t RESTORED_BYTES = 3;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Moves the entity into ECX
         .PreserveRegisters(savedRegisters)
@@ -192,7 +184,7 @@ static void Patch_EntityListReset_RemoveNonPersistentEntity()
 
 static void __fastcall asm_clear_references_and_delete_entity(Entity& entity)
 {
-    EntityLifecycle::Core::DeleteEntity(entity);
+    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
     entity.ClearReferences(); // restore call to ClearReferences
 }
 
@@ -221,7 +213,7 @@ static void __fastcall asm_delete_persistent_el_entity(Entity& entity)
     // If they are deleted they invoke free, which is then handled by the other hook.
     if (entity._type != ENTITY_PLAYER)
     {
-        EntityLifecycle::Core::DeleteEntity(entity);
+        EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
     }
 }
 
@@ -234,7 +226,7 @@ static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 8;
-    constexpr size_t RESTORED_BYTES = 8;
+    const size_t RESTORED_BYTES = 8;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Restore + Move Entity into ECX
         .PreserveRegisters(savedRegisters)
@@ -245,8 +237,8 @@ static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void EntityLifecycle::detail::Patches::ApplyPatches()
-{
+ void EntityLifecycle::detail::Patches::ApplyPatches()
+ {
     Patch_EntityListDestructor_RemoveMainEL();
     Patch_EntityListDestructor_RemovePersistentEL();
     Patch_EntityListReset_RemoveNonPersistentEntity();

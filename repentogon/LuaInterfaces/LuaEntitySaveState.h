@@ -10,7 +10,7 @@ struct Lua_EntitySaveState {
     static inline EntitySaveState& GetEntitySaveState(lua_State* L, int idx)
     {
         Lua_EntitySaveState* ud = lua::GetRawUserdata<Lua_EntitySaveState*>(L, idx, lua::metatables::EntitySaveStateMT);
-        EntitySaveState& st = (ud->vec->data()[ud->index]);
+        EntitySaveState& st = (*ud->vec)[ud->index];
         return st;
     }
 };
