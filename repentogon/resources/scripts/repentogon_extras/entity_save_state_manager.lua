@@ -32,7 +32,7 @@ local s_validEntities = {}
 ---@type table<string, table<integer, table>>
 local s_entityData = {}
 
----Persistent mdo data for entity save states
+---Persistent mod data for entity save states
 ---@type table<string, table<integer, table>>
 local s_saveStateData = {}
 

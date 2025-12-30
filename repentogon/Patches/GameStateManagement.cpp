@@ -84,7 +84,16 @@ static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, boo
 		return 0;
 	}
 
-	return std::atoi(&fileName.back());
+	const char* slotString = &fileName.back();
+	char* endPtr = nullptr;
+	uint32_t slot = std::strtol(&fileName.back(), &endPtr, 10);
+
+	if (endPtr != slotString + 1) // the slot should always be one character long, this also covers errno == ERANGE
+	{
+		return 0;
+	}
+
+	return slot;
 }
 
 static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun)
@@ -96,6 +105,25 @@ static inline std::string get_state_file_name(GameState* gameState, GameStateIO*
 	}
 
 	return get_state_file_name(gameState, save_slot, isRerun);
+}
+
+static bool is_file_name_valid(const std::string& fileName)
+{
+	if (fileName.empty())
+	{
+		return false;
+	}
+
+	const char* slotString = &fileName.back();
+	char* endPtr = nullptr;
+	uint32_t slot = std::strtol(&fileName.back(), &endPtr, 10);
+
+	if (endPtr != slotString + 1) // the slot should always be one character long, this also covers errno == ERANGE
+	{
+		return false;
+	}
+
+	return true;
 }
 
 #pragma endregion
@@ -204,7 +232,7 @@ HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 	}
 
 	auto fileName = get_state_file_name(this, *io, false);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping write.\n", fileName.c_str());
 		return true;
@@ -226,7 +254,7 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 	}
 
 	auto fileName = get_state_file_name(this, *io, true);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping write.\n", fileName.c_str());
 		return true;
@@ -260,7 +288,7 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 	}
 
 	auto fileName = get_state_file_name(this, *io, false);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
 		return !needsHandling;
@@ -292,7 +320,7 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 	bool needsHandling = ESSM::detail::SaveData::NeedsHandling(essmReadState);
 
 	auto fileName = get_state_file_name(this, *io, true);
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
 		return !needsHandling;
@@ -310,7 +338,7 @@ HOOK_METHOD(GameState, Delete, () -> void)
 {
 	auto fileName = get_state_file_name(this, this->_saveFile, false);
 	super();
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
 		return;
@@ -323,7 +351,7 @@ HOOK_METHOD(GameState, DeleteRerun, () -> void)
 {
 	auto fileName = get_state_file_name(this, this->_saveFile, true);
 	super();
-	if (fileName.empty() || std::atoi(&fileName.back()) == 0)
+	if (!is_file_name_valid(fileName))
 	{
 		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
 		return;

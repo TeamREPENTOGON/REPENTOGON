@@ -33,10 +33,26 @@ namespace EntitySaveStateManagement::detail::SaveData
 {
     using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>;
 
+    struct WrittenEntityState
+    {
+        StatePtr state;
+        uint32_t originalId;
+
+        WrittenEntityState(StatePtr state, uint32_t originalId) : state(state), originalId(originalId) {}
+    };
+
+    struct SerializeIdPair
+    {
+        uint32_t serializeId;
+        uint32_t realId;
+
+        SerializeIdPair(uint32_t serializeId, uint32_t realId) : serializeId(serializeId), realId(realId) {}
+    };
+
     struct _WriteState
     {
-        std::vector<std::pair<StatePtr, uint32_t>> writtenEntitySaveStates;
-        std::vector<std::pair<uint32_t, uint32_t>> writeEntityIdPairs; // write, id (for Lua Callbacks)
+        std::vector<WrittenEntityState> writtenEntitySaveStates;
+        std::vector<SerializeIdPair> writeEntityIdPairs; // for Lua Callbacks
 
         // Free up memory after we are done
         public: void FreeMemory()
@@ -53,7 +69,7 @@ namespace EntitySaveStateManagement::detail::SaveData
     struct _ReadState
     {
         std::vector<StatePtr> readEntitySaveStates;
-        std::vector<std::pair<uint32_t, uint32_t>> restoreEntityIdPairs; // readId, id (for Lua Callbacks)
+        std::vector<SerializeIdPair> restoreEntityIdPairs; // for Lua Callbacks
         uint32_t minReadEntities = 0;
         std::bitset<3> errors;
 

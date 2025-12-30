@@ -25,14 +25,13 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
         return;
     }
 
-    luaL_unref(L, LUA_REGISTRYINDEX, Data::s_luaNewEntityCallback);
-    luaL_unref(L, LUA_REGISTRYINDEX, Data::s_luaDeleteEntityCallback);
-
-    Data::s_luaNewEntityCallback = LUA_NOREF;
-    Data::s_luaDeleteEntityCallback = LUA_NOREF;
-
-    auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
+    auto BindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
     {
+        // reset ref
+        luaL_unref(L, LUA_REGISTRYINDEX, outRef);
+        outRef = LUA_NOREF;
+
+        // bind callback to ref
         lua_getfield(L, tblIdx, fieldName);
         if (!lua_isfunction(L, -1))
         {
@@ -45,8 +44,8 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
         outRef = luaL_ref(L, LUA_REGISTRYINDEX);
     };
 
-    bindCallback(L, tblIdx, "NewEntity", Data::s_luaNewEntityCallback);
-    bindCallback(L, tblIdx, "DeleteEntity", Data::s_luaDeleteEntityCallback);
+    BindCallback(L, tblIdx, "NewEntity", Data::s_luaNewEntityCallback);
+    BindCallback(L, tblIdx, "DeleteEntity", Data::s_luaDeleteEntityCallback);
 }
 
 namespace EntityLifecycle::Core
@@ -198,7 +197,7 @@ static void Patch_EntityListUpdate_RemoveEntityMainEL()
 
     intptr_t resumeAddr = addr + 7;
 
-    patch.AddBytes("\x8B\xCA") // MOV ECX, EDX
+    patch.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EDX)
         .PreserveRegisters(savedRegisters)
         .AddInternalCall(asm_clear_references_and_delete_entity)
         .RestoreRegisters(savedRegisters)

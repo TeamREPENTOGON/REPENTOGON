@@ -157,6 +157,19 @@ namespace REPENTOGON {
 		return optionsPath.c_str();
 	}
 
+	static bool EnsureParentPathExists(const std::filesystem::path& filePath)
+	{
+		const auto directory = filePath.parent_path();
+		if (directory.empty())
+		{
+			return true;
+		}
+
+		std::error_code ec;
+		std::filesystem::create_directories(directory, ec);
+		return !ec;
+	}
+
 	namespace Lua
 	{
 		static std::string GetFunctionName(lua_State* L, lua_Debug* ar)

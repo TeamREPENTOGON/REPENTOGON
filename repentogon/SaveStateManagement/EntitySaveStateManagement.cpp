@@ -120,22 +120,24 @@ namespace ESSM
 
     class LuaCallbacks
     {
-        private: int m_storeEntity = LUA_NOREF;
-        private: int m_restoreEntity = LUA_NOREF;
-        private: int m_clearSaveStates = LUA_NOREF;
-        private: int m_copySaveStates = LUA_NOREF;
-        private: int m_serialize = LUA_NOREF;
-        private: int m_preDeserialize = LUA_NOREF;
-        private: int m_deserialize = LUA_NOREF;
+    private:
+        int m_storeEntity = LUA_NOREF;
+        int m_restoreEntity = LUA_NOREF;
+        int m_clearSaveStates = LUA_NOREF;
+        int m_copySaveStates = LUA_NOREF;
+        int m_serialize = LUA_NOREF;
+        int m_preDeserialize = LUA_NOREF;
+        int m_deserialize = LUA_NOREF;
 
-        public: void BindLuaCallbacks(lua_State* L, int tblIdx);
-        public: void StoreEntity(const Entity& entity, uint32_t saveStateId);
-        public: void RestoreEntity(const Entity& entity, uint32_t saveStateId);
-        public: void ClearStates(const std::vector<uint32_t>& saveStateIds);
-        public: void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds);
-        public: void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
-        public: void PreDeserialize(const std::string& filename);
-        public: void Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
+    public:
+        void BindLuaCallbacks(lua_State* L, int tblIdx);
+        void StoreEntity(const Entity& entity, uint32_t saveStateId);
+        void RestoreEntity(const Entity& entity, uint32_t saveStateId);
+        void ClearStates(const std::vector<uint32_t>& saveStateIds);
+        void CopyStates(const std::vector<std::pair<uint32_t, uint32_t>>& copyIds);
+        void Serialize(const detail::SaveData::_WriteState& writeState, const std::string& filename, uint32_t checksum);
+        void PreDeserialize(const std::string& filename);
+        void Deserialize(const detail::SaveData::_ReadState& readState, const std::string& filename, uint32_t checksum);
     };
 
     static Data s_systemData;
@@ -300,7 +302,7 @@ namespace ESSM::EntityIterators
     namespace InGame
     {
         template <typename Func, typename... Args>
-        static void ForEachRoom(Func&& func, Args&&... args)
+        static void ForEachInRooms(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             RoomDescriptor* roomList = game->_gridRooms;
@@ -312,7 +314,7 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void ForBackwardsStage(Func&& func, Args&&... args)
+        static void ForEachInBackwardsStages(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             BackwardsStageDesc* backwardsStages = game->_backwardsStages;
@@ -325,7 +327,7 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void ForEachPlayer(Func&& func, Args&&... args)
+        static void ForEachInPlayers(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
             // Player data
@@ -367,17 +369,17 @@ namespace ESSM::EntityIterators
         static void ForEach(Func&& func, Args&&... args)
         {
             Game* game = g_Game;
-            ForEachRoom(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInRooms(std::forward<Func>(func), std::forward<Args>(args)...);
             detail::iterate_vector(game->_myosotisPickups, func, std::forward<Args>(args)...);
-            ForBackwardsStage(std::forward<Func>(func), std::forward<Args>(args)...);
-            ForEachPlayer(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInBackwardsStages(std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInPlayers(std::forward<Func>(func), std::forward<Args>(args)...);
         }
     }
     
     namespace InGameState
     {
         template <typename Func, typename... Args>
-        static void ForEachRoom(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachInRooms(GameState& gameState, Func&& func, Args&&... args)
         {
             RoomDescriptor* rooms = gameState._rooms;
         
@@ -389,7 +391,7 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void ForEachBackwardsStage(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachInBackwardsStages(GameState& gameState, Func&& func, Args&&... args)
         {
             BackwardsStageDesc* backwardsStages = gameState._backwardsStages;
         
@@ -401,7 +403,7 @@ namespace ESSM::EntityIterators
         }
 
         template <typename Func, typename... Args>
-        static void ForEachPlayer(GameState& gameState, Func&& func, Args&&... args)
+        static void ForEachInPlayers(GameState& gameState, Func&& func, Args&&... args)
         {
             GameStatePlayer* players = gameState._players;
             size_t playerCount = gameState._playerCount;
@@ -430,9 +432,9 @@ namespace ESSM::EntityIterators
         template <typename Func, typename... Args>
         static void ForEach(GameState& gameState, Func&& func, Args&&... args)
         {
-            ForEachRoom(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-            ForEachBackwardsStage(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
-            ForEachPlayer(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInRooms(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInBackwardsStages(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
+            ForEachInPlayers(gameState, std::forward<Func>(func), std::forward<Args>(args)...);
         }
     }
 }
@@ -473,101 +475,85 @@ namespace ESSM
         using Marker = typename Traits::MarkerType;
         using Id = typename Traits::IdType;
 
-        private: static constexpr Marker CLEARED_MARKER = 0x5249;
-        private: static constexpr Marker READ_MARKER = 0x5248;
-        private: static constexpr Marker HIJACK_MARKER = 0x5247;
-        private: static constexpr Marker WRITTEN_MARKER = 0x5246;
+        static_assert(std::is_integral_v<Marker> && sizeof(Marker) >= 2, "Chosen MarkerType cannot be used.");
 
-        private: static const Marker& get_marker_value(const Data& data)
+    private:
+        static const Marker CLEARED_MARKER = 0x5249;
+        static const Marker READ_MARKER = 0x5248;
+        static const Marker HIJACK_MARKER = 0x5247;
+        static const Marker WRITTEN_MARKER = 0x5246;
+
+    public:
+        static void DefaultRestore(Data& data)
         {
-            return data.*(Traits::marker_member);
+            Traits::DefaultRestore(data);
         }
 
-        private: static Marker& get_marker_value(Data& data)
+        static bool IsHijacked(const Data& data)
         {
-            return const_cast<Marker&>(get_marker_value(std::as_const(data)));
+            return Traits::GetMarker(data) == HIJACK_MARKER;
         }
 
-        private: static const Id& get_id_value(const Data& data)
+        static bool IsWritten(const Data& data)
         {
-            return data.*(Traits::id_member);
-        }
-
-        private: static Id& get_id_value(Data& data)
-        {
-            return const_cast<Id&>(get_id_value(std::as_const(data)));
-        }
-
-        public: static void DefaultRestore(Data& d)
-        {
-            Traits::DefaultRestore(d);
-        }
-
-        public: static bool IsHijacked(const Data& data)
-        {
-            return get_marker_value(data) == HIJACK_MARKER;
-        }
-
-        public: static bool IsWritten(const Data& data)
-        {
-            return get_marker_value(data) == WRITTEN_MARKER;
+            return Traits::GetMarker(data) == WRITTEN_MARKER;
         }
         
-        public: static bool IsRead(const Data& data)
+        static bool IsRead(const Data& data)
         {
-            return get_marker_value(data) == READ_MARKER;
+            return Traits::GetMarker(data) == READ_MARKER;
         }
 
-        public: static bool IsCleared(const Data& data)
+        static bool IsCleared(const Data& data)
         {
-            return get_marker_value(data) == CLEARED_MARKER;
+            return Traits::GetMarker(data) == CLEARED_MARKER;
         }
 
-        public: static bool HasMarker(const Data& data)
+        static bool HasMarker(const Data& data)
         {
             return IsHijacked(data) || IsWritten(data) || IsRead(data) || IsCleared(data);
         }
 
-        public: static void SetHijacked(Data& data)
+        static void SetHijacked(Data& data)
         {
-            get_marker_value(data) = HIJACK_MARKER;
+            Traits::SetMarker(data, HIJACK_MARKER);
         }
 
-        public: static void SetWritten(Data& data)
+        static void SetWritten(Data& data)
         {
-            get_marker_value(data) = WRITTEN_MARKER;
+            Traits::SetMarker(data, WRITTEN_MARKER);
         }
 
-        public: static void SetRead(Data& data)
+        static void SetRead(Data& data)
         {
-            get_marker_value(data) = READ_MARKER;
+            Traits::SetMarker(data, READ_MARKER);
         }
 
-        public: static void SetCleared(Data& data)
+        static void SetCleared(Data& data)
         {
-            get_marker_value(data) = CLEARED_MARKER;
+            Traits::SetMarker(data, CLEARED_MARKER);
         }
 
-        public: static size_t GetId(const Data& data)
+        static size_t GetId(const Data& data)
         {
-            return get_id_value(data);
+            return Traits::GetId(data);
         }
 
-        public: static void SetId(Data& data, size_t id)
+        static void SetId(Data& data, size_t id)
         {
-            get_id_value(data) = id;
+            Traits::SetId(data, id);
         }
 
-        public: static void Hijack(Data& data, size_t id)
+        static void Hijack(Data& data, size_t id)
         {
             HijackedState& hijackedState = s_systemData.hijackedStates[id];
-            hijackedState.marker = get_marker_value(data);
-            hijackedState.id = get_id_value(data);
+            hijackedState.marker = Traits::GetMarker(data);
+            hijackedState.id = Traits::GetId(data);
             SetHijacked(data);
             SetId(data, id);
         }
 
-        public: static size_t NewHijack(Data& data)
+        static size_t NewHijack(Data& data)
         {
             assert(!IsHijacked(data));
             size_t id = ESSM::IdManager::NewId();
@@ -575,13 +561,13 @@ namespace ESSM
             return id;
         }
 
-        public: static void RestoreHijack(Data& data, HijackedState& hijackedState)
+        static void RestoreHijack(Data& data, HijackedState& hijackedState)
         {
-            get_marker_value(data) = hijackedState.marker;
-            get_id_value(data) = hijackedState.id;
+            Traits::SetMarker(data, hijackedState.marker);
+            Traits::SetId(data, hijackedState.id);
         }
 
-        public: static size_t UnHijack(Data& data)
+        static size_t UnHijack(Data& data)
         {
             assert(IsHijacked(data));
             size_t id = GetId(data);
@@ -595,8 +581,10 @@ namespace ESSM
         using MarkerType = short;
         using IdType = uint32_t;
 
-        static constexpr MarkerType DataType::* marker_member = &EntitySaveState::gridSpawnIdx;
-        static constexpr IdType DataType::* id_member = &EntitySaveState::_intStorage7;
+        static short GetMarker(const EntitySaveState& data) { return data.gridSpawnIdx; }
+        static void SetMarker(EntitySaveState& data, short value) { data.gridSpawnIdx = value; }
+        static int GetId(const EntitySaveState& data) { return data._intStorage7; }
+        static void SetId(EntitySaveState& data, int value) { data._intStorage7 = value; }
 
         static void DefaultRestore(EntitySaveState& data)
         {
@@ -610,8 +598,10 @@ namespace ESSM
         using MarkerType = int;
         using IdType = int;
 
-        static constexpr MarkerType DataType::* marker_member = &GameStatePlayer::_immaculateConceptionState;
-        static constexpr IdType DataType::* id_member = &GameStatePlayer::_cambionConceptionState;
+        static int GetMarker(const GameStatePlayer& data) { return data._immaculateConceptionState; }
+        static void SetMarker(GameStatePlayer& data, int value) { data._immaculateConceptionState = value; }
+        static int GetId(const GameStatePlayer& data) { return data._cambionConceptionState; }
+        static void SetId(GameStatePlayer& data, int value) { data._cambionConceptionState = value; }
 
         static void DefaultRestore(GameStatePlayer& data)
         {
@@ -625,8 +615,10 @@ namespace ESSM
         using MarkerType = int;
         using IdType = int;
 
-        static constexpr MarkerType DataType::* marker_member = &FamiliarData::_state;
-        static constexpr IdType DataType::* id_member = &FamiliarData::_roomClearCount;
+        static int GetMarker(const FamiliarData& data) { return data._state; }
+        static void SetMarker(FamiliarData& data, int value) { data._state = value; }
+        static int GetId(const FamiliarData& data) { return data._roomClearCount; }
+        static void SetId(FamiliarData& data, int value) { data._roomClearCount = value; }
 
         static void DefaultRestore(FamiliarData& data)
         {
@@ -667,9 +659,9 @@ namespace ESSM::Traits
     {
         using Hijack = EntityHijackManager;
         static constexpr bool can_be_cleared = false;
-        static constexpr bool can_recurse = true;
+        static constexpr bool has_recursive_child = true;
 
-        static EntitySaveState* recurse(EntitySaveState& s)
+        static EntitySaveState* GetRecursiveChild(EntitySaveState& s)
         {
             return s.entitySaveState.saveState;
         }
@@ -679,14 +671,14 @@ namespace ESSM::Traits
     {
         using Hijack = PlayerHijackManager;
         static constexpr bool can_be_cleared = true;
-        static constexpr bool can_recurse = false;
+        static constexpr bool has_recursive_child = false;
     };
 
     struct FamiliarTraits
     {
         using Hijack = FamiliarHijackManager;
         static constexpr bool can_be_cleared = false;
-        static constexpr bool can_recurse = false;
+        static constexpr bool has_recursive_child = false;
     };
 
     template<>
@@ -757,25 +749,14 @@ namespace ESSM
             assert(false);
             return;
         }
-    
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_storeEntity);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_restoreEntity);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_clearSaveStates);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_copySaveStates);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_serialize);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_preDeserialize);
-        luaL_unref(L, LUA_REGISTRYINDEX, this->m_deserialize);
-    
-        this->m_storeEntity = LUA_NOREF; 
-        this->m_restoreEntity = LUA_NOREF; 
-        this->m_clearSaveStates = LUA_NOREF; 
-        this->m_copySaveStates = LUA_NOREF; 
-        this->m_serialize = LUA_NOREF;
-        this->m_preDeserialize = LUA_NOREF;
-        this->m_deserialize = LUA_NOREF;
-    
-        auto bindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
+        
+        auto BindCallback = [](lua_State* L, int tblIdx, const char* fieldName, int& outRef)
         {
+            // reset ref
+            luaL_unref(L, LUA_REGISTRYINDEX, outRef);
+            outRef = LUA_NOREF;
+
+            // bind callback to ref
             lua_getfield(L, tblIdx, fieldName);
             if (!lua_isfunction(L, -1))
             {
@@ -787,14 +768,14 @@ namespace ESSM
     
             outRef = luaL_ref(L, LUA_REGISTRYINDEX);
         };
-    
-        bindCallback(L, tblIdx, "StoreEntity", this->m_storeEntity);
-        bindCallback(L, tblIdx, "RestoreEntity", this->m_restoreEntity);
-        bindCallback(L, tblIdx, "ClearStates", this->m_clearSaveStates);
-        bindCallback(L, tblIdx, "CopyStates", this->m_copySaveStates);
-        bindCallback(L, tblIdx, "Serialize", this->m_serialize);
-        bindCallback(L, tblIdx, "PreDeserialize", this->m_preDeserialize);
-        bindCallback(L, tblIdx, "Deserialize", this->m_deserialize);
+
+        BindCallback(L, tblIdx, "StoreEntity", this->m_storeEntity);
+        BindCallback(L, tblIdx, "RestoreEntity", this->m_restoreEntity);
+        BindCallback(L, tblIdx, "ClearStates", this->m_clearSaveStates);
+        BindCallback(L, tblIdx, "CopyStates", this->m_copySaveStates);
+        BindCallback(L, tblIdx, "Serialize", this->m_serialize);
+        BindCallback(L, tblIdx, "PreDeserialize", this->m_preDeserialize);
+        BindCallback(L, tblIdx, "Deserialize", this->m_deserialize);
     }
     
     void LuaCallbacks::StoreEntity(const Entity& entity, uint32_t saveStateId)
@@ -904,7 +885,7 @@ namespace ESSM
         
         lua_rawgeti(L, LUA_REGISTRYINDEX, this->m_serialize);
 
-        /* ASSUMPTION: All written ids are unique.
+        /* ASSUMPTION: All serialize ids are unique.
         *  This should, currently, always be true as all ids are based on the size of the vector before push.
         */
 
@@ -915,9 +896,9 @@ namespace ESSM
 
         for (size_t i = 0; i < entityStates.size(); ++i)
         {
-            const auto& id = entityStates[i];
-            lua_pushinteger(L, id.second + 1); // Use 1-based indexing for Lua.
-            lua_rawseti(L, idMap, id.first + 1);
+            const auto& ids = entityStates[i];
+            lua_pushinteger(L, ids.realId + 1); // Use 1-based indexing for Lua.
+            lua_rawseti(L, idMap, ids.serializeId + 1);
         }
 
         lua_pushlstring(L, filename.c_str(), filename.size());
@@ -958,7 +939,7 @@ namespace ESSM
             lua_rawgeti(L, LUA_REGISTRYINDEX, modRef._luaTableRef->_ref);
             lua_rawseti(L, mods, i + 1);
 
-            std::string id = modRef._mainLuaPath;
+            const std::string& id = modRef._mainLuaPath;
             lua_pushlstring(L, id.c_str(), id.size());
             lua_rawseti(L, modIds, i + 1);
 
@@ -990,11 +971,11 @@ namespace ESSM
 
         for (size_t i = 0; i < entityStates.size(); ++i)
         {
-            const auto& id = entityStates[i];
-            lua_pushinteger(L, id.first + 1); // Use 1-based indexing for Lua.
+            const auto& ids = entityStates[i];
+            lua_pushinteger(L, ids.serializeId + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, serializedIds, i + 1);
 
-            lua_pushinteger(L, id.second + 1); // Use 1-based indexing for Lua.
+            lua_pushinteger(L, ids.realId + 1); // Use 1-based indexing for Lua.
             lua_rawseti(L, destIds, i + 1);
         }
 
@@ -1136,7 +1117,8 @@ namespace ESSM
 {
     class StabilityChecker
     {
-        private: enum eErrors
+    private:
+        enum eErrors
         {
             ERROR_DOUBLE_CLEAR = 0,
             ERROR_INVALID_STATE = 1,
@@ -1148,23 +1130,24 @@ namespace ESSM
             NUM_ERRORS
         };
 
-        private: struct CheckData
+        struct CheckData
         {
-            private: std::vector<uintptr_t> m_checks;
-            private: std::vector<StatePtr> m_invalidStates;
-            private: std::vector<StatePtr> m_invalidIds;
-            private: std::vector<StatePtr> m_duplicates;
-            private: std::vector<StatePtr> m_incorrectClears;
-            private: std::vector<uint32_t> m_leakedIds;
-            private: std::bitset<NUM_ERRORS> m_errors;
+        private:
+            std::vector<uintptr_t> m_checks;
+            std::vector<StatePtr> m_invalidStates;
+            std::vector<StatePtr> m_invalidIds;
+            std::vector<StatePtr> m_duplicates;
+            std::vector<StatePtr> m_incorrectClears;
+            std::vector<uint32_t> m_leakedIds;
+            std::bitset<NUM_ERRORS> m_errors;
 
             friend StabilityChecker;
         };
 
-        private: template <typename T>
+        template <typename T>
         struct CheckTraits;
 
-        private: template <>
+        template <>
         struct CheckTraits<EntitySaveState> : Traits::EntityTraits
         {
             static bool is_valid_state(EntitySaveState& s)
@@ -1173,7 +1156,7 @@ namespace ESSM
             }
         };
 
-        private: template <>
+        template <>
         struct CheckTraits<GameStatePlayer> : Traits::PlayerTraits
         {
             static bool is_valid_state(GameStatePlayer& s)
@@ -1182,7 +1165,7 @@ namespace ESSM
             }
         };
 
-        private: template <>
+        template <>
         struct CheckTraits<FamiliarData> : Traits::FamiliarTraits
         {
             static bool is_valid_state(FamiliarData& s)
@@ -1191,7 +1174,7 @@ namespace ESSM
             }
         };
 
-        private: template <typename T>
+        template <typename T>
         static void check_save_state(CheckData& checks, T& saveState)
         {
             using Traits  = CheckTraits<T>;
@@ -1248,20 +1231,20 @@ namespace ESSM
             }
 
             checks.m_checks[id] = savePtr;
-            // not every entity has inner save states
-            if constexpr (Traits::can_recurse)
+            // not every entity has a recursive child
+            if constexpr (Traits::has_recursive_child)
             {
-                if (auto* inner = Traits::recurse(saveState))
+                if (auto* recursiveChild = Traits::GetRecursiveChild(saveState))
                 {
-                    check_save_state(checks, *inner);
+                    check_save_state(checks, *recursiveChild);
                 }
             }
         }
 
-        private: static constexpr size_t MAX_PICKUPS = 512;
-        private: static void collect_from_entity_list(CollectedStates& collection)
+        static void collect_from_entity_list(CollectedStates& collection)
         {
             const EntityFactory* factory = g_Game->_entityFactory;
+            constexpr size_t MAX_PICKUPS = std::extent_v<decltype(factory->_pickup)>;
             const Entity_Pickup* pickups = factory->_pickup;
 
             for (size_t i = 0; i < MAX_PICKUPS; i++)
@@ -1275,63 +1258,59 @@ namespace ESSM
             }
         }
 
-        private: static void collect_from_run(CollectedStates& collection)
+        static void collect_from_run(CollectedStates& collection)
         {
             ESSM::PlayerIterators::InGame::ForEach(Utils::CollectLambda, collection);
             ESSM::FamiliarIterators::InGame::ForEach(Utils::CollectLambda, collection);
             ESSM::EntityIterators::InGame::ForEach(Utils::CollectLambda, collection);
         }
 
-        private: static void collect_from_game_state(GameState& gameState, CollectedStates& collection)
+        static void collect_from_game_state(GameState& gameState, CollectedStates& collection)
         {
             ESSM::PlayerIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
             ESSM::FamiliarIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
             ESSM::EntityIterators::InGameState::ForEach(gameState, Utils::CollectLambda, collection);
         }
 
-        private: static void print_errors(const std::array<const char*, eErrors::NUM_ERRORS>& strings, size_t numStrings)
+        static void print_errors(const std::array<const char*, eErrors::NUM_ERRORS>& strings, size_t numStrings)
         {
-            constexpr char HEADER[] = "EntitySaveStateManagement Stability Checker:\n";
-            constexpr char NEW_LINE[] = "  ";
-            constexpr char FOOTER[] = "end\n";
+            const char CONSOLE_ERROR_HEADER[] = LOG_ERROR_HEADER;
+            const char HEADER[] = "Stability Checker:\n";
+            const char INDENTATION[] = "  ";
+            const char FOOTER[] = "end\n";
+            constexpr size_t CONSOLE_ERROR_HEADER_SIZE = sizeof(CONSOLE_ERROR_HEADER) - 1;
             constexpr size_t HEADER_SIZE = sizeof(HEADER) - 1;
-            constexpr size_t NEW_LINE_SIZE = sizeof(NEW_LINE) - 1;
+            constexpr size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
             constexpr size_t FOOTER_SIZE = sizeof(FOOTER) - 1;
 
-            size_t stringSize = HEADER_SIZE;
+            size_t stringSize = CONSOLE_ERROR_HEADER_SIZE;
+            stringSize += HEADER_SIZE;
             size_t stringSizes[eErrors::NUM_ERRORS] = {0};
 
             for (size_t i = 0; i < numStrings; i++)
             {
                 stringSizes[i] = std::strlen(strings[i]);
-                stringSize += NEW_LINE_SIZE + stringSizes[i] + 1; // newline character
+                stringSize += INDENTATION_SIZE + stringSizes[i] + 1; // newline character
             }
 
             stringSize += FOOTER_SIZE;
  
-            std::unique_ptr<char[]> consoleString = std::make_unique<char[]>(stringSize + 1); // + 1 for the null terminator
-            size_t consoleStringPos = 0;
+            std::string consoleString;
+            consoleString.reserve(stringSize);
 
-            std::memcpy(consoleString.get(), HEADER, HEADER_SIZE);
-            consoleStringPos += HEADER_SIZE;
+            consoleString.assign(CONSOLE_ERROR_HEADER, CONSOLE_ERROR_HEADER_SIZE);
+            consoleString.append(HEADER, HEADER_SIZE);
 
             for (size_t i = 0; i < numStrings; i++)
             {
-                std::memcpy(consoleString.get() + consoleStringPos, NEW_LINE, NEW_LINE_SIZE);
-                consoleStringPos += NEW_LINE_SIZE;
-                std::memcpy(consoleString.get() + consoleStringPos, strings[i], stringSizes[i]);
-                consoleStringPos += stringSizes[i];
+                consoleString.append(INDENTATION, INDENTATION_SIZE);
+                consoleString.append(strings[i], stringSizes[i]);
                 // add newline
-                consoleString[consoleStringPos] = '\n'; 
-                consoleStringPos += 1;
+                consoleString.push_back('\n');
             }
             
-            std::memcpy(consoleString.get() + consoleStringPos, FOOTER, FOOTER_SIZE);
-            consoleStringPos += FOOTER_SIZE;
-
-            // null terminate
-            consoleString[consoleStringPos] = '\0';
-            assert(consoleStringPos == stringSize);
+            consoleString.append(FOOTER, FOOTER_SIZE);
+            assert(consoleString.size() == stringSize); // sanity check
 
             if (!s_checkerErrorShown)
             {
@@ -1340,9 +1319,9 @@ namespace ESSM
                 s_checkerErrorShown = true;
             }
 
-            g_Game->GetConsole()->PrintError(consoleString.get());
+            g_Game->GetConsole()->PrintError(consoleString.c_str());
 
-            // Log in ZHL differently, otherwise timestamps won't appear
+            // Log in ZHL differently, otherwise timestamps won't appear on other lines
             ZHL::Log(LOG_ERROR_HEADER "%s", HEADER);
             for (size_t i = 0; i < numStrings; i++)
             {
@@ -1351,7 +1330,7 @@ namespace ESSM
             ZHL::Log(LOG_ERROR_HEADER "%s", FOOTER);
         }
 
-        private: static void handle_errors(CheckData& checks)
+        static void handle_errors(CheckData& checks)
         {
             if (checks.m_errors.none())
             {
@@ -1465,7 +1444,8 @@ namespace ESSM
             print_errors(errorStrings.strings, errorStrings.numStrings);
         }
 
-        public: static void CheckStability()
+    public:
+        static void CheckStability()
         {
             CheckData checks = CheckData();
             checks.m_checks.resize(s_systemData.totalIds, 0);
@@ -1523,7 +1503,7 @@ namespace ESSM
 
 namespace ESSM::detail::SaveData
 {
-    constexpr uint32_t SAVE_VERSION = 1;
+    const uint32_t SAVE_VERSION = 1;
 
     struct SaveFile
     {
@@ -1534,10 +1514,10 @@ namespace ESSM::detail::SaveData
 
     namespace Section
     {
-        constexpr uint32_t ENTITY_START = 0x73454E54; // sENT
-        constexpr uint32_t ENTITY_END = 0x65454E54; // eENT
-        constexpr uint32_t ENTITY_SIZE = 4 + 4;
-        constexpr uint32_t MAX_ENTITY_COUNT = 0x1FFFF;
+        const uint32_t ENTITY_START = 0x73454E54; // sENT
+        const uint32_t ENTITY_END = 0x65454E54; // eENT
+        const uint32_t ENTITY_SIZE = 4 + 4;
+        const uint32_t MAX_ENTITY_COUNT = 0x1FFFF;
     }
 
     enum ReadErrors
@@ -1558,7 +1538,7 @@ namespace ESSM::detail::SaveData
 
     namespace Operations
     {
-        template <typename T, bool Recurse>
+        template <typename T, bool RecursiveChild>
         struct _WriteTraits;
 
         template <>
@@ -1597,10 +1577,10 @@ namespace ESSM::detail::SaveData
             }
         };
 
-        template <typename T, bool Recurse>
+        template <typename T, bool RecursiveChild>
         void write_save_state(T& data, _WriteState& writeState)
         {
-            using Traits  = _WriteTraits<T, Recurse>;
+            using Traits  = _WriteTraits<T, RecursiveChild>;
             using Hijack = Traits::Hijack;
 
             bool isValid = Traits::is_valid_state(data);
@@ -1624,9 +1604,9 @@ namespace ESSM::detail::SaveData
 
             writtenSaveStates.emplace_back(&data, id);
 
-            if constexpr (Traits::can_recurse)
+            if constexpr (Traits::has_recursive_child)
             {
-                if (auto* inner = Traits::recurse(data))
+                if (auto* inner = Traits::GetRecursiveChild(data))
                 {
                     write_save_state<T, true>(*inner, writeState);
                 }
@@ -1657,9 +1637,9 @@ namespace ESSM::detail::SaveData
 
             Hijack::SetRead(data);
 
-            if constexpr (Traits::can_recurse)
+            if constexpr (Traits::has_recursive_child)
             {
-                if (auto* inner = Traits::recurse(data))
+                if (auto* inner = Traits::GetRecursiveChild(data))
                 {
                     read_save_state<T>(*inner, readState);
                 }
@@ -1746,28 +1726,6 @@ namespace ESSM::detail::SaveData
         return REPENTOGON::StringFormat("%s/EntitySaveStateManagement/%s.dat", REPENTOGON::GetRepentogonDataPath(), fileName.c_str());
     }
 
-    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
-    {
-        std::filesystem::path directory = filePath.parent_path();
-
-        std::error_code errorCode;
-        if (!directory.empty() && !std::filesystem::exists(directory, errorCode))
-        {
-            if (errorCode)
-            {
-                return false;
-            }
-
-            std::filesystem::create_directories(directory, errorCode);
-            if (errorCode)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     static void remove_file(const std::filesystem::path& filePath)
     {
         std::error_code errorCode;
@@ -1851,8 +1809,8 @@ namespace ESSM::detail::SaveData
         _writeState.writeEntityIdPairs.reserve(_writeState.writtenEntitySaveStates.size());
         for (auto& writtenSaveState : _writeState.writtenEntitySaveStates)
         {
-            StatePtr& saveState = writtenSaveState.first;
-            uint32_t id = writtenSaveState.second;
+            StatePtr& saveState = writtenSaveState.state;
+            uint32_t id = writtenSaveState.originalId;
     
             uint32_t writeId;
             std::visit([&](auto* ptr)
@@ -1914,7 +1872,7 @@ namespace ESSM::detail::SaveData
 
         for (auto& saveState : writeState.writtenEntitySaveStates)
         {
-            uint32_t id = saveState.second;
+            uint32_t id = saveState.originalId;
             HijackedState& hijackedState = s_systemData.hijackedStates[id];
 
             write_binary(file, hijackedState.id); // UNHIJACKED_ID
@@ -2013,7 +1971,7 @@ namespace ESSM::detail::SaveData
     static void serialize(const std::string& filename, const _WriteState& writeState)
     {
         std::filesystem::path filePath = get_save_data_path(filename);
-        bool exists = guarantee_parent_path_exists(filePath);
+        bool exists = REPENTOGON::EnsureParentPathExists(filePath);
         if (!exists)
         {
             ZHL::Log(LOG_ERROR_HEADER "unable to create directory for save file at \"%s\"\n", filePath.string().c_str());
@@ -2312,7 +2270,7 @@ HOOK_METHOD(Game, ResetState, () -> void)
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
 	super();
@@ -2324,8 +2282,8 @@ HOOK_METHOD(GameState, Clear, () -> void)
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGameState::ForEachRoom(*this, ESSM::Utils::CollectLambda, collection);
-    ESSM::EntityIterators::InGameState::ForEachBackwardsStage(*this, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachInRooms(*this, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachInBackwardsStages(*this, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates_HijackedOnly(collection);
 
     // player save states are handled by GameStatePlayer::Init
@@ -2344,8 +2302,8 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
     
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGameState::ForEachRoom(*state, ESSM::Utils::CollectLambda, collection);
-    ESSM::EntityIterators::InGameState::ForEachBackwardsStage(*state, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachInRooms(*state, ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGameState::ForEachInBackwardsStages(*state, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 
     // players are handled by Entity_Player::Init
@@ -2359,7 +2317,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
     super(state, startGame);
@@ -2475,7 +2433,7 @@ static void __stdcall restore_game_state_backwards_rooms()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::ForBackwardsStage(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 }
 
@@ -2583,7 +2541,7 @@ static void __stdcall restore_level_game_state()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
-    ESSM::EntityIterators::InGame::ForEachRoom(ESSM::Utils::CollectLambda, collection);
+    ESSM::EntityIterators::InGame::ForEachInRooms(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::CopySaveStates(collection);
 }
 
@@ -3022,29 +2980,6 @@ namespace ESSM::LuaFunctions
         return std::filesystem::path(mod._dataDirectory) / "EntitySaveStateManagement" / (filename + ".dat");
     }
 
-    static bool guarantee_parent_path_exists(std::filesystem::path filePath)
-    {
-        std::filesystem::path directory = filePath.parent_path();
-
-        std::error_code errorCode;
-        if (!directory.empty() && !std::filesystem::exists(directory, errorCode))
-        {
-            if (errorCode)
-            {
-                return false;
-            }
-
-            std::filesystem::create_directories(directory, errorCode);
-            if (errorCode)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
     LUA_FUNCTION(SaveData)
     {
         ModReference& modReference = get_mod_reference(L, 1);
@@ -3054,7 +2989,7 @@ namespace ESSM::LuaFunctions
         const char* data = luaL_checklstring(L, 3, &len);
 
         std::filesystem::path filePath = GetLuaSaveDataPath(modReference, filename);
-        bool exists = guarantee_parent_path_exists(filePath);
+        bool exists = REPENTOGON::EnsureParentPathExists(filePath);
         if (!exists)
         {
             ZHL::Log(LOG_ERROR_HEADER "unable to create directory for Mod save file at \"%s\"\n", filePath.string().c_str());
