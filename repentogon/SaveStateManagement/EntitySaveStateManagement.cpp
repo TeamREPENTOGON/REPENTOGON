@@ -63,6 +63,7 @@
 #include "Log.h"
 #include "../MiscFunctions.h"
 #include "../LuaInterfaces/LuaEntitySaveState.h"
+#include "../LuaInterfaces/_Internals.h"
 #include "../ImGuiFeatures/CustomImGui.h"
 #include "../Patches/ExtraRenderSteps.h"
 
@@ -746,6 +747,7 @@ namespace ESSM
         if (!lua_istable(L, tblIdx))
         {
             ZHL::Log(LOG_ERROR_HEADER "ESSM::BindLuaCallbacks: expected a table\n");
+            LuaInternals::RaiseInitError();
             assert(false);
             return;
         }
@@ -762,6 +764,7 @@ namespace ESSM
             {
                 ZHL::Log(LOG_ERROR_HEADER "ESSM::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
                 lua_pop(L, 1);
+                LuaInternals::RaiseInitError();
                 assert(false);
                 return;
             }
@@ -1314,7 +1317,7 @@ namespace ESSM
 
             if (!s_checkerErrorShown)
             {
-                ErrorDisplay::RaiseError("A core REPENTOGON system is failing!", ErrorDisplay::REPENTOGON_INTERNAL_PRIORITY);
+                ErrorDisplay::RaiseError("A core REPENTOGON system is failing!", ErrorDisplay::Priority::REPENTOGON_MEDIUM);
                 // may want to create an ImGui display for REPENTOGON internals.
                 s_checkerErrorShown = true;
             }

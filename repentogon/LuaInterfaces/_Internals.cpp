@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_RaiseModError)
     const char* modName = luaL_checkstring(L, 1);
     std::string message = std::string(modName) + " is causing errors!";
 
-    ErrorDisplay::RaiseError(message, ErrorDisplay::LUA_ERROR_PRIORITY);
+    ErrorDisplay::RaiseError(message, ErrorDisplay::Priority::LUA_ERROR);
 
     return 0;
 }
@@ -47,4 +47,28 @@ void LuaInternals::RegisterInternals(lua_State *L)
 		EntitySaveStateManagement::detail::Init::RegisterLuaInternals(L, -1);
 	}
 	lua_setfield(L, -2, "ESSM");
+}
+
+bool s_raiseInitError = false;
+
+// have to delay it since globals haven't been initialized yet
+void LuaInternals::RaiseInitError()
+{
+	s_raiseInitError = true;
+}
+
+void LuaInternals::detail::RaiseInitError()
+{
+	if (!s_raiseInitError)
+	{
+		return;
+	}
+
+	ErrorDisplay::RaiseError("REPENTOGON failed to initialize!", ErrorDisplay::Priority::REPENTOGON_CRITICAL);
+	
+	const char* consoleString = "REPENTOGON's Lua Internals failed to initialize!\n"
+		"Some core systems may not behave as expected.\n"
+		"Please report this issue to the REPENTOGON developers.";
+
+	g_Game->GetConsole()->PrintError(consoleString);
 }

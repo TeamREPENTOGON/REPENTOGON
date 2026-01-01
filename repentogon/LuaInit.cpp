@@ -181,7 +181,9 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 	if (!lua_istable(L, tblIdx))
 	{
 		ZHL::Log("[ERROR] _LuaBindings is not a table.\n");
+		LuaInternals::RaiseInitError();
 		assert(false);
+
 		return;
 	}
 

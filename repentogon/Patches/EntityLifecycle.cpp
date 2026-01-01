@@ -6,6 +6,7 @@
 #include "ASMDefinition.h"
 #include "Log.h"
 #include "LuaCore.h"
+#include "../LuaInterfaces/_Internals.h"
 
 namespace EntityLifecycle::Data
 {
@@ -21,6 +22,7 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
     if (!lua_istable(L, tblIdx))
     {
         ZHL::Log("[ERROR] EntityLifecycle::BindLuaCallbacks: expected a table\n");
+        LuaInternals::RaiseInitError();
         assert(false);
         return;
     }
@@ -36,6 +38,7 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
         if (!lua_isfunction(L, -1))
         {
             ZHL::Log("[ERROR] EntityLifecycle::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+            LuaInternals::RaiseInitError();
             lua_pop(L, 1);
             assert(false);
             return;
