@@ -4585,7 +4585,7 @@ static int get_glowing_hourglass_slot(GameState* gameState) { //g_Game->_current
 }
 
 //PRE/POST_GLOWING_HOURGLASS_SAVE (1300 - 1302)
-HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
+HOOK_METHOD_PRIORITY(Game, SaveState, -100, (GameState* gameState) -> void) {
 	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	const int preCallbackId = 1302;
@@ -4623,7 +4623,7 @@ HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 }
 
 //PRE/POST_GLOWING_HOURGLASS_LOAD (1301 - 1303)
-HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
+HOOK_METHOD_PRIORITY(Game, RestoreState, -100, (GameState* gameState, bool startGame) -> void) {
 	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	if (currentSlot != -1)
