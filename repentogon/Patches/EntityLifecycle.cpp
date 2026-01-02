@@ -124,10 +124,10 @@ static void __fastcall asm_remove_and_delete_entity(Entity& entity)
     EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
 }
 
-static void Patch_EntityListDestructor_RemoveMainEL()
+static void common_remove_and_delete_entity_patch(const char* id, const char* logIdentifier)
 {
-    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_destructor_RemoveEntityMainEL);
-    ZHL::Log("[REPENTOGON] Patching EntityList::destructor for EntityLifecycle at %p\n", addr);
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(id);
+    ZHL::Log("[REPENTOGON] Patching %s for EntityLifecycle at %p\n", logIdentifier, addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -142,46 +142,21 @@ static void Patch_EntityListDestructor_RemoveMainEL()
         .AddRelativeJump((void*)resumeAddr);
 
     sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+static void Patch_EntityListDestructor_RemoveMainEL()
+{
+    common_remove_and_delete_entity_patch(&AsmDefinitions::EntityList_destructor_RemoveEntityMainEL, "EntityList::destructor");
 }
 
 static void Patch_EntityListDestructor_RemovePersistentEL()
 {
-    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_destructor_RemoveEntityPersistentEL);
-    ZHL::Log("[REPENTOGON] Patching EntityList::destructor for EntityLifecycle at %p\n", addr);
-
-    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-    ASMPatch patch;
-
-    intptr_t resumeAddr = addr + 8;
-    const size_t RESTORED_BYTES = 3;
-
-    patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Moves the entity into ECX
-        .PreserveRegisters(savedRegisters)
-        .AddInternalCall(asm_remove_and_delete_entity)
-        .RestoreRegisters(savedRegisters)
-        .AddRelativeJump((void*)resumeAddr);
-
-    sASMPatcher.PatchAt((void*)addr, &patch);
+    common_remove_and_delete_entity_patch(&AsmDefinitions::EntityList_destructor_RemoveEntityPersistentEL, "EntityList::destructor");
 }
 
 static void Patch_EntityListReset_RemoveNonPersistentEntity()
 {
-    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_Reset_RemoveNonPersistentEntity);
-    ZHL::Log("[REPENTOGON] Patching EntityList::Reset for EntityLifecycle at %p\n", addr);
-
-    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-    ASMPatch patch;
-
-    intptr_t resumeAddr = addr + 8;
-    const size_t RESTORED_BYTES = 3;
-
-    patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES)) // Moves the entity into ECX
-        .PreserveRegisters(savedRegisters)
-        .AddInternalCall(asm_remove_and_delete_entity)
-        .RestoreRegisters(savedRegisters)
-        .AddRelativeJump((void*)resumeAddr);
-
-    sASMPatcher.PatchAt((void*)addr, &patch);
+    common_remove_and_delete_entity_patch(&AsmDefinitions::EntityList_Reset_RemoveNonPersistentEntity, "EntityList::Reset");
 }
 
 static void __fastcall asm_clear_references_and_delete_entity(Entity& entity)

@@ -2432,7 +2432,7 @@ HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
     ESSM::Core::RestoreEntity(*this, ESSM::FamiliarHijackManager::GetId(*saveState));
 }
 
-static void __stdcall restore_game_state_backwards_rooms()
+static void __stdcall asm_restore_game_state_backwards_rooms()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2453,7 +2453,7 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .PreserveRegisters(savedRegisters)
-        .AddInternalCall(restore_game_state_backwards_rooms)
+        .AddInternalCall(asm_restore_game_state_backwards_rooms)
         .RestoreRegisters(savedRegisters)
         .AddRelativeJump((void*)resumeAddr);
 
@@ -2470,10 +2470,10 @@ static void __stdcall asm_clear_room_saved_entities()
     ESSM::Core::ClearSaveStates(collection);
 }
 
-static void Patch_RoomSaveState_ClearSavedEntities()
+static void common_clear_room_saved_entities_patch(const char* id, const char* logIdentifier)
 {
-    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_SaveState_ClearSavedEntities);
-    ZHL::Log("[REPENTOGON] Patching Room::SaveState for SaveStateManagement at %p\n", addr);
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(id);
+    ZHL::Log("[REPENTOGON] Patching %s for SaveStateManagement at %p\n", logIdentifier, addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -2490,24 +2490,14 @@ static void Patch_RoomSaveState_ClearSavedEntities()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+static void Patch_RoomSaveState_ClearSavedEntities()
+{
+    common_clear_room_saved_entities_patch(&AsmDefinitions::Room_SaveState_ClearSavedEntities, "Room::SaveState");
+}
+
 static void Patch_RoomRestoreState_ClearSavedEntities()
 {
-    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Room_RestoreState_ClearSavedEntities);
-    ZHL::Log("[REPENTOGON] Patching Room::RestoreState for SaveStateManagement at %p\n", addr);
-
-    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-    ASMPatch patch;
-
-    intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
-
-    patch.PreserveRegisters(savedRegisters)
-        .AddInternalCall(asm_clear_room_saved_entities)
-        .RestoreRegisters(savedRegisters)
-        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
-        .AddRelativeJump((void*)resumeAddr);
-
-    sASMPatcher.PatchAt((void*)addr, &patch);
+    common_clear_room_saved_entities_patch(&AsmDefinitions::Room_RestoreState_ClearSavedEntities, "Room::RestoreState");
 }
 
 static void __stdcall asm_copy_myosotis_pickups()
@@ -2540,7 +2530,7 @@ static void Patch_LevelInit_PostMyosotisEffect()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall restore_level_game_state()
+static void __stdcall asm_restore_level_game_state()
 {
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2561,7 +2551,7 @@ static void Patch_LevelRestoreGameState_PreRoomLoad()
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .PreserveRegisters(savedRegisters)
-        .AddInternalCall(restore_level_game_state)
+        .AddInternalCall(asm_restore_level_game_state)
         .RestoreRegisters(savedRegisters)
         .AddRelativeJump((void*)resumeAddr);
 
@@ -2642,7 +2632,7 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall hijack_dark_closet_collectible(EntitySaveState& saveState)
+static void __fastcall asm_hijack_dark_closet_collectible(EntitySaveState& saveState)
 {
     ESSM::EntityHijackManager::NewHijack(saveState);
 }
@@ -2665,8 +2655,8 @@ static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState()
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .PreserveRegisters(savedRegisters)
-        .LoadEffectiveAddress(ASMPatch::Registers::EBP, saveStateOffset_EBP, ASMPatch::Registers::ECX) // LEA ECX, [EBP + saveStateOffset_EBP]
-        .AddInternalCall(hijack_dark_closet_collectible)
+        .LoadEffectiveAddress(ASMPatch::Registers::EBP, saveStateOffset_EBP, ASMPatch::Registers::ECX)
+        .AddInternalCall(asm_hijack_dark_closet_collectible)
         .RestoreRegisters(savedRegisters)
         .AddRelativeJump((void*)resumeAddr);
 
@@ -2704,7 +2694,7 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __fastcall store_familiar_data(FamiliarData& saveState, size_t updateELIndex)
+static void __fastcall asm_store_familiar_data(FamiliarData& saveState, size_t updateELIndex)
 {
     EntityList_EL& updateEL = *g_Game->_room->_entityList.GetUpdateEL();
     assert(updateELIndex < updateEL._size);
@@ -2729,7 +2719,7 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState()
     patch.PreserveRegisters(savedRegisters)
         .MoveFromMemory(ASMPatch::Registers::EBP, -0x28, ASMPatch::Registers::EDX) // roomELIndex
         .LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x90, ASMPatch::Registers::ECX) // saveState
-        .AddInternalCall(store_familiar_data)
+        .AddInternalCall(asm_store_familiar_data)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .AddRelativeJump((void*)resumeAddr);
@@ -2896,7 +2886,7 @@ static void Patch_PickupTryFlip_RestoreFlipState()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall change_mineshaft_room(size_t listIdx)
+static void __stdcall asm_change_mineshaft_room(size_t listIdx)
 {
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[listIdx];
@@ -2921,7 +2911,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom()
 
     patch.PreserveRegisters(savedRegisters)
         .Push(ASMPatch::Registers::EBP, -0x48) // listIdx
-        .AddInternalCall(change_mineshaft_room)
+        .AddInternalCall(asm_change_mineshaft_room)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .AddRelativeJump((void*)resumeAddr);
