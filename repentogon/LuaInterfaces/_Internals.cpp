@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_RaiseModError)
 
 LUA_FUNCTION(Lua_GetModId)
 {
-	constexpr int tblIdx = 1;
+	const int tblIdx = 1;
 	if (!lua_istable(L, tblIdx))
 	{
 		return luaL_argerror(L, tblIdx, "Expected a table.");

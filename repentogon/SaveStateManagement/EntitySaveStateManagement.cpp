@@ -84,7 +84,7 @@ using StatePtr = std::variant<GameStatePlayer*, FamiliarData*, EntitySaveState*>
 using CollectedStates = std::vector<StatePtr>;
 namespace ErrorDisplay = ExtraRenderSteps::ErrorDisplay;
 
-constexpr size_t DEFAULT_COLLECT_RESERVE = (16'000 / sizeof(StatePtr)); // 16 KB should be enough to cover all cases.
+const size_t DEFAULT_COLLECT_RESERVE = (16'000 / sizeof(StatePtr)); // 16 KB should be enough to cover all cases.
 
 namespace {
     struct HijackedState {
@@ -196,7 +196,7 @@ namespace ESSM::PlayerIterators
                 handlePlayer(player);
             }
 
-            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
+            const size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
             for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 handlePlayer(playerManager._esauJrState[i]);
@@ -217,7 +217,7 @@ namespace ESSM::PlayerIterators
                 func(players[i], std::forward<Args>(args)...);
             }
 
-            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
+            const size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
             GameStatePlayer* esauJrStates = gameState._esauJrStates;
 
             for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
@@ -359,7 +359,7 @@ namespace ESSM::EntityIterators
                 handlePlayer(player);
             }
         
-            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
+            const size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(playerManager._esauJrState)>;
             for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
             {
                 handlePlayer(playerManager._esauJrState[i]);
@@ -415,7 +415,7 @@ namespace ESSM::EntityIterators
                 detail::iterate_vector(player._movingBoxContents, func, std::forward<Args>(args)...);
             }
         
-            constexpr size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
+            const size_t NUM_ESAU_JR_STATES = std::extent_v<decltype(gameState._esauJrStates)>;
             GameStatePlayer* esauJrStates = gameState._esauJrStates;
         
             for (size_t i = 0; i < NUM_ESAU_JR_STATES; i++)
@@ -1247,7 +1247,7 @@ namespace ESSM
         static void collect_from_entity_list(CollectedStates& collection)
         {
             const EntityFactory* factory = g_Game->_entityFactory;
-            constexpr size_t MAX_PICKUPS = std::extent_v<decltype(factory->_pickup)>;
+            const size_t MAX_PICKUPS = std::extent_v<decltype(factory->_pickup)>;
             const Entity_Pickup* pickups = factory->_pickup;
 
             for (size_t i = 0; i < MAX_PICKUPS; i++)
@@ -1281,10 +1281,10 @@ namespace ESSM
             const char HEADER[] = "Stability Checker:\n";
             const char INDENTATION[] = "  ";
             const char FOOTER[] = "end\n";
-            constexpr size_t CONSOLE_ERROR_HEADER_SIZE = sizeof(CONSOLE_ERROR_HEADER) - 1;
-            constexpr size_t HEADER_SIZE = sizeof(HEADER) - 1;
-            constexpr size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
-            constexpr size_t FOOTER_SIZE = sizeof(FOOTER) - 1;
+            const size_t CONSOLE_ERROR_HEADER_SIZE = sizeof(CONSOLE_ERROR_HEADER) - 1;
+            const size_t HEADER_SIZE = sizeof(HEADER) - 1;
+            const size_t INDENTATION_SIZE = sizeof(INDENTATION) - 1;
+            const size_t FOOTER_SIZE = sizeof(FOOTER) - 1;
 
             size_t stringSize = CONSOLE_ERROR_HEADER_SIZE;
             stringSize += HEADER_SIZE;
@@ -2188,7 +2188,7 @@ HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
 {
     Game* game = g_Game;
     RoomDescriptor* roomList = game->_gridRooms;
-    constexpr size_t LIL_PORTAL_IDX = MAX_GRID_ROOMS + (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
+    const size_t LIL_PORTAL_IDX = MAX_GRID_ROOMS + (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2218,7 +2218,7 @@ static void reset_single_room(RoomDescriptor& room)
 
 HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 {
-    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_DEBUG_IDX) - 1;
+    const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_DEBUG_IDX) - 1;
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
@@ -2229,7 +2229,7 @@ HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 
 HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 {
-    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_GENESIS_IDX) - 1;
+    const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_GENESIS_IDX) - 1;
 
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[LIST_IDX];
@@ -2240,8 +2240,8 @@ HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 
 HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, int direction) -> bool)
 {
-    constexpr uint32_t FLAG_BLUE_REDIRECT = 1 << 18;
-    constexpr size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_BLUE_ROOM_IDX) - 1;
+    const uint32_t FLAG_BLUE_REDIRECT = 1 << 18;
+    const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_BLUE_ROOM_IDX) - 1;
 
     if ((direction != -1 && currentIdx >= 0) && (g_Game->GetRoomByIdx(destinationIdx, -1)->Flags & FLAG_BLUE_REDIRECT) != 0)
     {
@@ -2332,7 +2332,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 {
     // ASSUMPTION: Confirm that the function does not reset the LilPortalRoom when calling reset_room_list (through params), since we currently have to perform that clear manually.
-    constexpr size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
+    const size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
     reset_single_room(g_Game->_negativeGridRooms[LIL_PORTAL_IDX]);
     super(state);
 }
@@ -2449,7 +2449,7 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .PreserveRegisters(savedRegisters)
@@ -2479,7 +2479,7 @@ static void common_clear_room_saved_entities_patch(const char* id, const char* l
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
         .AddInternalCall(asm_clear_room_saved_entities)
@@ -2519,7 +2519,7 @@ static void Patch_LevelInit_PostMyosotisEffect()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
         .AddInternalCall(asm_copy_myosotis_pickups)
@@ -2547,7 +2547,7 @@ static void Patch_LevelRestoreGameState_PreRoomLoad()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
         .PreserveRegisters(savedRegisters)
@@ -2588,7 +2588,7 @@ static void Patch_LevelPlaceRoomsBackwards_Boss_AssignEntitySaveStateVector()
 
     intptr_t callAddr = addr + 8;
     intptr_t resumeAddr = callAddr + 5;
-    constexpr size_t RESTORED_BYTES = 8;
+    const size_t RESTORED_BYTES = 8;
     int32_t call_rel32 = *(int32_t*)(callAddr + 1);
     intptr_t calleeAddress = callAddr + 5 + call_rel32;
 
@@ -2615,7 +2615,7 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
 
     intptr_t callAddr = addr + 10;
     intptr_t resumeAddr = callAddr + 5;
-    constexpr size_t RESTORED_BYTES = 10;
+    const size_t RESTORED_BYTES = 10;
     int32_t call_rel32 = *(int32_t*)(callAddr + 1);
     intptr_t calleeAddress = callAddr + 5 + call_rel32;
 
@@ -2647,8 +2647,8 @@ static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState()
 
     intptr_t resumeAddr = addr + 7;
     intptr_t disp8Addr = addr + 2;
-    constexpr size_t RESTORED_BYTES = 7;
-    constexpr int32_t FIELD_OFFSET = offsetof(EntitySaveState, _intStorage7);
+    const size_t RESTORED_BYTES = 7;
+    const int32_t FIELD_OFFSET = offsetof(EntitySaveState, _intStorage7);
     
     int8_t disp8 = *(int8_t*)disp8Addr;
     int32_t saveStateOffset_EBP = disp8 - FIELD_OFFSET;
@@ -2682,7 +2682,7 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
         .Push(ASMPatch::Registers::EDI) // player
@@ -2714,7 +2714,7 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
         .MoveFromMemory(ASMPatch::Registers::EBP, -0x28, ASMPatch::Registers::EDX) // roomELIndex
@@ -2757,7 +2757,7 @@ static void Patch_PlayerStoreGameState_AssignUnlistedFamiliarData()
 
     intptr_t callAddr = addr + 8;
     intptr_t resumeAddr = callAddr + 5;
-    constexpr size_t RESTORED_BYTES = 8;
+    const size_t RESTORED_BYTES = 8;
     int32_t call_rel32 = *(int32_t*)(callAddr + 1);
     intptr_t calleeAddress = callAddr + 5 + call_rel32;
 
@@ -2784,7 +2784,7 @@ static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData()
 
     intptr_t callAddr = addr + 15;
     intptr_t resumeAddr = callAddr + 5;
-    constexpr size_t RESTORED_BYTES = 15;
+    const size_t RESTORED_BYTES = 15;
     int32_t call_rel32 = *(int32_t*)(callAddr + 1);
     intptr_t calleeAddress = callAddr + 5 + call_rel32;
 
@@ -2843,7 +2843,7 @@ static void Patch_PickupInitFlipState_CreateSaveState()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 6;
+    const size_t RESTORED_BYTES = 6;
 
     patch.PreserveRegisters(savedRegisters)
         .Push(ASMPatch::Registers::EAX) // arg
@@ -2869,9 +2869,9 @@ static void Patch_PickupTryFlip_RestoreFlipState()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 6;
-    constexpr size_t RESTORED_BYTES = 4;
-    constexpr size_t JNZ_OP_CODE_SIZE = 2;
-    constexpr intptr_t JNZ_OFFSET = 4;
+    const size_t RESTORED_BYTES = 4;
+    const size_t JNZ_OP_CODE_SIZE = 2;
+    const intptr_t JNZ_OFFSET = 4;
     intptr_t relativeJmpAddr = addr + (intptr_t)RESTORED_BYTES + (intptr_t)JNZ_OP_CODE_SIZE + JNZ_OFFSET;
 
     patch.PreserveRegisters(savedRegisters)
@@ -2907,7 +2907,7 @@ static void Patch_EntityNPCAiMothersShadow_ChangeMineshaftRoom()
     ASMPatch patch;
 
     intptr_t resumeAddr = addr + 5;
-    constexpr size_t RESTORED_BYTES = 5;
+    const size_t RESTORED_BYTES = 5;
 
     patch.PreserveRegisters(savedRegisters)
         .Push(ASMPatch::Registers::EBP, -0x48) // listIdx
