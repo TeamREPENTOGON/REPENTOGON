@@ -1250,6 +1250,32 @@ namespace ESSM
             }
         }
 
+        static void collect_from_removed_players(CollectedStates& collection)
+        {
+            const EntityList_EL& persistentEL = *g_Game->_room->_entityList.GetPersistentEL();
+            for (size_t i = 0; i < persistentEL._size; ++i)
+            {
+                Entity* entity = persistentEL._data[i];
+                if (!entity || entity->_type != ENTITY_PLAYER)
+                {
+                    continue;
+                }
+
+                // the game always makes this assumption, so if this entity is not an actual Entity_Player there would be problems regardless.
+                Entity_Player* player = (Entity_Player*)entity;
+                if (!(!player->_exists && player->_valid && player->_playerIndex < 0))
+                {
+                    continue;
+                }
+
+                ESSM::Utils::CollectStates(player->_movingBoxContents, collection);
+                GameStatePlayer& saveState = player->_unlistedRestoreState;
+                collection.push_back(&saveState);
+                ESSM::Utils::CollectStates(saveState._familiarData, collection);
+                ESSM::Utils::CollectStates(saveState._movingBoxContents, collection);
+            }
+        }
+
         static void collect_from_entity_list(CollectedStates& collection)
         {
             const EntityFactory* factory = g_Game->_entityFactory;
@@ -1481,6 +1507,7 @@ namespace ESSM
             Game* game = g_Game;
 
             CollectedStates collection;
+            collect_from_removed_players(collection);
             collect_from_entity_list(collection);
             collect_from_run(collection);
             collect_from_game_state(manager->_gamestate, collection);

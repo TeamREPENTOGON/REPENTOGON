@@ -53,13 +53,13 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
 
 namespace EntityLifecycle::Core
 {
-    static void NotifyNewEntity(uintptr_t entityPtr)
+    static void NotifyNewEntity(const Entity& entity)
     {
         LuaEngine* lua = g_LuaEngine;
 
         lua_State* L = lua->_state;
         lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaNewEntityCallback);
-        lua_pushinteger(L, lua->GetMaskedPointer(entityPtr));
+        lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
@@ -68,13 +68,13 @@ namespace EntityLifecycle::Core
         }
     }
 
-    static void NotifyDeleteEntity(uintptr_t entityPtr)
+    static void NotifyDeleteEntity(const Entity& entity)
     {
         LuaEngine* lua = g_LuaEngine;
 
         lua_State* L = lua->_state;
         lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaDeleteEntityCallback);
-        lua_pushinteger(L, lua->GetMaskedPointer(entityPtr));
+        lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
@@ -89,7 +89,7 @@ HOOK_METHOD(EntityFactory, Create, (unsigned int type, bool force) -> Entity*)
     Entity* entity = super(type, force);
     if (entity)
     {
-        EntityLifecycle::Core::NotifyNewEntity((uintptr_t)entity);
+        EntityLifecycle::Core::NotifyNewEntity(*entity);
     }
 
     return entity;
@@ -101,27 +101,27 @@ HOOK_METHOD(Entity, Remove, () -> void)
     super();
     if (this->_removedByFactory)
     {
-        EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)this);
+        EntityLifecycle::Core::NotifyDeleteEntity(*this);
     }
 }
 
 HOOK_METHOD(Entity_Player, constructor, () -> void)
 {
     super();
-    EntityLifecycle::Core::NotifyNewEntity((uintptr_t)this);
+    EntityLifecycle::Core::NotifyNewEntity(*this);
 }
 
 // Entity_Player should be the only necessary one but just to be safe.
 HOOK_METHOD(Entity, destructor, () -> void)
 {
-    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)this);
+    EntityLifecycle::Core::NotifyDeleteEntity(*this);
     super();
 }
 
 static void __fastcall asm_remove_and_delete_entity(Entity& entity)
 {
     entity.Remove(); // restore call to Remove
-    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
+    EntityLifecycle::Core::NotifyDeleteEntity(entity);
 }
 
 static void common_remove_and_delete_entity_patch(const char* id, const char* logIdentifier)
@@ -161,7 +161,7 @@ static void Patch_EntityListReset_RemoveNonPersistentEntity()
 
 static void __fastcall asm_clear_references_and_delete_entity(Entity& entity)
 {
-    EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
+    EntityLifecycle::Core::NotifyDeleteEntity(entity);
     entity.ClearReferences(); // restore call to ClearReferences
 }
 
@@ -190,7 +190,7 @@ static void __fastcall asm_delete_persistent_el_entity(Entity& entity)
     // If they are deleted they invoke free, which is then handled by the other hook.
     if (entity._type != ENTITY_PLAYER)
     {
-        EntityLifecycle::Core::NotifyDeleteEntity((uintptr_t)&entity);
+        EntityLifecycle::Core::NotifyDeleteEntity(entity);
     }
 }
 
