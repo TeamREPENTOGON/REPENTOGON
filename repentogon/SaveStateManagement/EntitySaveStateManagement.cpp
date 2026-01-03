@@ -1100,7 +1100,7 @@ namespace ESSM::Core
     }
 }
 
-// Operations API
+// Public API
 namespace ESSM
 {
     void EntitySaveState_ClearBatch(const std::vector<EntitySaveState>& vector)
@@ -1112,6 +1112,12 @@ namespace ESSM
             Core::ClearState(&entity, clearedIds);
         }
         s_luaCallbacks.ClearStates(clearedIds);
+    }
+
+    void RegisterSaveState(EntitySaveState& saveState)
+    {
+        assert(!EntityHijackManager::HasMarker(saveState));
+        EntityHijackManager::NewHijack(saveState);
     }
 }
 
@@ -2352,6 +2358,12 @@ HOOK_METHOD(GameStatePlayer, Init, () -> void)
     ESSM::PlayerHijackManager::SetCleared(*this);
 }
 
+HOOK_METHOD(Entity_Player, constructor, () -> void)
+{
+    super();
+    ESSM::PlayerHijackManager::DefaultRestore(this->_unlistedRestoreState);
+}
+
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void)
 {
     super(type, variant, subtype, initSeed);
@@ -2855,7 +2867,7 @@ static void Patch_PickupInitFlipState_CreateSaveState()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-static void __stdcall asm_flip_restore(Entity& entity, EntitySaveState& saveState)
+static void __fastcall asm_flip_restore(Entity& entity, EntitySaveState& saveState)
 {
     ESSM::Core::RestoreEntity(entity, ESSM::EntityHijackManager::GetId(saveState));
 }
@@ -2872,11 +2884,13 @@ static void Patch_PickupTryFlip_RestoreFlipState()
     const size_t RESTORED_BYTES = 4;
     const size_t JNZ_OP_CODE_SIZE = 2;
     const intptr_t JNZ_OFFSET = 4;
+    const size_t SMART_PTR_SAVE_STATE_OFFSET = offsetof(KAGE_SmartPointer_EntitySaveState, saveState);
     intptr_t relativeJmpAddr = addr + (intptr_t)RESTORED_BYTES + (intptr_t)JNZ_OP_CODE_SIZE + JNZ_OFFSET;
 
+    // EDI is a reference to the FlipState SmartPointer
     patch.PreserveRegisters(savedRegisters)
-        .Push(ASMPatch::Registers::EDI) // saveState
-        .Push(ASMPatch::Registers::ESI) // entity
+        .MoveFromMemory(ASMPatch::Registers::EDI, SMART_PTR_SAVE_STATE_OFFSET, ASMPatch::Registers::EDX) // saveState
+        .CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::ESI) // entity
         .AddInternalCall(asm_flip_restore)
         .RestoreRegisters(savedRegisters)
         .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
@@ -2964,6 +2978,7 @@ namespace ESSM::LuaFunctions
         EntitySaveState& state = Lua_EntitySaveState::GetEntitySaveState(L, 1);
 
         // lua ids are sent over as if they were 1-indexed
+        assert(EntityHijackManager::IsHijacked(state));
         lua_pushinteger(L, EntityHijackManager::GetId(state) + 1);
         return 1;
     }

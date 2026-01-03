@@ -373,11 +373,6 @@ local function _deserialize_table(serializeTable)
     assert(_assert_serialized_table_size(serializeTable), "table is corrupted (sizes don't match)")
     local tables = serializeTable._data
 
-    print(#tables)
-    for key, value in pairs(tables[1]) do
-        print(key, value)
-    end
-
     for i = 1, #tables, 1 do
         local tbl = tables[i]
         local specialTbl = serializeTable._specialKeyData[i]
