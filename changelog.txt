@@ -4,6 +4,8 @@ Added:
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers
 		This is used by the Monstro's Lung + Technology synergy
+* Backported new enums for GameStateFlag
+/newline/
 Modified:
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
