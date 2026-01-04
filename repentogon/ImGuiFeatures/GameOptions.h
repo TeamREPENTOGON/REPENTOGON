@@ -342,6 +342,18 @@ struct GameOptionsWindow : ImGuiWindowObject {
                 if (ImGui::BeginTabItem(LANG.OPT_REPENTOGON)) {
                     if (ImGui::BeginTable("REPENTOGON_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_SYNC_OPTIONS, &repentogonOptions.syncVanillaOptions);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_SYNC_OPTIONS_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.syncVanillaOptions, true);
+                        ImGui::BeginDisabled(!repentogonOptions.syncVanillaOptions);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_SYNC_MODS_ENABLED, &repentogonOptions.syncModsEnabled);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_SYNC_MODS_ENABLED_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.syncModsEnabled, true);
+                        ImGui::EndDisabled();
+                        AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_BETTER_VOID_GEN, &repentogonOptions.betterVoidGeneration);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_BETTER_VOID_GEN_MARK);

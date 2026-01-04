@@ -10,12 +10,12 @@ struct _GLFWwindow {
 } : 0x258;
 
 struct KAGE_Graphics_Manager depends (BlendMode, _GLFWwindow){
-    BlendMode _blendMode : 0x4; // 0x4
-    KAGE_Graphics_Shader* _shader : 0x18; // 0x18
-    KAGE_Graphics_ImageBase* currentRenderTarget : 0x1c; // 0x1c
-    bool renderTargetUsesScreenSize : 0x20; // 0x20
+    BlendMode _blendMode : 0x4;
+    KAGE_Graphics_Shader* _shader : 0x18;
+    KAGE_Graphics_ImageBase* currentRenderTarget : 0x1c;
+    bool renderTargetUsesScreenSize : 0x20;
     KAGE_Graphics_ImageBase* _boundImage : 0xcc;
-    // uint32_t openGLFramebufferID : 0x??; // 0xC8
+    // uint32_t openGLFramebufferID : 0x??; // 0xC8 ?
 	//this struct pointer got shifted in rep+, be careful
     _GLFWwindow* _window : 0xe0;
 

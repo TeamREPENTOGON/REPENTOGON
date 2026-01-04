@@ -893,7 +893,7 @@ inline bool MultiValXMLParamParseLATE() {
 				string attrname = toparse.first;
 				if (auxnode.find(attrname) != auxnode.end()) {
 					string parseditemlist = ComaSeparatedNamesToIds(auxnode[attrname], xmldata, auxnode["sourceid"]);
-					printf("DINGUS: %s BINGUS: %s \n", auxnode[attrname].c_str(), parseditemlist.c_str());
+					//printf("DINGUS: %s BINGUS: %s \n", auxnode[attrname].c_str(), parseditemlist.c_str());
 					if (parseditemlist.length() > 0) {
 						auxnode["raw-" + attrname] = auxnode[attrname];
 						auxnode[attrname] = parseditemlist;
