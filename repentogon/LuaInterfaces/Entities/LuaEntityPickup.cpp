@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Utils/Entity/PickupUtils.h"
 
 LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
@@ -265,7 +266,7 @@ LUA_FUNCTION(Lua_PickupInitFlipState) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	const CollectibleType collectID = (CollectibleType)luaL_optinteger(L, 2, 0);
 	bool setupCollectibleGraphics = lua::luaL_optboolean(L, 3, true);
-	pickup->InitFlipState(collectID, setupCollectibleGraphics);
+	PickupUtils::InitFlipState(*pickup, collectID, setupCollectibleGraphics);
 	return 0;
 }
 

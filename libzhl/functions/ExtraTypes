@@ -315,6 +315,11 @@ TypeInfo vector_pair_RenderBatchPtr_ImagePtr {
     Align 4;
 };
 
+TypeInfo vector_FamiliarData {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo deque_ColorMod {
     Size 20;
     Align 4;

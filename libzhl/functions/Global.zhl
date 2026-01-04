@@ -94,6 +94,7 @@ typedef std::vector<KAGE_Graphics_ImageBase*> vector_ImagePtr;
 typedef std::vector<KAGE_Graphics_RenderBatch*> vector_RenderBatchPtr;
 typedef std::vector<std::pair<KAGE_Graphics_RenderBatch*, KAGE_Graphics_ImageBase*>> vector_pair_RenderBatchPtr_ImagePtr;
 typedef std::deque<ColorMod> deque_ColorMod;
+typedef std::vector<FamiliarData> vector_FamiliarData;
 typedef KColor KAGE_Graphics_Color;
 
 struct PoolItem {

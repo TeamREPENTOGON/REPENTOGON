@@ -11,8 +11,14 @@ namespace ExtraRenderSteps
 
     namespace ErrorDisplay
     {
-        constexpr int REPENTOGON_INTERNAL_PRIORITY = 100;
-        constexpr int LUA_ERROR_PRIORITY = 0;
+        enum Priority
+        {
+            REPENTOGON_CRITICAL = 10000,
+            REPENTOGON_HIGH = 1000,
+            REPENTOGON_MEDIUM = 500,
+            REPENTOGON_LOW = 100,
+            LUA_ERROR = 0,
+        };
 
         void RaiseError(const std::string& message, int priority);
     };

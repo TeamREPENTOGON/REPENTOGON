@@ -1,5 +1,6 @@
 v1.1.x -
 Added:
+* Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * EntityLaser
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers

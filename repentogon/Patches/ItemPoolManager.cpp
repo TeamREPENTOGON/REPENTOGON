@@ -8,6 +8,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
 #include "GameStateManagement.h"
+#include "../Utils/EntitySaveStateUtils.h"
 
 #include "rapidxml.hpp"
 #include "writer.h" // rapidjson
@@ -1589,10 +1590,10 @@ static inline void fix_player_game_state(GameStatePlayer& player, std::vector<in
 
 static inline void fix_collectible_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap)
 {
-	int* sourcePoolType = EntitySaveState::Pickup::GetSourcePoolType(entity);
+	int* sourcePoolType = EntitySaveStateUtils::Pickup::GetSourcePoolType(entity);
 	*sourcePoolType = get_new_pool_id(*sourcePoolType, poolIdRemap);
 
-	EntitySaveState* flipSaveState = EntitySaveState::Pickup::GetFlipSaveState(entity);
+	EntitySaveState* flipSaveState = EntitySaveStateUtils::Pickup::GetFlipSaveState(entity);
 	if (flipSaveState != nullptr)
 	{
 		fix_entity_save_state(*flipSaveState, poolIdRemap);

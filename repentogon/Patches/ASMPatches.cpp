@@ -24,6 +24,8 @@
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
 #include "ExtraRenderSteps.h"
+#include "EntityLifecycle.h"
+#include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -274,6 +276,8 @@ void PerformASMPatches() {
 
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
+	EntitySaveStateManagement::detail::Patches::ApplyPatches();
+	EntityLifecycle::detail::Patches::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

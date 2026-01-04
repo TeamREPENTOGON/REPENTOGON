@@ -94,6 +94,9 @@ __thiscall void Entity_NPC::Hornfel_UpdateAI();
 "558bec83e4f85153568bf15783be????????0a":
 __thiscall void Entity_NPC::Hornfel_UpdateFrame();
 
+"558bec6aff68????????64a1????????5081ec2c010000":
+static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":

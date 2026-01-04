@@ -1,6 +1,25 @@
+"558bec83e4f083ec3833c0":
+__thiscall void GameStatePlayer::Init();
+
 struct GameStatePlayer depends (History, BagOfCraftingOutput) {
     int _playerType : 0x0;
     vector_EntitySaveState _movingBoxContents : 0x1d4;
+    int _immaculateConceptionState : 0x340; // Hijacked by ESSM
+    int _cambionConceptionState : 0x344; // Hijacked by ESSM
+    vector_FamiliarData _familiarData : 0x374;
     History _history : 0x3b0;
     BagOfCraftingOutput _bagOfCraftingOutput : 0x4c4;
 } : 0x5bc;
+
+struct FamiliarData {
+    unsigned int _seed : 0x0;
+    unsigned int _variant : 0x4;
+    int _subtype : 0x8;
+    int _coins : 0xc;
+    int _hearts : 0x10;
+    int _keys : 0x14;
+    int _state : 0x18; // Hijacked by ESSM
+    int _roomClearCount : 0x1c; // Hijacked by ESSM
+    float _health : 0x28;
+    unsigned int _dropRNGSeed : 0x2c;
+} : 0x34;

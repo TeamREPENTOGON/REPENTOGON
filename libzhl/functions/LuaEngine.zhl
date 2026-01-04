@@ -86,7 +86,8 @@ struct LuaEngine depends (RunCallbackRegistry, Entity_Player) {
 	{{
 	
 		inline bool GetLuaDebug() {return this->_debug; }
-
+        inline uintptr_t GetMaskedPointer(uintptr_t pointer) { return pointer ^ this->_pointerMask; }
+        LIBZHL_API ModReference* GetModRefByTable(int tblIdx);
 	}}
 	
 	bool _debug : 0xc;
@@ -94,4 +95,5 @@ struct LuaEngine depends (RunCallbackRegistry, Entity_Player) {
     LuaBridgeRef* _unloadModFuncRef : 0x14;
     lua_State* _state : 0x18;
     int32_t _runCallbackRegistryKey : 0x1c;
+    uint32_t _pointerMask : 0x20;
 } : 0x268;
