@@ -10,6 +10,18 @@
 #include "../repentogon/Utils/ANM2Utils.hpp"
 #include "../repentogon/Utils/ShaderUtils.hpp"
 #include "../repentogon/Utils/ImageUtils.hpp"
+#include "../MiscFunctions.h"
+#include "ExtraRenderSteps.h"
+
+//shitass workaround for crashing pause menu anm2
+HOOK_METHOD(PauseScreen, Show, ()-> void) {
+		if (!this->mainsprite.GetLayer("Invite")) {
+			g_Game->GetConsole()->PrintError("A custom Pause menu ANM2 is not compatible with Repentance+ and has not been loaded, check your Pause Menu related mods!.");
+			this->mainsprite.Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/pausescreen.anm2"), true);
+		}
+	super();
+	return;
+}
 
 // Normalizes input shader paths for use as keys and for identification.
 // Converts to lowercase and strips excess slashes, ie `shaders\\MyShader` -> `shaders/myshader`

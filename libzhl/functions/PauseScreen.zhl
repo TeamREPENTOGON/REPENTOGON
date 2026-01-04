@@ -1,6 +1,9 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd0000000a1????????33c58945??5657508d45??64a3????????8bf98b0d":
 __thiscall void PauseScreen::Render();
 
+"558bec515356578bf933d2":
+__thiscall void PauseScreen::Show();
+
 struct PauseScreen depends(ANM2, GenericPopup, Menu_Options, CompletionWidget) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return &this->completionWidget; } 
