@@ -198,9 +198,11 @@ end
 local function _OnRestoreEntity(entityId, saveStateId)
     for modId, saveStateTbl in pairs(s_saveStateData) do
         local stateData = saveStateTbl[saveStateId]
+        local data = nil
         if stateData then
-            s_entityData[modId][entityId] = deep_copy(stateData)
+            data = deep_copy(stateData)
         end
+        s_entityData[modId][entityId] = data
     end
 end
 
