@@ -356,6 +356,7 @@ ModEntry* GetModEntryByContentPath(const string &path) {
 }
 
 void UpdateXMLModEntryData() {
+	std:string enabledmodslist = "-- Enabled Mods START -- \n";
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
 		int idx = 0;
 		XMLAttributes mod;
@@ -370,7 +371,7 @@ void UpdateXMLModEntryData() {
 
 		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
 		
-		if (entry->IsEnabled()) { mod["enabled"] = "true";}
+		if (entry->IsEnabled()) { mod["enabled"] = "true"; enabledmodslist += mod["realdirectory"] + "\n"; }
 		else { mod["enabled"] = "false"; }
 		XMLStuff.ModData->nodes[idx] = mod;
 		XMLStuff.ModData->modentries[idx] = entry;
@@ -378,6 +379,8 @@ void UpdateXMLModEntryData() {
 		XMLStuff.ModData->byfullpath[mod["fulldirectory"]] = idx;
 		
 	}
+	KAGE::LogMessage(0, enabledmodslist.c_str());
+	KAGE::LogMessage(0, "-- Enabled Mods END -- \n");
 }
 
 //Shameless chatgpt copypaste function
