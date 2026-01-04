@@ -1248,15 +1248,11 @@ static std::vector<std::optional<RoomConfig_Room>> build_rooms(lua_State* L, int
 	return rooms;
 }
 
-static void build_lua_return_table(lua_State* L, int index, std::vector<RoomConfig_Room*>& placedRooms)
+static void build_lua_return_table(lua_State* L, std::vector<RoomConfig_Room*>& placedRooms)
 {
-	int absIndex = lua_absindex(L, index);
-	size_t size = (size_t)lua_rawlen(L, absIndex);
-	assert(placedRooms.size() == size); // placed rooms's size must be equal to size of the table
-
 	lua_newtable(L);
 
-	for (size_t i = 1; i <= size; i++)
+	for (size_t i = 1; i <= placedRooms.size(); i++)
 	{
 		auto* room = placedRooms[i - 1];
 		if (!room)
@@ -1283,7 +1279,7 @@ void VirtualRoomSetManager::__AddLuaRooms(lua_State* L, uint32_t stageId, int mo
 	}
 
 	LogUtility::LogContext logContext;
-	logContext.emplace_back(REPENTOGON::StringFormat("[LUA] Add Rooms to set (%u, %i): ", stageId, mode));
+	logContext.emplace_back(REPENTOGON::StringFormat("[LUA] Add Lua Rooms to set (%u, %i): ", stageId, mode));
 	std::string luaCaller = LogUtility::Lua::GetStackLevelInfo(L, 1);
 	if (!luaCaller.empty())
 	{
@@ -1299,7 +1295,100 @@ void VirtualRoomSetManager::__AddLuaRooms(lua_State* L, uint32_t stageId, int mo
 		LogUtility::PrintConsole(logType, luaCaller + ": Something went wrong whilst adding rooms to a room set. Check repentogon.log for more details.");
 	}
 
-	build_lua_return_table(L, absTableIndex, placedRooms);
+	assert((size_t)lua_rawlen(L, absTableIndex) == placedRooms.size()); // placed rooms's size must be equal to size of the table
+
+	build_lua_return_table(L, placedRooms);
+}
+
+void VirtualRoomSetManager::__AddStbRooms(lua_State* L, uint32_t stageId, int mode, std::string filename) {
+	filename = "rooms/" + filename;
+
+	if (mode == -1)
+	{
+		mode = g_Game->GetMode();
+	}
+
+	LogUtility::LogContext logContext;
+	logContext.emplace_back(REPENTOGON::StringFormat("[LUA] Add Rooms from `.../content/rooms/%s` to set (%u, %i): ", filename.c_str(), stageId, mode));
+	std::string luaCaller = LogUtility::Lua::GetStackLevelInfo(L, 1);
+	if (!luaCaller.empty())
+	{
+		logContext.emplace_back(luaCaller + " -> ");
+	}
+
+	// Find the full expanded filepaths for matching files from ALL enabled mods.
+	std::vector<std::string> modfilepaths;
+
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods)
+	{
+		if (!mod->IsEnabled()) continue;
+
+		std::string contentPath;
+		mod->GetContentPath(&contentPath, &filename);
+
+		if (const char* expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str())) {
+			modfilepaths.push_back(expandedPath);
+			delete[] expandedPath;
+		}
+	}
+
+	std::vector<RoomConfig_Room> rooms;
+
+	for (const std::string& filepath : modfilepaths)
+	{
+		KAGE_Filesys_IFile* file = g_FileManager.OpenRead(filepath.c_str());
+		if (!file) continue;
+
+		// Read & validate the 4-byte header from the stb like the game expects.
+		char header[5];
+		file->Read(&header, 1, 4);
+		header[4] = '\0';
+		if (strcmp(header, "STB1") != 0)
+		{
+			logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("Invalid room file header '%s' in %s", header, filepath.c_str()).c_str());
+		}
+		else
+		{
+			// Read the number of rooms from the file.
+			int numRooms = 0;
+			file->Read(&numRooms, 4, 1);
+
+			logContext.emplace_back(REPENTOGON::StringFormat("Reading %d Rooms from `%s`...", numRooms, filepath.c_str()));
+
+			// The game's logic to load a RoomConfig_Room from a .stb file is tied to the RoomSet class.
+			// Additionally, we can run into issues if we try to move/destroy a RoomConfig_Room/RoomSpawns allocated by the game.
+			// Read all rooms from the file into this RoomSet, then copy the room data into our own vector.
+			::RoomSet bufferRoomSet;
+			bufferRoomSet._configs = new RoomConfig_Room[numRooms];
+			bufferRoomSet._count = numRooms;
+
+			rooms.reserve(rooms.size() + numRooms);
+
+			for (int i = 0; i < numRooms; i++)
+			{
+				RoomConfig::read_room(&bufferRoomSet, i, stageId, file);
+				// This will create a copy of the RoomConfig_Room, intentional since the copy's RoomSpawns will use memory allocated by us instead of the game.
+				rooms.push_back(bufferRoomSet._configs[i]);
+			}
+
+			// This will properly destroy/free the RoomConfig_Rooms in the RoomSet.
+			// (Note: RoomSet's real destructor does not call this function.)
+			bufferRoomSet.unload();
+		}
+
+		// Close the file.
+		file->Free(true);
+	}
+
+	auto placedRooms = VirtualRoomSetManager::AddRooms(stageId, mode, std::move(rooms), logContext);
+
+	if (logContext.GetLoggedMessagesCount(LogUtility::eLogType::ERROR) + logContext.GetLoggedMessagesCount(LogUtility::eLogType::WARN) > 0)
+	{
+		LogUtility::eLogType logType = logContext.GetLoggedMessagesCount(LogUtility::eLogType::ERROR) > 0 ? LogUtility::eLogType::ERROR : LogUtility::eLogType::WARN;
+		LogUtility::PrintConsole(logType, luaCaller + ": Something went wrong whilst adding rooms to a room set. Check repentogon.log for more details.");
+	}
+
+	build_lua_return_table(L, placedRooms);
 }
 
 #ifndef NDEBUG
@@ -1341,7 +1430,10 @@ LUA_FUNCTION(Lua_Debug_AddRooms)
 
 	auto rooms = build_rooms(L, 3, logContext);
 	auto placedRooms = VirtualRoomSetManager::AddRooms(stageId, mode, std::move(rooms), logContext);
-	build_lua_return_table(L, 3, placedRooms);
+
+	assert((size_t)lua_rawlen(L, lua_absindex(L, 3)) == placedRooms.size()); // placed rooms's size must be equal to size of the table
+
+	build_lua_return_table(L, placedRooms);
 
 	return 1;
 }

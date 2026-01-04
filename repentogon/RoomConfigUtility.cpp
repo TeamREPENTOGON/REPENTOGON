@@ -388,7 +388,7 @@ std::optional<RoomSpawn> RoomConfigUtility::BuildSpawnFromLua(lua_State* L, int 
 		return roomSpawn;
 	}
 
-	roomSpawn.CountEntries = (uint16_t)spawnEntries.size();
+	roomSpawn.CountEntries = (uint8_t)spawnEntries.size();
 	roomSpawn.Entries = new RoomEntry[roomSpawn.CountEntries];
 
 	for (size_t i = 0; i < roomSpawn.CountEntries; i++)
@@ -751,7 +751,7 @@ std::optional<RoomSpawn> RoomConfigUtility::DeserializeRoomSpawn(const rapidjson
 		auto spawnEntries = deserialize_spawn_entries_node(it->value, logContext);
 		if (!spawnEntries.empty())
 		{
-			roomSpawn.CountEntries = (uint16_t)spawnEntries.size();
+			roomSpawn.CountEntries = (uint8_t)spawnEntries.size();
 			roomSpawn.Entries = new RoomEntry[roomSpawn.CountEntries];
 			for (size_t i = 0; i < roomSpawn.CountEntries; i++)
 			{
