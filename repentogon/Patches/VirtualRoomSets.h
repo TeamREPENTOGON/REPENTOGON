@@ -242,6 +242,8 @@ public:
 	static void __GetRooms(std::vector<RoomConfig_Room*>& result, uint32_t stageId, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType, int mode);
 	static bool __TryWriteRestoredVirtualRoom(RoomConfig_Room& roomConfig, GameStateRoomConfig& gameStateRoom);
 	static void __AddLuaRooms(lua_State* L, uint32_t stageId, int mode, int tableIndex);
+	// `filename` is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
+	static void __AddStbRooms(lua_State* L, uint32_t stageId, int mode, std::string filename);
 	static RoomConfig_Room* __ReadRestoredVirtualRoom(GameStateRoomConfig& gameStateRoom);
 
 private:
