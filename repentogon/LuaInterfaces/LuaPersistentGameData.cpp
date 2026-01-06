@@ -17,6 +17,24 @@ LUA_FUNCTION(Lua_GetPersistentGameData) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PGDUnlock)
+{
+	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
+	int unlock = (int)luaL_checkinteger(L, 2);
+	if (lua_isboolean(L, 3) && lua_toboolean(L, 3)) {
+		nextSkipAchiev = unlock;
+	}
+	forceunlock = true;
+	bool success = pgd->TryUnlock(unlock);
+	forceunlock = false;
+	if (!success) {
+		// It failed, so reset state manually
+		nextSkipAchiev = -1;
+;	}
+	lua_pushboolean(L, success);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PGDTryUnlock)
 {
 	PersistentGameData* pgd = *lua::GetRawUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
@@ -167,6 +185,7 @@ static void RegisterPersistentGameData(lua_State* L)
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetPersistentGameData", Lua_GetPersistentGameData);
 
 	luaL_Reg functions[] = {
+		{ "Unlock", Lua_PGDUnlock },
 		{ "TryUnlock", Lua_PGDTryUnlock },
 		{ "Unlocked", Lua_PGDUnlocked },
 		{ "IncreaseEventCounter", Lua_PGDIncreaseEventCounter},

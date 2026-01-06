@@ -529,6 +529,7 @@ extern unordered_map<int, vector<int>> AchievementListeners; //achievementid - a
 extern unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
 extern string achivjsonpath;
 extern int nextSkipAchiev; // Modded achievement to skip if second arg of TryUnlock is true
+extern bool forceunlock;
 
 extern int toint(const string &str);
 

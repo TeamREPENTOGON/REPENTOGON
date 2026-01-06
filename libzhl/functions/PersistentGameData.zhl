@@ -110,6 +110,7 @@ struct PersistentGameData depends (PersistentGameData_Bestiary) { {{
 	}
 }}
 	
+	bool readonly : 0x1;
 	KAGE_Filesys_FileStream* file : 0x4;
 	std_string filepath : 0x8;
 	std_string steamcloudfilepath : 0x20;

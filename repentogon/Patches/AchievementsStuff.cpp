@@ -56,7 +56,7 @@ bool achievdone = false;
 bool blocksteam = false;
 int lastdummyachievframe = 10;
 queue<int> pendingachievs;
-
+bool forceunlock = false;
 
 bool achset = false;
 
@@ -95,14 +95,33 @@ void LoadAchievementsFromJson() {
 	logViewer.AddLog("[REPENTOGON]", "Achievements loaded from: %s \n", achivjsonpath.c_str());
 }
 
+HOOK_METHOD(Manager, AchievementUnlocksDisallowed,(bool unk1) -> bool) {
+	if (forceunlock) {
+		return false;
+	}
+	return super(unk1);
+}
+
 HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 	//if (achieveemntid < 0) {
 		//AccomplishCondition(achieveemntid);
 		//return false;
 	//}
 	if ((achieveemntid >= 0) && (achieveemntid < 641)) {
+		if (forceunlock) {
+			bool auxreadonly = this->readonly;
+			this->readonly = false;
+			bool ret = super(achieveemntid);
+			this->readonly = auxreadonly;
+			forceunlock = false;
+			return ret;
+		}
 		return super(achieveemntid);
 	}
+	if (this->readonly && !forceunlock) {
+		return false;
+	}
+	forceunlock = false;
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
 	XMLAttributes modachiev = XMLStuff.AchievementData->GetNodeById(achieveemntid);
 	string achievid = modachiev["name"] + modachiev["sourceid"];
@@ -126,7 +145,10 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 			int dum = dummyachiev;
 			this->achievements[dummyachiev] = 0;
 			blocksteam = true;
+			bool auxreadonly = this->readonly;
+			this->readonly = false;
 			super(dummyachiev);
+			this->readonly = auxreadonly;
 			blocksteam = false;
 			this->achievements[dum] = had;
 		}
@@ -142,6 +164,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 
 HOOK_METHOD(PersistentGameData, UnlockSteamAchievement, (int achieveemntid) -> void) {
 	if (!blocksteam) {
+		printf("[Achiev] Steam Achievement unlocked for %d \n", achieveemntid);
 		return super(achieveemntid);
 	}
 	ZHL::Log("[Achiev] Steam Achievement blocked for %d \n", achieveemntid);
@@ -304,6 +327,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		}
 	}
 	if (in.rfind("achievement ", 0) == 0) {
+		forceunlock = true;
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		if (cmdlets.size() < 2) { g_Game->GetConsole()->PrintError("No achievement Id Provided. \n"); super(in, out, player); return; }
 		int id = toint(cmdlets[1]);
@@ -317,6 +341,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		else {
 			g_Game->GetConsole()->PrintError("Achievement already unlocked. \n");
 		}
+		forceunlock = false;
 	}
 	super(in, out, player);
 }
