@@ -554,17 +554,6 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 	return false;
 }
 
-int RoomDescriptor::GetErrorTrinketEffect() {
-	if (this->SpawnSeed != 0) {
-		unsigned int seed = this->SpawnSeed;
-		seed = seed >> 2 ^ seed;
-		seed = seed << 7 ^ seed;
-		seed = seed >> 25 ^ seed;
-		return seed % (NUM_TRINKETS-1) + 1;
-	}
-	return TRINKET_NULL;
-}
-
 bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }
