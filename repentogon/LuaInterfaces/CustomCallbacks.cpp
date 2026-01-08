@@ -498,6 +498,20 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	return unmodifiedTarget;
 }
 
+// PRE_ROOM_COLLISION_PASS (1227)
+void CustomCallbacks::PRE_ROOM_COLLISION_PASS()
+{
+	const int callbackId = 1227;
+	if (!CallbackState.test(callbackId - 1000)) { return; }
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.call(1);
+}
 
 // PRE_PLAYER_TAKE_DMG
 // (Runs before holy mantle, etc)
@@ -5769,7 +5783,7 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 	return retTrinket;
 }
 
-void CustomCallbacks::ApplyPatches()
+void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();

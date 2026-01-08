@@ -2,12 +2,12 @@
 
 #include "LuaCore.h"
 
-namespace EntityLifecycle::detail::Init
+namespace EntityManager::detail::Init
 {
     void BindLuaCallbacks(lua_State* L, int tblIdx);
 }
 
-namespace EntityLifecycle::detail::Patches
+namespace EntityManager::detail::Patches
 {
     void ApplyPatches();
 }

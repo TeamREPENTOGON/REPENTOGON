@@ -1,4 +1,4 @@
-#include "EntityLifecycle.h"
+#include "EntityManager.h"
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -7,21 +7,28 @@
 #include "Log.h"
 #include "LuaCore.h"
 #include "../LuaInterfaces/_Internals.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 
-namespace EntityLifecycle::Data
+namespace EntityManager::Data
 {
-    static int s_luaNewEntityCallback = LUA_NOREF;
-    static int s_luaDeleteEntityCallback = LUA_NOREF;
+    // Tracks if an entity has been removed since the last remove commit.
+    static int s_stagedRemove = false;
 }
 
-void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
+namespace EntityManager::LuaCallbacks
+{
+    static int s_newEntityCallback = LUA_NOREF;
+    static int s_deleteEntityCallback = LUA_NOREF;
+}
+
+void EntityManager::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
 {
     assert(L == g_LuaEngine->_state);
 
     tblIdx = lua_absindex(L, tblIdx);
     if (!lua_istable(L, tblIdx))
     {
-        ZHL::Log("[ERROR] EntityLifecycle::BindLuaCallbacks: expected a table\n");
+        ZHL::Log("[ERROR] EntityManager::BindLuaCallbacks: expected a table\n");
         LuaInternals::RaiseInitError();
         assert(false);
         return;
@@ -37,7 +44,7 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
         lua_getfield(L, tblIdx, fieldName);
         if (!lua_isfunction(L, -1))
         {
-            ZHL::Log("[ERROR] EntityLifecycle::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
+            ZHL::Log("[ERROR] EntityManager::BindLuaCallbacks: Expected '%s' to be a function\n", fieldName);
             LuaInternals::RaiseInitError();
             lua_pop(L, 1);
             assert(false);
@@ -47,23 +54,23 @@ void EntityLifecycle::detail::Init::BindLuaCallbacks(lua_State* L, int tblIdx)
         outRef = luaL_ref(L, LUA_REGISTRYINDEX);
     };
 
-    BindCallback(L, tblIdx, "NewEntity", Data::s_luaNewEntityCallback);
-    BindCallback(L, tblIdx, "DeleteEntity", Data::s_luaDeleteEntityCallback);
+    BindCallback(L, tblIdx, "NewEntity", LuaCallbacks::s_newEntityCallback);
+    BindCallback(L, tblIdx, "DeleteEntity", LuaCallbacks::s_deleteEntityCallback);
 }
 
-namespace EntityLifecycle::Core
+namespace EntityManager::Core
 {
     static void NotifyNewEntity(const Entity& entity)
     {
         LuaEngine* lua = g_LuaEngine;
 
         lua_State* L = lua->_state;
-        lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaNewEntityCallback);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaCallbacks::s_newEntityCallback);
         lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
-            ZHL::Log("[ERROR] EntityLifecycle::NotifyNewEntity Lua error: %s\n", lua_tostring(L, -1));
+            ZHL::Log("[ERROR] EntityManager::NotifyNewEntity Lua error: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -73,12 +80,12 @@ namespace EntityLifecycle::Core
         LuaEngine* lua = g_LuaEngine;
 
         lua_State* L = lua->_state;
-        lua_rawgeti(L, LUA_REGISTRYINDEX, Data::s_luaDeleteEntityCallback);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaCallbacks::s_deleteEntityCallback);
         lua_pushinteger(L, lua->GetMaskedPointer((uintptr_t)&entity));
 
         if (lua_pcall(L, 1, 0, 0) != LUA_OK)
         {
-            ZHL::Log("[ERROR] EntityLifecycle::NotifyDeleteEntity Lua error: %s\n", lua_tostring(L, -1));
+            ZHL::Log("[ERROR] EntityManager::NotifyDeleteEntity Lua error: %s\n", lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
@@ -89,7 +96,7 @@ HOOK_METHOD(EntityFactory, Create, (unsigned int type, bool force) -> Entity*)
     Entity* entity = super(type, force);
     if (entity)
     {
-        EntityLifecycle::Core::NotifyNewEntity(*entity);
+        EntityManager::Core::NotifyNewEntity(*entity);
     }
 
     return entity;
@@ -101,33 +108,44 @@ HOOK_METHOD(Entity, Remove, () -> void)
     super();
     if (this->_removedByFactory)
     {
-        EntityLifecycle::Core::NotifyDeleteEntity(*this);
+        EntityManager::Core::NotifyDeleteEntity(*this);
+    }
+    else
+    {
+        EntityManager::Data::s_stagedRemove = true;
     }
 }
 
 HOOK_METHOD(Entity_Player, constructor, () -> void)
 {
     super();
-    EntityLifecycle::Core::NotifyNewEntity(*this);
+    EntityManager::Core::NotifyNewEntity(*this);
 }
 
 // Entity_Player should be the only necessary one but just to be safe.
 HOOK_METHOD(Entity, destructor, () -> void)
 {
-    EntityLifecycle::Core::NotifyDeleteEntity(*this);
+    EntityManager::Core::NotifyDeleteEntity(*this);
     super();
+}
+
+HOOK_METHOD(EntityList, Reset, () -> void)
+{
+    super();
+    // Reset immediately removes entities.
+    EntityManager::Data::s_stagedRemove = false;
 }
 
 static void __fastcall asm_remove_and_delete_entity(Entity& entity)
 {
     entity.Remove(); // restore call to Remove
-    EntityLifecycle::Core::NotifyDeleteEntity(entity);
+    EntityManager::Core::NotifyDeleteEntity(entity);
 }
 
 static void common_remove_and_delete_entity_patch(const char* id, const char* logIdentifier)
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(id);
-    ZHL::Log("[REPENTOGON] Patching %s for EntityLifecycle at %p\n", logIdentifier, addr);
+    ZHL::Log("[REPENTOGON] Patching %s for EntityManager at %p\n", logIdentifier, addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -161,14 +179,14 @@ static void Patch_EntityListReset_RemoveNonPersistentEntity()
 
 static void __fastcall asm_clear_references_and_delete_entity(Entity& entity)
 {
-    EntityLifecycle::Core::NotifyDeleteEntity(entity);
+    EntityManager::Core::NotifyDeleteEntity(entity);
     entity.ClearReferences(); // restore call to ClearReferences
 }
 
 static void Patch_EntityListUpdate_RemoveEntityMainEL()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_Update_RemoveEntityMainEL);
-    ZHL::Log("[REPENTOGON] Patching EntityList::Update for EntityLifecycle at %p\n", addr);
+    ZHL::Log("[REPENTOGON] Patching EntityList::Update for EntityManager at %p\n", addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -190,14 +208,14 @@ static void __fastcall asm_delete_persistent_el_entity(Entity& entity)
     // If they are deleted they invoke free, which is then handled by the other hook.
     if (entity._type != ENTITY_PLAYER)
     {
-        EntityLifecycle::Core::NotifyDeleteEntity(entity);
+        EntityManager::Core::NotifyDeleteEntity(entity);
     }
 }
 
 static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
 {
     intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_Update_RemoveEntityPersistentEL);
-    ZHL::Log("[REPENTOGON] Patching EntityList::Update for EntityLifecycle at %p\n", addr);
+    ZHL::Log("[REPENTOGON] Patching EntityList::Update for EntityManager at %p\n", addr);
 
     ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
     ASMPatch patch;
@@ -214,11 +232,62 @@ static void Patch_EntityListUpdate_RemoveEntityPersistentEL()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
- void EntityLifecycle::detail::Patches::ApplyPatches()
- {
+static void __fastcall asm_pre_commit_entity_remove(bool isTransition, bool& stagedRemove)
+{
+    if (!isTransition) // collide is not called when on transitions
+    {
+        CustomCallbacks::PRE_ROOM_COLLISION_PASS();
+    }
+
+    // Update has a local `stagedRemove` flag that indicates whether at least one entity
+    // is staged for removal. It is used to skip the commit step, which would otherwise
+    // iterate over every EL to check for removals.
+    //
+    // However, this flag is only updated after each entity runs its update. If an entity
+    // is staged for removal after its update, the flag will not be set, and the entity
+    // may persist for one extra update cycle if no future entities are removed.
+    //
+    // To avoid this order-dependent issue, we track staged removals using a global flag.
+    // This ensures the commit step is evaluated correctly regardless of update order.
+    stagedRemove = stagedRemove || EntityManager::Data::s_stagedRemove;
+    EntityManager::Data::s_stagedRemove = false;
+}
+
+// This patch is placed right when the local 'stagedRemove' flag is checked.
+static void Patch_EntityListUpdate_PreCommitRemovedEntities()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityList_Update_PreCommitRemovedEntities);
+    ZHL::Log("[REPENTOGON] Patching EntityList::Update for EntityManager at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+    ASMPatch patch;
+
+    intptr_t cmpAddr = addr;
+    int8_t cmp_m8_disp = *(int8_t*)cmpAddr + 2;
+    intptr_t jeAddr = addr + 4;
+    intptr_t skipCommitJmp_rel32 = *(int32_t*)(jeAddr + 2);
+    intptr_t skipCommitAddr = jeAddr + 6 + skipCommitJmp_rel32;
+    intptr_t commitRemovedEntitiesAddr = addr + 10;
+    constexpr size_t RESTORED_BYTES = 4; // restore the cmp
+
+    patch.PreserveRegisters(savedRegisters)
+        .LoadEffectiveAddress(ASMPatch::Registers::EBP, cmp_m8_disp, ASMPatch::Registers::EDX) // stagedRemove
+        .MoveFromMemory(ASMPatch::Registers::EBX, 8, ASMPatch::Registers::ECX) // isTransition
+        .AddInternalCall(asm_pre_commit_entity_remove)
+        .RestoreRegisters(savedRegisters)
+        .AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (void*)skipCommitAddr)
+        .AddRelativeJump((void*)commitRemovedEntitiesAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+void EntityManager::detail::Patches::ApplyPatches()
+{
     Patch_EntityListDestructor_RemoveMainEL();
     Patch_EntityListDestructor_RemovePersistentEL();
     Patch_EntityListReset_RemoveNonPersistentEntity();
     Patch_EntityListUpdate_RemoveEntityMainEL();
     Patch_EntityListUpdate_RemoveEntityPersistentEL();
+    Patch_EntityListUpdate_PreCommitRemovedEntities();
 }

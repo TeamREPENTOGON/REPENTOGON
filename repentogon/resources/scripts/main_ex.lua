@@ -1884,7 +1884,7 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 
 ---@class REPENTOGON._LuaBindings
 ---@field ESSM REPENTOGON._LuaBindings.ESSM
----@field EntityLifecycle REPENTOGON._LuaBindings.EntityLifecycle
+---@field EntityManager REPENTOGON._LuaBindings.EntityManager
 
 ---@class REPENTOGON._LuaBindings.ESSM
 ---@field StoreEntity fun(entityId: integer, saveStateId: integer)
@@ -1895,12 +1895,12 @@ local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
 ---@field PreDeserialize fun(mods: ModReference[], modIds: string[]) -- list mods that have data that could be deserialized
 ---@field Deserialize fun(serializedIds: integer[], destIds: integer[], fileName: string, checksum: integer) -- serializedIds and destIds must have the same size
 
----@class REPENTOGON._LuaBindings.EntityLifecycle
+---@class REPENTOGON._LuaBindings.EntityManager
 ---@field NewEntity fun(entityId: integer)
 ---@field DeleteEntity fun(entityId: integer)
 
----@type REPENTOGON._LuaBindings.EntityLifecycle
-local _EntityLifecycle = {
+---@type REPENTOGON._LuaBindings.EntityManager
+local _EntityManager = {
 	NewEntity = function (entityId)
 		ESSM_OnNewEntity(entityId)
 	end,
@@ -1922,7 +1922,7 @@ local _ESSM = {
 
 ---@type REPENTOGON._LuaBindings
 _LuaBindings = {
-	EntityLifecycle = _EntityLifecycle,
+	EntityManager = _EntityManager,
 	ESSM = _ESSM,
 }
 
