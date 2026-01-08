@@ -28,13 +28,11 @@ void __stdcall LoadCustomMinimapANM2(ModEntry* mod) {
     std::string path;
     mod->GetContentPath(&path, &filename);
 
-    const char* expanded = g_ContentManager.GetMountedFilePath(path.c_str());
-    if (expanded != nullptr) {
+    if (g_ContentManager.MountedFileExists(path)) {
         ModEntryEx* ex = CustomModManager::GetInstance().GetEx(mod);
         if (ex != nullptr) {
 			ex->_customMinimapANM2.Load(path, true);
         }
-		delete[] expanded;
     }
 }
 

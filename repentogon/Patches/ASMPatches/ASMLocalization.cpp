@@ -22,7 +22,7 @@ bool __stdcall TryToRedirectToLocalizedResources(std::string& resFileString, std
 
 		potentialPath = potentialPath + "/" + targetFile;
 
-		if (g_ContentManager.GetMountedFilePath(potentialPath.c_str()) != NULL) {
+		if (g_ContentManager.MountedFileExists(potentialPath)) {
 			resFileString = potentialPath;
 			redirectPath->_modEntry = *modEntry;
 			redirectPath->_filePath = resFileString;
@@ -75,7 +75,7 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 
 		potentialPath = potentialPath + "/" + *targetFile;
 
-		if (g_ContentManager.GetMountedFilePath(potentialPath.c_str()) != NULL) {
+		if (g_ContentManager.MountedFileExists(potentialPath.c_str())) {
 			*resFileString = potentialPath;
 			return true;
 		}

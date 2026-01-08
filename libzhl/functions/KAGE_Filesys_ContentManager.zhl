@@ -2,13 +2,19 @@
 __thiscall void KAGE_Filesys_ContentManager::AddMountPoint(const char* mountPoint);
 
 struct KAGE_Filesys_ContentManager {
+	{{
+		std::optional<std::string> LIBZHL_API KAGE_Filesys_ContentManager::GetMountedFilePath(const std::string& filePath);
+		std::optional<std::string> LIBZHL_API KAGE_Filesys_ContentManager::GetMountedFilePath(const char* filePath);
+		bool LIBZHL_API KAGE_Filesys_ContentManager::MountedFileExists(const std::string& filePath);
+		bool LIBZHL_API KAGE_Filesys_ContentManager::MountedFileExists(const char* filePath);
+	}}
     __vtable {
         skip; // Initialize
         skip; // Shutdown
         skip; // ApplicationMountPoint
 
         "558bec53568b75??5785f674":
-        const char* GetMountedFilePath(const char* filePath);
+        const char* GetMountedFilePath_DeleteMe(const char* filePath);
 
         skip; // notify_mount_point_destroy
         skip; // get_directory_entries

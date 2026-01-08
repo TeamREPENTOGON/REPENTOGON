@@ -170,6 +170,26 @@ namespace REPENTOGON {
 		return !ec;
 	}
 
+	static std::vector<std::string> GetAllModContentPaths(const std::string& filePath)
+	{
+		std::vector<std::string> paths;
+
+		for (ModEntry* mod : g_Manager->GetModManager()->_mods)
+		{
+			if (!mod->IsEnabled()) continue;
+
+			std::string contentPath;
+			mod->GetContentPath(&contentPath, &filePath);
+
+			if (std::optional<std::string> expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str()))
+			{
+				paths.push_back(*expandedPath);
+			}
+		}
+
+		return paths;
+	}
+
 	namespace Lua
 	{
 		static std::string GetFunctionName(lua_State* L, lua_Debug* ar)

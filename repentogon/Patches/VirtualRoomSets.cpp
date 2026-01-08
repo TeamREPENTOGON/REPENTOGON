@@ -1,6 +1,7 @@
 #include "VirtualRoomSets.h"
 
 #include "../RoomConfigUtility.h"
+#include "../MiscFunctions.h"
 #include "HookSystem.h"
 #include "GameStateManagement.h"
 #include "writer.h" // rapidjson
@@ -1317,20 +1318,7 @@ void VirtualRoomSetManager::__AddStbRooms(lua_State* L, uint32_t stageId, int mo
 	}
 
 	// Find the full expanded filepaths for matching files from ALL enabled mods.
-	std::vector<std::string> modfilepaths;
-
-	for (ModEntry* mod : g_Manager->GetModManager()->_mods)
-	{
-		if (!mod->IsEnabled()) continue;
-
-		std::string contentPath;
-		mod->GetContentPath(&contentPath, &filename);
-
-		if (const char* expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str())) {
-			modfilepaths.push_back(expandedPath);
-			delete[] expandedPath;
-		}
-	}
+	std::vector<std::string> modfilepaths = REPENTOGON::GetAllModContentPaths(filename);
 
 	std::vector<RoomConfig_Room> rooms;
 

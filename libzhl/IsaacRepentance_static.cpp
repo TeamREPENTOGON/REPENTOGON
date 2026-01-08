@@ -463,6 +463,25 @@ void KAGE::_LogMessage(int flag, const char* fmt, ...) {
 	}
 }
 
+std::optional<std::string> KAGE_Filesys_ContentManager::GetMountedFilePath(const char* filePath) {
+	const char* rawPath = GetMountedFilePath_DeleteMe(filePath);
+	if (rawPath) {
+		std::string path(rawPath);
+		delete[] rawPath;
+		return path;
+	}
+	return std::nullopt;
+}
+std::optional<std::string> KAGE_Filesys_ContentManager::GetMountedFilePath(const std::string& filePath) {
+	return GetMountedFilePath(filePath.c_str());
+}
+bool KAGE_Filesys_ContentManager::MountedFileExists(const char* filePath) {
+	return GetMountedFilePath(filePath).has_value();
+}
+bool KAGE_Filesys_ContentManager::MountedFileExists(const std::string& filePath) {
+	return MountedFileExists(filePath.c_str());
+}
+
 bool Game::IsErased(int type, int variant, int subtype) {
 	for (EntityId const& entity : _erasedEntities) {
 		if (entity.type == type) {
@@ -533,6 +552,17 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 	}
 
 	return false;
+}
+
+int RoomDescriptor::GetErrorTrinketEffect() {
+	if (this->SpawnSeed != 0) {
+		unsigned int seed = this->SpawnSeed;
+		seed = seed >> 2 ^ seed;
+		seed = seed << 7 ^ seed;
+		seed = seed >> 25 ^ seed;
+		return seed % (NUM_TRINKETS-1) + 1;
+	}
+	return TRINKET_NULL;
 }
 
 bool Isaac::IsInGame() {

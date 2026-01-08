@@ -20,6 +20,7 @@
 #include <queue>
 #include <cstdint>
 #include <bitset>
+#include <optional>
 #include <rttidata.h>
 #include <lua.hpp>
 #undef LoadImage

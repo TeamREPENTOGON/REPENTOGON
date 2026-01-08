@@ -277,14 +277,6 @@ static inline bool parse_xml_float_value(const XMLAttributes& node, T& value, co
 	return true;
 }
 
-static inline bool file_exists(const std::string& filePath)
-{
-	const char* path = g_ContentManager.GetMountedFilePath(filePath.c_str());
-	bool result = path != nullptr;
-	delete[] path;
-	return result;
-}
-
 static inline std::vector<char> get_file_stream(const std::string& filePath, Error& error)
 {
 	std::vector<char> stream;
@@ -610,7 +602,7 @@ void ItemPoolManager::add_modded_pools()
 		assert(g_Manager->GetOptions()->ModsEnabled());
 
 		mod->GetContentPath(&xmlPath, &xmlName);
-		if (file_exists(xmlPath))
+		if (g_ContentManager.MountedFileExists(xmlPath))
 		{
 			this->parse_xml_pool_names(xmlPath, mod);
 		}
