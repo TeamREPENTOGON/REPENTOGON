@@ -9,7 +9,7 @@
 #include "HookSystem.h"
 #include "MiscFunctions.h"
 #include "CrashHandler.h"
-#include "Patches/EntityLifecycle.h"
+#include "Patches/EntityManager.h"
 #include "SaveStateManagement/EntitySaveStateManagement.h"
 #include "LuaInterfaces/_Internals.h"
 #include <iostream>
@@ -189,8 +189,8 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 
 	{
 		lua::LuaStackProtector protector(L);
-		lua_getfield(L, tblIdx, "EntityLifecycle");
-		EntityLifecycle::detail::Init::BindLuaCallbacks(L, -1);
+		lua_getfield(L, tblIdx, "EntityManager");
+		EntityManager::detail::Init::BindLuaCallbacks(L, -1);
 		lua_pop(L, 1);
 	}
 

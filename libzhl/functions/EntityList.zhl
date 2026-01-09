@@ -1,6 +1,9 @@
 "558bec81ec8000000053":
 __thiscall void EntityList::RenderShadows(Vector *offset);
 
+"558bec83e4f851538bd933c0":
+__thiscall void EntityList::Reset();
+
 "558bec6aff68????????64a1????????5083ec24535657a1????????33c5508d45??64a3????????8bf18b5d":
 __thiscall EntityList_EL* EntityList::QueryType(EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
 

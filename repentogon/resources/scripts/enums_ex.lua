@@ -189,6 +189,7 @@ ModCallbacks.MC_POST_NPC_DARK_RED_CHAMPION_REGEN = 1223
 ModCallbacks.MC_EVALUATE_CUSTOM_CACHE = 1224
 ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER = 1225
 ModCallbacks.MC_EVALUATE_STAT = 1226
+ModCallbacks.MC_PRE_ROOM_COLLISION_PASS = 1227
 
 --ModCallbacks.DEPRECATED_MC_PRE_PLAYER_COLLISION = 1230  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PLAYER_COLLISION = 1231

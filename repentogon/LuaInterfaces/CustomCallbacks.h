@@ -2,5 +2,10 @@
 
 namespace CustomCallbacks
 {
-    void ApplyPatches();
+    namespace detail
+    {
+        void ApplyPatches();
+    }
+
+    void PRE_ROOM_COLLISION_PASS();
 }

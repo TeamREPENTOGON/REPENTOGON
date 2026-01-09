@@ -24,7 +24,7 @@
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
 #include "ExtraRenderSteps.h"
-#include "EntityLifecycle.h"
+#include "EntityManager.h"
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
@@ -168,7 +168,7 @@ void PerformASMPatches() {
 	ASMPatchConsoleRunCommand();
 
 	// Callbacks
-	CustomCallbacks::ApplyPatches();
+	CustomCallbacks::detail::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
 	PatchPreEntityTakeDamageCallbacks();
@@ -277,7 +277,7 @@ void PerformASMPatches() {
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
 	EntitySaveStateManagement::detail::Patches::ApplyPatches();
-	EntityLifecycle::detail::Patches::ApplyPatches();
+	EntityManager::detail::Patches::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
