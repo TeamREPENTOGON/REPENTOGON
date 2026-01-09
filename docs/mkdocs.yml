@@ -244,6 +244,7 @@ nav:
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
   - EntityDesc: EntityDesc.md
+  - EntitySaveStateManager: EntitySaveStateManager.md
   - Font: Font.md
   - FXLayers: FXLayers.md
   - FXParams: FXParams.md
