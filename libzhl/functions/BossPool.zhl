@@ -1,6 +1,9 @@
 "558bec83e4f083ec48a1????????8b55":
 __thiscall int BossPool::GetBossId(int leveltype, int levelvariant, RNG* rng);
 
+"558bec83ec08894d":
+__thiscall BossPool_Entry* BossPool::PickBoss(BossPool_Pool* pool);
+
 struct BossPool depends (BossPool_Pool) {
 	BossPool_Pool _pool[37] : 0x0;
 	vector_bool _removedBosses: 0x8ac;

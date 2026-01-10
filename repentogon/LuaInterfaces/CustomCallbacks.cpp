@@ -4486,32 +4486,120 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 }
 
 //MC_PRE_BOSS_SELECT (1280)
+static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int levelType, int levelVariant)
+{
+	const int callbackid = 1280;
+
+	if (!CallbackState.test(callbackid - 1000))
+	{
+		return std::nullopt;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.push(bossId)
+		.push(bossId)
+		.push(&pool, lua::metatables::BossPoolMT)
+		.push(levelType)
+		.push(levelVariant)
+		.call(1);
+
+	if (result || !lua_isinteger(L, -1))
+	{
+		return std::nullopt;
+	}
+
+	return (int)lua_tointeger(L, -1);
+}
+
+BossPool_Entry* s_lastPickedBoss = nullptr;
+
+HOOK_METHOD(BossPool, PickBoss, (BossPool_Pool* pool) -> BossPool_Entry*)
+{
+	BossPool_Entry* boss = super(pool);
+	// ASSUMPTION: PickBoss only ever returns a non null boss when it confirms it is available and after staging it for removal in the _levelBlacklist
+	// This is true for 1.9.7.12
+	s_lastPickedBoss = boss;
+	return boss;
+}
+
+static const size_t BOSS_DEATH_IDX = 3;
+static const size_t s_specialBosses[] = {
+	eBossId::BOSS_FAMINE, eBossId::BOSS_PESTILENCE, eBossId::BOSS_WAR,
+	eBossId::BOSS_DEATH, eBossId::BOSS_HEADLESS_HORSEMAN, eBossId::BOSS_CONQUEST
+};
+
+//MC_PRE_BOSS_SELECT (1280)
 HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRNG) -> int) {
+	constexpr size_t NUM_SPECIAL_BOSSES = std::extent_v<decltype(s_specialBosses)>;
+
+	s_lastPickedBoss = nullptr;
+	std::bitset<NUM_SPECIAL_BOSSES> specialBossStagedState;
+	auto& stagedRemoves = this->_levelBlacklist;
+
+	for (size_t i = 0; i < NUM_SPECIAL_BOSSES; i++)
+	{
+		size_t id = s_specialBosses[i];
+		specialBossStagedState[i] = stagedRemoves[id];
+	}
+
 	int bossId = super(leveltype, levelvariant, unusedRNG);
 
-	const int callbackid = 1280;
 	const auto stageId = RoomConfig::GetStageID(leveltype, levelvariant, -1);
+	BossPool_Pool& pool = this->_pool[stageId];
+	std::optional<int> callbackResult = PRE_BOSS_SELECT(bossId, this->_pool[stageId], leveltype, levelvariant);
 
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (!callbackResult)
+	{
+		return bossId;
+	}
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	int callbackBossId = callbackResult.value();
+	if (callbackBossId >= (int)stagedRemoves.size()) // this should always be equal to the number of boss ids
+	{
+		return bossId;
+	}
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(bossId)
-			.push(bossId)
-			.push(&_pool[stageId], lua::metatables::BossPoolMT)
-			.push(leveltype)
-			.push(levelvariant)
-			.call(1);
+	// Double trouble support is currently limited.
+	// From this function, you can only indicate that one should occur
+	// not fully control which boss should appear in it.
+	// It also needs to be the start of a valid variant range.
+	// For now, it is probably best to ignore negative indices.
+	if (callbackBossId < 0)
+	{
+		return bossId;
+	}
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				bossId = (int)lua_tointeger(L, -1);
+	// Undo GetBossId side effects
+	if (s_lastPickedBoss)
+	{
+		stagedRemoves[s_lastPickedBoss->_id] = false;
+	}
+	else
+	{
+		for (size_t i = 0; i < NUM_SPECIAL_BOSSES; i++)
+		{
+			size_t id = s_specialBosses[i];
+			if (id != bossId)
+			{
+				continue;
 			}
+
+			stagedRemoves[id] = specialBossStagedState[i];
+			if (id == eBossId::BOSS_CONQUEST)
+			{
+				stagedRemoves[eBossId::BOSS_DEATH] = specialBossStagedState[BOSS_DEATH_IDX];
+			}
+			break;
 		}
 	}
+
+	bossId = callbackBossId;
+	stagedRemoves[bossId] = true;
 	return bossId;
 }
 
