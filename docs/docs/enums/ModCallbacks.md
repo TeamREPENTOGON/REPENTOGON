@@ -1387,6 +1387,17 @@ Used to modify intermediate values of player stat calculations.
 |:--|:--|:--|:--|:--|
 |1226 |MC_EVALUATE_STAT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EvaluateStatStage](EvaluateStatStage.md) Stat, float CurrentValue) | [EvaluateStatStage](EvaluateStatStage.md) | void |
 
+### MC_PRE_ROOM_COLLISION_PASS {: .copyable }
+Called right before collision evaluation.
+
+???- info "Execution information"
+    Called once per game update. Unlike [MC_POST_UPDATE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=mc+post#MC_POST_UPDATE)
+    can be used to update entity data, add or remove entities, with those changes being correctly applied during collision detection.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1227 |MC_PRE_ROOM_COLLISION_PASS {: .copyable } | () | - | void |
+
 ### MC_PRE_NPC_RENDER {: .copyable }
 Accepts a [Vector](../Vector.md) to modify render offset
 
@@ -2852,6 +2863,15 @@ Please note that the optional parameter is the [EntityType](https://wofsauge.git
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1278 |MC_POST_APPLY_TEARFLAG_EFFECTS {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Vector](../Vector.md) Position, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float Damage) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_PRE_BOSS_SELECT {: .copyable}
+Called when selecting a boss from the [BossPoolManager](../BossPoolManager.md).
+
+You can return an integer from this callback in order to change the returned boss type.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1280 |MC_PRE_BOSS_SELECT {: .copyable } | ([BossType](../enums/BossType.md) Boss, [BossPool](../BossPool.md) Pool, [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) Stage, [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) StageType) | [BossType](../enums/BossType.md) Boss | int |
 
 ### MC_TRY_ADD_TO_BAG_OF_CRAFTING {: .copyable }
 Called before a pickup is "added" to the player's Bag of Crafting.
