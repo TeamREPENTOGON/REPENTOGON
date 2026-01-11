@@ -3266,6 +3266,20 @@ LUA_FUNCTION(Lua_PlayerSetItemStateCooldown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetImExcitedSpeedupCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_imExcitedSpeedupCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetImExcitedSpeedupCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_imExcitedSpeedupCountdown = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3561,6 +3575,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBlinkLockTime", Lua_PlayerSetBlinkLockTime },
 		{ "GetItemStateCooldown", Lua_PlayerGetItemStateCooldown },
 		{ "SetItemStateCooldown", Lua_PlayerSetItemStateCooldown },
+		{ "GetImExcitedSpeedupCountdown", Lua_PlayerGetImExcitedSpeedupCountdown },
+		{ "SetImExcitedSpeedupCountdown", Lua_PlayerSetImExcitedSpeedupCountdown },
 
 		{ NULL, NULL }
 	};

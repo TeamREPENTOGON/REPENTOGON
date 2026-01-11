@@ -4,10 +4,12 @@ Added:
 	- MC_PRE_ROOM_COLLISION_PASS()
 		Triggers right before collision detection.
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
-* EntityLaser
+* EntityLaser:
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers
 		This is used by the Monstro's Lung + Technology synergy
+* EntityPlayer:
+	- [Get/Set]ImExcitedSpeedupCountdown
 * Backported new enums for GameStateFlag
 /newline/
 Modified:

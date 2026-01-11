@@ -764,6 +764,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	uint32_t _deadEyeCharges : 0x189c;
 	uint32_t _deadEyeMisses : 0x18a0;
 	uint32_t _mawOfTheVoidChargeTimer : 0x18a8;
+	uint32_t _imExcitedSpeedupCountdown : 0x18d4;
 	int _megaBlastDuration : 0x18e0;
 	int _peeBurstCooldown : 0x18e4;
 	int _maxPeeBurstCooldown : 0x18e8;
