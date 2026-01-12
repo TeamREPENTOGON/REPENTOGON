@@ -411,6 +411,9 @@ __thiscall Entity_Laser* Entity_Player::FireTechLaser(const Vector& pos, unsigne
 "558bec83e4f881ec88000000a1????????33c4898424????????8b45":
 __thiscall Entity_Laser* Entity_Player::FireTechXLaser(const Vector& pos, const Vector& dir, float radius, Entity * source, float damageMultiplier);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec30a1????????33c58945??5657508d45??64a3????????8bf98b43":
+__thiscall void Entity_Player::GetLaserOffset(Vector* buffer, int laserOffsetID, Vector* direction);
+
 "558bec83e4f883ec0c568bf1f30f1086":
 __thiscall void Entity_Player::GetBodyMoveDirection(Vector * buffer);
 

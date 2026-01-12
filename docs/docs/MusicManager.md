@@ -28,7 +28,7 @@ ___
 
 ___
 ### PlayJingle () {: aria-label='Functions' }
-#### void PlayJingle ( [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicId ) {: .copyable aria-label='Functions' }
+#### void PlayJingle ( [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicId, int Duration = 140 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCurrentPitch () {: aria-label='Functions' }

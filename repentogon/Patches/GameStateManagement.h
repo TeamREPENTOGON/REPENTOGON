@@ -1,3 +1,5 @@
+#pragma once
+
 enum GameStateSlot
 {
 	NULL_SLOT = -1,

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ImagePatches
+namespace CustomCallbacks
 {
     void ApplyPatches();
 }

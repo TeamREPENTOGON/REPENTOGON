@@ -1,3 +1,5 @@
+#pragma once
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 

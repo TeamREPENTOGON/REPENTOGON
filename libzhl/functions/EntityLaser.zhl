@@ -19,6 +19,9 @@ __thiscall void Entity_Laser::Constructor();
 "558bec81ec9400000056":
 __thiscall ColorMod* Entity_Laser::CalculateTearColor(ColorMod* buffer);
 
+"558bec51568bf180be????????000f85":
+__thiscall void Entity_Laser::PlayInitSound();
+
 struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline uint32_t* GetHomingType() { return &this->_homingType; }
 	inline float* GetScale() { return &this->_scale; }
@@ -35,14 +38,18 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	bool _sampleLaser : 0x45d;
 	bool _shrink : 0x45e;
 	HomingLaser _homingLaser : 0x464;
+	float _maxDistance : 0x4d0;
 	uint32_t _homingType : 0x4d4;
 	float _scale : 0x4e0;
 	bool _disableFollowParent : 0x4e4;
 	bool _multidimensionalTouched: 0x500;
 	bool _prismTouched: 0x514;
 	bool _oneHit: 0x515;
+	bool _disableInitSound: 0x518;
 	float _damageMultiplier : 0x51c;
 	std_vector_uint _hitList : 0x520;
+	int _chainedLasers : 0x560;
+	
 
 	__vtable {
 		skip; // Free

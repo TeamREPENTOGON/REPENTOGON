@@ -2220,7 +2220,7 @@ EventCounter = {
 	UNKNOWN_EVENT_496 = 496, -- TODO: Currently Unknown. Maybe Daily Multiplayer run Streak?
 	ONLINE_CURRENT_STREAK = 497, -- Current Online Mode streak
 	ONLINE_BEST_STREAK = 498, -- Best streak in Online Gameplay
-	UNKNOWN_EVENT_499 = 499, -- TODO: Currently Unknown. Maybe Daily Multiplayer run Streak?
+	ONLINE_NEGATIVE_STREAK = 499,
 	ONLINE_SIN_ETERNAL = 500,
 	ONLINE_SIN_HEARTLESS = 501,
 	ONLINE_SIN_ENVIOUS = 502,
@@ -3086,6 +3086,33 @@ UseActiveItemResultFlag = {
 	REMOVE = 1 << 8,
 }
 
+SlotState = {
+	IDLE = 1,
+	CHOICE = 2, -- Shell Game & Hell Game only, choose a skull
+	REWARD = 2,
+	DESTROYED = 3,
+	PAYOUT = 4,
+	REWARD_SHELL_GAME = 5,
+	REWARD_HELL_GAME = 5,
+}
+
+BloodClotSubtype = {
+	RED = 0,
+	SOUL = 1,
+	BLACK = 2,
+	ETERNAL = 3,
+	GOLD = 4,
+	BONE = 5,
+	ROTTEN = 6,
+	LIL_CLOT = 7,
+}
+
+RoomDisplayFlags = {
+	INVISIBLE = 1 << -1,
+	VISIBLE = 1 << 0,
+	SHOW_LOCK = 1 << 1,
+	SHOW_ICON = 1 << 2,
+}
 
 --deprecated enums
 
@@ -3094,3 +3121,4 @@ Achievement.RESERVED_HEIROPHANT = 529
 Achievement.HAEMOLACHRIA = Achievement.HAEMOLACRIA
 Achievement.CROOKED_CARD = Achievement.CROOKED_PENNY
 MainMenuType.SEED = MainMenuType.ONLINELOBBY
+EventCounter.UNKNOWN_EVENT_499 = EventCounter.ONLINE_NEGATIVE_STREAK

@@ -53,7 +53,7 @@ __thiscall int PersistentGameData::GetBestiaryEncounterCount(int EntityType, int
 "558bec83ec14a1????????33c58945??8079??00":
 __thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
 
-"558bec515356578bf9837f??00":
+"558bec518b15????????535657":
 __thiscall void PersistentGameData::Save();
 
 "558bec518b15????????535657":

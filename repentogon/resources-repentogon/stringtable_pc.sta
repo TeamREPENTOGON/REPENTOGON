@@ -44,7 +44,7 @@
             <string>Désinstallation de %s</string>
         </key>
         <key name="ONLINE_MODS_NEEDS_RESTART">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>
@@ -54,7 +54,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_BANNED">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>
@@ -64,7 +64,7 @@
             <string></string>
         </key>
         <key name="ONLINE_MODS_PERMABANNED">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
             <string></string>
             <string></string>

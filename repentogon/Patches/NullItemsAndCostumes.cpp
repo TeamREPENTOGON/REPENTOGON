@@ -13,53 +13,8 @@
 * 3. Allow mods to assign costumes to heir characters in players.xml via a new "modcostume" attribute (must match the costume's relative ID).
 */
 
-// Track the latest mod to be loading XML data, same as the XMLData code.
-// Equivalent to the lastmodid used in XMLData.cpp, except empty for basegame.
-std::string lastModIdButCooler = "";
-
-//this is now basically just a copypaste of void ProcessModEntry(char* xmlpath,ModEntry* mod) from XMLData.cpp with minor changes
-void UpdateLastModId( ModEntry* mod, char* xmlpath) {
-	bool iscontent = false;
-	if (mod != NULL) { //it is null when its loading vanilla stuff
-		lastModIdButCooler = mod->GetId();
-	}
-	else {
-		lastModIdButCooler = "BaseGame";
-	}
-	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
-		iscontent = true;
-	}
-	else {
-		iscontent = false;
-	}
-	if ((string(lastModIdButCooler).length() == 0) || ((lastModIdButCooler == "BaseGame") && iscontent)) {
-		string path = string(xmlpath);
-		int first = path.find("/mods/") + 6;
-		int last = path.find("/content");
-		if (!iscontent) {
-			last = path.find("/resources");
-		}
-		else if (last <= 0) {
-			last = path.find("/content-dlc3");
-		}
-		path = path.substr(first, last - first); //when the id is null(which it can fucking be) just use the folder name as ID...
-		lastModIdButCooler = path;
-	}
-	//printf("path: %s (mod:%s iscontent:%d) \n", xmlpath,lastmodid,iscontent);
-	//logViewer.AddLog("[REPENTOGON]", "Mod ID: %s \n", lastmodid);
-	if (lastModIdButCooler == "BaseGame") {
-		lastModIdButCooler = "";
-	}
-}
-
-HOOK_METHOD(ItemConfig, Load, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry, xmlpath);
-	super(xmlpath, modentry);
-}
-
-HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry, xmlpath);
-	super(xmlpath, modentry);
+bool IsValidModId(const std::string modid) {
+	return !modid.empty() && modid != "BaseGame";
 }
 
 /*
@@ -76,7 +31,8 @@ HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, ModEntry* modentry)->void)
 * id and properly pushed to the std::vector.
 */
 bool __stdcall FixLoadingNullItemFromXml(ItemConfig_Item* newNullItem) {
-	if (!lastModIdButCooler.empty()) {
+	const std::string lastmodid = GetXMLDataLastModId();
+	if (IsValidModId(lastmodid)) {
 		// We are loading a Null Item from a mod's items.xml. The game will not
 		// handle it properly, so assign it the next available ID ourselves, and
 		// push it to the ItemConfig's nullitems std::vector properly.
@@ -122,7 +78,9 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 	// Yes, this is accurate to how the assembly near the patch refers to the ItemConfig_Costume.
 	ItemConfig_Costume* costume = (ItemConfig_Costume*)(ebp - 0x100DC);
 
-	if (lastModIdButCooler.empty() || costume == nullptr || costume->id == 0) {
+	const std::string lastmodid = GetXMLDataLastModId();
+
+	if (!IsValidModId(lastmodid) || costume == nullptr || costume->id == 0) {
 		// This costume was not assigned a "relative" ID in a mod's xml.
 		return false;
 	}
@@ -131,7 +89,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 	// If the game generates a null item for it, it will assign that new null item's ID to the costume as well.
 
 	// Thanks to XMLData, we can look up if there was a null item defined within the same mod's xmls with the same relative ID.
-	const std::string modRelativeKey = lastModIdButCooler + std::to_string(costume->id);
+	const std::string modRelativeKey = lastmodid + std::to_string(costume->id);
 
 	if (XMLStuff.NullItemData->byrelativeid.count(modRelativeKey) > 0) {
 		const unsigned int nullItemID = XMLStuff.NullItemData->byrelativeid[modRelativeKey];
@@ -140,7 +98,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 
 		if (!nullItem || nullItem->name != nullItemXml.at("name")) {
 			const std::string err = "WARNING: Trying to match costume [" + std::string(costume->anm2Path) + "] "
-				+ "to a NullItem with same mod-relative ID [" + std::to_string(costume->id) + "] from mod [" + lastModIdButCooler + "], "
+				+ "to a NullItem with same mod-relative ID [" + std::to_string(costume->id) + "] from mod [" + lastmodid + "], "
 				+ "but NullItem XMLData [" + nullItemXml.at("name") + "] with ID [" + std::to_string(nullItemID) + "] "
 				+ "does not match the corresponding ItemConfig entry [" + (nullItem ? nullItem->name : "<NULL>") + "]!\n";
 			ZHL::Log(err.c_str());
@@ -184,14 +142,14 @@ void ASMPatchTieModdedCostumesToModdedNullItems() {
 * This allows the costume to be permanantly applied to the player, including during the mineshaft sequence, like the hair of vanilla characters.
 */
 HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void) {
-	UpdateLastModId(modentry, xmlpath);
-
 	super(xmlpath, modentry);
 
-	if (lastModIdButCooler.empty()) return;
+	const std::string lastmodid = GetXMLDataLastModId();
+
+	if (!IsValidModId(lastmodid)) return;
 
 	// Check the XMLData of all players added by this mod.
-	for (const int id : XMLStuff.PlayerData->bymod[lastModIdButCooler]) {
+	for (const int id : XMLStuff.PlayerData->bymod[lastmodid]) {
 
 		if (id == 0 || XMLStuff.PlayerData->nodes.count(id) == 0) continue;
 
@@ -204,7 +162,7 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 		}
 
 		if (playerConfig->_costumeID == -1 && playerXML.count("modcostume") > 0) {
-			const std::string modRelativeKey = lastModIdButCooler + playerXML.at("modcostume");
+			const std::string modRelativeKey = lastmodid + playerXML.at("modcostume");
 			if (XMLStuff.NullCostumeData->byrelativeid.count(modRelativeKey) > 0) {
 				// Found a null costume from the same mod that matches the player's "modcostume" attribute.
 				playerConfig->_costumeID = XMLStuff.NullCostumeData->byrelativeid[modRelativeKey];

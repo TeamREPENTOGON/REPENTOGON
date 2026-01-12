@@ -152,7 +152,7 @@ The boolean parameters enable or disable additional restrictions/safeties for ro
 		local seed = level:GetDungeonPlacementSeed()
 		
 		-- Fetch a random RoomConfig for a new treasure room.
-		local roomConfig = RoomConfigHolder.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, RoomType.ROOM_TREASURE, RoomShape.ROOMSHAPE_1x1)
+		local roomConfig = RoomConfig.GetRandomRoom(seed, true, StbType.SPECIAL_ROOMS, RoomType.ROOM_TREASURE, RoomShape.ROOMSHAPE_1x1)
 		
 		-- Disallow placements with multiple doors, or placements that connect to other special rooms.
 		local allowMultipleDoors = false
@@ -212,7 +212,7 @@ Otherwise, the details are the same as for [TryPlaceRoom](Level.md#tryplaceroom)
 			if doorSlotAllowed and not room:GetDoor(doorSlot) then
 				local seed = rng:Next()
 				local requiredDoors = 15  -- Bitmask value that requires the new 1x1 room to have all 4 doorslots available, just so we're sure it fits.
-				local roomConfig = RoomConfigHolder.GetRandomRoom(seed, true, Isaac.GetCurrentStageConfigId(), RoomType.ROOM_DEFAULT, RoomShape.ROOMSHAPE_1x1, nil, nil, nil, nil, requiredDoors)
+				local roomConfig = RoomConfig.GetRandomRoom(seed, true, Isaac.GetCurrentStageConfigId(), RoomType.ROOM_DEFAULT, RoomShape.ROOMSHAPE_1x1, nil, nil, nil, nil, requiredDoors)
 				if roomConfig then
 					local newRoom = level:TryPlaceRoomAtDoor(roomConfig, roomDesc, doorSlot, seed, true, false)
 					if newRoom then

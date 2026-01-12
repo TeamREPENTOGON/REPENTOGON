@@ -51,7 +51,7 @@ RoomConfigUtility::RoomIdentifier::RoomIdentifier(const RoomConfig_Room& roomCon
 {
 }
 
-size_t RoomConfigUtility::RoomIdentifier::hash() const noexcept
+size_t RoomConfigUtility::RoomIdentifier::hash() const
 {
 	size_t seed = 0;
 
@@ -69,13 +69,13 @@ size_t RoomConfigUtility::RoomIdentifier::hash() const noexcept
 
 #pragma region Asserts and Validations
 
-static inline bool are_room_dimensions_valid(int width, int height, int shape) noexcept
+static inline bool are_room_dimensions_valid(int width, int height, int shape)
 {
 	auto& shapeDimensions = RoomConfigUtility::GetShapeDimensions(shape);
 	return width == shapeDimensions.first && height == shapeDimensions.second;
 }
 
-static bool is_spawn_entry_in_spawn_array(const RoomSpawn& roomSpawn, RoomEntry& spawnEntry) noexcept
+static bool is_spawn_entry_in_spawn_array(const RoomSpawn& roomSpawn, RoomEntry& spawnEntry)
 {
 	for (size_t i = 0; i < roomSpawn.CountEntries; i++)
 	{
@@ -106,14 +106,14 @@ static void assert_spawn_entry_flags(const RoomConfig_Room& room, const RoomSpaw
 #endif
 }
 
-void RoomConfigUtility::AssertRoomSpawnEntryValidity(const RoomEntry& roomSpawnEntry) noexcept
+void RoomConfigUtility::AssertRoomSpawnEntryValidity(const RoomEntry& roomSpawnEntry)
 {
 #ifndef NDEBUG
 	assert(roomSpawnEntry.weight >= 0.0f);
 #endif // !NDEBUG
 }
 
-void RoomConfigUtility::AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, const RoomConfig_Room* room) noexcept
+void RoomConfigUtility::AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, const RoomConfig_Room* room)
 {
 #ifndef NDEBUG
 	float sumWeights = 0.0f;
@@ -132,7 +132,7 @@ void RoomConfigUtility::AssertRoomSpawnValidity(const RoomSpawn& roomSpawn, cons
 #endif // !NDEBUG
 }
 
-void RoomConfigUtility::AssertRoomValidity(const RoomConfig_Room& room) noexcept
+void RoomConfigUtility::AssertRoomValidity(const RoomConfig_Room& room)
 {
 #ifndef NDEBUG
 	assert(IsStageValid(room.StageId));
@@ -154,7 +154,7 @@ void RoomConfigUtility::AssertRoomValidity(const RoomConfig_Room& room) noexcept
 
 #pragma region General
 
-const std::pair<const int, const int>& RoomConfigUtility::GetShapeDimensions(size_t shape) noexcept
+const std::pair<const int, const int>& RoomConfigUtility::GetShapeDimensions(size_t shape)
 {
 	assert(shape < NUM_ROOMSHAPES); // Assert, even if handled, cause something went wrong somewhere
 
@@ -162,7 +162,7 @@ const std::pair<const int, const int>& RoomConfigUtility::GetShapeDimensions(siz
 	return s_ShapeDimensions[shape];
 }
 
-void RoomConfigUtility::PostRoomInsert(RoomConfig_Room& room, uint32_t stageId, int mode) noexcept
+void RoomConfigUtility::PostRoomInsert(RoomConfig_Room& room, uint32_t stageId, int mode)
 {
 	if (mode == -1)
 	{
@@ -186,7 +186,7 @@ void RoomConfigUtility::PostRoomInsert(RoomConfig_Room& room, uint32_t stageId, 
 	room.Variant = variantSet->AddUnique(room.originalVariant);
 }
 
-void RoomConfigUtility::FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomSpawn& roomSpawn, RoomEntry& spawnEntry) noexcept
+void RoomConfigUtility::FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomSpawn& roomSpawn, RoomEntry& spawnEntry)
 {
 	assert(is_spawn_entry_in_spawn_array(roomSpawn, spawnEntry));
 
@@ -206,7 +206,7 @@ void RoomConfigUtility::FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomS
 	}
 }
 
-bool RoomConfigUtility::RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType) noexcept
+bool RoomConfigUtility::RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType)
 {
 	if ((room.Type == roomType) &&
 		(roomShape == NUM_ROOMSHAPES || room.Shape == roomShape) &&
@@ -225,7 +225,7 @@ bool RoomConfigUtility::RoomPassesFilter(RoomConfig_Room& room, uint32_t roomTyp
 
 #pragma region Lua
 
-std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L, int index, LogContext& logContext) noexcept
+std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L, int index, LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
 
@@ -333,7 +333,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::BuildRoomFromLua(lua_State* L,
 	return room;
 }
 
-std::optional<RoomSpawn> RoomConfigUtility::BuildSpawnFromLua(lua_State* L, int index, RoomConfig_Room& room, LogContext& logContext) noexcept
+std::optional<RoomSpawn> RoomConfigUtility::BuildSpawnFromLua(lua_State* L, int index, RoomConfig_Room& room, LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
 
@@ -400,7 +400,7 @@ std::optional<RoomSpawn> RoomConfigUtility::BuildSpawnFromLua(lua_State* L, int 
 	return roomSpawn;
 }
 
-static int RoomConfigUtility::GetDoorSlotFromLua(lua_State* L, int index, int shape, LogContext& logContext) noexcept
+static int RoomConfigUtility::GetDoorSlotFromLua(lua_State* L, int index, int shape, LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
 
@@ -445,7 +445,7 @@ static int RoomConfigUtility::GetDoorSlotFromLua(lua_State* L, int index, int sh
 	return doorSlot;
 }
 
-std::optional<RoomEntry> RoomConfigUtility::BuildSpawnEntryFromLua(lua_State* L, int index, LogContext& logContext) noexcept
+std::optional<RoomEntry> RoomConfigUtility::BuildSpawnEntryFromLua(lua_State* L, int index, LogContext& logContext)
 {
 	int absIndex = lua_absindex(L, index);
 
@@ -485,7 +485,7 @@ constexpr uint32_t ROOM_SERIALIZATION_VERSION = 2;
 constexpr uint32_t SPAWN_SERIALIZATION_VERSION = 1;
 constexpr uint32_t SPAWN_ENTRY_SERIALIZATION_VERSION = 1;
 
-rapidjson::Value RoomConfigUtility::SerializeRoom(const RoomConfig_Room& room, rapidjson::Document::AllocatorType& allocator) noexcept
+rapidjson::Value RoomConfigUtility::SerializeRoom(const RoomConfig_Room& room, rapidjson::Document::AllocatorType& allocator)
 {
 	RoomConfigUtility::AssertRoomValidity(room);
 	rapidjson::Value jsonRoom(rapidjson::kObjectType);
@@ -514,7 +514,7 @@ rapidjson::Value RoomConfigUtility::SerializeRoom(const RoomConfig_Room& room, r
 	return jsonRoom;
 }
 
-rapidjson::Value RoomConfigUtility::SerializeRoomSpawn(const RoomSpawn& roomSpawn, rapidjson::Document::AllocatorType& allocator) noexcept
+rapidjson::Value RoomConfigUtility::SerializeRoomSpawn(const RoomSpawn& roomSpawn, rapidjson::Document::AllocatorType& allocator)
 {
 	RoomConfigUtility::AssertRoomSpawnValidity(roomSpawn);
 	rapidjson::Value jsonSpawn(rapidjson::kObjectType);
@@ -534,7 +534,7 @@ rapidjson::Value RoomConfigUtility::SerializeRoomSpawn(const RoomSpawn& roomSpaw
 	return jsonSpawn;
 }
 
-rapidjson::Value RoomConfigUtility::SerializeRoomSpawnEntry(const RoomEntry& spawnEntry, rapidjson::Document::AllocatorType& allocator) noexcept
+rapidjson::Value RoomConfigUtility::SerializeRoomSpawnEntry(const RoomEntry& spawnEntry, rapidjson::Document::AllocatorType& allocator)
 {
 	RoomConfigUtility::AssertRoomSpawnEntryValidity(spawnEntry);
 	rapidjson::Value jsonSpawnEntry(rapidjson::kObjectType);
@@ -549,7 +549,7 @@ rapidjson::Value RoomConfigUtility::SerializeRoomSpawnEntry(const RoomEntry& spa
 	return jsonSpawnEntry;
 }
 
-static std::vector<RoomSpawn> deserialize_spawns_node(const rapidjson::Value& spawnsNode, RoomConfig_Room& room, LogContext& logContext) noexcept
+static std::vector<RoomSpawn> deserialize_spawns_node(const rapidjson::Value& spawnsNode, RoomConfig_Room& room, LogContext& logContext)
 {
 	std::vector<RoomSpawn> roomSpawns;
 
@@ -579,7 +579,7 @@ static std::vector<RoomSpawn> deserialize_spawns_node(const rapidjson::Value& sp
 	return roomSpawns;
 }
 
-static std::vector<RoomEntry> deserialize_spawn_entries_node(const rapidjson::Value& spawnEntriesNode, LogContext& logContext) noexcept
+static std::vector<RoomEntry> deserialize_spawn_entries_node(const rapidjson::Value& spawnEntriesNode, LogContext& logContext)
 {
 	std::vector<RoomEntry> spawnEntries;
 
@@ -609,7 +609,7 @@ static std::vector<RoomEntry> deserialize_spawn_entries_node(const rapidjson::Va
 	return spawnEntries;
 }
 
-std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjson::Value& roomNode, LogContext& logContext) noexcept
+std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjson::Value& roomNode, LogContext& logContext)
 {
 	if (!LogUtility::Json::ValidateObject(roomNode, logContext))
 	{
@@ -710,7 +710,7 @@ std::optional<RoomConfig_Room> RoomConfigUtility::DeserializeRoom(const rapidjso
 	return room;
 }
 
-std::optional<RoomSpawn> RoomConfigUtility::DeserializeRoomSpawn(const rapidjson::Value& spawnNode, RoomConfig_Room& room, LogContext& logContext) noexcept
+std::optional<RoomSpawn> RoomConfigUtility::DeserializeRoomSpawn(const rapidjson::Value& spawnNode, RoomConfig_Room& room, LogContext& logContext)
 {
 	if (!LogUtility::Json::ValidateObject(spawnNode, logContext))
 	{
@@ -765,7 +765,7 @@ std::optional<RoomSpawn> RoomConfigUtility::DeserializeRoomSpawn(const rapidjson
 	return roomSpawn;
 }
 
-std::optional<RoomEntry> RoomConfigUtility::DeserializeRoomSpawnEntry(const rapidjson::Value& spawnEntryNode, LogContext& logContext) noexcept
+std::optional<RoomEntry> RoomConfigUtility::DeserializeRoomSpawnEntry(const rapidjson::Value& spawnEntryNode, LogContext& logContext)
 {
 	if (!LogUtility::Json::ValidateObject(spawnEntryNode, logContext))
 	{
@@ -825,7 +825,7 @@ static std::string get_path_string(const std::filesystem::path& path)
 	return result;
 }
 
-static std::optional<std::ofstream> open_file_for_writing(std::filesystem::path filePath, Error& error, std::ios_base::openmode mode = 0) noexcept
+static std::optional<std::ofstream> open_file_for_writing(std::filesystem::path filePath, Error& error, std::ios_base::openmode mode = 0)
 {
 	error.reset();
 	assert((mode & std::ios::in) == 0);
@@ -859,7 +859,7 @@ static std::optional<std::ofstream> open_file_for_writing(std::filesystem::path 
 	return file;
 }
 
-static inline rapidjson::Document get_json_document(const std::string& filePath, Error& error) noexcept
+static inline rapidjson::Document get_json_document(const std::string& filePath, Error& error)
 {
 	error.reset();
 	rapidjson::Document doc;

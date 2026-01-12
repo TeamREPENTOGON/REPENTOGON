@@ -64,10 +64,16 @@ Checks if an item is in the collection. Aka. its at least picked up once in any 
 ___
 ### TryUnlock () {: aria-label='Functions' }
 #### boolean TryUnlock ( [Achievement](enums/Achievement.md) Unlock, boolean BlockPaperPopup = false ) {: .copyable aria-label='Functions' }
-Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
+Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked. Will fail if achievements are disabled.
 
 Setting `BlockPaperPopup` to `true` prevents popping up the achievement paper for modded achievements.
 
+___
+### Unlock () {: aria-label='Functions' }
+#### boolean Unlock ( [Achievement](enums/Achievement.md) Unlock, boolean BlockPaperPopup = false ) {: .copyable aria-label='Functions' }
+Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked. It will almost never fail tho, unlike TryUnlock, which will fail if achievements are disabled.
+
+Setting `BlockPaperPopup` to `true` prevents popping up the achievement paper for modded achievements.
 ___
 ### Unlocked () {: aria-label='Functions' }
 #### boolean Unlocked ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }

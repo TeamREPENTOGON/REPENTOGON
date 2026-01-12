@@ -40,39 +40,8 @@ option(ANTLR_BUILD_STATIC "" OFF)
 add_subdirectory("libs/antlr4/runtime/Cpp")
 include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
-# libcurl
-option(BUILD_TESTING "" OFF)
-option(BUILD_CURL_EXE "" OFF)
-option(BUILD_SHARED_LIBS "" OFF)
-option(BUILD_STATIC_LIBS "" ON)
-option(ENABLE_THREADED_RESOLVER "" OFF)
-option(CURL_USE_SCHANNEL "" ON)
-# Disable everything except HTTPS, we don't need to compile most of this.
-option(CURL_DISABLE_DICT "" ON)
-option(CURL_DISABLE_FILE "" ON)
-option(CURL_DISABLE_FTP "" ON)
-option(CURL_DISABLE_GOPHER "" ON)
-option(CURL_DISABLE_IMAP "" ON)
-option(CURL_DISABLE_LDAP "" ON)
-option(CURL_DISABLE_LDAPS "" ON)
-option(CURL_DISABLE_MQTT "" ON)
-option(CURL_DISABLE_POP3 "" ON)
-option(CURL_DISABLE_RTSP "" ON)
-option(CURL_DISABLE_SMB "" ON)
-option(CURL_DISABLE_SMTP "" ON)
-option(CURL_DISABLE_TELNET "" ON)
-option(CURL_DISABLE_TFTP "" ON)
-option(CURL_ZLIB "" OFF)
-add_subdirectory("libs/curl")
-
 # General logger
 add_library(logger STATIC ${CMAKE_SOURCE_DIR}/logger/logger.cpp)
-
-# Crypto++
-option(CRYPTOPP_BUILD_TESTING "" OFF)
-add_subdirectory("libs/cryptopp-cmake")
-# wd4996 ignore warning C4996: use of deprecated function
-target_compile_options(cryptopp PUBLIC "/MD" "/wd4996")
 
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
@@ -90,7 +59,7 @@ add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy 
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
-add_library(Lua5.4 SHARED ${LUA_SRC})
+add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
@@ -109,6 +78,7 @@ LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURC
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
+target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
@@ -193,6 +163,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_options(zhlREPENTOGON PRIVATE "/EHs")
 target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX CMAKE_REPENTOGON_VERSION="${CMAKE_REPENTOGON_VERSION}")
 
 # Delirium
@@ -206,6 +177,7 @@ endforeach()
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
 target_compile_options(zhlDelirium PUBLIC "/MD")
+target_compile_options(zhlDelirium PRIVATE "/EHs")
 
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources")
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources-repentogon")
@@ -219,7 +191,7 @@ target_link_libraries(offline_scanner injector)
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
-    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:Lua5.4>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET Lua5.3.3r POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:Lua5.3.3r>/Lua5.3.3r.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlLoader POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlLoader>/zhlLoader.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:freetype>/freetype.dll" "${ISAAC_DIRECTORY}")
@@ -240,11 +212,11 @@ add_dependencies(zhlREPENTOGON libzhl)
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp Imagehlp)
+target_link_libraries(zhlREPENTOGON Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
+target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp Imagehlp)
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
+set_target_properties(freetype antlr4_shared imgui Lua5.3.3r stb stbc Zydis Zycore PROPERTIES FOLDER "External Libs")
 set_target_properties(zhlLoader libzhl zhlparser PROPERTIES FOLDER "libzhl")
 set_target_properties(zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")

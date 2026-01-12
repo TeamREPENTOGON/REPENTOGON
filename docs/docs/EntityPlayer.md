@@ -283,7 +283,7 @@ Returns the current charge for when the player stops shooting and charges the Ki
 
 ___
 ### GetBlinkLockTime () {: aria-label='Functions' }
-#### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
+#### int GetBlinkLockTime ( ) {: .copyable aria-label='Functions' }
 How long player's head will play fired frame sprite?
 
 ___
@@ -693,28 +693,28 @@ ___
 #### float GetRevelationCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetRockBottomMoveSpeed () {: aria-label='Functions' }
-#### float GetRockBottomMoveSpeed ( ) {: .copyable aria-label='Functions' }
+### GetRockBottomDamage () {: aria-label='Functions' }
+#### float GetRockBottomDamage ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRockBottomLuck () {: aria-label='Functions' }
+#### float GetRockBottomLuck ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRockBottomMaxFireDelay () {: aria-label='Functions' }
 #### float GetRockBottomMaxFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetRockBottomDamage () {: aria-label='Functions' }
-#### float GetRockBottomDamage ( ) {: .copyable aria-label='Functions' }
-
-___
-### GetRockBottomTearRange () {: aria-label='Functions' }
-#### float GetRockBottomTearRange ( ) {: .copyable aria-label='Functions' }
+### GetRockBottomMoveSpeed () {: aria-label='Functions' }
+#### float GetRockBottomMoveSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRockBottomShotSpeed () {: aria-label='Functions' }
 #### float GetRockBottomShotSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetRockBottomLuck () {: aria-label='Functions' }
-#### float GetRockBottomLuck ( ) {: .copyable aria-label='Functions' }
+### GetRockBottomTearRange () {: aria-label='Functions' }
+#### float GetRockBottomTearRange ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetShotSpeedModifier () {: aria-label='Functions' }
@@ -748,6 +748,13 @@ Returns a table of the provided smelted trinket and their corresponding amounts.
 | goldenTrinketAmount | int | |
 
 ___
+### GetSoulLocketBonus () {: aria-label='Functions' }
+#### table GetSoulLocketBonus ( ) {: .copyable aria-label='Functions' }
+Returns a table of fields corresponding to each stat that Soul Locket can increase and the active amount of bonuses tied to each stat.
+
+The fields are: `FireDelay`, `Damage`, `TearRange`, `ShotSpeed`, `Luck`, `MoveSpeed`.
+
+___
 ### GetSpecialGridCollision () {: aria-label='Functions' }
 #### int GetSpecialGridCollision ( [Vector](Vector.md) Position = self.Position ) {: .copyable aria-label='Functions' }      
 
@@ -769,13 +776,6 @@ ___
 | CollectibleID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
 | AppendedCount | int | |
 | IsBlocked | boolean | |
-
-___
-### GetSoulLocketBonus () {: aria-label='Functions' }
-#### table GetSoulLocketBonus ( ) {: .copyable aria-label='Functions' }
-Returns a table of fields corresponding to each stat that Soul Locket can increase and the active amount of bonuses tied to each stat.
-
-The fields are: `FireDelay`, `Damage`, `TearRange`, `ShotSpeed`, `Luck`, `MoveSpeed`.
 
 ___
 ### GetStatMultiplier () {: aria-label='Functions' }
@@ -1008,7 +1008,7 @@ Plays an animation tied to the provided collectible.
 
 ___
 ### PlayDelayedSFX () {: aria-label='Functions' }
-#### void PlayDelayedSFX ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1.0 ) {: .copyable aria-label='Functions' }
+#### void PlayDelayedSFX ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/SoundEffect.html) ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1.0 ) {: .copyable aria-label='Functions' }
 Plays a sound effect after a delay.
 
 ___
@@ -1299,10 +1299,6 @@ ___
 #### void SetPlanCKillCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
-### SetPotatoPeelerUses () {: aria-label='Functions' }
-#### void SetPotatoPeelerUses ( int Amount ) {: .copyable aria-label='Functions' }
-
-___
 ### SetPonyCharge () {: aria-label='Functions' }
 #### void SetPonyCharge ( int Time ) {: .copyable aria-label='Functions' }
 Sets the duration of the charge effect from the A Pony and White Pony to the specified amount of frames.
@@ -1311,6 +1307,10 @@ ___
 ### SetPoopSpell () {: aria-label='Functions' }
 #### void SetPoopSpell ( int Slot, [PoopSpellType](https://wofsauge.github.io/IsaacDocs/rep/enums/PoopSpellType.html) PoopSpellType ) {: .copyable aria-label='Functions' }
 Sets the specified slot in the poop list to a type of poop. This is only used by Tainted ???.
+
+___
+### SetPotatoPeelerUses () {: aria-label='Functions' }
+#### void SetPotatoPeelerUses ( int Amount ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPurityState () {: aria-label='Functions' }
@@ -1327,28 +1327,28 @@ ___
 #### void SetRevelationCharge ( float Charge ) {: .copyable aria-label='Functions' }
 
 ___
-### SetRockBottomMoveSpeed () {: aria-label='Functions' }
-#### void SetRockBottomMoveSpeed ( float MoveSpeed ) {: .copyable aria-label='Functions' }
+### SetRockBottomDamage () {: aria-label='Functions' }
+#### void SetRockBottomDamage ( float Damage ) {: .copyable aria-label='Functions' }
+
+___
+### SetRockBottomLuck () {: aria-label='Functions' }
+#### void SetRockBottomLuck ( float Luck ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetRockBottomMaxFireDelay () {: aria-label='Functions' }
 #### void SetRockBottomMaxFireDelay ( float MaxFireDelay ) {: .copyable aria-label='Functions' }
 
 ___
-### SetRockBottomDamage () {: aria-label='Functions' }
-#### void SetRockBottomDamage ( float Damage ) {: .copyable aria-label='Functions' }
-
-___
-### SetRockBottomTearRange () {: aria-label='Functions' }
-#### void SetRockBottomTearRange ( float TearRange ) {: .copyable aria-label='Functions' }
+### SetRockBottomMoveSpeed () {: aria-label='Functions' }
+#### void SetRockBottomMoveSpeed ( float MoveSpeed ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetRockBottomShotSpeed () {: aria-label='Functions' }
 #### void SetRockBottomShotSpeed ( float ShotSpeed ) {: .copyable aria-label='Functions' }
 
 ___
-### SetRockBottomLuck () {: aria-label='Functions' }
-#### void SetRockBottomLuck ( float Luck ) {: .copyable aria-label='Functions' }
+### SetRockBottomTearRange () {: aria-label='Functions' }
+#### void SetRockBottomTearRange ( float TearRange ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetShotSpeedModifier () {: aria-label='Functions' }
@@ -1479,7 +1479,7 @@ Triggers effects on the player as if a room was cleared (i.e. Charging actives).
 
 ___
 ### TryAddToBagOfCrafting () {: aria-label='Functions' }
-#### bool TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) Pickup ) {: .copyable aria-label='Functions' }
+#### boolean TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) Pickup ) {: .copyable aria-label='Functions' }
 Tries to add the specified pickup to the player's Bag of Crafting. Returns true if successful.
 
 ___

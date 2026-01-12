@@ -35,9 +35,10 @@ Returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/Collect
 
 ___
 ### GetLootList () {: aria-label='Functions' }
-#### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
+#### [LootList](LootList.md) GetLootList ( boolean shouldAdvance = false ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
 
+`shouldAdvance` determines if the loot RNG should advance or not.
 ___
 ### GetMegaChestLeftCollectible () {: aria-label='Functions' }
 #### [EntityPickup](EntityPickup.md) GetMegaChestLeftCollectible ( ) {: .copyable aria-label='Functions' }
@@ -124,14 +125,14 @@ ___
 #### int SetNewOptionsPickupIndex ( ) {: .copyable aria-label='Functions' }
 Returns the new pickup index.
 ___
-### SetVarData () {: aria-label='Functions' }
-#### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
-
-___
 ### SetupCollectibleGraphics () {: aria-label='Functions' }
 [ ](#){: .static .tooltip .badge }
-#### static void SetupCollectibleGraphics ( [Sprite](Sprite.md) Sprite, integer Layer, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean Blind, integer Seed = Random(), boolean LoadGraphics  ) {: .copyable aria-label='Functions' }
+#### static void SetupCollectibleGraphics ( [Sprite](Sprite.md) Sprite, integer Layer, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean Blind = false, integer Seed = Random(), boolean LoadGraphics = false  ) {: .copyable aria-label='Functions' }
 Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
+
+___
+### SetVarData () {: aria-label='Functions' }
+#### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
 ### TriggerTheresOptionsPickup () {: aria-label='Functions' }

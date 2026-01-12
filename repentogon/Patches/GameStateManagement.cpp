@@ -1,4 +1,4 @@
-#include "GameStateManagerment.h"
+#include "GameStateManagement.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "Log.h"
@@ -9,7 +9,7 @@
 
 #pragma region Helpers
 
-static GameStateSlot get_game_state_slot(GameState* state) noexcept
+static GameStateSlot get_game_state_slot(GameState* state)
 {
 	if (g_Manager == nullptr || g_Game == nullptr)
 	{
@@ -33,7 +33,7 @@ static GameStateSlot get_game_state_slot(GameState* state) noexcept
 	return it->second;
 }
 
-static inline bool is_remote_save(GameState* gameState) noexcept
+static inline bool is_remote_save(GameState* gameState)
 {
 	auto gameStateIOPtr = reinterpret_cast<void**>(gameState->_saveFile);
 	if (!gameStateIOPtr)
@@ -44,12 +44,12 @@ static inline bool is_remote_save(GameState* gameState) noexcept
 	return *gameStateIOPtr == &SteamCloudFile_vftable;
 }
 
-static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun) noexcept
+static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun)
 {
 	return (is_remote_save(gameState) ? "remote" : "local") + std::string("_") + (isRerun ? "rerunstate" : "gamestate") + std::to_string(saveSlot);
 }
 
-static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun) noexcept
+static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun)
 {
 	const char* filePath = nullptr;
 	if (io)
@@ -83,7 +83,7 @@ static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, boo
 	return std::atoi(&fileName.back());
 }
 
-static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun) noexcept
+static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun)
 {
 	uint32_t save_slot = get_state_slot(gameState, io, isRerun);
 	if (!(1 <= save_slot && save_slot <= 3))
@@ -96,23 +96,23 @@ static inline std::string get_state_file_name(GameState* gameState, GameStateIO*
 
 #pragma endregion
 
-static inline void save_game_state(uint32_t slot) noexcept
+static inline void save_game_state(uint32_t slot)
 {
 	ItemPoolManager::__SaveState(slot);
 	VirtualRoomSetManager::__SaveGameState(slot);
 }
 
-static inline void restore_game_state(uint32_t slot, bool startGame) noexcept
+static inline void restore_game_state(uint32_t slot, bool startGame)
 {
 	ItemPoolManager::__RestoreState(slot);
 }
 
-static inline void clear_game_state(uint32_t slot) noexcept
+static inline void clear_game_state(uint32_t slot)
 {
 	ItemPoolManager::__ClearSaveState(slot);
 }
 
-static inline bool write_save(const std::string& fileName, bool isRerun) noexcept
+static inline bool write_save(const std::string& fileName, bool isRerun)
 {
 	ItemPoolManager::__SaveToDisk(fileName, isRerun);
 	VirtualRoomSetManager::__WriteSave(fileName, isRerun);
@@ -120,7 +120,7 @@ static inline bool write_save(const std::string& fileName, bool isRerun) noexcep
 }
 
 // Return false to invalidate the game state
-static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
+static inline bool read_save(const std::string& fileName, bool isRerun)
 {
 	if (!VirtualRoomSetManager::__ReadSave(fileName, isRerun))
 	{
@@ -131,7 +131,7 @@ static inline bool read_save(const std::string& fileName, bool isRerun) noexcept
 	return true;
 }
 
-static inline void delete_save(const std::string& fileName, bool isRerun) noexcept
+static inline void delete_save(const std::string& fileName, bool isRerun)
 {
 	ItemPoolManager::__DeleteGameState(fileName);
 	VirtualRoomSetManager::__DeleteSave(fileName, isRerun);

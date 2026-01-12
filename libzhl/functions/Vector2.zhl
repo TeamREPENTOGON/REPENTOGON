@@ -1,3 +1,5 @@
+"558bec8b45??f30f1060":
+__thiscall void Vector::Lerp(Vector* other, float t);
 
 struct Vector { {{
 	Vector() : x(0.f), y(0.f) {}
@@ -58,7 +60,7 @@ struct Vector { {{
 		return *this;
 	}
 
-	friend void swap(Vector& a, Vector& b) noexcept
+	friend void swap(Vector& a, Vector& b)
 	{
 		std::swap(a.x, b.x);
 		std::swap(a.y, b.y);

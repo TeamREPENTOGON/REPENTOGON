@@ -244,6 +244,7 @@ nav:
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
   - EntityDesc: EntityDesc.md
+  - EntitySaveStateManager: EntitySaveStateManager.md
   - Font: Font.md
   - FXLayers: FXLayers.md
   - FXParams: FXParams.md
@@ -352,7 +353,6 @@ nav:
     - RoomConfig: RoomConfig.md
     - RoomConfigStage: RoomConfigStage.md
     - GridEntitiesSaveStateVector: GridEntitiesSaveStateVector.md
-    - RoomConfigHolder: RoomConfigHolder.md
     - RoomConfigRoom: RoomConfigRoom.md
     - RoomDescriptor: RoomDescriptor.md
     - EntitiesSaveState: EntitiesSaveState.md

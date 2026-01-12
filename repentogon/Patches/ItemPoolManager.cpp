@@ -7,7 +7,7 @@
 #include "../MiscFunctions.h"
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
-#include "GameStateManagerment.h"
+#include "GameStateManagement.h"
 
 #include "rapidxml.hpp"
 #include "writer.h" // rapidjson
@@ -26,7 +26,7 @@
 typedef ItemPoolManager::Warnings Warnings;
 typedef ItemPoolManager::Error Error;
 
-static inline std::string get_mod_name(const ModEntry* mod) noexcept 
+static inline std::string get_mod_name(const ModEntry* mod) 
 {
 	if (!mod)
 	{
@@ -36,7 +36,7 @@ static inline std::string get_mod_name(const ModEntry* mod) noexcept
 	return mod->_name;
 }
 
-static inline void log_warnings(const Warnings& warnings) noexcept 
+static inline void log_warnings(const Warnings& warnings) 
 {
 	for (const auto& warning : warnings)
 	{
@@ -44,7 +44,7 @@ static inline void log_warnings(const Warnings& warnings) noexcept
 	}
 }
 
-static inline std::string string_to_lower(const std::string& string) noexcept 
+static inline std::string string_to_lower(const std::string& string) 
 {
 	std::string result = std::string(string);
 
@@ -56,7 +56,7 @@ static inline std::string string_to_lower(const std::string& string) noexcept
 	return result;
 }
 
-static inline std::vector<std::string> string_split(const std::string& string) noexcept
+static inline std::vector<std::string> string_split(const std::string& string)
 {
 	std::vector<std::string> subStrings;
 	size_t pos = 0;
@@ -77,19 +77,19 @@ static inline std::vector<std::string> string_split(const std::string& string) n
 	return subStrings;
 }
 
-static inline size_t get_string_hash(const std::string& name) noexcept
+static inline size_t get_string_hash(const std::string& name)
 {
 	std::hash<std::string> hash;
 	return hash(string_to_lower(name));
 }
 
-static inline int get_collectible_by_name(std::string& name) noexcept
+static inline int get_collectible_by_name(std::string& name)
 {
 	int itemId = LuaEngine::Isaac_GetItemIdByName(&name);
 	return itemId > -1 ? itemId : COLLECTIBLE_NULL;
 }
 
-static inline void finalize_pool_item(PoolItem* poolItem) noexcept
+static inline void finalize_pool_item(PoolItem* poolItem)
 {
 	auto* collectibleConfig = g_Manager->GetItemConfig()->GetCollectible(poolItem->_itemID);
 	if (!collectibleConfig)
@@ -102,7 +102,7 @@ static inline void finalize_pool_item(PoolItem* poolItem) noexcept
 }
 
 template <typename T>
-static inline T cast_to_integer(long long value, Error& error) noexcept
+static inline T cast_to_integer(long long value, Error& error)
 {
 	static_assert(std::is_integral<T>::value, "T must be an integer type");
 	static_assert(std::is_signed<T>::value, "T must be a signed integer type");
@@ -121,7 +121,7 @@ static inline T cast_to_integer(long long value, Error& error) noexcept
 }
 
 template <typename T>
-static inline T cast_to_unsigned_integer(unsigned long long value, Error& error) noexcept
+static inline T cast_to_unsigned_integer(unsigned long long value, Error& error)
 {
 	static_assert(std::is_integral<T>::value, "T must be an integer type");
 	static_assert(!std::is_signed<T>::value, "T must be an unsigned integer type");
@@ -140,7 +140,7 @@ static inline T cast_to_unsigned_integer(unsigned long long value, Error& error)
 }
 
 template <typename T>
-static inline T cast_to_floating_point(long double value, Error& error) noexcept
+static inline T cast_to_floating_point(long double value, Error& error)
 {
 	static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");
 
@@ -159,7 +159,7 @@ static inline T cast_to_floating_point(long double value, Error& error) noexcept
 }
 
 template <typename T>
-static inline T string_to_numerical_value(const char* string, Error& error, int base = 10) noexcept
+static inline T string_to_numerical_value(const char* string, Error& error, int base = 10)
 {
 	static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value, __FUNCTION__ " is only for numerical types.");
 
@@ -231,7 +231,7 @@ static inline T string_to_numerical_value(const char* string, Error& error, int 
 #pragma region XML Parsing
 
 template <typename T>
-static bool parse_xml_int_value(const XMLAttributes& node, T& value, const char* attributeName, Warnings& warnings) noexcept
+static bool parse_xml_int_value(const XMLAttributes& node, T& value, const char* attributeName, Warnings& warnings)
 {
 	static_assert(std::is_integral<T>::value, __FUNCTION__ " is only for integer types.");
 	auto it = node.find(attributeName);
@@ -254,7 +254,7 @@ static bool parse_xml_int_value(const XMLAttributes& node, T& value, const char*
 }
 
 template <typename T>
-static inline bool parse_xml_float_value(const XMLAttributes& node, T& value, const char* attributeName, Warnings& warnings) noexcept
+static inline bool parse_xml_float_value(const XMLAttributes& node, T& value, const char* attributeName, Warnings& warnings)
 {
 	static_assert(std::is_floating_point<T>::value, __FUNCTION__ " is only for floating point numbers.");
 	auto it = node.find(attributeName);
@@ -276,7 +276,7 @@ static inline bool parse_xml_float_value(const XMLAttributes& node, T& value, co
 	return true;
 }
 
-static inline bool file_exists(const std::string& filePath) noexcept
+static inline bool file_exists(const std::string& filePath)
 {
 	const char* path = g_ContentManager.GetMountedFilePath(filePath.c_str());
 	bool result = path != nullptr;
@@ -284,7 +284,7 @@ static inline bool file_exists(const std::string& filePath) noexcept
 	return result;
 }
 
-static inline std::vector<char> get_file_stream(const std::string& filePath, Error& error) noexcept
+static inline std::vector<char> get_file_stream(const std::string& filePath, Error& error)
 {
 	std::vector<char> stream;
 	error.reset();
@@ -306,7 +306,7 @@ static inline std::vector<char> get_file_stream(const std::string& filePath, Err
 	return stream;
 }
 
-static int get_xml_line_number(const char* data, const char* errorOffset) noexcept
+static int get_xml_line_number(const char* data, const char* errorOffset)
 {
 	if (strlen(errorOffset) <= 0) { return 0; }
 
@@ -321,7 +321,7 @@ static int get_xml_line_number(const char* data, const char* errorOffset) noexce
 	return lineNumber;
 }
 
-static inline void parse_xml_document(const std::unique_ptr<rapidxml::xml_document<>>& document, char* stream, Error& error) noexcept
+static inline void parse_xml_document(const std::unique_ptr<rapidxml::xml_document<>>& document, char* stream, Error& error)
 {
 	error.reset();
 
@@ -348,7 +348,7 @@ static const std::map<size_t, int> s_ChaosModes = {
 	{get_string_hash("all"), CHAOS_ALL}
 };
 
-static std::bitset<ItemPoolManager::NUM_CHAOS_MODES> parse_chaos_mode(rapidxml::xml_attribute<>* xmlAttribute, Warnings& warnings) noexcept
+static std::bitset<ItemPoolManager::NUM_CHAOS_MODES> parse_chaos_mode(rapidxml::xml_attribute<>* xmlAttribute, Warnings& warnings)
 {
 	std::bitset<ItemPoolManager::NUM_CHAOS_MODES> chaosMode;
 	auto chaosModes = string_split(xmlAttribute->value());
@@ -377,7 +377,7 @@ static std::bitset<ItemPoolManager::NUM_CHAOS_MODES> parse_chaos_mode(rapidxml::
 	return chaosMode;
 }
 
-void ItemPoolManager::parse_xml_pool_names(const std::string& filePath, const ModEntry* mod) noexcept
+void ItemPoolManager::parse_xml_pool_names(const std::string& filePath, const ModEntry* mod)
 {
 	constexpr const char* errorMsg = "[ItemPoolManager] [ERROR] - " __FUNCTION__ " - Error while parsing \"itempools.xml\" from \"%s\": %s\n";
 	Error error;
@@ -424,7 +424,7 @@ void ItemPoolManager::parse_xml_pool_names(const std::string& filePath, const Mo
 	}
 }
 
-static inline ItemPoolManager::PoolItemDesc parse_xml_pool_item(const XMLAttributes& itemNode, Warnings& warnings) noexcept
+static inline ItemPoolManager::PoolItemDesc parse_xml_pool_item(const XMLAttributes& itemNode, Warnings& warnings)
 {
 	ItemPoolManager::PoolItemDesc item;
 
@@ -452,7 +452,7 @@ static inline ItemPoolManager::PoolItemDesc parse_xml_pool_item(const XMLAttribu
 	return item;
 }
 
-static inline void load_xml_pool_data(ItemPoolManager::ItemPool* itemPool) noexcept
+static inline void load_xml_pool_data(ItemPoolManager::ItemPool* itemPool)
 {
 	const std::string& name = itemPool->GetName();
 	auto itemPoolNode = XMLStuff.PoolData->GetXMLNodeNChildsByName(name);
@@ -484,7 +484,7 @@ static inline void load_xml_pool_data(ItemPoolManager::ItemPool* itemPool) noexc
 
 #pragma region Initialization
 
-ItemPoolManager::ItemPool::ItemPool(int id, const std::string& name) noexcept
+ItemPoolManager::ItemPool::ItemPool(int id, const std::string& name)
 	: m_Id(id), m_Name(name)
 {
 	for (size_t i = 0; i < 3; i++)
@@ -493,7 +493,7 @@ ItemPoolManager::ItemPool::ItemPool(int id, const std::string& name) noexcept
 	}
 }
 
-ItemPoolManager::CustomItemPool::CustomItemPool(int id, const std::string& name) noexcept
+ItemPoolManager::CustomItemPool::CustomItemPool(int id, const std::string& name)
 	: ItemPool(id, name)
 {
 	for (size_t i = 0; i < 3; i++)
@@ -502,7 +502,7 @@ ItemPoolManager::CustomItemPool::CustomItemPool(int id, const std::string& name)
 	}
 }
 
-void ItemPoolManager::reset() noexcept
+void ItemPoolManager::reset()
 {
 	m_AppendMode = false;
 	m_ItemPoolInitialized = false;
@@ -510,7 +510,7 @@ void ItemPoolManager::reset() noexcept
 	m_PoolByName.clear();
 }
 
-ItemPoolManager::ItemPool* ItemPoolManager::add_pool(const std::string& name, bool isCustom) noexcept
+ItemPoolManager::ItemPool* ItemPoolManager::add_pool(const std::string& name, bool isCustom)
 {
 	if (isCustom)
 	{
@@ -529,7 +529,7 @@ ItemPoolManager::ItemPool* ItemPoolManager::add_pool(const std::string& name, bo
 	return itemPool;
 }
 
-void ItemPoolManager::add_base_pool(const std::string& name, bool isGreedMode) noexcept
+void ItemPoolManager::add_base_pool(const std::string& name, bool isGreedMode)
 {
 	auto* itemPool = this->add_pool(name, false);
 
@@ -539,7 +539,7 @@ void ItemPoolManager::add_base_pool(const std::string& name, bool isGreedMode) n
 	itemPool->m_IsChaosModeDefined = true;
 }
 
-void ItemPoolManager::add_modded_pool(const std::string& name, rapidxml::xml_node<>* xmlNode, Warnings& warnings) noexcept
+void ItemPoolManager::add_modded_pool(const std::string& name, rapidxml::xml_node<>* xmlNode, Warnings& warnings)
 {
 	auto* itemPool = this->get_pool_by_name(name);
 	if (!itemPool)
@@ -554,7 +554,7 @@ void ItemPoolManager::add_modded_pool(const std::string& name, rapidxml::xml_nod
 	}
 }
 
-void ItemPoolManager::add_base_pools() noexcept
+void ItemPoolManager::add_base_pools()
 {
 	this->add_base_pool("treasure", false);
 	this->add_base_pool("shop", false);
@@ -589,7 +589,7 @@ void ItemPoolManager::add_base_pools() noexcept
 	this->add_base_pool("rottenBeggar", false);
 }
 
-void ItemPoolManager::add_modded_pools() noexcept
+void ItemPoolManager::add_modded_pools()
 {
 	auto* modManager = g_Manager->GetModManager();
 	std::string xmlName = "itempools.xml";
@@ -616,7 +616,7 @@ void ItemPoolManager::add_modded_pools() noexcept
 	}
 }
 
-void ItemPoolManager::__Init() noexcept
+void ItemPoolManager::__Init()
 {
 	auto& instance = ItemPoolManager::Get();
 	instance.reset();
@@ -628,7 +628,7 @@ void ItemPoolManager::__Init() noexcept
 
 #pragma region Data Load
 
-void ItemPoolManager::ItemPool::reset() noexcept
+void ItemPoolManager::ItemPool::reset()
 {
 	ItemPool_Item* poolData = this->GetPoolData();
 
@@ -639,7 +639,7 @@ void ItemPoolManager::ItemPool::reset() noexcept
 	poolData->_bibleUpgrade = 0;
 }
 
-PoolItem ItemPoolManager::PoolItemDesc::BuildPoolItem() const noexcept
+PoolItem ItemPoolManager::PoolItemDesc::BuildPoolItem() const
 {
 	PoolItem poolItem;
 	poolItem._itemID = this->itemId;
@@ -652,7 +652,7 @@ PoolItem ItemPoolManager::PoolItemDesc::BuildPoolItem() const noexcept
 	return poolItem;
 }
 
-void ItemPoolManager::ItemPool::load_pool() noexcept
+void ItemPoolManager::ItemPool::load_pool()
 {
 	auto* pool = this->GetPoolData();
 
@@ -665,7 +665,7 @@ void ItemPoolManager::ItemPool::load_pool() noexcept
 	}
 }
 
-void ItemPoolManager::CustomItemPool::load_pool() noexcept
+void ItemPoolManager::CustomItemPool::load_pool()
 {
 	auto* poolData = this->GetPoolData();
 	RNG& rng = this->get_global_rng();
@@ -678,7 +678,7 @@ void ItemPoolManager::CustomItemPool::load_pool() noexcept
 	this->ItemPool::load_pool();
 }
 
-void ItemPoolManager::ItemPool::shuffle_pool(MTRNG& rng) noexcept
+void ItemPoolManager::ItemPool::shuffle_pool(MTRNG& rng)
 {
 	auto* poolData = this->GetPoolData();
 
@@ -697,7 +697,7 @@ void ItemPoolManager::ItemPool::shuffle_pool(MTRNG& rng) noexcept
 	}
 }
 
-void ItemPoolManager::ItemPool::finalize_pool() noexcept
+void ItemPoolManager::ItemPool::finalize_pool()
 {
 	auto* pool = this->GetPoolData();
 
@@ -709,7 +709,7 @@ void ItemPoolManager::ItemPool::finalize_pool() noexcept
 	this->update_static_pool_list();
 }
 
-void ItemPoolManager::ItemPool::update_static_pool_list() noexcept
+void ItemPoolManager::ItemPool::update_static_pool_list()
 {
 	auto& poolList = this->GetPoolData()->_poolList;
 
@@ -718,7 +718,7 @@ void ItemPoolManager::ItemPool::update_static_pool_list() noexcept
 	m_StaticPoolList[2] = poolList.data() + poolList.capacity();
 }
 
-void ItemPoolManager::__LoadPools() noexcept
+void ItemPoolManager::__LoadPools()
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -732,7 +732,7 @@ void ItemPoolManager::__LoadPools() noexcept
 	}
 }
 
-void ItemPoolManager::__FinalizePools() noexcept
+void ItemPoolManager::__FinalizePools()
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -754,12 +754,12 @@ void ItemPoolManager::__FinalizePools() noexcept
 
 #pragma region SaveState
 
-void ItemPoolManager::ItemPool::invalidate_state(size_t slot) noexcept
+void ItemPoolManager::ItemPool::invalidate_state(size_t slot)
 {
 	m_SaveStates[slot]->m_IsUsable = false;
 }
 
-void ItemPoolManager::ItemPool::store_state(size_t saveSlot) noexcept
+void ItemPoolManager::ItemPool::store_state(size_t saveSlot)
 {
 	auto* saveState = m_SaveStates[saveSlot].get();
 	auto* poolData = this->GetPoolData();
@@ -781,7 +781,7 @@ void ItemPoolManager::ItemPool::store_state(size_t saveSlot) noexcept
 	}
 }
 
-void ItemPoolManager::CustomItemPool::store_state(size_t saveSlot) noexcept
+void ItemPoolManager::CustomItemPool::store_state(size_t saveSlot)
 {
 	auto* saveState = static_cast<CustomPoolSaveState*>(m_SaveStates[saveSlot].get());
 	auto* poolData = this->GetPoolData();
@@ -801,7 +801,7 @@ void ItemPoolManager::CustomItemPool::store_state(size_t saveSlot) noexcept
 	this->ItemPool::store_state(saveSlot);
 }
 
-void ItemPoolManager::ItemPool::restore_state(size_t saveSlot) noexcept
+void ItemPoolManager::ItemPool::restore_state(size_t saveSlot)
 {
 	auto* saveState = m_SaveStates[saveSlot].get();
 	auto* poolData = this->GetPoolData();
@@ -822,7 +822,7 @@ void ItemPoolManager::ItemPool::restore_state(size_t saveSlot) noexcept
 	}
 }
 
-void ItemPoolManager::CustomItemPool::restore_state(size_t saveSlot) noexcept
+void ItemPoolManager::CustomItemPool::restore_state(size_t saveSlot)
 {
 	auto* saveState = static_cast<CustomPoolSaveState*>(m_SaveStates[saveSlot].get());
 	auto* poolData = this->GetPoolData();
@@ -846,7 +846,7 @@ void ItemPoolManager::CustomItemPool::restore_state(size_t saveSlot) noexcept
 	this->ItemPool::restore_state(saveSlot);
 }
 
-void ItemPoolManager::invalidate_state_slot(uint32_t slot) noexcept
+void ItemPoolManager::invalidate_state_slot(uint32_t slot)
 {
 	for (auto& itemPool : m_ItemPools)
 	{
@@ -854,7 +854,7 @@ void ItemPoolManager::invalidate_state_slot(uint32_t slot) noexcept
 	}
 }
 
-void ItemPoolManager::__SaveState(uint32_t slot) noexcept
+void ItemPoolManager::__SaveState(uint32_t slot)
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -864,7 +864,7 @@ void ItemPoolManager::__SaveState(uint32_t slot) noexcept
 	}
 }
 
-void ItemPoolManager::__RestoreState(uint32_t slot) noexcept
+void ItemPoolManager::__RestoreState(uint32_t slot)
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -890,12 +890,12 @@ void ItemPoolManager::__RestoreState(uint32_t slot) noexcept
 
 constexpr uint32_t GAMESTATE_VERSION = 1;
 
-static inline std::string get_state_file_path(const std::string& fileName) noexcept
+static inline std::string get_state_file_path(const std::string& fileName)
 {
 	return std::string(REPENTOGON::GetRepentogonDataPath()).append("ItemPoolManager/").append(fileName).append(".json");
 }
 
-static inline rapidjson::Document get_json_document(const std::string& filePath, Error& error) noexcept
+static inline rapidjson::Document get_json_document(const std::string& filePath, Error& error)
 {
 	error.reset();
 	rapidjson::Document doc;
@@ -966,7 +966,7 @@ struct JsonValidatorTraits<std::map<void, void>> { // Placeholder for JSON objec
 };
 
 template <typename T>
-static bool validate_json(const rapidjson::Value& node, const char* attributeName, Warnings& warnings) noexcept
+static bool validate_json(const rapidjson::Value& node, const char* attributeName, Warnings& warnings)
 {
 	constexpr auto IsValid = JsonValidatorTraits<T>::IsValid;    // Retrieve the type-check method
 	constexpr const char* TypeName = JsonValidatorTraits<T>::TypeName; // Retrieve the expected type name
@@ -991,7 +991,7 @@ static bool validate_json(const rapidjson::Value& node, const char* attributeNam
 
 // This function assumes that the json value has already been validated
 template <typename T>
-static bool assign_json_value(const rapidjson::Value& node, T& value, const char* attributeName, Warnings& warnings) noexcept
+static bool assign_json_value(const rapidjson::Value& node, T& value, const char* attributeName, Warnings& warnings)
 {
 	static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value, __FUNCTION__ " is only for numerical types.");
 
@@ -1038,7 +1038,7 @@ static bool assign_json_value(const rapidjson::Value& node, T& value, const char
 }
 
 template <typename T>
-static bool parse_json_numeric_value(const rapidjson::Value& node, T& value, const char* attributeName, Warnings& warnings) noexcept
+static bool parse_json_numeric_value(const rapidjson::Value& node, T& value, const char* attributeName, Warnings& warnings)
 {
 	static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value, __FUNCTION__ " is only for numeric types.");
 	bool valid = false;
@@ -1062,24 +1062,24 @@ static bool parse_json_numeric_value(const rapidjson::Value& node, T& value, con
 	return assign_json_value(node, value, attributeName, warnings);
 }
 
-static bool validate_json_string(const rapidjson::Value& node, const char* attributeName, Warnings& warnings) noexcept
+static bool validate_json_string(const rapidjson::Value& node, const char* attributeName, Warnings& warnings)
 {
 	return validate_json<std::string>(node, attributeName, warnings);
 }
 
-static bool validate_json_array(const rapidjson::Value& node, const char* attributeName, Warnings& warnings) noexcept
+static bool validate_json_array(const rapidjson::Value& node, const char* attributeName, Warnings& warnings)
 {
 	return validate_json<std::vector<void>>(node, attributeName, warnings);
 }
 
-static bool validate_json_object(const rapidjson::Value& node, const char* attributeName, Warnings& warnings) noexcept
+static bool validate_json_object(const rapidjson::Value& node, const char* attributeName, Warnings& warnings)
 {
 	return validate_json<std::map<void, void>>(node, attributeName, warnings);
 }
 
 #pragma endregion
 
-static inline rapidjson::Value serialize_pool_item(const PoolItem* poolItem, rapidjson::Document::AllocatorType& allocator) noexcept 
+static inline rapidjson::Value serialize_pool_item(const PoolItem* poolItem, rapidjson::Document::AllocatorType& allocator) 
 {
 	rapidjson::Value jsonObj(rapidjson::kObjectType);
 
@@ -1101,7 +1101,7 @@ static inline rapidjson::Value serialize_pool_item(const PoolItem* poolItem, rap
 	return jsonObj;
 }
 
-static inline PoolItem deserialize_pool_item(const rapidjson::Value& jsonObj, Warnings& warnings) noexcept
+static inline PoolItem deserialize_pool_item(const rapidjson::Value& jsonObj, Warnings& warnings)
 {
 	PoolItem poolItem;
 	if (!jsonObj.IsObject())
@@ -1130,7 +1130,7 @@ static inline PoolItem deserialize_pool_item(const rapidjson::Value& jsonObj, Wa
 	return poolItem;
 }
 
-void ItemPoolManager::PoolSaveState::serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) const noexcept
+void ItemPoolManager::PoolSaveState::serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) const
 {
 	rapidjson::Value temporaryItems(rapidjson::kArrayType);
 	for (const auto& item : m_TemporaryItems)
@@ -1141,7 +1141,7 @@ void ItemPoolManager::PoolSaveState::serialize(rapidjson::Value& node, rapidjson
 	node.AddMember("TemporaryItems", temporaryItems, allocator);
 }
 
-void ItemPoolManager::CustomPoolSaveState::serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) const noexcept
+void ItemPoolManager::CustomPoolSaveState::serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) const
 {
 	rapidjson::Value itemWeights(rapidjson::kArrayType);
 	for (float weight : m_ItemWeights)
@@ -1156,7 +1156,7 @@ void ItemPoolManager::CustomPoolSaveState::serialize(rapidjson::Value& node, rap
 	this->PoolSaveState::serialize(node, allocator);
 }
 
-void ItemPoolManager::PoolSaveState::deserialize(const rapidjson::Value& poolSaveState, Warnings& warnings) noexcept
+void ItemPoolManager::PoolSaveState::deserialize(const rapidjson::Value& poolSaveState, Warnings& warnings)
 {
 	if (!poolSaveState.IsObject())
 	{
@@ -1191,7 +1191,7 @@ void ItemPoolManager::PoolSaveState::deserialize(const rapidjson::Value& poolSav
 	}
 }
 
-void ItemPoolManager::CustomPoolSaveState::deserialize(const rapidjson::Value& poolSaveState, Warnings& warnings) noexcept
+void ItemPoolManager::CustomPoolSaveState::deserialize(const rapidjson::Value& poolSaveState, Warnings& warnings)
 {
 	if (!poolSaveState.IsObject())
 	{
@@ -1232,7 +1232,7 @@ void ItemPoolManager::CustomPoolSaveState::deserialize(const rapidjson::Value& p
 	parse_json_numeric_value(poolSaveState, m_RemainingGenesisItems, "RemainingGenesisItems", warnings);
 }
 
-static inline std::optional<rapidjson::Document> get_saved_game_state(const std::string& fileName) noexcept
+static inline std::optional<rapidjson::Document> get_saved_game_state(const std::string& fileName)
 {
 	auto savePath = get_state_file_path(fileName);
 
@@ -1261,7 +1261,7 @@ static inline std::optional<rapidjson::Document> get_saved_game_state(const std:
 	return doc;
 }
 
-static inline std::vector<int> init_game_state_pool_remap() noexcept
+static inline std::vector<int> init_game_state_pool_remap()
 {
 	std::vector<int> poolIdRemap;
 	poolIdRemap.reserve(NUM_ITEMPOOLS);
@@ -1274,7 +1274,7 @@ static inline std::vector<int> init_game_state_pool_remap() noexcept
 	return poolIdRemap;
 }
 
-static inline rapidjson::Value serialize_pool_index(rapidjson::Document::AllocatorType& allocator) noexcept
+static inline rapidjson::Value serialize_pool_index(rapidjson::Document::AllocatorType& allocator)
 {
 	rapidjson::Value poolIndex(rapidjson::kArrayType);
 	for (size_t i = NUM_ITEMPOOLS; i < ItemPoolManager::GetNumItemPools(); i++)
@@ -1286,7 +1286,7 @@ static inline rapidjson::Value serialize_pool_index(rapidjson::Document::Allocat
 	return poolIndex;
 }
 
-static inline bool deserialize_pool_index(const rapidjson::Value& node, std::vector<int>& poolIdRemap, Warnings& warnings) noexcept
+static inline bool deserialize_pool_index(const rapidjson::Value& node, std::vector<int>& poolIdRemap, Warnings& warnings)
 {
 	if (!validate_json_array(node, "PoolIndex", warnings))
 	{
@@ -1310,7 +1310,7 @@ static inline bool deserialize_pool_index(const rapidjson::Value& node, std::vec
 	return true;
 }
 
-rapidjson::Document ItemPoolManager::serialize_game_state(bool isRerun) noexcept
+rapidjson::Document ItemPoolManager::serialize_game_state(bool isRerun)
 {
 	rapidjson::Document doc;
 	doc.SetObject();
@@ -1339,7 +1339,7 @@ rapidjson::Document ItemPoolManager::serialize_game_state(bool isRerun) noexcept
 	return doc;
 }
 
-bool ItemPoolManager::deserialize_game_state(const rapidjson::Document& gameState, const std::string& fileName, bool isRerun, std::vector<int>& poolIdRemap) noexcept
+bool ItemPoolManager::deserialize_game_state(const rapidjson::Document& gameState, const std::string& fileName, bool isRerun, std::vector<int>& poolIdRemap)
 {
 	constexpr const char* errorMessage = "[ItemPoolManager] [ERROR] - " __FUNCTION__ " - unable to restore %s: %s\n";
 
@@ -1442,7 +1442,7 @@ bool ItemPoolManager::deserialize_game_state(const rapidjson::Document& gameStat
 	return true;
 }
 
-static std::optional<std::ofstream> open_game_state_file(std::filesystem::path filePath, Error& error) noexcept
+static std::optional<std::ofstream> open_game_state_file(std::filesystem::path filePath, Error& error)
 {
 	std::filesystem::path directory = filePath.parent_path();
 	error.reset();
@@ -1474,13 +1474,13 @@ static std::optional<std::ofstream> open_game_state_file(std::filesystem::path f
 	return file;
 }
 
-void ItemPoolManager::__ClearSaveState(uint32_t slot) noexcept
+void ItemPoolManager::__ClearSaveState(uint32_t slot)
 {
 	auto& instance = ItemPoolManager::Get();
 	instance.invalidate_state_slot(slot);
 }
 
-void ItemPoolManager::__SaveToDisk(const std::string& fileName, bool isRerun) noexcept
+void ItemPoolManager::__SaveToDisk(const std::string& fileName, bool isRerun)
 {
 	Error error;
 	auto& instance = ItemPoolManager::Get();
@@ -1503,7 +1503,7 @@ void ItemPoolManager::__SaveToDisk(const std::string& fileName, bool isRerun) no
 	ZHL::Log("[ItemPoolManager] [INFO] - " __FUNCTION__ " - successfully saved %s to \"%s\"\n", fileName.c_str(), filePath.string().c_str());
 }
 
-void ItemPoolManager::__LoadFromDisk(const std::string& fileName, bool isRerun) noexcept
+void ItemPoolManager::__LoadFromDisk(const std::string& fileName, bool isRerun)
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -1524,7 +1524,7 @@ void ItemPoolManager::__LoadFromDisk(const std::string& fileName, bool isRerun) 
 	ItemPoolManager::fix_original_game_state(poolIdRemap, isRerun);
 }
 
-void ItemPoolManager::__DeleteGameState(const std::string& fileName) noexcept
+void ItemPoolManager::__DeleteGameState(const std::string& fileName)
 {
 	std::filesystem::path filePath = get_state_file_path(fileName);
 
@@ -1556,7 +1556,7 @@ void ItemPoolManager::__DeleteGameState(const std::string& fileName) noexcept
 
 #pragma region Fix GameState
 
-static inline int get_new_pool_id(int oldPoolId, const std::vector<int>& poolIdRemap) noexcept
+static inline int get_new_pool_id(int oldPoolId, const std::vector<int>& poolIdRemap)
 {
 	if (oldPoolId < 0 || (uint32_t)oldPoolId >= poolIdRemap.size())
 	{
@@ -1566,9 +1566,9 @@ static inline int get_new_pool_id(int oldPoolId, const std::vector<int>& poolIdR
 	return poolIdRemap[oldPoolId] != POOL_NULL ? poolIdRemap[oldPoolId] : POOL_TREASURE;
 }
 
-static void fix_entity_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap) noexcept; // Forward declaration
+static void fix_entity_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap); // Forward declaration
 
-static inline void fix_player_game_state(GameStatePlayer& player, std::vector<int>& poolIdRemap) noexcept
+static inline void fix_player_game_state(GameStatePlayer& player, std::vector<int>& poolIdRemap)
 {
 	for (auto& historyItem : player._history._historyItems)
 	{
@@ -1587,7 +1587,7 @@ static inline void fix_player_game_state(GameStatePlayer& player, std::vector<in
 	}
 }
 
-static inline void fix_collectible_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap) noexcept
+static inline void fix_collectible_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap)
 {
 	int* sourcePoolType = EntitySaveState::Pickup::GetSourcePoolType(entity);
 	*sourcePoolType = get_new_pool_id(*sourcePoolType, poolIdRemap);
@@ -1599,7 +1599,7 @@ static inline void fix_collectible_save_state(EntitySaveState& entity, const std
 	}
 }
 
-void fix_entity_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap) noexcept
+void fix_entity_save_state(EntitySaveState& entity, const std::vector<int>& poolIdRemap)
 {
 	if (entity.type == 5 && entity.variant == 100 && entity.subtype != 0)
 	{
@@ -1607,7 +1607,7 @@ void fix_entity_save_state(EntitySaveState& entity, const std::vector<int>& pool
 	}
 }
 
-void ItemPoolManager::fix_original_game_state(std::vector<int>& poolIdRemap, bool isRerun) noexcept
+void ItemPoolManager::fix_original_game_state(std::vector<int>& poolIdRemap, bool isRerun)
 {
 	auto& gameState = g_Manager->_gamestate;
 
@@ -1644,7 +1644,7 @@ void ItemPoolManager::fix_original_game_state(std::vector<int>& poolIdRemap, boo
 	}
 }
 
-void ItemPoolManager::handle_dangling_save_states(std::vector<CustomPoolSaveState>& danglingSaveStates) noexcept
+void ItemPoolManager::handle_dangling_save_states(std::vector<CustomPoolSaveState>& danglingSaveStates)
 {
 	auto& gameState = g_Manager->_gamestate;
 
@@ -1661,7 +1661,7 @@ void ItemPoolManager::handle_dangling_save_states(std::vector<CustomPoolSaveStat
 
 #pragma region Others
 
-bool ItemPoolManager::PoolItemDesc::operator==(const PoolItem& item) const noexcept
+bool ItemPoolManager::PoolItemDesc::operator==(const PoolItem& item) const
 {
 	return this->itemId == item._itemID &&
 		this->weight == item._initialWeight &&
@@ -1669,13 +1669,13 @@ bool ItemPoolManager::PoolItemDesc::operator==(const PoolItem& item) const noexc
 		this->removeOn == item._removeOn;
 }
 
-ItemPoolManager::ItemPool* ItemPoolManager::get_pool_by_name(const std::string& name) noexcept
+ItemPoolManager::ItemPool* ItemPoolManager::get_pool_by_name(const std::string& name)
 {
 	auto it = m_PoolByName.find(get_string_hash(name));
 	return it != m_PoolByName.end() ? it->second : nullptr;
 }
 
-void ItemPoolManager::ItemPool::reset_collectible(int collectible) noexcept
+void ItemPoolManager::ItemPool::reset_collectible(int collectible)
 {
 	for (auto& poolItem : this->GetPoolData()->_poolList)
 	{
@@ -1686,7 +1686,7 @@ void ItemPoolManager::ItemPool::reset_collectible(int collectible) noexcept
 	}
 }
 
-void ItemPoolManager::__ResetCollectible(int collectible) noexcept
+void ItemPoolManager::__ResetCollectible(int collectible)
 {
 	auto& instance = ItemPoolManager::Get();
 	for (size_t i = NUM_ITEMPOOLS; i < instance.m_ItemPools.size(); i++)
@@ -1695,12 +1695,12 @@ void ItemPoolManager::__ResetCollectible(int collectible) noexcept
 	}
 }
 
-void ItemPoolManager::ItemPool::add_bible_upgrade(int amount) noexcept
+void ItemPoolManager::ItemPool::add_bible_upgrade(int amount)
 {
 	this->GetPoolData()->_bibleUpgrade += amount;
 }
 
-void ItemPoolManager::__AddBibleUpgrade(uint32_t poolId, int amount) noexcept
+void ItemPoolManager::__AddBibleUpgrade(uint32_t poolId, int amount)
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -1723,7 +1723,7 @@ void ItemPoolManager::__AddBibleUpgrade(uint32_t poolId, int amount) noexcept
 	itemPool->add_bible_upgrade(amount);
 }
 
-uint32_t ItemPoolManager::__GetChaosPool(RNG* rng) noexcept
+uint32_t ItemPoolManager::__GetChaosPool(RNG* rng)
 {
 	constexpr uint32_t scaleFactor = 100;
 	
@@ -1751,7 +1751,7 @@ uint32_t ItemPoolManager::__GetChaosPool(RNG* rng) noexcept
 	return picker.PickOutcome(pickerRNG);
 }
 
-void ItemPoolManager::__GetItemPoolsForCollectible(int collectible, std::vector<uint32_t>& result) noexcept
+void ItemPoolManager::__GetItemPoolsForCollectible(int collectible, std::vector<uint32_t>& result)
 {
 	auto& instance = ItemPoolManager::Get();
 
@@ -1769,12 +1769,12 @@ void ItemPoolManager::__GetItemPoolsForCollectible(int collectible, std::vector<
 	}
 }
 
-uint16_t& ItemPoolManager::ItemPool::get_remaining_genesis_items() noexcept
+uint16_t& ItemPoolManager::ItemPool::get_remaining_genesis_items()
 {
 	return g_Game->_itemPool._remainingGenesisItems[m_Id];
 }
 
-uint16_t& ItemPoolManager::CustomItemPool::get_remaining_genesis_items() noexcept
+uint16_t& ItemPoolManager::CustomItemPool::get_remaining_genesis_items()
 {
 	return m_RemainingGenesisItems;
 }
@@ -1802,7 +1802,7 @@ static const std::map<size_t, int> s_LuaPoolItemFields = {
 	{get_string_hash("removeOn"), LUA_REMOVE_ON},
 };
 
-ItemPoolManager::PoolItemDesc::PoolItemDesc(lua_State* L, int index, Warnings& warnings) noexcept
+ItemPoolManager::PoolItemDesc::PoolItemDesc(lua_State* L, int index, Warnings& warnings)
 {
 	int absIndex = lua_absindex(L, index);
 
@@ -1902,17 +1902,17 @@ ItemPoolManager::PoolItemDesc::PoolItemDesc(lua_State* L, int index, Warnings& w
 	}
 }
 
-ItemPool_Item* ItemPoolManager::ItemPool::GetPoolData() noexcept
+ItemPool_Item* ItemPoolManager::ItemPool::GetPoolData()
 {
 	return &g_Game->_itemPool._pools[m_Id];
 }
 
-ItemPool_Item* ItemPoolManager::CustomItemPool::GetPoolData() noexcept
+ItemPool_Item* ItemPoolManager::CustomItemPool::GetPoolData()
 {
 	return &m_Pool;
 }
 
-void ItemPoolManager::ItemPool::EmplaceItem( size_t position, const ItemPoolManager::PoolItemDesc& poolItem) noexcept
+void ItemPoolManager::ItemPool::EmplaceItem( size_t position, const ItemPoolManager::PoolItemDesc& poolItem)
 {
 	auto* poolData = this->GetPoolData();
 	auto& poolList = poolData->_poolList;
@@ -1925,7 +1925,7 @@ void ItemPoolManager::ItemPool::EmplaceItem( size_t position, const ItemPoolMana
 	this->update_static_pool_list();
 }
 
-void ItemPoolManager::ItemPool::EraseItem(size_t position) noexcept
+void ItemPoolManager::ItemPool::EraseItem(size_t position)
 {
 	auto* poolData = this->GetPoolData();
 	auto& poolList = poolData->_poolList;
@@ -1943,12 +1943,12 @@ void ItemPoolManager::ItemPool::EraseItem(size_t position) noexcept
 	this->update_static_pool_list();
 }
 
-uint16_t ItemPoolManager::ItemPool::GetRemainingGenesisItems() noexcept
+uint16_t ItemPoolManager::ItemPool::GetRemainingGenesisItems()
 {
 	return this->get_remaining_genesis_items();
 }
 
-void ItemPoolManager::ItemPool::IncreaseRemainingGenesisItems(uint16_t amount) noexcept
+void ItemPoolManager::ItemPool::IncreaseRemainingGenesisItems(uint16_t amount)
 {
 	constexpr uint16_t max = std::numeric_limits<uint16_t>::max();
 	uint16_t& value = this->get_remaining_genesis_items();
@@ -1956,27 +1956,27 @@ void ItemPoolManager::ItemPool::IncreaseRemainingGenesisItems(uint16_t amount) n
 	value += amount;
 }
 
-void ItemPoolManager::ItemPool::DecreaseRemainingGenesisItems(uint16_t amount) noexcept
+void ItemPoolManager::ItemPool::DecreaseRemainingGenesisItems(uint16_t amount)
 {
 	uint16_t& value = this->get_remaining_genesis_items();
 	amount = std::min(amount, value);
 	value -= amount;
 }
 
-ItemPoolManager::ItemPool* ItemPoolManager::GetItemPool(uint32_t id) noexcept
+ItemPoolManager::ItemPool* ItemPoolManager::GetItemPool(uint32_t id)
 {
 	auto& instance = ItemPoolManager::Get();
 	return id < instance.m_ItemPools.size() ? instance.m_ItemPools[id].get() : nullptr;
 }
 
-int ItemPoolManager::GetPoolIdByName(const std::string& name) noexcept
+int ItemPoolManager::GetPoolIdByName(const std::string& name)
 {
 	auto& instance = ItemPoolManager::Get();
 	auto* itemPool = instance.get_pool_by_name(name);
 	return itemPool ? itemPool->m_Id : -1;
 }
 
-void ItemPoolManager::ItemPool::AddVirtualItem(const ItemPoolManager::PoolItemDesc& poolItem) noexcept
+void ItemPoolManager::ItemPool::AddVirtualItem(const ItemPoolManager::PoolItemDesc& poolItem)
 {
 	auto& manager = ItemPoolManager::Get();
 
@@ -1994,7 +1994,7 @@ void ItemPoolManager::ItemPool::AddVirtualItem(const ItemPoolManager::PoolItemDe
 	}
 }
 
-void ItemPoolManager::ItemPool::AddTemporaryItem(const ItemPoolManager::PoolItemDesc& poolItem, Error& error) noexcept
+void ItemPoolManager::ItemPool::AddTemporaryItem(const ItemPoolManager::PoolItemDesc& poolItem, Error& error)
 {
 	error.reset();
 	auto& instance = ItemPoolManager::Get();
@@ -2015,7 +2015,7 @@ void ItemPoolManager::ItemPool::AddTemporaryItem(const ItemPoolManager::PoolItem
 	this->EmplaceItem(poolData->_poolList.size(), poolItem);
 }
 
-void ItemPoolManager::ItemPool::RemoveTemporaryItem(const ItemPoolManager::PoolItemDesc& poolItem, Error& error) noexcept
+void ItemPoolManager::ItemPool::RemoveTemporaryItem(const ItemPoolManager::PoolItemDesc& poolItem, Error& error)
 {
 	error.reset();
 	auto& instance = ItemPoolManager::Get();
@@ -2118,7 +2118,7 @@ HOOK_METHOD(ItemPool, GetItemPoolsForCollectible, (int collectible, std_vector_u
 
 constexpr const char* asmPatchMessage = "[ItemPoolManager] Patching %s at %p\n";
 
-static void ASMPatchCheckGetCollectiblePool(const char* signature, const char* functionName) noexcept
+static void ASMPatchCheckGetCollectiblePool(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2141,7 +2141,7 @@ static void ASMPatchCheckGetCollectiblePool(const char* signature, const char* f
 }
 
 // Pass the correct ItemPool_Item to pick_collectible
-static ItemPool_Item* __stdcall asm_patch_get_item_pool_data(size_t itemPoolOffset) noexcept
+static ItemPool_Item* __stdcall asm_patch_get_item_pool_data(size_t itemPoolOffset)
 {
 	int itemPoolType = itemPoolOffset / sizeof(ItemPool_Item);
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
@@ -2155,7 +2155,7 @@ static ItemPool_Item* __stdcall asm_patch_get_item_pool_data(size_t itemPoolOffs
 
 // This patch covers both pick_collectible and the BibleUpgrade evaluation
 // The code is now similar enough to allow the same patch to work on both tries
-static void ASMPatchPickCollectible(const char* signature, const char* functionName) noexcept
+static void ASMPatchPickCollectible(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2174,7 +2174,7 @@ static void ASMPatchPickCollectible(const char* signature, const char* functionN
 	sASMPatcher.PatchAt(address, &patch);
 }
 
-static void __stdcall asm_patch_increase_genesis_items(uint32_t itemPoolType) noexcept
+static void __stdcall asm_patch_increase_genesis_items(uint32_t itemPoolType)
 {
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
 	if (itemPool)
@@ -2183,7 +2183,7 @@ static void __stdcall asm_patch_increase_genesis_items(uint32_t itemPoolType) no
 	}
 }
 
-static void ASMPatchPreTriggerGenesis(const char* signature, const char* functionName) noexcept
+static void ASMPatchPreTriggerGenesis(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2201,7 +2201,7 @@ static void ASMPatchPreTriggerGenesis(const char* signature, const char* functio
 	sASMPatcher.PatchAt(address, &patch);
 }
 
-static void __stdcall asm_patch_decrease_genesis_items(uint32_t itemPoolType) noexcept
+static void __stdcall asm_patch_decrease_genesis_items(uint32_t itemPoolType)
 {
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
 	if (itemPool)
@@ -2210,7 +2210,7 @@ static void __stdcall asm_patch_decrease_genesis_items(uint32_t itemPoolType) no
 	}
 }
 
-static void ASMPatchDecreaseRemainingGenesisItems(const char* signature, const char* functionName) noexcept
+static void ASMPatchDecreaseRemainingGenesisItems(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2228,7 +2228,7 @@ static void ASMPatchDecreaseRemainingGenesisItems(const char* signature, const c
 	sASMPatcher.PatchAt(address, &patch);
 }
 
-static uint16_t __stdcall asm_patch_get_genesis_items(int itemPoolType) noexcept
+static uint16_t __stdcall asm_patch_get_genesis_items(int itemPoolType)
 {
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
 	if (!itemPool)
@@ -2239,7 +2239,7 @@ static uint16_t __stdcall asm_patch_get_genesis_items(int itemPoolType) noexcept
 	return itemPool->GetRemainingGenesisItems();
 }
 
-static void ASMPatchGetNextGenesisPool(const char* getGenesisItems, const char* firstLoopCompare, const char* secondLoopCompare, const char* functionName) noexcept
+static void ASMPatchGetNextGenesisPool(const char* getGenesisItems, const char* firstLoopCompare, const char* secondLoopCompare, const char* functionName)
 {
 	SigScan scannerGetGenesis(getGenesisItems);
 	scannerGetGenesis.Scan();
@@ -2290,7 +2290,7 @@ static void ASMPatchGetNextGenesisPool(const char* getGenesisItems, const char* 
 	sASMPatcher.PatchAt(addressSecondLoopCompare, &patchSecondLoopCompare);
 }
 
-static std::vector<PoolItem>* __stdcall asm_patch_get_static_pool_list(uint32_t itemPoolOffset) noexcept
+static std::vector<PoolItem>* __stdcall asm_patch_get_static_pool_list(uint32_t itemPoolOffset)
 {
 	uint32_t itemPoolType = itemPoolOffset / sizeof(ItemPool_Item);
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
@@ -2302,7 +2302,7 @@ static std::vector<PoolItem>* __stdcall asm_patch_get_static_pool_list(uint32_t 
 	return itemPool->__GetStaticPoolList();
 }
 
-static void ASMPatchBagOfCraftingPoolListIterator(const char* signature, const char* functionName) noexcept
+static void ASMPatchBagOfCraftingPoolListIterator(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2322,7 +2322,7 @@ static void ASMPatchBagOfCraftingPoolListIterator(const char* signature, const c
 	sASMPatcher.PatchAt(address, &patch);
 }
 
-static void ASMPatchPoolNotFoundLogINFO(const char* signature, const char* functionName) noexcept
+static void ASMPatchPoolNotFoundLogINFO(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2339,7 +2339,7 @@ static void ASMPatchPoolNotFoundLogINFO(const char* signature, const char* funct
 
 const char* s_EmptyString = "";
 
-static const char* __stdcall asm_patch_get_item_pool_name(int itemPoolType) noexcept
+static const char* __stdcall asm_patch_get_item_pool_name(int itemPoolType)
 {
 	auto* itemPool = ItemPoolManager::GetItemPool(itemPoolType);
 	if (!itemPool)
@@ -2350,7 +2350,7 @@ static const char* __stdcall asm_patch_get_item_pool_name(int itemPoolType) noex
 	return itemPool->GetName().c_str();
 }
 
-static void ASMPatchGetDebug12PoolName(const char* signature, const char* functionName) noexcept
+static void ASMPatchGetDebug12PoolName(const char* signature, const char* functionName)
 {
 	SigScan scanner(signature);
 	scanner.Scan();
@@ -2369,7 +2369,7 @@ static void ASMPatchGetDebug12PoolName(const char* signature, const char* functi
 	sASMPatcher.PatchAt(address, &patch);
 }
 
-void ASMPatches::__ItemPoolManager() noexcept
+void ASMPatches::__ItemPoolManager()
 {
 	ASMPatchCheckGetCollectiblePool("83fe1e0f87", "ItemPool::GetCollectible (Check Pool)");
 	ASMPatchPickCollectible("83c00403c78945??e8", "ItemPool::GetCollectible (First Try)");
@@ -2380,7 +2380,7 @@ void ASMPatches::__ItemPoolManager() noexcept
 	ASMPatchBagOfCraftingPoolListIterator("8d8e????????03ca", "Entity_Player::get_crafting_output");
 }
 
-void ASMPatches::__ItemPoolManagerExtra() noexcept
+void ASMPatches::__ItemPoolManagerExtra()
 {
 	ASMPatchPoolNotFoundLogINFO("e8????????c645fc0383c40c", "ItemPool::load_pools");
 	ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d45??e9", "EntityPlayer::RenderDebugInfo");

@@ -4,6 +4,7 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "../SaveSyncing/SaveSyncing.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
@@ -39,6 +40,7 @@
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
@@ -163,6 +165,7 @@ void PerformASMPatches() {
 	ASMPatchConsoleRunCommand();
 
 	// Callbacks
+	CustomCallbacks::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
 	PatchPreEntityTakeDamageCallbacks();
@@ -283,6 +286,7 @@ void PerformASMPatches() {
 	ASMPatches::__ItemPoolManagerExtra();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForCustomModManager();
+	ASMPatchRedirectToLocalizationFolders();
 	ASMFixes();
 	HookImGui();
 

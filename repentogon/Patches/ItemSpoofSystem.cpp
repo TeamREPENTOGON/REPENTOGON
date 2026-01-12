@@ -8,35 +8,35 @@ static std::bitset<CollectibleType::NUM_COLLECTIBLES> s_reworkedCollectibles;
 static std::bitset<ePlayerType::NUM_PLAYER_TYPES> s_reworkedBirthrights;
 static std::bitset<TrinketType::NUM_TRINKETS> s_reworkedTrinkets;
 
-void ItemSpoofSystem::StartLuaRequest() noexcept
+void ItemSpoofSystem::StartLuaRequest()
 {
     s_isLuaRequest = true;
 }
 
-void ItemSpoofSystem::EndLuaRequest() noexcept
+void ItemSpoofSystem::EndLuaRequest()
 {
     s_isLuaRequest = false;
 }
 
-void ItemSpoofSystem::ReworkCollectible(int collectible) noexcept
+void ItemSpoofSystem::ReworkCollectible(int collectible)
 {
     assert(CollectibleType::COLLECTIBLE_NULL < collectible && collectible < CollectibleType::NUM_COLLECTIBLES);
     s_reworkedCollectibles.set(collectible, true);
 }
 
-void ItemSpoofSystem::ReworkBirthright(int playerType) noexcept
+void ItemSpoofSystem::ReworkBirthright(int playerType)
 {
     assert(0 <= playerType && playerType < ePlayerType::NUM_PLAYER_TYPES);
     s_reworkedBirthrights.set(playerType, true);
 }
 
-void ItemSpoofSystem::ReworkTrinket(int trinket) noexcept
+void ItemSpoofSystem::ReworkTrinket(int trinket)
 {
     assert(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS);
     s_reworkedTrinkets.set(trinket, true);
 }
 
-static bool is_reworked_collectible(int collectible, int playerType) noexcept
+static bool is_reworked_collectible(int collectible, int playerType)
 {
     if (collectible == CollectibleType::COLLECTIBLE_BIRTHRIGHT)
     {
@@ -57,7 +57,7 @@ static bool is_reworked_collectible(int collectible, int playerType) noexcept
     return s_reworkedCollectibles.test(collectible);
 }
 
-static bool is_reworked_trinket(int trinket) noexcept
+static bool is_reworked_trinket(int trinket)
 {
     if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
     {

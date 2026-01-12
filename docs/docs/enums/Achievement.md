@@ -812,3 +812,8 @@ tags:
 |635 |ASCENT_DOOR {: .copyable } |  |
 |636 |DEATH_CERTIFICATE {: .copyable } |  |
 |637 |DEAD_GOD {: .copyable } |  |
+|638 |PLAYED_ONLINE {: .copyable } |  |
+|639 |WON_ONLINE {: .copyable } |  |
+|639 |ONLINE_WON {: .copyable } |  |
+|640 |WON_ONLINE_DAILY {: .copyable } |  |
+|640 |DAILY_ONLINE_WON {: .copyable } |  |

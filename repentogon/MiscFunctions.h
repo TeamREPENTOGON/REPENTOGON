@@ -48,7 +48,7 @@ namespace REPENTOGON {
 		return ss.str();
 	}
 
-	static std::string StringFormat(const char* format, va_list args) noexcept
+	static std::string StringFormat(const char* format, va_list args)
 	{
 		int size = vsnprintf(nullptr, 0, format, args);
 
@@ -58,7 +58,7 @@ namespace REPENTOGON {
 		return result;
 	}
 
-	static inline std::string StringFormat(const char* format, ...) noexcept
+	static inline std::string StringFormat(const char* format, ...)
 	{
 		va_list args;
 		va_start(args, format);
@@ -68,7 +68,7 @@ namespace REPENTOGON {
 	}
 
 	template <typename NewType, typename OldType>
-	static inline NewType DynamicNumberCast(OldType value, std::optional<std::string>& error) noexcept
+	static inline NewType DynamicNumberCast(OldType value, std::optional<std::string>& error)
 	{
 		static_assert(std::is_arithmetic<NewType>::value, "NewType must be a number type");
 		static_assert(std::is_arithmetic<OldType>::value, "OldType must be a number type");
@@ -154,7 +154,7 @@ namespace REPENTOGON {
 
 	namespace Lua
 	{
-		static std::string GetFunctionName(lua_State* L, lua_Debug* ar) noexcept
+		static std::string GetFunctionName(lua_State* L, lua_Debug* ar)
 		{
 			if (*ar->namewhat != '\0')
 			{
@@ -168,7 +168,7 @@ namespace REPENTOGON {
 			return StringFormat("function at line %d", ar->linedefined);
 		}
 
-		static std::string CleanTraceback(lua_State* L, int level) noexcept
+		static std::string CleanTraceback(lua_State* L, int level)
 		{
 			lua_Debug ar;
 			std::string stackTraceback = "Stack Traceback:\n";
@@ -203,12 +203,12 @@ namespace REPENTOGON {
 			return stackTraceback;
 		}
 
-		static std::string GenerateInvalidTypeMessage(lua_State* L, int idx, const char* expectedType) noexcept
+		static std::string GenerateInvalidTypeMessage(lua_State* L, int idx, const char* expectedType)
 		{
 			return StringFormat("%s expected, got %s", expectedType, lua_typename(L, lua_type(L, idx)));
 		}
 
-		static inline std::optional<bool> ReadBool(lua_State* L, int index, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBool(lua_State* L, int index, std::optional<std::string>& error, bool optional = true)
 		{
 			error.reset();
 
@@ -225,7 +225,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static std::optional<T> ReadInteger(lua_State* L, int index, std::optional<std::string>& error, bool optional = true) noexcept
+		static std::optional<T> ReadInteger(lua_State* L, int index, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -271,7 +271,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static std::optional<T> ReadNumber(lua_State* L, int index, std::optional<std::string>& error, bool optional = true) noexcept
+		static std::optional<T> ReadNumber(lua_State* L, int index, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -296,7 +296,7 @@ namespace REPENTOGON {
 			return value;
 		}
 
-		static inline std::optional<std::string> ReadString(lua_State* L, int index, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadString(lua_State* L, int index, std::optional<std::string>& error, bool optional = true)
 		{
 			error.reset();
 
@@ -312,7 +312,7 @@ namespace REPENTOGON {
 			return lua_tostring(L, index);
 		}
 
-		static inline std::optional<bool> ReadBoolField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBoolField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true)
 		{
 			assert(lua_istable(L, index));
 			assert(fieldName);
@@ -325,7 +325,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadIntegerField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<T> ReadIntegerField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 			assert(lua_istable(L, index));
@@ -339,7 +339,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadNumberField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<T> ReadNumberField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 			assert(lua_istable(L, index));
@@ -352,7 +352,7 @@ namespace REPENTOGON {
 			return result;
 		}
 
-		static inline std::optional<std::string> ReadStringField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadStringField(lua_State* L, int index, const char* fieldName, std::optional<std::string>& error, bool optional = true)
 		{
 			assert(lua_istable(L, index));
 			assert(fieldName);
@@ -369,12 +369,12 @@ namespace REPENTOGON {
 	{
 		static const char* kTypeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
 
-		static std::string GenerateInvalidTypeMessage(const rapidjson::Value& jsonValue, const char* expectedType) noexcept
+		static std::string GenerateInvalidTypeMessage(const rapidjson::Value& jsonValue, const char* expectedType)
 		{
 			return StringFormat("%s expected, got %s", expectedType, kTypeNames[jsonValue.GetType()]);
 		}
 
-		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, std::optional<std::string>& error) noexcept
+		static inline std::optional<bool> ReadBool(const rapidjson::Value& jsonValue, std::optional<std::string>& error)
 		{
 			error.reset();
 
@@ -388,7 +388,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, std::optional<std::string>& error) noexcept
+		static std::optional<T> ReadInteger(const rapidjson::Value& jsonValue, std::optional<std::string>& error)
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 
@@ -426,7 +426,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, std::optional<std::string>& error) noexcept
+		static std::optional<T> ReadNumber(const rapidjson::Value& jsonValue, std::optional<std::string>& error)
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
@@ -447,7 +447,7 @@ namespace REPENTOGON {
 			return value;
 		}
 
-		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, std::optional<std::string>& error) noexcept
+		static inline std::optional<std::string> ReadString(const rapidjson::Value& jsonValue, std::optional<std::string>& error)
 		{
 			error.reset();
 
@@ -460,7 +460,7 @@ namespace REPENTOGON {
 			return jsonValue.GetString();
 		}
 
-		static inline std::optional<bool> ReadBoolMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<bool> ReadBoolMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true)
 		{
 			assert(jsonValue.IsObject());
 			assert(memberName);
@@ -481,7 +481,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadIntegerMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<T> ReadIntegerMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_integral<T>::value, "T must be an integer type");
 			assert(jsonValue.IsObject());
@@ -503,7 +503,7 @@ namespace REPENTOGON {
 		}
 
 		template<typename T>
-		static inline std::optional<T> ReadNumberMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<T> ReadNumberMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true)
 		{
 			static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 			assert(jsonValue.IsObject());
@@ -524,7 +524,7 @@ namespace REPENTOGON {
 			return ReadNumber<T>(it->value, error);
 		}
 
-		static inline std::optional<std::string> ReadStringMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true) noexcept
+		static inline std::optional<std::string> ReadStringMember(const rapidjson::Value& jsonValue, const char* memberName, std::optional<std::string>& error, bool optional = true)
 		{
 			assert(jsonValue.IsObject());
 			assert(memberName);

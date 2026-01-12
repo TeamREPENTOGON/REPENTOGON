@@ -539,6 +539,7 @@ bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }
 
+/*
 void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 	if ((_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {
 		_runTimeLevel = stage;
@@ -547,6 +548,7 @@ void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 	}
 	return;
 }
+*/
 
 void EntityList_EL::Untie() {
 	if (!_sublist) {
@@ -644,7 +646,7 @@ void Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollect
 	return;
 }
 
-void DestinationQuad::RotateRadians(const Vector& pivot, float radians) noexcept
+void DestinationQuad::RotateRadians(const Vector& pivot, float radians)
 {
 	if (radians == 0.0)
 	{

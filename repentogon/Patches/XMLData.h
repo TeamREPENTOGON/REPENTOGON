@@ -84,6 +84,10 @@ inline string stringlower(const char* str)
 	return s;
 }
 
+// Returns the ID string of the current mod being processed, or "BaseGame" for vanilla XMLs.
+// Only relevant at times where XMLs are actually being loaded by the game.
+std::string GetXMLDataLastModId();
+
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;
@@ -748,8 +752,8 @@ struct XMLData {
 	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLBossPortrait* BossPortraitData = new XMLBossPortrait();
 	XMLTrinket* TrinketData = new XMLTrinket();
-	XMLMusic* MusicData = new XMLMusic(118);
-	XMLSound* SoundData = new XMLSound(832);
+	XMLMusic* MusicData = new XMLMusic(119);
+	XMLSound* SoundData = new XMLSound(914);
 	XMLPill* PillData = new XMLPill();
 	XMLCard* CardData = new XMLCard();
 	XMLChallenge* ChallengeData = new XMLChallenge();
@@ -960,7 +964,7 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 }
 
 inline char* GetResources(const string& dir, const string& filename) {
-	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
+	vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string& path : paths) {
 		ifstream file(path.c_str());
 		if (file.is_open()) {
@@ -1065,7 +1069,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
+			vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					targetresource = path;
@@ -1082,7 +1086,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\content-dlc3\\" + xml.filename, dir + "\\content\\" + xml.filename };
+			vector<string> paths = { dir + "\\content-repentogon\\" + xml.filename, dir + "\\content-dlc3\\" + xml.filename, dir + "\\content\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					lastmodid = string(mod->GetId());

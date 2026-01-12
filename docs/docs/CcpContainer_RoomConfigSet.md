@@ -23,19 +23,19 @@ The length (#) operation. Returns the amount of entities in the list.
 
 ___
 ## Functions
-### Get () {: aria-label='Functions' }
-[ ](#){: .abrep .tooltip .badge }
-#### [RoomConfigRoom](RoomConfigRoom.md) Get ( int idx ) {: .copyable aria-label='Functions' }
-
-Returns a [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) at the index of the list provided.
-
-___
 ### AddRooms () {: aria-label='Functions' }
 #### [RoomConfigRoom](RoomConfigRoom.md)[] AddRooms ( table[] Rooms ) {: .copyable aria-label='Functions' }
 
 Adds the provided Lua Rooms to the RoomConfigSet. For details on how to generate Lua Rooms, refer to the [Custom StageAPI Github page](https://github.com/Meowlala/BOIStageAPI15/tree/master).
 
 The function returns a table containing the placed RoomConfigRoom objects, in the same order as the input `Rooms` table. If a room at a given index could not be converted into a valid RoomConfigRoom, the corresponding entry in the returned table will be nil instead.
+
+___
+### Get () {: aria-label='Functions' }
+[ ](#){: .abrep .tooltip .badge }
+#### [RoomConfigRoom](RoomConfigRoom.md) Get ( int idx ) {: .copyable aria-label='Functions' }
+
+Returns a [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) at the index of the list provided.
 
 ___
 ## Variables

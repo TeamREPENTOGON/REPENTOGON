@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/EntityPlus.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
 
 LUA_FUNCTION(Lua_TearGetDeadEyeIntensity)
@@ -135,6 +136,22 @@ LUA_FUNCTION(Lua_TearInHitList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_TearSetInitSound) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	uint32_t soundId = (uint32_t)luaL_checkinteger(L, 2);
+
+	if (soundId >= g_Manager->_sfxManager._sounds.size())
+	{
+		luaL_argerror(L, 2, "Invalid SoundEffect");
+	}
+
+	EntityTearPlus* tearPlus = GetEntityTearPlus(tear);
+	assert(tearPlus);
+
+	tearPlus->initSound = soundId;
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -158,6 +175,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RemoveFromHitList", Lua_TearRemoveFromHitList },
 		{ "AddToHitList", Lua_TearAddToHitList },
 		{ "InHitList", Lua_TearInHitList },
+		{ "SetInitSound", Lua_TearSetInitSound },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);
