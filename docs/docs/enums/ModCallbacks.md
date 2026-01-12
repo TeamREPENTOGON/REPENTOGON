@@ -137,22 +137,22 @@ Added boolean argument that identifies if it is running due to game shutdown.
 
 Now runs earlier during shutdown, so code is less likely to crash.
 
-|DLC|Value|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|:--|
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
 |73 |MC_PRE_MOD_UNLOAD {: .copyable } | table Mod, boolean ShuttingDown | - | void |
 
 ### MC_GET_PILL_EFFECT
 Now passes EntityPlayer as an argument.
 
-|DLC|Value|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|:--|
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
 |65 |MC_GET_PILL_EFFECT {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) SelectedPillEffect, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) PillColor, [EntityPlayer](../EntityPlayer.md) Player) | - | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) |
 
 ### MC_POST_ENTITY_KILL
 Now passes **Kill Source** as an argument.
 
-|DLC|Value|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|:--|
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
 |68 |MC_POST_ENTITY_KILL {: .copyable } | ([Entity](../Entity.md) Entity, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) KillSource) | - | void |
 
 ## New Callbacks
@@ -1776,13 +1776,13 @@ Return `false` to stop the player from using a bomb.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1020 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
+|1220 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
 ### MC_POST_PLAYER_USE_BOMB {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityBomb](../EntityBomb.md) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
+|1221 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityBomb](../EntityBomb.md) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
 
 ### MC_POST_BOMB_DAMAGE {: .copyable }
 Called after [Game():BombDamage()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombdamage) is called, used by the game to damage entities within a radius for explosions and similar effects.
@@ -2451,7 +2451,7 @@ Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1284 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+|1284 |MC_POST_PLAYER_REMOVE_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
 
 ### MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
 Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.

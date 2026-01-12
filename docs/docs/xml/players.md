@@ -37,6 +37,8 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |achievement|int or string|This is now respected on modded characters. For mods, it's best to define this as the *name* of the achievement (for example, `achievement='TaintedPeter'`, TaintedPeter being the name attribute of the achievement). Characters with this tag should have a second frame in their `characterportraits(alt).anm2` which should be the "locked" picture for the character. In addition, all stat/item layers on the main menu will be hidden and the `Unlocked By` layer will be visible. See the [achievements XML section](achievements.md) for more info.|
 |hideachievement|int or string|Hides the character from the menu until this achievement is earned. Must be used on the non-tainted version of a character.|
 |modcostume|int|Set this to match the "id" attribute of a costume with type="none" defined in the same mod (in [costumes2.xml](costumes.md)) to have that costume permanantly applied to the character (including during the mineshaft chase sequence). You cannot set both this and the "costume" attribute for vanilla costumes at the same time.|
+|hurtsound|int or string|Set this to define a hurt sound for the character whenever they would take damage.|
+|deathsound|int or string|Set this to define a death sound for the character whenever they would die or touch a White Fireplace.|
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/players.html).
