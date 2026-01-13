@@ -70,7 +70,8 @@ Used in place of the sprites provided by [GetStackedStreakSprite](HUD.md#getstac
 ___
 ### GetPoopSpellSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPoopSpellSprite ( ) {: .copyable aria-label='Functions' }
-Tainted blue baby poop spell sprite
+Tainted blue baby poop spell sprite.
+
 ___
 ### GetStackedStreakSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetStackedStreakSprite ( int Index = 0 ) {: .copyable aria-label='Functions' }

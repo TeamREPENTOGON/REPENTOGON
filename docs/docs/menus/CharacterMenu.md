@@ -29,6 +29,10 @@ ___
 #### [Sprite](../Sprite.md) GetBGSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetCharacterMenuIDFromPlayerType () {: aria-label='Functions' }
+#### int GetCharacterMenuIDFromPlayerType ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character ) {: .copyable aria-label='Functions' }
+
+___
 ### GetCharacterPortraitSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetCharacterPortraitSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -107,6 +111,11 @@ ___
 ___
 ### GetSelectedCharacterID () {: aria-label='Functions' }
 #### int GetSelectedCharacterID ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSelectedCharacterPlayerType () {: aria-label='Functions' }
+#### [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) GetSelectedCharacterPlayerType ( ) {: .copyable aria-label='Functions' }
+Returns the PlayerType for the character currently selected in the menu.
 
 ___
 ### GetTaintedBGDecoSprite () {: aria-label='Functions' }

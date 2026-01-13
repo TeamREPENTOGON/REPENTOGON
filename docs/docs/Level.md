@@ -48,6 +48,10 @@ If set, the level will automatically attempt to place the Knife Piece puzzle doo
 	This is set to `SpecialQuest.DEFAULT` immediately before calling `MC_PRE_LEVEL_INIT`.
 
 ___
+### GetGenerationRNG () {: aria-label='Functions' }
+#### [RNG](RNG.md) GetGenerationRNG ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetGreedWavesClearedWithoutRedHeartDamage () {: aria-label='Functions' }
 #### int GetGreedWavesClearedWithoutRedHeartDamage ( ) {: .copyable aria-label='Functions' }
 

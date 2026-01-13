@@ -29,6 +29,11 @@ ___
 Seems to only be used by Crane Game and Hell Game. Gets the collectible that will be awarded as the prize when winning.
 
 ___
+### GetPrizeSprite () {: aria-label='Functions' }
+#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetPrizeSprite ( ) {: .copyable aria-label='Functions' }
+Returns the sprite used by Shell Game and Hell Game for the currently selected prize. Plays the "Prizes" animation and hides all layers but one (plus the skull layer) for the selected prize.
+
+___
 ### GetPrizeType () {: aria-label='Functions' }
 #### int GetPrizeType ( ) {: .copyable aria-label='Functions' }
 Returns an integer that varies based on the slot machine.

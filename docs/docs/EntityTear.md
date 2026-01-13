@@ -15,6 +15,11 @@ Now accepts a `Force` argument to force the tear into re-evaluating what tear sc
 ___
 ## Functions
 
+### ClearHitList () {: aria-label='Functions' }
+#### void ClearHitList ( ) {: .copyable aria-label='Functions' }
+Clears the array of hit entities, allowing them to be hit again.
+
+___
 ### FireSplitTear () {: aria-label='Functions' }
 #### [EntityTear](EntityTear.md) FireSplitTear ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, float DamageMultiplier = 0.5, float SizeMultiplier = 0.6, int Variant = 0, [SplitTearType](enums/SplitTearType.md) splitType = SplitTearType.SPLIT_GENERIC ) {: .copyable aria-label='Functions' }
 Fire a new tear that inherits many attributes from this tear (flags, damage, size, color, etc).
@@ -35,7 +40,6 @@ ___
 ### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
-
 
 ___
 ### GetTearEffectSprite () {: aria-label='Functions' }

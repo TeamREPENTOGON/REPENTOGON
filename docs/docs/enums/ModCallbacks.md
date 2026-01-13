@@ -1945,7 +1945,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1068 |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean PlaySound) | - | void |
+|1068 |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean Silent) | - | void |
+
+### MC_POST_ROOM_TRIGGER_CLEAR {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1143 |MC_POST_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean Silent) | - | void |
 
 ### MC_POST_SAVESLOT_LOAD {: .copyable }
 This is called wheenver a saveslot is loaded by the game.
@@ -2204,7 +2211,7 @@ Called before a ghost pickup of the loot content is applied to the pickup. Retur
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1335 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup | void | boolean |
+|1335 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md)) Pickup | void | boolean |
 
 ### MC_POST_PLAYER_ADD_EFFECT {: .copyable }
 Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is added to a player.

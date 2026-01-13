@@ -600,6 +600,10 @@ Returns the entity effect representing the target of the [Marked](https://bindin
 If the target is not displayed on the ground, this function returns `nil`.
 
 ___
+### GetMawOfTheVoidCharge () {: aria-label='Functions' }
+#### int GetMawOfTheVoidCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetMaxBladderCharge () {: aria-label='Functions' }
 #### int GetMaxBladderCharge ( ) {: .copyable aria-label='Functions' }
 Returns the maximum charge for when the player stops shooting and charges the Kidney Stone item.
@@ -634,7 +638,11 @@ ___
 
 ___
 ### GetMetronomeCollectibleID () {: aria-label='Functions' }
-#### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetMontezumaRevengeCharge () {: aria-label='Functions' }
+#### int GetMontezumaRevengeCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetMovingBoxContents () {: aria-label='Functions' }
@@ -1277,6 +1285,10 @@ ___
 Sets the cooldown of Tainted Magdalene's swing attack to the specified amount of frames.
 
 ___
+### SetMawOfTheVoidCharge () {: aria-label='Functions' }
+#### void SetMawOfTheVoidCharge ( int Charge ) {: .copyable aria-label='Functions' }
+
+___
 ### SetMaxBladderCharge () {: aria-label='Functions' }
 #### void SetMaxBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
 Sets the maximum charge for when the player stops shooting and charges the Kidney Stone item.
@@ -1288,6 +1300,10 @@ Sets the duration of the Mega Blast laser to the specified amount of frames. Set
 
 ???+ bug "Bug"
 	If the Mega Blast laser is active and you call the function again with a lower duration, the laser will persist even after the amount of frames has passed until the player leaves the room.
+
+___
+### SetMontezumaRevengeCharge () {: aria-label='Functions' }
+#### void SetMontezumaRevengeCharge ( int Charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetNextUrethraBlockFrame () {: aria-label='Functions' }

@@ -357,6 +357,7 @@ nav:
     - EntitiesSaveState: EntitiesSaveState.md
     - EntitiesSaveStateVector: EntitiesSaveStateVector.md
   - RoomTransition: RoomTransition.md
+  - Seeds: Seeds.md
   - Sprite:
     - AnimationData: AnimationData.md
     - AnimationFrame: AnimationFrame.md

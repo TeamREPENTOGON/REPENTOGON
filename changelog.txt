@@ -289,7 +289,7 @@ Additions:
 	- MC_POST_START_AMBUSH_WAVE(boolean BossAmbush)
 		Fires at the start of challenge/boss rush room wave
 	- MC_POST_START_GREED_WAVE
-		(add description later)
+		Fires at the start of a Greed Mode wave
 	- MC_EVALUATE_MULTI_SHOT_PARAMS(EntityPlayer, MultiShotParams, WeaponType)
 		Optional param: PlayerType
 		Replacement for the legacy MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS that passes along a mutable MultiShotParams and allows all mods to modify it.
