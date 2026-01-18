@@ -81,7 +81,7 @@ Spawns a timer EntityEffect. This entity will starting running `Function` functi
 ___
 ### CreateWeapon () {: aria-label='Functions' }
 #### [Weapon](Weapon.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) Owner ) {: .copyable aria-label='Functions' }
-Creates and returns a [Weapon](Weapon.md) object. It is not automatically useable by `owner` and `Isaac.SetWeaponType` must be used in tandem.
+Creates and returns a [Weapon](Weapon.md) object. It is not automatically useable by `owner` and [EntityPlayer:SetWeapon](EntityPlayer.md#setweapon) must be used in tandem.
 ___
 ### DestroyWeapon () {: aria-label='Functions' }
 #### void DestroyWeapon ( [Weapon](Weapon.md) Weapon ) {: .copyable aria-label='Functions' }
