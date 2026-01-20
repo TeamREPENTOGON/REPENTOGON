@@ -1255,7 +1255,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			string meh = stringlower(auxnode->name());
 			const char* auxnodename = meh.c_str();
-			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0) || (strcmp(auxnodename, "item") == 0)) {
+			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0)) {
 				XMLAttributes item;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{

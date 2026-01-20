@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_PGDUnlock)
 	if (!success) {
 		// It failed, so reset state manually
 		nextSkipAchiev = -1;
-;	}
+;	}  
 	lua_pushboolean(L, success);
 	return 1;
 }
