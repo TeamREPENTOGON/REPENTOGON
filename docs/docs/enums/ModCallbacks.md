@@ -1068,6 +1068,15 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1024 |MC_POST_HUD_RENDER {: .copyable } | void | - | void |
 
+### MC_PRE_UPDATE {: .copyable }
+Called before the game's main update cycle begins.
+
+Return `true` to cancel the update, effectively pausing the game.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1026 |MC_PRE_UPDATE {: .copyable } | void | - | boolean |
+
 ### MC_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
 
