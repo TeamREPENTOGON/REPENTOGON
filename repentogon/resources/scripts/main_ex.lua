@@ -581,7 +581,9 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLAYER_COLLECT_PILL,
 	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_CAMBION,
 	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE,
+	ModCallbacks.MC_PRE_UPDATE,
 }
+
 for _, callback in ipairs(boolCallbacks) do
 	typecheckFunctions[callback] = { ["boolean"] = true }
 end

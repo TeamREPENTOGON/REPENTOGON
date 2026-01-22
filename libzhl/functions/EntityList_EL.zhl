@@ -16,6 +16,26 @@ struct EntityList_EL {
     
     }
 
+    void RemoveAt(size_t index)
+    {
+        size_t size = this->_size;
+
+        if (size <= index)
+        {
+            assert(false);
+            return;
+        }
+
+        if (index < size - 1)
+        {
+            Entity** data = this->_data;
+            size_t moveCount = (size - 1 - index) * sizeof(Entity*);
+            memmove(&data[index], &data[index + 1], moveCount);
+        }
+
+        this->_size--;
+    }
+
     /* If this list is a sublist, turn it into a non sublist. This makes the content 
      * of the list no longer shared with other sublists, preventing some issues with
      * the way the game manages sublists.

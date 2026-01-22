@@ -91,6 +91,58 @@ namespace EntityManager::Core
     }
 }
 
+void EntityManager::CommitRemovedEntities()
+{
+    if (!EntityManager::Data::s_stagedRemove)
+    {
+        return;
+    }
+
+    EntityList* entityList = g_Game->_room->GetEntityList();
+
+    auto remove_entities = [](EntityList_EL* list, bool entityOwner)
+    {
+        for (int i = (int)list->_size - 1; i >= 0; i--)
+        {
+            Entity* entity = list->_data[i];
+            if (entity->_exists)
+            {
+                continue;
+            }
+
+            if (entityOwner)
+            {
+                bool isPlayer = entity->_type == eEntityType::ENTITY_PLAYER;
+                if (!isPlayer)
+                {
+                    // Players are handled by Free hook
+                    EntityManager::Core::NotifyDeleteEntity(*entity);
+                }
+                bool wasValid = entity->_valid;
+                entity->ClearReferences();
+                entity->_valid = false;
+
+                if (isPlayer && wasValid)
+                {
+                    unsigned int deallocate = 0x1;
+                    entity->Free(deallocate);
+                }
+            }
+
+            list->RemoveAt((size_t)i);
+        }
+    };
+
+    remove_entities(entityList->GetUpdateEL(), false);
+    remove_entities(entityList->GetRenderEL(), false);
+    remove_entities(entityList->GetWispEL(), false);
+    remove_entities(entityList->GetMainEL(), true);
+    remove_entities(entityList->GetPersistentEL(), true);
+    // other entity lists are not removed.
+
+    EntityManager::Data::s_stagedRemove = false;
+}
+
 HOOK_METHOD(EntityFactory, Create, (unsigned int type, bool force) -> Entity*)
 {
     Entity* entity = super(type, force);

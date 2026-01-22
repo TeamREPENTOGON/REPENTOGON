@@ -169,6 +169,7 @@ void PerformASMPatches() {
 
 	// Callbacks
 	CustomCallbacks::detail::ApplyPatches();
+	ASMCallbacks::detail::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
 	PatchPreEntityTakeDamageCallbacks();

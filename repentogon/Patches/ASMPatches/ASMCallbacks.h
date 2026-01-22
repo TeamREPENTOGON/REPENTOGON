@@ -33,3 +33,8 @@ void ASMPatchPreItemTextDisplayCallback();
 void ASMPatchHideChargeBar();
 void ASMPatchesForCustomActiveGFX();
 void ASMPatchPostBackwardsRoomRestore();
+
+namespace ASMCallbacks::detail
+{
+    void ApplyPatches();
+}

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 
+#include "ASMCallbacks.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
@@ -8,6 +9,7 @@
 #include "../../LuaInit.h"
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
+#include "../../Patches/EntityManager.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -18,6 +20,93 @@ static inline void* get_sig_address(const char* signature, const char* location,
 		assert(false);
 	}
 	return scanner.GetAddress();
+}
+
+bool s_callbackPause = false;
+
+HOOK_METHOD(Game, Update, () -> void)
+{
+	s_callbackPause = false; // reset at beginning of Update
+	super();
+}
+
+HOOK_METHOD(Game, IsPaused, () -> bool)
+{
+	return s_callbackPause || super();
+}
+
+// MC_PRE_UPDATE (1026)
+/**
+ * @return whether or not the update needs to be skipped
+ */
+static bool MC_PRE_UPDATE()
+{
+	const int callbackid = 1026;
+	if (!CallbackState.test(callbackid - 1000))
+	{
+		return false;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.call(1);
+
+	if (!result)
+	{
+		if (lua_isboolean(L, -1))
+		{
+			return lua_toboolean(L, -1);
+		}
+	}
+
+	return false;
+}
+
+static void handle_skipped_update()
+{
+	Game* game = g_Game;
+	EntityManager::CommitRemovedEntities();
+	game->_room->GetEntityList()->render_sort();
+	game->GetHUD()->PostUpdate();
+}
+
+static bool __stdcall asm_run_pre_update_callback()
+{
+	s_callbackPause = true; // also set it at the beginning (avoiding problems with IsFrame)
+	bool skip = MC_PRE_UPDATE();
+	if (skip)
+	{
+		handle_skipped_update();
+	}
+
+	s_callbackPause = skip;
+	return skip;
+}
+
+static void Patch_GameUpdate_MainUpdate()
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_Update_MainUpdate);
+	intptr_t skipAddr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_Update_Return);
+	ZHL::Log("[REPENTOGON] Patching Game::Update for MC_PRE_UPDATE at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	intptr_t resumeAddr = addr + 6;
+	constexpr size_t RESTORED_BYTES = 6;
+
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(asm_run_pre_update_callback)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)skipAddr)
+		.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+		.AddRelativeJump((void*)resumeAddr);
+
+	sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
 /* * MC_PRE_LASER_COLLISION * *
@@ -1886,4 +1975,9 @@ void ASMPatchPostBackwardsRoomRestore()
 {
 	patch_post_backwards_boss_restore("894d??8955??85c90f89", "Level::place_rooms_backwards (Post Boss Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
 	patch_post_backwards_treasure_restore("4883ea0c", "Level::place_rooms_backwards (Post Treasure Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
+}
+
+void ASMCallbacks::detail::ApplyPatches()
+{
+	Patch_GameUpdate_MainUpdate();
 }

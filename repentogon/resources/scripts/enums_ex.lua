@@ -22,6 +22,7 @@ ModCallbacks.MC_HUD_RENDER = 1022
 ModCallbacks.MC_MAIN_MENU_RENDER = 1023
 ModCallbacks.MC_POST_HUD_RENDER = 1024
 ModCallbacks.MC_POST_FIRE_SPLIT_TEAR = 1025
+ModCallbacks.MC_PRE_UPDATE = 1026
 
 ModCallbacks.MC_PRE_SFX_PLAY = 1030
 ModCallbacks.MC_POST_SFX_PLAY = 1031

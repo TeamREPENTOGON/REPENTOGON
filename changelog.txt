@@ -1,6 +1,9 @@
 v1.1.x -
 Added:
 * ModCallbacks:
+	- MC_PRE_UPDATE()
+		Triggers before the game's main update cycle.
+		Can be used to prevent the normal update, effectively pausing the game.
 	- MC_PRE_ROOM_COLLISION_PASS()
 		Triggers right before collision detection.
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.

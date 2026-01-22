@@ -247,7 +247,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 	LuaBridgeRef* _luaBridgeRef: 0x408;
 
     __vtable {
-        skip; // Free
+        "558bec568bf1e8????????f645??0174??6810040000":
+		void Free(unsigned int flags);
 		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
