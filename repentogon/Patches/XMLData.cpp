@@ -401,6 +401,15 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
+
+//Menu Daily challenge fix! (pretty serious shit)
+HOOK_METHOD(Game, StartDailyChallenge, (DailyChallenge* params)-> void) {
+	params->_seed = params->_seed + 2;
+	if (params->_seed <= 0) { params->_seed = 1; }
+	params->_isPractice = true;
+	super(params);
+}
+
 //Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
 HOOK_METHOD(MenuManager, Update, ()-> void) {
 	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19 || g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
