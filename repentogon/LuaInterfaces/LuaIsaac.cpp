@@ -972,10 +972,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RGON_GetChangelog", Lua_GetRGON_Changelog);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
-	#ifdef NDEBUG
-	#else
-		lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
-	#endif
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNanoTime", Lua_GetNanoTime);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkCollectible", Lua_ReworkCollectible);
