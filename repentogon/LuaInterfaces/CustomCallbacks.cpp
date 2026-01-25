@@ -878,7 +878,10 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				super((int)lua_tointeger(L, -1), volume);
+				int newId = (int)lua_tointeger(L, -1);
+				if (g_Manager->_musicmanager._currentId != newId) {
+					super(newId, volume);
+				}
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
