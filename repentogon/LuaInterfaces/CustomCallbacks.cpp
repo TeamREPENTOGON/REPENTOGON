@@ -5871,6 +5871,60 @@ HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> E
 	return retTrinket;
 }
 
+//MC_GET_BOSS_THEMATIC_ITEM (id : 1493)
+HOOK_METHOD(Room, GetBossThematicItem, (int* retCollectibleType, int* retTrinketType, unsigned int* seed) -> bool) {
+	bool spawned = super(retCollectibleType, retTrinketType, seed);
+	const int callbackid = 1493;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(spawned)
+			.push(*retCollectibleType)
+			.push(*retTrinketType)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) { //
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Collectible" && lua_isinteger(L, -1)) {
+							int newCollectible = (int)lua_tointeger(L, -1);
+							if (g_Manager->_itemConfig.GetCollectible(newCollectible)) {
+								*retCollectibleType = newCollectible;
+								*retTrinketType = 0;
+								spawned = true;
+							}
+							
+						}
+						else if (key == "Trinket" && lua_isinteger(L, -1)) {
+							int newTrinket = (int)lua_tointeger(L, -1);
+							if (g_Manager->_itemConfig.GetTrinket(newTrinket)) {
+								*retTrinketType = newTrinket;
+								*retCollectibleType = 0;
+								spawned = true;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+
+	return spawned;
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();

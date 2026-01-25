@@ -13,6 +13,12 @@ Added:
 		This is used by the Monstro's Lung + Technology synergy
 * EntityPlayer:
 	- [Get/Set]ImExcitedSpeedupCountdown
+* ModCallbacks:
+	- MC_GET_BOSS_THEMATIC_ITEM(boolean Spawned, CollectibleType SpawnedCollectible, TrinketType SpawnedTrinket)
+		Triggers after boss room clean. Used to spawn/overwrite result of second collectible or trinket.
+		Return table with field "Collectible" to spawn collectible, or "Trinket" to spawn trinket.
+		Alternatively you can return ``true`` to cancel item spawn altogether.
+		to-do: description for new callback
 * Backported new enums for GameStateFlag
 /newline/
 Modified:
