@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
+#include "../XMLPlayerExtras.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -1466,6 +1467,108 @@ void ASMPatchMainMenuCallback() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// MC_PRE/POST_RENDER_CHARACTER_SELECT_PORTRAIT (1331/1332)
+void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playerType) {
+	Vector scaleCopy = sprite->_scale;
+	ColorMod colorCopy = sprite->_color;
+
+	const int precallbackid = 1331;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(sprite, lua::Metatables::SPRITE)
+			.push(pos, lua::Metatables::VECTOR)
+			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(&colorCopy, lua::Metatables::COLOR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				*pos = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+
+	Vector zeroVector(0, 0);
+	sprite->Render(pos, &zeroVector, &zeroVector);
+
+	const int postcallbackid = 1332;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(sprite, lua::Metatables::SPRITE)
+			.push(pos, lua::Metatables::VECTOR)
+			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(&colorCopy, lua::Metatables::COLOR)
+			.call(1);
+	}
+}
+
+void __stdcall RenderVanillaCharacterWheelTrampoline(const int menuid, Vector* pos) {
+	ANM2* sprite = &g_MenuManager->GetMenuCharacter()->_CharacterPortraitsSprite;
+	const bool taintedMenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
+	if (menuid >= 0 && menuid < 18) {
+		const int playerType = (menuid == 0) ? -1 : __ptr_g_MenuCharacterEntries[taintedMenu ? (menuid + 18) : menuid].playerType;
+		RunRenderCharacterWheelCallbacks(sprite, pos, playerType);
+	} else {
+		// Failsafe
+		Vector zeroVector(0, 0);
+		sprite->Render(pos, &zeroVector, &zeroVector);
+	}
+}
+void ASMPatchVanillaCharacterWheel() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_PreRenderVanillaCharacter);
+	void* postAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_PostRenderVanillaCharacter);
+	void* getCharacterIdAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_GetMenuCharacterIndex);
+
+	const int8_t renderPositionStackOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_RenderPositionStackOffset) + 0x5);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, renderPositionStackOffset, ASMPatch::Registers::EAX)
+		.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EAX)  // Vector* pos
+		.AddBytes(ByteBuffer().AddAny((char*)getCharacterIdAddr, 0x8))  // MOV EAX,[0x????????]; ECX,dword ptr [EAX + EBX*0x1];
+		.Push(ASMPatch::Registers::ECX)  // int menuid
+		.AddInternalCall(RenderVanillaCharacterWheelTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump(postAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+void __stdcall RenderModdedCharacterWheelTrampoline(int id, Vector* pos, ColorMod* color, Vector* scale) {
+	RenderModdedCharacterPortrait(id, pos, color, scale, true);
+}
+void ASMPatchModdedCharacterWheel() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_RenderModdedCharacter);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, 0xC, ASMPatch::Registers::EAX)
+		.PreserveRegisters(reg)
+		.AddBytes("\xFF\x30")  // push [EAX]  // Vector* scale
+		.Push(ASMPatch::Registers::EAX, -0x4)  // ColorMod* color
+		.Push(ASMPatch::Registers::EAX, -0x8)  // Vector* pos
+		.Push(ASMPatch::Registers::EAX, -0xC)  // int id
+		.AddInternalCall(RenderModdedCharacterWheelTrampoline)
+		.RestoreRegisters(reg)
+		.AddBytes("\x83\xC4\x10")  // ADD ESP,0x10
+		.AddRelativeJump((char*)patchAddr + 0x5);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
 // Historically, MC_PRE_MOD_UNLOAD also runs during game shutdown, when the LuaEngine is being destroyed.
 // However, this happens late into the shutdown process, after Game and Manager are already destroyed,
 // so any code running on this callback at this time is very likely to crash the game.
@@ -1980,4 +2083,6 @@ void ASMPatchPostBackwardsRoomRestore()
 void ASMCallbacks::detail::ApplyPatches()
 {
 	Patch_GameUpdate_MainUpdate();
+	ASMPatchVanillaCharacterWheel();
+	ASMPatchModdedCharacterWheel();
 }

@@ -1264,6 +1264,20 @@ local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value,
 	return value
 end
 
+local function RunAdditiveThirdArgCallbackWithBreak(callbackID, param, arg1, arg2, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+		if type(ret) == "boolean" then
+			if ret == false then
+				return ret
+			end
+		elseif ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
 local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3, value, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
@@ -1650,6 +1664,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_ADD_TRINKET] = RunPreAddTrinketCallback,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PLAYER_GET_HEART_LIMIT] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT] = RunAdditiveThirdArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

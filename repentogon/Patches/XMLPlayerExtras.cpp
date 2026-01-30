@@ -8,6 +8,7 @@
 #include "ASMPatcher.hpp"
 #include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
+#include "ASMPatches/ASMCallbacks.h"
 
 #include <tuple>
 
@@ -139,18 +140,29 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	}
 }
 
+void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color, Vector* scale, bool isCharacterWheel) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
 
-HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(id);
+	ANM2* portrait = *g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuPortraitANM2();
+	if (portrait != nullptr) {
+		portrait->Play(playerXML["name"].c_str(), true);
+		portrait->_color = *color;
+		portrait->_scale = *scale;
 
-	ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
-	if ((*portrait) != nullptr) {
-		(*portrait)->Play(playerXML["name"].c_str(), true);
-		(*portrait)->SetLayerFrame(0, !IsCharacterUnlockedRgon(id) ? 1 : 0);
-		(*portrait)->_color = *color;
-		(*portrait)->_scale = *scale;
-		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
+		if (isCharacterWheel) {
+			portrait->SetLayerFrame(0, !IsCharacterUnlockedRgon(playerType) ? 1 : 0);
+			RunRenderCharacterWheelCallbacks(portrait, pos, playerType);
+		} else {
+			portrait->SetLayerFrame(0, 0);
+			Vector zeroVector(0, 0);
+			portrait->Render(pos, &zeroVector, &zeroVector);
+		}
 	}
+}
+
+// Only runs for the continue widget now, since the character wheel call was patched over.
+HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
+	RenderModdedCharacterPortrait(id, pos, color, scale, false);
 }
 
 HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
