@@ -90,6 +90,18 @@ HOOK_METHOD(ItemPool, IsPillIdentified, (uint32_t pillColor) -> bool) {
 	return false;
 }
 
+// Fixes rendering bugs caused by starting a new render operation before presenting the previous one.
+HOOK_STATIC(Rendering, PushCurrentRenderTarget, () -> void, __stdcall)
+{
+	KAGE_Graphics_ImageManager& imageManager = g_KAGE_Graphics_ImageManager;
+	if (!(imageManager._frameImages.empty() && imageManager._transparentBatches.empty()))
+	{
+		g_KAGE_Graphics_Manager.PresentWithoutSwap();
+	}
+
+	super();
+}
+
 // Set patched out deselectable buttons on the online and daily menus to render at 0.5 alpha.
 HOOK_METHOD(Menu_Online, Render, () -> void) {
 	int layers[4] = {1, 2, 3, 14};
