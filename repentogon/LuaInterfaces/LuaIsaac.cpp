@@ -782,11 +782,15 @@ LUA_FUNCTION(Lua_GetAxisAlignedUnitVectorFromDir) {
 
 LUA_FUNCTION(Lua_StartDailyGame) {
 	const unsigned int date = (unsigned int)luaL_checkinteger(L, 1);
-	auto* dailychallenge = g_Manager->GetDailyChallenge();
-	dailychallenge->Init(date);
-	dailychallenge->_isPractice = true;
 
-	g_Game->StartDailyChallenge(dailychallenge);
+	// defer start to the manager
+	Seeds seeds; seeds.constructor();
+	g_Manager->StartNewGame(ePlayerType::PLAYER_ISAAC, eChallenge::CHALLENGE_NULL, seeds, 0);
+
+	// setup daily challenge, so that the newly started game is treated as a daily challenge
+	auto* dailyChallenge = g_Manager->GetDailyChallenge();
+	dailyChallenge->Init(date);
+	dailyChallenge->_isPractice = true;
 
 	return 0;
 }
