@@ -65,6 +65,7 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KColor) {
 		skip; // SetTexelData (exclusive to ImagePlatformBase)
     };
 
+	uint64_t _flags : 0x10;
 	uint32_t _predefinedShader: 0x20;
 	uint8_t* _vertexFormat : 0x34;
 	uint8_t _numVertexAttributes : 0x38;

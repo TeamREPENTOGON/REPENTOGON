@@ -3318,6 +3318,10 @@ enum class eAnimationFlag : int {
     PROCEDURAL = 1 << 9,
 };
 
+enum class eImageFlag : uint64_t {
+    PROCEDURAL = 1 << 1,
+};
+
 enum class eVertexAttributeFormat : int {
     FLOAT = 1,
     VEC_2 = 2,

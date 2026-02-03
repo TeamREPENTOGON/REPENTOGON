@@ -2291,11 +2291,17 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 }
 
 LUA_FUNCTION(lua_Renderer_StartTransformation) {
-	LuaImage* image = LuaRender::GetLuaImage(L);
+	LuaImage* luaImage = LuaRender::GetLuaImage(L);
+	auto& pointer = luaImage->image;
+	if ((pointer.image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
+	{
+		return luaL_error(L, "Cannot use a non procedural image as the render target");
+	}
+
 	LuaTransformer* transformer = new (lua_newuserdata(L, sizeof(LuaTransformer))) LuaTransformer;
 	transformer->_valid = true;
 	luaL_setmetatable(L, LuaRender::TransformerMT);
-	transformer->_output = image->image;
+	transformer->_output = pointer;
 	return 1;
 }
 
