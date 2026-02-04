@@ -6,6 +6,23 @@ Added:
 		Can be used to prevent the normal update, effectively pausing the game.
 	- MC_PRE_ROOM_COLLISION_PASS()
 		Triggers right before collision detection.
+	- MC_GET_BOSS_THEMATIC_ITEM(boolean Spawned, CollectibleType SpawnedCollectible, TrinketType SpawnedTrinket)
+		Triggers after boss room clean. Used to spawn/overwrite result of second collectible or trinket.
+		Return table with field "Collectible" to spawn collectible, or "Trinket" to spawn trinket.
+		Alternatively you can return ``true`` to cancel item spawn altogether.
+		to-do: description for new callback
+	- MC_PRE/POST_RENDER_CHARACTER_SELECT_PORTRAIT(PlayerType, Sprite, Vector Position, Vector DefaultScale, Color DefaultColor)
+		On PRE, return false to cancel rendering, or a Vector to change the Position.
+		Modifications made to the Sprite during this callback WILL apply to the natural render.
+		Optional param: PlayerType
+	- MC_PRE_BOMB_DAMAGE(Vector Position, float Damage, float Radius, bool LineCheck, Entity Source, TearFlags, DamageFlags, bool DamageSource)
+		Called before Game():BombDamage(), used to damage entities in a radius for explosions, etc.
+		Return false to cancel, or a table containing changed values for Position, Damage, Radius, TearFlags, and/or DamageFlags.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_PRE_BOMB_TEARFLAG_EFFECTS(Vector Position, float Radius, TearFlags, Entity Source, float RadiusMult)
+		Called before Game():BombTearflagEffects(), used when TearFlags-based effects are triggered by an explosion.
+		Return false to cancel, or a table containing changed values for Position, Radius, TearFlags, and/or RadiusMult.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * EntityLaser:
 	- SetInitSound(SoundEffect sound)
@@ -13,12 +30,10 @@ Added:
 		This is used by the Monstro's Lung + Technology synergy
 * EntityPlayer:
 	- [Get/Set]ImExcitedSpeedupCountdown
-* ModCallbacks:
-	- MC_GET_BOSS_THEMATIC_ITEM(boolean Spawned, CollectibleType SpawnedCollectible, TrinketType SpawnedTrinket)
-		Triggers after boss room clean. Used to spawn/overwrite result of second collectible or trinket.
-		Return table with field "Collectible" to spawn collectible, or "Trinket" to spawn trinket.
-		Alternatively you can return ``true`` to cancel item spawn altogether.
-		to-do: description for new callback
+* RoomConfig:
+	- LoadStb(StbType, int Mode, string StbFileName)
+* RoomConfigSet:
+	- LoadStb(string StbFileName)
 * Backported new enums for GameStateFlag
 /newline/
 Modified:
@@ -353,6 +368,12 @@ Additions:
 		Optional param: ItemConfigItem
 	- MC_POST_ROOM_ADD_EFFECT(ItemConfigItem)
 		Optional param: ItemConfigItem
+	- MC_POST_BOMB_DAMAGE(Vector Position, float Damage, float Radius, bool LineCheck, Entity Source, TearFlags, DamageFlags, bool DamageSource)
+		Called after Game():BombDamage(), used to damage entities in a radius for explosions, etc.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_POST_BOMB_TEARFLAG_EFFECTS(Vector Position, float Radius, TearFlags, Entity Source, float RadiusMult)
+		Called after Game():BombTearflagEffects(), used when TearFlags-based effects are triggered by an explosion.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
 * New Enums:
 	- DoorMask
 	- WaterClipFlag

@@ -5602,23 +5602,94 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 	return opened;
 }
 
+// MC_PRE/POST_BOMB_DAMAGE (1291/1275)
 HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource) -> void) {
-	super(pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+	Vector posCopy = *pos;
 
-	const int callbackid = 1275;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int precallbackid = 1291;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid);
+		caller.push(precallbackid);
 		if (source) {
 			caller.push(source->_type);
 		} else {
 			caller.pushnil();
 		}
-		caller.push(pos, lua::Metatables::VECTOR)
+		caller.push(&posCopy, lua::Metatables::VECTOR)
+			.push(damage)
+			.push(radius)
+			.push(lineCheck);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		lua::LuaResults results = caller.push(&tearFlags, lua::Metatables::BITSET_128)
+			.push(damageFlags)
+			.push(damageSource)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Radius" && lua_isnumber(L, -1)) {
+							float newRadius = (float)lua_tonumber(L, -1);
+							if (newRadius < 0) {
+								newRadius = 0;
+							}
+							radius = newRadius;
+						} else if (key == "Damage" && lua_isnumber(L, -1)) {
+							float newDamage = (float)lua_tonumber(L, -1);
+							if (newDamage < 0) {
+								newDamage = 0;
+							}
+							damage = newDamage;
+						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
+							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							if (newFlags) {
+								tearFlags = *newFlags;
+							}
+						} else if (key == "DamageFlags" && lua_isnumber(L, -1)) {
+							damageFlags = (uint64_t)std::max(0.0, lua_tonumber(L, -1));
+						} else if (key == "Position" && lua_isuserdata(L, -1)) {
+							Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							if (newPos) {
+								posCopy = *newPos;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	
+	super(&posCopy, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+
+	const int postcallbackid = 1275;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(postcallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(&posCopy, lua::Metatables::VECTOR)
 			.push(damage)
 			.push(radius)
 			.push(lineCheck);
@@ -5634,23 +5705,88 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 	}
 }
 
+// MC_PRE/POST_BOMB_TEARFLAG_EFFECTS (1292/1276)
 HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult) -> void) {
-	super(pos, radius, tearFlags, source, radiusMult);
-
-	const int callbackid = 1276;
-	if (CallbackState.test(callbackid - 1000)) {
+	Vector posCopy = *pos;
+	
+	const int precallbackid = 1292;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid);
+		caller.push(precallbackid);
 		if (source) {
 			caller.push(source->_type);
 		} else {
 			caller.pushnil();
 		}
-		caller.push(pos, lua::Metatables::VECTOR)
+		caller.push(&posCopy, lua::Metatables::VECTOR)
+			.push(radius)
+			.push(&tearFlags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		lua::LuaResults results = caller.push(radiusMult).call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Radius" && lua_isnumber(L, -1)) {
+							float newRadius = (float)lua_tonumber(L, -1);
+							if (newRadius < 0) {
+								newRadius = 0;
+							}
+							radius = newRadius;
+						} else if (key == "RadiusMult" && lua_isnumber(L, -1)) {
+							float newRadiusMult = (float)lua_tonumber(L, -1);
+							if (newRadiusMult < 0) {
+								newRadiusMult = 0;
+							}
+							radiusMult = newRadiusMult;
+						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
+							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							if (newFlags) {
+								tearFlags = *newFlags;
+							}
+						} else if (key == "Position" && lua_isuserdata(L, -1)) {
+							Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							if (newPos) {
+								posCopy = *newPos;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	
+	super(&posCopy, radius, tearFlags, source, radiusMult);
+
+	const int postcallbackid = 1276;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(postcallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.push(&posCopy, lua::Metatables::VECTOR)
 			.push(radius)
 			.push(&tearFlags, lua::Metatables::BITSET_128);
 		if (source) {

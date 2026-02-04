@@ -1623,6 +1623,79 @@ local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity
 	return recentRet
 end
 
+local function RunPreBombDamageCallback(callbackID, param, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
+	local combinedRet
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					pos = ret.Position
+				end
+				if ret.Damage and type(ret.Damage) == "number" then
+					damage = ret.Damage
+				end
+				if ret.Radius and type(ret.Radius) == "number" then
+					radius = ret.Radius
+				end
+				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					tearFlags = ret.TearFlags
+				end
+				if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
+					damageFlags = ret.DamageFlags
+				end
+				if combinedRet then
+					for k, v in pairs(ret) do
+						combinedRet[k] = v
+					end
+				else
+					combinedRet = ret
+				end
+			end
+		end
+	end
+
+	return combinedRet
+end
+
+local function RunPreBombTearFlagEffectsCallback(callbackID, param, pos, radius, tearFlags, source, radiusMult)
+	local combinedRet
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, pos, radius, tearFlags, source, radiusMult)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					pos = ret.Position
+				end
+				if ret.Radius and type(ret.Radius) == "number" then
+					radius = ret.Radius
+				end
+				if ret.RadiusMult and type(ret.RadiusMult) == "number" then
+					radiusMult = ret.RadiusMult
+				end
+				if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					tearFlags = ret.TearFlags
+				end
+				if combinedRet then
+					for k, v in pairs(ret) do
+						combinedRet[k] = v
+					end
+				else
+					combinedRet = ret
+				end
+			end
+		end
+	end
+
+	return combinedRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1636,6 +1709,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
 	[ModCallbacks.MC_PRE_APPLY_TEARFLAG_EFFECTS] = RunPreApplyTearflagEffectsCallback,
+	[ModCallbacks.MC_POST_APPLY_TEARFLAG_EFFECTS] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_ENTITY_REMOVE] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
@@ -1666,6 +1740,10 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PLAYER_GET_HEART_LIMIT] = RunAdditiveSecondArgCallback,
 	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT] = RunAdditiveThirdArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_BOMB_DAMAGE] = RunPreBombDamageCallback,
+	[ModCallbacks.MC_POST_BOMB_DAMAGE] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_BOMB_TEARFLAG_EFFECTS] = RunPreBombTearFlagEffectsCallback,
+	[ModCallbacks.MC_POST_BOMB_TEARFLAG_EFFECTS] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({
