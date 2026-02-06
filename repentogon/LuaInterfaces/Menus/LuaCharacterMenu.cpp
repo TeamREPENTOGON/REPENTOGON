@@ -133,6 +133,16 @@ LUA_FUNCTION(lua_CharMenu_GetTaintedBGDecoSprite)
 	return 1;
 }
 
+LUA_FUNCTION(lua_CharMenu_GetCompletionMarksSprite)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
+	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
+	ANM2* anm2 = &menu->GetCompletionWidget()->anm2;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
 LUA_FUNCTION(lua_CharMenu_GetNumCharacters)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
@@ -459,6 +469,7 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSeedEntrySprite", lua_CharMenu_GetSeedEntrySprite);
 	lua::TableAssoc(L, "GetPageSwapWidgetSprite", lua_CharMenu_GetPageSwapWidgetSprite);
 	lua::TableAssoc(L, "GetTaintedBGDecoSprite", lua_CharMenu_GetTaintedBGDecoSprite);
+	lua::TableAssoc(L, "GetCompletionMarksSprite", lua_CharMenu_GetCompletionMarksSprite);
 	lua::TableAssoc(L, "GetNumCharacters", lua_CharMenu_GetNumCharacters);
 	lua::TableAssoc(L, "GetSelectedCharacterMenu", lua_CharMenu_GetSelectedCharacterMenu);
 	lua::TableAssoc(L, "SetSelectedCharacterMenu", lua_CharMenu_SetSelectedCharacterMenu);

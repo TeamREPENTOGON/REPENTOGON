@@ -36,10 +36,13 @@ Added:
 		This is used by the Monstro's Lung + Technology synergy
 * EntityPlayer:
 	- [Get/Set]ImExcitedSpeedupCountdown
+	- [Get/Set]DonateLuck
 * RoomConfig:
 	- LoadStb(StbType, int Mode, string StbFileName)
 * RoomConfigSet:
 	- LoadStb(string StbFileName)
+* CharacterMenu
+	- GetCompletionMarksSprite
 * Backported new enums for GameStateFlag
 /newline/
 Modified:

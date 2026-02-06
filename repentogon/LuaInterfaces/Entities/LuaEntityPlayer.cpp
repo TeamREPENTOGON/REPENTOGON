@@ -3280,6 +3280,20 @@ LUA_FUNCTION(Lua_PlayerSetImExcitedSpeedupCountdown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetDonateLuck) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_donateLuck);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetDonateLuck) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_donateLuck = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3577,6 +3591,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetItemStateCooldown", Lua_PlayerSetItemStateCooldown },
 		{ "GetImExcitedSpeedupCountdown", Lua_PlayerGetImExcitedSpeedupCountdown },
 		{ "SetImExcitedSpeedupCountdown", Lua_PlayerSetImExcitedSpeedupCountdown },
+		{ "GetDonateLuck", Lua_PlayerGetDonateLuck },
+		{ "SetDonateLuck", Lua_PlayerSetDonateLuck },
 
 		{ NULL, NULL }
 	};

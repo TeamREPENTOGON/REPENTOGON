@@ -731,6 +731,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	ColorMod _laserColor : 0x14bc;
 	TemporaryEffects _temporaryeffects : 0x1500;
 	int _speedModifier : 0x1518, _fireDelayModifier : 0x151c, _damageModifier : 0x1520, _tearRangeModifier : 0x1524, _shotSpeedModifier : 0x1528, _luckModifier : 0x152c;
+	int _donateLuck : 0x1530;
 	int _potatoPeelerCounter : 0x1534;
 	float _edenSpeed : 0x1540, _edenFireDelay : 0x1544, _edenDamage : 0x1548, _edenTearRange : 0x154c, _edenShotSpeed : 0x1550, _edenLuck : 0x1554;
 	float _movespeed : 0x155c;
