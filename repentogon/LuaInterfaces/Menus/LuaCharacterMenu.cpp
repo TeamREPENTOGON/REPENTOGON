@@ -360,7 +360,7 @@ int GetCharacterMenuIDFromPlayerType(const int playerType) {
 		}
 	} else if (playerType >= 0) {
 		for (uint32_t i = 1; i < 36; i++) {
-			if (playerType == __ptr_g_MenuCharacterEntries[i].playerType) {
+			if (i != 18 && playerType == __ptr_g_MenuCharacterEntries[i].playerType) {
 				return i % 18;
 			}
 		}
