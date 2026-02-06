@@ -2636,24 +2636,6 @@ HOOK_METHOD(Entity_Player, TriggerNewStage, (bool FromPlayerUpdate) -> void) {
 	}
 }
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	super(CharacterId, RenderPos, DefaultSprite);
-	const int callbackid = 1333;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.push(CharacterId)
-			.push(CharacterId)
-			.pushUserdataValue(*RenderPos, lua::Metatables::VECTOR)
-			.push(DefaultSprite, lua::Metatables::SPRITE)
-			.call(1);
-	}
-}
-
 //COMPLETION_MARK_GET 1047
 //POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
 //(PRE/POST)_COMPLETION_EVENT (1049/1052) 
@@ -5620,7 +5602,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		caller.push(&posCopy, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(damage)
 			.push(radius)
 			.push(lineCheck);
@@ -5689,7 +5671,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		caller.push(&posCopy, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(damage)
 			.push(radius)
 			.push(lineCheck);
@@ -5723,7 +5705,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		} else {
 			caller.pushnil();
 		}
-		caller.push(&posCopy, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(radius)
 			.push(&tearFlags, lua::Metatables::BITSET_128);
 		if (source) {
@@ -5786,7 +5768,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		} else {
 			caller.pushnil();
 		}
-		caller.push(&posCopy, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(radius)
 			.push(&tearFlags, lua::Metatables::BITSET_128);
 		if (source) {
@@ -5832,7 +5814,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 			caller.pushnil();
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
-			.push(&posCopy, lua::Metatables::VECTOR)
+			.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(&flags, lua::Metatables::BITSET_128);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
@@ -5890,7 +5872,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 			caller.pushnil();
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
-			.push(&posCopy, lua::Metatables::VECTOR)
+			.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(&flags, lua::Metatables::BITSET_128);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);

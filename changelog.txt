@@ -14,6 +14,12 @@ Added:
 	- MC_PRE/POST_RENDER_CHARACTER_SELECT_PORTRAIT(PlayerType, Sprite, Vector Position, Vector DefaultScale, Color DefaultColor)
 		On PRE, return false to cancel rendering, or a Vector to change the Position.
 		Modifications made to the Sprite during this callback WILL apply to the natural render.
+		PlayerType is -1 when "random character" is selected.
+		Optional param: PlayerType
+	- MC_PRE/POST_RENDER_CHARACTER_SELECT_PAGE(PlayerType, Vector Position, Sprite DefaultSprite, Sprite ModdedSprite, bool HasCustomBackground)
+		PRE supports returning false to cancel rendering. Modifications made to the Sprites will apply to the natural render.
+		ModdedSprite can only be non-nil for modded characters. HasCustomBackground indicates if ModdedSprite includes a background paper.
+		PlayerType is -1 when "random character" is selected.
 		Optional param: PlayerType
 	- MC_PRE_BOMB_DAMAGE(Vector Position, float Damage, float Radius, bool LineCheck, Entity Source, TearFlags, DamageFlags, bool DamageSource)
 		Called before Game():BombDamage(), used to damage entities in a radius for explosions, etc.

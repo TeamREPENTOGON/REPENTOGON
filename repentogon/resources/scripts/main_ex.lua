@@ -1225,6 +1225,16 @@ local function DefaultRunCallbackLogic(callbackID, param, ...)
 	end
 end
 
+-- Slightly modified callback that only breaks on returning false specifically.
+local function RunFalseBreakCallbackLogic(callbackID, param, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, ...)
+		if ret == false then
+			return ret
+		end
+	end
+end
+
 -- For callbacks with no return values that don't want to allow mods to terminate them early.
 local function RunNoReturnCallback(callbackID, param, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
@@ -1740,6 +1750,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PLAYER_GET_HEART_LIMIT] = RunAdditiveSecondArgCallback,
 	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT] = RunAdditiveThirdArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PAGE] = RunFalseBreakCallbackLogic,
+	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PAGE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PRE_BOMB_DAMAGE] = RunPreBombDamageCallback,
 	[ModCallbacks.MC_POST_BOMB_DAMAGE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PRE_BOMB_TEARFLAG_EFFECTS] = RunPreBombTearFlagEffectsCallback,

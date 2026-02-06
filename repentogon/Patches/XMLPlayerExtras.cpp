@@ -143,7 +143,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color, Vector* scale, bool isCharacterWheel) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
 
-	ANM2* portrait = *g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuPortraitANM2();
+	ANM2* portrait = g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuPortraitANM2();
 	if (portrait != nullptr) {
 		portrait->Play(playerXML["name"].c_str(), true);
 		portrait->_color = *color;
@@ -161,15 +161,15 @@ void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color,
 }
 
 // Only runs for the continue widget now, since the character wheel call was patched over.
-HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
-	RenderModdedCharacterPortrait(id, pos, color, scale, false);
+HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int playerType, Vector* pos, ColorMod* color, Vector* scale) -> void) {
+	RenderModdedCharacterPortrait(playerType, pos, color, scale, false);
 }
 
-HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int playerType, Vector* pos, ANM2* vanillaBackground) -> void, __stdcall) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
+	const bool unlocked = IsCharacterUnlockedRgon(playerType);
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
-	bool disableState;
-	std::vector<const char*> layersToDisable = {
+	static const std::vector<const char*> layersToDisable = {
 		"Item Name",
 		"Item Name 2",
 		"Item Name 3",
@@ -184,39 +184,26 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 		"Life Icon"
 	};
 
-	ANM2** background = g_Manager->GetPlayerConfig()->at(CharacterId).GetModdedMenuBackgroundANM2();
+	ANM2* moddedBackground = g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuBackgroundANM2();
 
-	if (*background != nullptr) {
-		if (!IsCharacterUnlockedRgon(CharacterId))
-			disableState = false;
-		else
-			disableState = true;
-
-
+	if (moddedBackground != nullptr) {
 		for (const char* layer : layersToDisable) {
-			LayerState* layerState = (*background)->GetLayer(layer);
+			LayerState* layerState = moddedBackground->GetLayer(layer);
 			if (layerState != nullptr) { 
-				*layerState->IsVisible() = disableState;
+				*layerState->IsVisible() = unlocked;
 			}
 		}
 
-		LayerState* unlockedByLayer = (*background)->GetLayer("Unlocked By");
+		LayerState* unlockedByLayer = moddedBackground->GetLayer("Unlocked By");
 		if (unlockedByLayer != nullptr) {
-			*unlockedByLayer->IsVisible() = !disableState;
+			*unlockedByLayer->IsVisible() = !unlocked;
 		}
 	}
 
-	super(CharacterId, RenderPos, DefaultSprite);
-
-}
-
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	super(CharacterId, RenderPos, DefaultSprite);
-
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
-
-	if (!IsCharacterUnlockedRgon(CharacterId))
+	if (!unlocked)
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
+
+	super(playerType, pos, vanillaBackground);
 }
 
 HOOK_METHOD(Menu_Character, UpdateRotations, () -> void) {

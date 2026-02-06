@@ -720,7 +720,6 @@ void PostMarksCallbackTrigger(int markid, int playertpe) {
 
 
 
-int selectedchar = 0;
 int ischartainted = false;
 int hidemarks = false;
 
@@ -944,22 +943,23 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 }
 
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	selectedchar = CharacterId;
-	super(CharacterId, RenderPos, DefaultSprite);
-}
+
 HOOK_METHOD(Menu_Character, Render, () -> void) {
 	super();
 	CompletionWidget* cmpl = this->GetCompletionWidget();
-	if (this->SelectedCharacterID > 17) {
+	int menucharid = this->SelectedCharacterID;
+	if (menucharid > 17 && menucharid < (int)g_ModCharacterMap.size() + 18) {
+		const auto& menuchar = g_ModCharacterMap[menucharid - 18];
+		const bool taintedmenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
+		const int playertype = taintedmenu ? menuchar.tainted : menuchar.normal;
 
 		Vector* ref = &g_MenuManager->_ViewPosition;
 //		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(selectedchar, anm,true);
+		array marks = GetMarksForPlayer(playertype, anm, true);
 		if (!hidemarks) {
-			cmpl->CharacterId = selectedchar;
+			cmpl->CharacterId = playertype;
 			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
 		}
 

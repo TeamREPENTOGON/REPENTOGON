@@ -3,7 +3,7 @@
 #include "IsaacRepentance.h"
 
 bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity);
-void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playerType);
+void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, int playerType);
 
 void PatchPreSampleLaserCollision();
 void PatchPreLaserCollision();

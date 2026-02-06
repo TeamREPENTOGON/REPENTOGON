@@ -4,8 +4,8 @@ __thiscall std_string EntityConfig_Player::GetDisplayName(void* ptr);
 struct EntityConfig_Player depends (ANM2) {
 	{{
 		inline int* GetAchievement() { return &this->_achievement; }
-		inline ANM2** GetModdedMenuBackgroundANM2() { return (ANM2**)((char*)this + 0x134); }
-		inline ANM2** GetModdedMenuPortraitANM2() { return (ANM2**)((char*)this + 0x138); }
+		inline ANM2* GetModdedMenuBackgroundANM2() { return *(ANM2**)((char*)this + 0x134); }
+		inline ANM2* GetModdedMenuPortraitANM2() { return *(ANM2**)((char*)this + 0x138); }
 	}}
 	int _id : 0x0;
 	std_string _name : 0x4;
@@ -38,7 +38,7 @@ struct EntityConfig_Player depends (ANM2) {
 	int _moddedTaintedPlayerID : 0x124;
 	bool _hidden : 0x128;  // Vanilla characters don't have this.
 	ModEntry* _modEntry : 0x12C;
-	// ??? _unk : 0x130;
+	bool _renderCustomBackground : 0x130;
 	ANM2* _moddedMenuBackgroundANM2 : 0x134;
 	ANM2* _moddedMenuPortraitANM2 : 0x138;
 	ANM2* _moddedGameOverANM2 : 0x13C;

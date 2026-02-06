@@ -1482,7 +1482,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.push(playerType)
 			.push(sprite, lua::Metatables::SPRITE)
-			.push(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
 			.push(&scaleCopy, lua::Metatables::VECTOR)
 			.push(&colorCopy, lua::Metatables::COLOR)
 			.call(1);
@@ -1509,7 +1509,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.push(playerType)
 			.push(sprite, lua::Metatables::SPRITE)
-			.push(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
 			.push(&scaleCopy, lua::Metatables::VECTOR)
 			.push(&colorCopy, lua::Metatables::COLOR)
 			.call(1);
@@ -1566,6 +1566,179 @@ void ASMPatchModdedCharacterWheel() {
 		.RestoreRegisters(reg)
 		.AddBytes("\x83\xC4\x10")  // ADD ESP,0x10
 		.AddRelativeJump((char*)patchAddr + 0x5);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+bool RunPreRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* vanillaSprite, ANM2* customSprite, const bool renderCustomBackground) {
+	// MC_PRE_RENDER_CHARACTER_SELECT_PAGE
+	const int callbackid = 1329;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(vanillaSprite, lua::Metatables::SPRITE)
+			.push(customSprite, lua::Metatables::SPRITE)
+			.push(renderCustomBackground)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* vanillaSprite, ANM2* customSprite, const bool renderCustomBackground, const bool runLegacyCallback) {
+	if (runLegacyCallback) {
+		// Legacy MC_PRE_RENDER_CUSTOM_CHARACTER_MENU callback that actually ran AFTER the menu got rendered.
+		// We still run it for backwards compat.
+		const int legacycallbackid = 1333;
+		if (CallbackState.test(legacycallbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaCaller(L).push(legacycallbackid)
+				.push(playerType)
+				.push(playerType)
+				.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+				.push(vanillaSprite, lua::Metatables::SPRITE)
+				.call(1);
+		}
+	}
+
+	// MC_POST_RENDER_CHARACTER_SELECT_PAGE
+	const int callbackid = 1330;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(vanillaSprite, lua::Metatables::SPRITE)
+			.push(customSprite, lua::Metatables::SPRITE)
+			.push(renderCustomBackground)
+			.call(1);
+	}
+}
+
+// Set to true when we skipped rendering the character menu. Always gets updated before the game would consider rendering the tokens.
+static bool _skipEdenTokensRender = false;
+
+void __stdcall RenderVanillaCharacterMenuTrampoline(Vector* pos) {
+	int menuid = g_MenuManager->GetMenuCharacter()->SelectedCharacterID;
+	ANM2* vanillaSprite = g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite();
+	Vector zeroVector(0, 0);
+	_skipEdenTokensRender = false;
+	if (menuid >= 0 && menuid < 18) {
+		const bool taintedMenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
+		const int playerType = (menuid == 0) ? -1 : __ptr_g_MenuCharacterEntries[taintedMenu ? (menuid + 18) : menuid].playerType;
+		if (RunPreRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false)) {
+			vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+			RunPostRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false, false);
+		} else {
+			_skipEdenTokensRender = true;
+		}
+	} else {
+		// Failsafe
+		vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+	}
+}
+void ASMPatchRenderVanillaCharacterMenu() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderVanillaCharacterMenu);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::ESI)  // Vector* pos
+		.AddInternalCall(RenderVanillaCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + 0x12);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+bool __stdcall ShouldRenderEdenTokens() {
+	return g_MenuManager->GetMenuCharacter()->SelectedCharacterID == 10 && !_skipEdenTokensRender;
+}
+void ASMPatchRenderVanillaCharacterMenu_EdenTokens() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderVanillaCharacterMenu_EdenTokens);
+	const int skipJump = *(int*)((char*)patchAddr + 0x6) + 0xA;
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.AddInternalCall(ShouldRenderEdenTokens)
+		.AddBytes("\x84\xC0")  // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)patchAddr + skipJump)  // Jump for false
+		.AddRelativeJump((char*)patchAddr + 0xA);  // Jump for true
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+void __stdcall RenderCustomCharacterMenuTrampoline(int playerType, ANM2* customSprite, Vector* pos) {
+	ANM2* vanillaSprite = g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite();
+	
+	EntityConfig_Player* conf = g_Manager->GetEntityConfig()->GetPlayer(playerType);
+	const bool renderCustomBackground = customSprite && conf && conf->_renderCustomBackground;
+
+	if (RunPreRenderCharacterMenuCallback(playerType, pos, vanillaSprite, customSprite, renderCustomBackground)) {
+		Vector zeroVector(0, 0);
+		if (customSprite) {
+			EntityConfig_Player* conf = g_Manager->GetEntityConfig()->GetPlayer(playerType);
+			if (conf && !conf->_renderCustomBackground) {
+				g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite()->RenderLayer(0, pos, &zeroVector, &zeroVector);
+			}
+			customSprite->Render(pos, &zeroVector, &zeroVector);
+		} else {
+			vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+		}
+		
+		RunPostRenderCharacterMenuCallback(playerType, pos, vanillaSprite, customSprite, renderCustomBackground, true);
+	}
+}
+void ASMPatchRenderCustomCharacterMenu_Custom() {
+	void* nopAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_Nop);
+	ASMPatch nopPatch(ByteBuffer().AddByte(0x90, 0x16));
+	sASMPatcher.FlatPatch(nopAddr, &nopPatch);
+
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_RenderCustom);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes("\x83\xC4\x0C")  // ADD ESP,0xC
+		.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EBP, 0xC)  // Vector* pos
+		.Push(ASMPatch::Registers::ECX)  // ANM2*
+		.Push(ASMPatch::Registers::EBP, 0x8)  // PlayerType
+		.AddInternalCall(RenderCustomCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + 0x5);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+void ASMPatchRenderCustomCharacterMenu_Default() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_RenderDefault);
+	const int jump = *(int*)((char*)patchAddr + 0x9) + 0xD;
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EBP, 0xC)  // Vector* pos
+		.Push(0x0)  // ANM2*
+		.Push(ASMPatch::Registers::EBP, 0x8)  // PlayerType
+		.AddInternalCall(RenderCustomCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + jump);
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
@@ -2085,4 +2258,8 @@ void ASMCallbacks::detail::ApplyPatches()
 	Patch_GameUpdate_MainUpdate();
 	ASMPatchVanillaCharacterWheel();
 	ASMPatchModdedCharacterWheel();
+	ASMPatchRenderVanillaCharacterMenu();
+	ASMPatchRenderVanillaCharacterMenu_EdenTokens();
+	ASMPatchRenderCustomCharacterMenu_Custom();
+	ASMPatchRenderCustomCharacterMenu_Default();
 }
