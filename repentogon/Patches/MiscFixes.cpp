@@ -96,7 +96,7 @@ HOOK_STATIC(Rendering, PushCurrentRenderTarget, () -> void, __stdcall)
 	KAGE_Graphics_ImageManager& imageManager = g_KAGE_Graphics_ImageManager;
 	if (!(imageManager._frameImages.empty() && imageManager._transparentBatches.empty()))
 	{
-		g_KAGE_Graphics_Manager.PresentWithoutSwap();
+		g_KAGE_Graphics_Manager.Present();
 	}
 
 	super();

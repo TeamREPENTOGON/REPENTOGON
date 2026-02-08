@@ -1,22 +1,82 @@
 "558bec6aff68????????64a1000000005083ec0c5657a1????????33c5508d45f464a3000000008bf9ff75088d4de8e86c010000":
-KAGE_SmartPointer_ImageBase& KAGE_SmartPointer_ImageBase::operator=(KAGE_SmartPointer_ImageBase const& other);
+KAGE_SmartPointer_ImageBase& KAGE_SmartPointer_ImageBase::swap(KAGE_SmartPointer_ImageBase const& other);
 
 // This is actually the destructor, but it ultimately only decreases the reference count and frees memory if this was the last reference
 "558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf18b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595e8be55dc3????????????????????558bec6aff68????????64a1????????5051":
 void KAGE_SmartPointer_ImageBase::DecrRef();
 
-struct KAGE_SmartPointer_ImageBase {
+struct KAGE_SmartPointer_ImageBase depends (KAGE_ReferenceCount_ImageBase) {
     KAGE_Graphics_ImageBase* image : 0x0;
     KAGE_ReferenceCount_ImageBase* counter : 0x4;
 
     {{
+private:
+    void copy(const KAGE_SmartPointer_ImageBase& other)
+    {
+        if (other.counter)
+        {
+            other.counter->IncrementReference();
+        }
+
+        this->image = other.image;
+        this->counter = other.counter;
+    }
+
+    void move(KAGE_SmartPointer_ImageBase& other)
+    {
+        this->image = other.image;
+        this->counter = other.counter;
+        other.image = nullptr;
+        other.counter = nullptr;
+    }
+
+    void destroy()
+    {
+        DecrRef();
+    }
+
+public:
     KAGE_SmartPointer_ImageBase() {
         image = nullptr;
         counter = nullptr;
     }
 
     ~KAGE_SmartPointer_ImageBase() {
-        DecrRef();
+        destroy();
+    }
+
+    KAGE_SmartPointer_ImageBase(const KAGE_SmartPointer_ImageBase& other)
+    {
+        this->copy(other);
+    }
+
+    KAGE_SmartPointer_ImageBase(KAGE_SmartPointer_ImageBase&& other)
+    {
+        this->move(other);
+    }
+
+    KAGE_SmartPointer_ImageBase& operator=(const KAGE_SmartPointer_ImageBase& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->copy(other);
+        return *this;
+    }
+
+    KAGE_SmartPointer_ImageBase& operator=(KAGE_SmartPointer_ImageBase&& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->destroy();
+        this->move(other);
+        return *this;
     }
     }}
 } : 0x8;

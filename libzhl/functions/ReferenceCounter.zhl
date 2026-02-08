@@ -1,15 +1,22 @@
-struct KAGE_ReferenceCount_ImageBase depends (KAGE_System_Mutex) {
-    void* vtable: 0x0;
+struct KAGE_ReferenceCountBase depends (KAGE_System_Mutex) {
+    __vtable {
+        pure void Free(unsigned int flags);
+        pure bool IncrementReferenceNonZero();
+        pure void IncrementReference();
+        pure bool DecrementReference();
+        pure void IncrementWeakReference();
+        pure bool DecrementWeakReference();
+    };
+
     uint16_t strong : 0x4;
     uint16_t weak : 0x6;
     KAGE_System_Mutex mutex : 0x8;
+} : 0x14;
+
+struct KAGE_ReferenceCount_ImageBase : public KAGE_ReferenceCountBase {
     KAGE_Graphics_ImageBase* image : 0x14;
 } : 0x18;
 
-struct KAGE_ReferenceCount_EntitySaveState depends (KAGE_System_Mutex) {
-    void* vtable: 0x0;
-    uint16_t strong : 0x4;
-    uint16_t weak : 0x6;
-    KAGE_System_Mutex mutex : 0x8;
+struct KAGE_ReferenceCount_EntitySaveState : public KAGE_ReferenceCountBase {
     EntitySaveState* _saveState : 0x14;
 } : 0x18;
