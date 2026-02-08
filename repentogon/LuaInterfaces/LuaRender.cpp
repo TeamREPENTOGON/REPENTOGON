@@ -14,6 +14,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h"
+#include "../Utils/ImageUtils.hpp"
+#include "../Utils/ShaderUtils.hpp"
 
 using LuaRender::LuaImage;
 using LuaRender::LuaTransformer;
@@ -24,6 +26,23 @@ LuaRender::RenderContext LuaRender::ElementsRenderContext;
 LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
 static constexpr bool EnableCustomRendering = false;
+
+// ============================================================================
+// Utils
+
+template <typename Func>
+static void RenderToSurface(KAGE_Graphics_ImageBase& surface, Func&& renderFn)
+{
+	auto& manager = g_KAGE_Graphics_Manager;
+
+	Rendering::PushCurrentRenderTarget();
+	manager.SetCurrentRenderTarget(&surface, false);
+	
+	renderFn();
+
+	manager.Present();
+	Rendering::RestorePreviousRenderTarget();
+}
 
 // ============================================================================
 // Image
@@ -38,12 +57,98 @@ LUA_FUNCTION(lua_Image_gc) {
 	return 0;
 }
 
+static void make_axis_aligned_quad(DestinationQuad& quad, Vector& topLeft, Vector& bottomRight)
+{
+	quad._topLeft = topLeft;
+	quad._topRight = Vector(bottomRight.x, topLeft.y);
+	quad._bottomLeft = Vector(topLeft.x, bottomRight.y);
+	quad._bottomRight = bottomRight;
+}
+
+// Temporary test function
+LUA_FUNCTION(Lua_Image_Render)
+{
+	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
+	Vector position = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	auto& image = *luaImage->image.image;
+
+	float width = (float)image.GetWidth();
+	float height = (float)image.GetHeight();
+
+	SourceQuad sourceQuad;
+	make_axis_aligned_quad(sourceQuad, Vector(0.0, 0.0), Vector(1.0, 1.0));
+	sourceQuad._coordinateSpace = SourceQuad::eCoordinateSpace::NORMALIZED_UV;
+
+	DestinationQuad destQuad;
+	make_axis_aligned_quad(destQuad, Vector(position.x, position.y), Vector(position.x + width, position.y + height));
+
+	auto& shader = g_AllShaders[ShaderType::SHADER_COLOR_OFFSET];
+	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, sourceQuad, destQuad, ImageUtils::QuadColor(KAGE_Graphics_Color()));
+	ShaderUtils::ColorOffset::FillVertices(vertexBuffer, image, ColorMod());
+
+	return 0;
+}
+
 static void RegisterImageClass(lua_State* L) {
 	luaL_Reg functions[] = {
+	#ifndef NDEBUG
+		{ "Render", Lua_Image_Render },
+	#endif
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, "Image", "Image", functions, lua_Image_gc);
 }
+
+// ===========================================================================
+// SurfaceRenderController
+
+// Used for functions that only make sense during a Surface render operation
+namespace LuaSurfaceRenderController {
+	struct Userdata {
+		constexpr static const char* MT = "SurfaceRenderController";
+		bool valid = true;
+
+		Userdata() = default;
+	};
+	
+	static Userdata* get_userdata(lua_State* L, int idx) {
+		return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
+	}
+
+	static Userdata* get_valid_surface_render_controller(lua_State* L, int idx) {
+		Userdata* controller = get_userdata(L, idx);
+		if (!controller->valid)
+		{
+			luaL_error(L, "This surface render controller has already been applied and cannot be used again");
+		}
+	
+		return controller;
+	}
+
+	LUA_FUNCTION(lua_clear)
+	{
+		Userdata* controller = get_valid_surface_render_controller(L, 1);
+		g_KAGE_Graphics_Manager.Clear();
+		return 0;
+	}
+
+	static Userdata* NewUserdata(lua_State* L)
+	{
+		Userdata* userdata = new (lua_newuserdata(L, sizeof(Userdata))) Userdata;
+		luaL_setmetatable(L, Userdata::MT);
+		return userdata;
+	}
+
+	static void RegisterUserdataClass(lua_State* L) {
+		luaL_Reg functions[] = {
+			{ "Clear", lua_clear },
+			{ NULL, NULL }
+		};
+		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
+	}
+}
+
 
 // ============================================================================
 // Transformer
@@ -113,15 +218,15 @@ LUA_FUNCTION(lua_Transformer_Apply) {
 	if (!transformer->_valid) {
 		return luaL_error(L, "No operations allowed after a transformer had been applied");
 	}
-	Rendering::PushCurrentRenderTarget();
-	__ptr_g_KAGE_Graphics_Manager->SetCurrentRenderTarget(transformer->_output.image, false);
-	// __ptr_g_KAGE_Graphics_Manager->Clear();
-	for (Transformation& transformation : transformer->_transformations) {
-		KAGE_Graphics_ImageBase* image = transformation._input.image;
-		image->Render(transformation._source, transformation._dest, transformation._color1, transformation._color2, transformation._color3, transformation._color4);
-	}
-	__ptr_g_KAGE_Graphics_Manager->Present();
-	Rendering::RestorePreviousRenderTarget();
+
+	RenderToSurface(*transformer->_output.image, [&](){
+		// __ptr_g_KAGE_Graphics_Manager->Clear();
+		for (Transformation& transformation : transformer->_transformations) {
+			KAGE_Graphics_ImageBase* image = transformation._input.image;
+			image->Render(transformation._source, transformation._dest, transformation._color1, transformation._color2, transformation._color3, transformation._color4);
+		}
+	});
+
 	transformer->_valid = false;
 	return 0;
 }
@@ -296,7 +401,7 @@ static void FillQuad(lua_State* L, void* quad) {
 
 LUA_FUNCTION(lua_SourceQuad_new) {
 	SourceQuad quad;
-	quad.__coordinateSpaceEnum = 0;
+	quad._coordinateSpace = 0;
 	FillQuad(L, &quad);
 	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
 	luaL_setmetatable(L, LuaRender::SourceQuadMT);
@@ -2290,6 +2395,69 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Renderer_CreateImage) {
+	uint32_t width = (uint32_t)luaL_checkinteger(L, 1);
+	uint32_t height = (uint32_t)luaL_checkinteger(L, 2);
+	const char* name = luaL_checkstring(L, 3);
+	KColor color = KColor(0.0, 0.0, 0.0, 0.0);
+
+	// prevent name clashes with real images (since these are added to the cache for some reason, even though they are never loaded)
+	std::string trueName = REPENTOGON::StringFormat("%s.procedural", name);
+	KAGE_SmartPointer_ImageBase pointer = KAGE_Graphics_ImageManager::CreateProceduralImage(width, height, trueName.c_str(), color);
+
+	if (!pointer.image) {
+		return luaL_error(L, "Unable to create Image");
+	}
+
+	LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaImage))) LuaImage;
+	memset(ud, 0, sizeof(LuaImage));
+	luaL_setmetatable(L, LuaRender::ImageMT);
+	ud->image = pointer;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Renderer_RenderToSurface) {
+	LuaImage* luaImage = LuaRender::GetLuaImage(L);
+	auto* image = luaImage->image.image;
+	if ((image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
+	{
+		return luaL_error(L, "Cannot use a non procedural image as the render target");
+	}
+
+	luaL_checktype(L, 2, LUA_TFUNCTION);
+	int renderFn = lua_absindex(L, 2);
+
+	lua::LuaStackProtector protector(L);
+	auto* renderController = LuaSurfaceRenderController::NewUserdata(L);
+	int renderControllerIdx = lua_absindex(L, -1);
+
+	RenderToSurface(*image, [&](){
+		lua_pushvalue(L, renderFn);
+		lua::LuaResults results = lua::LuaCaller(L)
+			.pushvalue(renderControllerIdx)
+			.call(0);
+
+		if (results.getResultCode() != LUA_OK)
+		{
+			if (lua_isstring(L, -1))
+			{
+				const char* msg = lua_tostring(L, -1);
+				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\": %s\n", image->_name, msg));
+			}
+			else
+			{
+				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\"\n", image->_name));
+			}
+		}
+		
+		renderController->valid = false;
+	});
+
+	lua_pop(L, 1); // pop renderController
+
+	return 0;
+}
+
 LUA_FUNCTION(lua_Renderer_StartTransformation) {
 	LuaImage* luaImage = LuaRender::GetLuaImage(L);
 	auto& pointer = luaImage->image;
@@ -2451,6 +2619,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* L = _state;
 	lua::LuaStackProtector protector(L);
 	RegisterImageClass(L);
+	LuaSurfaceRenderController::RegisterUserdataClass(L);
 	RegisterTransformerClass(L);
 	RegisterQuadClasses(L);
 	RegisterCustomRenderMetatables(L);
@@ -2462,6 +2631,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg renderFunctions[] = {
 		{ "LoadImage", lua_Renderer_LoadImage },
+		{ "CreateImage", Lua_Renderer_CreateImage },
+		{ "RenderToSurface", Lua_Renderer_RenderToSurface },
 		{ "StartTransformation", lua_Renderer_StartTransformation },
 		{ "Shader", Lua_Renderer_Shader },
 		{ "Vec2", Lua_Renderer_Vec2 },

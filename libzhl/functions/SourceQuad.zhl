@@ -1,3 +1,11 @@
 struct SourceQuad depends(Vector, DestinationQuad) : public DestinationQuad {
-    int __coordinateSpaceEnum : 0x20;
+    int _coordinateSpace : 0x20;
+
+    {{
+        enum eCoordinateSpace
+        {
+            PIXEL = 0,
+            NORMALIZED_UV = 1,
+        };
+    }}
 } : 0x24;
