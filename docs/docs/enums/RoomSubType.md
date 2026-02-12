@@ -20,7 +20,7 @@ tags:
 |104 |SHOP_KEEPER_LEVEL_5 {: .copyable } |  |
 |110 |SHOP_KEEPER_RARE_GOOD {: .copyable } |  |
 |111 |SHOP_KEEPER_RARE_BAD {: .copyable } |  |
-|1 |TREASURE_NORMAL {: .copyable } |  |
+|0 |TREASURE_NORMAL {: .copyable } |  |
 |1 |TREASURE_OPTIONS {: .copyable } |  |
 |2 |TREASURE_PAY_TO_PLAY {: .copyable } |  |
 |3 |TREASURE_PAY_TO_PLAY_OPTIONS {: .copyable } |  |
