@@ -128,8 +128,8 @@ bool IsCharacterHiddenByAchievementRgon(const int playerType) {
 	return false;
 }
 
-HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
-	super();
+HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlPath, ModEntry* modEntry) -> void) {
+	super(xmlPath, modEntry);
 
 	// Players with the "hideachievement" attribute (hides them from menus until an achievement is earned) cannot also be ""hidden"".
 	// They mean different things (for example, The Forgotten never has the ""hidden"" attribute).
