@@ -554,6 +554,59 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 	return false;
 }
 
+int RoomDescriptor::GetErrorTrinketEffect() {
+	if (this->SpawnSeed != 0) {
+		unsigned int seed = this->SpawnSeed;
+		seed = seed >> 2 ^ seed;
+		seed = seed << 7 ^ seed;
+		seed = seed >> 25 ^ seed;
+		return seed % (NUM_TRINKETS-1) + 1;
+	}
+	return TRINKET_ERROR;
+}
+
+Vector HistoryHUD::GetPosition() const {
+	Vector minimapDisplaySize;
+	g_Game->GetMinimap()->GetDisplayedSize(minimapDisplaySize);
+	const float hudOffset = 1 - g_Manager->GetOptions()->_hudOffset;
+	return Vector(g_WIDTH - 87 + hudOffset * 24, hudOffset * -14 + minimapDisplaySize.y + 32);
+}
+
+bool HistoryHUD::HasTwin() const {
+	return _playerHistoryHuds[1]._player != nullptr;
+}
+
+bool HistoryHUD::IsMini() const {
+	return g_Manager->GetOptions()->_historyHudMode == 2;
+}
+
+float HistoryHUD::GetScale() const {
+	return IsMini() ? 0.5f : 1.0f;
+}
+
+float HistoryHUD::GetIconSize() const {
+	return GetScale() * 32.f;
+}
+
+int HistoryHUD::GetNumRows() const {
+	const float hudOffset = 1 - g_Manager->GetOptions()->_hudOffset;
+	return (int)std::ceil(((hudOffset * 14 + (g_HEIGHT - 64)) - GetPosition().y) / GetIconSize());
+}
+
+// This is per-player, if there are twins.
+int HistoryHUD::GetNumColumns() const {
+	int col = HasTwin() ? 1 : 2;
+	if (IsMini()) {
+		col *= 2;
+	}
+	return col;
+}
+
+// This is per-player, if there are twins.
+int HistoryHUD::GetNumVisibleItems() const {
+	return GetNumRows() * GetNumColumns();
+}
+
 bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }

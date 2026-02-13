@@ -37,21 +37,35 @@ Added:
 * EntityPlayer:
 	- [Get/Set]ImExcitedSpeedupCountdown
 	- [Get/Set]DonateLuck
+	- GetErrorTrinketEffect
+* RoomDescriptor
+	- GetErrorTrinketEffect
 * RoomConfig:
 	- LoadStb(StbType, int Mode, string StbFileName)
 * RoomConfigSet:
 	- LoadStb(string StbFileName)
 * CharacterMenu
 	- GetCompletionMarksSprite
+* History
+	- SearchCollectibles(int or table)
+	- SearchTrinkets(int or table)
+* HUD
+	- GetHistoryHUD
+* Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
+* The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
 /newline/
 Modified:
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+/newline/
 Fixes:
 * ModCallbacks:
 	- Fixed MC_GET_STATUS_EFFECT_TARGET not running for the "shrink" status effect.
+* CharacterMenu:
+	- Fixed GetCharacterMenuIDFromPlayerType not returning the correct value for Tainted Isaac
+* Fixed modded characters' locked/door sprites rendering on the "continue" widget if they are locked behind an achievement.
 /newline/
 /versionseparator/
 v1.1.1a -

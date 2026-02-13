@@ -1706,6 +1706,35 @@ local function RunPreBombTearFlagEffectsCallback(callbackID, param, pos, radius,
 	return combinedRet
 end
 
+local function RunPreHistoryHudRenderCallback(callbackID, param, ...)
+	local combinedRet = {
+		HideCollectibles = {},
+		HideTrinkets = {},
+	}
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif type(ret) == "table" then
+				if ret.HideCollectibles and type(ret.HideCollectibles) == "table" then
+					for _, id in pairs(ret.HideCollectibles) do
+						combinedRet.HideCollectibles[id] = true
+					end
+				end
+				if ret.HideTrinkets and type(ret.HideTrinkets) == "table" then
+					for _, id in pairs(ret.HideTrinkets) do
+						combinedRet.HideTrinkets[id] = true
+					end
+				end
+			end
+		end
+	end
+
+	return combinedRet
+end
+
 -- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
@@ -1756,6 +1785,9 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_POST_BOMB_DAMAGE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PRE_BOMB_TEARFLAG_EFFECTS] = RunPreBombTearFlagEffectsCallback,
 	[ModCallbacks.MC_POST_BOMB_TEARFLAG_EFFECTS] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_HISTORYHUD_RENDER] = RunPreHistoryHudRenderCallback,
+	[ModCallbacks.MC_POST_HISTORYHUD_RENDER] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_HISTORYHUD_RECOMPUTE] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

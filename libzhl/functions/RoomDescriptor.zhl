@@ -3,6 +3,9 @@ __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 
 struct RoomDescriptor depends (RoomConfig_Room)
 {
+	{{
+		int LIBZHL_API RoomDescriptor::GetErrorTrinketEffect();
+	}}
     int32_t GridIndex : 0x0;
     int32_t SafeGridIndex : 0x4;
     int32_t ListIndex : 0x8;

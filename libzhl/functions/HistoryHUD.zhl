@@ -1,0 +1,25 @@
+"558bec83e4f081ec18010000a1":
+__thiscall void HistoryHUD::Render(Vector* pos, bool mini);
+
+"558bec538bd98b0d????????81c1b8af0400578b7d??8b013b41??74??ffb7????????e8????????84c074??837f??0075??83bf????????0075??83bf????????2874??83c8ff":
+__thiscall int HistoryHUD::GetPlayerIdx(Entity_Player* player);  // aka GetPlayerPartID
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec2801000056":
+__thiscall void HistoryHUD::Recompute(int idx, bool immediate);
+
+"558bec6aff68????????64a1????????5083ec38535657a1????????33c5508d45??64a3????????894d":
+__thiscall void HistoryHUD::RecomputeAll(bool immediate);
+
+struct HistoryHUD depends (HistoryHUD_Player) {
+	{{
+		Vector LIBZHL_API HistoryHUD::GetPosition() const;
+		bool LIBZHL_API HistoryHUD::HasTwin() const;
+		bool LIBZHL_API HistoryHUD::IsMini() const;
+		float LIBZHL_API HistoryHUD::GetScale() const;
+		float LIBZHL_API HistoryHUD::GetIconSize() const;
+		int LIBZHL_API HistoryHUD::GetNumRows() const;
+		int LIBZHL_API HistoryHUD::GetNumColumns() const;
+		int LIBZHL_API HistoryHUD::GetNumVisibleItems() const;
+	}}
+	HistoryHUD_Player _playerHistoryHuds[2] : 0x0;
+} : 0x2C;

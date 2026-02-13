@@ -23,6 +23,8 @@ struct GameState depends (RoomDescriptor, GameStateRoomConfig, GameStatePlayer, 
     uint32_t _roomCount : 0x19c;
     RoomDescriptor _rooms[527] : 0x1a0;
     GameStateRoomConfig _roomConfigs[527] : 0x17c68;
+    int _roomIdx : 0x19d1c;
+    int _lastRoomIdx : 0x19d20;
     uint32_t _playerCount : 0x19d70;
     GameStatePlayer _players[8] : 0x19d74;
     GameStatePlayer _esauJrStates[4] : 0x1cb54;

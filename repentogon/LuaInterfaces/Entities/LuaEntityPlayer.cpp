@@ -3294,6 +3294,11 @@ LUA_FUNCTION(Lua_PlayerSetDonateLuck) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
+	lua_pushinteger(L, g_Game->GetCurrentRoomDesc()->GetErrorTrinketEffect());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3593,6 +3598,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetImExcitedSpeedupCountdown", Lua_PlayerSetImExcitedSpeedupCountdown },
 		{ "GetDonateLuck", Lua_PlayerGetDonateLuck },
 		{ "SetDonateLuck", Lua_PlayerSetDonateLuck },
+		{ "GetErrorTrinketEffect", Lua_PlayerGetErrorTrinketEffect },
 
 		{ NULL, NULL }
 	};

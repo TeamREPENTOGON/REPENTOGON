@@ -1,0 +1,4 @@
+struct HistoryHUD_Player {
+	Entity_Player* _player : 0x0;
+	std_vector_HistoryHUDItem _historyHudItems : 0x8;
+} : 0x14;

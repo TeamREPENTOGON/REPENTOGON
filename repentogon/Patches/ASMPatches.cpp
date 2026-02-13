@@ -34,6 +34,7 @@
 #include "ASMPatches/ASMEntityNPC.h"
 #include "ASMPatches/ASMGridEntityCollision.h"
 #include "ASMPatches/ASMGridEntitySpawn.h"
+#include "ASMPatches/ASMHud.h"
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
@@ -233,6 +234,10 @@ void PerformASMPatches() {
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchOnlineMenu();
 	PatchModdedCharacterHiddenByAchievementInMenu();
+
+	// HUD
+	ASMPatchHistoryHudRecompute();
+	ASMPatchRenderHistoryItem();
 
 	// Room
 	ASMPatchAmbushWaveCount();

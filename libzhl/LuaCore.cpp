@@ -788,6 +788,8 @@ namespace lua {
 		const char* GridWebMT = "GridEntityWeb";
 		const char* HistoryMT = "History";
 		const char* HistoryItemMT = "HistoryItem";
+		const char* HistoryHUDMT = "HistoryHUD";
+		const char* HistoryHUDItemMT = "HistoryHUDItem";
 		const char* HUDMessageMT = "HUDMessage";
 		const char* ImGuiMT = "ImGui";
 		const char* ItemOverlayMT = "ItemOverlay";
