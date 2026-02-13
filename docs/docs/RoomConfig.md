@@ -40,3 +40,11 @@ ___
 #### [RoomConfigStage](RoomConfigStage.md) GetStage ( [StbType](enums/StbType.md) Stage ) {: .copyable aria-label='Functions' }
 
 ___
+### LoadStb () {: aria-label='Functions' }
+#### [RoomConfigRoom](RoomConfigRoom.md)[] LoadStb ( [StbType](enums/StbType.md) Stage, int Mode, string StbFileName ) {: .copyable aria-label='Functions' }
+
+Adds the rooms from the provided `.stb` file to the specified RoomConfigSet. Files can only be loaded starting from the `.../content(-repentogon)/rooms/` folder of all mods (so you should not include `content/rooms/` in your path).
+
+If files from multiple mods match the filename, they will all be loaded.
+
+___

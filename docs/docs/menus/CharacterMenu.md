@@ -43,6 +43,10 @@ ___
 Returns the width of the character selection wheel object.
 
 ___
+### GetCompletionMarksSprite () {: aria-label='Functions' }
+#### [Sprite](../Sprite.md) GetCompletionMarksSprite ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDifficulty () {: aria-label='Functions' }
 #### int GetDifficulty ( ) {: .copyable aria-label='Functions' }
 

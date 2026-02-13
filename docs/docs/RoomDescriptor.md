@@ -43,6 +43,12 @@ ___
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetErrorTrinketEffect () {: aria-label='Functions' }
+#### [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) GetErrorTrinketEffect ( ) {: .copyable aria-label='Functions' }
+Returns the current effect that would be mimicked by the "Error" trinket (`TrinketType.TRINKET_ERROR`) for a player in this room.
+
+Note that this effect is based entirely on the [SpawnSeed](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html#spawnseed).
+
 ### GetGridEntitiesSaveState () {: aria-label='Functions' }
 #### [GridEntitiesSaveStateVector](GridEntitiesSaveStateVector.md) GetGridEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
 

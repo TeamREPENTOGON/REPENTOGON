@@ -436,6 +436,10 @@ Returns the name of the player's death animation.
     - `LostDeath` - When playing as the Lost, under the Lost Curse, playing as Forgotten's Soul, or in Tainted Jacob's Ghost form.
 
 ___
+### GetDonateLuck () {: aria-label='Functions' }
+#### int GetDonateLuck ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetEdenDamage () {: aria-label='Functions' }
 #### float GetEdenDamage ( ) {: .copyable aria-label='Functions' }
 Returns the offset of the player's damage stat for Eden's random stats.
@@ -476,6 +480,13 @@ ___
 ___
 ### GetEpiphoraCharge () {: aria-label='Functions' }
 #### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetErrorTrinketEffect () {: aria-label='Functions' }
+#### [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) GetErrorTrinketEffect ( ) {: .copyable aria-label='Functions' }
+Returns the current trinket effect that would be mimicked by the "Error" trinket (`TrinketType.TRINKET_ERROR`), regardless of if the player has it.
+
+Note that this effect is based entirely on the current room's [SpawnSeed](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor.html#spawnseed), and can be also obtained from [RoomDescriptor](RoomDescriptor.md#geterrortrinketeffect). This player function is just provided as a convenience.
 
 ___
 ### GetEveSumptoriumCharge () {: aria-label='Functions' }
@@ -556,6 +567,10 @@ Gets the [Sprite](Sprite.md) object used for when the player is doing an animati
 ___
 ### GetHistory () {: aria-label='Functions' }
 #### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetImExcitedSpeedupCountdown () {: aria-label='Functions' }
+#### int GetImExcitedSpeedupCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
@@ -1126,8 +1141,10 @@ Sets the bitmask corresponding to which familiars have been spawned by Cambion/I
 
 ___
 ### SetControllerIndex () {: aria-label='Functions' }
-#### void SetControllerIndex ( int Idx ) {: .copyable aria-label='Functions' }        
+#### void SetControllerIndex ( int Idx, boolean IncludePlayerOwned = false ) {: .copyable aria-label='Functions' }
 Changes the player's controller index.
+
+If `IncludePlayerOwned` is set to true, also sets the ControllerIndex for the player's subplayer/twinplayer, if any.
 
 ___
 ### SetD8DamageModifier () {: aria-label='Functions' }
@@ -1153,6 +1170,13 @@ Used for Experimental Treatment and for stat boosts from Void.
 Modifier is applied to the player as flat damage.
 
 Experimental Treatment adds `-1`, `0` or `1` depending on the damage rolled. Void may randomly add `1`.
+
+___
+### SetDonateLuck () {: aria-label='Functions' }
+#### void SetDonateLuck ( int Value ) {: .copyable aria-label='Functions' }
+Does not trigger cache evaluation.
+
+For simply incrementing this luck, consider the [DonateLuck](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html?h=donateluck#donateluck) function instead.
 
 ___
 ### SetEdenDamage () {: aria-label='Functions' }
@@ -1229,6 +1253,10 @@ ___
 ### SetHeadDirectionLockTime () {: aria-label='Functions' }
 #### void SetHeadDirectionLockTime ( int Time ) {: .copyable aria-label='Functions' }
 How long the player's head should be forced to stay in its current direction.
+
+___
+### SetImExcitedSpeedupCountdown () {: aria-label='Functions' }
+#### void SetImExcitedSpeedupCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }

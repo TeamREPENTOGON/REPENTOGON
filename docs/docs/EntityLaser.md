@@ -36,6 +36,11 @@ ___
 Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
 
 ___
+### GetNumChainedLasers () {: aria-label='Functions' }
+#### int GetNumChainedLasers ( ) {: .copyable aria-label='Functions' }
+Related to the effect used by the Monstro's Lung + Technology synergy. If >0, may cause an additional laser to spawn at the end point of this laser, up to this many times.
+
+___
 ### GetOneHit () {: aria-label='Functions' }
 #### boolean GetOneHit ( ) {: .copyable aria-label='Functions' }
 
@@ -81,6 +86,16 @@ ___
 ___
 ### SetDisableFollowParent () {: aria-label='Functions' }
 #### void SetDisableFollowParent ( boolean Value ) {: .copyable aria-label='Functions' }
+
+___
+### SetInitSound () {: aria-label='Functions' }
+#### void SetInitSound ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/SoundEffect.html) Sound ) {: .copyable aria-label='Functions' }
+Set after a laser is spawned but before it updates (for example, [MC_POST_LASER_INIT](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html#mc_post_laser_init)) to change the sound it makes. Can be set to `SoundEffect.SOUND_NULL` to make no sound play.
+
+___
+### SetNumChainedLasers () {: aria-label='Functions' }
+#### void SetNumChainedLasers ( int Value ) {: .copyable aria-label='Functions' }
+Controls the effect used by the Monstro's Lung + Technology synergy. If >0, may cause an additional laser to spawn at the end point of this laser, up to this many times. May not function for all laser variants.
 
 ___
 ### SetPrismTouched () {: aria-label='Functions' }
