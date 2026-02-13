@@ -49,6 +49,10 @@ ___
 #### [Sprite](Sprite.md) GetHeartsSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetHistoryHUD () {: aria-label='Functions' }
+#### [HistoryHUD](HistoryHUD.md) GetHistoryHUD ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetInventorySprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetInventorySprite ( ) {: .copyable aria-label='Functions' }
 Sprite object used for Tainted Isaac inventory system.

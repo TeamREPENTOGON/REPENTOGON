@@ -11,7 +11,7 @@ tags:
 
     ???+ example "Example Code"
         ```lua
-        local playerHud = HUD.GetPlayerHUD(0)
+        local playerHud = Game():GetHUD():GetPlayerHUD(0)
         ```
 
 ## Functions

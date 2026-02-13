@@ -38,6 +38,14 @@ ___
 Returns a [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) at the index of the list provided.
 
 ___
+### LoadStb () {: aria-label='Functions' }
+#### [RoomConfigRoom](RoomConfigRoom.md)[] LoadStb ( string StbFileName ) {: .copyable aria-label='Functions' }
+
+Adds the rooms from the provided `.stb` file to the RoomConfigSet. Files can only be loaded starting from the `.../content(-repentogon)/rooms/` folder of all mods (so you should not include `content/rooms/` in your path).
+
+If files from multiple mods match the filename, they will all be loaded.
+
+___
 ## Variables
 ### Size {: aria-label='Variables' }
 [ ](#){: .const .tooltip .badge } [ ](#){: .abrep .tooltip .badge }
