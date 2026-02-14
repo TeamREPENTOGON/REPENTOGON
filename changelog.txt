@@ -39,6 +39,9 @@ Added:
 	- [Get/Set]DonateLuck
 	- GetErrorTrinketEffect
 	- [Get/Set]RUAWizardTimer
+* EntityEffect
+	- [Get/Set/Add/Clear/Has]AquariusTearFlags
+		Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
 * RoomDescriptor
 	- GetErrorTrinketEffect
 * RoomConfig:

@@ -59,6 +59,54 @@ LUA_FUNCTION(Lua_GetGridEntityDesc) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetAquariusTearFlags) {
+	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+
+	if (entity->_variant == 54) {
+		lua::luabridge::UserdataValue<BitSet128>::push(L, lua::GetMetatableKey(lua::Metatables::BITSET_128), entity->_varData);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetAquariusTearFlags) {
+	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+
+	if (entity->_variant == 54) {
+		entity->_varData = *lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_AddAquariusTearFlags) {
+	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+
+	if (entity->_variant == 54) {
+		entity->_varData.AddFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ClearAquariusTearFlags) {
+	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+
+	if (entity->_variant == 54) {
+		entity->_varData.RemoveFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_HasAquariusTearFlags) {
+	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+	lua_pushboolean(L, entity->_variant == 54 && entity->_varData.HasAny(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128")));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -66,6 +114,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetGridEntityDesc", Lua_GetGridEntityDesc },
+		{ "GetAquariusTearFlags", Lua_GetAquariusTearFlags },
+		{ "SetAquariusTearFlags", Lua_SetAquariusTearFlags },
+		{ "AddAquariusTearFlags", Lua_AddAquariusTearFlags },
+		{ "ClearAquariusTearFlags", Lua_ClearAquariusTearFlags },
+		{ "HasAquariusTearFlags", Lua_HasAquariusTearFlags },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_EFFECT, functions);
