@@ -3294,6 +3294,20 @@ LUA_FUNCTION(Lua_PlayerSetDonateLuck) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetRUAWizardTimer) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_rUaWizardTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRUAWizardTimer) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_rUaWizardTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
 	lua_pushinteger(L, g_Game->GetCurrentRoomDesc()->GetErrorTrinketEffect());
 	return 1;
@@ -3598,6 +3612,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetImExcitedSpeedupCountdown", Lua_PlayerSetImExcitedSpeedupCountdown },
 		{ "GetDonateLuck", Lua_PlayerGetDonateLuck },
 		{ "SetDonateLuck", Lua_PlayerSetDonateLuck },
+		{ "GetRUAWizardTimer", Lua_PlayerGetRUAWizardTimer },
+		{ "SetRUAWizardTimer", Lua_PlayerSetRUAWizardTimer },
 		{ "GetErrorTrinketEffect", Lua_PlayerGetErrorTrinketEffect },
 
 		{ NULL, NULL }

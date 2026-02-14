@@ -38,6 +38,7 @@ Added:
 	- [Get/Set]ImExcitedSpeedupCountdown
 	- [Get/Set]DonateLuck
 	- GetErrorTrinketEffect
+	- [Get/Set]RUAWizardTimer
 * RoomDescriptor
 	- GetErrorTrinketEffect
 * RoomConfig:

@@ -721,6 +721,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	Entity_Effect* _markedTarget : 0x1408;
 	Entity* _heldEntity : 0x140c;
 	Entity_Laser* _megaBlastLaser : 0x1454;
+	int _rUaWizardTimer : 0x1458;
 	float _maxfiredelay : 0x145c;
 	float _shotspeed : 0x1460;
 	float _damage : 0x146c;
