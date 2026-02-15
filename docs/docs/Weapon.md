@@ -68,7 +68,7 @@ ___
 
 ___
 ### PlayItemAnim () {: aria-label='Functions' }
-#### void PlayItemAnim ( int ItemID, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) AnimDirection, [Vector](Vector.md) Position, float Charge ) {: .copyable aria-label='Functions' }
+#### void PlayItemAnim ( int ItemID, AnimId, [Vector](Vector.md) Direction, float unk ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharge () {: aria-label='Functions' }
