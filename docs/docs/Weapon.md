@@ -68,7 +68,7 @@ ___
 
 ___
 ### PlayItemAnim () {: aria-label='Functions' }
-#### void PlayItemAnim ( int ItemID, AnimId, [Vector](Vector.md) Direction, float unk ) {: .copyable aria-label='Functions' }
+#### void PlayItemAnim ( int ItemID, int AnimId, [Vector](Vector.md) Direction, float unk ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharge () {: aria-label='Functions' }
