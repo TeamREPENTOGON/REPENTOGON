@@ -1,16 +1,69 @@
-struct DestinationQuad depends (Vector) { {{
-    void LIBZHL_API DestinationQuad::RotateRadians(const Vector& pivot, float radians);
+{{
+struct RenderMatrix
+{
+    float a = 1.0f, b = 0.0f, tx = 0.0f;
+    float c = 0.0f, d = 1.0f, ty = 0.0f;
+};
+}}
 
-    inline void DestinationQuad::FlipX()
+struct DestinationQuad depends (Vector) { {{
+    inline void FlipX()
     {
         std::swap(_topLeft, _topRight);
         std::swap(_bottomLeft, _bottomRight);
     }
 
-    inline void DestinationQuad::FlipY()
+    inline void FlipY()
     {
         std::swap(_topLeft, _bottomLeft);
         std::swap(_topRight, _bottomRight);
+    }
+
+    inline void Translate(const Vector& offset)
+    {
+        this->_topLeft += offset;
+        this->_topRight += offset;
+        this->_bottomLeft += offset;
+        this->_bottomRight += offset;
+    }
+
+    inline void Scale(const Vector& scale, const Vector& anchor)
+    {
+        this->Translate(-anchor);
+
+        auto scale_point = [&](Vector& vec) {
+            vec.x *= scale.x;
+            vec.y *= scale.y;
+        };
+
+        scale_point(this->_topLeft);
+        scale_point(this->_topRight);
+        scale_point(this->_bottomLeft);
+        scale_point(this->_bottomRight);
+
+        this->Translate(anchor);
+    }
+
+    inline void RotateRadians(const Vector& pivot, float radians)
+    {
+        float sin = std::sin(radians);
+        float cos = std::cos(radians);
+
+        this->Translate(-pivot);
+
+        auto rotate = [](auto& p, float sin, float cos) {
+            float x = p.x;
+            float y = p.y;
+            p.x =  cos * x - sin * y;
+            p.y =  sin * x + cos * y;
+        };
+
+        rotate(_topLeft, sin, cos);
+        rotate(_topRight, sin, cos);
+        rotate(_bottomLeft, sin, cos);
+        rotate(_bottomRight, sin, cos);
+
+        this->Translate(pivot);
     }
 
     inline void RotateDegrees(const Vector& pivot, float degrees)
@@ -18,6 +71,44 @@ struct DestinationQuad depends (Vector) { {{
         constexpr float DEGREES_TO_RADIANS = 3.14159265358979323846f / 180.0f;
         float radians = degrees * DEGREES_TO_RADIANS;
         RotateRadians(pivot, radians);
+    }
+
+    inline void Shear(const Vector& shear, const Vector& anchor)
+    {
+        this->Translate(-anchor);
+
+        auto shear_point = [&](Vector& vec) {
+            float x = vec.x;
+            float y = vec.y;
+            vec.x += shear.x * y;
+            vec.y += shear.y * x;
+        };
+
+        shear_point(this->_topLeft);
+        shear_point(this->_topRight);
+        shear_point(this->_bottomLeft);
+        shear_point(this->_bottomRight);
+
+        this->Translate(anchor);
+    }
+
+    inline void ApplyMatrix(const RenderMatrix& matrix, const Vector& anchor)
+    {
+        this->Translate(-anchor);
+
+        auto apply_matrix = [](Vector& v, const RenderMatrix& m) {
+            float x = v.x;
+            float y = v.y;
+            v.x = (m.a * x + m.b * y + m.tx);
+            v.y = (m.c * x + m.d * y + m.ty);
+        };
+
+        apply_matrix(this->_topLeft, matrix);
+        apply_matrix(this->_topRight, matrix);
+        apply_matrix(this->_bottomLeft, matrix);
+        apply_matrix(this->_bottomRight, matrix);
+
+        this->Translate(anchor);
     }
 }}
     Vector _topLeft : 0x0, _topRight : 0x8, _bottomLeft : 0x10, _bottomRight : 0x18;

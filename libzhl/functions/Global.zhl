@@ -3324,6 +3324,7 @@ enum class eImageFlag : uint64_t {
 };
 
 enum class eVertexAttributeFormat : int {
+    TERMINATOR = 0, // Used to define the end of the VertexAttributeDescriptor array
     FLOAT = 1,
     VEC_2 = 2,
     VEC_3 = 3,

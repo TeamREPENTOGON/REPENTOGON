@@ -34,4 +34,7 @@ struct KAGE_Graphics_RenderBatch depends (KAGE_Graphics_GraphicsBufferObject) {
     KAGE_Graphics_GraphicsBufferObject _indexBuffer : 0x30;
 } : 0x3c; // (checked)
 
-struct KAGE_Graphics_VertexAttributeDescriptor {};
+struct KAGE_Graphics_VertexAttributeDescriptor {
+    const char* name : 0x0;
+    uint32_t format : 0x4; // eVertexFormat
+} : 0x8;
