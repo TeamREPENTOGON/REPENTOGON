@@ -7,11 +7,11 @@ namespace ShaderUtils
     // size is expressed in number of floats
     constexpr size_t GetFormatSize(uint32_t format);
     constexpr size_t GetFormatStride(uint32_t format);
-    size_t GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor);
+    size_t GetNumVertexAttributes(const KAGE_Graphics_VertexAttributeDescriptor* descriptor);
     // size is expressed in number of floats
-    uint32_t GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
-    uint32_t GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
-    void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    uint32_t GetVertexSize(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    uint32_t GetVertexStride(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
 }
 
 inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format)

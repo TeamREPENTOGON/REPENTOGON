@@ -621,40 +621,47 @@ void Entity_Bomb::UpdateDirtColor() {
     }
 }
 
-void DestinationQuad::RotateRadians(const Vector& pivot, float radians)
+inline void SourceQuad::ConvertToPixelSpace(KAGE_Graphics_ImageBase& image)
 {
-	if (radians == 0.0)
+	if (this->_coordinateSpace == eCoordinateSpace::PIXEL)
 	{
 		return;
 	}
 
-	float sin = std::sin(radians);
-	float cos = std::cos(radians);
+	float width = (float)image.GetWidth();
+	float height = (float)image.GetHeight();
 
-	// translate
-	_topLeft -= pivot;
-	_topRight -= pivot;
-	_bottomLeft -= pivot;
-	_bottomRight -= pivot;
+	this->_topLeft.x *= width;
+	this->_topLeft.y *= height;
+	this->_topRight.x *= width;
+	this->_topRight.y *= height;
+	this->_bottomLeft.x *= width;
+	this->_bottomLeft.y *= height;
+	this->_bottomRight.x *= width;
+	this->_bottomRight.y *= height;
+}
 
-	// apply rotation
-	auto rotate = [](auto& p, float sin, float cos) {
-		float x = p.x;
-		float y = p.y;
-		p.x =  cos * x - sin * y;
-		p.y =  sin * x + cos * y;
-	};
+inline void SourceQuad::ConvertToUVSpace(KAGE_Graphics_ImageBase& image)
+{
+	if (this->_coordinateSpace == eCoordinateSpace::NORMALIZED_UV)
+	{
+		return;
+	}
 
-	rotate(_topLeft, sin, cos);
-	rotate(_topRight, sin, cos);
-	rotate(_bottomLeft, sin, cos);
-	rotate(_bottomRight, sin, cos);
+	int width = image.GetWidth();
+	int height = image.GetHeight();
 
-	// undo translation
-	_topLeft += pivot;
-	_topRight += pivot;
-	_bottomLeft += pivot;
-	_bottomRight += pivot;
+	float inverseWidth = 1.0f / (float)width;
+	float inverseHeight = 1.0f / (float)height;
+
+	this->_topLeft.x *= inverseWidth;
+	this->_topLeft.y *= inverseHeight;
+	this->_topRight.x *= inverseWidth;
+	this->_topRight.y *= inverseHeight;
+	this->_bottomLeft.x *= inverseWidth;
+	this->_bottomLeft.y *= inverseHeight;
+	this->_bottomRight.x *= inverseWidth;
+	this->_bottomRight.y *= inverseHeight;
 }
 
 ModReference* LuaEngine::GetModRefByTable(int tblIdx)
