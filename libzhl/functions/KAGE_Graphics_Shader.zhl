@@ -44,7 +44,13 @@ struct KAGE_Graphics_Shader : public KAGE_Graphics_ShaderBase {
             this->Free(false);
         }
 
-        inline int GetShaderId() { return *(int*)((char*)this + 0x28); }
+        void HardReset()
+        {
+            this->~KAGE_Graphics_Shader();
+            new (this) KAGE_Graphics_Shader();
+        }
+
+        inline int GetShaderId() { return this->_glProgram; }
     }}
     unsigned int _glProgram : 0x28;
 } : 0x2c;

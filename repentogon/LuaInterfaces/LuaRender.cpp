@@ -14,6 +14,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h"
+#include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.hpp"
 #include "../Utils/ShaderUtils.hpp"
 
@@ -195,7 +196,7 @@ static RenderMatrix get_render_matrix(lua_State* L, int idx)
 // Shader
 namespace LuaShader {
 	struct Userdata {
-		static constexpr char* MT = "KageShader";
+		static constexpr char* MT = "Shader";
 		KAGE_Graphics_Shader* shader = nullptr;
 
 		Userdata(KAGE_Graphics_Shader* shader)
@@ -1954,7 +1955,7 @@ namespace GL {
 		}
 
 		static void Lua_BindUniform(lua_State* L, const char* mt) {
-			Shader** shader = lua::GetRawUserdata<Shader**>(L, 1, LuaRender::ShaderMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 1, LuaRender::GLShaderMT);
 			std::string name(luaL_checkstring(L, 2));
 			GLSLValue* value = lua::GetRawUserdata<GLSLValue*>(L, 3, mt);
 			(*shader)->BindUniform(name, value);
@@ -2007,7 +2008,7 @@ namespace GL {
 				{ NULL, NULL}
 			};
 
-			lua::RegisterNewClass(L, LuaRender::ShaderMT, LuaRender::ShaderMT, funcs);
+			lua::RegisterNewClass(L, LuaRender::GLShaderMT, LuaRender::GLShaderMT, funcs);
 		}
 
 		// Shaders outlive everything once registered. Store them in static memory
@@ -2080,7 +2081,7 @@ namespace GL {
 		LUA_FUNCTION(Lua_NewPass) {
 			Pipeline* pipeline = lua::GetRawUserdata<Pipeline*>(L, 1, LuaRender::PipelineMT);
 			size_t nbVertices = (size_t) luaL_checkinteger(L, 2);
-			Shader** shader = lua::GetRawUserdata<Shader**>(L, 3, LuaRender::ShaderMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 3, LuaRender::GLShaderMT);
 			size_t nbElements = (size_t) luaL_checkinteger(L, 4);
 
 			VertexBuffer* buffer = pipeline->NewPass(nbVertices, *shader, nbElements);
@@ -2272,7 +2273,7 @@ namespace GL {
 	public:
 		LUA_FUNCTION(Lua_SliceSingle) {
 			VertexBuffer** buffer = lua::GetRawUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
-			Shader** shader = lua::GetRawUserdata<Shader**>(L, 2, LuaRender::ShaderMT);
+			Shader** shader = lua::GetRawUserdata<Shader**>(L, 2, LuaRender::GLShaderMT);
 			int nElements = (int) luaL_checkinteger(L, 3);
 
 			int first = (int) luaL_checkinteger(L, 4);
@@ -2651,10 +2652,10 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum 
 
 			case LUA_TUSERDATA:
 				lua_getmetatable(L, -1);
-				luaL_getmetatable(L, LuaRender::ShaderMT);
+				luaL_getmetatable(L, LuaRender::GLShaderMT);
 				if (lua_rawequal(L, -1, -2)) {
 					lua_pop(L, 2);
-					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::ShaderMT);
+					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::GLShaderMT);
 					shader->Use();
 					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
 					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
@@ -2805,7 +2806,7 @@ LUA_FUNCTION(lua_Renderer_StartTransformation) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Renderer_Shader) {
+LUA_FUNCTION(Lua_Renderer_GLShader) {
 	std::string vertexShader(luaL_checkstring(L, 1));
 	std::string fragmentShader(luaL_checkstring(L, 2));
 	GL::VertexDescriptor* descriptor = lua::GetRawUserdata<GL::VertexDescriptor*>(L, 3, LuaRender::VertexDescriptorMT);
@@ -2815,7 +2816,7 @@ LUA_FUNCTION(Lua_Renderer_Shader) {
 		shader = new GL::Shader(vertexShader, fragmentShader, descriptor);
 		std::unique_ptr<GL::Shader> ptr(shader);
 		GL::Shader** ud = (GL::Shader**)lua_newuserdata(L, sizeof(shader));
-		luaL_setmetatable(L, LuaRender::ShaderMT);
+		luaL_setmetatable(L, LuaRender::GLShaderMT);
 		*ud = shader;
 		GL::Shader::_shaders.push_back(std::move(ptr));
 	}
@@ -2824,6 +2825,89 @@ LUA_FUNCTION(Lua_Renderer_Shader) {
 		ZHL::Log("%s\n", error);
 		luaL_error(L, "Error while creating shader: %s", error);
 	}
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Renderer_LoadShader)
+{
+	std::string path = luaL_checkstring(L, 1);
+	if (!lua_istable(L, 2))
+	{
+		return luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
+	}
+	
+	int descTbl = lua_absindex(L, 2);
+
+	size_t numAttributes = (size_t)lua_rawlen(L, descTbl);
+	std::vector<KAGE_Graphics_VertexAttributeDescriptor> descriptor;
+	descriptor.reserve(numAttributes + 1); // + 1 for terminator
+
+	// lua table to descriptor
+	for (size_t i = 0; i < numAttributes; i++)
+	{
+		auto& attributeDesc = descriptor.emplace_back();
+
+		int type = lua_rawgeti(L, descTbl, i + 1);
+		if (!lua_istable(L, -1))
+		{
+			lua_pop(L, 1);
+			return luaL_error(L, "vertex attribute %i: table expected", i + 1);
+		}
+
+		lua_rawgeti(L, -1, 1);
+		if (!lua_isstring(L, -1))
+		{
+			lua_pop(L, 2);
+			return luaL_error(L, "vertex attribute %i name: string expected", i + 1);
+		}
+		attributeDesc.name = lua_tostring(L, -1);
+		lua_pop(L, 1); // pop name
+
+		lua_rawgeti(L, -1, 2);
+		if (!lua_isinteger(L, -1))
+		{
+			lua_pop(L, 2);
+			return luaL_error(L, "vertex attribute %i format: integer expected", i + 1);
+		}
+		int format = (int)lua_tointeger(L, -1);
+		if (!(1 <= format && format <= 8))
+		{
+			lua_pop(L, 2);
+			return luaL_error(L, "vertex attribute %i format: invalid format", i + 1);
+		}
+		attributeDesc.format = format;
+		lua_pop(L, 1); // pop format
+
+		lua_pop(L, 1); // pop attribute
+	}
+
+	auto& terminator = descriptor.emplace_back();
+	terminator.name = "";
+	terminator.format = (size_t)eVertexAttributeFormat::TERMINATOR;
+
+	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(path, descriptor.data());
+	if (!shader)
+	{
+		luaL_error(L, "Unable to load shader \"%s\"", path);
+	}
+
+	// confirm correct vertex descriptor
+	if (shader->_numVertexAttributes != descriptor.size() - 1)
+	{
+		luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path);
+	}
+
+	const KAGE_Graphics_VertexAttributeDescriptor* shaderDescriptor = shader->_vertexAttributes;
+	for (size_t i = 0; i < shader->_numVertexAttributes; i++)
+	{
+		if (shaderDescriptor[i] != descriptor[i])
+		{
+			luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path);
+		}
+	}
+
+	LuaShader::NewUserdata(L, shader);
 	
 	return 1;
 }
@@ -2998,15 +3082,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CreateImage", Lua_Renderer_CreateImage },
 		{ "RenderToSurface", Lua_Renderer_RenderToSurface },
 		{ "StartTransformation", lua_Renderer_StartTransformation },
-		{ "Shader", Lua_Renderer_Shader },
+		// { "GLShader", Lua_Renderer_GLShader },
 		{ "GetShaderByType", Lua_Renderer_GetShaderByType },
-		{ "Vec2", Lua_Renderer_Vec2 },
-		{ "Vec3", Lua_Renderer_Vec3 },
-		{ "Vec4", Lua_Renderer_Vec4 },
-		{ "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
-		{ "Pipeline", Lua_Renderer_Pipeline },
-		{ "VertexDescriptor", Lua_Renderer_VertexDescriptor},
-		{ "RenderSet", Lua_Renderer_RenderSet },
+		{ "LoadShader", Lua_Renderer_LoadShader },
+		// { "Vec2", Lua_Renderer_Vec2 },
+		// { "Vec3", Lua_Renderer_Vec3 },
+		// { "Vec4", Lua_Renderer_Vec4 },
+		// { "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
+		// { "Pipeline", Lua_Renderer_Pipeline },
+		// { "VertexDescriptor", Lua_Renderer_VertexDescriptor},
+		// { "RenderSet", Lua_Renderer_RenderSet },
 		{ "GetPixelationAmount", Lua_Renderer_GetPixelationAmount },
 		{ "GetClipPaneNormal", Lua_Renderer_GetClipPaneNormal },
 		{ "GetClipPaneThreshold", Lua_Renderer_GetClipPaneThreshold },
@@ -3046,6 +3131,17 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::TableAssoc(L, "SHADER_DIZZY", SHADER_DIZZY);
 	lua::TableAssoc(L, "SHADER_HEAT_WAVE", SHADER_HEAT_WAVE);
 	lua::TableAssoc(L, "SHADER_MIRROR", SHADER_MIRROR);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "VertexAttributeFormat");
+	lua_newtable(L);
+	lua::TableAssoc(L, "FLOAT", (int)eVertexAttributeFormat::FLOAT);
+	lua::TableAssoc(L, "VEC2", (int)eVertexAttributeFormat::VEC_2);
+	lua::TableAssoc(L, "VEC3", (int)eVertexAttributeFormat::VEC_3);
+	lua::TableAssoc(L, "VEC4", (int)eVertexAttributeFormat::VEC_4);
+	lua::TableAssoc(L, "POSITION", (int)eVertexAttributeFormat::POSITION);
+	lua::TableAssoc(L, "COLOR", (int)eVertexAttributeFormat::COLOR);
+	lua::TableAssoc(L, "TEX_COORD", (int)eVertexAttributeFormat::TEX_COORD);
 	lua_rawset(L, -3);
 
 	lua_setglobal(L, "Renderer");
