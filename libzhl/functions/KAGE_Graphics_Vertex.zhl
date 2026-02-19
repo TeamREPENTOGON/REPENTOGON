@@ -37,4 +37,16 @@ struct KAGE_Graphics_RenderBatch depends (KAGE_Graphics_GraphicsBufferObject) {
 struct KAGE_Graphics_VertexAttributeDescriptor {
     const char* name : 0x0;
     uint32_t format : 0x4; // eVertexFormat
+
+    {{
+    bool operator==(const KAGE_Graphics_VertexAttributeDescriptor& other) const
+    {
+        return std::strcmp(this->name, other.name) == 0 && this->format == other.format;
+    }
+
+    bool operator!=(const KAGE_Graphics_VertexAttributeDescriptor& other) const
+    {
+        return !(*this == other);
+    }
+    }}
 } : 0x8;
