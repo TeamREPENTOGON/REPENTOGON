@@ -9,9 +9,16 @@ reference void* KAGE_Graphics_Shader_vftable;
 
 struct KAGE_Graphics_ShaderBase {
     {{
+    // ShaderBase has pure methods and so it should not be instantiable
+    protected:
         KAGE_Graphics_ShaderBase() : _vtable(__ptr_KAGE_Graphics_Shader_vftable) {
-            std::memset((void*)(this + 0x4), 0, sizeof(*this) - 0x4); // the constructor would normally set everything to 0 so we emulate that here
+            std::memset((void*)((uintptr_t)this + 0x4), 0, sizeof(*this) - 0x4); // the constructor would normally set everything to 0 so we emulate that here
         };
+
+    public:
+        ~KAGE_Graphics_ShaderBase() {
+            this->Free(false);
+        }
     }}
 
     __vtable {
@@ -36,14 +43,15 @@ struct KAGE_Graphics_Shader : public KAGE_Graphics_ShaderBase {
         ~KAGE_Graphics_Shader() {
             if (this->_initialized)
             {
-                // The glProgram values are not reset, so we can't be sure that the resource is not an already deleted glProgram,
-                // but based on usage the only time glDeleteProgram is called is when initialization fails, where _initialized is left as false.
-                this->Shutdown(); // Shutdown simply calls glDeleteProgram.
+                // We must call Shutdown manually, as the Free method only calls the base class Shutdown, causing _glProgram to leak.
+                // _glProgram is not reset to a default value on Shutdown, so we can't be sure that we are not deleting an already deleted glProgram,
+                // but based on usage the only time glDeleteProgram is called is on Shutdown (where _initialized is set to false),
+                // and when Initialize fails (where _initialized is left as false).
+                this->Shutdown();
             }
-
-            this->Free(false);
         }
 
+        // Use this if you want to reload the shader, as none of the methods gracefully handle a double initialization, causing some resources to leak.
         void HardReset()
         {
             this->~KAGE_Graphics_Shader();
