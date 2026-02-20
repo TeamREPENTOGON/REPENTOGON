@@ -41,6 +41,29 @@ inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_
     }
 }
 
+inline bool ShaderUtils::AreVerticesEqual(const KAGE_Graphics_VertexAttributeDescriptor* desc, const KAGE_Graphics_VertexAttributeDescriptor* other, size_t numAttributes)
+{
+    for (size_t i = 0; i < numAttributes; i++)
+    {
+        if (desc[i] != other[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+inline bool ShaderUtils::UsesVertexDescriptor(const KAGE_Graphics_ShaderBase& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDescriptor, size_t numAttributes)
+{
+    if (shader._numVertexAttributes != numAttributes)
+    {
+        return false;
+    }
+
+    return ShaderUtils::AreVerticesEqual(shader._vertexAttributes, vertexDescriptor, numAttributes);
+}
+
 inline void ShaderUtils::ColorOffset::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod)
 {
     assert(vertexBuffer != nullptr);
