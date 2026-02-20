@@ -3132,6 +3132,13 @@ RoomDisplayFlags = {
 	SHOW_ICON = 1 << 2,
 }
 
+MinimapIconPosition = {
+	BEFORE_MAP_ICONS = 0,
+	AFTER_MAP_ICONS = 1,
+	BEFORE_CURSE_ICONS = 2,
+	AFTER_CURSE_ICONS = 3
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

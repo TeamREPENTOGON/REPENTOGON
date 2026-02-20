@@ -33,4 +33,12 @@ private:
     CustomModManager& operator=(const CustomModManager&) = delete;
 };
 
+struct CurseSpriteData {
+    ModEntryEx* modEx;
+    ANM2* customANM2;
+    uint32_t frameNum;
+};
+
 void ASMPatchesForCustomModManager();
+
+std::map<uint32_t, CurseSpriteData> GetCurseSpriteMap();
