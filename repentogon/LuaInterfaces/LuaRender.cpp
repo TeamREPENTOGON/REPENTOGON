@@ -151,18 +151,11 @@ static RenderMatrix get_render_matrix(lua_State* L, int idx)
 	int luaMatrix = lua_absindex(L, idx);
 	lua_rawgeti(L, luaMatrix, 1);
 	lua_rawgeti(L, luaMatrix, 2);
-	lua_rawgeti(L, luaMatrix, 3);
 	
-	int xTransform = lua_absindex(L, -3);
-	int yTransform = lua_absindex(L, -2);
-	int perspectiveRow = lua_absindex(L, -1);
+	int xTransform = lua_absindex(L, -2);
+	int yTransform = lua_absindex(L, -1);
 
 	if (!lua_istable(L, xTransform) || !lua_istable(L, yTransform))
-	{
-		luaL_argerror(L, luaMatrix, "render matrix row is not a table");
-	}
-
-	if (!lua_istable(L, perspectiveRow) && !lua_isnoneornil(L, perspectiveRow))
 	{
 		luaL_argerror(L, luaMatrix, "render matrix row is not a table");
 	}
@@ -187,7 +180,7 @@ static RenderMatrix get_render_matrix(lua_State* L, int idx)
 	assign_matrix_field(matrix.d, L, luaMatrix, yTransform, 2);
 	assign_matrix_field(matrix.ty, L, luaMatrix, yTransform, 3);
 
-	lua_pop(L, 2); // pop xTransform, yTransform, transformRow
+	lua_pop(L, 2); // pop xTransform, yTransform
 	
 	return matrix;
 }
