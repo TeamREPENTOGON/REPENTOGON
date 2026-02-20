@@ -7,11 +7,14 @@ namespace ShaderUtils
     // size is expressed in number of floats
     constexpr size_t GetFormatSize(uint32_t format);
     constexpr size_t GetFormatStride(uint32_t format);
+    // This method expects a descriptor with a Terminator format.
     size_t GetNumVertexAttributes(const KAGE_Graphics_VertexAttributeDescriptor* descriptor);
     // size is expressed in number of floats
     uint32_t GetVertexSize(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
     uint32_t GetVertexStride(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
     void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    bool AreVerticesEqual(const KAGE_Graphics_VertexAttributeDescriptor* desc, const KAGE_Graphics_VertexAttributeDescriptor* other, size_t numAttributes);
+    bool UsesVertexDescriptor(const KAGE_Graphics_ShaderBase& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDescriptor, size_t numAttributes);
 }
 
 inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format)
@@ -54,6 +57,7 @@ namespace ShaderUtils
         constexpr size_t CLIP_PANE_OFFSET = PIXELATION_AMOUNT_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::FLOAT);
         constexpr size_t VERTEX_SIZE = CLIP_PANE_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::VEC_3);
         constexpr size_t VERTEX_STRIDE = VERTEX_SIZE * sizeof(float);
+        constexpr size_t NUM_ATTRIBUTES = 8;
 
         void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod);
     }
@@ -71,6 +75,7 @@ namespace ShaderUtils
         constexpr size_t CHAMPION_COLOR_OFFSET = CLIP_PANE_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::VEC_3);
         constexpr size_t VERTEX_SIZE = CHAMPION_COLOR_OFFSET + ShaderUtils::GetFormatSize((uint32_t)eVertexAttributeFormat::VEC_4);
         constexpr size_t VERTEX_STRIDE = VERTEX_SIZE * sizeof(float);
+        constexpr size_t NUM_ATTRIBUTES = 9;
 
         void FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod, const ColorMod& championColor);
     }
