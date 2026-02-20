@@ -265,6 +265,13 @@ LUA_FUNCTION(Lua_Image_GetPaddedHeight)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Image_GetName)
+{
+	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
+	lua_pushstring(L, luaImage->image.image->_name);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_Image_Render)
 {
 	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
@@ -331,12 +338,35 @@ LUA_FUNCTION(Lua_Image_RenderWithShader)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Image_GetTexelRegion)
+{
+	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
+	int x = (int)luaL_checkinteger(L, 2);
+	int y = (int)luaL_checkinteger(L, 3);
+	uint32_t width = (uint32_t)luaL_checkinteger(L, 4);
+	uint32_t height = (uint32_t)luaL_checkinteger(L, 5);
+
+	auto& image = *luaImage->image.image;
+	uint32_t size = width * height * 4; // (RGBA)
+	luaL_Buffer buffer;
+	luaL_buffinit(L, &buffer);
+
+	uint8_t* dst = (uint8_t*)luaL_prepbuffsize(&buffer, size);
+	image.GetTexelRegion(x, y, width, height, dst);
+
+	luaL_addsize(&buffer, size);
+	luaL_pushresult(&buffer);
+	return 1;
+}
+
 static void RegisterImageClass(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetWidth", Lua_Image_GetWidth },
 		{ "GetHeight", Lua_Image_GetHeight },
 		{ "GetPaddedWidth", Lua_Image_GetPaddedWidth },
 		{ "GetPaddedHeight", Lua_Image_GetPaddedHeight },
+		{ "GetName", Lua_Image_GetName },
+		{ "GetTexelRegion", Lua_Image_GetTexelRegion },
 		{ "Render", Lua_Image_Render },
 		{ "RenderWithShader", Lua_Image_RenderWithShader },
 		{ NULL, NULL }
