@@ -545,6 +545,28 @@ DestinationQuad* LuaRender::GetDestQuad(lua_State* L, int idx) {
 	return (DestinationQuad*)luaL_checkudata(L, idx, LuaRender::DestinationQuadMT);
 }
 
+LUA_FUNCTION(Lua_DestinationQuad_Copy)
+{
+	DestinationQuad* quad = LuaRender::GetDestQuad(L, 1);
+
+	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
+	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
+	*result = *quad;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SourceQuad_Copy)
+{
+	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
+
+	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
+	luaL_setmetatable(L, LuaRender::SourceQuadMT);
+	*result = *quad;
+
+	return 1;
+}
+
 LUA_FUNCTION(lua_Quad_GetTopLeft) {
 	DestinationQuad* quad = get_quad(L, 1);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_topLeft);
@@ -683,6 +705,13 @@ LUA_FUNCTION(Lua_DestQuad_ToString)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SourceQuad_IsUVSpace)
+{
+	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
+	lua_pushboolean(L, quad->_coordinateSpace == SourceQuad::eCoordinateSpace::NORMALIZED_UV);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_SourceQuad_ConvertToPixelSpace)
 {
 	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
@@ -719,6 +748,7 @@ LUA_FUNCTION(Lua_SourceQuad_ToString)
 
 static void RegisterQuadClasses(lua_State* L) {
 	luaL_Reg destinationQuadFunctions[] = {
+		{ "Copy", Lua_DestinationQuad_Copy },
 		{ "GetTopLeft", lua_Quad_GetTopLeft },
 		{ "GetTopRight", lua_Quad_GetTopRight },
 		{ "GetBottomLeft", lua_Quad_GetBottomLeft },
@@ -738,6 +768,8 @@ static void RegisterQuadClasses(lua_State* L) {
 	};
 
 	luaL_Reg sourceQuadFunctions[] = {
+		{ "Copy", Lua_SourceQuad_Copy },
+		{ "IsUVSpace", Lua_SourceQuad_IsUVSpace },
 		{ "ConvertToPixelSpace", Lua_SourceQuad_ConvertToPixelSpace },
 		{ "ConvertToUVSpace", Lua_SourceQuad_ConvertToUVSpace },
 		{ "__tostring", Lua_SourceQuad_ToString },
