@@ -12,6 +12,14 @@
 #include "../repentogon/Utils/ImageUtils.hpp"
 #include "../MiscFunctions.h"
 #include "ExtraRenderSteps.h"
+#include "../ShaderLoader.h"
+
+namespace {
+	struct CustomShader {
+		std::string path;  // Relative path starting from `.../resources/`, without the file extensions, ie `shaders/myshader`
+		KAGE_Graphics_Shader* shader;
+	};
+}
 
 //shitass workaround for crashing pause menu anm2
 HOOK_METHOD(PauseScreen, Show, ()-> void) {
@@ -33,33 +41,34 @@ std::string NormalizeShaderPath(const std::string& input_path) {
 
 // Layer-specific extra data.
 struct Anm2LayerExtras {
-	CustomShader* custom_shader = nullptr;
-	CustomShader* custom_champion_shader = nullptr;
+	std::optional<CustomShader> custom_shader;
+	std::optional<CustomShader> custom_champion_shader;
 
-	void SetCustomShader(CustomShader* shader, const bool champion) {
+	void SetCustomShader(KAGE_Graphics_Shader* shader, const std::string& input_path, const bool champion) {
+		CustomShader customShader = { NormalizeShaderPath(input_path), shader };
 		if (champion) {
-			custom_champion_shader = shader;
+			custom_champion_shader = customShader;
 		}
 		else {
-			custom_shader = shader;
+			custom_shader = customShader;
 		}
 	}
-	CustomShader* GetCustomShader(const bool champion) {
+	const std::optional<CustomShader>& GetCustomShader(const bool champion) {
 		return champion ? custom_champion_shader : custom_shader;
 	}
 	bool HasCustomShader(const bool champion) {
-		return GetCustomShader(champion) != nullptr;
+		return GetCustomShader(champion) != std::nullopt;
 	}
 	bool HasCustomShader(const std::string& path, const bool champion) {
-		CustomShader* shader = GetCustomShader(champion);
-		return shader != nullptr && shader->path == NormalizeShaderPath(path);
+		const std::optional<CustomShader>& shader = GetCustomShader(champion);
+		return shader.has_value() && shader->path == NormalizeShaderPath(path);
 	}
 	void ClearCustomShader(const bool champion) {
 		if (champion) {
-			custom_champion_shader = nullptr;
+			custom_champion_shader = std::nullopt;
 		}
 		else {
-			custom_shader = nullptr;
+			custom_shader = std::nullopt;
 		}
 	}
 };
@@ -71,9 +80,6 @@ struct Anm2Extras {
 };
 
 std::unordered_map<ANM2*, Anm2Extras> anm2_extras;
-
-std::unordered_map<std::string, CustomShader> custom_shaders;
-std::unordered_map<std::string, CustomShader> custom_champion_shaders;
 
 // Clear an ANM2's data whenever it is destroyed or reset.
 HOOK_METHOD(ANM2, destructor, ()->void) {
@@ -126,68 +132,45 @@ Anm2LayerExtras* GetLayerExtras(LayerState* layer) {
 
 // Returns the custom shader that this layer should use, if any.
 // Prefer layer-specific shader, if none check the ANM2 instead.
-CustomShader* GetCustomShaderForLayer(LayerState* layer, const bool champion) {
+KAGE_Graphics_Shader* GetCustomShaderForLayer(LayerState* layer, const bool champion) {
 	Anm2LayerExtras* layer_extras = GetLayerExtras(layer);
 	if (layer_extras) {
-		CustomShader* shader = layer_extras->GetCustomShader(champion);
-		if (shader) {
-			return shader;
+		const std::optional<CustomShader>& customShader = layer_extras->GetCustomShader(champion);
+		if (customShader && customShader->shader->_initialized) {
+			return customShader->shader;
 		}
 	}
 
 	Anm2LayerExtras* default_extras = GetDefaultLayerExtras(layer);
 	if (default_extras) {
-		return default_extras->GetCustomShader(champion);
-	}
-	return nullptr;
-}
-
-// Finds the full filepath to the shader and checks if the .fs and .vs files exist.
-// Returns an empty string if no matching files are found.
-std::string FindShaderFullPath(const std::string& path) {
-	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
-		if (!mod->IsEnabled()) continue;
-
-		const std::string fullpath = (std::filesystem::path(mod->_resourcesDirectory) / path).string();
-
-		if (std::filesystem::exists(fullpath + ".fs") && std::filesystem::exists(fullpath + ".vs")) {
-			return fullpath;
+		const std::optional<CustomShader>& customShader = default_extras->GetCustomShader(champion);
+		if (customShader && customShader->shader->_initialized) {
+			return customShader->shader;
 		}
 	}
-	return "";
-}
 
-// Abstracted shader loading (for reloading shaders via console)
-bool LoadCustomShader(const std::string& path, KAGE_Graphics_Shader* shader, bool champion) {
-	const std::string fullpath = FindShaderFullPath(path);
-	if (fullpath.empty())
-		return false;
-	KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
-	KAGE_Graphics_Manager_GL::LoadShader(shader, desc, fullpath.c_str());
-	return true;
+	return nullptr;
 }
 
 // Returns the custom shader corresponding to the relative path.
 // Initializes the shader if necessary.
-CustomShader* GetOrLoadCustomShader(const std::string& input_path, const bool champion) {
-	if (input_path.empty())
+KAGE_Graphics_Shader* GetCustomShader(const std::string& input_path, const bool champion) {
+	const KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
+	size_t numAttributes = champion ? ShaderUtils::ColorOffsetChampion::NUM_ATTRIBUTES : ShaderUtils::ColorOffset::NUM_ATTRIBUTES;
+	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(input_path, desc);
+
+	if (!shader || !shader->_initialized || !ShaderUtils::UsesVertexDescriptor(*shader, desc, numAttributes))
+	{
 		return nullptr;
-	const std::string path = NormalizeShaderPath(input_path);
-	auto& shader_map = champion ? custom_champion_shaders : custom_shaders;
-	if (shader_map.count(path) == 0) {
-		shader_map[path].path = path;
-		if (!LoadCustomShader(path, &shader_map[path].shader, champion)) {
-			shader_map.erase(path);
-			return nullptr;
-		}
 	}
-	return &shader_map[path];
+
+	return shader;
 }
 
 bool SetCustomShader(ANM2* anm2, const std::string& path, const bool champion) {
-	CustomShader* shader = GetOrLoadCustomShader(path, champion);
+	KAGE_Graphics_Shader* shader = GetCustomShader(path, champion);
 	if (shader) {
-		anm2_extras[anm2].default_layer_extras.SetCustomShader(shader, champion);
+		anm2_extras[anm2].default_layer_extras.SetCustomShader(shader, path, champion);
 		return true;
 	}
 	return false;
@@ -197,9 +180,9 @@ bool SetCustomShader(LayerState* layer, const std::string& path, const bool cham
 	ANM2* anm2 = layer->_animation;
 	if (!anm2) return false;
 
-	CustomShader* shader = GetOrLoadCustomShader(path, champion);
+	KAGE_Graphics_Shader* shader = GetCustomShader(path, champion);
 	if (shader) {
-		anm2_extras[anm2].layer_extras[layer->GetLayerID()].SetCustomShader(shader, champion);
+		anm2_extras[anm2].layer_extras[layer->GetLayerID()].SetCustomShader(shader, path, champion);
 		return true;
 	}
 	return false;
@@ -253,10 +236,10 @@ bool HasCustomShader(LayerState* layer, const std::string& path, const bool cham
 
 static KAGE_Graphics_Shader* get_color_offset_shader(LayerState* layerState, const bool champion)
 {
-	CustomShader* shader = GetCustomShaderForLayer(layerState, champion);
+	KAGE_Graphics_Shader* shader = GetCustomShaderForLayer(layerState, champion);
 	if (shader) {
 		// Use the custom shader.
-		return &shader->shader;
+		return shader;
 	}
 	// Use the normal shader.
 	return __ptr_g_AllShaders[champion ? SHADER_COLOR_OFFSET_CHAMPION : SHADER_COLOR_OFFSET];
