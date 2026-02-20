@@ -2923,18 +2923,9 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 	}
 
 	// confirm correct vertex descriptor
-	if (shader->_numVertexAttributes != descriptor.size() - 1)
+	if (!ShaderUtils::UsesVertexDescriptor(*shader, descriptor.data(), descriptor.size() - 1))
 	{
 		luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path);
-	}
-
-	const KAGE_Graphics_VertexAttributeDescriptor* shaderDescriptor = shader->_vertexAttributes;
-	for (size_t i = 0; i < shader->_numVertexAttributes; i++)
-	{
-		if (shaderDescriptor[i] != descriptor[i])
-		{
-			luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path);
-		}
 	}
 
 	LuaShader::NewUserdata(L, shader);

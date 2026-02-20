@@ -80,7 +80,7 @@ static std::string find_shader(const std::string& path)
 {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods)
     {
-		if (!mod->IsEnabled()) continue;
+		if (!mod->_loaded) continue;
 
 		const std::string fullpath = (std::filesystem::path(mod->_resourcesDirectory) / path).string();
 		if (std::filesystem::exists(fullpath + ".fs") && std::filesystem::exists(fullpath + ".vs")) {
