@@ -70,6 +70,7 @@ Fixes:
 * CharacterMenu:
 	- Fixed GetCharacterMenuIDFromPlayerType not returning the correct value for Tainted Isaac
 * Fixed modded characters' locked/door sprites rendering on the "continue" widget if they are locked behind an achievement.
+* Fixed custom caches not running for golden trinkets.
 /newline/
 /versionseparator/
 v1.1.1a -

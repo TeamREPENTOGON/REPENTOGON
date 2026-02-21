@@ -297,7 +297,7 @@ void TriggerCollectibleCustomCache(Entity_Player* player, const int id, const bo
 }
 
 void TriggerTrinketCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.TrinketData, id, immediate);
+	TriggerCustomCache(player, XMLStuff.TrinketData, id & TRINKET_ID_MASK, immediate);
 }
 
 void TriggerItemCustomCache(Entity_Player* player, ItemConfig_Item* item, const bool immediate) {
