@@ -2804,7 +2804,7 @@ LUA_FUNCTION(Lua_Renderer_CreateImage) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Renderer_RenderToSurface) {
+LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 	LuaImage* luaImage = LuaRender::GetLuaImage(L);
 	auto* image = luaImage->image.image;
 	if ((image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
@@ -3126,7 +3126,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg renderFunctions[] = {
 		{ "LoadImage", lua_Renderer_LoadImage },
 		{ "CreateImage", Lua_Renderer_CreateImage },
-		{ "RenderToSurface", Lua_Renderer_RenderToSurface },
+		{ "RenderToImage", Lua_Renderer_RenderToImage },
 		{ "StartTransformation", lua_Renderer_StartTransformation },
 		// { "GLShader", Lua_Renderer_GLShader },
 		{ "GetShaderByType", Lua_Renderer_GetShaderByType },
