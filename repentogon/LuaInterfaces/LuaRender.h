@@ -42,7 +42,7 @@ namespace LuaRender {
 
 	constexpr static const char* VertexBufferMT = "VertexBuffer";
 	constexpr static const char* ElementsArrayMT = "ElementsArray";
-	constexpr static const char* ShaderMT = "Shader";
+	constexpr static const char* GLShaderMT = "GLShader";
 	constexpr static const char* GLFloatMT = "GLFloat";
 	constexpr static const char* GLVec2MT = "GLVec2";
 	constexpr static const char* GLVec3MT = "GLVec3";

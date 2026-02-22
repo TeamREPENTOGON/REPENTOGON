@@ -5,6 +5,7 @@
 #include "LuaCore.h"
 #include "../Patches/ModReloading.h"
 #include "../REPENTOGONFileMap.h"
+#include "../ShaderLoader.h"
 #include "Anm2Extras.h"
 
 #include <filesystem>
@@ -182,10 +183,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
     */
 
     if ((in == "reloadshaders") || (in.rfind("reloadshaders ", 0) == 0)) {
-        for (auto & [ key, value ] : custom_shaders)
-            LoadCustomShader(key, &value.shader, false);
-        for (auto & [ key, value ] : custom_champion_shaders)
-            LoadCustomShader(key, &value.shader, true);
+        ShaderLoader::detail::ReloadShaders();
     }
 
     if ((in == "help") || (in.rfind("help ", 0) == 0)) {

@@ -5,21 +5,60 @@ reference KAGE_Graphics_Shader* g_CurrentShader;
 reference KAGE_Graphics_Shader* g_AllShaders;
  
 "c705????????(????????)c705????????ffffffffc605????????00c705????????000000000f2905":
-reference void* KAGE_Graphics_ShaderBase_vftable;
+reference void* KAGE_Graphics_Shader_vftable;
 
 struct KAGE_Graphics_ShaderBase {
     {{
-        KAGE_Graphics_ShaderBase() : _vtable(__ptr_KAGE_Graphics_ShaderBase_vftable) {};
+    // ShaderBase has pure methods and so it should not be instantiable
+    protected:
+        KAGE_Graphics_ShaderBase() : _vtable(__ptr_KAGE_Graphics_Shader_vftable) {
+            std::memset((void*)((uintptr_t)this + 0x4), 0, sizeof(*this) - 0x4); // the constructor would normally set everything to 0 so we emulate that here
+        };
+
+    public:
+        ~KAGE_Graphics_ShaderBase() {
+            this->Free(false);
+        }
     }}
+
+    __vtable {
+        pure void Free(bool deletePtr);
+        skip; // Initialize
+        pure void Shutdown();
+    };
+
     void* _vtable : 0x0;
-    KAGE_Graphics_ImageBase_VertexAttributeDescriptor* _vertexAttributes : 0x8;
+    bool _initialized : 0x4;
+    KAGE_Graphics_VertexAttributeDescriptor* _vertexAttributes : 0x8;
     uint32_t _numVertexAttributes : 0xc;
 } : 0x28;
 
-struct KAGE_Graphics_Shader depends (KAGE_Graphics_ShaderBase) {
+struct KAGE_Graphics_Shader : public KAGE_Graphics_ShaderBase {
     {{
-        inline int GetShaderId() { return *(int*)((char*)this + 0x28); }
+        KAGE_Graphics_Shader() {
+            _vtable = __ptr_KAGE_Graphics_Shader_vftable;
+            this->_glProgram = -1;
+        }
+
+        ~KAGE_Graphics_Shader() {
+            if (this->_initialized)
+            {
+                // We must call Shutdown manually, as the Free method only calls the base class Shutdown, causing _glProgram to leak.
+                // _glProgram is not reset to a default value on Shutdown, so we can't be sure that we are not deleting an already deleted glProgram,
+                // but based on usage the only time glDeleteProgram is called is on Shutdown (where _initialized is set to false),
+                // and when Initialize fails (where _initialized is left as false).
+                this->Shutdown();
+            }
+        }
+
+        // Use this if you want to reload the shader, as none of the methods gracefully handle a double initialization, causing some resources to leak.
+        void HardReset()
+        {
+            this->~KAGE_Graphics_Shader();
+            new (this) KAGE_Graphics_Shader();
+        }
+
+        inline int GetShaderId() { return this->_glProgram; }
     }}
-    KAGE_Graphics_ShaderBase _shaderBase : 0x0;
     unsigned int _glProgram : 0x28;
 } : 0x2c;

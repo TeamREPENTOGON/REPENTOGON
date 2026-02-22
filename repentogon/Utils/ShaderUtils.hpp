@@ -2,7 +2,7 @@
 
 #include "ShaderUtils.h"
 
-inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor)
+inline size_t ShaderUtils::GetNumVertexAttributes(const KAGE_Graphics_VertexAttributeDescriptor *descriptor)
 {
     size_t i = 0;
     unsigned int format = descriptor[i].format;
@@ -16,7 +16,7 @@ inline size_t ShaderUtils::GetNumVertexAttributes(KAGE_Graphics_ImageBase_Vertex
     return i;
 }
 
-inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes)
+inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     uint32_t stride = 0;
 
@@ -28,17 +28,40 @@ inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_ImageBase_VertexAttribu
     return stride;
 }
 
-inline uint32_t ShaderUtils::GetVertexStride(KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, size_t numAttributes)
+inline uint32_t ShaderUtils::GetVertexStride(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     return GetVertexSize(descriptor, numAttributes) * sizeof(float);
 }
 
-inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_ImageBase_VertexAttributeDescriptor *descriptor, size_t numAttributes)
+inline void ShaderUtils::ToImageVertexDescriptor(uint8_t *result, KAGE_Graphics_VertexAttributeDescriptor *descriptor, size_t numAttributes)
 {
     for (size_t i = 0; i < numAttributes; i++)
     {
         result[i] = (uint8_t)descriptor[i].format;
     }
+}
+
+inline bool ShaderUtils::AreVerticesEqual(const KAGE_Graphics_VertexAttributeDescriptor* desc, const KAGE_Graphics_VertexAttributeDescriptor* other, size_t numAttributes)
+{
+    for (size_t i = 0; i < numAttributes; i++)
+    {
+        if (desc[i] != other[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+inline bool ShaderUtils::UsesVertexDescriptor(const KAGE_Graphics_ShaderBase& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDescriptor, size_t numAttributes)
+{
+    if (shader._numVertexAttributes != numAttributes)
+    {
+        return false;
+    }
+
+    return ShaderUtils::AreVerticesEqual(shader._vertexAttributes, vertexDescriptor, numAttributes);
 }
 
 inline void ShaderUtils::ColorOffset::FillVertices(float* vertexBuffer, KAGE_Graphics_ImageBase& image, const ColorMod& colorMod)
