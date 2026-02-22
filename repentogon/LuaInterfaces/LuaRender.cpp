@@ -2769,6 +2769,12 @@ static void RegisterCustomRenderMetatables(lua_State* L) {
 
 LUA_FUNCTION(lua_Renderer_LoadImage) {
 	const char* path = luaL_checkstring(L, 1);
+	std::filesystem::path p = path;
+	if (!p.is_relative())
+	{
+		return luaL_error(L, "Image %s does not exist", path);
+	}
+	
 	KAGE_SmartPointer_ImageBase image;
 	Manager::LoadImage(&image, path, __ptr_g_VertexAttributeDescriptor_Position, false);
 
