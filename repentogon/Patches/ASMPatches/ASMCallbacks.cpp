@@ -1518,9 +1518,8 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 
 void __stdcall RenderVanillaCharacterWheelTrampoline(const int menuid, Vector* pos) {
 	ANM2* sprite = &g_MenuManager->GetMenuCharacter()->_CharacterPortraitsSprite;
-	const bool taintedMenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
-	if (menuid >= 0 && menuid < 18) {
-		const int playerType = (menuid == 0) ? -1 : __ptr_g_MenuCharacterEntries[taintedMenu ? (menuid + 18) : menuid].playerType;
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetPlayerTypeFromCurrentMenuID(menuid);
+	if (playerType < NUM_PLAYER_TYPES) {
 		RunRenderCharacterWheelCallbacks(sprite, pos, playerType);
 	} else {
 		// Failsafe
@@ -1637,13 +1636,11 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 static bool _skipEdenTokensRender = false;
 
 void __stdcall RenderVanillaCharacterMenuTrampoline(Vector* pos) {
-	int menuid = g_MenuManager->GetMenuCharacter()->SelectedCharacterID;
 	ANM2* vanillaSprite = g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite();
 	Vector zeroVector(0, 0);
 	_skipEdenTokensRender = false;
-	if (menuid >= 0 && menuid < 18) {
-		const bool taintedMenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
-		const int playerType = (menuid == 0) ? -1 : __ptr_g_MenuCharacterEntries[taintedMenu ? (menuid + 18) : menuid].playerType;
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+	if (playerType < NUM_PLAYER_TYPES) {
 		if (RunPreRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false)) {
 			vanillaSprite->Render(pos, &zeroVector, &zeroVector);
 			RunPostRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false, false);
@@ -1739,6 +1736,49 @@ void ASMPatchRenderCustomCharacterMenu_Default() {
 		.AddInternalCall(RenderCustomCharacterMenuTrampoline)
 		.RestoreRegisters(reg)
 		.AddRelativeJump((char*)patchAddr + jump);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+// MC_CAN_SELECT_CHARACTER
+bool RunCanSelectCharacterCallback(const int playerType, const bool isBeingSelected) {
+	const int callbackid = 1328;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(isBeingSelected)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool __stdcall CharacterMenuPreSelectCharacterTrampoline() {
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+	return RunCanSelectCharacterCallback(playerType, true);
+}
+void ASMPatchCharacterMenuPreSelectCharacter() {
+	void* patchAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MenuCharacter_PreSelectCharacter) + 0x2;
+	const int8_t jump = *(int8_t*)((char*)patchAddr - 0x1);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.AddInternalCall(CharacterMenuPreSelectCharacterTrampoline)
+		.AddBytes("\x84\xC0")  // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)patchAddr + jump)  // Jump for false
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x5))  // Restore the push we overwrote
+		.AddRelativeJump((char*)patchAddr + 0x5);  // Continue for true
 	sASMPatcher.PatchAt(patchAddr, &patch);
 }
 
@@ -2262,4 +2302,5 @@ void ASMCallbacks::detail::ApplyPatches()
 	ASMPatchRenderVanillaCharacterMenu_EdenTokens();
 	ASMPatchRenderCustomCharacterMenu_Custom();
 	ASMPatchRenderCustomCharacterMenu_Default();
+	ASMPatchCharacterMenuPreSelectCharacter();
 }

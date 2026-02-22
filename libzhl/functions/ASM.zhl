@@ -5,6 +5,7 @@ asm DisableExitPrompt "8d45??c745??00009643"; //DisableExitPrompt option patch
 asm LeaderboardGoalPatch "83be????????01b807000000"; //LeaderboardGoalPatch
 
 asm HideModdedCharacterByAchievement "80b8????????0075??83b8????????0075??8b08"; //PatchModdedCharacterHiddenByAchievementInMenu
+asm MenuCharacter_PreSelectCharacter "74??a1????????83ec14";
 
 asm RenderCharacterWheel_RenderPositionStackOffset "f30f114c24??f30f58d0f30f115424";  // Offset is one byte @ +0x5
 asm RenderCharacterWheel_GetMenuCharacterIndex "a1????????8b0c??f30f104c";  // 8 bytes, moves a data ptr into EAX, then the value into ECX, using EBX

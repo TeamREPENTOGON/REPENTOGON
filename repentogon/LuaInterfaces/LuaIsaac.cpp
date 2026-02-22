@@ -197,10 +197,18 @@ LUA_FUNCTION(Lua_StartNewGame) {
 	int pltype = (int)luaL_optinteger(L, 1, 0);
 	int challenge = (int)luaL_optinteger(L, 2, 0);
 	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
-	unsigned int seed = (int)luaL_optinteger(L, 4, 0);
-	Seeds seedobj;	//am avoiding heap corruption this way
-	seedobj.constructor();	
-	seedobj.set_start_seed(seed);
+	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors ourselves.
+	// However, StartNewGame will handle it for us. Just be aware of this.
+	Seeds seedobj;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		seedobj.construct_from_copy(lua::GetLuabridgeUserdata<Seeds*>(L, 4, lua::Metatables::SEEDS, "Seeds"));
+	} else {
+		unsigned int seed = (unsigned int)luaL_optinteger(L, 4, 0);
+		bool isCustomRun = lua::luaL_optboolean(L, 5, false);
+		seedobj.constructor();
+		seedobj.set_start_seed(seed);
+		seedobj._isCustomRun = isCustomRun;
+	}
 	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
 	return 0;
 }
@@ -784,6 +792,8 @@ LUA_FUNCTION(Lua_StartDailyGame) {
 	const unsigned int date = (unsigned int)luaL_checkinteger(L, 1);
 
 	// defer start to the manager
+	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors by ourselves.
+	// However, StartNewGame will handle it for us. Just be aware of this.
 	Seeds seeds; seeds.constructor();
 	g_Manager->StartNewGame(ePlayerType::PLAYER_ISAAC, eChallenge::CHALLENGE_NULL, seeds, 0);
 

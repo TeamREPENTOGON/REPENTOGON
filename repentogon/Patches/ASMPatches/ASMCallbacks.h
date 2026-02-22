@@ -4,6 +4,7 @@
 
 bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity);
 void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, int playerType);
+bool RunCanSelectCharacterCallback(int playerType, bool isBeingSelected);
 
 void PatchPreSampleLaserCollision();
 void PatchPreLaserCollision();

@@ -607,6 +607,27 @@ int HistoryHUD::GetNumVisibleItems() const {
 	return GetNumRows() * GetNumColumns();
 }
 
+int Menu_Character::GetPlayerTypeFromMenuID(int menuID, bool taintedMenu) {
+	if (menuID > 0) {
+		if (menuID < 18) {
+			return __ptr_g_MenuCharacterEntries[taintedMenu ? (menuID + 18) : menuID].playerType;
+		} else if (menuID < (int)g_ModCharacterMap.size() + 18) {
+			const auto& modChar = g_ModCharacterMap[menuID - 18];
+			return taintedMenu ? modChar.tainted : modChar.normal;
+		}
+	}
+	return -1;
+}
+
+int Menu_Character::GetPlayerTypeFromCurrentMenuID(int menuID) {
+	const bool taintedMenu = GetSelectedCharacterMenu() == 1;
+	return Menu_Character::GetPlayerTypeFromMenuID(menuID, taintedMenu);
+}
+
+int Menu_Character::GetSelectedPlayerType() {
+	return GetPlayerTypeFromCurrentMenuID(SelectedCharacterID);
+}
+
 bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }

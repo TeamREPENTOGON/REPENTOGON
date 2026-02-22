@@ -42,9 +42,18 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
 	inline ANM2* GetSeedEntrySprite() { return &this->_SeedEntrySprite; }
 	inline ANM2* GetPageSwapWidgetSprite() { return &this->_PageSwapWidgetSprite; }
 	inline ANM2* GetTaintedBGDecoSprite() { return &this->_TaintedMenuBGDecoSprite; }
-    
-    inline int GetNumCharacters() { return this->_numCharacters; }
+
+	inline int GetNumCharacters() { return this->_numCharacters; }
 	inline int GetSelectedCharacterMenu() { return this->_characterMenuShown; }
+
+	// Given a CharacterMenu ID, returns the corresponding PlayerType in the specified menu (-1 for random).
+	static int LIBZHL_API Menu_Character::GetPlayerTypeFromMenuID(int menuID, bool taintedMenu);
+
+	// Given a CharacterMenu ID, returns the corresponding PlayerType in the current menu (-1 for random).
+	int LIBZHL_API Menu_Character::GetPlayerTypeFromCurrentMenuID(int menuID);
+
+	// Returns the PlayerType of the currently selected character in the wheel (-1 for random).
+	int LIBZHL_API Menu_Character::GetSelectedPlayerType();
 }} 
     int Status : 0x0; //1 seeds screen //4 transitioning to tainted
     bool IsCharacterUnlocked : 0x5;

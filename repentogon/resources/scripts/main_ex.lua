@@ -1788,6 +1788,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_HISTORYHUD_RENDER] = RunPreHistoryHudRenderCallback,
 	[ModCallbacks.MC_POST_HISTORYHUD_RENDER] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_HISTORYHUD_RECOMPUTE] = RunNoReturnCallback,
+	[ModCallbacks.MC_CAN_SELECT_CHARACTER] = RunFalseBreakCallbackLogic,
 }
 
 for _, callback in ipairs({

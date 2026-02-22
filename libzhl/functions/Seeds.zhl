@@ -16,13 +16,16 @@ __thiscall bool Seeds::HasSeedEffect(uint32_t seedEffect);
 "558bec83ec1453568b71":
 __thiscall bool Seeds::AchievementUnlocksDisallowed();
 
-// sorry for the mess, this is a direct ghidra export :(
+// Please note that the constructors for this class allocate 0x14 bytes for SeedEffects.
+// We cannot properly free this memory ourselves at the moment. The proper destructor for this
+// class may have been inlined everywhere. Passing the Seeds to certain functions like
+// StartNewGame will handle the cleanup for us however, just be mindful.
 struct Seeds depends (RNG,ANM2){
     bool _isCustomRun : 0x0;
     unsigned int _gameStartSeed : 0x4;
     RNG _rng : 0x8;
     unsigned int _stageSeeds[14] : 0x18;
     unsigned int _playerInitSeed : 0x50;
-	unsigned int _unkseed : 0x54;
+    // 0x54 is a pointer to some kind of data structure for SeedEffects.
     int _seedEffectsCount : 0x58;
 } : 0x5c;

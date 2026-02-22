@@ -29,6 +29,12 @@ Added:
 		Called before Game():BombTearflagEffects(), used when TearFlags-based effects are triggered by an explosion.
 		Return false to cancel, or a table containing changed values for Position, Radius, TearFlags, and/or RadiusMult.
 		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_CAN_SELECT_CHARACTER(PlayerType, bool IsBeingSelected)
+		Will only run for characters present in the character select menu that are capable of being selected (IE, not hidden or locked behind an achievement).
+		Return false to prevent the character from being selectable. This has no visual effects.
+		IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
+		Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
+		Optional param: PlayerType
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * EntityLaser:
 	- SetInitSound(SoundEffect sound)
@@ -60,6 +66,10 @@ Added:
 * The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
 /newline/
 Modified:
+* Isaac:
+	- StartNewGame
+		Added optional param "bool isCustomRun".
+		Added function variant that takes a whole Seeds object instead of a seed integer.
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer

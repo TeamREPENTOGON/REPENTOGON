@@ -947,12 +947,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 HOOK_METHOD(Menu_Character, Render, () -> void) {
 	super();
 	CompletionWidget* cmpl = this->GetCompletionWidget();
-	int menucharid = this->SelectedCharacterID;
-	if (menucharid > 17 && menucharid < (int)g_ModCharacterMap.size() + 18) {
-		const auto& menuchar = g_ModCharacterMap[menucharid - 18];
-		const bool taintedmenu = g_MenuManager->GetMenuCharacter()->GetSelectedCharacterMenu() == 1;
-		const int playertype = taintedmenu ? menuchar.tainted : menuchar.normal;
-
+	const int playertype = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+	if (playertype >= NUM_PLAYER_TYPES) {
 		Vector* ref = &g_MenuManager->_ViewPosition;
 //		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
 		ANM2* anm = cmpl->GetANM2();

@@ -301,19 +301,6 @@ LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterID)
 	return 0;
 }
 
-// Given a CharacterMenu character ID, returns the corresponding PlayerType.
-int GetPlayerTypeFromCharacterMenuID(const int charID, const bool taintedMenu) {
-	if (charID > 0) {
-		if (charID < 18) {
-			return __ptr_g_MenuCharacterEntries[taintedMenu ? (charID + 18) : charID].playerType;
-		} else if (charID < (int)g_ModCharacterMap.size() + 18) {
-			const auto& modChar = g_ModCharacterMap[charID - 18];
-			return taintedMenu ? modChar.tainted : modChar.normal;
-		}
-	}
-	return -1;
-}
-
 LUA_FUNCTION(lua_CharMenu_GetPlayerTypeFromCharacterMenuID)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
@@ -321,7 +308,7 @@ LUA_FUNCTION(lua_CharMenu_GetPlayerTypeFromCharacterMenuID)
 
 	const int charID = (int)luaL_checkinteger(L, 1);
 	const bool taintedMenu = lua::luaL_optboolean(L, 2, menu->GetSelectedCharacterMenu() == 1);
-	const int playerType = GetPlayerTypeFromCharacterMenuID(charID, taintedMenu);
+	const int playerType = Menu_Character::GetPlayerTypeFromMenuID(charID, taintedMenu);
 
 	if (playerType < 0) {
 		lua_pushnil(L);
@@ -337,8 +324,7 @@ LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterPlayerType)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 
-	const bool taintedMenu = menu->GetSelectedCharacterMenu() == 1;
-	const int playerType = GetPlayerTypeFromCharacterMenuID(menu->SelectedCharacterID, taintedMenu);
+	const int playerType = menu->GetSelectedPlayerType();
 
 	if (playerType < 0) {
 		lua_pushnil(L);
