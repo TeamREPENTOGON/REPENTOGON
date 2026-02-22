@@ -35,7 +35,7 @@ jobs:
     - name: Create Artifact Folder
       shell: powershell
       run: |
-        cd ${{github.workspace}}/build/Release
+        cd ${{github.workspace}}/build/RelWithDebInfo
         mkdir artifact
         mv resources artifact
         mv resources-repentogon artifact
@@ -50,5 +50,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: REPENTOGON-main
-        path: ${{github.workspace}}/build/Release/artifact/
+        path: ${{github.workspace}}/build/RelWithDebInfo/artifact/
         retention-days: 30
