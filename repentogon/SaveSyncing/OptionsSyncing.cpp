@@ -141,7 +141,7 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 	super(rgonPath.c_str());
 }
 
-constexpr char RGON_INI_DISCLAIMER[] = "Note: The options in this file are overwritten by the ones in `.../Binding of Isaac Repentance+/options.txt` when REPENTOGON starts. Modifying this file may have no effect.";
+constexpr char RGON_INI_DISCLAIMER[] = "Note: The options in this file are overwritten by the ones in `.../Binding of Isaac Repentance+/options.ini` when REPENTOGON starts. Modifying this file may have no effect.";
 
 HOOK_METHOD(OptionsConfig, Save, () -> void) {
 	super();
