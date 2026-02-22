@@ -54,16 +54,15 @@ struct LogViewer : ImGuiWindowObject {
         windowName = LANG.LOGV_WIN_NAME;
     }
 
-    void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(2)
-    {
-        std::stringstream ss(fmt);
-        std::string token;
+    void AddLogNoFormat(const char* type, const char* str) {
         int old_size = logBuf.size();
         bool recomputeOffsets = false;
 
         // ZHL::Log("[DEBUG] logBuf size = %d, offsets size = %d\n", logBuf.size(), offsets.size());
 
         // Split the format string on newline, in order to add each line separately in the buffer
+        std::stringstream ss(str);
+        std::string token;
         while (std::getline(ss, token, '\n')) {
             int currentSize = logBuf.size();
             size_t textSize = strlen(type) + token.length() + 3 /* ' ' + '\n' + '\0' */;
@@ -103,27 +102,13 @@ struct LogViewer : ImGuiWindowObject {
                 if (readSize < reductionAmount) {
                     ZHL::Log("[ERROR] Unable to read sufficient data in the log viewer while balancing memory usage, forcibly clearing history\n");
                     logBuf.clear();
-                }
-                else {
+                } else {
                     memmove(logBuf.Buf.Data, content, currentSize - readSize);
                     logBuf.Buf.Size -= (int)readSize;
                 }
             }
 
-            char* buffer = (char*)malloc(textSize);
-            if (!buffer) {
-                ZHL::Log("[ERROR] Failed to allocate %llu bytes to log string %s %s\n", textSize, type, token.c_str());
-                continue;
-            }
-
-            sprintf(buffer, "%s %s\n", type, token.c_str());
-
-            va_list args;
-            va_start(args, fmt);
-            logBuf.appendfv(buffer, args);
-            va_end(args);
-
-            free(buffer);
+            logBuf.appendf("%s %s\n", type, token.c_str());
         }
 
         if (recomputeOffsets) {
@@ -136,12 +121,29 @@ struct LogViewer : ImGuiWindowObject {
                 offsets.push_back(delimiter - start + 1);
                 content = delimiter + 1;
             }
-        }
-        else {
+        } else {
             for (int new_size = logBuf.size(); old_size < new_size; old_size++)
                 if (logBuf[old_size] == '\n')
                     offsets.push_back(old_size + 1);
         }
+    }
+
+    void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(2)
+    {
+        // First get the length of the formatted string.
+        va_list args;
+        va_start(args, fmt);
+        size_t len = std::vsnprintf(NULL, 0, fmt, args);
+        va_end(args);
+
+        // Next, write the full formatted string into a buffer.
+        auto buffer = std::make_unique<char[]>(len+1);
+        va_start(args, fmt);
+        std::vsnprintf(buffer.get(), len+1, fmt, args);
+        va_end(args);
+
+        // Log the now-formatted string.
+        AddLogNoFormat(type, buffer.get());
     }
 
     void Draw(boolean isImGuiActive)
