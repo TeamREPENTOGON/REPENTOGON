@@ -54,77 +54,125 @@ struct LogViewer : ImGuiWindowObject {
         windowName = LANG.LOGV_WIN_NAME;
     }
 
-    void AddLogNoFormat(const char* type, const char* str) {
-        int old_size = logBuf.size();
-        bool recomputeOffsets = false;
+    void AddLogNoFormat(const char* type, const char* str)
+    {
+        const char* logFormat = "%.*s %.*s\n";
+        std::string_view _type = type;
+        size_t additionalSize = _type.size() + 2; // +2 for added ' ' and '\n'.
+        constexpr size_t MAX_CONTENT_SIZE = LogViewerBufMaxSize - 1; // the ImGuiTextBuffer always null terminates the string, so we need to leave space for that.
 
-        // ZHL::Log("[DEBUG] logBuf size = %d, offsets size = %d\n", logBuf.size(), offsets.size());
+        std::vector<std::string_view> lines;
+        // split lines at \n (excluding the delimiter)
+        {
+            std::string_view remainingStr = str;
+            size_t newlinePos;
+            while ((newlinePos = remainingStr.find('\n')) != std::string_view::npos)
+            {
+                std::string_view line = remainingStr.substr(0, newlinePos);
 
-        // Split the format string on newline, in order to add each line separately in the buffer
-        std::stringstream ss(str);
-        std::string token;
-        while (std::getline(ss, token, '\n')) {
-            int currentSize = logBuf.size();
-            size_t textSize = strlen(type) + token.length() + 3 /* ' ' + '\n' + '\0' */;
-
-            size_t cumulatedSize = (size_t)currentSize + textSize;
-            /* Make space for the new string.
-             *
-             * If adding more text would cause the threshold to be reached or exceeded, we remove
-             * content from the buffer in order to make space.
-             */
-            if (cumulatedSize >= LogViewerBufMaxSize) {
-                recomputeOffsets = true;
-
-                // If the new text is longer than our reduction amount, make room for the text directly
-                size_t reductionAmount = std::max(LogViewerReduceSize, textSize);
-                if (cumulatedSize - reductionAmount >= LogViewerBufMaxSize) {
-                    reductionAmount = size_t(cumulatedSize * 0.75);
+                size_t lineTotalSize = additionalSize + line.size();
+                if (lineTotalSize <= MAX_CONTENT_SIZE)
+                {
+                    lines.push_back(line);
                 }
 
-                /* Do not cut lines in the middle, repeatedly split the buffer on '\n' to remove full lines
-                 * This should handle backslashes nicely as imgui should have already formatted strings in
-                 * such a way that '\n' is treated as a character and '\\n' is treated as '\' followed by '\n'.
-                 */
-                char* content = logBuf.Buf.Data;
-                size_t readSize = 0;
-                char* delimiter = NULL;
-                // Do not use strtok as it would replace newlines with '\0'
-                while ((delimiter = strpbrk(content, "\n")) && readSize < reductionAmount) {
-                    ptrdiff_t length = delimiter - content + 1;
-                    readSize += length;
-                    content = delimiter + 1;
-                }
-
-                /* I suspect this arises if the '\0' is encountered too early. We need this patched
-                 * so let's commit it for now.
-                 */
-                if (readSize < reductionAmount) {
-                    ZHL::Log("[ERROR] Unable to read sufficient data in the log viewer while balancing memory usage, forcibly clearing history\n");
-                    logBuf.clear();
-                } else {
-                    memmove(logBuf.Buf.Data, content, currentSize - readSize);
-                    logBuf.Buf.Size -= (int)readSize;
-                }
+                remainingStr.remove_prefix(newlinePos + 1);
             }
 
-            logBuf.appendf("%s %s\n", type, token.c_str());
+            if (!remainingStr.empty() && remainingStr.size() + additionalSize <= MAX_CONTENT_SIZE)
+            {
+                lines.push_back(remainingStr);
+            }
         }
 
-        if (recomputeOffsets) {
-            // ZHL::Log("[DEBUG] Recomputing offsets in imgui\n");
-            offsets.clear();
-            const char* start = logBuf.Buf.Data;
-            const char* content = start;
-            const char* delimiter = NULL;
-            while (delimiter = strpbrk(content, "\n")) {
-                offsets.push_back(delimiter - start + 1);
-                content = delimiter + 1;
+        if (lines.empty())
+        {
+            return;
+        }
+
+        // get total memory occupied by all lines.
+        // if the total memory occupied exceeds the buffer size, then we ignore the first lines that don't fit.
+        size_t totalSize = 0;
+        size_t firstLine = lines.size();
+        for (size_t i = lines.size(); i-- > 0;)
+        {
+            size_t lineSize = lines[i].size() + additionalSize;
+            assert(lineSize <= MAX_CONTENT_SIZE); // we should have already rejected lines that exceed the max size.
+            if (totalSize + lineSize > MAX_CONTENT_SIZE)
+            {
+                break;
             }
-        } else {
-            for (int new_size = logBuf.size(); old_size < new_size; old_size++)
-                if (logBuf[old_size] == '\n')
-                    offsets.push_back(old_size + 1);
+            firstLine = i;
+            totalSize += lineSize;
+        }
+
+        // check if we need to make space for the new logs
+        size_t currentSize = this->logBuf.size();
+        bool overflow = totalSize + currentSize > MAX_CONTENT_SIZE;
+        if (overflow)
+        {
+            size_t reductionAmount = std::max(LogViewerReduceSize, totalSize);
+            assert(reductionAmount >= currentSize + totalSize - MAX_CONTENT_SIZE); // reduction amount must always be greater than the overflow.
+
+            std::string_view content = std::string_view(this->logBuf.Buf.Data, this->logBuf.size());
+            
+            // get how much data we need to keep
+            size_t pos = 0;
+            while (pos < content.size() && pos < reductionAmount)
+            {
+                size_t newlinePos = content.find('\n', pos);
+                if (newlinePos == std::string_view::npos)
+                {
+                    break;
+                }
+
+                pos = newlinePos + 1;
+            }
+
+            if (pos < reductionAmount)
+            {
+                this->logBuf.clear();
+            }
+            else
+            {
+                std::string_view keptData = content.substr(pos);
+                memmove(this->logBuf.Buf.Data, keptData.data(), keptData.size());
+                this->logBuf.Buf.Data[keptData.size()] = '\0'; // zero-terminate the buffer
+                this->logBuf.Buf.Size = keptData.size() + 1;
+            }
+        }
+
+        size_t oldSize = this->logBuf.size();
+
+        // place new logs into the buffer
+        for (size_t i = firstLine; i < lines.size(); i++)
+        {
+            auto& line = lines[i];
+            this->logBuf.appendf(logFormat, (int)_type.size(), _type.data(), (int)line.size(), line.data());
+        }
+        assert(this->logBuf.size() <= MAX_CONTENT_SIZE);
+
+        // update imgui offsets
+        {
+            size_t pos;
+            if (overflow)
+            {
+                // recompute all offsets
+                this->offsets.clear();
+                pos = 0;
+            }
+            else
+            {
+                pos = oldSize;
+            }
+
+            std::string_view content = std::string_view(this->logBuf.Buf.Data, this->logBuf.size());
+            size_t newlinePos;
+            while ((newlinePos = content.find('\n', pos)) != std::string_view::npos)
+            {
+                pos = newlinePos + 1;
+                this->offsets.push_back(pos);
+            }
         }
     }
 
