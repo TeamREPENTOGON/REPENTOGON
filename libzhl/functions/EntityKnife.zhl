@@ -15,6 +15,8 @@ __thiscall Entity_Player* Entity_Knife::GetPlayer();
 
 struct Entity_Knife depends (BitSet128) : public Entity { 
 	BitSet128 _tearFlags : 0x410;
+	float _knifeDistance : 0x444;
+	float _knifeVelocity : 0x448;
 	bool _isSwinging : 0x465;
 	bool _prismApplied : 0x4e5;
 	bool _multidimensionalApplied : 0x4e6;

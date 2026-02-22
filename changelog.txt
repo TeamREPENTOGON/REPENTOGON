@@ -48,6 +48,9 @@ Added:
 * EntityEffect
 	- [Get/Set/Add/Clear/Has]AquariusTearFlags
 		Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+* EntityKnife
+	- SetKnifeDistance
+	- SetKnifeVelocity
 * RoomDescriptor
 	- GetErrorTrinketEffect
 * RoomConfig:
