@@ -24,6 +24,8 @@ class EntityPlayerPlus : public EntityPlus {
 	bool evaluatingHealthType = false;
 	bool disableHealthTypeModification = false;
 	bool camoOverride = false;
+	int previousControllerIndex = -1;
+	int restoreTwinID = -1;
 };
 
 // Attributes for EntityFamiliar.

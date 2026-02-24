@@ -56,6 +56,7 @@
 
 #include "EntitySaveStateManagement.h"
 
+#include "EntitySaveStateEx.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "ASMPatcher.hpp"
@@ -1064,6 +1065,7 @@ namespace ESSM::Core
         {
             std::visit([&](auto* obj) { ClearState(obj, clearedIds); }, entity);
         }
+        EntitySaveStateEx::ClearSaveStates(clearedIds);
         s_luaCallbacks.ClearStates(clearedIds);
     }
 
@@ -1075,6 +1077,7 @@ namespace ESSM::Core
         {
             std::visit([&](auto* obj) { ClearState_HijackedOnly(obj, clearedIds); }, entity);
         }
+        EntitySaveStateEx::ClearSaveStates(clearedIds);
         s_luaCallbacks.ClearStates(clearedIds);
     }
 
@@ -1086,16 +1089,19 @@ namespace ESSM::Core
         {
             std::visit([&](auto* obj) { CopyState(obj, copiedIds); }, entity);
         }
+        EntitySaveStateEx::CopySaveStates(copiedIds);
         s_luaCallbacks.CopyStates(copiedIds);
     }
 
     static void SaveEntity(Entity& entity, uint32_t id)
     {
+        EntitySaveStateEx::SaveEntity(entity, id);
         s_luaCallbacks.StoreEntity(entity, id);
     }
 
     static void RestoreEntity(Entity& entity, uint32_t id)
     {
+        EntitySaveStateEx::RestoreEntity(entity, id);
         s_luaCallbacks.RestoreEntity(entity, id);
     }
 }
@@ -2049,6 +2055,7 @@ namespace ESSM::detail::SaveData
     {
         _WriteState& _writeState = writeState.m_writeState;
         serialize(fileName, _writeState);
+        EntitySaveStateEx::WriteSaveFile(fileName, _writeState.writeEntityIdPairs);
 
         _writeState.FreeMemory();
     }
@@ -2106,6 +2113,7 @@ namespace ESSM::detail::SaveData
     {
         _ReadState& _readState = readState.m_readState;
         bool success = deserialize(fileName, _readState);
+        EntitySaveStateEx::LoadSaveFile(fileName, _readState.restoreEntityIdPairs);
 
         // free the memory since we no longer need it
         _readState.FreeMemory();
@@ -2114,6 +2122,8 @@ namespace ESSM::detail::SaveData
 
     void DeleteGameState(const std::string& fileName)
     {
+        EntitySaveStateEx::DeleteSaveFile(fileName);
+
         std::filesystem::path filePath = get_save_data_path(fileName);
         std::error_code errorCode;
         if (!std::filesystem::exists(filePath, errorCode))

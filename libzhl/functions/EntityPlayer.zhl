@@ -503,7 +503,7 @@ __thiscall void Entity_Player::RevivePlayerGhost();
 __thiscall void Entity_Player::SalvageCollectible(Vector * pos, int subtype, unsigned int seed, int poolType);
 
 "558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8bf9ffb7":
-__thiscall void Entity_Player::SetControllerIndex(unsigned int index, bool includePlayerOwned);
+__thiscall void Entity_Player::SetControllerIndex(int index, bool includePlayerOwned);
 
 // Allegedly the boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 "558bec566aff":
@@ -585,7 +585,7 @@ __thiscall void Entity_Player::RestoreGameState_PostLevelInit(GameStatePlayer* s
 "558bec83e4f883ec1453568bf157897424":
 __thiscall Entity_Pickup* Entity_Player::DropTrinket(Vector* DropPos, bool ReplaceTick);
 
-struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer) : public Entity { {{
+struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -695,7 +695,9 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
     inline BagOfCraftingOutput* GetBagOfCraftingOutput() { return &this->_bagOfCraftingOutput; }
 	inline uint8_t* GetWildCardItemType() { return &this->_wildCardItemType; }
 	inline int* GetWildCardItem() { return &this->_wildCardItem; }
-	inline Entity_Player* GetBackupPlayer() { return this->_backupPlayer; }
+	
+	inline Entity_Player* GetTwinPlayer() { return (Entity_Player*)this->_twinPlayer.GetReference(); }
+	inline void SetTwinPlayer(Entity_Player* player) { this->_twinPlayer.SetReference(player); }
     }}
 
 	ANM2 _bodySprite : 0x41c;
@@ -798,7 +800,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _numGigaBombs : 0x1dc0;
 	History _history : 0x1dd8;
 	deque_afterImageFrames _afterImageFrames : 0x1e38;
-	Entity_Player* _twinPlayer : 0x1e4c;
+	EntityPtr _twinPlayer : 0x1e4c;
 	Entity_Player* _backupPlayer : 0x1e50;
 	int _redStewBonusDuration : 0x1e58;
 	float _rockBottomMoveSpeed : 0x1e94, _rockBottomMaxFireDelay : 0x1e98, _rockBottomDamage : 0x1e9c, _rockBottomTearRange : 0x1ea0, _rockBottomShotSpeed : 0x1ea4, _rockBottomLuck : 0x1ea8;
