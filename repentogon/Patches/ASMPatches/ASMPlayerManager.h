@@ -2,3 +2,4 @@
 
 void ASMPatchSpawnSelectedBaby();
 void ASMPatchCoopWheelRespectModdedAchievements();
+void ASMPatchReassignControllers();

@@ -275,6 +275,7 @@ void PerformASMPatches() {
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
 	ASMPatchCoopWheelRespectModdedAchievements();
+	ASMPatchReassignControllers();
 
 	// Camera
 	ASMPatchCameraBoundClampOverride();
