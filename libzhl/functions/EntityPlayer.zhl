@@ -814,7 +814,8 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	Vector _suplexLandPos : 0x1f18;
 	char _bagOfCraftingContent[8]: 0x1f20;
 	BagOfCraftingOutput _bagOfCraftingOutput : 0x1f28;
-	char _poopSpellQueue[6] : 0x1f30;
+	int _poopMana : 0x1f30;
+	char _poopSpellQueue[6] : 0x1f34;
 	int _eveSumptoriumCharge : 0x1f58;
 	std_map_int_int _itemWispsList : 0x1f5c;
 	int _modelingClayEffect : 0x1f94;
