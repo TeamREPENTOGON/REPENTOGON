@@ -2913,14 +2913,14 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 		if (!lua_istable(L, -1))
 		{
 			lua_pop(L, 1);
-			return luaL_error(L, "vertex attribute %i: table expected", i + 1);
+			return luaL_error(L, "Invalid vertex attribute %d (table expected)", i + 1);
 		}
 
 		lua_rawgeti(L, -1, 1);
 		if (!lua_isstring(L, -1))
 		{
 			lua_pop(L, 2);
-			return luaL_error(L, "vertex attribute %i name: string expected", i + 1);
+			return luaL_error(L, "Invalid name for vertex attribute %d (string expected)", i + 1);
 		}
 		attributeDesc.name = lua_tostring(L, -1);
 		lua_pop(L, 1); // pop name
@@ -2929,13 +2929,13 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 		if (!lua_isinteger(L, -1))
 		{
 			lua_pop(L, 2);
-			return luaL_error(L, "vertex attribute %i format: integer expected", i + 1);
+			return luaL_error(L, "Invalid format for vertex attribute \"%s\" (integer expected)", attributeDesc.name);
 		}
 		int format = (int)lua_tointeger(L, -1);
 		if (!(1 <= format && format <= 8))
 		{
 			lua_pop(L, 2);
-			return luaL_error(L, "vertex attribute %i format: invalid format", i + 1);
+			return luaL_error(L, "Invalid format for vertex attribute \"%s\"", attributeDesc.name);
 		}
 		attributeDesc.format = format;
 		lua_pop(L, 1); // pop format
@@ -2950,13 +2950,13 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(path, descriptor.data());
 	if (!shader)
 	{
-		luaL_error(L, "Unable to load shader \"%s\"", path);
+		luaL_error(L, "Unable to load shader \"%s\"", path.c_str());
 	}
 
 	// confirm correct vertex descriptor
 	if (!ShaderUtils::UsesVertexDescriptor(*shader, descriptor.data(), descriptor.size() - 1))
 	{
-		luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path);
+		luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path.c_str());
 	}
 
 	LuaShader::NewUserdata(L, shader);
