@@ -7,6 +7,7 @@
 #include "UnifontSupport.h"
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
+#include "../Patches/VirtualRoomSets.h"
 
 #include <sstream>
 #include <cctype>
@@ -626,60 +627,83 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case GOTO: {
-                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                            RoomConfig_Stage* stage = &g_Game->GetRoomConfig()->_stages[stbID];
-                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode()];
-                            RoomConfig_Room* config = set->_configs;
-                            std::map<int, std::string> specialRoomTypes = {
-                                std::pair<int, std::string>(1, "default"),
-                                std::pair<int, std::string>(2, "shop"),
-                                std::pair<int, std::string>(3, "error"),
-                                std::pair<int, std::string>(4, "treasure"),
-                                std::pair<int, std::string>(5, "boss"),
-                                std::pair<int, std::string>(6, "miniboss"),
-                                std::pair<int, std::string>(7, "secret"),
-                                std::pair<int, std::string>(8, "supersecret"),
-                                std::pair<int, std::string>(9, "arcade"),
-                                std::pair<int, std::string>(10, "curse"),
-                                std::pair<int, std::string>(11, "challenge"),
-                                std::pair<int, std::string>(12, "library"),
-                                std::pair<int, std::string>(13, "sacrifice"),
-                                std::pair<int, std::string>(14, "devil"),
-                                std::pair<int, std::string>(15, "angel"),
-                                std::pair<int, std::string>(16, "itemdungeon"),
-                                std::pair<int, std::string>(17, "bossrush"),
-                                std::pair<int, std::string>(18, "isaacs"),
-                                std::pair<int, std::string>(19, "barren"),
-                                std::pair<int, std::string>(20, "chest"),
-                                std::pair<int, std::string>(21, "dice"),
-                                std::pair<int, std::string>(22, "blackmarket"),
-                                std::pair<int, std::string>(23, "greedexit"),
-                                std::pair<int, std::string>(24, "planetarium"),
-                                std::pair<int, std::string>(25, "teleporter"),
-                                std::pair<int, std::string>(26, "teleporterexit"),
-                                std::pair<int, std::string>(27, "secretexit"),
-                                std::pair<int, std::string>(28, "blue"),
-                                std::pair<int, std::string>(29, "ultrasecret"),
-                                std::pair<int, std::string>(30, "deathmatch"),
+                            const std::map<int, std::string> specialRoomTypes = {
+                                {1, "default"},
+                                {2, "shop"},
+                                {3, "error"},
+                                {4, "treasure"},
+                                {5, "boss"},
+                                {6, "miniboss"},
+                                {7, "secret"},
+                                {8, "supersecret"},
+                                {9, "arcade"},
+                                {10, "curse"},
+                                {11, "challenge"},
+                                {12, "library"},
+                                {13, "sacrifice"},
+                                {14, "devil"},
+                                {15, "angel"},
+                                {16, "itemdungeon"},
+                                {17, "bossrush"},
+                                {18, "isaacs"},
+                                {19, "barren"},
+                                {20, "chest"},
+                                {21, "dice"},
+                                {22, "blackmarket"},
+                                {23, "greedexit"},
+                                {24, "planetarium"},
+                                {25, "teleporter"},
+                                {26, "teleporterexit"},
+                                {27, "secretexit"},
+                                {28, "blue"},
+                                {29, "ultrasecret"},
+                                {30, "deathmatch"},
                             };
 
-                            for (unsigned int i = 1; i < set->_count; ++i) {
-                                if (config->Type != 1) {
-                                    entries.insert(AutocompleteEntry(std::string("x.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
-                                    config++;
-                                    continue;
-                                };
-                                entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
+                            auto addEntry = [this, specialRoomTypes](const RoomConfig_Room& room) -> void {
+                                std::string text = "d.";
+                                if (room.StageId == STB_SPECIAL_ROOMS || room.Type != 1) {
+                                    if (room.StageId == STB_SPECIAL_ROOMS) {
+                                        text = "s.";
+                                    } else {
+                                        text = "x.";
+                                    }
+                                    if (specialRoomTypes.find(room.Type) != specialRoomTypes.end()) {
+                                        text += specialRoomTypes.at(room.Type) + ".";
+                                    } else {
+                                        // IDK what to do here for now. SKIP.
+                                        return;
+                                    }
+                                }
+                                text += std::to_string(room.Variant);
+                                entries.insert(AutocompleteEntry(text, room.Name));
+                            };
+
+                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+                            int mode = g_Game->IsGreedMode();
+
+                            // Add stage rooms.
+                            RoomSet* stageSet = &g_Game->GetRoomConfig()->_stages[stbID]._rooms[mode];
+                            RoomConfig_Room* config = stageSet->_configs;
+
+                            for (unsigned int i = 1; i < stageSet->_count; ++i) {
+                                addEntry(*config);
                                 config++;
                             }
+                            for (const auto& room : VirtualRoomSetManager::Get().GetRoomSet(stbID, mode)) {
+                                addEntry(room);
+                            }
 
-                            RoomConfig_Stage* special = &g_Game->GetRoomConfig()->_stages[0];
-                            RoomSet* specialSet = &special->_rooms[g_Game->IsGreedMode()];
+                            // Add special rooms.
+                            RoomSet* specialSet = &g_Game->GetRoomConfig()->_stages[STB_SPECIAL_ROOMS]._rooms[mode];
                             config = specialSet->_configs;
 
                             for (unsigned int i = 0; i < specialSet->_count; ++i) {
-                                entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                addEntry(*config);
                                 config++;
+                            }
+                            for (const auto& room : VirtualRoomSetManager::Get().GetRoomSet(STB_SPECIAL_ROOMS, mode)) {
+                                addEntry(room);
                             }
 
                             break;
