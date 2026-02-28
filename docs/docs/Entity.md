@@ -41,11 +41,6 @@ ___
 #### boolean CanDevolve ( ) {: .copyable aria-label='Functions' }
 
 ___
-### ClearHitList () {: aria-label='Functions' }
-#### void ClearHitList ( ) {: .copyable aria-label='Functions' }
-Clears the tear's hit list, allowing it to hit previously hit enemies again.
-
-___
 ### ComputeStatusEffectDuration () {: aria-label='Functions' }
 #### int ComputeStatusEffectDuration ( int InitialLength, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
 
