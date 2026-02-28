@@ -35,7 +35,6 @@ Added:
 		IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
 		Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
 		Optional param: PlayerType
-* Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * EntityLaser:
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers
@@ -66,9 +65,44 @@ Added:
 	- SearchTrinkets(int or table)
 * HUD
 	- GetHistoryHUD
+* Renderer:
+	- CreateImage(int width, int height, string name)
+	- RenderToImage(Image, function)
+	- LoadShader(string path, table vertexDesc)
+	- GetShaderByType(ShaderType)
+	- GetPixelationAmount()
+	- GetClipPaneNormal()
+	- GetClipPaneThreshold()
+	- VertexAttributeFormat enum
+* Image:
+	- GetWidth()
+	- GetHeight()
+	- GetPaddedWidth()
+	- GetPaddedHeight()
+	- GetName()
+	- GetTexelRegion(int x, int y, int width, int height)
+	- Render(SourceQuad, DestinationQuad, KColor)
+	- RenderWithShader(SourceQuad, DestinationQuad, KColor, Shader, table shaderParams)
+* DestinationQuad:
+	- Copy()
+	- Translate(Vector)
+	- Scale(Vector, Vector anchor)
+	- Rotate(number, Vector anchor)
+	- Shear(Vector, Vector anchor)
+	- ApplyMatrix(table renderMatrix, Vector anchor)
+	- Flip(bool flipX, bool flipY)
+	- __tostring
+* SourceQuad:
+	- Copy() override
+	- IsUVSpace()
+	- ConvertToPixelSpace()
+	- ConvertToUVSpace()
+	- __tostring override
+* Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
 * The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
+* Removed unused class constructors in Renderer.
 /newline/
 Modified:
 * Isaac:
