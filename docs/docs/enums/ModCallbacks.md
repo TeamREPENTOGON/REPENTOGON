@@ -1583,9 +1583,9 @@ Accepts `true` to cancel rendering.
 If a table is returned instead of a boolean, the following fields can be set to a non-nil value for extra functionality:
 
 * HideItem: Boolean. Determines whether the item should be hidden from the active slot or not.
-* HideOutline: Boolean. Deterimins if item outline should be hidden or not.
-* HideChargeBar: Boolean. Deterimins if item chargebar should be hidden or not.
-* CropOffset: Vector. Deterimins rectangle area of the active item image that will rendered in active slot.
+* HideOutline: Boolean. Determines if item outline should be hidden or not.
+* HideChargeBar: Boolean. Determines if item chargebar should be hidden or not.
+* CropOffset: Vector. Determines rectangle area of the active item image that will rendered in active slot.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
