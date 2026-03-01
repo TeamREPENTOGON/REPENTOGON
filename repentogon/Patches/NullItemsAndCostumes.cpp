@@ -54,14 +54,14 @@ void ASMPatchFixLoadingNullItemsFromXml() {
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the commands we overwrote
-		.PreserveRegisters(savedRegisters)
+	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI)  // Push the newly created ItemConfig_Item
 		.AddInternalCall(FixLoadingNullItemFromXml)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x5) // Jump for false (no new entry was added, continue as normal)
-		.AddRelativeJump((char*)addr + 0x2B);  // Jump for true (new entry was added, skip some internal code)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x2B)  // Jump for true (new entry was added, skip some internal code)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x5);  // Jump for false (no new entry was added, continue as normal)
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
