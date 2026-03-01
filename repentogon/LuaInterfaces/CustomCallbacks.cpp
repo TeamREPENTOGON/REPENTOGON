@@ -1510,12 +1510,8 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 	int defaultHealthType = vanillaHealthType;
 
 	// Check for HealthType specified in players.xml
-	XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-	if (!playerXML["healthtype"].empty()) {
-		const int xmlHealthType = stoi(playerXML["healthtype"]);
-		if (xmlHealthType >= 0 && xmlHealthType <= 4) {
-			defaultHealthType = xmlHealthType;
-		}
+	if (const int xmlHealthType = XMLStuff.PlayerData->GetNumberAttributeById(this->GetPlayerType(), "healthtype"); xmlHealthType >= 0 && xmlHealthType <= 4) {
+		defaultHealthType = xmlHealthType;
 	}
 
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);

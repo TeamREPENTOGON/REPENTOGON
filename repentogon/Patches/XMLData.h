@@ -152,10 +152,40 @@ public:
 		}
 	}
 
-	XMLAttributes  GetNodeById(int name) {
-		auto iter = this->nodes.find(name);
-		if (iter == this->nodes.end()) { return XMLAttributes(); }
-		else { return iter->second; }
+	XMLAttributes* GetNodeOrNullById(int id) {
+		auto iter = this->nodes.find(id);
+		if (iter != this->nodes.end()) {
+			return &iter->second;
+		}
+		return nullptr;
+	}
+
+	// Note: This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
+	// Not changing everything right away just in case there are possible side effects, but try GetAttributeById.
+	XMLAttributes GetNodeById(int name) {
+		if (XMLAttributes* node = GetNodeOrNullById(name)) {
+			return *node;
+		}
+		return XMLAttributes();
+	}
+
+	std::string GetAttributeById(int id, const std::string& key) {
+		if (XMLAttributes* node = GetNodeOrNullById(id)) {
+			auto iter = node->find(key);
+			if (iter != node->end()) {
+				return iter->second;
+			}
+		}
+		return "";
+	}
+
+	int GetNumberAttributeById(int id, const std::string& key, int defaultValue = -1) {
+		const std::string attr = GetAttributeById(id, key);
+		if (!attr.empty()) {
+			try { return std::stoi(attr); } catch (...) {}
+		}
+		return defaultValue;
+
 	}
 
 	XMLAttributes GetNodeById(const string& name) { //for convenience,lol
@@ -694,8 +724,8 @@ public:
 		return nullptr;
 	}
 
-	// This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
-	// Not changing things right away just in case there are possible side effects, but try GetAttributeByTypeVarSub.
+	// Note: This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
+	// Not changing everything right away just in case there are possible side effects, but try GetAttributeByTypeVarSub.
 	XMLAttributes GetNodesByTypeVarSub(int type, int var, int sub, bool strict) {
 		if (XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict)) {
 			return *node;
@@ -704,9 +734,11 @@ public:
 	}
 
 	std::string GetAttributeByTypeVarSub(int type, int var, int sub, bool strict, const std::string& key) {
-		XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict);
-		if (node && node->find(key) != node->end()) {
-			return node->at(key);
+		if (XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict)) {
+			auto iter = node->find(key);
+			if (iter != node->end()) {
+				return iter->second;
+			}
 		}
 		return "";
 	}
