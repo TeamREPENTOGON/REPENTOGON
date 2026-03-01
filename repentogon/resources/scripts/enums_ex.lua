@@ -3098,6 +3098,7 @@ SplitTearType = {
 	POP = 8,  -- Pop! + Lasers
 	MULTIDIMENSIONAL = 9,
 	ANGELIC_PRISM = 10,
+	SWORD_BEAM = 11,
 }
 
 UseActiveItemResultFlag = {
