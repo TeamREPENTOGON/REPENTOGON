@@ -4,41 +4,34 @@ tags:
 ---
 # Class "SourceQuad"
 
+???+ info
+    This class inherits from [DestinationQuad](DestinationQuad.md).
+
 ## Constructors
 ### SourceQuad () {: aria-label='Constructors' }
 #### [SourceQuad](SourceQuad.md) SourceQuad ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) TopRight, [Vector](../Vector.md) BottomLeft, [Vector](../Vector.md) BottomRight ) {: .copyable aria-label='Constructors' }
 
 ## Functions
 
-### GetBottomLeft () {: aria-label='Functions' }
-#### [Vector](../Vector.md) GetBottomLeft ( ) {: .copyable aria-label='Functions' }      
+### __tostring () {: aria-label='Functions' }
+#### string __tostring ( ) {: .copyable aria-label='Operators' }
+Specialized version of __tostring, to represent the extra fields from this class.
 
 ___
-### GetBottomRight () {: aria-label='Functions' }
-#### [Vector](../Vector.md) GetBottomRight ( ) {: .copyable aria-label='Functions' }     
+### Copy () {: aria-label='Functions' }
+#### [SourceQuad](SourceQuad.md) Copy ( ) {: .copyable aria-label='Functions' }
+Specialized version of Copy.
 
 ___
-### GetTopLeft () {: aria-label='Functions' }
-#### [Vector](../Vector.md) GetTopLeft ( ) {: .copyable aria-label='Functions' }
+### IsUVSpace () {: aria-label='Functions' }
+#### boolean IsUVSpace ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetTopRight () {: aria-label='Functions' }
-#### [Vector](../Vector.md) GetTopRight ( ) {: .copyable aria-label='Functions' }        
+### ConvertToPixelSpace () {: aria-label='Functions' }
+#### void ConvertToPixelSpace ( ) {: .copyable aria-label='Functions' }
 
 ___
-### SetBottomLeft () {: aria-label='Functions' }
-#### void SetBottomLeft ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
-
-___
-### SetBottomRight () {: aria-label='Functions' }
-#### void SetBottomRight ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
-
-___
-### SetTopLeft () {: aria-label='Functions' }
-#### void SetTopLeft ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
-
-___
-### SetTopRight () {: aria-label='Functions' }
-#### void SetTopRight ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
+### ConvertToUVSpace () {: aria-label='Functions' }
+#### void ConvertToUVSpace ( ) {: .copyable aria-label='Functions' }
 
 ___
