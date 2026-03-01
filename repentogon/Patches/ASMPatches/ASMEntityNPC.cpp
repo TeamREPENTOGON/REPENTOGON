@@ -3,6 +3,8 @@
 
 #include "ASMEntityNPC.h"
 
+#include "HookSystem.h"
+#include "../XMLData.h"
 
 thread_local FireProjectilesStorage projectilesStorage;
 
@@ -130,4 +132,16 @@ void ASMPatchApplyFrozenEnemyDeathEffects() {
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))
 		.AddRelativeJump((char*)addr + 0x6);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+HOOK_METHOD(Entity, IsActiveEnemy, (bool includeDead) -> bool) {
+	if (this->_type >= ENTITY_GAPER && this->_type < ENTITY_EFFECT) {
+		const std::string attr = XMLStuff.EntityData->GetAttributeByTypeVarSub(this->_type, this->_variant, this->_subtype, false, "isactiveenemy");
+		if (attr == "true") {
+			return !this->_dead || includeDead;
+		} else if (attr == "false") {
+			return false;
+		}
+	}
+	return super(includeDead);
 }

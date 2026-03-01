@@ -120,6 +120,9 @@ __thiscall void Entity::ClearBossHazards(bool excludeNPCs);
 "8b89????????85c974??8b81":
 __thiscall bool Entity::CanDevolve();
 
+"558beca1????????8bd1":
+__thiscall bool Entity::IsActiveEnemy(bool includeDead);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 {{
 	inline int GetIndex() { return this->_index; }

@@ -675,23 +675,40 @@ public:
 		//return this->GetNodeById(iter->second);
 	//}
 
-	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub, bool strict ) {
+	XMLAttributes* GetNodesOrNullByTypeVarSub(int type, int var, int sub, bool strict) {
 		auto iter = this->nodes.find({ type, var, sub });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
 		}
 		if (strict) {
-			return XMLAttributes();
+			return nullptr;
 		}
 		iter = this->nodes.find({ type, var, 0 });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
 		}
 		iter = this->nodes.find({ type, 0, 0 });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
+		}
+		return nullptr;
+	}
+
+	// This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
+	// Not changing things right away just in case there are possible side effects, but try GetAttributeByTypeVarSub.
+	XMLAttributes GetNodesByTypeVarSub(int type, int var, int sub, bool strict) {
+		if (XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict)) {
+			return *node;
 		}
 		return XMLAttributes();
+	}
+
+	std::string GetAttributeByTypeVarSub(int type, int var, int sub, bool strict, const std::string& key) {
+		XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict);
+		if (node && node->find(key) != node->end()) {
+			return node->at(key);
+		}
+		return "";
 	}
 
 	const set<string>& GetCustomTags(int type, int var, int sub) {
