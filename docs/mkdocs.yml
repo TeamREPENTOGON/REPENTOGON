@@ -203,6 +203,7 @@ nav:
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
     - UseActiveItemResultFlag: enums/UseActiveItemResultFlag.md
+    - VertexAttributeFormat: enums/VertexAttributeFormat.md
     - WaterClipFlag: enums/WaterClipFlag.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
@@ -342,6 +343,7 @@ nav:
     - Shader: renderer/Shader.md
     - SourceQuad: renderer/SourceQuad.md
     - Shape: renderer/Shape.md
+    - SurfaceRenderController: renderer/SurfaceRenderController.md
     - Transformer: renderer/Transformer.md
     - Vertex: renderer/Vertex.md
     - VertexBuffer: renderer/VertexBuffer.md
