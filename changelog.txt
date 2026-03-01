@@ -101,6 +101,8 @@ Added:
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
+* Added "isActiveEnemy" attribute for EntityNPCs in entities2.xml (set to "true" or "false")
+* Added SplitTearType.SWORD_BEAM
 * The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
 * Removed unused class constructors in Renderer.
 /newline/
