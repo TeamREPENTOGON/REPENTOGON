@@ -116,9 +116,6 @@ See [items.xml](xml/items.md) for more information on custom caches.
 ___
 ### AddInnateCollectible () {: aria-label='Functions' }
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1 ) {: .copyable aria-label='Functions' }
-
-???+ bug "Bug"
-	Currently this function directly modifies the contents of WispCollectiblesList, so if this list was updated on wisp init/delete, or the player exits the run, your added innate items will not be saved.
 	
 ___
 ### AddLeprosy () {: aria-label='Functions' }
