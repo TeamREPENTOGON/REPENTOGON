@@ -114,6 +114,9 @@ Modified:
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+* ModCallbacks:
+	- MC_POST_PLAYER_DROP_TRINKET
+		Added DroppedTrinket param.
 /newline/
 Fixes:
 * ModCallbacks:
