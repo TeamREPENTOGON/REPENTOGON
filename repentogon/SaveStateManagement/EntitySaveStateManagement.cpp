@@ -2403,10 +2403,23 @@ HOOK_METHOD(Entity_Player, constructor, () -> void)
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void)
 {
+    CollectedStates collection;
+    collection.reserve(this->_movingBoxContents.size());
+    ESSM::Utils::CollectStates(this->_movingBoxContents, collection);
+    
+    ESSM::Core::ClearSaveStates(collection);
+
     super(type, variant, subtype, initSeed);
 
-    assert(!ESSM::PlayerHijackManager::HasMarker(this->_unlistedRestoreState));
-    ESSM::PlayerHijackManager::SetCleared(this->_unlistedRestoreState);
+    // Genesis forces us to handle this case, since Init doesn't actually reset the save state.
+    if (ESSM::PlayerHijackManager::HasMarker(this->_unlistedRestoreState))
+    {
+        assert(this->_hasUnlistedRestoreState == false);
+    }
+    else
+    {
+        ESSM::PlayerHijackManager::SetCleared(this->_unlistedRestoreState);
+    }
 }
 
 HOOK_METHOD(Entity_Player, destructor, () -> void)
