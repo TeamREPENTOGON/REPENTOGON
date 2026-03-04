@@ -1905,6 +1905,19 @@ PlayerType is -1 when "random character" is selected.
 |:--|:--|:--|:--|:--|
 |1332 |MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Sprite](../Sprite.md) PortraitSprite, <br>[Vector](../Vector.md) RenderPos, <br>[Vector](../Vector.md) DefaultScale, <br>[Color](../Color.md) DefaultColor) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
+### MC_CAN_SELECT_CHARACTER {: .copyable }
+Will only run for characters present in the character select menu that are capable of being selected (IE, not hidden or locked behind an achievement).
+
+Return false to prevent the character from being selectable. This has no visual effects.
+
+IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
+
+Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1328 |MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, boolean IsBeingSelected) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
+
 ### MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable }
 Accepts an override [Vector](../Vector.md) for Offset.
 
@@ -2889,7 +2902,7 @@ Called after a player drops a trinket onto the ground from their inventory.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1144 |MC_POST_PLAYER_DROP_TRINKET {: .copyable } | ([TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html), [Vector](../Vector.md) DropPos, [EntityPlayer](../EntityPlayer.md) Player, boolean IsGoldenTrinket, boolean ReplaceTick) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1144 |MC_POST_PLAYER_DROP_TRINKET {: .copyable } | ([TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html), [Vector](../Vector.md) DropPos, [EntityPlayer](../EntityPlayer.md) Player, boolean IsGoldenTrinket, boolean ReplaceTick, [EntityPickup]() DroppedTrinket) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_PRE_FAMILIAR_CAN_CHARM {: .copyable }
 Fires when `EntityFamiliar:CanCharm` is called. This is typically used by Siren's familiar charm attack.
