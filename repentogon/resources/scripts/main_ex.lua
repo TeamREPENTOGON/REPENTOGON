@@ -7,7 +7,70 @@ REPENTOGON = {
 
 collectgarbage("generational")
 
+--- Each module is a { module, loaded } pair
+local s_modules = {}
+
+local debug_getinfo = debug.getinfo
+
+local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
+	level = level + 1
+	local msg = "Stack Traceback:\n"
+	while true do
+		local info = debug_getinfo(level, "Sln")
+		if not info then break end
+		if info.what == "C" then
+			if info.name == "xpcall" then break end
+			msg = msg .. "  in method " .. tostring(info.name) .. "\n"
+		else
+			if info.name then
+				msg = msg ..
+				"  " ..
+				tostring(info.short_src) ..
+				":" .. tostring(info.currentline) .. ": in function '" .. tostring(info.name) .. "'\n"
+			else
+				msg = msg ..
+				"  " ..
+				tostring(info.short_src) ..
+				":" .. tostring(info.currentline) .. ": in function at line " .. tostring(info.linedefined) .. "\n"
+			end
+		end
+
+		level = level + 1
+	end
+
+	return msg
+end
+
+local errorHandler = function(msg)
+	return msg .. "\n" .. cleanTraceback(2)
+end
+
+---@param modName string
+function _GetModule(modName)
+	local cachedMod = s_modules[modName]
+	if cachedMod then
+		if not cachedMod[2] then
+			error(string.format("[ERROR] [REPENTOGON] module \"%s\" caused a recursive dependency", modName), 0) -- use level 0 to not print a source line
+		end
+
+		return cachedMod[1]
+	end
+
+	cachedMod = {nil, false}
+	s_modules[modName] = cachedMod
+	local ok, mod = xpcall(include, errorHandler, modName)
+	if not ok then
+		s_modules[modName] = nil
+		error(string.format("[ERROR] [REPENTOGON] Failed to load module \"%s\": %s", modName, mod), 0) -- use level 0 to not print a source line
+	end
+
+	cachedMod[1] = mod
+	cachedMod[2] = true
+	return mod
+end
+
 local RaiseModError = _CBindings.RaiseModError
+local ModManager = _GetModule("repentogon_extras.mod_manager")
 
 local function MeetsVersion(targetVersion)
 	if (REPENTOGON.Version == "dev build") then return true end
@@ -38,8 +101,6 @@ local function MeetsVersion(targetVersion)
 end
 
 REPENTOGON.MeetsVersion = MeetsVersion;
-
-local debug_getinfo = debug.getinfo
 
 local callbackIDToName = {}
 for k, v in pairs(ModCallbacks) do
@@ -663,36 +724,6 @@ local err_dupecount = 1
 ---@type string[]
 local printedWarnings = {}
 
-local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
-	level = level + 1
-	local msg = "Stack Traceback:\n"
-	while true do
-		local info = debug_getinfo(level, "Sln")
-		if not info then break end
-		if info.what == "C" then
-			if info.name == "xpcall" then break end
-			msg = msg .. "  in method " .. tostring(info.name) .. "\n"
-		else
-			if info.name then
-				msg = msg ..
-				"  " ..
-				tostring(info.short_src) ..
-				":" .. tostring(info.currentline) .. ": in function '" .. tostring(info.name) .. "'\n"
-			else
-				msg = msg ..
-				"  " ..
-				tostring(info.short_src) ..
-				":" .. tostring(info.currentline) .. ": in function at line " .. tostring(info.linedefined) .. "\n"
-			end
-		end
-
-		level = level + 1
-	end
-
-	return msg
-end
-
-
 local function logWarning(callbackID, modName, warn)
 	local cbName = callbackIDToName[callbackID] or callbackID
 	for _, printedWarning in pairs(printedWarnings) do
@@ -1192,6 +1223,7 @@ function _UnloadMod(mod)
 	end
 
 	RemoveAllCallbacksForMod(mod)
+	ModManager.detail.UnloadMod(mod)
 end
 
 -- Runs a single callback function and checks the results.
@@ -1826,7 +1858,6 @@ end
 ---- MISC STUFF
 -----------------------------------------------------------------------------------------------------
 
-
 --Menuman Hub
 MenuManager.MainMenu = MainMenu
 MenuManager.CharacterMenu = CharacterMenu
@@ -1863,6 +1894,8 @@ local oldregmod = RegisterMod
 function RegisterMod(name, ver)
 	local out = oldregmod(name, ver)
 	out.Repentogon = REPENTOGON
+	ModManager.detail.RegisterMod(out)
+
 	return out
 end
 
@@ -2014,11 +2047,7 @@ pcall(require, "repentogon_extras/bestiary_menu")
 -- pcall(require, "repentogon_extras/onlinestub") let's not load it
 pcall(require, "repentogon_extras/mods_menu_tweaks")
 
----@type boolean, REPENTOGON._Internals.ESSM
-local essmSuccess, ESSM = pcall(include, "repentogon_extras.entity_save_state_manager")
-if not essmSuccess then
-	error(string.format("[ERROR] Failed to load ESSM script: %s", ESSM))
-end
+local ESSM = _GetModule("repentogon_extras.entity_save_state_manager")
 
 local ESSM_OnNewEntity = ESSM._OnNewEntity
 local ESSM_OnDeleteEntity = ESSM._OnDeleteEntity
@@ -2073,3 +2102,6 @@ EntitySaveStateManager = {
 	TryGetEntityData = ESSM.TryGetEntityData,
 	TryGetEntitySaveStateData = ESSM.TryGetEntitySaveStateData,
 }
+
+_GetModule = nil
+s_modules = nil

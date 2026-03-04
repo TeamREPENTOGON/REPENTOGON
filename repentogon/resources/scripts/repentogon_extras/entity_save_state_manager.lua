@@ -1,6 +1,3 @@
----@class REPENTOGON._Internals.ESSM
-local Module = {}
-
 --#region Data
 
 ---@class REPENTOGON._Internals.ESSM.ModLookup
@@ -20,8 +17,8 @@ local Module = {}
 
 local SAVE_DATA_VERSION = 1
 
----Map of registered mod ids and the ModReference that will be used for save and load
----@type table<string, ModReference>
+---Map of registered mod ids and it's name, used to check if a modId has been registered and for some debug messages.
+---@type table<string, string>
 local s_registeredMods = {}
 
 ---Set of entities PtrHash that exist
@@ -44,6 +41,7 @@ local s_modLookup = {}
 --#endregion
 
 local json = require("json")
+local ModManager = _GetModule("repentogon_extras.mod_manager")
 
 local type = type
 local pairs = pairs
@@ -58,7 +56,6 @@ local json_encode = json.encode
 local json_decode = json.decode
 local GetPtrHash = GetPtrHash
 local Isaac_DebugString = Isaac.DebugString
-local GetModId = _CBindings.GetModId
 local GetEntitySaveStateId = _CBindings.ESSM.GetEntitySaveStateId
 local SaveEntityData = _CBindings.ESSM.SaveData
 local LoadEntityData = _CBindings.ESSM.LoadData
@@ -126,7 +123,7 @@ local function register_mod_id(mod, modId)
     local saveStateData
 
     if not exists then
-        s_registeredMods[modId] = mod
+        s_registeredMods[modId] = mod.Name
         entityData = {}
         saveStateData = {}
         s_entityData[modId] = entityData
@@ -143,13 +140,9 @@ end
 ---@return boolean, string
 local function register_mod(mod)
     local varType = type(mod)
-    if varType ~= "table" then
-        return false, string_format("ModReference expected, got %s", varType)
-    end
-
-    local modId = GetModId(mod)
+    local modId = ModManager.GetModIdByReference(mod)
     if not modId then
-        return false, "ModReference expected, got table"
+        return false, string_format("ModReference expected, got %s", varType)
     end
 
     register_mod_id(mod, modId)
@@ -333,14 +326,21 @@ end
 ---@param checksum integer
 local function _Serialize(idMap, fileName, checksum)
     for modId, saveStateTbl in pairs(s_saveStateData) do
+        local mod = ModManager.GetModReferenceById(modId)
+        if not mod then
+            local modName = s_registeredMods[modId] -- use the first ever registered mod reference name
+            Isaac_DebugString(string_format("[ERROR] [ESSM] Registered mod \"%s\" no longer has a valid ModReference, cannot save data", modName))
+            goto continue
+        end
+
         local success, result = pcall(serialize_data, saveStateTbl, idMap, checksum)
-        local mod = s_registeredMods[modId]
         if not success then
-            Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to save data for Mod '%s' in '%s': %s", mod.Name, fileName, result))
+            Isaac_DebugString(string_format("[ERROR] [ESSM] Unable to save data for Mod \"%s\" in \"%s\": %s", mod.Name, fileName, result))
             DeleteEntityData(mod, fileName)
         else
             SaveEntityData(mod, fileName, result)
         end
+        ::continue::
     end
 end
 
@@ -450,7 +450,13 @@ end
 local function _Deserialize(serializedIds, destIds, fileName, checksum)
     assert(#serializedIds, #destIds)
     for modId, saveStateTbl in pairs(s_saveStateData) do
-        local mod = s_registeredMods[modId]
+        local mod = ModManager.GetModReferenceById(modId)
+        if not mod then
+            local modName = s_registeredMods[modId] -- use the first ever registered mod reference name
+            Isaac_DebugString(string_format("[ERROR] [ESSM] Registered mod \"%s\" no longer has a valid ModReference, cannot load data", modName))
+            goto continue
+        end
+
         local data = LoadEntityData(mod, fileName)
 
         if not data then
@@ -603,6 +609,8 @@ local function TryGetEntitySaveStateData(mod, ess)
 end
 
 --#endregion
+
+local Module = {}
 
 Module._OnNewEntity = _OnNewEntity
 Module._OnDeleteEntity = _OnDeleteEntity
