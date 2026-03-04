@@ -93,7 +93,7 @@ ___
 
 ___
 ### GetClipPaneThreshold () {: aria-label='Functions' }
-#### number GetClipPaneNormal ( ) {: .copyable aria-label='Functions' }    
+#### number GetClipPaneThreshold ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### StartTransformation () {: aria-label='Functions' }
