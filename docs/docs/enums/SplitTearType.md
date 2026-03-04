@@ -16,3 +16,4 @@ tags:
 |8 |POP {: .copyable } | Pop! synergy for lasers |
 |9 |MULTIDIMENSIONAL {: .copyable } | Multidimensional Baby |
 |10 |ANGELIC_PRISM {: .copyable } | Angelic Prism |
+|11 |SWORD_BEAM {: .copyable } | Spirit Sword |

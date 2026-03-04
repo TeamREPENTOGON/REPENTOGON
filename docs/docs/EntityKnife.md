@@ -58,6 +58,14 @@ ___
 #### void SetIsSwinging ( boolean isSwinging ) {: .copyable aria-label='Functions' }
 
 ___
+### SetKnifeDistance () {: aria-label='Functions' }
+#### void SetKnifeDistance ( float Distance ) {: .copyable aria-label='Functions' }
+
+___
+### SetKnifeVelocity () {: aria-label='Functions' }
+#### void SetKnifeVelocity ( float Velocity ) {: .copyable aria-label='Functions' }
+
+___
 ### SetMultidimensionalTouched () {: aria-label='Functions' }
 #### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
 Sets if the knife was created through the Angelic Prism effect.

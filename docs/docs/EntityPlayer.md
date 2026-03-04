@@ -732,6 +732,10 @@ ___
 #### float GetRockBottomTearRange ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetRUAWizardTimer () {: aria-label='Functions' }
+#### int GetRUAWizardTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetShotSpeedModifier () {: aria-label='Functions' }
 #### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
 Used for Experimental Treatment and for stat boosts from Void.
@@ -1377,6 +1381,10 @@ ___
 ___
 ### SetRockBottomTearRange () {: aria-label='Functions' }
 #### void SetRockBottomTearRange ( float TearRange ) {: .copyable aria-label='Functions' }
+
+___
+### SetRUAWizardTimer () {: aria-label='Functions' }
+#### void SetRUAWizardTimer ( int timer ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetShotSpeedModifier () {: aria-label='Functions' }
