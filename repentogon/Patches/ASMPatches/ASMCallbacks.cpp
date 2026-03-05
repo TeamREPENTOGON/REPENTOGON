@@ -183,6 +183,88 @@ void PatchPreLaserCollision() {
 
 // End of PRE_LASER_COLLISION patches
 
+
+// ---------- Beginning of MC_(POST_)ENTITY_TAKE_DMG related patches --------------------------------------------------
+
+// Place to temporarily store "extra sources" to pass to the TakeDamage callbacks.
+// These refs are keyed by the address of the primary EntityRef created for, and passed to, the TakeDamage call.
+// An entry in this map is added right before the TakeDamage call, and removed immediately afterwards,
+// allowing access to the extra source for the duration of the TakeDamage call.
+// Should not be modified outside of `TakeDamageWithExtraSource`.
+static std::unordered_map<uintptr_t, EntityRef> _TakeDamageExtraSources;
+
+// Fetch the extra source for a TakeDamage source, if any exists.
+static EntityRef* GetExtraTakeDamageSource(EntityRef* source) {
+	if (source && _TakeDamageExtraSources.find((uintptr_t)source) != _TakeDamageExtraSources.end()) {
+		EntityRef* extraSource = &_TakeDamageExtraSources[(uintptr_t)source];
+		if (extraSource && extraSource->_entity != source->_entity) {
+			return extraSource;
+		}
+	}
+	return nullptr;
+}
+
+// Call TakeDamage with an "extra source", available via the standard "source" for the TAKE_DMG callbacks.
+// Patches are used to overwrite relevant TakeDamage calls with this one that enables the extra source.
+bool __stdcall TakeDamageWithExtraSource(Entity* damagedEntity, float damage, uint64_t damageFlags, EntityRef* source, int damageCountdown, Entity* extraSourceEntity) {
+	_TakeDamageExtraSources[(uintptr_t)source] = EntityRef(extraSourceEntity);
+	bool result = damagedEntity->TakeDamage(damage, damageFlags, source, damageCountdown);
+	_TakeDamageExtraSources.erase((uintptr_t)source);
+	return result;
+}
+void PatchLaserDoDamageExtraSourcePushEbx(char* asmDef, int overriddenBytes) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+	printf("[REPENTOGON] Patching Entity_Laser::DoDamage at %p\n", addr);
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EBX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, overriddenBytes))
+		.AddRelativeJump((char*)addr + overriddenBytes);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchLaserDoDamageExtraSource(char* asmDef, int bytesToCopy) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+	void* exitAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LaserDoDamageExit);
+
+	printf("[REPENTOGON] Patching Entity::TakeDamage call in Entity_Laser::DoDamage at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS) & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, bytesToCopy))
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(TakeDamageWithExtraSource)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump(exitAddr);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchTakeDamageWithExtraSource(char* desc, char* asmDef, ASMPatch::Registers extraSourceRegister, char* offsetAsmDef, int bytesToCopy, int addJump) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+
+	int offset = 0;
+	if (offsetAsmDef) {
+		offset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(offsetAsmDef) + 0x2);
+	}
+
+	printf("[REPENTOGON] Patching Entity::TakeDamage call for ExtraSource (%s) at %p\n", desc, addr);
+
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS) & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters);
+	if (offsetAsmDef) {
+		patch.Push(extraSourceRegister, offset);
+	} else {
+		patch.Push(extraSourceRegister);
+	}
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, bytesToCopy))
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(TakeDamageWithExtraSource)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + bytesToCopy + addJump);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 /* * MC_ENTITY_TAKE_DMG REIMPLEMENTATION * *
 * This section patches in a new ENTITY_TAKE_DMG callback with table returns for overridding.
 * A patch is used because ENTITY_TAKE_DMG runs in the middle of the TakeDamage functions,
@@ -192,8 +274,9 @@ void PatchPreLaserCollision() {
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* damageHearts, uint64_t* damageFlags, EntityRef* source, int* damageCountdown, const bool isPlayer) {
-	const int callbackid = 11;
+	EntityRef* extraSource = GetExtraTakeDamageSource(source);
 
+	const int callbackid = 11;
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -212,7 +295,8 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* dama
 		}
 		caller.push(*damageFlags)
 			.push(source, lua::Metatables::ENTITY_REF)
-			.push(*damageCountdown);
+			.push(*damageCountdown)
+			.push(extraSource, lua::Metatables::ENTITY_REF);
 		lua::LuaResults lua_result = caller.call(1);
 
 		if (!lua_result) {
@@ -283,7 +367,6 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* dama
 
 	return true;
 }
-
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 
@@ -337,17 +420,8 @@ void InjectPreDamageCallback(void* addr, bool isPlayer) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// Patches overtop the existing calls to LuaEngine::Callback::EntityTakeDamage,
-// within the Entity::TakeDamage and EntityPlayer::TakeDamage functions respectively.
-void PatchPreEntityTakeDamageCallbacks() {
-	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PreEntityCallback), false);
-	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PrePlayerCallback), true);
-}
-
 // Even though I patched overtop the calls to this callback, super kill it for good measure.
 HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) { return true; }
-
-// End of ENTITY_TAKE_DMG patches
 
 /* * MC_POST_ENTITY_TAKE_DMG * *
 * A hook worked just fine for ""POST_TAKE_DMG"" initially, but now that we support overidding
@@ -355,8 +429,9 @@ HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned
 * those modified values. That means another patch!!
 * Like before, we need to patch into both Entity::TakeDamage and EntityPlayer::TakeDamage.
 */
-
 void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, const uint64_t damageFlags, EntityRef* source, const int damageCountdown, const bool isPlayer) {
+	EntityRef* extraSource = GetExtraTakeDamageSource(source);
+
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
@@ -381,10 +456,10 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, con
 		caller.push(damageFlags)
 			.push(source, lua::Metatables::ENTITY_REF)
 			.push(damageCountdown)
+			.push(extraSource, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
 };
-
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
@@ -426,15 +501,32 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
-// The overridden bytes are restored by the patch.
-void PatchPostEntityTakeDamageCallbacks() {
-	// Sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
+void PatchEntityTakeDamageCallbacks() {
+	// Patches overtop the existing calls to LuaEngine::Callback::EntityTakeDamage,
+	// within the Entity::TakeDamage and EntityPlayer::TakeDamage functions respectively.
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PreEntityCallback), false);
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PrePlayerCallback), true);
+
+	// These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
+	// The overridden bytes are restored by the patch.
+	// First sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
 	InjectPostDamageCallback((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostEntityCallback) + 0x6, false);
 	InjectPostDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostPlayerCallback), true);
+
+	// Patches over TakeDamage calls to allow providing an ExtraSource.
+	PatchLaserDoDamageExtraSourcePushEbx(&AsmDefinitions::LaserDoDamagePushEbxA, 0x7);
+	PatchLaserDoDamageExtraSourcePushEbx(&AsmDefinitions::LaserDoDamagePushEbxB, 0x8);
+	PatchLaserDoDamageExtraSource(&AsmDefinitions::LaserDoDamageA, 0x14);
+	PatchLaserDoDamageExtraSource(&AsmDefinitions::LaserDoDamageB, 0xF);
+	PatchTakeDamageWithExtraSource("Entity_Laser::do_damage, player", &AsmDefinitions::LaserDoDamagePlayer, ASMPatch::Registers::EBX, nullptr, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Knife::update_bone_swing", &AsmDefinitions::UpdateBoneSwingDamage, ASMPatch::Registers::ESI, nullptr, 0x1A, 0x2);
+	PatchTakeDamageWithExtraSource("Entity_Knife::update_bone_swing, fireplace", &AsmDefinitions::UpdateBoneSwingDamageFireplace, ASMPatch::Registers::ESI, nullptr, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Familiar::ai_umbilical_baby", &AsmDefinitions::GelloDamage, ASMPatch::Registers::EBP, &AsmDefinitions::GelloDamageEbpOffset, 0x1A, 0x2);
+	PatchTakeDamageWithExtraSource("Entity_Familiar::ai_umbilical_baby, fireplace", &AsmDefinitions::GelloDamageFireplace, ASMPatch::Registers::EBP, &AsmDefinitions::GelloDamageEbpOffset, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Effect::Update, Brimstone Ball", &AsmDefinitions::BrimstoneBallDamage, ASMPatch::Registers::EBP, &AsmDefinitions::BrimstoneBallDamageEbpOffset, 0x36, 0x2);
 }
 
-// End of POST_ENTITY_TAKE_DMG patches
+// ---------- End of MC_(POST_)ENTITY_TAKE_DMG related patches --------------------------------------------------
 
 
 // MC_PRE_PLAYER_USE_BOMB

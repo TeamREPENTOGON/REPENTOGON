@@ -117,6 +117,11 @@ Modified:
 * ModCallbacks:
 	- MC_POST_PLAYER_DROP_TRINKET
 		Added DroppedTrinket param.
+	- MC_(POST_)ENTITY_TAKE_DMG
+		Added ExtraSource param. This is an additional EntityRef provided in specific situations where the "Source" of the damage may be indirect.
+		For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife will now be passed as the ExtraSource!
+		Currently supported: lasers, melee hitbox knives, gello, and brimstone balls.
+		Note that ExtraSource is nil if not available.
 /newline/
 Fixes:
 * ModCallbacks:

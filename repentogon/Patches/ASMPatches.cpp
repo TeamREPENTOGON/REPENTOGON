@@ -173,8 +173,7 @@ void PerformASMPatches() {
 	ASMCallbacks::detail::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
-	PatchPreEntityTakeDamageCallbacks();
-	PatchPostEntityTakeDamageCallbacks();
+	PatchEntityTakeDamageCallbacks();
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
 	ASMPatchPreMMorphActiveCallback();

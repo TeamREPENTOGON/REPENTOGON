@@ -8,8 +8,7 @@ bool RunCanSelectCharacterCallback(int playerType, bool isBeingSelected);
 
 void PatchPreSampleLaserCollision();
 void PatchPreLaserCollision();
-void PatchPreEntityTakeDamageCallbacks();
-void PatchPostEntityTakeDamageCallbacks();
+void PatchEntityTakeDamageCallbacks();
 void ASMPatchPrePlayerUseBomb();
 void ASMPatchPostPlayerUseBomb();
 void ASMPatchBombPreApplyTearflagEffects();

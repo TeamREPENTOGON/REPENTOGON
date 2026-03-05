@@ -1387,11 +1387,11 @@ end
 
 -- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
 -- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
-function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown)
+function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown, extraSource)
 	local combinedRet
 
 	for callback in GetCallbackIterator(callbackID, param) do
-		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown)
+		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown, extraSource)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
 				-- Only terminate the callback early if someone returns FALSE.

@@ -12,7 +12,6 @@ void __stdcall RunMeleeHitboxCallback(Entity_Knife* hitboxKnife, Entity_Knife* m
 	if (entityPlus) {
 		entityPlus->hitboxSource.SetReference(mainKnife);
 	}
-	hitboxKnife->Update();  // Patch overwrites an update call.
 }
 void PatchMeleeHitboxInit() {
 	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PostMeleeHitboxInit);
@@ -26,6 +25,7 @@ void PatchMeleeHitboxInit() {
 		.Push(ASMPatch::Registers::EDI)  // "Hitbox" Knife
 		.AddInternalCall(RunMeleeHitboxCallback)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x7);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore overwritten bytes
+		.AddRelativeJump((char*)addr + 0x6);
 	sASMPatcher.PatchAt(addr, &patch);
 }
