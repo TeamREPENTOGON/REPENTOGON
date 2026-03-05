@@ -366,6 +366,16 @@ LUA_FUNCTION(Lua_IsStartingFromState) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SetDifficulty) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int difficulty = luaL_checkinteger(L, 2);
+	if (difficulty >= 0 && difficulty <= 3) {
+		game->_difficulty = difficulty;
+	}
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -412,4 +422,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
 
+	lua::RegisterVariableSetter(_state, lua::Metatables::GAME, "Difficulty", Lua_SetDifficulty);
 }
