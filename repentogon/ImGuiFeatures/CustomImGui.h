@@ -1142,8 +1142,8 @@ struct CustomImGui {
                 if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children, overflowElements);
-                    ImGui::EndChild();
                 }
+                ImGui::EndChild();
                 break;
             }
             case IMGUI_ELEMENT::Menu:

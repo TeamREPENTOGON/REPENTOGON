@@ -281,8 +281,8 @@ struct LogViewer : ImGuiWindowObject {
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     ImGui::SetScrollHereY(1.0f);
                 ImGui::PopStyleVar();
-                ImGui::EndChild();
             }
+            ImGui::EndChild();
         }
         ImGui::End(); // close window element
     }
