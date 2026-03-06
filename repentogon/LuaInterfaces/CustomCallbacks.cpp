@@ -6043,6 +6043,39 @@ HOOK_METHOD(Room, GetBossThematicItem, (int* retCollectibleType, int* retTrinket
 	return spawned;
 }
 
+// MC_PRE/POST_BRIMSTONE_SNEEZE (1036/1037)
+HOOK_METHOD(Weapon_Brimstone, do_baby_brimstone_burst, (Vector* unused1, Vector* dir, int unused2, float damageScale) -> void) {
+	const int precallbackid = 1036;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(precallbackid)
+			.pushnil()
+			.push(this->_owner, lua::Metatables::ENTITY)
+			.pushUserdataValue(*dir, lua::Metatables::VECTOR)
+			.push(damageScale)
+			.call(1);
+	}
+
+	super(unused1, dir, unused2, damageScale);
+
+	const int postcallbackid = 1037;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.pushnil()
+			.push(this->_owner, lua::Metatables::ENTITY)
+			.pushUserdataValue(*dir, lua::Metatables::VECTOR)
+			.push(damageScale)
+			.call(1);
+	}
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
