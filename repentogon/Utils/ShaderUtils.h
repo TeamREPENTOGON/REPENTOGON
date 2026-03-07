@@ -1,20 +1,61 @@
 #pragma once
 
 #include <IsaacRepentance.h>
+#include <glad/glad.h>
 
 namespace ShaderUtils
 {
+    constexpr bool IsGLtypeCompatible(GLenum glType, uint32_t format);
+    constexpr uint32_t GLtypeToFormat(GLenum glType);
     // size is expressed in number of floats
     constexpr size_t GetFormatSize(uint32_t format);
     constexpr size_t GetFormatStride(uint32_t format);
     // This method expects a descriptor with a Terminator format.
     size_t GetNumVertexAttributes(const KAGE_Graphics_VertexAttributeDescriptor* descriptor);
     // size is expressed in number of floats
-    uint32_t GetVertexSize(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
-    uint32_t GetVertexStride(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    uint32_t GetVertexSize(const KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
+    uint32_t GetVertexStride(const KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
     void ToImageVertexDescriptor(uint8_t* result, KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes);
     bool AreVerticesEqual(const KAGE_Graphics_VertexAttributeDescriptor* desc, const KAGE_Graphics_VertexAttributeDescriptor* other, size_t numAttributes);
     bool UsesVertexDescriptor(const KAGE_Graphics_ShaderBase& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDescriptor, size_t numAttributes);
+}
+
+inline constexpr uint32_t ShaderUtils::GLtypeToFormat(GLenum glType)
+{
+    switch (glType)
+    {
+    case GL_FLOAT:
+        return (uint32_t)eVertexAttributeFormat::FLOAT;
+    case GL_FLOAT_VEC2:
+        return (uint32_t)eVertexAttributeFormat::VEC_2;
+    case GL_FLOAT_VEC3:
+        return (uint32_t)eVertexAttributeFormat::VEC_3;
+    case GL_FLOAT_VEC4:
+        return (uint32_t)eVertexAttributeFormat::VEC_4;
+    default:
+        return (uint32_t)eVertexAttributeFormat::TERMINATOR;
+    }
+}
+
+inline constexpr bool ShaderUtils::IsGLtypeCompatible(GLenum glType, uint32_t format)
+{
+    switch (format)
+    {
+    case (uint32_t)eVertexAttributeFormat::FLOAT:
+    case 8: // unknown
+        return glType == GL_FLOAT;
+    case (uint32_t)eVertexAttributeFormat::VEC_2:
+    case (uint32_t)eVertexAttributeFormat::TEX_COORD:
+        return glType == GL_FLOAT_VEC2;
+    case (uint32_t)eVertexAttributeFormat::VEC_3:
+    case (uint32_t)eVertexAttributeFormat::POSITION:
+        return glType == GL_FLOAT_VEC3;
+    case (uint32_t)eVertexAttributeFormat::VEC_4:
+    case (uint32_t)eVertexAttributeFormat::COLOR:
+        return glType == GL_FLOAT_VEC4;
+    default:
+        return false;
+    }
 }
 
 inline constexpr size_t ShaderUtils::GetFormatSize(uint32_t format)

@@ -1,31 +1,17 @@
 #include "ShaderLoader.h"
 #include "Utils/ShaderUtils.hpp"
 #include "MiscFunctions.h"
+#include <numeric>
 #include <filesystem>
 #include <regex>
+#include <glad/glad.h>
 
 namespace {
     struct ShaderMetadata
     {
         std::string path;
         std::vector<KAGE_Graphics_VertexAttributeDescriptor> vertexDescriptor;
-
-    private:
-        void free_vertex_descriptor()
-        {
-            for (int i = 0; i < (int)this->vertexDescriptor.size() - 1; i++)
-            {
-                auto& attribute = this->vertexDescriptor[i];
-                delete[] attribute.name;
-                attribute.name = nullptr;
-            }
-        }
-
-    public:
-        ~ShaderMetadata()
-        {
-            this->free_vertex_descriptor();
-        }
+        bool forceReload = false; // forcibly reload the shader next time ShaderLoader::LoadShader is called on this shader.
     };
 
     struct Shader
@@ -46,25 +32,14 @@ namespace {
             // copy descriptor
             for (size_t i = 0; i < numAttributes; i++)
             {
-                auto& myAttribute = vertexDescriptor.emplace_back();
-                auto& attribute = descriptor[i];
-
-                size_t len = std::strlen(attribute.name);
-                char* name = new char[len + 1];
-                std::memcpy(name, attribute.name, len + 1);
-                myAttribute.name = name;
-
-                myAttribute.format = attribute.format;
+                vertexDescriptor.emplace_back(descriptor[i]);
             }
-
             auto& terminator = vertexDescriptor.emplace_back();
-            terminator.name = "";
-            terminator.format = (int)eVertexAttributeFormat::TERMINATOR;
         }
     };
 }
 
-static std::unordered_map<std::string, Shader> shaderMap;
+static std::unordered_map<std::string, Shader> s_shaderMap;
 
 // Normalizes input shader paths for use as keys and for identification.
 // Converts to lowercase and strips excess slashes, ie `shaders\\MyShader` -> `shaders/myshader`
@@ -91,29 +66,140 @@ static std::string find_shader(const std::string& path)
 	return "";
 }
 
+namespace
+{
+    struct GLVertexAttribute
+    {
+        std::string name;
+        GLenum type = 0;
+
+        GLVertexAttribute(std::string_view name, GLenum type)
+            : name(name), type(type)
+        {}
+    };
+}
+
+static std::vector<GLVertexAttribute> get_shader_vertex_attributes(const KAGE_Graphics_Shader& shader)
+{
+    std::vector<GLVertexAttribute> attributes;
+    GLuint program = shader._glProgram;
+
+    GLint count;
+    glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
+    attributes.reserve(count);
+
+    GLint maxLength;
+    glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength);
+
+    std::vector<char> name(maxLength);
+    GLsizei length;
+    GLint size;
+    GLenum type;
+
+    for (GLuint i = 0; i < (GLuint)count; i++)
+    {
+        glGetActiveAttrib(program, i, maxLength, &length, &size, &type, name.data());
+        attributes.emplace_back(std::string_view(name.data(), length), type);
+    }
+
+    std::sort(attributes.begin(), attributes.end(),
+    [](const GLVertexAttribute& a, const GLVertexAttribute& b)
+    {
+        return a.name < b.name;
+    });
+    
+    return attributes;
+}
+
+static bool is_vertex_descriptor_compatible(const KAGE_Graphics_Shader& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
+{
+    auto shaderAttributes = get_shader_vertex_attributes(shader);
+    if (shaderAttributes.size() != ShaderUtils::GetNumVertexAttributes(vertexDesc))
+    {
+        return false;
+    }
+
+    size_t count = shaderAttributes.size();
+    // use indirect sorting to not copy and to not modify buffer.
+    std::vector<size_t> sortIndices(count);
+    std::iota(sortIndices.begin(), sortIndices.end(), 0);
+
+    std::sort(sortIndices.begin(), sortIndices.end(),
+    [&](size_t a, size_t b)
+    {
+        return std::strcmp(vertexDesc[a].name, vertexDesc[b].name) < 0;
+    });
+
+    for (size_t i = 0; i < shaderAttributes.size(); i++)
+    {
+        auto& shaderAttribute = shaderAttributes[i];
+        auto& attribute = vertexDesc[sortIndices[i]];
+        if (std::strcmp(attribute.name, shaderAttribute.name.c_str()) != 0)
+        {
+            return false;
+        }
+
+        if (!ShaderUtils::IsGLtypeCompatible(shaderAttribute.type, attribute.format))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool load_shader(Shader& shader, const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
+{
+    const std::string modPath = find_shader(path);
+    if (modPath.empty())
+    {
+        return false;
+    }
+
+    KAGE_Graphics_Manager_GL::LoadShader(&shader.shader, vertexDesc, modPath.c_str());
+    if (!shader.shader._initialized)
+    {
+        return false;
+    }
+
+    if (!is_vertex_descriptor_compatible(shader.shader, vertexDesc))
+    {
+        return false;
+    }
+
+    return true;
+}
+
 KAGE_Graphics_Shader* ShaderLoader::LoadShader(const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
 {
     const std::string key = normalize_shader_path(path);
-    auto [it, inserted] = shaderMap.try_emplace(key);
+    auto [it, inserted] = s_shaderMap.try_emplace(key);
     Shader& shader = it->second;
 
     if (inserted)
     {
-        const std::string modPath = find_shader(path);
-        if (modPath.empty())
+        bool success = load_shader(shader, path, vertexDesc);
+        if (!success)
         {
-            shaderMap.erase(it);
+            s_shaderMap.erase(it);
             return nullptr;
         }
-
-        KAGE_Graphics_Manager_GL::LoadShader(&shader.shader, vertexDesc, modPath.c_str());
-        if (!shader.shader._initialized)
-        {
-            shaderMap.erase(it);
-            return nullptr;
-        }
-
         shader.SetMetadata(path, vertexDesc);
+    }
+    else if (shader.metadata.forceReload)
+    {
+        bool success = load_shader(shader, path, vertexDesc);
+        if (!success)
+        {
+            shader.shader.HardReset();
+            return nullptr;
+        }
+        shader.SetMetadata(path, vertexDesc);
+        shader.metadata.forceReload = false;
+    }
+    else if (!shader.shader._initialized || !ShaderUtils::UsesVertexDescriptor(shader.shader, vertexDesc, ShaderUtils::GetNumVertexAttributes(vertexDesc)))
+    {
+        return nullptr;
     }
 
     return &shader.shader;
@@ -121,7 +207,7 @@ KAGE_Graphics_Shader* ShaderLoader::LoadShader(const std::string& path, const KA
 
 void ShaderLoader::detail::ReloadShaders()
 {
-    for (auto& [key, value] : shaderMap)
+    for (auto& [key, value] : s_shaderMap)
     {
         auto& shader = value.shader;
         auto& metadata = value.metadata;
@@ -140,13 +226,23 @@ void ShaderLoader::detail::ReloadShaders()
         {
             KAGE_Graphics_Manager_GL::LoadShader(&shader, metadata.vertexDescriptor.data(), modPath.c_str());
             failed = !shader._initialized;
+            metadata.forceReload = failed;
         }
 
         if (failed)
         {
             std::string message = REPENTOGON::StringFormat("Unable to reload shader \"%s\"", metadata.path.c_str());
             g_Game->GetConsole()->PrintError(message);
-            ZHL::Log(message.c_str());
+            KAGE::LogMessage(3, message.c_str());
+        }
+        else if (!is_vertex_descriptor_compatible(shader, metadata.vertexDescriptor.data()))
+        {
+            std::string message = REPENTOGON::StringFormat("Shader \"%s\" changed vertex descriptor, reload the shader manually", metadata.path.c_str());
+            g_Game->GetConsole()->PrintError(message);
+            KAGE::LogMessage(3, message.c_str());
+
+            shader.HardReset();
+            metadata.forceReload = true;
         }
     }
 }

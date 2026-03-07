@@ -3372,6 +3372,11 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
 
+// The last thing that's run by this function is KAGE_engine_startup_base, which returns a bool.
+// The caller never makes use of the returned AL value, so it's unknown if this is meant to return a bool or void.
+"53576a00":
+cleanup void KAGE_EngineStartup(int numArgs<ecx>, const char** args<edx>);
+
 "558bec6aff68????????64a1????????5081ece8010000a1????????33c58945??5657508d45??64a3????????8bc2":
 __x86_64 void IsaacStartup(int param_1, int param_2, int param_3);
 

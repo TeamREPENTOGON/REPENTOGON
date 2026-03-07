@@ -16,7 +16,7 @@ inline size_t ShaderUtils::GetNumVertexAttributes(const KAGE_Graphics_VertexAttr
     return i;
 }
 
-inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
+inline uint32_t ShaderUtils::GetVertexSize(const KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     uint32_t stride = 0;
 
@@ -28,7 +28,7 @@ inline uint32_t ShaderUtils::GetVertexSize(KAGE_Graphics_VertexAttributeDescript
     return stride;
 }
 
-inline uint32_t ShaderUtils::GetVertexStride(KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
+inline uint32_t ShaderUtils::GetVertexStride(const KAGE_Graphics_VertexAttributeDescriptor* descriptor, size_t numAttributes)
 {
     return GetVertexSize(descriptor, numAttributes) * sizeof(float);
 }

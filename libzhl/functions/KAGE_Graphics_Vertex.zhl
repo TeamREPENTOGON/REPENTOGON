@@ -38,7 +38,57 @@ struct KAGE_Graphics_VertexAttributeDescriptor {
     const char* name : 0x0;
     uint32_t format : 0x4; // eVertexFormat
 
-    {{
+{{
+private:
+    void copy_name(const std::string_view name)
+    {
+        size_t len = name.size();
+        char* newName = new char[len + 1];
+        std::memcpy(newName, name.data(), len);
+        newName[len] = '\0';
+
+        this->name = newName;
+    }
+
+public:
+    KAGE_Graphics_VertexAttributeDescriptor()
+    {
+        char* name = new char[1];
+        name[0] = '\0';
+        this->name = name;
+        this->format = (uint32_t)eVertexAttributeFormat::TERMINATOR;
+    }
+
+    KAGE_Graphics_VertexAttributeDescriptor(const std::string_view name, uint32_t format)
+    {
+        copy_name(name);
+        this->format = format;
+    }
+
+    KAGE_Graphics_VertexAttributeDescriptor(const KAGE_Graphics_VertexAttributeDescriptor& other)
+    {
+        copy_name(other.name);
+        this->format = other.format;
+    }
+
+    ~KAGE_Graphics_VertexAttributeDescriptor()
+    {
+        delete[] this->name;
+    }
+
+    void SetName(std::string_view name)
+    {
+        delete[] this->name;
+        copy_name(name);
+    }
+
+    KAGE_Graphics_VertexAttributeDescriptor& operator=(const KAGE_Graphics_VertexAttributeDescriptor& other)
+    {
+        delete[] this->name;
+        copy_name(other.name);
+        this->format = other.format;
+    }
+
     bool operator==(const KAGE_Graphics_VertexAttributeDescriptor& other) const
     {
         return std::strcmp(this->name, other.name) == 0 && this->format == other.format;
@@ -48,5 +98,5 @@ struct KAGE_Graphics_VertexAttributeDescriptor {
     {
         return !(*this == other);
     }
-    }}
+}}
 } : 0x8;

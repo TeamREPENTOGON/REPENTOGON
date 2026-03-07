@@ -103,7 +103,7 @@ static void fill_shader_vertices(float* vertexBuffer, const KAGE_Graphics_Shader
 		}
 	};
 
-	KAGE_Graphics_VertexAttributeDescriptor* attributes = shader._vertexAttributes;
+	const KAGE_Graphics_VertexAttributeDescriptor* attributes = shader._vertexAttributes;
 	size_t numAttributes = shader._numVertexAttributes;
 	size_t vertexSize = ShaderUtils::GetVertexSize(attributes, numAttributes);
 	size_t attributeOffset = 0;
@@ -2533,20 +2533,6 @@ namespace GL {
 	}
 }
 
-namespace GL {
-	bool GLADInitialized = false;
-	HMODULE OpenGLLibrary;
-}
-
-void* load_fn(const char* name) {
-	void* addr = wglGetProcAddress(name);
-	if (!addr) {
-		addr = GetProcAddress(GL::OpenGLLibrary, name);
-	}
-	ZHL::Log("[OpenGL] %s -> %p\n", name, addr);
-	return addr;
-}
-
 struct ContextDataVisitor {
 	std::string operator()(Entity_Bomb* p) {
 		return Base("EntityBomb", p);
@@ -2907,8 +2893,6 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 	// lua table to descriptor
 	for (size_t i = 0; i < numAttributes; i++)
 	{
-		auto& attributeDesc = descriptor.emplace_back();
-
 		int type = lua_rawgeti(L, descTbl, i + 1);
 		if (!lua_istable(L, -1))
 		{
@@ -2922,30 +2906,28 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 			lua_pop(L, 2);
 			return luaL_error(L, "Invalid name for vertex attribute %d (string expected)", i + 1);
 		}
-		attributeDesc.name = lua_tostring(L, -1);
+		const char* name = lua_tostring(L, -1);
 		lua_pop(L, 1); // pop name
 
 		lua_rawgeti(L, -1, 2);
 		if (!lua_isinteger(L, -1))
 		{
 			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\" (integer expected)", attributeDesc.name);
+			return luaL_error(L, "Invalid format for vertex attribute \"%s\" (integer expected)", name);
 		}
 		int format = (int)lua_tointeger(L, -1);
 		if (!(1 <= format && format <= 8))
 		{
 			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\"", attributeDesc.name);
+			return luaL_error(L, "Invalid format for vertex attribute \"%s\"", name);
 		}
-		attributeDesc.format = format;
 		lua_pop(L, 1); // pop format
-
+		
+		descriptor.emplace_back(name, format);
 		lua_pop(L, 1); // pop attribute
 	}
 
 	auto& terminator = descriptor.emplace_back();
-	terminator.name = "";
-	terminator.format = (size_t)eVertexAttributeFormat::TERMINATOR;
 
 	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(path, descriptor.data());
 	if (!shader)
@@ -3103,17 +3085,6 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-
-	if (!GL::GLADInitialized) {
-		GL::OpenGLLibrary = LoadLibrary("opengl32.dll");
-		if (!GL::OpenGLLibrary || !gladLoadGLLoader(load_fn)) {
-			abort();
-		}
-		GL::GLADInitialized = true;
-
-		//glEnable(GL_DEBUG_OUTPUT);
-		//glDebugMessageCallback(GL::OpenGLErrorCallback, 0);
-	}
 
 	lua_State* L = _state;
 	lua::LuaStackProtector protector(L);
