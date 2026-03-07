@@ -2929,19 +2929,13 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 
 	auto& terminator = descriptor.emplace_back();
 
-	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(path, descriptor.data());
-	if (!shader)
+	auto shader = ShaderLoader::LoadShader(path, descriptor.data());
+	if (shader.is_err())
 	{
-		luaL_error(L, "Unable to load shader \"%s\"", path.c_str());
+		luaL_error(L, "Unable to load shader \"%s\": %s", path.c_str(), shader.unwrap_err().c_str());
 	}
 
-	// confirm correct vertex descriptor
-	if (!ShaderUtils::UsesVertexDescriptor(*shader, descriptor.data(), descriptor.size() - 1))
-	{
-		luaL_error(L, "Incorrect VertexDescriptor for \"%s\"", path.c_str());
-	}
-
-	LuaShader::NewUserdata(L, shader);
+	LuaShader::NewUserdata(L, shader.unwrap());
 	
 	return 1;
 }

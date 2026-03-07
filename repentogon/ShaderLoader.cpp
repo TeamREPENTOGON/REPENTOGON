@@ -120,7 +120,7 @@ static bool is_vertex_descriptor_compatible(const KAGE_Graphics_Shader& shader, 
     }
 
     size_t count = shaderAttributes.size();
-    // use indirect sorting to not copy and to not modify buffer.
+    // use indirect sorting to avoid copying or modifying the vertexDesc.
     std::vector<size_t> sortIndices(count);
     std::iota(sortIndices.begin(), sortIndices.end(), 0);
 
@@ -148,29 +148,30 @@ static bool is_vertex_descriptor_compatible(const KAGE_Graphics_Shader& shader, 
     return true;
 }
 
-static bool load_shader(Shader& shader, const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
+static REPENTOGON::Result<KAGE_Graphics_Shader*, std::string> load_shader(Shader& shader, const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
 {
     const std::string modPath = find_shader(path);
     if (modPath.empty())
     {
-        return false;
+        return REPENTOGON::err(std::string("No shader exists for the specified path"));
     }
 
+    assert(!shader.shader._initialized);
     KAGE_Graphics_Manager_GL::LoadShader(&shader.shader, vertexDesc, modPath.c_str());
     if (!shader.shader._initialized)
     {
-        return false;
+        return REPENTOGON::err(std::string("Shader failed to compile"));
     }
 
     if (!is_vertex_descriptor_compatible(shader.shader, vertexDesc))
     {
-        return false;
+        return REPENTOGON::err(std::string("Vertex Descriptor is incompatible with shader attributes"));
     }
 
-    return true;
+    return REPENTOGON::ok(&shader.shader);
 }
 
-KAGE_Graphics_Shader* ShaderLoader::LoadShader(const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
+REPENTOGON::Result<KAGE_Graphics_Shader*, std::string> ShaderLoader::LoadShader(const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
 {
     const std::string key = normalize_shader_path(path);
     auto [it, inserted] = s_shaderMap.try_emplace(key);
@@ -178,31 +179,46 @@ KAGE_Graphics_Shader* ShaderLoader::LoadShader(const std::string& path, const KA
 
     if (inserted)
     {
-        bool success = load_shader(shader, path, vertexDesc);
-        if (!success)
+        auto result = load_shader(shader, path, vertexDesc);
+        if (result.is_err())
         {
             s_shaderMap.erase(it);
-            return nullptr;
         }
-        shader.SetMetadata(path, vertexDesc);
-    }
-    else if (shader.metadata.forceReload)
-    {
-        bool success = load_shader(shader, path, vertexDesc);
-        if (!success)
+        else
         {
-            shader.shader.HardReset();
-            return nullptr;
+            shader.SetMetadata(path, vertexDesc);
         }
-        shader.SetMetadata(path, vertexDesc);
-        shader.metadata.forceReload = false;
-    }
-    else if (!shader.shader._initialized || !ShaderUtils::UsesVertexDescriptor(shader.shader, vertexDesc, ShaderUtils::GetNumVertexAttributes(vertexDesc)))
-    {
-        return nullptr;
+
+        return result;
     }
 
-    return &shader.shader;
+    if (shader.metadata.forceReload)
+    {
+        auto result = load_shader(shader, path, vertexDesc);
+        if (result.is_err())
+        {
+            shader.shader.HardReset();
+        }
+        else
+        {
+            shader.SetMetadata(path, vertexDesc);
+            shader.metadata.forceReload = false;
+        }
+
+        return result;
+    }
+
+    if (!shader.shader._initialized)
+    {
+        return REPENTOGON::err(std::string("Shader failed to compile"));
+    }
+
+    if (!ShaderUtils::UsesVertexDescriptor(shader.shader, vertexDesc, ShaderUtils::GetNumVertexAttributes(vertexDesc)))
+    {
+        return REPENTOGON::err(std::string("Incorrect Vertex Descriptor"));
+    }
+
+    return REPENTOGON::ok(&shader.shader);
 }
 
 void ShaderLoader::detail::ReloadShaders()

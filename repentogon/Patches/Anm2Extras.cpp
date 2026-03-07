@@ -157,14 +157,14 @@ KAGE_Graphics_Shader* GetCustomShaderForLayer(LayerState* layer, const bool cham
 KAGE_Graphics_Shader* GetCustomShader(const std::string& input_path, const bool champion) {
 	const KAGE_Graphics_VertexAttributeDescriptor* desc = champion ? &g_ColorOffset_Champion_VertexAttributes : &g_ColorOffset_VertexAttributes;
 	size_t numAttributes = champion ? ShaderUtils::ColorOffsetChampion::NUM_ATTRIBUTES : ShaderUtils::ColorOffset::NUM_ATTRIBUTES;
-	KAGE_Graphics_Shader* shader = ShaderLoader::LoadShader(input_path, desc);
+	auto shader = ShaderLoader::LoadShader(input_path, desc);
 
-	if (!shader || !shader->_initialized || !ShaderUtils::UsesVertexDescriptor(*shader, desc, numAttributes))
+	if (shader.is_err())
 	{
 		return nullptr;
 	}
 
-	return shader;
+	return shader.unwrap();
 }
 
 bool SetCustomShader(ANM2* anm2, const std::string& path, const bool champion) {
