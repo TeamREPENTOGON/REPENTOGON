@@ -21,7 +21,7 @@ tags:
 
 ___
 ### GetCharge () {: aria-label='Functions' }
-#### int GetCharge ( ) {: .copyable aria-label='Functions' }
+#### float GetCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDirection () {: aria-label='Functions' }
@@ -29,7 +29,7 @@ ___
 
 ___
 ### GetFireDelay () {: aria-label='Functions' }
-#### int GetFireDelay ( ) {: .copyable aria-label='Functions' }
+#### float GetFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetMainEntity () {: aria-label='Functions' }
@@ -39,8 +39,12 @@ Returns active entity used by weapon (Brimstone - EntityLaser, Mom's Knife -  En
 Returns `nil` if it cannot be found.
 
 ___
+### GetMaxCharge () {: aria-label='Functions' }
+#### float GetMaxCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetMaxFireDelay () {: aria-label='Functions' }
-#### int GetMaxFireDelay ( ) {: .copyable aria-label='Functions' }
+#### float GetMaxFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetModifiers () {: aria-label='Functions' }
@@ -72,7 +76,7 @@ ___
 
 ___
 ### SetCharge () {: aria-label='Functions' }
-#### void SetCharge ( int Charge ) {: .copyable aria-label='Functions' }
+#### void SetCharge ( float Charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetFireDelay () {: aria-label='Functions' }
