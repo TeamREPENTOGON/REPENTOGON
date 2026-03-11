@@ -3535,7 +3535,7 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 static std::unordered_map<int, std::set<int>> _getMultiShotParamsRecursionProtection;
 
 // MC_EVALUATE_MULTI_SHOT_PARAMS (1289)
-// Formerly MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
+// Formerly MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251, now deprecated)
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
 	std::set<int>* recursionProtection = &_getMultiShotParamsRecursionProtection[this->_playerIndex];
 
@@ -3553,12 +3553,17 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		// Custom RunCallback function that runs the legacy callback first for backwards compatibility.
+		// Otherwise the legacy callback should be considered deprecated.
+		static const int customRunCallbackRef = [L]() {
+			lua_getglobal(L, "_RunGetMultiShotParamsCallbackWithLegacyCompat");
+			return luaL_ref(L, LUA_REGISTRYINDEX);
+		}();
+		lua_rawgeti(L, LUA_REGISTRYINDEX, customRunCallbackRef);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid)
-			.push(this->GetPlayerType())
-			.push(this, lua::Metatables::ENTITY_PLAYER);
+		caller.push(this->GetPlayerType());
+		caller.push(this, lua::Metatables::ENTITY_PLAYER);
 		Weapon_MultiShotParams* luaParams = caller.pushUd<Weapon_MultiShotParams>(lua::metatables::MultiShotParamsMT);
 		*luaParams = *params;
 		lua::LuaResults results = caller.push(weaponType).call(1);

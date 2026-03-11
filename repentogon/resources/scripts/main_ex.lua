@@ -100,7 +100,7 @@ local function MeetsVersion(targetVersion)
     return true
 end
 
-REPENTOGON.MeetsVersion = MeetsVersion;
+REPENTOGON.MeetsVersion = MeetsVersion
 
 local callbackIDToName = {}
 for k, v in pairs(ModCallbacks) do
@@ -1248,8 +1248,8 @@ end
 
 
 -- Default callback behaviour (first returned non-nil value terminates the callback).
-local function DefaultRunCallbackLogic(callbackID, param, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function DefaultRunCallbackLogic(callbackID, callbackIterator, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
 			return ret
@@ -1258,8 +1258,8 @@ local function DefaultRunCallbackLogic(callbackID, param, ...)
 end
 
 -- Slightly modified callback that only breaks on returning false specifically.
-local function RunFalseBreakCallbackLogic(callbackID, param, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunFalseBreakCallbackLogic(callbackID, callbackIterator, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret == false then
 			return ret
@@ -1268,16 +1268,16 @@ local function RunFalseBreakCallbackLogic(callbackID, param, ...)
 end
 
 -- For callbacks with no return values that don't want to allow mods to terminate them early.
-local function RunNoReturnCallback(callbackID, param, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunNoReturnCallback(callbackID, callbackIterator, ...)
+	for callback in callbackIterator do
 		RunCallbackInternal(callbackID, callback, ...)
 	end
 end
 
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
 -- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
-local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunAdditiveFirstArgCallback(callbackID, callbackIterator, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
 			value = ret
@@ -1286,8 +1286,8 @@ local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
 	return value
 end
 
-local function RunAdditiveSecondArgCallback(callbackID, param, arg1, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunAdditiveSecondArgCallback(callbackID, callbackIterator, arg1, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
 		if ret ~= nil then
 			value = ret
@@ -1296,8 +1296,8 @@ local function RunAdditiveSecondArgCallback(callbackID, param, arg1, value, ...)
 	return value
 end
 
-local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunAdditiveThirdArgCallback(callbackID, callbackIterator, arg1, arg2, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
 		if ret ~= nil then
 			value = ret
@@ -1306,8 +1306,8 @@ local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value,
 	return value
 end
 
-local function RunAdditiveThirdArgCallbackWithBreak(callbackID, param, arg1, arg2, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunAdditiveThirdArgCallbackWithBreak(callbackID, callbackIterator, arg1, arg2, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
 		if type(ret) == "boolean" then
 			if ret == false then
@@ -1320,8 +1320,8 @@ local function RunAdditiveThirdArgCallbackWithBreak(callbackID, param, arg1, arg
 	return value
 end
 
-local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunAdditiveFourthArgCallback(callbackID, callbackIterator, arg1, arg2, arg3, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
 		if ret ~= nil then
 			value = ret
@@ -1330,13 +1330,8 @@ local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3,
 	return value
 end
 
--- Older paramless version of the additive callback logic, preserved because it was a global.
-function _RunAdditiveCallback(callbackID, value, ...)
-	RunAdditiveFirstArgCallback(callbackID, nil, value, ...)
-end
-
-local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunPreAddCardPillCallback(callbackID, callbackIterator, player, pillCard, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
 		if type(ret) == "boolean" and ret == false then
 			return false
@@ -1351,17 +1346,9 @@ local function IsValidMultiShotParams(params)
 	return params ~= nil and type(params) == "userdata" and GetMetatableType(params) == "MultiShotParams"
 end
 
-local function RunGetMultiShotParamsCallback(_, param, player, multiShotParams, ...)
-	-- Run legacy callback first (didn't pass a modifiable MultiShotParams along, incentivised recursing GetMultiShotParams
-	-- inside the callback, returning a MultiShotParams terminated the callback and made it hard for multiple mods to modify).
-	-- Replacing it was cleaner for backwards compatability's sake, and we can just run the legacy callbacks here with no extra C jumps.
-	local legacyResult = Isaac.RunCallbackWithParam(ModCallbacks.MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS, param, player)
-	if IsValidMultiShotParams(legacyResult) then
-		multiShotParams = legacyResult
-	end
-	
-	for callback in GetCallbackIterator(ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS, param) do
-		local ret = RunCallbackInternal(ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS, callback, player, multiShotParams, ...)
+local function RunGetMultiShotParamsCallback(callbackID, callbackIterator, player, multiShotParams, ...)
+	for callback in callbackIterator do
+		local ret = RunCallbackInternal(callbackID, callback, player, multiShotParams, ...)
 		if IsValidMultiShotParams(ret) then
 			multiShotParams = ret
 		end
@@ -1370,9 +1357,20 @@ local function RunGetMultiShotParamsCallback(_, param, player, multiShotParams, 
 	return multiShotParams
 end
 
+function _RunGetMultiShotParamsCallbackWithLegacyCompat(param, player, multiShotParams, ...)
+	-- Run legacy callback first (didn't pass a modifiable MultiShotParams along, incentivised recursing GetMultiShotParams
+	-- inside the callback, returning a MultiShotParams terminated the callback and made it hard for multiple mods to modify).
+	-- Replacing it was cleaner for backwards compatability's sake, and we can just run the legacy callbacks here with no extra C jumps.
+	local legacyResult = Isaac.RunCallbackWithParam(ModCallbacks.MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS, param, player)
+	if IsValidMultiShotParams(legacyResult) then
+		multiShotParams = legacyResult
+	end
+	return Isaac.RunCallbackWithParam(ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS, param, player, multiShotParams, ...)
+end
+
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
-function _RunPreRenderCallback(callbackID, param, mt, value, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunPreRenderCallback(callbackID, callbackIterator, mt, value, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1387,10 +1385,10 @@ end
 
 -- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
 -- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
-function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown, extraSource)
+local function RunEntityTakeDmgCallback(callbackID, callbackIterator, entity, damage, damageFlags, source, damageCountdown, extraSource)
 	local combinedRet
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown, extraSource)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1422,10 +1420,10 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 	return combinedRet
 end
 
-local function RunAccumulateReturnTableCallback(callbackID, param, ...)
+local function RunAccumulateReturnTableCallback(callbackID, callbackIterator, ...)
 	local retTable
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" then
@@ -1445,11 +1443,11 @@ local function RunAccumulateReturnTableCallback(callbackID, param, ...)
 	return retTable
 end
 
-local function RunPreAddCollectibleCallback(callbackID, param, collectibleType, charge, firstTime, slot, vardata, ...)
+local function RunPreAddCollectibleCallback(callbackID, callbackIterator, collectibleType, charge, firstTime, slot, vardata, ...)
 	local retType
 	local retTable
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, collectibleType, charge, firstTime, slot, vardata, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1484,11 +1482,11 @@ local function RunPreAddCollectibleCallback(callbackID, param, collectibleType, 
 	return retTable or retType
 end
 
-local function RunPreAddTrinketCallback(callbackID, param, player, trinketType, firstTime, ...)
+local function RunPreAddTrinketCallback(callbackID, callbackIterator, player, trinketType, firstTime, ...)
 	local retType
 	local retTable
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, trinketType, firstTime, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1522,8 +1520,8 @@ end
 
 -- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
 -- Terminate early if the player is revived by any means.
-function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunTriggerPlayerDeathCallback(callbackID, callbackIterator, player, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, ...)
 		if ret == false or not player:IsDead() then
 			return ret
@@ -1534,10 +1532,10 @@ end
 
 -- Custom handling for MC_POST_PICKUP_SELECTION.
 -- Terminate early if the table's 3rd argument is nil or false
-function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ...)
-	local recentRet = nil;
+local function RunPostPickupSelectionCallback(callbackID, callbackIterator, pickup, variant, subType, ...)
+	local recentRet = nil
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, pickup, variant, subType, ...)
 		if type(ret) == "table" then
 			if not ret[3] then
@@ -1556,10 +1554,8 @@ function _RunPostPickupSelection(callbackID, param, pickup, variant, subType, ..
 	return recentRet
 end
 
-local function RunTryAddToBagOfCraftingCallback(callbackID, param, player, pickup, ...)
-	local result = {...}
-
-	for callback in GetCallbackIterator(callbackID, param) do
+local function RunTryAddToBagOfCraftingCallback(callbackID, callbackIterator, player, pickup, result, ...)
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, pickup, result)
 		if type(ret) == "boolean" and ret == false then
 			return false
@@ -1578,10 +1574,10 @@ local function RunTryAddToBagOfCraftingCallback(callbackID, param, player, picku
 	return result
 end
 
-local function RunPreApplyTearflagEffectsCallback(callbackID, param, entity, pos, flags, source, damage)
+local function RunPreApplyTearflagEffectsCallback(callbackID, callbackIterator, entity, pos, flags, source, damage)
 	local combinedRet
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, entity, pos, flags, source, damage)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1628,10 +1624,10 @@ local preStatusApplyReturnTableTypes = {
 -- Handle type checking here since the callback is called for several status effects with different types,
 -- terminate early if false is returned,
 -- and use additive callback logic instead of the default one.
-local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
+local function RunPreStatusEffectApplyCallback(callbackID, callbackIterator, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 	local recentRet = nil
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, status, entity, entityRef, duration, extraParam1, extraParam2, extraParam3)
 
 		if type(ret) == "boolean" then
@@ -1665,10 +1661,10 @@ local function RunPreStatusEffectApplyCallback(callbackID, param, status, entity
 	return recentRet
 end
 
-local function RunPreBombDamageCallback(callbackID, param, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
+local function RunPreBombDamageCallback(callbackID, callbackIterator, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
 	local combinedRet
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1703,10 +1699,10 @@ local function RunPreBombDamageCallback(callbackID, param, pos, damage, radius, 
 	return combinedRet
 end
 
-local function RunPreBombTearFlagEffectsCallback(callbackID, param, pos, radius, tearFlags, source, radiusMult)
+local function RunPreBombTearFlagEffectsCallback(callbackID, callbackIterator, pos, radius, tearFlags, source, radiusMult)
 	local combinedRet
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, pos, radius, tearFlags, source, radiusMult)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1738,13 +1734,13 @@ local function RunPreBombTearFlagEffectsCallback(callbackID, param, pos, radius,
 	return combinedRet
 end
 
-local function RunPreHistoryHudRenderCallback(callbackID, param, ...)
+local function RunPreHistoryHudRenderCallback(callbackID, callbackIterator, ...)
 	local combinedRet = {
 		HideCollectibles = {},
 		HideTrinkets = {},
 	}
 
-	for callback in GetCallbackIterator(callbackID, param) do
+	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1767,7 +1763,22 @@ local function RunPreHistoryHudRenderCallback(callbackID, param, ...)
 	return combinedRet
 end
 
--- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
+-- Legacy globals. Safer to just leave them alone since they were already exposed. Don't use these.
+function _RunPreRenderCallback(callbackID, param, ...)
+	return RunPreRenderCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+end
+function _RunAdditiveCallback(callbackID, value, ...)
+	return RunAdditiveFirstArgCallback(callbackID, GetCallbackIterator(callbackID), value, ...)
+end
+function _RunEntityTakeDmgCallback(callbackID, param, ...)
+	return RunEntityTakeDmgCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+end
+function _RunPostPickupSelection(callbackID, param, ...)
+	return RunPostPickupSelectionCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+end
+function _RunTriggerPlayerDeathCallback(callbackID, param, ...)
+	return RunTriggerPlayerDeathCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
+end
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
@@ -1777,15 +1788,15 @@ rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 -- Defines non-default callback handling logic to be used for specific callbacks.
 -- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
 local CustomRunCallbackLogic = {
-	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_EVALUATE_MULTI_SHOT_PARAMS] = RunGetMultiShotParamsCallback,
 	[ModCallbacks.MC_PRE_APPLY_TEARFLAG_EFFECTS] = RunPreApplyTearflagEffectsCallback,
 	[ModCallbacks.MC_POST_APPLY_TEARFLAG_EFFECTS] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_CURSE_EVAL] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_ENTITY_REMOVE] = RunNoReturnCallback,
-	[ModCallbacks.MC_POST_PICKUP_SELECTION] = _RunPostPickupSelection,
-	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
-	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_POST_PICKUP_SELECTION] = RunPostPickupSelectionCallback,
+	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRY_ADD_TO_BAG_OF_CRAFTING] = RunTryAddToBagOfCraftingCallback,
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
@@ -1835,15 +1846,18 @@ for _, callback in ipairs({
 	ModCallbacks.MC_PRE_BOMB_RENDER,
 	ModCallbacks.MC_PRE_SLOT_RENDER,
 }) do
-	CustomRunCallbackLogic[callback] = _RunPreRenderCallback
+	CustomRunCallbackLogic[callback] = RunPreRenderCallback
 end
 
+local function RunCallbackOverIterator(callbackID, callbackIterator, ...)
+	local runCallbackLogic = CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic
+	return runCallbackLogic(callbackID, callbackIterator, ...)
+end
+rawset(Isaac, "RunCallbackOverIterator", RunCallbackOverIterator)
 
 function _RunCallback(callbackID, param, ...)
-	-- Check for custom logic.
-	local runCallbackLogic = CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic
-
-	return runCallbackLogic(callbackID, param, ...)
+	local callbackIterator = GetCallbackIterator(callbackID, param)
+	return RunCallbackOverIterator(callbackID, callbackIterator, ...)
 end
 
 Isaac.RunCallbackWithParam = _RunCallback
