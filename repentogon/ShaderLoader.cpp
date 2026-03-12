@@ -101,27 +101,28 @@ static std::vector<GLVertexAttribute> get_shader_vertex_attributes(const KAGE_Gr
         glGetActiveAttrib(program, i, maxLength, &length, &size, &type, name.data());
         attributes.emplace_back(std::string_view(name.data(), length), type);
     }
-
-    std::sort(attributes.begin(), attributes.end(),
-    [](const GLVertexAttribute& a, const GLVertexAttribute& b)
-    {
-        return a.name < b.name;
-    });
     
     return attributes;
 }
 
+// VertexDescriptor is valid if it is a superset of the shader attributes.
 static bool is_vertex_descriptor_compatible(const KAGE_Graphics_Shader& shader, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
 {
     auto shaderAttributes = get_shader_vertex_attributes(shader);
-    if (shaderAttributes.size() != ShaderUtils::GetNumVertexAttributes(vertexDesc))
+    size_t descSize = ShaderUtils::GetNumVertexAttributes(vertexDesc);
+    if (shaderAttributes.size() > descSize)
     {
         return false;
     }
 
-    size_t count = shaderAttributes.size();
+    std::sort(shaderAttributes.begin(), shaderAttributes.end(),
+    [](const GLVertexAttribute& a, const GLVertexAttribute& b)
+    {
+        return a.name < b.name;
+    });
+
     // use indirect sorting to avoid copying or modifying the vertexDesc.
-    std::vector<size_t> sortIndices(count);
+    std::vector<size_t> sortIndices(descSize);
     std::iota(sortIndices.begin(), sortIndices.end(), 0);
 
     std::sort(sortIndices.begin(), sortIndices.end(),
@@ -130,22 +131,41 @@ static bool is_vertex_descriptor_compatible(const KAGE_Graphics_Shader& shader, 
         return std::strcmp(vertexDesc[a].name, vertexDesc[b].name) < 0;
     });
 
-    for (size_t i = 0; i < shaderAttributes.size(); i++)
-    {
-        auto& shaderAttribute = shaderAttributes[i];
-        auto& attribute = vertexDesc[sortIndices[i]];
-        if (std::strcmp(attribute.name, shaderAttribute.name.c_str()) != 0)
-        {
-            return false;
-        }
 
-        if (!ShaderUtils::IsGLtypeCompatible(shaderAttribute.type, attribute.format))
+    size_t s = 0;
+    size_t v = 0;
+
+    size_t shaderCount = shaderAttributes.size();
+    while (s < shaderCount && v < descSize)
+    {
+        const auto& shaderAttribute = shaderAttributes[s];
+        const auto& attribute = vertexDesc[sortIndices[v]];
+
+        int cmp = std::strcmp(shaderAttribute.name.c_str(), attribute.name);
+
+        if (cmp == 0)
         {
+            if (!ShaderUtils::IsGLtypeCompatible(shaderAttribute.type, attribute.format))
+            {
+                return false;
+            }
+
+            s++;
+            v++;
+        }
+        else if (cmp > 0)
+        {
+            // Extra attribute
+            v++;
+        }
+        else
+        {
+            // Shader attribute not found
             return false;
         }
     }
 
-    return true;
+    return s == shaderCount;
 }
 
 static REPENTOGON::Result<KAGE_Graphics_Shader*, std::string> load_shader(Shader& shader, const std::string& path, const KAGE_Graphics_VertexAttributeDescriptor* vertexDesc)
@@ -163,6 +183,8 @@ static REPENTOGON::Result<KAGE_Graphics_Shader*, std::string> load_shader(Shader
         return REPENTOGON::err(std::string("Shader failed to compile"));
     }
 
+    // Due to how the game handles rendering sprites we can't alter the vertexDescriptor if it is a superset,
+    // as the Fill functions will end up writing out of bounds.
     if (!is_vertex_descriptor_compatible(shader.shader, vertexDesc))
     {
         return REPENTOGON::err(std::string("Vertex Descriptor is incompatible with shader attributes"));
