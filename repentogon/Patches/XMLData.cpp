@@ -355,6 +355,7 @@ ModEntry* GetModEntryByContentPath(const string &path) {
 	return NULL;
 }
 
+
 void UpdateXMLModEntryData() {
 	std:string enabledmodslist = "-- Enabled Mods START -- \n";
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
@@ -2541,6 +2542,9 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
+
+		string loadingmodmsg = "Loading: " + mod["name"] + "(" + mod["directory"] +  ") \n";
+		KAGE::LogMessage(0, loadingmodmsg.c_str());
 	}
 	break;
 	case 26: //fxlayers
