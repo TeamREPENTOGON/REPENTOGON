@@ -134,6 +134,7 @@ Fixes:
 * Fixed modded characters' locked/door sprites rendering on the "continue" widget if they are locked behind an achievement.
 * Fixed custom caches not running for golden trinkets.
 * Fixed multiple instances where the "Controller Disconnected" popup could trigger when continuing a run, such as modded twins/coplayers, and a vanilla bug with Jacob & Esau as a co-op player.
+* Fixed a vanilla bug that caused Blood Baby familiars to render incorrectly when using Dataminer.
 /newline/
 /versionseparator/
 v1.1.1a -

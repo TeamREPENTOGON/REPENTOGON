@@ -50,7 +50,7 @@ inline ColorMod ANM2Utils::GetFrameColor(const ANM2& anm2, const LayerState& lay
     return color;
 }
 
-inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2, const KAGE_Graphics_ImageBase* texture)
+inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2)
 {
     SourceQuad sourceQuad;
     AnimationLayer::GetSourceQuad(&sourceQuad, nullptr, frame, layerState, topLeftClamp, bottomRightClamp, anm2);
@@ -58,16 +58,9 @@ inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, Lay
     if (g_ANM2_GlitchRendering)
     {
         Vector pivot = Vector(
-            frame.width / 2 + frame.crop.x,
-            frame.height / 2 + frame.crop.y
+            frame.width / 2 + frame.crop.x + layerState._cropOffset.x,
+            frame.height / 2 + frame.crop.y + layerState._cropOffset.y
         );
-
-        const KAGE_Graphics_ImageBase* proceduralItemTexture = g_Game->GetProceduralItemManager()->_proceduralItemTexture.image;
-        if (texture == proceduralItemTexture)
-        {
-            pivot.x += layerState._cropOffset.x;
-            pivot.y += layerState._cropOffset.y;
-        }
 
         RNG rng = RNG();
         rng.SetSeed((uint32_t)&anm2, 35);
