@@ -172,6 +172,7 @@ Blocks the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/e
 ___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
 #### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Used to determine which items can be added to Tainted Isaac's limited inventory.
 
 ___
 ### CanCrushRocks () {: aria-label='Functions' }
