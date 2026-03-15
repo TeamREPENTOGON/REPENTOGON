@@ -912,6 +912,13 @@ ___
 ### HasPoisonImmunity () {: aria-label='Functions' }
 #### boolean HasPoisonImmunity ( ) {: .copyable aria-label='Functions' }
 
+???- info "Info"
+    Returns `true` if the player has one of the following items / effects / transformations.
+
+	- Bob transformation
+    - Bob's Curse
+    - Jupiter
+
 ___
 ### IncrementPlayerFormCounter () {: aria-label='Functions' }
 #### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html) Form, int Count ) {: .copyable aria-label='Functions' }
@@ -951,6 +958,7 @@ Returns `true` if the costume associated with the collectible is visible.
 ___
 ### IsEntityValidTarget () {: aria-label='Functions' }
 #### boolean IsEntityValidTarget ( [Entity](Entity.md) Entity ) {: .copyable aria-label='Functions' }
+Returns `false` for entities such as Dark Esau or Blood Puppy in its angered form.
 
 ___
 ### IsFootstepFrame () {: aria-label='Functions' }
