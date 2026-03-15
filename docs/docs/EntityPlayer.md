@@ -190,6 +190,7 @@ ___
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
 #### boolean CanOverrideActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+Returns `true` if the active slot is empty, or contains only Book of Virtues or Book of Belial from Judas' Birthright.
 
 ___
 ### CanUsePill () {: aria-label='Functions' }
