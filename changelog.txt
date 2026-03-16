@@ -67,7 +67,7 @@ Added:
 * HUD
 	- GetHistoryHUD
 * Sprite:
-	- Copy(Sprite)
+	- Copy()
 	- GetSpritesheet(int layerId)
 	- SetSpritesheet(int layerId, Image)
 * LayerState:
