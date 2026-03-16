@@ -999,10 +999,6 @@ ___
 #### boolean IsNullItemCostumeVisible ( int nullItem, string layerName ) {: .copyable aria-label='Functions' }
 
 ___
-### IsPacifist () {: aria-label='Functions' }
-#### boolean IsPacifist ( ) {: .copyable aria-label='Functions' }
-
-___
 ### IsPostLevelInitFinished () {: aria-label='Functions' }
 #### boolean IsPostLevelInitFinished ( ) {: .copyable aria-label='Functions' }
 
