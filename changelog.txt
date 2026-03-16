@@ -66,6 +66,13 @@ Added:
 	- SearchTrinkets(int or table)
 * HUD
 	- GetHistoryHUD
+* Sprite:
+	- Copy(Sprite)
+	- GetSpritesheet(int layerId)
+	- SetSpritesheet(int layerId, Image)
+* LayerState:
+	- GetSpritesheet()
+	- SetSpritesheet(Image)
 * Renderer:
 	- CreateImage(int width, int height, string name)
 	- RenderToImage(Image, function)
@@ -82,7 +89,7 @@ Added:
 	- GetPaddedHeight()
 	- GetName()
 	- GetTexelRegion(int x, int y, int width, int height)
-	- Render(SourceQuad, DestinationQuad, KColor)
+	- Render(SourceQuad, DestinationQuad, KColor, ColorMod)
 	- RenderWithShader(SourceQuad, DestinationQuad, KColor, Shader, table shaderParams)
 * DestinationQuad:
 	- Copy()
@@ -115,6 +122,9 @@ Modified:
 * EntityPlayer:
 	- SetControllerIndex(integer ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+* CostumeSpriteDesc:
+	- Renamed GetHeadColor -> GetDefaultSkinColor
+	- Renamed GetBodyColor -> GetSkinColor
 * ModCallbacks:
 	- MC_POST_PLAYER_DROP_TRINKET
 		Added DroppedTrinket param.

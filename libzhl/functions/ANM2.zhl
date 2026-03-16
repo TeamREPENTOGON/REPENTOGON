@@ -113,6 +113,8 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
     unsigned int _bitflags : 0x110;
 } : 0x114;
 
+"c706(????????)e8????????f645??01c706":
+reference void* UserdataValue_ANM2_vftable;
 
 "f30f1105(????????)f30f1105????????660f6e45":
 reference float g_WIDTH; //global width used in several anm2 position calculations

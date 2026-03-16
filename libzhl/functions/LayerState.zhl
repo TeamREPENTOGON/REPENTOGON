@@ -10,7 +10,22 @@ struct LayerState depends (KAGE_SmartPointer_ImageBase, LayerData, Vector, Color
 	inline bool* IsVisible() { return &this->_visible; }
 	inline BlendMode* GetBlendMode() { return &this->_blendMode; }
 	inline unsigned int* GetRenderFlags() { return &this->_bitflags; }
-	inline Vector* GetCropOffset() { return &this->_cropOffset; } 
+	inline Vector* GetCropOffset() { return &this->_cropOffset; }
+
+    inline void SetSpriteSheet(KAGE_SmartPointer_ImageBase& image)
+    {
+        this->_spriteSheet = image;
+        auto* img = image.image;
+        if (img)
+        {
+            this->_minFilterMode = img->_minFilterMode;
+            this->_magFilterMode = img->_magFilterMode;
+            this->_wrapSMode = img->_wrapSMode;
+            this->_wrapTMode = img->_wrapTMode;
+        }
+
+        this->_spriteSheetLoaded = img != nullptr;
+    }
 }} 
     LayerData* _layerData : 0x0;
     ANM2* _animation : 0x4;
@@ -19,7 +34,8 @@ struct LayerState depends (KAGE_SmartPointer_ImageBase, LayerData, Vector, Color
     unsigned int _magFilterMode : 0x24;
     unsigned int _wrapSMode : 0x28;
     unsigned int _wrapTMode : 0x2c;
-	bool _unk[2] : 0x30;
+    bool _spriteSheetLoaded : 0x30;
+	bool _unk : 0x31;
 	bool _flipX : 0x32;
 	bool _flipY : 0x33;
     Vector _size : 0x34;

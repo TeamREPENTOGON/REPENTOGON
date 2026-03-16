@@ -3,13 +3,24 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "LuaRender.h"
 #include "../MiscFunctions.h"
 #include "../Patches/Anm2Extras.h"
+#include "../Utils/ANM2Utils.hpp"
 
 /*
 * While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
 * I've named this file "LuaSprite" for consistency with the existing API metatable.
 */
+
+LUA_FUNCTION(Lua_SpriteCopy)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* copy = lua::luabridge::UserdataValue<ANM2>::place_with_vftable(L, lua::GetMetatableKey(lua::Metatables::SPRITE), __ptr_UserdataValue_ANM2_vftable);
+	copy->construct_from_copy(anm2);
+
+	return 1;
+}
 
 LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 {
@@ -27,6 +38,46 @@ LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 	}
 
 	lua_pushboolean(L, successful);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteSetSpritesheet)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	uint32_t layerId = (uint32_t)luaL_checkinteger(L, 2);
+	LuaRender::LuaImage* luaImage = lua::GetRawUserdata<LuaRender::LuaImage*>(L, 3, LuaRender::ImageMT);
+
+	LayerState* layer = anm2->GetLayer(layerId);
+	if (layer)
+	{
+		layer->SetSpriteSheet(luaImage->image);
+	}
+
+	lua_pushboolean(L, layer != nullptr);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteGetSpritesheet)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	uint32_t layerId = (uint32_t)luaL_checkinteger(L, 2);
+	LayerState* layer = anm2->GetLayer(layerId);
+	if (!layer)
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+
+	LuaRender::LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
+	luaL_setmetatable(L, LuaRender::ImageMT);
+	ud->image = layer->GetSpriteSheet();
+
+	if (!ud->image.image)
+	{
+		lua_pop(L, 1);
+		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -288,7 +339,6 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 	return 1;
 }
 
-
 // LayerState from here on out
 
 LUA_FUNCTION(Lua_LayerStateSetCustomShader)
@@ -372,6 +422,32 @@ LUA_FUNCTION(Lua_LayerStateGetName)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	lua_pushstring(L, layerState->GetName().c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetSpritesheet)
+{
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	LuaRender::LuaImage* luaImage = lua::GetRawUserdata<LuaRender::LuaImage*>(L, 2, LuaRender::ImageMT);
+
+	layerState->SetSpriteSheet(luaImage->image);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetSpritesheet)
+{
+	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+
+	LuaRender::LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
+	luaL_setmetatable(L, LuaRender::ImageMT);
+	ud->image = layerState->GetSpriteSheet();
+
+	if (!ud->image.image)
+	{
+		lua_pop(L, 1);
+		lua_pushnil(L);
+	}
+
 	return 1;
 }
 
@@ -578,9 +654,12 @@ LUA_FUNCTION(Lua_LayerStateSetFlipY)
 
 static void RegisterSpriteFuncs(lua_State* L) {
 	luaL_Reg functions[] = {
+		{ "Copy", Lua_SpriteCopy },
 		{ "GetLayer", Lua_SpriteGetLayer},
 		{ "GetAllLayers", Lua_SpriteGetAllLayers},
 		{ "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet},
+		{ "SetSpritesheet", Lua_SpriteSetSpritesheet },
+		{ "GetSpritesheet", Lua_SpriteGetSpritesheet },
 		{ "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered},
 		{ "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered},
 		{ "SetOverlayFrame", Lua_SpriteSetOverlayFrame},
@@ -609,6 +688,8 @@ static void RegisterLayerState(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetLayerID", Lua_LayerStateGetLayerID },
 		{ "GetName", Lua_LayerStateGetName },
+		{ "SetSpritesheet", Lua_LayerStateSetSpritesheet },
+		{ "GetSpritesheet", Lua_LayerStateGetSpritesheet },
 		{ "GetSpritesheetPath", Lua_LayerStateGetSpritesheetPath },
 		{ "GetDefaultSpritesheetPath", Lua_LayerStateGetDefaultSpritesheetPath },
 		{ "IsVisible", Lua_LayerStateIsVisible },

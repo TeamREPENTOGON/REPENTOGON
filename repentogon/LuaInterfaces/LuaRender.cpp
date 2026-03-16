@@ -271,6 +271,10 @@ LUA_FUNCTION(Lua_Image_Render)
 	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
 	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
 	KColor color = *lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	ColorMod colorMod =
+		lua_isnoneornil(L, 5)
+		? ColorMod()
+		: *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 
 	auto& image = *luaImage->image.image;
 
@@ -278,7 +282,7 @@ LUA_FUNCTION(Lua_Image_Render)
 	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, *sourceQuad, *destQuad, ImageUtils::QuadColor(color));
 	if (vertexBuffer)
 	{
-		ShaderUtils::ColorOffset::FillVertices(vertexBuffer, image, ColorMod());
+		ShaderUtils::ColorOffset::FillVertices(vertexBuffer, image, colorMod);
 	}
 
 	return 0;

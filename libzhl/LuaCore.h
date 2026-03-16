@@ -512,6 +512,18 @@ namespace lua {
                 lua_setmetatable(L, -2);
                 return (T*)ud->getPointer();
             }
+            
+            // this is not a function from the original LuaBridge source
+            static T* place_with_vftable(lua_State* L, void* key, void* vtable)
+            {
+                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
+                auto** vptr = reinterpret_cast<void**>(ud);
+                *vptr = vtable;
+
+                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+                lua_setmetatable(L, -2);
+                return (T*)ud->getPointer();
+            }
 
             template<typename U>
             static void push(lua_State* L, void* key, U const& u) {

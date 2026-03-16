@@ -67,6 +67,10 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KColor) {
 
 	uint64_t _flags : 0x10;
 	uint32_t _predefinedShader: 0x20;
+	uint32_t _minFilterMode : 0x24;
+	uint32_t _magFilterMode : 0x28;
+	uint32_t _wrapSMode : 0x2c;
+	uint32_t _wrapTMode : 0x30;
 	uint8_t* _vertexFormat : 0x34;
 	uint8_t _numVertexAttributes : 0x38;
 	uint16_t _vertexFormatStride : 0x3a;
