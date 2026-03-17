@@ -7,8 +7,14 @@ struct GridEntity_TNT : public GridEntity {
         void Update();
 		
 		skip; // Render
-		skip; // Hurt
-		skip; // Destroy
+		
+		override
+		"558bec56578bf9e8":
+		bool Hurt(int damage, EntityRef* source);
+		
+		override
+		"558bec83e4f883ec34807d??00":
+		bool Destroy(bool Immediate, EntityRef* Source); 
 		
 		override
 		"558bec8b45??c70039000000":

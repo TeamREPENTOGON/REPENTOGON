@@ -3132,7 +3132,91 @@ HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> boo
 	int gridType = gridRock->GetDesc()->_type;
 	if (result) ProcessGridRockDestroy(gridRock,Immediate, Source, gridType);
 	return result;
-	
+}
+
+// MC_PRE_GRID_HURT (1017)
+bool RunPreGridHurtCallback(GridEntity* grid, lua::Metatables mt, int* damage, EntityRef* source) {
+	const int callbackid = 1017;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, mt)
+			.push(*damage)
+			.push(source, lua::Metatables::ENTITY_REF)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				const int newDamage = (int)lua_tointeger(L, -1);
+				if (newDamage >= 0) {
+					*damage = newDamage;
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+// MC_POST_GRID_HURT (1018)
+void RunPostGridHurtCallback(GridEntity* grid, lua::Metatables mt, int damage, EntityRef* source) {
+	const int callbackid = 1018;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, mt)
+			.push(damage)
+			.push(source, lua::Metatables::ENTITY_REF)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(GridEntity_Poop, Hurt, (int damage, EntityRef* source) -> bool) {
+	const bool canBeHurt = this->_desc._state != 1000;
+	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, &damage, source)) {
+		return false;
+	}
+	bool result = super(damage, source);
+	if (canBeHurt && result) {
+		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, damage, source);
+	}
+	return result;
+}
+
+HOOK_METHOD(GridEntity_TNT, Hurt, (int damage, EntityRef* source) -> bool) {
+	const bool canBeHurt = this->_desc._state < 4;
+	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, &damage, source)) {
+		return false;
+	}
+	bool result = super(damage, source);
+	if (canBeHurt && result) {
+		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, damage, source);
+	}
+	return result;
+}
+
+HOOK_METHOD(GridEntity_TNT, Destroy, (bool immediate, EntityRef* source) -> bool) {
+	if (!immediate) {
+		// The game doesn't pass along the source when it does this itself but there's no reason not to.
+		return this->Hurt(4, source);
+	}
+	return super(immediate, source);
 }
 
 //(POST_)GRID_HURT_DAMAGE (1012/1013)

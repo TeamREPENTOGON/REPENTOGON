@@ -503,6 +503,10 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["table"] = checkTableSizeFunctionUpTo(4), -- per-status type checking done manually
 	},
+	[ModCallbacks.MC_PRE_GRID_HURT] = {
+		["number"] = checkInteger,
+		["boolean"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -1296,6 +1300,20 @@ local function RunAdditiveSecondArgCallback(callbackID, callbackIterator, arg1, 
 	return value
 end
 
+local function RunAdditiveSecondArgCallbackWithBreak(callbackID, callbackIterator, arg1, value, ...)
+	for callback in callbackIterator do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+		if type(ret) == "boolean" then
+			if ret == false then
+				return ret
+			end
+		elseif ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
 local function RunAdditiveThirdArgCallback(callbackID, callbackIterator, arg1, arg2, value, ...)
 	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
@@ -1832,6 +1850,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_POST_HISTORYHUD_RENDER] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_HISTORYHUD_RECOMPUTE] = RunNoReturnCallback,
 	[ModCallbacks.MC_CAN_SELECT_CHARACTER] = RunFalseBreakCallbackLogic,
+	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

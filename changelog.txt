@@ -36,6 +36,10 @@ Added:
 		IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
 		Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
 		Optional param: PlayerType
+	- MC_PRE/POST_GRID_HURT(GridEntity, int Damage, EntityRef Source)
+		Runs when a Poop or TNT GridEntity takes damage.
+		On PRE, you can return an integer to modify the damage, or return false to cancel the damage.
+		Optional param: GridEntityType
 * EntityLaser:
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers
