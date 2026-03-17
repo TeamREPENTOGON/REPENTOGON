@@ -26,6 +26,7 @@ ___
 ___
 ### CanCharm () {: aria-label='Functions' }
 #### boolean CanCharm ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the familiar can be charmed by the Siren boss.
 
 ___
 ### GetActiveWeaponEntity () {: aria-label='Functions' }
@@ -92,6 +93,7 @@ Makes it so that the next time [GetMultiplier](EntityFamiliar.md#getmultiplier) 
 ___
 ### IsCharmed () {: aria-label='Functions' }
 #### boolean IsCharmed ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the familiar is charmed by the Siren boss.
 
 ___
 ### IsLilDelirium () {: aria-label='Functions' }
