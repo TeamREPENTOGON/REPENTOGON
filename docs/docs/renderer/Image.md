@@ -58,7 +58,7 @@ Every group of 4 consecutive floats represents one pixel in RGBA order:
 
 ___
 ### Render () {: aria-label='Functions' }
-#### void Render ( [SourceQuad](SourceQuad.md) sourceQuad, [DestinationQuad](DestinationQuad.md) destinationQuad, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color ) {: .copyable aria-label='Functions' }    
+#### void Render ( [SourceQuad](SourceQuad.md) sourceQuad, [DestinationQuad](DestinationQuad.md) destinationQuad, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, [Color](../Color.md) colorMod = Color() ) {: .copyable aria-label='Functions' }    
 
 ___
 ### RenderWithShader () {: aria-label='Functions' }
