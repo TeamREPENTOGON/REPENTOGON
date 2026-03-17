@@ -15,7 +15,7 @@ namespace EntitySaveStateManagement
     uint32_t& FamiliarData_GetState(FamiliarData& data);
     uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data);
 
-    void EntitySaveState_ClearBatch(const std::vector<EntitySaveState>& vector);
+    void EntitySaveState_ClearBatch(std::vector<EntitySaveState>& vector);
 
     void RegisterSaveState(EntitySaveState& saveState);
 }

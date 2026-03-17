@@ -95,6 +95,10 @@ namespace {
 };
 
 #if DEBUG_MSG
+    static size_t s_debugContextLevel = 0;
+    static constexpr char DEBUG_INDENT[] = "  ";
+    static std::string s_debugIndent = "";
+
     static void LogDebug(const char* format, ...)
     {
         va_list args;
@@ -102,9 +106,53 @@ namespace {
         std::string message = REPENTOGON::StringFormat(format, args);
         va_end(args);
 
+        message = LOG_DEBUG_HEADER + s_debugIndent + message;
         KAGE::_LogMessage(0, message.c_str());
     }
+
+    static void BeginDebugContext(const char* message)
+    {
+        LogDebug("Start %s\n", message);
+        s_debugContextLevel++;
+        s_debugIndent += DEBUG_INDENT;
+    }
+
+    static void EndDebugContext(const char* message)
+    {
+        s_debugContextLevel--;
+        s_debugIndent.resize(s_debugIndent.size() - (sizeof(DEBUG_INDENT) - 1));
+        LogDebug("End %s\n", message);
+    }
+
+    namespace {
+        struct ScopedDebugContext
+        {
+        private:
+            const char* m_message;
+
+        public:
+            ScopedDebugContext(const char* message)
+                : m_message(message)
+            {
+                BeginDebugContext(message);
+            }
+
+            ~ScopedDebugContext()
+            {
+                EndDebugContext(m_message);
+            }
+        };
+    }
+
 #else
+    namespace
+    {
+        struct ScopedDebugContext
+        {
+            ScopedDebugContext(const char* message) {}
+        };
+    }
+
     static void LogDebug(const char* format, ...) {};
 #endif
 
@@ -449,21 +497,21 @@ namespace ESSM::IdManager
         {
             uint32_t id = s_systemData.reusableIds.back();
             s_systemData.reusableIds.pop_back();
-            LogDebug(LOG_DEBUG_HEADER "New ID: %u\n", id);
+            LogDebug("New ID: %u\n", id);
             return id;
         }
     
         uint32_t id = s_systemData.totalIds;
         s_systemData.totalIds++;
         s_systemData.hijackedStates.emplace_back();
-        LogDebug(LOG_DEBUG_HEADER "New ID: %u\n", id);
+        LogDebug("New ID: %u\n", id);
         return id;
     }
 
     static void ClearId(uint32_t id)
     {
         s_systemData.reusableIds.push_back(id);
-        LogDebug(LOG_DEBUG_HEADER "Cleared ID: %u\n", id);
+        LogDebug("Cleared ID: %u\n", id);
     }
 }
 
@@ -480,6 +528,7 @@ namespace ESSM
         static_assert(std::is_integral_v<Marker> && sizeof(Marker) >= 2, "Chosen MarkerType cannot be used.");
 
     private:
+        static const Marker DEBUG_CLEARED_MARKER = 0x5250; // used to identify incorrect clears more reliably in debug
         static const Marker CLEARED_MARKER = 0x5249;
         static const Marker READ_MARKER = 0x5248;
         static const Marker HIJACK_MARKER = 0x5247;
@@ -515,6 +564,15 @@ namespace ESSM
         {
             return IsHijacked(data) || IsWritten(data) || IsRead(data) || IsCleared(data);
         }
+
+#ifndef NDEBUG
+        static void SetDebugCleared(Data& data)
+        {
+            Traits::SetMarker(data, DEBUG_CLEARED_MARKER);
+        }
+#else
+        static void SetDebugCleared(Data& data) {}
+#endif
 
         static void SetHijacked(Data& data)
         {
@@ -1011,7 +1069,16 @@ namespace ESSM::Utils
 
 namespace ESSM::Core
 {
-    static auto ClearState = [](const auto* obj, ClearedIds& clearedIds)
+    static auto NewState = [](auto* obj)
+    {
+        using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
+        using Traits = ESSM::Traits::TraitsFor<T>;
+        using Manager = typename Traits::Hijack;
+
+        Manager::NewHijack(*obj);
+    };
+
+    static auto ClearState = [](auto* obj, ClearedIds& clearedIds)
     {
         using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
         using Traits = ESSM::Traits::TraitsFor<T>;
@@ -1019,12 +1086,13 @@ namespace ESSM::Core
 
         assert(Manager::IsHijacked(*obj));
         uint32_t id = Manager::GetId(*obj);
+        Manager::SetDebugCleared(*obj);
         IdManager::ClearId(id);
 
         clearedIds.emplace_back(id);
     };
 
-    static auto ClearState_HijackedOnly = [](const auto* obj, ClearedIds& clearedIds)
+    static auto ClearState_HijackedOnly = [](auto* obj, ClearedIds& clearedIds)
     {
         using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
         using Traits = ESSM::Traits::TraitsFor<T>;
@@ -1047,7 +1115,7 @@ namespace ESSM::Core
         uint32_t targetId = IdManager::NewId();
         Manager::SetId(*obj, targetId);
         s_systemData.hijackedStates[targetId] = s_systemData.hijackedStates[sourceId];
-        LogDebug(LOG_DEBUG_HEADER "Copied Entity %d -> %d\n", sourceId, targetId);
+        LogDebug("Copied Entity %d -> %d\n", sourceId, targetId);
 
         return std::make_pair(sourceId, targetId);
     };
@@ -1056,6 +1124,14 @@ namespace ESSM::Core
     {
         copiedIds.emplace_back(CopyState_NoBatch(obj));
     };
+
+    static void NewStates(CollectedStates& collectedStates)
+    {
+        for (auto& entity : collectedStates)
+        {
+            std::visit([](auto* obj) { NewState(obj); }, entity);
+        }
+    }
 
     static void ClearSaveStates(CollectedStates& collectedSaves)
     {
@@ -1109,7 +1185,7 @@ namespace ESSM::Core
 // Public API
 namespace ESSM
 {
-    void EntitySaveState_ClearBatch(const std::vector<EntitySaveState>& vector)
+    void EntitySaveState_ClearBatch(std::vector<EntitySaveState>& vector)
     {
         ClearedIds clearedIds;
         clearedIds.reserve(vector.size());
@@ -2311,6 +2387,71 @@ HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
     ESSM::Core::CopySaveStates(collection);
 }
 
+HOOK_STATIC(Entity_NPC, moms_heart_mausoleum_death, () -> void, __cdecl)
+{
+    constexpr size_t STATE_MAUSOLEUM_HEART_KILLED_FLAG_IDX = 46;
+    constexpr size_t STATE_MAUSOLEUM_HEART_KILLED_WORD_OFFSET = offsetof(Game, _gameStateFlags) + (STATE_MAUSOLEUM_HEART_KILLED_FLAG_IDX / 32) * sizeof(uint32_t);
+    constexpr uint32_t STATE_MAUSOLEUM_HEART_KILLED_FLAG = 1 << (STATE_MAUSOLEUM_HEART_KILLED_FLAG_IDX % 32);
+
+    Game* game = g_Game;
+    uint32_t bitset = *(uint32_t*)((uintptr_t)game + STATE_MAUSOLEUM_HEART_KILLED_WORD_OFFSET);
+    uint32_t deathTriggered = (bitset & STATE_MAUSOLEUM_HEART_KILLED_FLAG) == 0;
+
+
+    if (!deathTriggered)
+    {
+        return super();
+    }
+
+    ScopedDebugContext context("Mom Heart Mausoleum Death");
+
+    CollectedStates collection;
+    collection.reserve(DEFAULT_COLLECT_RESERVE);
+
+    RoomDescriptor* rooms = game->_gridRooms;
+    const RoomDescriptor& currentRoom = *game->_room->_descriptor;
+
+    for (size_t i = 0; i < MAX_ROOMS; i++)
+    {
+        RoomDescriptor& room = rooms[i];
+        if (!room.Data || &room == &currentRoom || room.Data->Type == eRoomType::ROOM_ULTRASECRET || room.GridIndex == eGridRooms::ROOM_LIL_PORTAL_IDX)
+        {
+            continue;
+        }
+
+        std::vector<EntitySaveState>& entityStates = room.SavedEntities;
+        for (size_t i = 0; i < entityStates.size(); i++)
+        {
+            EntitySaveState& entityState = entityStates[i];
+            if (entityState.type == eEntityType::ENTITY_PICKUP)
+            {
+                collection.emplace_back(&entityState);
+            }
+        }
+    }
+
+    ESSM::Core::ClearSaveStates(collection);
+
+    super();
+
+    constexpr uint32_t FLAG_CLEAR = 1 << 0;
+    RoomDescriptor& lastBossRoom = game->_gridRooms[game->_lastBossRoomListIdx];
+    if (lastBossRoom.Data && (lastBossRoom.Flags & FLAG_CLEAR) != 0)
+    {
+        // bugs and flies were added to the room
+        collection.clear();
+        for (auto& entity : lastBossRoom.SavedEntities)
+        {
+            if (!ESSM::EntityHijackManager::HasMarker(entity))
+            {
+                collection.emplace_back(&entity);
+            }
+        }
+
+        ESSM::Core::NewStates(collection);
+    }
+}
+
 // Clear backwards stage save state, even though the game simply sets room count to 0, to avoid having to iterate "uninitialized" RoomDescriptors in the BackwardsStage. 
 HOOK_METHOD(Game, ResetState, () -> void)
 {
@@ -2324,7 +2465,7 @@ HOOK_METHOD(Game, ResetState, () -> void)
 
 HOOK_METHOD(GameState, Clear, () -> void)
 {
-    LogDebug(LOG_DEBUG_HEADER "Start GameState::Clear\n");
+    ScopedDebugContext context("GameState::Clear");
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2334,13 +2475,11 @@ HOOK_METHOD(GameState, Clear, () -> void)
 
     // player save states are handled by GameStatePlayer::Init
     super();
-
-    LogDebug(LOG_DEBUG_HEADER "End GameState::Clear\n");
 }
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
-    LogDebug(LOG_DEBUG_HEADER "Start Game::SaveState\n");
+    ScopedDebugContext context("Game::SaveState");
 
     // ASSUMPTION: It is assumed that the state has already been cleared.
     // This is because SaveState always calls GameState::Clear before saving
@@ -2353,13 +2492,11 @@ HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
     ESSM::Core::CopySaveStates(collection);
 
     // players are handled by Entity_Player::Init
-
-    LogDebug(LOG_DEBUG_HEADER "End Game::SaveState\n");
 }
 
 HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 {
-    LogDebug(LOG_DEBUG_HEADER "Start Game::RestoreState\n");
+    ScopedDebugContext context("Game::RestoreState");
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2368,8 +2505,6 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
 
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
-
-    LogDebug(LOG_DEBUG_HEADER "End Game::RestoreState\n");
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
@@ -2873,7 +3008,7 @@ static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
         CollectedStates collection = {saveState};
         ESSM::Core::ClearSaveStates(collection);
 
-        LogDebug(LOG_DEBUG_HEADER "Smart pointer Cleared: %u\n", id);
+        LogDebug("Smart pointer Cleared: %u\n", id);
     }
 
     saveState->destructor();
@@ -2893,7 +3028,7 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor()
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState)
 {
     uint32_t id = ESSM::EntityHijackManager::NewHijack(saveState);
-    LogDebug(LOG_DEBUG_HEADER "New Flip State: %u\n", id);
+    LogDebug("New Flip State: %u\n", id);
 }
 
 static void Patch_PickupInitFlipState_CreateSaveState()
