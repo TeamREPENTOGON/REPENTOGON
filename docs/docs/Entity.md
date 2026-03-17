@@ -433,6 +433,23 @@ Used to cast an [Entity](Entity.md) object to an [EntitySlot](EntitySlot.md) obj
 ___
 
 ### TryThrow () {: aria-label='Functions' }
-#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) Velocity, float Height ) {: .copyable aria-label='Functions' }
+Has different effects based on the entity it was used on.
+
+[EntityPlayer](https://repentogon.com/EntityPlayer.html) Players:
+Throws the player into the air, respects grid collision.
+Throw won't be applied if the player is airborne or has flight, unless the source is a player.
+
+[EntityPickup](https://repentogon.com/EntityPickup.html) Pickups:
+Only works on Chests, throws it into the air, respects grid collision.
+When the Chest lands it will always open, no matter the unlock condition.
+
+[EntityNPC](https://repentogon.com/EntityNPC.html) NPCs:
+Only works on poop entities, throws it into the air, ignores grid collision.
+At certain Velocity, the poop will play the `SoundEffect.SOUND_POOPITEM_THROW` sound effect when thrown.
+
+[EntityFamiliar](https://repentogon.com/EntityFamiliar.html) Familiars:
+Only works on Dip familiars and Cube Baby, throws it into the air, ignores grid collision.
+Cube baby will leave creep when thrown, similar to throwing it with Mom's Ring.
 
 ___
