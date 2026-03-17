@@ -168,3 +168,9 @@ Sets the wrap mode for the `y` coordinate. See [this website](https://open.gl/te
     Enums for these are pending.
 
 ___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }
