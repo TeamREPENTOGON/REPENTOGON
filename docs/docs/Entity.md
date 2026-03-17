@@ -9,17 +9,29 @@ tags:
 ### AddBaited () {: aria-label='Functions' }
 #### void AddBaited ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddBleeding () {: aria-label='Functions' }
 #### void AddBleeding ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
+
+???+ info "Duration info"
+    The Duration has a maximum of 4 seconds.
 
 ___
 ### AddBrimstoneMark () {: aria-label='Functions' }
 #### void AddBrimstoneMark ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddIce () {: aria-label='Functions' }
 #### void AddIce ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
+
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
 
 ___
 ### AddKnockback () {: aria-label='Functions' }
@@ -32,9 +44,15 @@ ___
 ### AddMagnetized () {: aria-label='Functions' }
 #### void AddMagnetized ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddWeakness () {: aria-label='Functions' }
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
+
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
 
 ___
 ### CanDevolve () {: aria-label='Functions' }
@@ -43,6 +61,7 @@ ___
 ___
 ### ComputeStatusEffectDuration () {: aria-label='Functions' }
 #### int ComputeStatusEffectDuration ( int InitialLength, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
+If the source entity originates from a player with Second Hand, returns the duration multiplied by `(2 × Second Hand multiplier)`, otherwise returns the original duration.
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
