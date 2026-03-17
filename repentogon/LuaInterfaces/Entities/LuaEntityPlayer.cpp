@@ -1348,6 +1348,12 @@ LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBloodGushSprite) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::luabridge::UserdataPtr::push(L, &plr->_bloodGushSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerGetHeldEntity)
 {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -3437,6 +3443,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame },
 		{ "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame },
 		{ "GetHeldSprite", Lua_PlayerGetHeldSprite },
+		{ "GetBloodGushSprite", Lua_PlayerGetBloodGushSprite },
 		{ "GetHeldEntity", Lua_PlayerGetHeldEntity },
 		{ "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired },
 		{ "SetPoopSpell", Lua_PlayerSetPoopSpell },

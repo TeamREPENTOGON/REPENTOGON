@@ -701,6 +701,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
     }}
 
 	ANM2 _bodySprite : 0x41c;
+	ANM2 _bloodGushSprite : 0xee4;
 	ANM2 _heldSprite : 0xff8;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1220;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x122c;
