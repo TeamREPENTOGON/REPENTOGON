@@ -269,6 +269,11 @@ ___
 #### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
 
 ___
+### CalculateBagOfCraftingOutput () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html), [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) CalculateBagOfCraftingOutput ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] pickups ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBagOfCraftingOutput () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetBagOfCraftingOutput ( ) {: .copyable aria-label='Functions' }
 
