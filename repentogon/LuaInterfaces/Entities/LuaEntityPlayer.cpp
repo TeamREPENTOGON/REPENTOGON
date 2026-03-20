@@ -14,6 +14,7 @@
 #include "../../Patches/ItemSpoofSystem.h"
 
 #include <algorithm>
+#include <array>
 
 
 /*
@@ -632,7 +633,7 @@ inline void RecalculateBagOfCraftingOutput(Entity_Player* player) {
 		output->itemPoolType = POOL_NULL;
 	}
 	else {
-		player->CalculateBagOfCraftingOutput(output, content);
+		player->CalculateBagOfCraftingOutput(output, content, false);
 	}
 }
 
@@ -739,6 +740,47 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	player->GetBagOfCraftingOutput()->itemPoolType = itemPoolType;
 	g_Game->GetHUD()->InvalidateCraftingItem(player);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_CalculateBagOfCraftingOutput)
+{
+	constexpr const char* FUNC_NAME = "CalculateBagOfCraftingOutput";
+	const int PICKUPS_IDX = 1;
+
+	if (!lua_istable(L, PICKUPS_IDX))
+	{
+		luaL_argerror(L, PICKUPS_IDX, "Expected a table");
+	}
+
+	std::array<BagOfCraftingPickup, 8> pickups;
+
+	size_t length = (size_t)lua_rawlen(L, PICKUPS_IDX);
+	if (length != 8)
+	{
+		luaL_error(L, "bad argument #%d to '%s': Expected 8 pickups, got %d", PICKUPS_IDX, FUNC_NAME, (int)length);
+	}
+
+	size_t index;
+	for (index = 0; index < length; index++)
+	{
+		lua_rawgeti(L, PICKUPS_IDX, index + 1);
+		int pickup = (int)luaL_checkinteger(L, -1);
+		lua_pop(L, 1);
+		if (pickup < 0 || pickup > 29)
+		{
+			luaL_error(L, "bad argument #%d to '%s': Invalid pickup %d at index %d", PICKUPS_IDX, FUNC_NAME, pickup, index + 1);
+		}
+
+		pickups[index] = (BagOfCraftingPickup)pickup;
+	}
+
+	BagOfCraftingOutput output;
+	Entity_Player::CalculateBagOfCraftingOutput(&output, pickups.data(), false);
+
+	lua_pushinteger(L, output.collectibleType);
+	lua_pushinteger(L, output.itemPoolType);
+
+	return 2;
 }
 
 LUA_FUNCTION(Lua_PlayerGetMovingBoxContents)
@@ -3630,4 +3672,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// fix BabySkin Variable
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "BabySkin", Lua_PlayerGetBabySkin, Lua_PlayerSetBabySkin);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
 }

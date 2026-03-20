@@ -50,6 +50,7 @@ Added:
 	- GetErrorTrinketEffect
 	- [Get/Set]RUAWizardTimer
 	- GetBloodGushSprite
+	- CalculateBagOfCraftingOutput
 * EntityEffect
 	- [Get/Set/Add/Clear/Has]AquariusTearFlags
 		Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
