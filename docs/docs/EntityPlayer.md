@@ -803,7 +803,7 @@ ___
 
 ___
 ### GetSuplexState () {: aria-label='Functions' }
-#### int GetSuplexState ( ) {: .copyable aria-label='Functions' }
+#### [SuplexState](enums/SuplexState.md) GetSuplexState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetSuplexTargetPosition () {: aria-label='Functions' }
@@ -1397,7 +1397,7 @@ ___
 
 ___
 ### SetSuplexState () {: aria-label='Functions' }
-#### void SetSuplexState ( int State ) {: .copyable aria-label='Functions' }
+#### void SetSuplexState ( [SuplexState](enums/SuplexState.md) State ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetSuplexTargetPosition () {: aria-label='Functions' }
