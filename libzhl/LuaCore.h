@@ -333,6 +333,8 @@ namespace lua {
         return (T)ud;
     }
 
+    LIBZHL_API void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function);
+
     struct lua_global_tag_t {};
 
     class LuaResults;

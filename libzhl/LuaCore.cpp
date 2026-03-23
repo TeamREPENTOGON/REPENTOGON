@@ -426,6 +426,60 @@ namespace lua {
 		lua_pop(L, pop);
 	}
 
+	static void pushfuncname (lua_State *L, lua_Debug *ar) {
+		if (*ar->namewhat != '\0')
+			lua_pushfstring(L, "%s '%s'", ar->namewhat, ar->name);
+		else if (*ar->what == 'm')
+			lua_pushliteral(L, "main chunk");
+		else if (*ar->what != 'C')
+			lua_pushfstring(L, "function at line %d", ar->linedefined);
+		else
+			lua_pushliteral(L, "?");
+	}
+
+	void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function)
+	{
+		luaL_Buffer b;
+		lua_Debug ar;
+		luaL_buffinit(L, &b);
+		if (msg) {
+			luaL_addstring(&b, msg);
+			luaL_addchar(&b, '\n');
+		}
+
+		luaL_addstring(&b, "Begin Stack Traceback:\n");
+		while (lua_getstack(L, level++, &ar))
+		{
+			lua_getinfo(L, "f", &ar);
+
+			if (lua_iscfunction(L, -1))
+			{
+				lua_CFunction fn = lua_tocfunction(L, -1);
+				if (fn == function) break;
+			}
+
+			lua_getinfo(L, "Sln", &ar);
+			if (*ar.what == 'C')
+			{
+				lua_pushfstring(L, "  %s: in method %s\n", ar.short_src, ar.name ? ar.name : "?");
+			}
+			else
+			{
+				if (ar.name == '\0')
+				{
+					lua_pushfstring(L, "  %s:%d: in function at line %d\n", ar.short_src, ar.currentline, ar.linedefined);
+				}
+				else
+				{
+					lua_pushfstring(L, "  %s:%d: in function '%s'\n", ar.short_src, ar.currentline, ar.name);
+				}
+			}
+			luaL_addvalue(&b);
+		}
+		luaL_addstring(&b, "End Stack Traceback");
+		luaL_pushresult(&b);
+	}
+
 	namespace luabridge {
 		UserdataPtr::UserdataPtr(void* const p) {
 			m_p = p;

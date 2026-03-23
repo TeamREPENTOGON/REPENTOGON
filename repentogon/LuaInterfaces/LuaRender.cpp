@@ -2811,6 +2811,16 @@ LUA_FUNCTION(Lua_Renderer_CreateImage) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Renderer_RenderToImage);
+
+LUA_FUNCTION(Lua_RenderToImage_ErrorHandler)
+{
+	const char* msg = lua_tostring(L, -1);
+	lua::TracebackTillFunction(L, msg, 2, Lua_Renderer_RenderToImage);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 	LuaImage* luaImage = LuaRender::GetLuaImage(L);
 	auto* image = luaImage->image.image;
@@ -2820,39 +2830,55 @@ LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 	}
 
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	int renderFn = lua_absindex(L, 2);
+	int renderFnAbs = lua_absindex(L, 2);
+	std::optional<std::string> error = std::nullopt;
 
-	lua::LuaStackProtector protector(L);
-	auto* renderController = LuaSurfaceRenderController::NewUserdata(L);
-	int renderControllerIdx = lua_absindex(L, -1);
+	{
+		lua::LuaStackProtector protector(L);
+		auto* renderController = LuaSurfaceRenderController::NewUserdata(L);
+		int renderControllerAbs = lua_absindex(L, -1);
 
-	RenderToSurface(*image, [&](){
-		auto& graphics = g_KAGE_Graphics_Manager;
-		BlendMode previous_blendMode = graphics._blendMode;
+		RenderToSurface(*image, [&]() {
+			auto& graphics = g_KAGE_Graphics_Manager;
+			BlendMode previous_blendMode = graphics._blendMode;
 
-		lua_pushvalue(L, renderFn);
-		lua::LuaResults results = lua::LuaCaller(L)
-			.pushvalue(renderControllerIdx)
-			.call(0);
+			// push errorHandler
+			lua_pushcfunction(L, Lua_RenderToImage_ErrorHandler);
+			int errorHandlerAbs = lua_absindex(L, -1);
 
-		if (results.getResultCode() != LUA_OK)
-		{
-			if (lua_isstring(L, -1))
+			int numArgs = 0; lua_pushvalue(L, renderFnAbs);
+			numArgs++; lua_pushvalue(L, renderControllerAbs);
+
+			int n = lua_gettop(L) - numArgs - 1; // Expected amount after poping everything (number of params + function)
+			int resultCode = lua_pcall(L, numArgs, 0, errorHandlerAbs);
+			int numResults = lua_gettop(L) - n;
+
+			if (resultCode != LUA_OK)
 			{
-				const char* msg = lua_tostring(L, -1);
-				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\": %s\n", image->_name, msg));
+				if (lua_isstring(L, -1))
+				{
+					const char* msg = lua_tostring(L, -1);
+					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\": (%s)", image->_name, msg);
+				}
+				else
+				{
+					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\"", image->_name);
+				}
 			}
-			else
-			{
-				g_Game->GetConsole()->PrintError(REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\"\n", image->_name));
-			}
-		}
-		
-		renderController->valid = false;
-		graphics._blendMode = previous_blendMode;
-	});
 
-	lua_pop(L, 1); // pop renderController
+			lua_pop(L, numResults + 1); // pop results + errorHandler
+
+			renderController->valid = false;
+			graphics._blendMode = previous_blendMode;
+			});
+
+		lua_pop(L, 1); // pop renderController
+	}
+
+	if (error.has_value())
+	{
+		luaL_error(L, error.value().c_str());
+	}
 
 	return 0;
 }
