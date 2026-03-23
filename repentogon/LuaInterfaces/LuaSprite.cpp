@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "LuaRender.h"
+#include "LuaBlendMode.h"
 #include "../MiscFunctions.h"
 #include "../Patches/Anm2Extras.h"
 #include "../Utils/ANM2Utils.hpp"
@@ -582,9 +583,7 @@ LUA_FUNCTION(Lua_LayerStateSetCropOffset)
 
 LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	BlendMode** ud = (BlendMode**)lua_newuserdata(L, sizeof(BlendMode*));
-	*ud = layerState->GetBlendMode();
-	luaL_setmetatable(L, lua::metatables::BlendModeMT);
+	LuaBlendMode::NewPointer(L, layerState->GetBlendMode());
 	return 1;
 }
 

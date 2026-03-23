@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "LuaBlendMode.h"
 
 constexpr int FUNC_ADD = (int)eBlendEquation::FUNC_ADD;
 
@@ -22,10 +23,16 @@ static void check_valid_blend_equation(lua_State* L, int idx, int equation) {
 	}
 }
 
+LUA_FUNCTION(Lua_BlendMode_GC)
+{
+	LuaBlendMode::GC(L, 1);
+	return 0;
+}
+
 //1
 LUA_FUNCTION(Lua_GetRGBSourceFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	lua_pushinteger(L, mode->_rgbSourceFactor);
 
 	return 1;
@@ -33,7 +40,7 @@ LUA_FUNCTION(Lua_GetRGBSourceFactor)
 
 LUA_FUNCTION(Lua_SetRGBSourceFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
 	check_valid_blend_factor(L, 2, blendFactor);
 	mode->_rgbSourceFactor = blendFactor;
@@ -43,7 +50,7 @@ LUA_FUNCTION(Lua_SetRGBSourceFactor)
 //2
 LUA_FUNCTION(Lua_GetRGBDestinationFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	lua_pushinteger(L, mode->_rgbDestFactor);
 
 	return 1;
@@ -51,7 +58,7 @@ LUA_FUNCTION(Lua_GetRGBDestinationFactor)
 
 LUA_FUNCTION(Lua_SetRGBDestinationFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
 	check_valid_blend_factor(L, 2, blendFactor);
 	mode->_rgbDestFactor = blendFactor;
@@ -61,7 +68,7 @@ LUA_FUNCTION(Lua_SetRGBDestinationFactor)
 //3
 LUA_FUNCTION(Lua_GetAlphaSourceFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	lua_pushinteger(L, mode->_alphaSourceFactor);
 
 	return 1;
@@ -69,7 +76,7 @@ LUA_FUNCTION(Lua_GetAlphaSourceFactor)
 
 LUA_FUNCTION(Lua_SetAlphaSourceFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
 	check_valid_blend_factor(L, 2, blendFactor);
 	mode->_alphaSourceFactor = blendFactor;
@@ -79,7 +86,7 @@ LUA_FUNCTION(Lua_SetAlphaSourceFactor)
 //4
 LUA_FUNCTION(Lua_GetAlphaDestinationFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	lua_pushinteger(L, mode->_alphaDestFactor);
 
 	return 1;
@@ -87,7 +94,7 @@ LUA_FUNCTION(Lua_GetAlphaDestinationFactor)
 
 LUA_FUNCTION(Lua_SetAlphaDestinationFactor)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	unsigned int blendFactor = (unsigned int)luaL_checkinteger(L, 2);
 	check_valid_blend_factor(L, 2, blendFactor);
 	mode->_alphaDestFactor = blendFactor;
@@ -96,7 +103,7 @@ LUA_FUNCTION(Lua_SetAlphaDestinationFactor)
 
 LUA_FUNCTION(Lua_GetBlendEquation)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	lua_pushinteger(L, mode->_equation);
 
 	return 1;
@@ -104,7 +111,7 @@ LUA_FUNCTION(Lua_GetBlendEquation)
 
 LUA_FUNCTION(Lua_SetBlendEquation)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	unsigned int equation = (unsigned int)luaL_checkinteger(L, 2);
 	check_valid_blend_equation(L, 2, equation);
 	mode->_equation = equation;
@@ -121,7 +128,7 @@ const BlendMode modes[5] = {
 
 LUA_FUNCTION(Lua_SetMode)
 {
-	BlendMode* mode = *lua::GetRawUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
+	BlendMode* mode = LuaBlendMode::Get(L, 1);
 	if (lua_gettop(L) > 2) {
 		int rgbSrc = (int)luaL_optnumber(L, 2, mode->_rgbSourceFactor);
 		check_valid_blend_factor(L, 2, rgbSrc);
@@ -149,7 +156,7 @@ LUA_FUNCTION(Lua_SetMode)
 		int newMode = (int)luaL_checknumber(L, 2);
 
 		//invalid modes are simply ignored
-		if (newMode >= 0 && newMode <= 5) {
+		if (newMode >= 0 && newMode < 5) {
 			*mode = modes[newMode];
 		}
 	}
@@ -157,10 +164,49 @@ LUA_FUNCTION(Lua_SetMode)
 	return 0;
 }
 
-static void RegisterBlendMode(lua_State* L) {
+LUA_FUNCTION(Lua_BlendMode_New)
+{
+	int rgbSrc = (int)luaL_optnumber(L, 1, BLEND_ONE);
+	check_valid_blend_factor(L, 1, rgbSrc);
 
+	int rgbDst = (int)luaL_optnumber(L, 2, BLEND_ZERO);
+	check_valid_blend_factor(L, 2, rgbDst);
+
+	int alphaSrc = (int)luaL_optnumber(L, 3, BLEND_ONE);
+	check_valid_blend_factor(L, 3, alphaSrc);
+
+	int alphaDst = (int)luaL_optnumber(L, 4, BLEND_ZERO);
+	check_valid_blend_factor(L, 4, alphaDst);
+
+	int equation = (int)luaL_optnumber(L, 5, FUNC_ADD);
+	check_valid_blend_equation(L, 5, equation);
+
+	LuaBlendMode::NewValue(L, equation, rgbSrc, rgbDst, alphaSrc, alphaDst);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BlendMode_NewType)
+{
+	constexpr const char* FUNC_NAME = "NewType";
+	int type = (int)luaL_checknumber(L, 1);
+
+	if (!(0 <= type && type < 5))
+	{
+		luaL_error(L, "bad argument #%d to '%s': Invalid blend type %d", 1, FUNC_NAME, (int)type);
+		return 0;
+	}
+
+	LuaBlendMode::NewValue(L, modes[type]);
+	return 1;
+}
+
+static void RegisterBlendMode(lua_State* L) {
 	// manual creation of BlendMode class to ensure __newindex definition and variable additions work correctly
 	luaL_newmetatable(L, lua::metatables::BlendModeMT);
+	lua_pushstring(L, "__gc");
+	lua_pushcfunction(L, Lua_BlendMode_GC);
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
 	lua_rawset(L, -3);
@@ -239,7 +285,7 @@ static void RegisterBlendMode(lua_State* L) {
 	lua_pushcfunction(L, Lua_SetBlendEquation);
 	lua_rawset(L, -3);
 
-	// depreciated
+	// deprecated
 	lua_pushstring(L, "Flag1");
 	lua_pushcfunction(L, Lua_SetRGBSourceFactor);
 	lua_rawset(L, -3);
@@ -266,6 +312,18 @@ static void RegisterBlendMode(lua_State* L) {
 	luaL_setfuncs(L, functions, 0);
 
 	lua_pop(L, 1);
+
+	// static methods
+
+	lua_createtable(L, 0, 2);
+
+	lua_pushcfunction(L, Lua_BlendMode_New);
+	lua_setfield(L, -2, "New");
+
+	lua_pushcfunction(L, Lua_BlendMode_NewType);
+	lua_setfield(L, -2, "NewType");
+
+	lua_setglobal(L, "BlendMode");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

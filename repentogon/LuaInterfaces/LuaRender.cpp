@@ -14,6 +14,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h"
+#include "LuaBlendMode.h"
 #include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.hpp"
 #include "../Utils/ShaderUtils.hpp"
@@ -391,16 +392,25 @@ namespace LuaSurfaceRenderController {
 		Userdata* controller = get_userdata(L, idx);
 		if (!controller->valid)
 		{
-			luaL_error(L, "This surface render controller has already been applied and cannot be used again");
+			luaL_argerror(L, idx, "This surface render controller has already been applied and cannot be used again");
 		}
 	
 		return controller;
 	}
 
-	LUA_FUNCTION(lua_clear)
+	LUA_FUNCTION(Lua_Clear)
 	{
 		Userdata* controller = get_valid_surface_render_controller(L, 1);
 		g_KAGE_Graphics_Manager.Clear();
+		// Set Normal BlendMode since Clear sets BlendMode to Constant, which is rarely used.
+		g_KAGE_Graphics_Manager._blendMode = BlendMode();
+		return 0;
+	}
+
+	LUA_FUNCTION(Lua_SetBlendMode)
+	{
+		Userdata* controller = get_valid_surface_render_controller(L, 1);
+		g_KAGE_Graphics_Manager._blendMode = *LuaBlendMode::Get(L, 2);
 		return 0;
 	}
 
@@ -413,7 +423,8 @@ namespace LuaSurfaceRenderController {
 
 	static void RegisterUserdataClass(lua_State* L) {
 		luaL_Reg functions[] = {
-			{ "Clear", lua_clear },
+			{ "Clear", Lua_Clear },
+			{ "SetBlendMode", Lua_SetBlendMode },
 			{ NULL, NULL }
 		};
 		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
@@ -2816,6 +2827,9 @@ LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 	int renderControllerIdx = lua_absindex(L, -1);
 
 	RenderToSurface(*image, [&](){
+		auto& graphics = g_KAGE_Graphics_Manager;
+		BlendMode previous_blendMode = graphics._blendMode;
+
 		lua_pushvalue(L, renderFn);
 		lua::LuaResults results = lua::LuaCaller(L)
 			.pushvalue(renderControllerIdx)
@@ -2835,6 +2849,7 @@ LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 		}
 		
 		renderController->valid = false;
+		graphics._blendMode = previous_blendMode;
 	});
 
 	lua_pop(L, 1); // pop renderController
