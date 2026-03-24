@@ -126,6 +126,7 @@ nav:
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BlendFactor: enums/BlendFactor.md
     - BlendType: enums/BlendType.md
+    - BlendEquation: enums/BlendEquation.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
