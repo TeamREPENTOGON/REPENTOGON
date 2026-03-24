@@ -8,6 +8,16 @@ tags:
 ### DestinationQuad () {: aria-label='Constructors' }
 #### [DestinationQuad](DestinationQuad.md) DestinationQuad ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) TopRight, [Vector](../Vector.md) BottomLeft, [Vector](../Vector.md) BottomRight ) {: .copyable aria-label='Constructors' }
 
+___
+### NewFromBounds () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### [DestinationQuad](DestinationQuad.md) NewFromBounds ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) BottomRight ) {: .copyable aria-label='Constructors' }
+
+___
+### NewFromRectangle () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### [DestinationQuad](DestinationQuad.md) NewFromRectangle ( [Vector](../Vector.md) TopLeft, float Width, float Height ) {: .copyable aria-label='Constructors' }
+
 ## Functions
 
 ### __tostring () {: aria-label='Functions' }

@@ -23,9 +23,9 @@ Determines how a [LayerState](../LayerState.md) should blend with the elements r
 #### static BlendMode New ( [BlendFactor](../enums/BlendFactor.md) srcRGB, [BlendFactor](../enums/BlendFactor.md) dstRGB, [BlendFactor](../enums/BlendFactor.md) srcAlpha, [BlendFactor](../enums/BlendFactor.md) dstAlpha, [BlendEquation](../enums/BlendEquation.md) equation) {: .copyable aria-label='Constructors' }
 
 ___
-### NewType () {: aria-label='Constructors' }
+### NewFromType () {: aria-label='Constructors' }
 [ ](#){: .static .tooltip .badge }
-#### static BlendMode NewType ( [BlendType](../enums/BlendType.md) blendType ) {: .copyable aria-label='Constructors' }
+#### static BlendMode NewFromType ( [BlendType](../enums/BlendType.md) blendType ) {: .copyable aria-label='Constructors' }
 
 
 ## Functions

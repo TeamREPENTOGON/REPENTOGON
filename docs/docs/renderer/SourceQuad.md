@@ -9,7 +9,17 @@ tags:
 
 ## Constructors
 ### SourceQuad () {: aria-label='Constructors' }
-#### [SourceQuad](SourceQuad.md) SourceQuad ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) TopRight, [Vector](../Vector.md) BottomLeft, [Vector](../Vector.md) BottomRight ) {: .copyable aria-label='Constructors' }
+#### [SourceQuad](SourceQuad.md) SourceQuad ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) TopRight, [Vector](../Vector.md) BottomLeft, [Vector](../Vector.md) BottomRight, bool UV ) {: .copyable aria-label='Constructors' }
+
+___
+### NewFromBounds () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### [SourceQuad](SourceQuad.md) NewFromBounds ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) BottomRight, bool UV ) {: .copyable aria-label='Constructors' }
+
+___
+### NewFromRectangle () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### [SourceQuad](SourceQuad.md) NewFromRectangle ( [Vector](../Vector.md) TopLeft, float Width, float Height, bool UV ) {: .copyable aria-label='Constructors' }
 
 ## Functions
 
