@@ -98,6 +98,8 @@ Added:
 	- Render(SourceQuad, DestinationQuad, KColor, ColorMod)
 	- RenderWithShader(SourceQuad, DestinationQuad, KColor, Shader, table shaderParams)
 * DestinationQuad:
+	- NewFromBounds(Vector topLeft, Vector bottomRight)
+	- NewFromRectangle(Vector topLeft, float width, float height)
 	- Copy()
 	- Translate(Vector)
 	- Scale(Vector, Vector anchor)
@@ -107,6 +109,8 @@ Added:
 	- Flip(bool flipX, bool flipY)
 	- __tostring
 * SourceQuad:
+	- NewFromBounds(Vector topLeft, Vector bottomRight, bool uv)
+	- NewFromRectangle(Vector topLeft, float width, float height, bool uv)
 	- Copy() override
 	- IsUVSpace()
 	- ConvertToPixelSpace()
@@ -114,7 +118,7 @@ Added:
 	- __tostring override
 * BlendMode:
 	- New(int rgbSrc, int rgbDest, int alphaSrc, int alphaDest, int equation)
-	- NewType(BlendType type)
+	- NewFromType(BlendType type)
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag

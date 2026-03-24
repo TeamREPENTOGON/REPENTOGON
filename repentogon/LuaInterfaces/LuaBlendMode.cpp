@@ -185,9 +185,9 @@ LUA_FUNCTION(Lua_BlendMode_New)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_BlendMode_NewType)
+LUA_FUNCTION(Lua_BlendMode_NewFromType)
 {
-	constexpr const char* FUNC_NAME = "NewType";
+	constexpr const char* FUNC_NAME = "NewFromType";
 	int type = (int)luaL_checknumber(L, 1);
 
 	if (!(0 <= type && type < 5))
@@ -320,8 +320,8 @@ static void RegisterBlendMode(lua_State* L) {
 	lua_pushcfunction(L, Lua_BlendMode_New);
 	lua_setfield(L, -2, "New");
 
-	lua_pushcfunction(L, Lua_BlendMode_NewType);
-	lua_setfield(L, -2, "NewType");
+	lua_pushcfunction(L, Lua_BlendMode_NewFromType);
+	lua_setfield(L, -2, "NewFromType");
 
 	lua_setglobal(L, "BlendMode");
 }

@@ -799,10 +799,57 @@ static void FillQuad(lua_State* L, DestinationQuad& quad, int startIdx) {
 	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 3, lua::Metatables::VECTOR, "Vector");
 }
 
+static void init_from_bounds(lua_State* L, DestinationQuad& quad, int startIdx)
+{
+	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
+	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 1, lua::Metatables::VECTOR, "Vector");
+	quad._topRight = Vector(quad._bottomRight.x, quad._topLeft.y);
+	quad._bottomLeft = Vector(quad._topLeft.x, quad._bottomRight.y);
+}
+
+static void init_from_aa_rect(lua_State* L, DestinationQuad& quad, int startIdx)
+{
+	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
+	Vector pos = quad._topLeft;
+	float width = (float)luaL_checknumber(L, startIdx + 1);
+	float height = (float)luaL_checknumber(L, startIdx + 2);
+
+	quad._topRight = Vector(pos.x + width, pos.y);
+	quad._bottomLeft = Vector(pos.x, pos.y + height);
+	quad._bottomRight = Vector(pos.x + width, pos.y + height);
+}
+
 LUA_FUNCTION(lua_SourceQuad_new) {
 	SourceQuad quad;
-	FillQuad(L, quad, 1);
-	bool uvSpace = lua_toboolean(L, 5);
+	// __call passes the table itself as the first arg
+	FillQuad(L, quad, 2);
+	bool uvSpace = lua_toboolean(L, 6);
+	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
+
+	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
+	luaL_setmetatable(L, LuaRender::SourceQuadMT);
+	memcpy(result, &quad, sizeof(SourceQuad));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SourceQuad_NewFromBounds)
+{
+	SourceQuad quad;
+	init_from_bounds(L, quad, 1);
+	bool uvSpace = lua_toboolean(L, 3);
+	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
+
+	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
+	luaL_setmetatable(L, LuaRender::SourceQuadMT);
+	memcpy(result, &quad, sizeof(SourceQuad));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SourceQuad_NewFromRectangle)
+{
+	SourceQuad quad;
+	init_from_aa_rect(L, quad, 1);
+	bool uvSpace = lua_toboolean(L, 4);
 	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
 
 	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
@@ -813,7 +860,30 @@ LUA_FUNCTION(lua_SourceQuad_new) {
 
 LUA_FUNCTION(lua_DestinationQuad_new) {
 	DestinationQuad quad;
-	FillQuad(L, quad, 1);
+	// __call passes the table itself as the first arg
+	FillQuad(L, quad, 2);
+
+	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
+	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
+	memcpy(result, &quad, sizeof(DestinationQuad));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_DestinationQuad_NewFromBounds)
+{
+	DestinationQuad quad;
+	init_from_bounds(L, quad, 1);
+
+	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
+	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
+	memcpy(result, &quad, sizeof(DestinationQuad));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_DestinationQuad_NewFromRectangle)
+{
+	DestinationQuad quad;
+	init_from_aa_rect(L, quad, 1);
 
 	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
 	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
@@ -3134,8 +3204,41 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterQuadClasses(L);
 	RegisterCustomRenderMetatables(L);
 
-	lua_register(L, "SourceQuad", lua_SourceQuad_new);
-	lua_register(L, "DestinationQuad", lua_DestinationQuad_new);
+	// SourceQuad static methods
+
+	lua_createtable(L, 0, 2); // table
+	lua_createtable(L, 0, 1); // metatable
+
+	lua_pushcfunction(L, lua_SourceQuad_new);
+	lua_setfield(L, -2, "__call");
+
+	lua_setmetatable(L, -2);
+
+	lua_pushcfunction(L, Lua_SourceQuad_NewFromBounds);
+	lua_setfield(L, -2, "NewFromBounds");
+
+	lua_pushcfunction(L, Lua_SourceQuad_NewFromRectangle);
+	lua_setfield(L, -2, "NewFromRectangle");
+
+	lua_setglobal(L, "SourceQuad");
+
+	// DestinationQuad static methods
+
+	lua_createtable(L, 0, 2); // table
+	lua_createtable(L, 0, 1); // metatable
+
+	lua_pushcfunction(L, lua_DestinationQuad_new);
+	lua_setfield(L, -2, "__call");
+
+	lua_setmetatable(L, -2);
+
+	lua_pushcfunction(L, Lua_DestinationQuad_NewFromBounds);
+	lua_setfield(L, -2, "NewFromBounds");
+
+	lua_pushcfunction(L, Lua_DestinationQuad_NewFromRectangle);
+	lua_setfield(L, -2, "NewFromRectangle");
+
+	lua_setglobal(L, "DestinationQuad");
 
 	lua_newtable(L);
 

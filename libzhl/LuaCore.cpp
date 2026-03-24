@@ -426,17 +426,6 @@ namespace lua {
 		lua_pop(L, pop);
 	}
 
-	static void pushfuncname (lua_State *L, lua_Debug *ar) {
-		if (*ar->namewhat != '\0')
-			lua_pushfstring(L, "%s '%s'", ar->namewhat, ar->name);
-		else if (*ar->what == 'm')
-			lua_pushliteral(L, "main chunk");
-		else if (*ar->what != 'C')
-			lua_pushfstring(L, "function at line %d", ar->linedefined);
-		else
-			lua_pushliteral(L, "?");
-	}
-
 	void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function)
 	{
 		luaL_Buffer b;
