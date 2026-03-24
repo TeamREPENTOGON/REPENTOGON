@@ -16,6 +16,18 @@ Determines how a [LayerState](../LayerState.md) should blend with the elements r
         local blendMode = Sprite():GetLayer(0):GetBlendMode()
         ```
 
+## Constructors
+
+### New () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### static BlendMode New ( [BlendFactor](../enums/BlendFactor.md) srcRGB, [BlendFactor](../enums/BlendFactor.md) dstRGB, [BlendFactor](../enums/BlendFactor.md) srcAlpha, [BlendFactor](../enums/BlendFactor.md) dstAlpha, [BlendEquation](../enums/BlendEquation.md) equation) {: .copyable aria-label='Constructors' }
+
+___
+### NewType () {: aria-label='Constructors' }
+[ ](#){: .static .tooltip .badge }
+#### static BlendMode NewType ( [BlendType](../enums/BlendType.md) blendType ) {: .copyable aria-label='Constructors' }
+
+
 ## Functions
 
 ### SetMode () {: aria-label='Functions' }
@@ -67,5 +79,9 @@ ___
 
 ???- warning "Depreciation history"
     This variable was previously known as `Flag1`.
+
+___
+### Equation {: aria-label='Variables' }
+#### [BlendEquation](../enums/BlendEquation.md) Equation {: .copyable aria-label='Variables'}
 
 ___
