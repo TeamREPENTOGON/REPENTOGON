@@ -397,94 +397,33 @@ HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
 	super(seed, filename);
 }
 
-//Unlocks
+// Secrets Menu Stuff
 
-
-
-bool modsecrets = false;
-bool secretneedsupdate = false;
+// List of XMLData keys for the mods with achievements (+ "BaseGame")
+vector<string> SourcesWithAchiev;
+// XMLData key for the mod whose achievements are being currently viewed (or "BaseGame").
 string secretssource = "BaseGame";
-
-vector <string> SourcesWithAchiev;
-int curridx = 0;
-int currmax = 0;
-int modmax = 0;
+// Index in the SourcesWithAchiev vector corresponding to the current secretssource.
+int secretssourceid = 0;
+// Index in the SourcesWithAchiev vector corresponding to the BaseGame achievements.
 int basegameid = 0;
+// The number of achievements that the current secretssource has.
+int currentNumAchievs = 0;
+// Index of the individual achievement being viewed within the current secretssource's list of achievements.
+// Not used for "BaseGame", though.
+int selectedModAchiev = 0;
 
-void PlayIfNotPlaying(ANM2* sprite,string* anim, bool force = false) {
-	if (force || !sprite->IsPlaying(anim)) {
-		sprite->Play(anim->c_str(), true);
-		sprite->Update();
-	}
-}
-
-string selectedanims[6] = { "Icon1UnlockedSelected" ,"Icon2UnlockedSelected","Icon3UnlockedSelected","Icon1LockedSelected","Icon2LockedSelected","Icon3LockedSelected" };
-bool IsSpriteSelected(ANM2* sprite) {
-	for (int i = 0; i <= 6; i++) {
-		if (sprite->IsPlaying(&selectedanims[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-
-int GetDir(double x) {
-	if (x > 0.001) {
-		return -1; //its in reverse
-	}
-	else if (x < -0.001) {
-		return 1;
-	}
-	return 0;
-}
-int ConstrainId(int x) {
-	int res = 0;
-	if (x >= currmax) {
-		res = ConstrainId(x- currmax);
-	}
-	else if (x < 0) {
-		res = ConstrainId(currmax - x);
-	}
-	return res;
-}
-
-int achievbckup[641];
-int lastfuck = 0;
-void BackupAchievsNOverride() {
-	if (secretssource != "BaseGame") {
-		PersistentGameData* pgd = g_Manager->GetPersistentGameData();
-		for (int i = 1; i <= currmax; i++) {
-			achievbckup[i] = pgd->achievements[i];
-			if ((int)XMLStuff.ModData->achievlistpermod[secretssource].size() >= i) {
-				XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][i-1];
-				pgd->achievements[i] = pgd->Unlocked(toint(cur["id"]));
-			}
-		}
-	}
-}
-
-void RecoverAchievs() {
-	if (secretssource != "BaseGame") {
-		PersistentGameData* pgd = g_Manager->GetPersistentGameData();
-		for (int i = 1; i <= currmax; i++) {
-			pgd->achievements[i] = achievbckup[i];
-		}
-	}
-}
-
-
-int achievidoffsets[9] = {-4,-3,-2,-1,0,1,2,3,4};
-ANM2* copyselected;
-void UpdateSecretsSprites(bool justpaper) {
-	Menu_Stats* menstats = g_MenuManager->GetMenuStats();	
-	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
-	XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][menstats->_selectedAchievmentId];
-	int id = toint(cur["id"]);
-	ReplaceAchievementSprite(&menstats->_achievementsSprite, id);
+// Bound the given index to [0,currentNumAchievs) by looping around to the other end.
+int ConstrainId(int idx) {
+    int res = idx % currentNumAchievs;
+    if (res < 0) {
+        res += currentNumAchievs;
+    }
+    return res;
 }
 
 void ChangeCurrentSecrets(int dir) {
-	int tgrtdir = curridx + dir;
+	int tgrtdir = secretssourceid + dir;
 	if (dir == 9999) {
 		tgrtdir = basegameid;
 	}else if (tgrtdir < 0) {
@@ -492,121 +431,165 @@ void ChangeCurrentSecrets(int dir) {
 	}else if (tgrtdir >= (int)SourcesWithAchiev.size()) {
 		tgrtdir = 0;
 	} 
-	if (curridx != tgrtdir) {
-		curridx = tgrtdir;
-		secretssource = SourcesWithAchiev[curridx]; 
-		currmax = XMLStuff.ModData->achievlistpermod[secretssource].size();
+	if (secretssourceid != tgrtdir) {
+		secretssourceid = tgrtdir;
+		secretssource = SourcesWithAchiev[secretssourceid]; 
+		currentNumAchievs = XMLStuff.ModData->achievlistpermod[secretssource].size();
 		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
 		menstats->_selectedAchievmentId = 0;
-		menstats->_maxAchievementID = currmax;
-		for (int i = 1; i <= currmax; i++) {
+        selectedModAchiev = 0;
+
+		/*for (int i = 1; i <= currentNumAchievs; i++) {
 			AchievementOverlay_Entry overlay = menstats->_achievementOverlayEntries[i];
 			XMLAttributes ach = XMLStuff.ModData->achievlistpermod[secretssource][i-1];
 			overlay.id = toint(ach["id"]);
 			overlay.gfx = ach["gfxroot"] + ach["gfx"];
 			menstats->_achievementOverlayEntries[i] = overlay;
-		}
-		UpdateSecretsSprites(false);
+		}*/
+
+        XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][0];
+        ReplaceAchievementSprite(&menstats->_achievementsSprite, toint(cur["id"]));
 	}
 }
-
 
 void SetUpReverseSourcesVec() {
-		if (!sourceswithachievset) {
-			Menu_Stats* menstats = g_MenuManager->GetMenuStats();
-			sourceswithachievset = true;
-			SourcesWithAchiev.clear();
-			for each (const auto & entry in XMLStuff.ModData->achievlistpermod) {
-				SourcesWithAchiev.push_back(entry.first);
-				if (entry.first == secretssource) {
-					curridx = SourcesWithAchiev.size() - 1;
-					basegameid = curridx;
-				}
+	if (!sourceswithachievset) {
+		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
+		sourceswithachievset = true;
+		SourcesWithAchiev.clear();
+		for (const auto& entry : XMLStuff.ModData->achievlistpermod) {
+			SourcesWithAchiev.push_back(entry.first);
+			if (entry.first == secretssource) {
+				secretssourceid = SourcesWithAchiev.size() - 1;
+				basegameid = secretssourceid;
 			}
-			currmax = XMLStuff.ModData->achievlistpermod[secretssource].size();
 		}
-}
-
-bool tempblocksave = false;
-HOOK_METHOD(PersistentGameData, Save, () -> void) {
-	if (!tempblocksave) {
-		super();
+		currentNumAchievs = XMLStuff.ModData->achievlistpermod[secretssource].size();
 	}
 }
+
+bool IsSecretsMenuScrolling() {
+    ANM2& sprite = g_MenuManager->GetMenuStats()->_achievementsSprite;
+    return sprite.IsPlaying("Appear") || sprite.IsPlaying("Appear2") || sprite.IsPlaying("Dissapear") || sprite.IsPlaying("Dissapear2");
+}
+
+// To help control the flashing animation of the selected mini icon
+float selectedMiniSpriteLastFrame = 0;
 
 bool achievslidingin = false;
 bool justopened = false;
 HOOK_METHOD(Menu_Stats, UpdateSecrets, () -> void) {
-	tempblocksave = true;
-	BackupAchievsNOverride();
-	super();
-	RecoverAchievs();
-	tempblocksave = false;
-	//UpdateSecretsSprites(false);
+    if (secretssource == "BaseGame") {
+        super();
+    } else {
+        // Little funny business to detect when to move left/right.
+        this->_selectedAchievmentId = 1;
+        super();
+        if (this->_selectedAchievmentId == 0) {
+            // Moving left
+            selectedModAchiev--;
+        } else if (this->_selectedAchievmentId == 2) {
+            // Moving right
+            selectedModAchiev++;
+        }
+        selectedModAchiev = ConstrainId(selectedModAchiev);
+        this->_selectedAchievmentId = 0;
 
-	if (secretssource != "BaseGame") {
-		if (!this->_isAchievementScreenVisible) {
-			ChangeCurrentSecrets(9999);
-		}
-		int trgtachv = _selectedAchievmentId;
-		if (this->_achievementsSprite.IsPlaying(&string("Appear"))) {
+        if (!this->_isAchievementScreenVisible) {
+            ChangeCurrentSecrets(9999);
+            return;
+        }
+
+        // Handle updating the main achievement sprite
+		int trgtachv = selectedModAchiev;
+		if (this->_achievementsSprite.IsPlaying("Appear")) {
 			trgtachv -= 1;
-		}
-		else if (this->_achievementsSprite.IsPlaying(&string("Appear2"))) {
+		} else if (this->_achievementsSprite.IsPlaying("Appear2")) {
 			trgtachv += 1;
-		}
-		if ((trgtachv != _selectedAchievmentId)) {
-			if ((trgtachv >= this->_maxAchievementID) || (this->_maxAchievementID == 1)) { trgtachv = 0; }
-			if (trgtachv < 0) { trgtachv = this->_maxAchievementID - 1; }
+        }
+		if (trgtachv != selectedModAchiev) {
+            trgtachv = ConstrainId(trgtachv);
 			if (justopened) { 
-				trgtachv = _selectedAchievmentId;
+				trgtachv = selectedModAchiev;
 			}
-			PersistentGameData* pgd = g_Manager->GetPersistentGameData();
 			XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][trgtachv];
 			if (!achievslidingin) {
 				ReplaceAchievementSprite(&this->_achievementsSprite, toint(cur["id"]));
 				achievslidingin = true;
 			}
-		}
-		else {
+		} else {
 			achievslidingin = false;
 		}
+
+        // Handle the mini icons
+        const bool scrolling = IsSecretsMenuScrolling();
+        if (scrolling) {
+            selectedMiniSpriteLastFrame = 0;
+        }
+        for (int i = -4; i <= 4; i++) {
+            int achievIndex = ConstrainId(selectedModAchiev + i);
+            XMLAttributes xmlAchiev = XMLStuff.ModData->achievlistpermod[secretssource][achievIndex];
+            int achievementID = toint(xmlAchiev["id"]);
+            bool isUnlocked = g_Manager->GetPersistentGameData()->Unlocked(achievementID);
+            // This array holds a random assortment of 1s 2s and 3s to determine which of the 3 different mini icon shapes to use.
+            // Offset it for each mod to make things look a little more varied.
+            int icon = this->_IconIDtoUseForAchievementID[(achievementID + 100) % 641];
+            bool isSelected = i == 0 && !scrolling;
+            string anim = "Icon" + std::to_string(icon) + (isUnlocked ? "Unlocked" : "Locked") + (isSelected ? "Selected" : "");
+            ANM2& sprite = (&this->_achievementMiniSprite5)[i];  // its fine
+            sprite.SetAnimation(anim.c_str(), false);
+            if (isSelected) {
+                sprite.GetAnimationState()->SetFrame(selectedMiniSpriteLastFrame);
+                sprite.Update();
+                if ((g_Manager->_framecount & 1) == 0) {
+                    selectedMiniSpriteLastFrame = sprite.GetAnimationState()->_animFrame;
+                }
+            }
+        }
 	}
 	justopened = false;
 }
 
 HOOK_METHOD(Menu_Stats, Render, () -> void) {
-		super();
-		if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled() && (SourcesWithAchiev.size() > 1)) {
-			Vector* ref = &g_MenuManager->_ViewPosition;
-			Vector posbase;
-			posbase = Vector(ref->x + 39, ref->y + 15);
-			ref = &posbase;
-			Vector offset = Vector(ref->x - 480, ref->y + 1350);
-			Vector pos = Vector(-251 + offset.x, -3 + offset.y);
-			pos.x += 450;  // Compensation for  pre-rep+ "boxWidth" of 900
-			Vector z = Vector(0, 0);
-			//Vector* a = g_LuaEngine->GetMousePosition(&z, true);
-			const std::string text = (secretssource == "BaseGame") ? "Repentance" : XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"];
-			KColor color(1, 1, 1, 0.8f);
-			FontSettings settings;
-			settings._align = 1;  // DrawStringAlignment.TOP_CENTER
-			Font* font = &g_Manager->_font1_TeamMeatEx10;
-			Vector scale(1, 1);
-			font->DrawString(text.c_str(), pos, scale, &color, &settings);
-			float txtwidth = (float)font->GetStringWidth(text.c_str())/2;
-			float x = 0;
-			float y = 100;
-			this->_cursorLeftSprite._scale = Vector(0.5, 0.5);
-			this->_cursorLeftSprite._rotation = 90;
-			this->_cursorLeftSprite.Render(&(offset + Vector(192- txtwidth, 8)), &z, &z);
-			this->_cursorLeftSprite._rotation = -90;
-			this->_cursorLeftSprite.Render(&(offset + Vector(205+ txtwidth, 4)), &z, &z);
-			this->_cursorLeftSprite._rotation = 0;
-			this->_cursorLeftSprite._scale = Vector(1, 1);
-			
+    if (secretssource == "BaseGame") {
+        super();
+    } else {
+        // Temporarily modify _selectedAchievmentId & _maxAchievementID to change the X/Y numbers rendered at the top of the screen.
+        int max = _maxAchievementID;
+        this->_selectedAchievmentId = selectedModAchiev;
+        this->_maxAchievementID = currentNumAchievs;
+        super();
+        this->_selectedAchievmentId = 0;
+        this->_maxAchievementID = max;
+    }
 
-		}
+	if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled() && (SourcesWithAchiev.size() > 1)) {
+		Vector* ref = &g_MenuManager->_ViewPosition;
+		Vector posbase;
+		posbase = Vector(ref->x + 39, ref->y + 15);
+		ref = &posbase;
+		Vector offset = Vector(ref->x - 480, ref->y + 1350);
+		Vector pos = Vector(-251 + offset.x, -3 + offset.y);
+		pos.x += 450;  // Compensation for  pre-rep+ "boxWidth" of 900
+		Vector z = Vector(0, 0);
+		const std::string text = (secretssource == "BaseGame") ? "Repentance" : XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"];
+		KColor color(1, 1, 1, 0.8f);
+		FontSettings settings;
+		settings._align = 1;  // DrawStringAlignment.TOP_CENTER
+		Font* font = &g_Manager->_font1_TeamMeatEx10;
+		Vector scale(1, 1);
+		font->DrawString(text.c_str(), pos, scale, &color, &settings);
+		float txtwidth = (float)font->GetStringWidth(text.c_str())/2;
+		float x = 0;
+		float y = 100;
+		this->_cursorLeftSprite._scale = Vector(0.5, 0.5);
+		this->_cursorLeftSprite._rotation = 90;
+		this->_cursorLeftSprite.Render(&(offset + Vector(192- txtwidth, 8)), &z, &z);
+		this->_cursorLeftSprite._rotation = -90;
+		this->_cursorLeftSprite.Render(&(offset + Vector(205+ txtwidth, 4)), &z, &z);
+		this->_cursorLeftSprite._rotation = 0;
+		this->_cursorLeftSprite._scale = Vector(1, 1);
+	}
 }
 
 
@@ -618,12 +601,12 @@ HOOK_METHOD(Menu_Stats, Update, () -> void) {
 	if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled()) {
 		SetUpReverseSourcesVec();
 		
-		if (g_InputManagerBase.IsActionTriggered(22, -1, 0)) {
-			ChangeCurrentSecrets(1);
-		}else if (g_InputManagerBase.IsActionTriggered(23, -1, 0)) {
-			ChangeCurrentSecrets(-1);
-		}
-		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
-		menstats->_maxAchievementID = currmax;
+        if (!IsSecretsMenuScrolling()) {
+            if (g_InputManagerBase.IsActionTriggered(22, -1, 0)) {
+                ChangeCurrentSecrets(1);
+            } else if (g_InputManagerBase.IsActionTriggered(23, -1, 0)) {
+                ChangeCurrentSecrets(-1);
+            }
+        }
 	}	
 }
