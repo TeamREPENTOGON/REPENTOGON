@@ -138,7 +138,7 @@ ValidateTypeResult TypeValidator::CheckVTableInternalConsistency(Struct const& s
                 if (function->_name == sig._function._name) {
                     if (*function == sig._function) {
                         ParserLogger()->Error("Structure %s has an inconsistent vtable: method %s overrides itself\n",
-                            s._name.c_str(), function->_name);
+                            s._name.c_str(), function->_name.c_str());
                         return VALIDATE_TYPE_VTABLE_INTERNAL_INCONSISTENCY;
                     }
                 }
