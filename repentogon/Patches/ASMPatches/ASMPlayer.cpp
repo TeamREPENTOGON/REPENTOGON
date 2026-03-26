@@ -8,6 +8,9 @@
 
 thread_local CheckFamiliarStorage familiarsStorage;
 
+Entity* playerShootRedCandleEntity;
+Entity* playerShootBlueCandleEntity;
+
 void __stdcall CheckFamiliar_Internal(Entity_Familiar* familiar) {
 	familiar->Update();
 
@@ -327,4 +330,26 @@ void ASMPatchPlayerLostSoulSkipPeePuddle() {
 
 	sASMPatcher.PatchAt(addr, &patch);
 
+}
+
+void ASMPatchPlayerShootRedCandle() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ShootRedCandle_FireSpawn);
+
+	patch.AddBytes(ByteBuffer().AddString("\xA3").AddPointer(&playerShootRedCandleEntity)) // MOV &playerShootRedCandleEntity, EAX
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9)) // Restore instructions that we overwrote
+		.AddRelativeJump((char*)addr + 0x9);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchPlayerShootBlueCandle() {
+	ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_ShootBlueCandle_FireSpawn);
+
+	patch.AddBytes(ByteBuffer().AddString("\xA3").AddPointer(&playerShootBlueCandleEntity)) // MOV &playerShootRedCandleEntity, EAX
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9)) // Restore instructions that we overwrote
+		.AddRelativeJump((char*)addr + 0x9);
+
+	sASMPatcher.PatchAt(addr, &patch);
 }
