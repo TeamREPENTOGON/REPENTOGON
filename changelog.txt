@@ -56,6 +56,7 @@ Added:
 	- Get/SetNumChainedLasers
 		This is used by the Monstro's Lung + Technology synergy
 * EntityPlayer:
+	- ShootRedCandle and ShootBlueCandle now returns an EntityEffect for the flame.
 	- [Get/Set]ImExcitedSpeedupCountdown
 	- [Get/Set]DonateLuck
 	- GetErrorTrinketEffect
