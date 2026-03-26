@@ -175,6 +175,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
     inline Entity_Pickup* ToPickup() { return Downcast<Entity_Pickup*>(__ptr_EntityPickupRTTI); }
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
+	inline Entity_Effect* ToEffect() { return Downcast<Entity_Effect*>(__ptr_EntityEffectRTTI); }
 
     Vector LIBZHL_API Entity::GetPredictedTargetPosition(Entity* target, float multiplier);
 	

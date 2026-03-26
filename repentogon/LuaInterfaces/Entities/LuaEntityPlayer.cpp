@@ -2358,7 +2358,10 @@ LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	player->ShootBlueCandle(dir);
-	return 0;
+
+	lua::luabridge::UserdataPtr::push(L, playerShootBlueCandleEntity->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
 }
 
 // not sure if this returns the clot or not
@@ -3361,6 +3364,16 @@ LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerShootRedCandle) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	player->ShootRedCandle(shotDirection);
+
+	lua::luabridge::UserdataPtr::push(L, playerShootRedCandleEntity->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3375,6 +3388,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },
 		{ "SetItemState", Lua_PlayerSetItemState },
 		{ "AddCacheFlags", Lua_PlayerAddCacheFlags },
+		{ "ShootRedCandle", Lua_PlayerShootRedCandle },
 		{ "GetHealthType", Lua_PlayerGetHealthType },
 		{ "GetTotalActiveCharge", Lua_PlayerGetTotalActiveCharge },
 		{ "GetActiveMaxCharge", Lua_PlayerGetActiveMaxCharge },
