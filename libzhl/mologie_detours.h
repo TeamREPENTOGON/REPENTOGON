@@ -41,7 +41,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#ifdef WIN32
+#if defined(_WIN32)
 #  include <Windows.h>
 #  define MOLOGIE_DETOURS_MEMORY_UNPROTECT(ADDRESS, SIZE, OLDPROT) (VirtualProtect((LPVOID)(ADDRESS), (SIZE_T)(SIZE), PAGE_EXECUTE_READWRITE, &OLDPROT) == TRUE)
 #  define MOLOGIE_DETOURS_MEMORY_REPROTECT(ADDRESS, SIZE, OLDPROT) (VirtualProtect((LPVOID)(ADDRESS), (SIZE_T)(SIZE), OLDPROT, &OLDPROT) == TRUE)

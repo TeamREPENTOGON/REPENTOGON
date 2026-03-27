@@ -6,6 +6,7 @@
 
 {{
 #include <windows.h>
+#include "libzhl.h"
 #include "rapidxml.hpp"
 #include <string>
 #include <vector>
@@ -2257,36 +2258,36 @@ enum EntityFlag : UINT64 {
 	FLAG_ADD_JAR_FLY = 1 << 28,				// Adds a fly to the jar when killed
 	FLAG_FRIENDLY = 1 << 29,					// Charmed and m_CharmCountdown<0
 	FLAG_NO_PHYSICS_KNOCKBACK = 1 << 30,		// No knockback from general collisions
-	FLAG_DONT_COUNT_BOSS_HP = 1 << 31,		// Do not count boss hp
-	FLAG_NO_SPRITE_UPDATE = (UINT64)1 << 32,			// Do not update sprite animation
-	FLAG_CONTAGIOUS = (UINT64)1 << 33,				// Used for Contagious item (if the enemy is infected)
-	FLAG_BLEED_OUT = (UINT64)1 << 34,					// Used for Mom's Razor
-	FLAG_HIDE_HP_BAR = (UINT64)1 << 35,				// Added for Ultra Greed so his HP can be hidden after he "dies" since his entity sticks around
-	FLAG_NO_DAMAGE_BLINK = (UINT64)1 << 36,			// Player was given a short period of invulnerability by something other than damage, don't blink
-	FLAG_PERSISTENT = (UINT64)1 << 37,				// Entity persists between rooms
+	FLAG_DONT_COUNT_BOSS_HP = 1u << 31,		// Do not count boss hp
+	FLAG_NO_SPRITE_UPDATE = 1ull << 32,			// Do not update sprite animation
+	FLAG_CONTAGIOUS = 1ull << 33,				// Used for Contagious item (if the enemy is infected)
+	FLAG_BLEED_OUT = 1ull << 34,					// Used for Mom's Razor
+	FLAG_HIDE_HP_BAR = 1ull << 35,				// Added for Ultra Greed so his HP can be hidden after he "dies" since his entity sticks around
+	FLAG_NO_DAMAGE_BLINK = 1ull << 36,			// Player was given a short period of invulnerability by something other than damage, don't blink
+	FLAG_PERSISTENT = 1ull << 37,				// Entity persists between rooms
 
-	FLAG_BACKDROP_DETAIL = (UINT64)1 << 38,			// Was spawned as a backdrop decoration, should be deleted if the current backdrop changes (due to Delirium)
-	FLAG_AMBUSH = (UINT64)1 << 39,					// Enemy was spawned by some sort of ambush (Greed Mode, challenge rooms), don't collide with the player for a few frames
-	FLAG_GLITCH = (UINT64)1 << 40,					// Glitched out, has different effects depending on the entity
-	FLAG_SPIN = (UINT64)1 << 41,						// Used by Spin to Win, causes a familiar to rapidly spin around its owner
-	FLAG_NO_REWARD = (UINT64)1 << 42,					// Doesn't spawn any kind of reward on death
-	FLAG_REDUCE_GIBS = (UINT64)1 << 43,				// Spawn less gibs on death
-	FLAG_TRANSITION_UPDATE = (UINT64)1 << 44,			// Updates during room/stage transitions
-	FLAG_NO_PLAYER_CONTROL = (UINT64)1 << 45,			// Cannot be controlled by players
-	FLAG_NO_QUERY = (UINT64)1 << 46,					// Hide from query results
-	FLAG_KNOCKED_BACK = (UINT64)1 << 47,				// Strong knockback: Forcefy moved in a specified direction for a short duration
-	FLAG_APPLY_IMPACT_DAMAGE = (UINT64)1 << 48,		// Inflicts damage upon colliding with enemies, takes damage when colliding with walls
-	FLAG_ICE_FROZEN = (UINT64)1 << 49,				// Frozen solid
-	FLAG_ICE = (UINT64)1 << 50,						// Flagged to become frozen on death
-	FLAG_MAGNETIZED = (UINT64)1 << 51,				// Magnetized: Attracts nearby enemies, projectiles and pickups
-	FLAG_BAITED = (UINT64)1 << 52,					// Baited: Is targeted by nearby enemies
-	FLAG_KILLSWITCH = (UINT64)1 << 53,				// Killed by a killswitch
-	FLAG_WEAKNESS = (UINT64)1 << 54,					// Weakness effect from Reverse Strength
-	FLAG_EXTRA_GORE = (UINT64)1 << 55,				// Spawns more gibs on death
-	FLAG_BRIMSTONE_MARKED = (UINT64)1 << 56,			// Marked by Azazel B, takes extra damage from Brimstone attacks
-	FLAG_HELD = (UINT64)1 << 57,						// Picked up by a player
-	FLAG_THROWN = (UINT64)1 << 58,					// Thrown by a player
-	FLAG_FRIENDLY_BALL = (UINT64)1 << 59,				// Used to detect enemies spawned by Friendly Ball
+	FLAG_BACKDROP_DETAIL = 1ull << 38,			// Was spawned as a backdrop decoration, should be deleted if the current backdrop changes (due to Delirium)
+	FLAG_AMBUSH = 1ull << 39,					// Enemy was spawned by some sort of ambush (Greed Mode, challenge rooms), don't collide with the player for a few frames
+	FLAG_GLITCH = 1ull << 40,					// Glitched out, has different effects depending on the entity
+	FLAG_SPIN = 1ull << 41,						// Used by Spin to Win, causes a familiar to rapidly spin around its owner
+	FLAG_NO_REWARD = 1ull << 42,					// Doesn't spawn any kind of reward on death
+	FLAG_REDUCE_GIBS = 1ull << 43,				// Spawn less gibs on death
+	FLAG_TRANSITION_UPDATE = 1ull << 44,			// Updates during room/stage transitions
+	FLAG_NO_PLAYER_CONTROL = 1ull << 45,			// Cannot be controlled by players
+	FLAG_NO_QUERY = 1ull << 46,					// Hide from query results
+	FLAG_KNOCKED_BACK = 1ull << 47,				// Strong knockback: Forcefy moved in a specified direction for a short duration
+	FLAG_APPLY_IMPACT_DAMAGE = 1ull << 48,		// Inflicts damage upon colliding with enemies, takes damage when colliding with walls
+	FLAG_ICE_FROZEN = 1ull << 49,				// Frozen solid
+	FLAG_ICE = 1ull << 50,						// Flagged to become frozen on death
+	FLAG_MAGNETIZED = 1ull << 51,				// Magnetized: Attracts nearby enemies, projectiles and pickups
+	FLAG_BAITED = 1ull << 52,					// Baited: Is targeted by nearby enemies
+	FLAG_KILLSWITCH = 1ull << 53,				// Killed by a killswitch
+	FLAG_WEAKNESS = 1ull << 54,					// Weakness effect from Reverse Strength
+	FLAG_EXTRA_GORE = 1ull << 55,				// Spawns more gibs on death
+	FLAG_BRIMSTONE_MARKED = 1ull << 56,			// Marked by Azazel B, takes extra damage from Brimstone attacks
+	FLAG_HELD = 1ull << 57,						// Picked up by a player
+	FLAG_THROWN = 1ull << 58,					// Thrown by a player
+	FLAG_FRIENDLY_BALL = 1ull << 59,				// Used to detect enemies spawned by Friendly Ball
 
 	FLAG_STATUS_EFFECTS = (UINT64)(FLAG_FREEZE + FLAG_POISON + FLAG_SLOW + FLAG_CHARM + FLAG_CONFUSION + FLAG_MIDAS_FREEZE + FLAG_FEAR + FLAG_BURN + FLAG_SHRINK + FLAG_FRIENDLY + FLAG_BLEED_OUT + FLAG_ICE_FROZEN + FLAG_ICE + FLAG_MAGNETIZED + FLAG_BAITED + FLAG_WEAKNESS + FLAG_BRIMSTONE_MARKED),
 	FLAG_NON_STATUS_EFFECTS = (((UINT64)1 << 60) - 1) - FLAG_STATUS_EFFECTS,
@@ -2611,7 +2612,7 @@ enum ePickupVariant {
 	PICKUP_MOMSCHEST = 390,
 };
 
-enum eDamageFlag : UINT64 {
+enum eDamageFlag : uint64_t {
 	DAMAGE_NOKILL = 1,
 	DAMAGE_FIRE = 1<<1,
 	DAMAGE_EXPLOSION = 1<<2,
@@ -2643,8 +2644,8 @@ enum eDamageFlag : UINT64 {
 	DAMAGE_NO_PENALTIES = 1<<28,
 	DAMAGE_SPAWN_TEMP_HEART = 1<<29,
 	DAMAGE_IGNORE_ARMOR = 1<<30,
-	DAMAGE_SPAWN_CARD = 1<<31,
-	DAMAGE_SPAWN_RUNE = (UINT64)1<<32,
+	DAMAGE_SPAWN_CARD = 1u<<31,
+	DAMAGE_SPAWN_RUNE = 1ull<<32,
 };
 
 enum class eAchievement : int {

@@ -160,3 +160,24 @@ struct IsInPack<T, std::variant<Types...>> {
 
 template<typename T, typename... Types>
 constexpr bool IsInPackV = IsInPack<T, Types...>::value;
+
+#define LIBZHL_MSVC 0
+#define LIBZHL_CLANG_CL 1
+
+#ifdef __clang__
+#  ifdef _MSC_VER
+#    define LIBZHL_COMPILER LIBZHL_CLANG_CL
+#  else
+#    error "Unable to compile libzhl with just clang
+#  endif
+#else
+#  if defined _MSC_VER
+#    define LIBZHL_COMPILER LIBZHL_MSVC
+#  else
+#    error "Unknown compiler"
+#  endif
+#endif
+
+#if LIBZHL_COMPILER == LIBZHL_CLANG_CL
+#define _ThrowInfo void*
+#endif
