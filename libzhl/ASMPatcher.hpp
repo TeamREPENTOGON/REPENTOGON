@@ -299,7 +299,7 @@ public:
 
 	private:
 		template<typename T>
-		friend static StackSpace Make(bool);
+		friend StackSpace Make(bool);
 
 		StackSpace(size_t s, bool shouldFree = true) : _size(s) {
 

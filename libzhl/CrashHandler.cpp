@@ -1,6 +1,11 @@
 #include <Windows.h>
 #include <DbgHelp.h>
-#include <ehdata_forceinclude.h>
+
+#include "libzhl.h"
+
+#if LIBZHL_COMPILER == LIBZHL_MSVC
+#  include <ehdata_forceinclude.h>
+#endif
 
 #include "CrashHandler.h"
 #include "HookSystem.h"
