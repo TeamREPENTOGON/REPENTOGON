@@ -119,6 +119,11 @@ Added:
 * BlendMode:
 	- New(int rgbSrc, int rgbDest, int alphaSrc, int alphaDest, int equation)
 	- NewFromType(BlendType type)
+* Enums:
+	- PillEffectSubClass
+	- CompletionStatus
+	- ChargeType
+	- EnemyTargetFlags
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
