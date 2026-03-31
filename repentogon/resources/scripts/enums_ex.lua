@@ -3136,6 +3136,32 @@ RoomDisplayFlags = {
 	SHOW_ICON = 1 << 2,
 }
 
+PillEffectSubClass = {
+	NEUTRAL = 0,
+	POSITIVE = 1, GOOD = 1,
+	NEGATIVE = 2, BAD = 2,
+}
+
+CompletionStatus = {
+	NOT_DONE = 0, NONE = 0,
+	NORMAL = 1,
+	HARD = 2,
+}
+
+ChargeType = {
+	NORMAL = 0,
+	TIMED = 1,
+	SPECIAL = 2,
+}
+
+EnemyTargetFlags = {
+	CAN_CHANGE_TARGET = 1 << 0, -- Allow switching to a better target even if we already have one
+	AVOID_CLOSE_ENEMIES = 1 << 1, -- Don't prioritize enemies close to our owner
+	PRIORITIZE_HIGH_HP = 1 << 2, -- Prioritize enemies with higher HP
+	PRIORITIZE_LOW_HP = 1 << 3, -- Prioritize enemies with lower HP
+	DEPRIORITIZE_CURRENT_TARGET = 1 << 4, -- Give lower priority to our current target (makes switching targets more likely)
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
