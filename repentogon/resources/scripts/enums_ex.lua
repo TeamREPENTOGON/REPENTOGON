@@ -3162,6 +3162,13 @@ EnemyTargetFlags = {
 	DEPRIORITIZE_CURRENT_TARGET = 1 << 4, -- Give lower priority to our current target (makes switching targets more likely)
 }
 
+TrinketSlot = {
+	PRIMARY = 0,
+	SECONDARY = 1,
+	MOMS_PURSE = 1,
+	BELLY_BUTTON = 1,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
