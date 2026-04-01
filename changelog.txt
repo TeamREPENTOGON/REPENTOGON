@@ -124,6 +124,7 @@ Added:
 	- CompletionStatus
 	- ChargeType
 	- EnemyTargetFlags
+	- TrinketSlot
 * Added EntitySaveStateManager class to support persistent, modded save data for entities.
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
