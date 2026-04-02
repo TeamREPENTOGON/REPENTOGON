@@ -115,11 +115,18 @@ See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### AddInnateCollectible () {: aria-label='Functions' }
-#### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1 ) {: .copyable aria-label='Functions' }
+#### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true ) {: .copyable aria-label='Functions' }
+"GroupKey" is used to distinguish separate "groups" of innate items. Innate item functions can only modify items added under the specified group. Use a distinct GroupKey string to isolate your innate items from other sources, avoiding conflicts and making tracking easier.
 
-???+ bug "Bug"
-	Currently this function directly modifies the contents of WispCollectiblesList, so if this list was updated on wisp init/delete, or the player exits the run, your added innate items will not be saved.
-	
+If a GroupKey other than the default empty string is used, the innate item will persist across quit & continue, and interact properly with save state mechanics such as Glowing Hourglass.
+
+Items added with a positive duration will automatically remove themselves (30 duration = 1 second).
+
+___
+### AddInnateTrinket () {: aria-label='Functions' }
+#### void AddInnateTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true ) {: .copyable aria-label='Functions' }
+Same as AddInnateCollectible but for trinkets. Note that golden trinkets must be added/removed separately.
+
 ___
 ### AddLeprosy () {: aria-label='Functions' }
 #### void AddLeprosy ( ) {: .copyable aria-label='Functions' }
@@ -173,6 +180,11 @@ ___
 Blocks the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html). This will make it so the game thinks you don't have the item, even if it's in your inventory.
 
 ___
+### BlockTrinket () {: aria-label='Functions' }
+#### void BlockTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }  
+Blocks the provided [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html). This will make it so the game thinks you don't have the trinket, even if it's in your inventory.
+
+___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
 #### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
@@ -207,6 +219,11 @@ A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlay
 ___
 ### ClearCollectibleAnim () {: aria-label='Functions' }
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
+
+___
+### ClearInnateItemGroup () {: aria-label='Modified Functions' }
+#### void ClearInnateItemGroup ( string GroupKey ) {: .copyable aria-label='Modified Functions' }
+Remove all innate collectibles and trinkets added under the specified group.
 
 ___
 ### ClearQueueItem () {: aria-label='Functions' }
@@ -290,6 +307,11 @@ ___
 ### GetBlinkLockTime () {: aria-label='Functions' }
 #### int GetBlinkLockTime ( ) {: .copyable aria-label='Functions' }
 How long player's head will play fired frame sprite?
+
+___
+### GetBloodGushSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetBloodGushSprite ( ) {: .copyable aria-label='Functions' }
+Sprite used for things like Scissors and The Intruder.
 
 ___
 ### GetBloodLustCounter () {: aria-label='Functions' }
@@ -581,6 +603,34 @@ ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
 Returns how many hearts have been collected with the Immaculate Conception item. Resets to 0 after spawning a familiar/soul heart.
+
+___
+### GetInnateCollectibleCount () {: aria-label='Functions' }
+#### int GetInnateCollectibleCount ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, string GroupKey = "" ) {: .copyable aria-label='Functions' }
+Returns how many innate copies of this collectible are currently in the specified group.
+
+___
+### GetInnateCollectibleGroup () {: aria-label='Functions' }
+#### table GetInnateCollectibleGroup ( string GroupKey ) {: .copyable aria-label='Functions' }
+Returns a table of the innate collectibles currently in the specified group.
+
+The returned table has [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) as the keys and current counts as the values. If no copies of the item are in the group, it will not have an entry in the table.
+
+___
+### GetInnateTrinketCount () {: aria-label='Functions' }
+#### int GetInnateTrinketCount ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, string GroupKey = "" ) {: .copyable aria-label='Functions' }
+Returns how many innate copies of this trinket are currently in the specified group.
+
+Note that golden trinkets are counted separately.
+
+___
+### GetInnateTrinketGroup () {: aria-label='Functions' }
+#### table GetInnateTrinketGroup ( string GroupKey ) {: .copyable aria-label='Functions' }
+Returns a table of the innate trinket currently in the specified group.
+
+The returned table has [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) as the keys and current counts as the values. If no copies of the item are in the group, it will not have an entry in the table.
+
+Note that golden trinkets are counted separately.
 
 ___
 ### GetItemStateCooldown () {: aria-label='Functions' }
@@ -1016,6 +1066,11 @@ ___
 #### boolean IsPostLevelInitFinished ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsTrinketBlocked () {: aria-label='Functions' }
+#### boolean IsTrinketBlocked ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+Returns true if the [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) was blocked. Collectibles can only be blocked by use of [BlockTrinket](EntityPlayer.md#blocktrinket).
+
+___
 ### IsUrethraBlocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
 Returns true when the player can no longer shoot due to charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
@@ -1053,6 +1108,18 @@ ___
 ### RemovePoopSpell () {: aria-label='Functions' }
 #### void RemovePoopSpell ( int Position = 0 ) {: .copyable aria-label='Functions' }
 Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position. Poop spells are only used by Tainted ???.
+
+___
+### RemoveInnateCollectible () {: aria-label='Functions' }
+#### int RemoveInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1, string GroupKey = "" ) {: .copyable aria-label='Functions' }
+Removes innate collectibles from the specified group. Returns the actual number of innate items removed.
+
+___
+### RemoveInnateTrinket () {: aria-label='Functions' }
+#### int RemoveInnateTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, int Amount = 1, string GroupKey = "" ) {: .copyable aria-label='Functions' }
+Removes innate trinkets from the specified group. Returns the actual number of innate items removed.
+
+Note that golden trinkets must be added/removed separately.
 
 ___
 ### RerollAllCollectibles () {: aria-label='Functions' }
@@ -1275,6 +1342,34 @@ Sets how many hearts have been collected for the Immaculate Conception item.
 Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.
 
 If you set a value that is greater than 14, the value is automatically capped at 14, meaning that the next heart picked up will spawn a familiar.
+
+___
+### SetInnateCollectibleCount () {: aria-label='Functions' }
+#### int SetInnateCollectibleCount ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int NewCount, string GroupKey = "", boolean AddCostume = true ) {: .copyable aria-label='Functions' }
+Changes the current count of an innate collectible in the specified group. Triggers cache evals and callbacks appropriately if any items needed to be added or removed to reach the desired count, and returns the number of items added or removed (removals are negative). Does nothing if the count is already the desired value.
+
+___
+### SetInnateCollectibleGroup () {: aria-label='Functions' }
+#### void SetInnateCollectibleGroup ( string GroupKey, table NewCounts, boolean AddCostume = true ) {: .copyable aria-label='Functions' }
+Updates the contents of the specified innate collectible group to match the provided table. The table must use [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) for the keys and the desired counts as the values.
+
+Any items currently in the group but not specified in the table are removed. Triggers cache evals and callbacks appropriately if any items need to be added or removed to reach their desired count.
+
+___
+### SetInnateTrinketCount () {: aria-label='Functions' }
+#### int SetInnateTrinketCount ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, int NewCount, string GroupKey = "", boolean AddCostume = true ) {: .copyable aria-label='Functions' }
+Changes the current count of an innate trinket in the specified group. Automatically triggers cache evals and callbacks appropriately if any items needed to be added or removed to reach the desired count, and returns the number of items added or removed (removals are negative). Does nothing if the count is already the desired value.
+
+Note that golden trinkets are counted separately.
+
+___
+### SetInnateTrinketGroup () {: aria-label='Functions' }
+#### void SetInnateTrinketGroup ( string GroupKey, table NewCounts, boolean AddCostume = true ) {: .copyable aria-label='Functions' }
+Updates the contents of the specified innate collectible group to match the provided table. The table must use [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) for the keys and the desired counts as the values.
+
+Any items currently in the group but not specified in the table are removed. Triggers cache evals and callbacks appropriately if any items need to be added or removed to reach their desired count.
+
+Note that golden trinkets are counted separately.
 
 ___
 ### SetItemState () {: aria-label='Functions' }
@@ -1557,6 +1652,11 @@ ___
 ### UnblockCollectible () {: aria-label='Functions' }
 #### void UnblockCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Unblocks the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) that was blocked through [BlockCollectible](EntityPlayer.md#blockcollectible).
+
+___
+### UnblockTrinket () {: aria-label='Functions' }
+#### void UnblockTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+Unblocks the [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) that was blocked through [BlockTrinket](EntityPlayer.md#blocktrinket).
 
 ___
 ### UpdateIsaacPregnancy () {: aria-label='Functions' }

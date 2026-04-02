@@ -490,6 +490,20 @@ Returning any value will have no effect on later callback executions.
 |:--|:--|:--|:--|:--|
 |1255 |MC_POST_FIRE_BRIMSTONE {: .copyable } | ([EntityLaser](../EntityLaser.md) Laser) | - | void |
 
+### MC_PRE_BRIMSTONE_SNEEZE {: .copyable }
+Runs before the Hemoptysis / Tainted Azazel sneeze attack.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1036 |MC_PRE_BRIMSTONE_SNEEZE {: .copyable } | ([Entity](../Entity.md) Source, Vector Direction, float DamageScale) | - | void |
+
+### MC_POST_BRIMSTONE_SNEEZE {: .copyable }
+Runs after the Hemoptysis / Tainted Azazel sneeze attack.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1037 |MC_POST_BRIMSTONE_SNEEZE {: .copyable } | ([Entity](../Entity.md) Source, Vector Direction, float DamageScale) | - | void |
+
 ### MC_POST_FIRE_KNIFE {: .copyable }
 Called when the player fires the knife from Mom's Knife.
 
@@ -1044,6 +1058,22 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
+### MC_PRE_GRID_HURT {: .copyable }
+Called before a [GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) or [GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) takes damage.
+
+Return an integer to modify the damage, or false to cancel it.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1017 |MC_PRE_GRID_HURT {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>int Damage, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | int or boolean |
+
+### MC_POST_GRID_HURT {: .copyable }
+Called after a [GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) or [GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) takes damage.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1018 |MC_POST_GRID_HURT {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>int Damage, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
 ### MC_POST_GRID_ROCK_DESTROY {: .copyable }
 Accepts no return parameters.
 
@@ -1060,6 +1090,48 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1022 |MC_HUD_RENDER {: .copyable } | void | - | void |
+
+### MC_POST_HUD_RENDER {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1024 |MC_POST_HUD_RENDER {: .copyable } | void | - | void |
+
+### MC_PRE_HISTORYHUD_RENDER {: .copyable }
+Return false to cancel rendering.
+
+Return a table to specify the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) of items to skip rendering their sprites, leaving empty space instead. You can then use the [HistoryHUD](../HistoryHUD.md) class to help you render in that space (preferably in `MC_POST_HISTORYHUD_RENDER`).
+
+???- example "Example Code"
+    ```lua
+    return {
+        HideCollectibles = {
+            CollectibleType.COLLECTIBLE_SAD_ONION,
+            CollectibleType.COLLECTIBLE_INNER_EYE,
+        },
+        HideTrinkets = {
+            TrinketType.TRINKET_SWALLOWED_PENNY,
+        },
+    }
+    ```
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1027 |MC_PRE_HISTORYHUD_RENDER {: .copyable } | boolean or table | - | void |
+
+### MC_POST_HISTORYHUD_RENDER {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1028 |MC_POST_HISTORYHUD_RENDER {: .copyable } | void | - | void |
+
+### MC_POST_HISTORYHUD_RECOMPUTE {: .copyable }
+Runs when the contents of the [HistoryHUD](../HistoryHUD.md) are refreshed (typically when some item is added or removed).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1029 |MC_POST_HISTORYHUD_RECOMPUTE {: .copyable } | void | - | void |
 
 ### MC_POST_HUD_RENDER {: .copyable }
 Accepts no return parameters.
@@ -2177,12 +2249,43 @@ Alternatively accepts `false` to cancel rendering
 |:--|:--|:--|:--|:--|
 |1084 |MC_PRE_TEAR_RENDER {: .copyable } | ([EntityTear](../EntityTear.md) Tear, <br>[Vector](../Vector.md) Offset) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.md) | [Vector](../Vector.md) or boolean |
 
+### MC_POST_TRIGGER_COLLECTIBLE_ADDED {: .copyable }
+Compared to `MC_POST_ADD_COLLECTIBLE`, this runs for all of "true" items, wisps, and REPENTOGON's innate items.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1053 |MC_POST_TRIGGER_COLLECTIBLE_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean FirstTimePickingUp, <br>boolean WispOrInnate ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
 ### MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean RemoveFromPlayerForm, <br>boolean Wisp ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean RemoveFromPlayerForm, <br>boolean WispOrInnate ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
+### MC_POST_ADD_INNATE_COLLECTIBLE {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1054 |MC_POST_ADD_INNATE_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>string GroupKey, <br>int Amount, <br>int Duration ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or string | void |
+
+### MC_POST_REMOVE_INNATE_COLLECTIBLE {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1056 |MC_POST_REMOVE_INNATE_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>string GroupKey, <br>int Amount, <br>boolean ExpiredDuration ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or string | void |
+
+### MC_POST_ADD_INNATE_TRINKET {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1055 |MC_POST_ADD_INNATE_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>string GroupKey, <br>int Amount, <br>int Duration ) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) or string | void |
+
+### MC_POST_REMOVE_INNATE_TRINKET {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1057 |MC_POST_REMOVE_INNATE_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>string GroupKey, <br>int Amount, <br>boolean ExpiredDuration ) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) or string | void |
 
 ### MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable }
 Fires right before the game over screen, but BEFORE the game checks for vanilla revive effects like 1UP.
