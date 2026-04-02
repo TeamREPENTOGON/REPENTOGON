@@ -36,6 +36,10 @@ Added:
 		IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
 		Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
 		Optional param: PlayerType
+	- MC_PRE/POST_HISTORYHUD_RENDER
+		Return false to cancel rendering. Return a table to skip rendering the icons for specific items.
+		Example: `return { HideCollectibles = { CollectibleType.COLLECTIBLE_SAD_ONION, CollectibleType.COLLECTIBLE_INNER_EYE }, HideTrinkets = { TrinketType.TRINKET_SWALLOWED_PENNY } }`
+	- MC_POST_HISTORYHUD_RECOMPUTE
 	- MC_PRE/POST_GRID_HURT(GridEntity, int Damage, EntityRef Source)
 		Runs when a Poop or TNT GridEntity takes damage.
 		On PRE, you can return an integer to modify the damage, or return false to cancel the damage.
@@ -69,6 +73,7 @@ Added:
 	- SetInnateTrinketCount(TrinketType, int NewCount, string GroupKey = "", bool AddCostume = true)
 	- GetInnateTrinketGroup(string GroupKey) -> table
 	- SetInnateTrinketGroup(string GroupKey, table, bool AddCostumes = true)
+	- ClearInnateItemGroup(string GroupKey)
 	- BlockTrinket
 	- UnblockTrinket
 	- IsTrinketBlocked
@@ -162,7 +167,7 @@ Modified:
 * EntityPlayer:
 	- SetControllerIndex(int ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
-	- AddInnateTrinket(CollectibleType, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true)
+	- AddInnateCollectible(CollectibleType, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true)
 		A "GroupKey" represents a distinct set of innate items. Innate item functions that take a GroupKey will only interact with items under that key.
 		This enables complete separation between different mechanics/mods/effects utilizing innate items, assuming distinct GroupKeys are used.
 		IMPORTANT: Using a non-empty GroupKey also enables persistence across save & continue and proper gamestate handling overall.
