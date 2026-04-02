@@ -396,11 +396,11 @@ Spawns an NPC forcing it to be a Boss, returning true for IsBoss(), giving it a 
 
 ___
 ### StartNewGame () {: aria-label='Functions' }
-#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random, boolean IsCustomRun ) {: .copyable aria-label='Functions' }
-#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode = Difficulty.DIFFICULTY_NORMAL, [Seeds](https://wofsauge.github.io/IsaacDocs/rep/Seeds.html) Seed = nil ) {: .copyable aria-label='Functions' }
+#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random, boolean IsCustomRun = false ) {: .copyable aria-label='Functions' }
+#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge, [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Mode, [Seeds](https://wofsauge.github.io/IsaacDocs/rep/Seeds.html) Seeds ) {: .copyable aria-label='Functions' }
 Starts a new game using the specified arguments. Can be used from the main menu.
 
-Setting IsCustomRun to true will disable achievements for the run. Alternatively, an overload accepts a Seeds object to use the current seed and all of its modifiers.
+Setting IsCustomRun to true will disable achievements for the run. Alternatively, an overload accepts a [Seeds](https://wofsauge.github.io/IsaacDocs/rep/Seeds.html) object to use the current seed and all of its modifiers.
 
 ___
 ### TriggerWindowResize () {: aria-label='Functions' }
