@@ -10,6 +10,7 @@
 #include "stringbuffer.h" // rapidjson
 #include "../MiscFunctions.h"
 #include "../Patches/EntityPlus.h"
+#include "../Patches/ItemSpoofSystem.h"
 
 namespace EntitySaveStateEx {
 
@@ -66,6 +67,11 @@ void PlayerSaveStateEx::Save(Entity& entity) {
 	} else {
 		_mainTwinIndex = -1;
 	}
+
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        _innateCollectibles = playerPlus->itemSpoofs.GetCollectibleSpoof().SaveInnateItems();
+        _innateTrinkets = playerPlus->itemSpoofs.GetTrinketSpoof().SaveInnateItems();
+    }
 }
 
 void PlayerSaveStateEx::Restore(Entity& entity) {
@@ -74,6 +80,8 @@ void PlayerSaveStateEx::Restore(Entity& entity) {
 
 	if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
 		playerPlus->restoreTwinID = _mainTwinIndex;
+        playerPlus->itemSpoofs.GetCollectibleSpoof().LoadInnateItems(_innateCollectibles);
+        playerPlus->itemSpoofs.GetTrinketSpoof().LoadInnateItems(_innateTrinkets);
 	}
 }
 
@@ -81,6 +89,15 @@ void PlayerSaveStateEx::Serialize(rapidjson::Value& node, rapidjson::Document::A
 	if (_mainTwinIndex > -1) {
 		node.AddMember("mainTwinIndex", _mainTwinIndex, allocator);
 	}
+
+    if (!_innateCollectibles.empty()) {
+        ZHL::Log("[PlayerSaveStateEx] [INFO] - Serializing Innate Collectibles...");
+        node.AddMember("innateCollectibles", ItemSpoofSystem::SerializeInnateItems(_innateCollectibles, allocator), allocator);
+    }
+    if (!_innateTrinkets.empty()) {
+        ZHL::Log("[PlayerSaveStateEx] [INFO] - Serializing Innate Trinkets...");
+        node.AddMember("innateTrinkets", ItemSpoofSystem::SerializeInnateItems(_innateTrinkets, allocator), allocator);
+    }
 }
 
 void PlayerSaveStateEx::Deserialize(const rapidjson::Value& node) {
@@ -89,6 +106,15 @@ void PlayerSaveStateEx::Deserialize(const rapidjson::Value& node) {
 	} else {
 		_mainTwinIndex = -1;
 	}
+
+    if (node.HasMember("innateCollectibles")) {
+        ZHL::Log("[PlayerSaveStateEx] [INFO] - Deserializing Innate Collectibles...");
+        _innateCollectibles = ItemSpoofSystem::DeserializeInnateItems(node["innateCollectibles"]);
+    }
+    if (node.HasMember("innateTrinkets")) {
+        ZHL::Log("[PlayerSaveStateEx] [INFO] - Deserializing Innate Trinkets...");
+        _innateTrinkets = ItemSpoofSystem::DeserializeInnateItems(node["innateTrinkets"]);
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------

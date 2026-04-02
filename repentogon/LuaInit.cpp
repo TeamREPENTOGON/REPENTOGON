@@ -21,6 +21,8 @@
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 
+int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
+
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);
 	lua_newtable(L);
@@ -244,6 +246,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	// "delete" C Bindings
 	lua_pushnil(L);
 	lua_setglobal(L, C_BINDINGS_NAME);
+
+    lua_getglobal(state, "_RunCallbackWithTwoParams");
+    LuaKeys::runCallbackWithTwoParams = luaL_ref(state, LUA_REGISTRYINDEX);
 
 	NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");

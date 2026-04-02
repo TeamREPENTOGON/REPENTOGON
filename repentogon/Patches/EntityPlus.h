@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "IsaacRepentance.h"
+#include "ItemSpoofSystem.h"
 
 // Attributes shared by all entities.
 class EntityPlus {
@@ -17,6 +18,7 @@ class EntityPlus {
 // Attributes for EntityPlayer.
 class EntityPlayerPlus : public EntityPlus {
   public:
+	ItemSpoofSystem::PlayerItemSpoofs itemSpoofs;
 	std::set<std::string> customCacheTags;
 	std::unordered_map<std::string, double> customCacheResults;
 	bool customCacheRequiresEvaluateItemsCall = false;

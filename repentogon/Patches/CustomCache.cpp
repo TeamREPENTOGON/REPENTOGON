@@ -349,7 +349,7 @@ HOOK_METHOD_PRIORITY(Entity_Familiar, WispInit, -1, () -> void) {
 	}
 }
 
-HOOK_METHOD_PRIORITY(Entity_Player, TriggerCollectibleRemoved, -1, (unsigned int collectibleType) -> void) {
+HOOK_METHOD_PRIORITY(Entity_Player, TriggerCollectibleRemoved, -1, (int collectibleType) -> void) {
 	super(collectibleType);
 	TriggerCollectibleCustomCache(this, collectibleType, true);
 }

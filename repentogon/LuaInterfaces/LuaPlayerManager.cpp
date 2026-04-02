@@ -20,7 +20,6 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 
 	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, lazSharedGlobalTag);
-	ItemSpoofSystem::EndLuaRequest();
 
 	if (!player) {
 		lua_pushnil(L);
@@ -39,7 +38,6 @@ LUA_FUNCTION(Lua_AnyoneHasCollectible)
 
 	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, true);
-	ItemSpoofSystem::EndLuaRequest();
 
 	if (!player) {
 		lua_pushboolean(L, false);
@@ -77,7 +75,6 @@ LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
 
 	ItemSpoofSystem::StartLuaRequest();
 	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
-	ItemSpoofSystem::EndLuaRequest();
 
 	return 1;
 }
@@ -89,7 +86,6 @@ LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 
 	ItemSpoofSystem::StartLuaRequest();
 	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
-	ItemSpoofSystem::EndLuaRequest();
 
 	return 1;
 }
@@ -232,7 +228,6 @@ LUA_FUNCTION(Lua_FirstBirthrightOwner)
 
 	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
-	ItemSpoofSystem::EndLuaRequest();
 
 	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 
@@ -246,7 +241,6 @@ LUA_FUNCTION(Lua_AnyPlayerTypeHasBirthright)
 
 	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
-	ItemSpoofSystem::EndLuaRequest();
 
 	lua_pushboolean(L, player ? true : false);
 

@@ -736,12 +736,8 @@ local function logWarning(callbackID, modName, warn)
 
 	table.insert(printedWarnings, warn)
 
-	Console.PrintWarning('"' ..
-	cbName ..
-	'" from "' .. modName .. '" failed: ' .. warn .. "\n(This warning will not reappear until the next Lua reload.)")
-	Isaac.DebugString('Error in "' ..
-	cbName ..
-	'" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
+	Console.PrintWarning('"' .. cbName .. '" from "' .. modName .. '" warning: ' .. warn .. "\n(This warning will not reappear until the next Lua reload.)")
+	Isaac.DebugString('Warning in "' .. cbName .. '" from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
 end
 
 local function imGuiError(errortext)
@@ -980,7 +976,7 @@ local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 
 -- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
 -- Allows other code to easily iterate over callbacks using a param, in the correct execution order.
-local function GetCallbackIterator(callbackID, param)
+local function GetCallbackIterator(callbackID, param, extraParam)
 	local callbackData = Callbacks[callbackID]
 
 	if not callbackData then
@@ -1011,6 +1007,11 @@ local function GetCallbackIterator(callbackID, param)
 
 	local commonCallback = callbackData.COMMON[1]
 	local paramCallback = param and callbackData.PARAM[param] and callbackData.PARAM[param][1]
+	local extraParamCallback = extraParam and callbackData.PARAM[extraParam] and callbackData.PARAM[extraParam][1]
+
+	if not paramCallback then
+		paramCallback = extraParamCallback
+	end
 
 	if not paramCallback then
 		-- No parameterized callbacks to run, so just iterate over the common callbacks.
@@ -1029,19 +1030,48 @@ local function GetCallbackIterator(callbackID, param)
 		end
 	end
 
-	-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
-	-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
+	if not extraParamCallback then
+		-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
+		-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
+		return function()
+			local nextCallback
+
+			-- Skip over removed callbacks if needed.
+			repeat
+				if CallbackComparator(commonCallback, paramCallback) then
+					nextCallback = commonCallback
+					commonCallback = commonCallback.NextParam
+				elseif paramCallback then
+					nextCallback = paramCallback
+					paramCallback = paramCallback.NextParam
+				else
+					nextCallback = nil
+				end
+			until not nextCallback or not nextCallback.Removed
+
+			return nextCallback
+		end
+	end
+
+	-- New: Iterate over callbacks using... two parameters at once???
 	return function()
 		local nextCallback
 
-		-- Skip over removed callbacks if needed.
 		repeat
-			if CallbackComparator(commonCallback, paramCallback) then
-				nextCallback = commonCallback
-				commonCallback = commonCallback.NextParam
-			elseif paramCallback then
+			nextCallback = commonCallback
+			if CallbackComparator(paramCallback, nextCallback) then
 				nextCallback = paramCallback
+			end
+			if CallbackComparator(extraParamCallback, nextCallback) then
+				nextCallback = extraParamCallback
+			end
+
+			if nextCallback == commonCallback and commonCallback then
+				commonCallback = commonCallback.NextParam
+			elseif nextCallback == paramCallback and paramCallback then
 				paramCallback = paramCallback.NextParam
+			elseif nextCallback == extraParamCallback and extraParamCallback then
+				extraParamCallback = extraParamCallback.NextParam
 			else
 				nextCallback = nil
 			end
@@ -1121,10 +1151,20 @@ local function AddToCallbackList(callbackList, newCallback, isAllList)
 	end
 end
 
+local DEPRECATED_CALLBACKS = {
+	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = "MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM is deprecated - please use functions such as player:AddInnateCollectible instead.",
+	[ModCallbacks.MC_PRE_OPENGL_RENDER] = "MC_PRE_OPENGL_RENDER is unused, and does not run.",
+}
+
 rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, param)
 	checkCallbackIdArg(2, callbackID)
 	checkNumberArg(3, priority)
 	checkFunctionArg(4, fn)
+
+	if DEPRECATED_CALLBACKS[callbackID] then
+		logWarning(callbackID, mod and mod.Name or "???", DEPRECATED_CALLBACKS[callbackID])
+	end
+
 	param = ConvertCallbackParam(callbackID, param)
 
 	InitCallbackIfNeeded(callbackID)
@@ -1885,6 +1925,12 @@ Isaac.RunCallbackWithParam = _RunCallback
 function Isaac.RunCallback(callbackID, ...)
 	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
+
+function _RunCallbackWithTwoParams(callbackID, param1, param2, ...)
+	local callbackIterator = GetCallbackIterator(callbackID, param1, param2)
+	return RunCallbackOverIterator(callbackID, callbackIterator, ...)
+end
+rawset(Isaac, "RunCallbackWithTwoParams", _RunCallbackWithTwoParams)
 
 
 -----------------------------------------------------------------------------------------------------

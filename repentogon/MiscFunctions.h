@@ -277,7 +277,7 @@ namespace REPENTOGON {
 		static std::string CleanTraceback(lua_State* L, int level)
 		{
 			lua_Debug ar;
-			std::string stackTraceback = "Stack Traceback:\n";
+			std::string stackTraceback = "Stack Traceback:";
 
 			while (lua_getstack(L, level++, &ar))
 			{
@@ -306,7 +306,7 @@ namespace REPENTOGON {
 				}
 			}
 
-			return stackTraceback;
+			return stackTraceback + "\n";
 		}
 
 		static std::string GenerateInvalidTypeMessage(lua_State* L, int idx, const char* expectedType)

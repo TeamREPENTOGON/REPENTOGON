@@ -218,7 +218,7 @@ int toint(const string &str) {
 			return returnval;
 		}
 	}
-		return 0;
+    return 0;
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {

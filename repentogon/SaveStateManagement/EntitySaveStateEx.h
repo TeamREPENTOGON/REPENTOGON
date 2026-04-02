@@ -5,6 +5,7 @@
 #include "IsaacRepentance.h"
 #include "document.h" // rapidjson
 #include "EntitySaveStateManagement.h"
+#include "../Patches/ItemSpoofSystem.h"
 
 // Contains the representation and handling of REPENTOGON-internal entity save states.
 // Piggybacks on EntitySaveStateManagement, being controlled by that logic and using the same IDs.
@@ -47,6 +48,9 @@ class PlayerSaveStateEx : public EntitySaveStateEx {
 	// We don't rely on their indices being the same after load - just that both twins have the same value here.
 	// We'll use this to restore the twin relationship after load (see ASMPlayerManager.cpp).
 	int _mainTwinIndex = -1;
+
+    ItemSpoofSystem::InnateItemGroups _innateCollectibles;
+    ItemSpoofSystem::InnateItemGroups _innateTrinkets;
 };
 
 class FamiliarSaveStateEx : public EntitySaveStateEx {

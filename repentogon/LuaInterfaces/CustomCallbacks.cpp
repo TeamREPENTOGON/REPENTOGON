@@ -39,8 +39,36 @@ HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)->
 	}
 }
 
+// MC_POST_TRIGGER_COLLECTIBLE_ADDED (1053)
+// (Runs for normal items, wisps, and innate collectibles)
+void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collectibleID, bool firsttime, bool wispOrInnate) {
+    const int callbackid = 1053;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+        lua::LuaCaller(L).push(callbackid)
+            .push(collectibleID)
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(collectibleID)
+            .push(firsttime)
+            .push(wispOrInnate)
+            .call(1);
+    }
+}
+HOOK_METHOD(Entity_Familiar, WispInit, () -> void) {
+    super();
+
+    if (this->_variant == 237 && this->_subtype > 0 && this->_player) {
+        CustomCallbacks::TriggerCollectibleAdded(*this->_player, this->_subtype, false, true);
+    }
+}
+
 //PRE/POST_ADD_COLLECTIBLE (1004/1005)
 void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, int vardata, Entity_Player* player) {
+    CustomCallbacks::TriggerCollectibleAdded(*player, type, firsttime, false);
+
 	const int callbackid = 1005;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2831,7 +2859,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 	super(ent, offset);
 }
 
-//PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM (1092)
+//PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM (1092) (DEPRECATED)
 HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCountTrueItems) -> int) {
 	const int callbackid = 1092;
 	int originalCount = super(CollectibleID, OnlyCountTrueItems);
@@ -2914,46 +2942,69 @@ HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> 
 	super(musicId, unusedInt, unusedBool);
 }
 
+
 enum class eTriggerCollectibleRemovedFlags
 {
 	FLAG_REMOVE_FROM_PLAYER_FORM = 0,
 	FLAG_WISP = 1,
+	FLAG_INNATE = 2,
 
 	NUM_FLAGS
 };
 
 static constexpr uint32_t MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_REMOVE_FROM_PLAYER_FORM;
 static constexpr uint32_t MC_TCR_FLAG_WISP = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_WISP;
+static constexpr uint32_t MC_TCR_FLAG_INNATE = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_INNATE;
 static constexpr uint32_t MC_TCR_NUM_FLAGS = (uint32_t)eTriggerCollectibleRemovedFlags::NUM_FLAGS;
 
 static constexpr std::bitset<MC_TCR_NUM_FLAGS> DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT = 1 << MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM;
 static auto s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
 
+void CustomCallbacks::TriggerInnateCollectibleRemoved(Entity_Player& player, int collectibleID)
+{
+    s_TriggerCollectibleRemovedContext.reset();
+    s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_INNATE, true);
+    player.TriggerCollectibleRemoved(collectibleID);
+}
+
 //POST_TRIGGER_COLLECTIBLE_REMOVED (1095) 
-HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleID) -> void) {
+HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (int collectibleID) -> void) {
 	const auto flags = s_TriggerCollectibleRemovedContext;
 	s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
 
-	super(collectibleID);
-	const int callbackid = 1095;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+    // Reimplementation of nop'd out Stompy decrement.
+    // Wisps triggering this was weird, and provides no benefit. Why was it even part of this function when no other playerform counter is?
+    if ((collectibleID == COLLECTIBLE_LEO || collectibleID == COLLECTIBLE_MAGIC_MUSHROOM) && flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM)) {
+        this->IncrementPlayerFormCounter(13, -1);  // PLAYERFORM_STOMPY
+    }
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+    // Reimplementation of nop'd out Heartbreak broken heart removal.
+    // Wisps can keep triggering this since its ""beneficial to the player"" but for innate copies, let's skip it.
+    if (collectibleID == COLLECTIBLE_HEARTBREAK && !flags.test(MC_TCR_FLAG_INNATE)) {
+        this->AddBrokenHearts(-3);
+    }
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(collectibleID)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(collectibleID)
-			.push(flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM))
-			.push(flags.test(MC_TCR_FLAG_WISP))
-			.call(1);
-	}
+    super(collectibleID);
+
+    const int callbackid = 1095;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(collectibleID)
+            .push(this, lua::Metatables::ENTITY_PLAYER)
+            .push(collectibleID)
+            .push(flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM))
+            .push(flags.test(MC_TCR_FLAG_WISP) || flags.test(MC_TCR_FLAG_INNATE))
+            .call(1);
+    }
 }
 
 // __fastcall to simulate __thiscall
-static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, uint32_t collectibleID)
+static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, int32_t collectibleID)
 {
 	s_TriggerCollectibleRemovedContext.reset();
 	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM, removeFromPlayerForm);
@@ -2979,7 +3030,7 @@ static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved()
 }
 
 // __fastcall to simulate __thiscall
-static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, uint32_t collectibleID)
+static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, int32_t collectibleID)
 {
 	s_TriggerCollectibleRemovedContext.reset();
 	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_WISP, true);
@@ -2997,9 +3048,58 @@ static void Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved()
 	sASMPatcher.FlatPatch((void*)addr, &patch);
 }
 
+// Nop out the reduction of the PlayerForm counter for Stompy from TriggerCollectibleRemoved so that we can handle it and make it not trigger for wisps and innate items.
+static void Patch_PlayerTriggerCollectibleRemoved_Stompy()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Stompy);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::RecomputeWispCollectibles for Stompy at %p\n", addr);
+
+    ASMPatch patch;
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 0xB);
+    patch.AddBytes(buffer);
+
+    sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+// Nop out the removal of 3 broken hearts for Heartbreak in TriggerCollectibleRemoved so that we can prevent it for innate items.
+static void Patch_PlayerTriggerCollectibleRemoved_Heartbreak()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Heartbreak);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerCollectibleRemoved for Heartbreak at %p\n", addr);
+
+    ASMPatch patch;
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 0x11);
+    patch.AddBytes(buffer);
+
+    sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+
+static int s_AddingInnateTrinkets = 0;
+
+void CustomCallbacks::TriggerInnateTrinketsAdded(Entity_Player& player, unsigned int trinketID, int num) {
+    s_AddingInnateTrinkets = num;
+    player.TriggerTrinketAdded(trinketID, false);
+}
+
 //POST_TRIGGER_TRINKET_ADDED (1096) 
 HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool firstTimePickingUp) -> void) {
-	super(trinketID, firstTimePickingUp);
+    int times = 1;
+    bool innate = false;
+
+    if (s_AddingInnateTrinkets > 0) {
+        times = s_AddingInnateTrinkets;
+        s_AddingInnateTrinkets = 0;
+        innate = true;
+        for (int i = 0; i < times; i++) {
+            super(trinketID, firstTimePickingUp);
+        }
+    } else {
+        super(trinketID, firstTimePickingUp);
+    }
+
 	const int callbackid = 1096;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3012,13 +3112,35 @@ HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool fi
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(trinketID)
 			.push(firstTimePickingUp)
+            .push(innate)
 			.call(1);
 	}
 }
 
+
+static int s_RemovingInnateTrinkets = 0;
+
+void CustomCallbacks::TriggerInnateTrinketsRemoved(Entity_Player& player, unsigned int trinketID, int num) {
+    s_RemovingInnateTrinkets = num;
+    player.TriggerTrinketRemoved(trinketID);
+}
+
 //POST_TRIGGER_TRINKET_REMOVED (1097) 
 HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> void) {
-	super(trinketID);
+    int times = 1;
+    bool innate = false;
+
+    if (s_RemovingInnateTrinkets > 0) {
+        times = s_RemovingInnateTrinkets;
+        s_RemovingInnateTrinkets = 0;
+        innate = true;
+        for (int i = 0; i < times; i++) {
+            super(trinketID);
+        }
+    } else {
+        super(trinketID);
+    }
+
 	const int callbackid = 1097;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3030,9 +3152,11 @@ HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> vo
 			.push(trinketID)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(trinketID)
+            .push(innate)
 			.call(1);
 	}
 }
+
 
 //POST_TRIGGER_WEAPON_FIRED (1098)
 HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> void) {
@@ -4422,6 +4546,48 @@ HOOK_METHOD(TemporaryEffects, AddEffect, (TemporaryEffect* effect, bool addCostu
 			}
 		}
 	}
+}
+
+// MC_POST_ADD_INNATE_COLLECTIBLE/TRINKET (1054/1055)
+void CustomCallbacks::TriggerInnateItemAddedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, int duration) {
+    int callbackid = isTrinket ? 1055 : 1054;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::runCallbackWithTwoParams);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(id)
+            .push(key.c_str())
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(id)
+            .push(key.c_str())
+            .push(amount)
+            .push(duration)
+            .call(1);
+    }
+}
+
+// MC_POST_REMOVE_INNATE_COLLECTIBLE/TRINKET (1056/1057)
+void CustomCallbacks::TriggerInnateItemRemovedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, bool expiredDuration) {
+    int callbackid = isTrinket ? 1057 : 1056;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::runCallbackWithTwoParams);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(id)
+            .push(key.c_str())
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(id)
+            .push(key.c_str())
+            .push(amount)
+            .push(expiredDuration)
+            .call(1);
+    }
 }
 
 //MC_PRE/POST_PLAYER_REVIVE (1482)
@@ -6169,4 +6335,6 @@ void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
+    Patch_PlayerTriggerCollectibleRemoved_Stompy();
+    Patch_PlayerTriggerCollectibleRemoved_Heartbreak();
 }

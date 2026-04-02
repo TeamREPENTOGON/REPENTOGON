@@ -252,7 +252,7 @@ __thiscall bool Entity_Player::TryFakeDeath();
 __thiscall int Entity_Player::GetCollectibleNum(int collectibleID, bool OnlyCountTrueItems);
 
 "558bec83e4f8a1????????83ec1c83b8????????02":
-__thiscall void Entity_Player::TriggerCollectibleRemoved(unsigned int collectibleID);
+__thiscall void Entity_Player::TriggerCollectibleRemoved(int collectibleID);
 
 "558bec83e4f85153568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool firstTimePickingUp);
