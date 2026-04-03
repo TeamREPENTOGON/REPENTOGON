@@ -191,6 +191,8 @@ Fixes:
 	- Fixed MC_GET_STATUS_EFFECT_TARGET not running for the "shrink" status effect.
 * EntityPlayer:
 	- Fixed SetPoopSpell & RemovePoopSpell not working correctly and messing up the poop mana value.
+* EntityPickup
+	- Fix some crashes related to GetLootList
 * CharacterMenu:
 	- Fixed GetCharacterMenuIDFromPlayerType not returning the correct value for Tainted Isaac
 * Fixed modded characters' locked/door sprites rendering on the "continue" widget if they are locked behind an achievement.
