@@ -1163,7 +1163,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.PlayerData->byorder[XMLStuff.PlayerData->nodes.size()] = id;
 			XMLStuff.PlayerData->bymod[lastmodid].push_back(id);
 			XMLStuff.ModData->players[lastmodid] += 1;
-			}
+		}
 	break;
 	case 3: //pocketitems
 		id = 1;

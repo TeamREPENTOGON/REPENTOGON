@@ -155,6 +155,7 @@ Added:
 * Added HistoryHUD and HistoryHUDItem classes
 * Backported new enums for GameStateFlag
 * Added "isActiveEnemy" attribute for EntityNPCs in entities2.xml (set to "true" or "false")
+* Added "innateitems" and "innatetrinkets" attributes for players.xml (comma-separated list of IDs or names)
 * Added SplitTearType.SWORD_BEAM
 * The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
 * Removed unused class constructors in Renderer.

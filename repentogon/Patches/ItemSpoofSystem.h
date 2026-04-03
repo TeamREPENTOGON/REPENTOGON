@@ -419,10 +419,16 @@ namespace ItemSpoofSystem
         TrinketSpoof& GetTrinketSpoof() {
             return trinketSpoof_;
         }
+        
+        // Check for a PlayerType change, and if a change is detected, "trigger" the add/remove of PlayerType-based innate items.
+        // Note that this is not required for the PlayerType-based innates to function correctly - this only handles stuff like TriggerCollectibleRemoved.
+        // If `restoringGameState`, update the lastPlayerType_ without triggering anything.
+        void CheckPlayerType(Entity_Player& player, bool restoringGameState);
 
     private:
         CollectibleSpoof collectibleSpoof_;
         TrinketSpoof trinketSpoof_;
+        int lastPlayerType_ = -1;
     };
 
 }  // namespace ItemSpoofSystem

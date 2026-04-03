@@ -57,12 +57,18 @@ void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collect
             .call(1);
     }
 }
+static bool s_RestoringFamiliarStates = false;
 HOOK_METHOD(Entity_Familiar, WispInit, () -> void) {
     super();
 
-    if (this->_variant == 237 && this->_subtype > 0 && this->_player) {
+    if (!s_RestoringFamiliarStates && this->_variant == 237 && this->_player && ItemConfig::IsValidCollectible(this->_subtype)) {
         CustomCallbacks::TriggerCollectibleAdded(*this->_player, this->_subtype, false, true);
     }
+}
+HOOK_METHOD(Entity_Player, RestoreGameState_PostLevelInit, (GameStatePlayer* saveState) -> void) {
+    s_RestoringFamiliarStates = true;
+    super(saveState);
+    s_RestoringFamiliarStates = false;
 }
 
 //PRE/POST_ADD_COLLECTIBLE (1004/1005)

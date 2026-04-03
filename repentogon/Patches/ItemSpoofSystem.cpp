@@ -4,6 +4,9 @@
 #include "HookSystem.h"
 #include "EntityPlus.h"
 
+
+// Context handling
+
 struct ItemSpoofCallContext
 {
     bool isLuaRequest = false;
@@ -24,15 +27,17 @@ ItemSpoofCallContext GetContextAndReset()
     return context;
 }
 
-static std::bitset<CollectibleType::NUM_COLLECTIBLES> s_reworkedCollectibles;
-static std::bitset<ePlayerType::NUM_PLAYER_TYPES> s_reworkedBirthrights;
-static std::bitset<TrinketType::NUM_TRINKETS> s_reworkedTrinkets;
-
-void ItemSpoofSystem::StartLuaRequest(bool ignoreSpoof)
-{
+void ItemSpoofSystem::StartLuaRequest(bool ignoreSpoof) {
     s_ItemSpoofCallContext.isLuaRequest = true;
     s_ItemSpoofCallContext.ignoreSpoof = ignoreSpoof;
 }
+
+
+// "Reworked" Items
+
+static std::bitset<CollectibleType::NUM_COLLECTIBLES> s_reworkedCollectibles;
+static std::bitset<ePlayerType::NUM_PLAYER_TYPES> s_reworkedBirthrights;
+static std::bitset<TrinketType::NUM_TRINKETS> s_reworkedTrinkets;
 
 void ItemSpoofSystem::ReworkCollectible(int collectible)
 {
@@ -82,6 +87,84 @@ static bool is_reworked_trinket(int trinket)
     return s_reworkedTrinkets.test(trinket);
 }
 
+
+// XML Innate Items
+
+static std::unordered_map<int, std::unordered_map<int, int>> s_playerTypeInnateCollectibles;
+static std::unordered_map<int, std::unordered_map<int, int>> s_playerTypeInnateTrinkets;
+
+const std::unordered_map<int, int>* GetPlayerTypeInnateCollectibles(int playerType) {
+    if (auto it = s_playerTypeInnateCollectibles.find(playerType); it != s_playerTypeInnateCollectibles.end())
+        return &it->second;
+    return nullptr;
+}
+
+int GetPlayerTypeInnateCollectibleCount(Entity_Player* player, int collectible) {
+    if (const auto* ptypeCollectibles = GetPlayerTypeInnateCollectibles(player->_playerType)) {
+        if (auto it = ptypeCollectibles->find(collectible); it != ptypeCollectibles->end()) {
+            return it->second;
+        }
+    }
+    return 0;
+}
+
+const std::unordered_map<int, int>* GetPlayerTypeInnateTrinkets(int playerType) {
+    if (auto it = s_playerTypeInnateTrinkets.find(playerType); it != s_playerTypeInnateTrinkets.end())
+        return &it->second;
+    return nullptr;
+}
+
+int GetPlayerTypeInnateTrinketCount(Entity_Player* player, int collectible) {
+    if (const auto* ptypeTrinkets = GetPlayerTypeInnateTrinkets(player->_playerType)) {
+        if (auto it = ptypeTrinkets->find(collectible); it != ptypeTrinkets->end()) {
+            return it->second;
+        }
+    }
+    return 0;
+}
+
+std::vector<int> ParseCommaSeparatedIdList(const std::string& str) {
+    std::vector<int> ids;
+
+    std::stringstream ss(str);
+    std::string item;
+
+    while (std::getline(ss, item, ',')) {
+        int id = std::atoi(item.c_str());
+        if (id > 0) {
+            ids.push_back(id);
+        }
+    }
+
+    return ids;
+}
+
+HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -9999, () -> void) {
+    RegisterCustomXMLAttr(XMLStuff.PlayerData, "innateitems", XMLStuff.ItemData);
+    RegisterCustomXMLAttr(XMLStuff.PlayerData, "innatetrinkets", XMLStuff.TrinketData);
+
+    super();
+
+    s_playerTypeInnateCollectibles.clear();
+    s_playerTypeInnateTrinkets.clear();
+
+    for (const auto& [playerType, playerData] : XMLStuff.PlayerData->nodes) {
+        if (auto it = playerData.find("innateitems"); it != playerData.end()) {
+            for (const int id : ParseCommaSeparatedIdList(it->second)) {
+                s_playerTypeInnateCollectibles[playerType][id]++;
+            }
+        }
+        if (auto it = playerData.find("innatetrinkets"); it != playerData.end()) {
+            for (const int id : ParseCommaSeparatedIdList(it->second)) {
+                s_playerTypeInnateTrinkets[playerType][id]++;
+            }
+        }
+    }
+}
+
+
+// Core ItemSpoofSystem hooks
+
 HOOK_METHOD_PRIORITY(Entity_Player, HasCollectible, -9999, (int collectible, bool ignoreModifiers) -> bool)
 {
     const auto context = GetContextAndReset();
@@ -104,6 +187,10 @@ HOOK_METHOD_PRIORITY(Entity_Player, HasCollectible, -9999, (int collectible, boo
             {
                 return true;
             }
+        }
+
+        if (GetPlayerTypeInnateCollectibleCount(this, collectible) > 0) {
+            return true;
         }
     }
 
@@ -132,6 +219,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetCollectibleNum, -9999, (int collectible, 
             }
             innateCount += spoofs.GetInnateCount(collectible);
         }
+
+        innateCount += GetPlayerTypeInnateCollectibleCount(this, collectible);
     }
    
     return innateCount + super(collectible, ignoreModifiers);
@@ -160,6 +249,10 @@ HOOK_METHOD_PRIORITY(Entity_Player, HasTrinket, -9999, (unsigned int trinket, bo
                 return true;
             }
         }
+
+        if (GetPlayerTypeInnateTrinketCount(this, trinket) > 0) {
+            return true;
+        }
     }
 
     return super(trinket, ignoreModifiers);
@@ -187,6 +280,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetTrinketMultiplier, -9999, (unsigned int t
             }
             innateMult += spoofs.GetInnateCount(trinket & TRINKET_ID_MASK) + spoofs.GetInnateCount(trinket | TRINKET_GOLDEN_FLAG) * 2;
         }
+
+        innateMult += GetPlayerTypeInnateTrinketCount(this, trinket);
     }
 
     int vanillaMult = super(trinket);
@@ -228,10 +323,40 @@ HOOK_METHOD_PRIORITY(Entity_Player, UpdateEffects, -9999, () -> void)
 {
     if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this))
     {
+        playerPlus->itemSpoofs.CheckPlayerType(*this, false);
         playerPlus->itemSpoofs.GetCollectibleSpoof().UpdateTemporaryTimers(*this);
         playerPlus->itemSpoofs.GetTrinketSpoof().UpdateTemporaryTimers(*this);
     }
     super();
+}
+
+// Detect PlayerType changes where they can happen.
+HOOK_METHOD_PRIORITY(Entity_Player, ChangePlayerType, 9999, (int playerType, bool unk) -> void) {
+    super(playerType, unk);
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+        playerPlus->itemSpoofs.CheckPlayerType(*this, false);
+    }
+}
+HOOK_METHOD_PRIORITY(Entity_Player, InitPostLevelInitStats, 9999, () -> void) {
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+        playerPlus->itemSpoofs.CheckPlayerType(*this, false);
+    }
+    super();
+}
+HOOK_METHOD_PRIORITY(Entity_Player, TriggerDeath, 9999, (bool checkOnly) -> bool) {
+    bool res = super(checkOnly);
+    if (!checkOnly) {
+        if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+            playerPlus->itemSpoofs.CheckPlayerType(*this, false);
+        }
+    }
+    return res;
+}
+HOOK_METHOD_PRIORITY(Entity_Player, RestoreGameState, -9999, (GameStatePlayer* saveState) -> void) {
+    super(saveState);
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this)) {
+        playerPlus->itemSpoofs.CheckPlayerType(*this, true);
+    }
 }
 
 
@@ -589,6 +714,38 @@ namespace ItemSpoofSystem
         innates_ = state;
         if (!legacyGroup.IsEmpty()) {
             innates_[""] = std::move(legacyGroup);
+        }
+    }
+
+    void PlayerItemSpoofs::CheckPlayerType(Entity_Player& player, bool restoringGameState) {
+        const int prevPlayerType = lastPlayerType_;
+        const int currentPlayerType = player._playerType;
+        if (prevPlayerType != currentPlayerType) {
+            lastPlayerType_ = currentPlayerType;
+            if (restoringGameState) {
+                return;
+            }
+            if (const auto* oldCols = GetPlayerTypeInnateCollectibles(prevPlayerType)) {
+                for (const auto& [id, count] : *oldCols) {
+                    collectibleSpoof_.TriggerRemoved(player, id, count, false);
+                }
+            }
+            if (const auto* newCols = GetPlayerTypeInnateCollectibles(currentPlayerType)) {
+                for (const auto& [id, count] : *newCols) {
+                    collectibleSpoof_.TriggerAdded(player, id, count, false, false);
+                }
+            }
+            if (const auto* oldTrinkets = GetPlayerTypeInnateTrinkets(prevPlayerType)) {
+                for (const auto& [id, count] : *oldTrinkets) {
+                    trinketSpoof_.TriggerRemoved(player, id, count, false);
+                }
+            }
+            if (const auto* newTrinkets = GetPlayerTypeInnateTrinkets(currentPlayerType)) {
+                for (const auto& [id, count] : *newTrinkets) {
+                    trinketSpoof_.TriggerAdded(player, id, count, false, false);
+                }
+            }
+            player.EvaluateItems();
         }
     }
 
