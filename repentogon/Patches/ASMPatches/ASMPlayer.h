@@ -8,8 +8,6 @@ struct CheckFamiliarStorage {
 };
 
 extern thread_local CheckFamiliarStorage familiarsStorage;
-extern Entity* playerShootRedCandleEntity;
-extern Entity* playerShootBlueCandleEntity;
 
 static std::vector<Entity_Familiar*>& InitFamiliarStorage() {
 	std::vector<Entity_Familiar*>& familiars = familiarsStorage.familiars;
@@ -30,5 +28,3 @@ void ASMPatchPlayerDeathSoundSoulOfLazarus();
 void ASMPatchPlayerDeathSoundLost();
 void ASMPatchPlayerDeathSoundAstralProjection();
 void ASMPatchPlayerLostSoulSkipPeePuddle();
-void ASMPatchPlayerShootRedCandle();
-void ASMPatchPlayerShootBlueCandle();

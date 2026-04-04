@@ -262,8 +262,6 @@ void PerformASMPatches() {
 	ASMPatchPlayerDeathSoundLost();
 	ASMPatchPlayerDeathSoundAstralProjection();
 	ASMPatchPlayerLostSoulSkipPeePuddle();
-	ASMPatchPlayerShootRedCandle();
-	ASMPatchPlayerShootBlueCandle();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();
