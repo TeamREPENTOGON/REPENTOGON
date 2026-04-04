@@ -68,22 +68,22 @@ std::string PointerDecl::GetPrefix() const {
 
 std::string BasicTypeToString(BasicTypes type) {
     switch (type) {
-    case CHAR:
+    case BasicTypes::CHAR:
         return "char";
 
-    case INT:
+    case BasicTypes::INT:
         return "int";
 
-    case BOOL:
+    case BasicTypes::BOOL:
         return "bool";
 
-    case VOID:
+    case BasicTypes::TVOID:
         return "void";
 
-    case FLOAT:
+    case BasicTypes::FLOAT:
         return "float";
 
-    case DOUBLE:
+    case BasicTypes::DOUBLE:
         return "double";
 
     default:
@@ -112,15 +112,15 @@ std::string BasicType::ToString() const {
 
     if (_length) {
         switch (*_length) {
-        case LONG:
+	case Length::LONG:
             res << "long ";
             break;
 
-        case LONGLONG:
+	case Length::LONGLONG:
             res << "long long ";
             break;
 
-        case SHORT:
+	case Length::SHORT:
             res << "short ";
         }
     }
@@ -144,40 +144,45 @@ std::string BasicType::GetAbsoluteName() const {
         }
     }
     else {
-        if (_type == INT || _type == CHAR) {
+        if (_type == BasicTypes::INT || _type == BasicTypes::CHAR) {
             str << "s";
         }
     }
 
     switch (_type) {
-    case FLOAT:
+    case BasicTypes::FLOAT:
         str << "f";
         break;
 
-    case DOUBLE:
+    case BasicTypes::DOUBLE:
         str << "d";
         break;
 
-    case INT:
+    case BasicTypes::INT:
         str << "i";
         break;
 
-    case CHAR:
+    case BasicTypes::CHAR:
         str << "c";
         break;
 
-    case BOOL:
+    case BasicTypes::BOOL:
         str << "b";
         break;
 
-    case VOID:
+    case BasicTypes::TVOID:
         str << "v";
+	break;
+
+    case BasicTypes::BT_INVALID:
+	str << "?";
+	break;
     }
 
     if (_length) {
         switch (*_length) {
-        case LONG:
-            if (_type == INT) {
+	case Length::LONG:
+            if (_type == BasicTypes::INT) {
                 str << "32";
             }
             else {
@@ -185,11 +190,11 @@ std::string BasicType::GetAbsoluteName() const {
             }
             break;
 
-        case SHORT:
+	case Length::SHORT:
             str << "16";
             break;
 
-        case LONGLONG:
+	case Length::LONGLONG:
             str << "64";
             break;
         }
@@ -200,19 +205,19 @@ std::string BasicType::GetAbsoluteName() const {
 
 size_t BasicType::size() const {
     switch (_type) {
-    case CHAR:
+    case BasicTypes::CHAR:
         return 1;
 
-    case INT:
+    case BasicTypes::INT:
         if (_length) {
             switch (*_length) {
-            case SHORT:
+	    case Length::SHORT:
                 return 2;
 
-            case LONG:
+	    case Length::LONG:
                 return 4;
 
-            case LONGLONG:
+	    case Length::LONGLONG:
                 return 8;
             }
         }
@@ -220,13 +225,13 @@ size_t BasicType::size() const {
             return 4;
         }
 
-    case FLOAT:
+    case BasicTypes::FLOAT:
         return 4;
 
-    case DOUBLE:
+    case BasicTypes::DOUBLE:
         if (_length) {
             switch (*_length) {
-            case LONG:
+	    case Length::LONG:
                 return 12;
 
             default:
@@ -237,10 +242,10 @@ size_t BasicType::size() const {
             return 8;
         }
 
-    case BOOL:
+    case BasicTypes::BOOL:
         return 1;
 
-    case VOID:
+    case BasicTypes::TVOID:
         return 0;
 
     default:
@@ -395,15 +400,17 @@ public:
     InvalidTypeSizeException() { }
 
     virtual const char* what() const override {
-        return _str.str().c_str();
+	const_cast<std::string&>(_str) = const_cast<std::ostringstream&>(_sstr).str();
+        return _str.c_str();
     }
 
     std::ostringstream& get() {
-        return _str;
+        return _sstr;
     }
 
 private:
-    std::ostringstream _str;
+    std::ostringstream _sstr;
+    std::string _str;
 };
 
 size_t Type::size() const {
@@ -747,20 +754,20 @@ std::string RegisterToString(Registers reg) {
 
 std::string CallingConventionToString(CallingConventions convention) {
     switch (convention) {
-    case CDECL:
+    case CallingConventions::CCDECL:
         return "__cdecl";
 
-    case STDCALL:
+    case CallingConventions::STDCALL:
         return "__stdcall";
 
-    case FASTCALL:
+    case CallingConventions::FASTCALL:
         return "__fastcall";
 
-    case THISCALL:
+    case CallingConventions::THISCALL:
         return "__thiscall";
 
-    case X86_64:
-    case X86_64_OUTPUT:
+    case CallingConventions::X86_64:
+    case CallingConventions::X86_64_OUTPUT:
         return "";
 
     default:
@@ -779,11 +786,14 @@ std::string FunctionParam::ToString() const {
 }
 
 bool Function::IsVirtual() const {
-    return _qualifiers & VIRTUAL || _qualifiers & PURE;
+    return _qualifiers & VIRTUAL || _qualifiers & QPURE;
 }
 
 bool Function::IsCleanup() const {
-    return _qualifiers & CLEANUP || (_convention && (*_convention == CDECL || *_convention == X86_64 || *_convention == X86_64_OUTPUT));
+    return _qualifiers & CLEANUP ||
+      (_convention && (*_convention == CallingConventions::CCDECL ||
+		       *_convention == CallingConventions::X86_64 ||
+		       *_convention == CallingConventions::X86_64_OUTPUT));
 }
 
 bool Function::IsStatic() const {
@@ -791,7 +801,7 @@ bool Function::IsStatic() const {
 }
 
 bool Function::IsPure() const {
-    return _qualifiers & PURE;
+    return _qualifiers & QPURE;
 }
 
 bool Function::IsDebug() const {
@@ -863,7 +873,7 @@ std::string FunctionPtr::ToString() const {
     str << _ret->ToString(false) << "(";
 
     if (_convention) {
-        str << *_convention << " ";
+        str << CallingConventionToString(*_convention) << " ";
     }
 
     if (_scope) {
@@ -994,13 +1004,13 @@ std::string VisibilityToString(Visibility v) {
 
 std::string LengthToString(Length length) {
     switch (length) {
-    case LONGLONG:
+    case Length::LONGLONG:
         return "long long";
 
-    case LONG:
+    case Length::LONG:
         return "long";
 
-    case SHORT:
+    case Length::SHORT:
         return "short";
     }
 
@@ -1045,7 +1055,7 @@ CallingConventions StringToConvention(std::string const& convention) {
         return CallingConventions::FASTCALL;
     }
     else if (convention == "__cdecl") {
-        return CallingConventions::CDECL;
+        return CallingConventions::CCDECL;
     }
     else if (convention == "__thiscall") {
         return CallingConventions::THISCALL;
@@ -1082,6 +1092,6 @@ bool FunctionParam::IsX8664Valid(size_t position) const {
         return position < 2;
     }
     else {
-        return true; // If type is VOID the program is ill-formed so I don't care
+        return true; // If type is TVOID the program is ill-formed so I don't care
     }
 }

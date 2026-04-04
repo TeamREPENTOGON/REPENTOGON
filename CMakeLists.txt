@@ -1,5 +1,45 @@
 cmake_minimum_required(VERSION 3.13.0)
 
+function (linux_to_wine_path path result)
+    string (REPLACE "/" "\\\\" path_slash "${path}")
+    string (PREPEND path_slash "Z:")
+    message (STATUS "linux_to_wine_path: path = ${path}, path_slash = ${path_slash}")
+    set (${result} "${path_slash}" PARENT_SCOPE)
+endfunction ()
+
+if (CMAKE_SYSTEM_NAME MATCHES Windows)
+  if (CMAKE_HOST_SYSTEM_NAME MATCHES Linux)
+    message (STATUS "Cross-compiling from Linux to Windows (assuming clang-cl)")
+    set (ZHLPARSER_RUNNER "wine")
+    set (ZHLPARSER_EXEC "zhlparser.exe")
+    set (ZHLGEN_ASM_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.asm")
+    set (ZHLGEN_ASM "--output-asm=${ZHLGEN_ASM_FILE}")
+    set (ZHLGEN_LIB_FILE "${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance_lib.cpp")
+    set (ZHLGEN_LIB_FLAG "--output-gen-lib=${ZHLGEN_LIB_FILE}")
+    set (ZHLGEN_NEED_ASM 1)
+    linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/rapidxml" RAPIDXML_WINE_PATH)
+    linux_to_wine_path("${CMAKE_SOURCE_DIR}/libs/lua" LUA_WINE_PATH)
+    linux_to_wine_path("${ZHLGEN_LIB_FILE}" ZHLGEN_LIB_FILE_WINE_PATH)
+    set (ZHLGEN_LIB_CMD "--gen-lib-cmd=\"/LD /std:c++17 /I${RAPIDXML_WINE_PATH} /I${LUA_WINE_PATH} ${ZHLGEN_LIB_FILE_WINE_PATH}\"")
+    if (NOT ZHLGEN_TC)
+      message (FATAL_ERROR "ZHLGEN_TC is unset, compiling the base library for IsaacRepentance.asm is impossible")
+    endif ()
+    set (ZHLGEN_LIB_TC "--gen-lib-tc=${ZHLGEN_TC}")
+  else ()
+    message (STATUS "Building natively on Windows")
+    set (ZHLPARSER_RUNNER "")
+    set (ZHLPARSER_EXEC "zhlparser")
+    set (ZHLGEN_ASM "")
+    set (ZHLGEN_ASM_FILE "")
+    set (ZHLGEN_LIB_FILE "")
+    set (ZHLGEN_LIB_FLAG "")
+    set (ZHLGEN_LIB_CMD "")
+    set (ZHLGEN_LIB_TC "")
+  endif ()
+else ()
+  message (FATAL_ERROR "Unknown system configuration, CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}, CMAKE_HOST_SYSTEM_NAME = ${CMAKE_HOST_SYSTEM_NAME}")
+endif ()
+
 set ("CMAKE_CXX_STANDARD" 17)
 set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 set (CMAKE_BUILD_TYPE "Debug")
@@ -66,17 +106,32 @@ add_library(Lua5.3.3r SHARED ${LUA_SRC})
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 LIST(APPEND ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes)
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND
-  zhlparser --output-header="${CMAKE_SOURCE_DIR}/include/IsaacRepentance.h"
-            --output-impl="${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp"
+add_custom_command(
+  OUTPUT
+    ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp
+    ${ZHLGEN_ASM_FILE}
+  COMMAND
+  ${ZHLPARSER_RUNNER} "$<TARGET_FILE_DIR:zhlparser>/${ZHLPARSER_EXEC}"
+	    --output-header="${CMAKE_SOURCE_DIR}/include/IsaacRepentance.h"
+	    --output-impl="${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp"
             --output-hooks="${CMAKE_SOURCE_DIR}/libzhl/hooks.json"
+	    "${ZHLGEN_ASM}"
+	    "${ZHLGEN_LIB_FLAG}"
+	    "${ZHLGEN_LIB_CMD}"
+	    "${ZHLGEN_LIB_TC}"
             --folder="${CMAKE_SOURCE_DIR}/libzhl/functions"
             --file="${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes"
-            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser
+)
+set_source_files_properties(${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp PROPERTIES SYMBOLIC TRUE)
 
 # ZHL
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.h)
+LIST(REMOVE_ITEM ZHL_SRC "${ZHLGEN_LIB_FILE}")
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
+if (ZHLGEN_NEED_ASM)
+  LIST (APPEND ZHL_SRC ${ZHLGEN_ASM_FILE})
+endif ()
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
 target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")

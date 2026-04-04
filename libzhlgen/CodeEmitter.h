@@ -14,7 +14,10 @@ namespace fs = std::filesystem;
 class CodeEmitter {
 public:
 	CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
-		std::string const& outputImpl, std::string const& outputHooks);
+		std::string const& outputImpl, std::string const& outputHooks,
+		std::optional<std::string> outputAsmImpl,
+		std::string const& asmLibFile, std::string const& genLibCmd,
+		std::string const& genLibTc);
 
 	bool ProcessZHLFiles(fs::path const& base);
 	bool ProcessFile(fs::path const& path);
@@ -25,6 +28,8 @@ public:
 private:
 	friend class TypeEmitter;
 	friend class TypeGenerator;
+
+	typedef std::variant<Signature, Function> SigOrFunc;
 
 	class TypeEmitter {
 	public:
@@ -48,12 +53,26 @@ private:
 		CodeEmitter* _emitter;
 	};
 
+	void EmitHeader();
+	void EmitHeader(Struct const& s);
+	void EmitHeader(VariableSignature const& sig);
+	void EmitHeader(Variable const& var);
+	void EmitHeader(Signature const& sig, bool isVirtual);
+	void EmitHeader(VTableEntry const& sig);
+
+	void EmitImplementation();
+	void EmitImpl(Struct const& s);
+	void EmitImpl(VariableSignature const& sig);
+	void EmitImpl(Signature const& sig, bool isVirtual);
+	void EmitImpl(VTableEntry const& sig);
+
+	void EmitJsonFile();
+
 	void BuildExternalNamespaces();
 
 	void EmitForwardDecl();
 	void EmitJsonPrologue();
 	void EmitJsonEpilogue();
-	void EmitAsmDefinitions();
 	void EmitAsmDefinitions_Decl();
 	void EmitAsmDefinitions_Impl();
 
@@ -61,18 +80,17 @@ private:
 	void Emit(std::string const& s);
 	void Emit(Variable const& var);
 	void Emit(Signature const& sig, bool isVirtual);
-	void Emit(std::variant<Signature, Skip, Function> const& sig);
+	void Emit(VTableEntry const& sig);
 	void Emit(PointerDecl const& ptr);
 	void EmitFunction(Function const& fun, bool withPrefix = false);
 	void Emit(VariableSignature const& sig);
-	void EmitNamespace(std::string const& name);
+	void EmitNamespaceHeader(std::string const& name);
+	void EmitNamespaceImpl(std::string const& name);
 	void Emit(ExternalFunction const& fn);
 	void Emit(std::vector<Variable> const& vars);
 	void EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize, bool comma);
-	void EmitJson(Function const& fn, std::string const& internalName,
-		std::string const& fullName);
 
-	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
+	void EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
 	void EmitInstruction(std::string const& ins);
 
@@ -93,8 +111,10 @@ private:
 
 	std::tuple<bool, uint32_t, uint32_t> EmitArgData(Function const& fn);
 	void EmitTypeID(Function const& fn);
-	std::string GenerateFunctionPrototype(Function const& fn, bool includeName);
-	void EmitFunctionPrototype(Function const& fn, bool includeName);
+	std::string GenerateFunctionPrototype(Function const& fn, bool includeName,
+	    bool includeCallingConvention, bool protectName, bool link);
+	void EmitFunctionPrototype(Function const& fn, bool includeName,
+	    bool includeCallingConvention, bool protectName, bool link);
 	uint32_t GetFlags(Function const& fn) const;
 
 	void EmitGlobalPrologue();
@@ -105,6 +125,7 @@ private:
 
 	void EmitDecl();
 	void EmitImpl();
+	void EmitAsmImpl();
 	void EmitJson();
 
 	inline void IncrDepth() {
@@ -119,7 +140,6 @@ private:
 	bool InProcessing(Struct const& s) const;
 
 	void EmitDependencies(Struct const& s);
-	void AssertEmitted(Struct const& s);
 
 	inline uint32_t ResetDepth() {
 		uint32_t back = _emitDepth;
@@ -136,7 +156,7 @@ private:
 	AsmDefMap* _asmDefs;
 	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
-	std::ofstream _decls, _impl, _json;
+	std::ofstream _decls, _impl, _json, _asmImpl;
 	std::ofstream* _emitContext = nullptr;
 	Variable const* _variableContext = nullptr;
 	Struct const* _currentStructure = nullptr;
@@ -155,12 +175,22 @@ private:
 	std::set<std::string> _vtableProcessingStructures;
 
 	uint32_t _emitDepth = 0;
+	bool _emitAssembly = false;
+	std::string _outputHeaderFilename;
 
-	/* Convert from a function's fully qualified name to its internal name
-	 * used in the hook enabler system. FQFN is <ret> <full_namespace>::name([params]*);,
-	 * internal name is _fun<ID>.
-	 */
-	std::map<std::string, std::string> _fullNameToInternalName;
+	struct FunctionJsonData {
+	    bool canHook;
+	    std::string internalName;
+	    std::string fullName;
+	};
+	std::vector<FunctionJsonData> _functionJsonData;
+	std::string _asmLibFile;
+	std::string _genLibCmd;
+	std::string _genLibTc;
+	void EmitJson(FunctionJsonData const& data);
+	Function const* FunctionFromSigOrFunc(SigOrFunc const& fn);
+	void ComputeMangledNames();
+	void EmitStub(FILE* f, SigOrFunc const& fn);
 };
 
 Logger* ParserLogger();

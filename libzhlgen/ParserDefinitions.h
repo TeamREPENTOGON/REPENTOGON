@@ -29,7 +29,7 @@ enum Signedness {
 
 std::string SignednessToString(Signedness sign);
 
-enum Length {
+enum class Length {
     LONG,
     LONGLONG,
     SHORT
@@ -37,11 +37,11 @@ enum Length {
 
 std::string LengthToString(Length length);
 
-enum BasicTypes {
+enum class BasicTypes {
     CHAR,
     INT,
     BOOL,
-    VOID,
+    TVOID,
     FLOAT,
     DOUBLE,
     BT_INVALID
@@ -50,8 +50,8 @@ enum BasicTypes {
 std::string BasicTypeToString(BasicTypes type);
 
 
-enum CallingConventions {
-    CDECL,
+enum class CallingConventions {
+    CCDECL,
     STDCALL,
     FASTCALL,
     THISCALL,
@@ -99,7 +99,7 @@ enum FunctionQualifiers {
     STATIC = 1 << 0,
     VIRTUAL = 1 << 1,
     CLEANUP = 1 << 2,
-    PURE = 1 << 3,
+    QPURE = 1 << 3,
     DEBUG = 1 << 4,
     NOHOOK = 1 << 5
 };
@@ -109,7 +109,7 @@ std::string CallingConventionToString(CallingConventions convention);
 struct BasicType {
     std::optional<Signedness> _sign;
     std::optional<Length> _length;
-    BasicTypes _type = BT_INVALID;
+    BasicTypes _type = BasicTypes::BT_INVALID;
 
     std::string ToString() const;
     std::string GetAbsoluteName() const;
