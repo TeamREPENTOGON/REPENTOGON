@@ -319,7 +319,7 @@ std::any Parser::visitSimpleType(ZHLParser::SimpleTypeContext* ctx) {
         basic._type = BasicTypes::BOOL;
     }
     else if (ctx->Void()) {
-        basic._type = BasicTypes::VOID;
+        basic._type = BasicTypes::TVOID;
     }
     else if (ctx->Char()) {
         basic._type = BasicTypes::CHAR;
@@ -578,7 +578,7 @@ std::any Parser::visitVtableEntry(ZHLParser::VtableEntryContext* ctx) {
     }
     else if (ctx->Pure()) {
         Function func = std::any_cast<Function>(visit(ctx->classFunction()));
-        func._qualifiers |= PURE;
+        func._qualifiers |= QPURE;
         _currentStruct->_virtualFunctions.push_back(func);
     }
     else {
@@ -1085,7 +1085,7 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
             }
             else if (fn._convention) {
                 CallingConventions convention = *fn._convention;
-                if (convention != CDECL) {
+                if (convention != CallingConventions::CCDECL) {
                     ParserLogger()->Error("%s: 'cleanup' specified on non cdecl (%s) function %s\n",
                         _currentFile.c_str(), CallingConventionToString(convention).c_str(),
                         GetCurrentFunctionQualifiedName(fn._name).c_str());

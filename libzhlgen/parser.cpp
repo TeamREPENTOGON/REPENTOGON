@@ -77,7 +77,12 @@ void ParseArguments(int argc, char** argv, Args& args, FreeArgs& freeArgs) {
 }
 
 void ReadOneArgument(Args const& args, std::string const& arg, std::string& value) {
-    if (std::vector<std::string> const& values = args.find(arg)->second; !values.empty()) {
+    auto iter = args.find(arg);
+    if (iter == args.end()) {
+	return;
+    }
+
+    if (std::vector<std::string> const& values = iter->second; !values.empty()) {
         value = values.front();
         if (values.size() > 1) {
             fprintf(stderr, "[WARN] Argument --%s given multiple times, ignoring repeats\n", arg.c_str());
@@ -90,6 +95,10 @@ static const std::string OutputImpl = "output-impl";
 static const std::string OutputHooks = "output-hooks";
 static const std::string Folder = "folder";
 static const std::string File = "file";
+static const std::string OutputAsm = "output-asm";
+static const std::string OutputGenLib = "output-gen-lib";
+static const std::string GenLibCmd = "gen-lib-cmd";
+static const std::string GenLibTc = "gen-lib-tc";
 
 int main(int argc, char** argv) {
     Args args;
@@ -99,16 +108,28 @@ int main(int argc, char** argv) {
 
     std::string outputHeader = "ZHLInterface.h";
     std::string outputImpl = "ZHLInterface.cpp";
+    std::string outputAsm = "ZHLInterface.asm";
     std::string outputHooks = "ZHLHooks.json";
+    std::string outputGenLib = "ZHLGenLib.cpp";
+    std::string genLibCmd = "/LD /std:c++17 ZHLGenLib.cpp";
+    std::string genLibTc;
 
     ReadOneArgument(args, OutputHeader, outputHeader);
     ReadOneArgument(args, OutputImpl, outputImpl);
     ReadOneArgument(args, OutputHooks, outputHooks);
+    ReadOneArgument(args, OutputAsm, outputAsm);
+    ReadOneArgument(args, OutputGenLib, outputGenLib);
+    ReadOneArgument(args, GenLibCmd, genLibCmd);
+    ReadOneArgument(args, GenLibTc, genLibTc);
+
+    bool shouldOutputAsm = args.find(OutputAsm) != args.end();
 
     try {
         TypeMap types;
         AsmDefMap asmDefs;
-        CodeEmitter emitter(&types, &asmDefs, outputHeader, outputImpl, outputHooks);
+        CodeEmitter emitter(&types, &asmDefs, outputHeader, outputImpl,
+	    outputHooks, shouldOutputAsm ? std::make_optional(outputAsm) : std::nullopt,
+	    outputGenLib, genLibCmd, genLibTc);
         bool ok = true;
         for (std::string const& path : args[Folder]) {
             if (!emitter.ProcessZHLFiles(path)) {

@@ -1,6 +1,10 @@
+#include <Windows.h>
+#undef ERROR // Defined in the depths of Windows.h, conflicts with antlr
+
 #include "CodeEmitter.h"
 #include "ParserCore.h"
 
+#include <codecvt>
 #include <fstream>
 #include <iostream>
 
@@ -33,15 +37,22 @@ std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
 }
 
 CodeEmitter::CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
-    std::string const& outputImpl, std::string const& outputHooks) :
-    _types(types), _asmDefs(asmDefs) {
+    std::string const& outputImpl, std::string const& outputHooks,
+    std::optional<std::string> outputAsmImpl, std::string const& asmLibFile,
+    std::string const& genLibCmd, std::string const& genLibTc) :
+    _types(types), _asmDefs(asmDefs), _emitAssembly(outputAsmImpl),
+    _outputHeaderFilename(outputHeader), _asmLibFile(asmLibFile),
+    _genLibCmd(genLibCmd), _genLibTc(genLibTc) {
     _decls.open(outputHeader);
     _impl.open(outputImpl);
     _json.open(outputHooks);
+    if (outputAsmImpl) {
+	_asmImpl.open(*outputAsmImpl);
+    }
 }
 
 bool CodeEmitter::ProcessZHLFiles(fs::path const& base) {
-    bool ok = true;
+	bool ok = true;
 
 	for (fs::directory_entry const& entry : fs::directory_iterator(base)) {
 		//std::cout << "File " << entry.path() << std::endl;
@@ -52,9 +63,9 @@ bool CodeEmitter::ProcessZHLFiles(fs::path const& base) {
 		if (entry.path().extension() != std::string(".zhl"))
 			continue;
 
-        if (!ProcessFile(entry.path())) {
-            ok = false;
-        }
+		if (!ProcessFile(entry.path())) {
+			ok = false;
+		}
 	}
 
     return ok;
@@ -103,51 +114,85 @@ bool CodeEmitter::ProcessFile(fs::path const& file) {
     return result;
 }
 
-void CodeEmitter::Emit() {
+void CodeEmitter::EmitHeader() {
+    EmitDecl();
     EmitGlobalPrologue();
-    EmitImplPrologue();
-    EmitJsonPrologue();
-
     EmitForwardDecl();
 
-    EmitDecl();
-
-    for (GenericCode const& code : _global._generic) {
-        Emit(code);
-        EmitNL();
+    for (GenericCode const& code: _global._generic) {
+	Emit(code);
+	EmitNL();
     }
 
-    for (VariableSignature const& sig : _global._references) {
-        Emit(sig);
+    for (VariableSignature const& sig: _global._references) {
+	EmitHeader(sig);
     }
 
-    for (auto const& [_, type] : *_types) {
-        if (type->IsStruct() && !type->_pending) {
-            Emit(type->GetStruct());
-        }
+    for (auto const& [_, type]: *_types) {
+	if (type->IsStruct() && !type->_pending) {
+	    EmitHeader(type->GetStruct());
+	}
     }
 
     for (Signature const& sig : _global._signatures) {
-        Emit(sig, false);
+        EmitHeader(sig, false);
     }
 
-    BuildExternalNamespaces();
-    for (auto const& [name, _] : _externals) {
-        EmitNamespace(name);
+    for (auto const& [name, _]: _externals) {
+	EmitNamespaceHeader(name);
     }
 
-    EmitAsmDefinitions();
-
-    EmitJsonEpilogue();
+    EmitAsmDefinitions_Decl();
+    _decls.close();
 }
 
-void CodeEmitter::EmitAsmDefinitions() {
-    EmitAsmDefinitions_Decl();
+void CodeEmitter::EmitImplementation() {
+    EmitImpl();
+
+    EmitImplPrologue();
+
+    for (VariableSignature const& sig: _global._references) {
+	EmitImpl(sig);
+    }
+
+    for (auto const& [_, type]: *_types) {
+	if (type->IsStruct() && !type->_pending) {
+	    EmitImpl(type->GetStruct());
+	}
+    }
+
+    for (Signature const& sig : _global._signatures) {
+        EmitImpl(sig, false);
+    }
+
+    for (auto const& [name, _]: _externals) {
+	EmitNamespaceImpl(name);
+    }
+
     EmitAsmDefinitions_Impl();
 }
 
+void CodeEmitter::EmitJsonFile() {
+    EmitJson();
+    EmitJsonPrologue();
+    for (FunctionJsonData const& data: _functionJsonData) {
+	EmitJson(data);
+    }
+    EmitJsonEpilogue();
+}
+
+void CodeEmitter::Emit() {
+    BuildExternalNamespaces();
+
+    EmitHeader();
+    EmitImplementation();
+    if (_emitAssembly) {
+	ComputeMangledNames();
+    }
+    EmitJsonFile();
+}
+
 void CodeEmitter::EmitAsmDefinitions_Decl() {
-    EmitDecl();
     uint32_t depth = ResetDepth();
     Emit("namespace AsmDefinitions {");
     EmitNL();
@@ -169,7 +214,6 @@ void CodeEmitter::EmitAsmDefinitions_Decl() {
 }
 
 void CodeEmitter::EmitAsmDefinitions_Impl() {
-    EmitImpl();
     uint32_t depth = ResetDepth();
     Emit("namespace AsmDefinitions {");
     EmitNL();
@@ -200,7 +244,6 @@ void CodeEmitter::EmitAsmDefinitions_Impl() {
 }
 
 void CodeEmitter::EmitForwardDecl() {
-    EmitDecl();
     for (auto const& [_, type] : *_types) {
         if (type->IsStruct() && !type->_pending) {
             Emit("struct ");
@@ -212,25 +255,21 @@ void CodeEmitter::EmitForwardDecl() {
 }
 
 void CodeEmitter::EmitJsonPrologue() {
-    EmitJson();
     Emit("[\n");
 }
 
 void CodeEmitter::EmitJsonEpilogue() {
-    EmitJson();
     Emit("\t{ \"function\": \"\", \"hook\": \"no\" }\n");
     Emit("]");
 }
 
-void CodeEmitter::EmitJson(Function const& fn, std::string const& internalName,
-    std::string const& fullName) {
-    EmitJson();
+void CodeEmitter::EmitJson(FunctionJsonData const& data) {
     Emit("\t{ \"function\": \"");
-    Emit(internalName);
+    Emit(data.internalName);
     Emit("\", \"fullName\": \"");
-    Emit(fullName);
+    Emit(data.fullName);
     Emit("\", \"hook\": ");
-    if (fn.CanHook()) {
+    if (data.canHook) {
         Emit("\"yes\"");
     } else {
         Emit("\"no\"");
@@ -263,7 +302,7 @@ void CodeEmitter::Emit(Type const& type) {
     Emit(GenerateType(type));
 }
 
-void CodeEmitter::Emit(Struct const& s) {
+void CodeEmitter::EmitHeader(Struct const& s) {
     if (InProcessing(s) || Emitted(s)) {
         return;
     }
@@ -274,7 +313,6 @@ void CodeEmitter::Emit(Struct const& s) {
 
     _currentStructure = &s;
 
-    EmitDecl();
     EmitTab();
     Emit("struct ");
     Emit(s._name);
@@ -294,19 +332,19 @@ void CodeEmitter::Emit(Struct const& s) {
     IncrDepth();
 
     for (Variable const& var : s._namespace._fields) {
-        Emit(var);
+        EmitHeader(var);
     }
 
     for (Signature const& sig : s._namespace._signatures) {
-        Emit(sig, false);
+        EmitHeader(sig, false);
     }
 
     for (Signature const& sig : s._overridenVirtualFunctions) {
-        Emit(sig, true);
+        EmitHeader(sig, true);
     }
 
-    for (std::variant<Signature, Skip, Function> const& sig : s._virtualFunctions) {
-        Emit(sig);
+    for (VTableEntry const& sig : s._virtualFunctions) {
+        EmitHeader(sig);
     }
 
     for (GenericCode const& code : s._namespace._generic) {
@@ -316,14 +354,32 @@ void CodeEmitter::Emit(Struct const& s) {
 
     DecrDepth();
     Emit("};");
-    std::ostringstream size;
-    size << " // 0x" << std::hex << s.size();
-    Emit(size.str());
+    char buffer[100];
+    sprintf(buffer, " // %#zx", s.size());
+    Emit(buffer);
     EmitNL();
     EmitNL();
 
     _processingStructures.erase(s._name);
     _emittedStructures.insert(s._name);
+
+    _currentStructure = nullptr;
+}
+
+void CodeEmitter::EmitImpl(Struct const& s) {
+    _currentStructure = &s;
+
+    for (Signature const& sig : s._namespace._signatures) {
+        EmitImpl(sig, false);
+    }
+
+    for (Signature const& sig : s._overridenVirtualFunctions) {
+        EmitImpl(sig, true);
+    }
+
+    for (VTableEntry const& sig : s._virtualFunctions) {
+        EmitImpl(sig);
+    }
 
     _currentStructure = nullptr;
 }
@@ -479,10 +535,14 @@ void CodeEmitter::EmitJson() {
     _emitContext = &_json;
 }
 
+void CodeEmitter::EmitAsmImpl() {
+    _emitContext = &_asmImpl;
+}
+
 void CodeEmitter::EmitDependencies(Struct const& s) {
     for (Type* dep : s._deps) {
         if (dep->IsStruct()) {
-            Emit(std::get<Struct>(dep->_value));
+            EmitHeader(std::get<Struct>(dep->_value));
         }
         else {
             std::ostringstream str;
@@ -493,7 +553,7 @@ void CodeEmitter::EmitDependencies(Struct const& s) {
 
     for (auto const& [dep, vis] : s._parents) {
         if (dep->IsStruct()) {
-            Emit(dep->GetStruct());
+            EmitHeader(dep->GetStruct());
         }
         else {
             std::ostringstream str;
@@ -507,19 +567,11 @@ bool CodeEmitter::Emitted(Struct const& s) const {
     return _emittedStructures.find(s._name) != _emittedStructures.end();
 }
 
-void CodeEmitter::AssertEmitted(Struct const& s) {
-    if (!Emitted(s)) {
-        std::ostringstream str;
-        str << "[FATAL] Structure " << _currentStructure->_name << " has not specified direct dependency on structure " << s._name << std::endl;
-        throw std::runtime_error(str.str());
-    }
-}
-
 bool CodeEmitter::InProcessing(Struct const& s) const {
     return _processingStructures.find(s._name) != _processingStructures.end();
 }
 
-void CodeEmitter::Emit(Variable const& var) {
+void CodeEmitter::EmitHeader(Variable const& var) {
     _variableContext = &var;
 
     EmitTab();
@@ -535,9 +587,9 @@ void CodeEmitter::Emit(Variable const& var) {
         if (var._name.substr(0, 3) != "pad") {
             Emit(std::to_string(var._type->_arraySize));
         } else {
-            std::ostringstream stream;
-            stream << "0x" << std::hex << var._type->_arraySize;
-            Emit(stream.str());
+	    char buffer[100];
+	    sprintf(buffer, "%#zx", var._type->_arraySize);
+            Emit(buffer);
         }
         Emit("]");
     }
@@ -553,8 +605,8 @@ void CodeEmitter::Emit(Variable const& var) {
     _variableContext = nullptr;
 }
 
-void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
-    Function const& fun = var._function;
+void CodeEmitter::EmitHeader(Signature const& sig, bool isVirtual) {
+    Function const& fun = sig._function;
 
     if (fun.IsDebug()) {
         Emit("#ifdef DEBUG");
@@ -562,9 +614,15 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     }
     EmitTab();
     Emit("LIBZHL_API ");
-    /* if (isVirtual) {
-        Emit("virtual ");
-    } */
+
+    /* Do not emit 'virtual' here. The virtual functions are implemented in
+     * such a way that they naturally call the appropriate function in the
+     * vtable. If the function was explicitly flagged as virtual, the compiler
+     * could generate a different vtable and we do not want that.
+     *
+     * FIXME: I'm not sure about this.
+     */
+
     EmitFunction(fun);
 
     if (fun.IsDebug()) {
@@ -572,17 +630,28 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
         EmitNL();
     }
 
-    EmitAssembly(var, isVirtual, false);
-
-    // Emit function twice, one with the vtable, one without.
-    // This allows parent calls, otherwise only virtual calls would be possible
-    // as the parent call would enter a virtual call.
+    /* Emit function twice, one with the vtable, one without.
+     * This allows parent calls, otherwise only virtual calls would be possible
+     * as the parent call would enter a virtual call.
+     */
     if (isVirtual) {
-        Signature copy(var);
+        Signature copy(sig);
         std::ostringstream name;
-        name << "Original_" << var._function._name;
+        name << "Original_" << sig._function._name;
         copy._function._name = name.str();
-        Emit(copy, false);
+        EmitHeader(copy, false);
+    }
+}
+
+void CodeEmitter::EmitImpl(Signature const& sig, bool isVirtual) {
+    EmitAssembly(sig, isVirtual, false);
+
+    if (isVirtual) {
+	Signature copy(sig);
+	std::ostringstream name;
+	name << "Original_" << sig._function._name;
+	copy._function._name = name.str();
+	EmitImpl(copy, false);
     }
 }
 
@@ -601,7 +670,7 @@ void CodeEmitter::EmitFunction(Function const& fun, bool withPrefix) {
     Emit(" ");
 
     if (fun._convention) {
-        if (*fun._convention == THISCALL && _currentStructure) {
+        if (*fun._convention == CallingConventions::THISCALL && _currentStructure) {
             // Nop
         }
         else {
@@ -629,7 +698,7 @@ void CodeEmitter::EmitFunction(Function const& fun, bool withPrefix) {
     EmitNL();
 }
 
-void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
+void CodeEmitter::EmitHeader(VTableEntry const& sig) {
     if (std::holds_alternative<Skip>(sig)) {
         EmitTab();
         Emit("void virtual_unk");
@@ -639,17 +708,30 @@ void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
         ++_virtualFnUnk;
     }
     else if (std::holds_alternative<Signature>(sig)) {
-        Emit(std::get<Signature>(sig), true);
+        EmitHeader(std::get<Signature>(sig), true);
     }
     else {
         Function const& fn = std::get<Function>(sig);
         EmitFunction(fn, true);
-        EmitAssembly(fn, true, false);
 
         Function copy = fn;
         copy._name.append("_Original");
         EmitFunction(copy, true);
-        EmitAssembly(copy, true, true);
+    }
+}
+
+void CodeEmitter::EmitImpl(VTableEntry const& sig) {
+    if (std::holds_alternative<Skip>(sig)) {
+	// Skip
+    } else if (std::holds_alternative<Signature>(sig)) {
+	EmitImpl(std::get<Signature>(sig), true);
+    } else {
+	Function const& fn = std::get<Function>(sig);
+	EmitAssembly(fn, true, false);
+
+	Function copy = fn;
+	copy._name.append("_Original");
+	EmitAssembly(copy, true, true);
     }
 }
 
@@ -687,18 +769,20 @@ enum FunctionDefFlags {
     DEF_LONGLONG = 1 << 3
 };
 
-void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure) {
+Function const* CodeEmitter::FunctionFromSigOrFunc(SigOrFunc const& sig) {
+    if (std::holds_alternative<Signature>(sig)) {
+        return &std::get<Signature>(sig)._function;
+    } else {
+        return &std::get<Function>(sig);
+    }
+}
+
+void CodeEmitter::EmitAssembly(SigOrFunc const& sig, bool isVirtual, bool isPure) {
     uint32_t depth = _emitDepth;
     _emitDepth = 0;
     EmitImpl();
 
-    Function const* fnPtr;
-    if (std::holds_alternative<Signature>(sig)) {
-        fnPtr = &std::get<Signature>(sig)._function;
-    }
-    else {
-        fnPtr = &std::get<Function>(sig);
-    }
+    Function const* fnPtr = FunctionFromSigOrFunc(sig);
 
     Function const& fn = *fnPtr;
     bool emittingPureVirtual = std::holds_alternative<Function>(sig);
@@ -758,10 +842,12 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
             Emit("); ");
             EmitNL();
 
-            std::string fullName = GenerateFunctionPrototype(fn, true);
-            _fullNameToInternalName[fullName] = internalName;
-            EmitJson(fn, internalName, fullName);
-            EmitImpl();
+	    FunctionJsonData data;
+	    data.canHook = fn.CanHook();
+	    data.internalName = std::move(internalName);
+            std::string fullName = GenerateFunctionPrototype(fn, true, false, true, false);
+	    data.fullName = std::move(fullName);
+	    _functionJsonData.push_back(std::move(data));
         }
 
         // End namespace
@@ -776,7 +862,9 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
     Emit(*fn._ret);
     Emit(" ");
     if (fn._convention) {
-        if (*fn._convention != THISCALL && *fn._convention != X86_64 && *fn._convention != X86_64_OUTPUT) {
+        if (*fn._convention != CallingConventions::THISCALL &&
+	    *fn._convention != CallingConventions::X86_64 &&
+	    *fn._convention != CallingConventions::X86_64_OUTPUT) {
             Emit(CallingConventionToString(*fn._convention));
             Emit(" ");
         }
@@ -991,7 +1079,7 @@ void CodeEmitter::EmitInstruction(std::string const& ins) {
     EmitNL();
 }
 
-void CodeEmitter::Emit(VariableSignature const& sig) {
+void CodeEmitter::EmitHeader(VariableSignature const& sig) {
     std::string refName("__ptr_" + sig._variable._name);
 
     Emit("extern LIBZHL_API ");
@@ -1006,14 +1094,10 @@ void CodeEmitter::Emit(VariableSignature const& sig) {
     Emit(refName);
     Emit(")");
     EmitNL();
-
-    EmitAssembly(sig);
 }
 
-void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
+void CodeEmitter::EmitImpl(VariableSignature const& sig) {
     std::string refName("__ptr_" + sig._variable._name);
-
-    EmitImpl();
 
     Emit("namespace _var");
     Emit(std::to_string(_nEmittedVars));
@@ -1040,12 +1124,9 @@ void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
     EmitNL();
 
     ++_nEmittedVars;
-
-    EmitDecl();
 }
 
 void CodeEmitter::EmitGlobalPrologue() {
-    EmitDecl();
     Emit("#pragma once\n");
     EmitNL();
     Emit("#include \"libzhl.h\"\n"
@@ -1055,10 +1136,9 @@ void CodeEmitter::EmitGlobalPrologue() {
 }
 
 void CodeEmitter::EmitImplPrologue() {
-    EmitImpl();
-    Emit("#include \"ASMDefinition.h\"\n");
-    Emit("#include \"HookSystem_private.h\"\n");
-    Emit("#include \"IsaacRepentance.h\"\n");
+	Emit("#include \"ASMDefinition.h\"\n");
+	Emit("#include \"HookSystem_private.h\"\n");
+	Emit("#include \"IsaacRepentance.h\"\n");
     EmitNL();
 }
 
@@ -1068,7 +1148,7 @@ void CodeEmitter::BuildExternalNamespaces() {
     }
 }
 
-void CodeEmitter::EmitNamespace(std::string const& name) {
+void CodeEmitter::EmitNamespaceHeader(std::string const& name) {
     EmitNL();
     std::vector<const ExternalFunction*> const& funcs = _externals[name];
     EmitDecl();
@@ -1084,7 +1164,6 @@ void CodeEmitter::EmitNamespace(std::string const& name) {
         }
         EmitTab();
         EmitFunction(fn->_fn);
-        Emit(*fn);
         EmitNL();
         if (fn->_fn.IsDebug()) {
             Emit("#endif");
@@ -1093,6 +1172,13 @@ void CodeEmitter::EmitNamespace(std::string const& name) {
     }
     DecrDepth();
     Emit("}");
+}
+
+void CodeEmitter::EmitNamespaceImpl(std::string const& name) {
+    std::vector<const ExternalFunction*> const& funcs = _externals[name];
+    for (const ExternalFunction* fn: funcs) {
+	Emit(*fn);
+    }
 }
 
 void CodeEmitter::Emit(const ExternalFunction& fn) {
@@ -1148,13 +1234,14 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     }
     EmitNL();
     ++_nEmittedExternal;
-    EmitDecl();
 
     _emitDepth = depth;
 }
 
 std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
-    bool hasImplicitOutput = fn._ret->size() > 8 || (fn._ret->IsStruct() && fn._kind == METHOD) || fn._convention == X86_64_OUTPUT;
+    bool hasImplicitOutput = fn._ret->size() > 8 ||
+      (fn._ret->IsStruct() && fn._kind == METHOD) ||
+      fn._convention == CallingConventions::X86_64_OUTPUT;
     uint32_t stackSize = 0; // How much the trampoline takes on the stack
     uint32_t fnStackSize = 0; // How much the trampoline should pop after calling the function
 
@@ -1165,8 +1252,11 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
         Emit("static HookSystem::ArgData args[] = {");
         EmitNL();
         IncrDepth();
-        if (fn._convention && (*fn._convention == FASTCALL || *fn._convention == X86_64 || *fn._convention == X86_64_OUTPUT)) {
-            if (*fn._convention == FASTCALL) {
+        if (fn._convention &&
+	    (*fn._convention == CallingConventions::FASTCALL ||
+	     *fn._convention == CallingConventions::X86_64 ||
+	     *fn._convention == CallingConventions::X86_64_OUTPUT)) {
+            if (*fn._convention == CallingConventions::FASTCALL) {
                 Registers next = ECX;
                 for (size_t i = 0; i < fn._params.size(); ++i) {
                     FunctionParam const& param = fn._params[i];
@@ -1306,7 +1396,8 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
             }
         }
         else {
-            if (hasImplicitOutput && (!fn._convention || fn._convention != X86_64_OUTPUT)) {
+            if (hasImplicitOutput &&
+		(!fn._convention || fn._convention != CallingConventions::X86_64_OUTPUT)) {
                 EmitTab();
                 Emit("{ HookSystem::NoRegister(), 1 }"); // 1: pointer
                 if (fn._params.size() != 0) {
@@ -1365,13 +1456,35 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
     Emit("typeid(");
-    EmitFunctionPrototype(fn, false);
+    EmitFunctionPrototype(fn, false, false, true, false);
     Emit(")");
 }
 
-std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool includeName) {
-    std::string result = GenerateType(*fn._ret) + " (";
-    if (_currentStructure && fn._kind == METHOD) {
+std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool includeName,
+    bool includeCallingConvention, bool protectName, bool link) {
+    std::string result;
+    if (link)
+	result = "__declspec(dllexport) ";
+
+    result += GenerateType(*fn._ret) + " ";
+
+    if (includeCallingConvention) {
+	if (fn._convention) {
+	    if (_currentStructure && *fn._convention == CallingConventions::THISCALL) {
+		// Skip
+	    } else {
+		result += CallingConventionToString(*fn._convention) + " ";
+	    }
+	} else if (fn._kind == FUNCTION && !fn.IsCleanup()) {
+	    result += "__stdcall ";
+	}
+    }
+
+    if (protectName) {
+	result += "(";
+    }
+
+    if (_currentStructure) {
         result += _currentStructure->_name + "::";
     }
     if (includeName) {
@@ -1380,7 +1493,9 @@ std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool incl
         result += "*";
     }
 
-    result += ")(";
+    if (protectName)
+	result += ")";
+    result += "(";
     for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
         result += GenerateType(*param._type);
@@ -1392,8 +1507,10 @@ std::string CodeEmitter::GenerateFunctionPrototype(Function const& fn, bool incl
     return result;
 }
 
-void CodeEmitter::EmitFunctionPrototype(Function const& fn, bool includeName) {
-    Emit(GenerateFunctionPrototype(fn, includeName));
+void CodeEmitter::EmitFunctionPrototype(Function const& fn, bool includeName,
+    bool includeCallingConvention, bool protectName, bool link) {
+    Emit(GenerateFunctionPrototype(fn, includeName, includeCallingConvention,
+	  protectName, link));
 }
 
 uint32_t CodeEmitter::GetFlags(Function const& fn) const {
@@ -1406,7 +1523,7 @@ uint32_t CodeEmitter::GetFlags(Function const& fn) const {
         flags |= FunctionDefFlags::DEF_CLEANUP;
     }
 
-    if (fn._ret->IsBasic() && std::get<BasicType>(fn._ret->_value)._type == VOID) {
+    if (fn._ret->IsBasic() && std::get<BasicType>(fn._ret->_value)._type == BasicTypes::TVOID) {
         flags |= FunctionDefFlags::DEF_VOID;
     }
 
@@ -1433,4 +1550,103 @@ void CodeEmitter::EmitParamData(Function const& fn, FunctionParam const& param, 
 
     *stackSize += paramSize * 4;
     *fnStackSize += paramSize * 4;
+}
+
+void CodeEmitter::EmitStub(FILE* f, SigOrFunc const& fn) {
+    Function const* func = FunctionFromSigOrFunc(fn);
+    std::string fullName = GenerateFunctionPrototype(*func, true, true, false, true);
+    fprintf(f, "[[noreturn]] %s { abort(); }\n", fullName.c_str());
+}
+
+void CodeEmitter::ComputeMangledNames() {
+    FILE* f = fopen(_asmLibFile.c_str(), "w");
+    if (!f) {
+	fprintf(stderr, "[FATAL] Unable to open base file to create dynamic "
+	    "library to compute mangled names (%s)\n", _asmLibFile.c_str());
+	exit(-1);
+    }
+
+    fprintf(f, "#include \"%s\"\n", _outputHeaderFilename.c_str());
+
+    for (auto const& [_, type]: *_types) {
+	if (type->IsStruct() && !type->_pending) {
+	    Struct const& s = type->GetStruct();
+
+	    _currentStructure = &s;
+	    for (Signature const& sig: s._namespace._signatures) {
+		EmitStub(f, sig);
+	    }
+
+	    for (Signature const& sig: s._overridenVirtualFunctions) {
+		EmitStub(f, sig);
+	    }
+
+	    for (VTableEntry const& entry: s._virtualFunctions) {
+		if (std::holds_alternative<Skip>(entry)) {
+		    // Skip
+		} else if (std::holds_alternative<Signature>(entry)) {
+		    EmitStub(f, std::get<Signature>(entry));
+		} else {
+		    EmitStub(f, std::get<Function>(entry));
+		}
+	    }
+	}
+    }
+
+    _currentStructure = nullptr;
+    for (Signature const& sig: _global._signatures) {
+	EmitStub(f, sig);
+    }
+
+    fclose(f);
+
+    STARTUPINFOW startupInfo;
+    PROCESS_INFORMATION processInfo;
+    memset(&startupInfo, 0, sizeof(startupInfo));
+    startupInfo.cb = sizeof(startupInfo);
+    startupInfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+    startupInfo.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    startupInfo.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> cvt;
+    std::wstring tc = cvt.from_bytes(_genLibTc);
+    std::wstring cl = tc + L"\\cl.exe";
+    std::wstring dumpbin = tc + L"\\dumbin.exe";
+
+    std::wstring cmd = cvt.from_bytes(_genLibCmd);
+    cmd = tc + L" " + cmd;
+    wchar_t cmdStr[32767];
+    wcscpy(cmdStr, cmd.c_str());
+    wchar_t* cmdPtr = cmdStr;
+    while (*cmdPtr) {
+	wchar_t c = *cmdPtr;
+	if (c == L'\\') {
+	    wchar_t next = *(cmdPtr + 1);
+	    if (next == L' ') {
+	       *cmdPtr = L' ';
+	    }
+	}
+	++cmdPtr;
+    }
+
+
+    printf("Running cl as %ls with params %ls\n", cl.c_str(), cmdStr);
+    BOOL ok = CreateProcessW(cl.c_str(), cmdStr, NULL, NULL, FALSE,
+			     0, NULL, NULL, &startupInfo, &processInfo);
+    if (!ok) {
+	fprintf(stderr, "[FATAL] Unable to invoke compiler for the base ZHLgen library: %lu\n",
+	    GetLastError());
+	exit(-1);
+    }
+
+    WaitForSingleObject(processInfo.hProcess, INFINITE);
+    DWORD clExitCode = -1;
+    GetExitCodeProcess(processInfo.hProcess, &clExitCode);
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
+
+    if (clExitCode != 0) {
+	fprintf(stderr, "[FATAL] Unable to compile the base ZHLgen library: %lu\n", clExitCode);
+	exit(-1);
+    }
 }

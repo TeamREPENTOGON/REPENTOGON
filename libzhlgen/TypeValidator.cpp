@@ -472,7 +472,7 @@ void TypeValidator::FinalizeStructure(Struct& s, Fields const& fields, size_t si
 
 bool TypeValidator::Fields::AddPadding(size_t offset, size_t padding) {
     BasicType type;
-    type._type = CHAR;
+    type._type = BasicTypes::CHAR;
     Array array;
     array._size = padding;
 
