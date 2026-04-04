@@ -2356,10 +2356,9 @@ LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 // todo: asm patch to return effect
 LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	player->ShootBlueCandle(dir);
-
-	lua::luabridge::UserdataPtr::push(L, playerShootBlueCandleEntity->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity* flame = player->ShootBlueCandle(shotDirection);
+	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
 	return 1;
 }
@@ -3367,9 +3366,8 @@ LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
 LUA_FUNCTION(Lua_PlayerShootRedCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	player->ShootRedCandle(shotDirection);
-
-	lua::luabridge::UserdataPtr::push(L, playerShootRedCandleEntity->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	Entity* flame = player->ShootRedCandle(shotDirection);
+	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
 	return 1;
 }
