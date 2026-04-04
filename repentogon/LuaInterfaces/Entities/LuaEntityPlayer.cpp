@@ -2013,9 +2013,12 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	player->AddBoneOrbital(position);
+	
+	Entity* orbital = player->AddBoneOrbital(position);
 
-	return 0;
+	lua::luabridge::UserdataPtr::push(L, orbital->ToFamiliar(), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+
+	return 1;
 }
 
 /*
