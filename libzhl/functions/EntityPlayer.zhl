@@ -379,7 +379,7 @@ __thiscall void Entity_Player::SetCard(int slot, int card);
 __thiscall void Entity_Player::SetPill(int slot, int pillColor);
 
 "558bec568bf1e8????????8b0d":
-__thiscall void Entity_Player::AddBoneOrbital(Vector* Position);
+__thiscall Entity* Entity_Player::AddBoneOrbital(Vector* Position);
 
 "558bec83e4f883ec0c837d??005356578bd9":
 __thiscall unsigned int Entity_Player::AddItemCard(unsigned int itemID);
