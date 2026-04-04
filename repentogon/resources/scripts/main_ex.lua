@@ -969,9 +969,20 @@ local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 	[ModCallbacks.MC_USE_ITEM] = true,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_ADDED] = true,
 	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED] = true,
+	[ModCallbacks.MC_POST_ADD_INNATE_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_REMOVE_INNATE_COLLECTIBLE] = true,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = true,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = true,
+	[ModCallbacks.MC_POST_DISCHARGE_ACTIVE_ITEM] = true,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM] = true,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM] = true,
+	-- For the character select callbacks, -1 is the "random" character's "PlayerType".
+	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT] = true,
+	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT] = true,
+	[ModCallbacks.MC_PRE_RENDER_CHARACTER_SELECT_PAGE] = true,
+	[ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PAGE] = true,
 }
 
 -- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
