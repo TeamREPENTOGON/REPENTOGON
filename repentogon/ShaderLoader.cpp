@@ -99,7 +99,12 @@ static std::vector<GLVertexAttribute> get_shader_vertex_attributes(const KAGE_Gr
     for (GLuint i = 0; i < (GLuint)count; i++)
     {
         glGetActiveAttrib(program, i, maxLength, &length, &size, &type, name.data());
-        attributes.emplace_back(std::string_view(name.data(), length), type);
+        auto str = std::string_view(name.data(), length);
+        if (str.substr(0, 3) == "gl_")
+        {
+            continue;
+        }
+        attributes.emplace_back(str, type);
     }
     
     return attributes;
