@@ -57,6 +57,7 @@ Added:
 		This is used by the Monstro's Lung + Technology synergy
 * EntityPlayer:
 	- ShootRedCandle and ShootBlueCandle now returns an EntityEffect for the flame.
+	- AddBoneOrbital now returns the bone orbital familiar spawned.
 	- [Get/Set]ImExcitedSpeedupCountdown
 	- [Get/Set]DonateLuck
 	- GetErrorTrinketEffect
