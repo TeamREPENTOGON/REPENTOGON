@@ -1592,8 +1592,11 @@ end
 local function RunTriggerPlayerDeathCallback(callbackID, callbackIterator, player, ...)
 	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, ...)
-		if ret == false or not player:IsDead() then
-			return ret
+		if not player:IsDead() or not player:Exists() then
+			return
+		end
+		if ret == false then
+			return false
 		end
 	end
 	return true

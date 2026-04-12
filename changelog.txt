@@ -201,6 +201,8 @@ Fixes:
 * Fixed custom caches not running for golden trinkets.
 * Fixed multiple instances where the "Controller Disconnected" popup could trigger when continuing a run, such as modded twins/coplayers, and a vanilla bug with Jacob & Esau as a co-op player.
 * Fixed a vanilla bug that caused Blood Baby familiars to render incorrectly when using Dataminer.
+* Fixed custom revives on twins (especially the non-main twin, ie Esau) not reliably preventing save deletion or the run ending, alongside other quirks.
+* Reviving a coin health character will now leave them with a whole coin heart instead of half of one.
 /newline/
 /versionseparator/
 v1.1.1a -

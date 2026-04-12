@@ -4633,6 +4633,11 @@ HOOK_METHOD(Entity_Player, Revive, () -> void) {
 		}
 	}
 
+    // Prevent reviving with half a coin heart (keeper)
+    if (this->GetHealthType() == 3 && this->_redHearts == 1) {
+        this->_redHearts = 2;
+    }
+
 	const int postcallbackid = 1482;
 	if (CallbackState.test(postcallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
