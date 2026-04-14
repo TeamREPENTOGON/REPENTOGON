@@ -89,6 +89,8 @@ Added:
 	- Unlock: same as TryUnlock but it overrides situations where TryUnlock would be blocked normally (Challenges)
 * RoomDescriptor
 	- GetErrorTrinketEffect
+	- GetValidNeighborPlacementLocations(RoomShape = RoomShape.ROOMSHAPE_1x1, DoorMask = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+	- GetValidNeighborPlacementLocations(RoomConfigRoom, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
 * RoomConfig:
 	- LoadStb(StbType, int Mode, string StbFileName)
 * RoomConfigSet:
