@@ -9,6 +9,27 @@
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
 
+LUA_FUNCTION(Lua_RoomSetRedHeartDamage_Override)
+{
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	bool flag = true;
+
+	if (!lua_isboolean(L, 2))
+	{
+		if (!lua_isnoneornil(L, 2))
+		{
+			luaL_typeerror(L, 2, lua_typename(L, LUA_TBOOLEAN));
+		}
+	}
+	else
+	{
+		flag = lua_toboolean(L, 2);
+	}
+
+	room->_redHeartDamage = flag;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	bool ret = false;
@@ -506,6 +527,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "SetRedHeartDamage", Lua_RoomSetRedHeartDamage_Override },
+
 		{ "GetShopItemPrice", Lua_RoomGetShopItemPrice},
 		{ "SpawnGridEntity", Lua_SpawnGridEntity},
 		{ "RemoveGridEntityImmediate", Lua_RemoveGridEntityImmediate},

@@ -169,6 +169,9 @@ Modified:
 	- StartNewGame
 		Added optional param "bool isCustomRun".
 		Added function variant that takes a whole Seeds object instead of a seed integer.
+* Room:
+	- SetRedHeartDamage
+		Added optional param "bool value".
 * EntityPlayer:
 	- SetControllerIndex(int ControllerIndex, boolean IncludePlayerOwned = false)
 		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
