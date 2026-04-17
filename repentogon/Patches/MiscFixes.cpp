@@ -2,6 +2,9 @@
 #include "HookSystem.h"
 #include "LuaCore.h"
 #include <filesystem>
+#include <algorithm>
+
+#undef max
 
 // The GameOver class stores an EntityConfig_Entity reference for the modded entity that the player dies to,
 // in order to access the mod's death portraits. However, it does not clear this reference when the
@@ -150,4 +153,14 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 HOOK_METHOD(ModManager, ListMods, () -> void) {
 	super();
 	_modBanStatus = 3;
+}
+
+// Fixes game crashing when spawning an entity with a seed of 0.
+// Since Game::Spawn is inlined in some places, and vanilla spawns can still end up with a seed of 0,
+// we enforce a valid seed in the callback function, as all spawns ultimately pass through it.
+HOOK_STATIC(LuaEngine, Callback_PreEntitySpawn, (int* type, int* variant, Vector* position, Vector* velocity, Entity* spawner, int* subType, uint32_t* seed) -> void, __stdcall)
+{
+	*seed = std::max(*seed, 1U); // avoid mods getting a seed of 0
+	super(type, variant, position, velocity, spawner, subType, seed);
+	*seed = std::max(*seed, 1U); // in case some mod changed the seed.
 }
