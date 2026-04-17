@@ -85,6 +85,11 @@ Added:
 * EntityKnife
 	- SetKnifeDistance
 	- SetKnifeVelocity
+* TearParams
+	- MassMultiplier
+	- KnockbackMultiplier
+	- SpeedMultiplier
+	- TearDisplacement
 * PersistentGameData:
 	- Unlock: same as TryUnlock but it overrides situations where TryUnlock would be blocked normally (Challenges)
 * RoomDescriptor
