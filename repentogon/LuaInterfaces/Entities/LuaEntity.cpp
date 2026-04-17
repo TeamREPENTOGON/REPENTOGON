@@ -849,6 +849,18 @@ LUA_FUNCTION(Lua_EntityCanDevolve)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntitySetVariant) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+
+	if (Entity_Effect* effect = ent->ToEffect()) {
+		effect->_varData = BitSet128();
+	}
+
+	ent->_variant = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -946,4 +958,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
+
+	lua::RegisterVariableSetter(_state, lua::Metatables::ENTITY, "Variant", Lua_EntitySetVariant);
 }

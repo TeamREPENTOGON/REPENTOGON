@@ -1,3 +1,5 @@
+#include <unordered_set>
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -50,19 +52,29 @@ LUA_FUNCTION(Lua_EffectCreateLootPreview) {
 LUA_FUNCTION(Lua_GetGridEntityDesc) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
-	if (entity->_variant != 136) {
+	if (entity->_variant == 136) {
+		lua::luabridge::UserdataPtr::push(L, (GridEntityDesc*)&entity->_varData, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY_DESC));
+	} else {
 		lua_pushnil(L);
-		return 1;
 	}
-
-	lua::luabridge::UserdataPtr::push(L, (GridEntityDesc*)&entity->_varData, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY_DESC));
+	
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetAquariusTearFlags) {
+static const std::unordered_set<int> tearflagEffectVariants = {
+	54,   // PLAYER_CREEP_HOLYWATER_TRAIL (Aquarius)
+	113,  // BRIMSTONE_BALL
+	126,  // TECH_DOT
+	167,  // CHAIN_LIGHTNING
+};
+static bool AllowTearflagAccess(Entity_Effect* effect) {
+	return tearflagEffectVariants.count(effect->_variant);
+}
+
+LUA_FUNCTION(Lua_GetTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
-	if (entity->_variant == 54) {
+	if (AllowTearflagAccess(entity)) {
 		lua::luabridge::UserdataValue<BitSet128>::push(L, lua::GetMetatableKey(lua::Metatables::BITSET_128), entity->_varData);
 	} else {
 		lua_pushnil(L);
@@ -71,39 +83,39 @@ LUA_FUNCTION(Lua_GetAquariusTearFlags) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_SetAquariusTearFlags) {
+LUA_FUNCTION(Lua_SetTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
-	if (entity->_variant == 54) {
+	if (AllowTearflagAccess(entity)) {
 		entity->_varData = *lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
 	}
 
 	return 0;
 }
 
-LUA_FUNCTION(Lua_AddAquariusTearFlags) {
+LUA_FUNCTION(Lua_AddTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
-	if (entity->_variant == 54) {
+	if (AllowTearflagAccess(entity)) {
 		entity->_varData.AddFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
 	}
 
 	return 0;
 }
 
-LUA_FUNCTION(Lua_ClearAquariusTearFlags) {
+LUA_FUNCTION(Lua_ClearTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
-	if (entity->_variant == 54) {
+	if (AllowTearflagAccess(entity)) {
 		entity->_varData.RemoveFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
 	}
 
 	return 0;
 }
 
-LUA_FUNCTION(Lua_HasAquariusTearFlags) {
+LUA_FUNCTION(Lua_HasTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	lua_pushboolean(L, entity->_variant == 54 && entity->_varData.HasAny(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128")));
+	lua_pushboolean(L, AllowTearflagAccess(entity) && entity->_varData.HasAny(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128")));
 	return 1;
 }
 
@@ -114,11 +126,17 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetGridEntityDesc", Lua_GetGridEntityDesc },
-		{ "GetAquariusTearFlags", Lua_GetAquariusTearFlags },
-		{ "SetAquariusTearFlags", Lua_SetAquariusTearFlags },
-		{ "AddAquariusTearFlags", Lua_AddAquariusTearFlags },
-		{ "ClearAquariusTearFlags", Lua_ClearAquariusTearFlags },
-		{ "HasAquariusTearFlags", Lua_HasAquariusTearFlags },
+		{ "GetTearFlags", Lua_GetTearFlags },
+		{ "SetTearFlags", Lua_SetTearFlags },
+		{ "AddTearFlags", Lua_AddTearFlags },
+		{ "ClearTearFlags", Lua_ClearTearFlags },
+		{ "HasTearFlags", Lua_HasTearFlags },
+		// Previous function names
+		{ "GetAquariusTearFlags", Lua_GetTearFlags },
+		{ "SetAquariusTearFlags", Lua_SetTearFlags },
+		{ "AddAquariusTearFlags", Lua_AddTearFlags },
+		{ "ClearAquariusTearFlags", Lua_ClearTearFlags },
+		{ "HasAquariusTearFlags", Lua_HasTearFlags },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_EFFECT, functions);
