@@ -59,8 +59,11 @@ static const std::unordered_map<GameVersion, SaveDataPathInfo> SAVE_DATA_PATHS =
 };
 
 // Given a PersistentGameData path to the REPENTOGON save file, returns the corresponding vanilla Repentance+ save file path.
-std::string ConvertRgonSavePathToVanilla(std::string rgonSavePath) {
-	return std::regex_replace(rgonSavePath, std::regex(R"((Repentogon[\/\\]+rgon_)|(rgon_steam_))", std::regex_constants::icase), "");
+std::string ConvertRgonSavePathToVanilla(std::string rgonSavePath, const bool steamCloud) {
+	if (steamCloud) {
+		return std::regex_replace(rgonSavePath, std::regex(R"(rgon_steam_)", std::regex_constants::icase), "rep+");
+	}
+	return std::regex_replace(rgonSavePath, std::regex(R"(Repentogon[\/\\]+rgon_)", std::regex_constants::icase), "");
 }
 
 // Shared paths for GameState. At the moment, REPENTOGON still uses the same GameState file.
@@ -192,10 +195,10 @@ void ASMPatchRemoteSaveFileName() {
 
 // If the game attempts to load a save file with the wrong number of achievements, it does not handle it properly and
 // will nuke everything in the save file except the achievments. Just freaking crash instead of letting that happen.
-// In theory this shouldn't get triggered unless something in repentogon breaks or the user fucks with ther save manually.
+// In theory this shouldn't get triggered unless something in repentogon breaks or the user fucks with their saves manually.
 // Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
 void __stdcall DifferentNumberOfAchievementsCheck(const int numAchievements) {
-	if (numAchievements > 641) {
+	if (numAchievements > (int)eAchievement::NUM_ACHIEVEMENTS) {
 		ZHL::Log("[SaveSyncing] Fatal error: Attempt to load a save file with the wrong number of achievements! Throwing an exception to avoid save corruption...\n");
 		MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_ACHIEVEMENTS, "REPENTOGON", MB_ICONERROR);
 		throw std::runtime_error("Wrong number of achievements");
@@ -218,11 +221,9 @@ void ASMPatchDifferentNumberOfAchievementsCheck() {
 }
 
 void ASMPatchesForSaveSyncing() {
-	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ASMPatchLocalSaveFileName();
-		ASMPatchRemoteSaveFileName();
-		ASMPatchDifferentNumberOfAchievementsCheck();
-	}
+	ASMPatchLocalSaveFileName();
+	ASMPatchRemoteSaveFileName();
+	ASMPatchDifferentNumberOfAchievementsCheck();
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -375,11 +376,6 @@ bool SaveFileExists(const std::string path, const bool steamCloud) {
 void TryInitRepentogonSaveFile(const int slot) {
 	if (slot < 1 || slot > 3) return;
 
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
-		return;
-	}
-
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
 
 	const std::string rgonPath = GetPersistentGameDataPath(REPENTOGON, slot, steamCloudEnabled);
@@ -443,11 +439,6 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 // Possible issues include Nicalis making a change to the Rep+ save format, persistent crashing, or perhaps some
 // niche edge case with the save data contents that we did not account for.
 bool TrySyncSaveSlot(const int slot, const bool isStartup) {
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
-		return false;
-	}
-
 	const bool steamCloudEnabled = g_Manager->IsSteamCloudEnabled();
 
 	const std::string vanillaPathStr = GetPersistentGameDataPath(REPENTANCE_PLUS, slot, steamCloudEnabled);
@@ -593,11 +584,6 @@ bool TrySyncSaveSlot(const int slot, const bool isStartup) {
 }
 
 bool PerformVanillaSaveSynchronization(const bool isStartup) {
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
-		return false;
-	}
-
 	if (!syncStatus.IsLoaded()) {
 		ZHL::Log("[SaveSyncing] Cannot sync - SyncStatus not loaded.\n");
 		return false;
@@ -621,11 +607,6 @@ bool PerformVanillaSaveSynchronization(const bool isStartup) {
 static bool startupSyncWasSuccessful = false;
 
 bool PerformAutomaticVanillaSaveSynchronization(const bool isStartup) {
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		ZHL::Log("[SaveSyncing] Separate REPENTOGON save file is disabled.\n");
-		return false;
-	}
-
 	if (!syncStatus.IsEnabled()) {
 		ZHL::Log("[SaveSyncing] Automatic save syncing is disabled.\n");
 		return false;
@@ -650,62 +631,84 @@ bool PerformAutomaticVanillaSaveSynchronization(const bool isStartup) {
 // Sync on startup, before the game has read any save files.
 HOOK_GLOBAL(IsaacStartup, (int param1, int param2, int param3) -> void, _X86_) {
 	super(param1, param2, param3);
-	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		syncStatus.LoadFromJson();
-		TryInitRepentogonSaveFiles();
-		PerformAutomaticVanillaSaveSynchronization(true);
-	}
+	syncStatus.LoadFromJson();
+	TryInitRepentogonSaveFiles();
+	PerformAutomaticVanillaSaveSynchronization(true);
 }
 
 // Sync on shutdown, after the game is already finished with save-related stuff.
 HOOK_METHOD(Manager, destructor, () -> void) {
-	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		PerformAutomaticVanillaSaveSynchronization(false);
-	}
+	PerformAutomaticVanillaSaveSynchronization(false);
 	super();
+}
+
+// Skip save imports if someone placed a Rep+ save in the Rep/Rebirth/etc folder,
+// or have a cloud rep+ save named rep_ or something stupid like that.
+// Avoids hitting our exception thrown on trying to read a save file with too many achievements.
+// Helps prevent some potential weird cases when people are messing with saves manually.
+static bool BlockSaveImport(const std::string& path, const GameVersion version, const bool steamCloud) {
+	int slot = -1;
+
+	std::smatch match;
+	if (std::regex_search(path, match, std::regex(R"(persistentgamedata(\d+)\.dat)", std::regex_constants::icase)) && match.size() > 1) {
+		try { slot = std::stoi(match[1].str()); } catch (...) {}
+	}
+
+	if (slot < 1 || slot > 3) {
+		ZHL::Log("[SaveSyncing] Error: Failed to parse slot number from `%s`\n", path.c_str());
+		return false;
+	}
+
+	const std::string importPath = GetPersistentGameDataPath(version, slot, steamCloud);
+
+	const SaveFile save(importPath.c_str(), steamCloud);
+	if (auto* achievements = save.GetSaveChunkDesc(SAVE_CHUNK_ACHIEVEMENTS); achievements && achievements->numElements > (int)eAchievement::NUM_ACHIEVEMENTS) {
+		ZHL::Log("[SaveSyncing] Error: Unexpected Repentance+ save found @ `%s`\n", importPath.c_str());
+		return true;
+	}
+	return false;
 }
 
 // The functions for importing saves from previous versions expect to be passed the vanilla save path,
 // and they copy/modify it to obtain the path for the legacy save. These don't work at all when passed
-// the REPENTOGOIN save data paths, so here we fix them to still start from the vanilla paths.
-#define FIX_LOCAL_SAVE_IMPORT(_func) \
+// the REPENTOGON save data paths, so here we fix them to still start from the vanilla paths.
+#define FIX_LOCAL_SAVE_IMPORT(_func, _version) \
 HOOK_METHOD(PersistentGameData, _func, (const char* path) -> bool) { \
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) return super(path); \
-	std::string vanillaPath = ConvertRgonSavePathToVanilla(path); \
+	std::string vanillaPath = ConvertRgonSavePathToVanilla(path, false); \
+	if (BlockSaveImport(vanillaPath, _version, false)) return false; \
 	return super(vanillaPath.c_str()); \
 }
-FIX_LOCAL_SAVE_IMPORT(TryImportRepLocalSave);
-FIX_LOCAL_SAVE_IMPORT(TryImportABPLocalSave);
-FIX_LOCAL_SAVE_IMPORT(TryImportABLocalSave);
-FIX_LOCAL_SAVE_IMPORT(TryImportRebirthLocalSave);
+FIX_LOCAL_SAVE_IMPORT(TryImportRepLocalSave, REPENTANCE)
+FIX_LOCAL_SAVE_IMPORT(TryImportABPLocalSave, AFTERBIRTH_PLUS)
+FIX_LOCAL_SAVE_IMPORT(TryImportABLocalSave, AFTERBIRTH)
+FIX_LOCAL_SAVE_IMPORT(TryImportRebirthLocalSave, REBIRTH)
 
 // Same as above for the steam cloud files, though these read from `steamcloudfilepath` instead of taking a parameter.
 // Note there is no function to import a rebirth save from the cloud, for some reason!!
-#define FIX_STEAM_CLOUD_SAVE_IMPORT(_func) \
+#define FIX_STEAM_CLOUD_SAVE_IMPORT(_func, _version) \
 HOOK_METHOD(PersistentGameData, _func, () -> bool) { \
-	if (!USE_SEPARATE_REPENTOGON_SAVE_FILES) return super(); \
 	const std::string rgonPath = this->steamcloudfilepath; \
-	this->steamcloudfilepath = ConvertRgonSavePathToVanilla(rgonPath); \
+	const std::string vanillaPath = ConvertRgonSavePathToVanilla(rgonPath, true); \
+	if (BlockSaveImport(vanillaPath, _version, true)) return false; \
+	this->steamcloudfilepath = vanillaPath; \
 	const bool result = super(); \
 	this->steamcloudfilepath = rgonPath; \
 	return result; \
 }
-FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportRepCloudSave);
-FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABPCloudSave);
-FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave);
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportRepCloudSave, REPENTANCE)
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABPCloudSave, AFTERBIRTH_PLUS)
+FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave, AFTERBIRTH)
 
 // An attempt to load anything other than our designated repentogon save file(s) most likely means something broke.
-// In such a case, throw and exception to avoid possible save data corruption.
+// In such a case, throw an exception to avoid possible save data corruption.
 // This should never occur unless something in REPENTOGON is broken.
 // Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
 void VerifyExpectedSaveFile(const char* path) {
-	if (USE_SEPARATE_REPENTOGON_SAVE_FILES) {
-		std::string filename = std::filesystem::path(path).filename().string();
-		if (!std::regex_match(filename, std::regex("rgon_.*", std::regex_constants::icase))) {
-			ZHL::Log("[SaveSyncing] Fatal error: Attempt to load unexpected save file `%s`\n", path);
-			MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_NAME, "REPENTOGON", MB_ICONERROR);
-			throw std::runtime_error("Unexpected save file load");
-		}
+	std::string filename = std::filesystem::path(path).filename().string();
+	if (!std::regex_match(filename, std::regex("rgon_.*", std::regex_constants::icase))) {
+		ZHL::Log("[SaveSyncing] Fatal error: Attempt to load unexpected save file `%s`\n", path);
+		MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_NAME, "REPENTOGON", MB_ICONERROR);
+		throw std::runtime_error("Unexpected save file load");
 	}
 }
 HOOK_METHOD(PersistentGameData, Load, (const char* path) -> bool) {
