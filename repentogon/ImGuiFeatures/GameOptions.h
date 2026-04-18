@@ -436,7 +436,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                     ImGui::EndTabItem();
                 }
 
-                if (SaveSyncing::USE_SEPARATE_REPENTOGON_SAVE_FILES && ImGui::BeginTabItem(LANG.OPT_SAVE_MANAGEMENT)) {
+                if (ImGui::BeginTabItem(LANG.OPT_SAVE_MANAGEMENT)) {
                     if (ImGui::BeginTable("SaveManagement_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         // Save Management options/utilities that can immediately modify save data are only available on the title/save menus when no save file is loaded.
                         const bool saveManagementAllowed = !Isaac::IsInGame() && g_MenuManager && (g_MenuManager->_selectedMenuID == 1 || g_MenuManager->_selectedMenuID == 2);
