@@ -207,6 +207,29 @@ static void fix_game_state_read_missing_item_pool_fail_check()
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+// https://github.com/epfly6/RepentanceAPIIssueTracker/issues/603
+// I honest to god believe that this log doesn't actually mean anything despite how it sounds, but I will keep ONE in the log.
+// If it appears at all, it's probably being spammed constantly.
+static bool s_LoggedPushRenderTargetStackOverflow = false;
+void __stdcall push_render_target_stack_overflow() {
+	if (!s_LoggedPushRenderTargetStackOverflow) {
+		s_LoggedPushRenderTargetStackOverflow = true;
+		KAGE::LogMessage(3, "PushRenderTarget: stack overflow!\n");
+	}
+}
+static void suppress_push_render_target_stack_overflow() {
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Misc_PushRenderTargetStackOverflow);
+	ZHL::Log("[REPENTOGON] PushRenderTarget: stack overflow! (at %p)\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(push_render_target_stack_overflow)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xC);
+	sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -218,4 +241,5 @@ void ASMFixes()
     fix_use_pill_identify_pill();
     fix_itempool_getpilleffect();
     fix_game_state_read_missing_item_pool_fail_check();
+	suppress_push_render_target_stack_overflow();
 }
