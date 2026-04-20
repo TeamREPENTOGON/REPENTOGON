@@ -1355,8 +1355,11 @@ void VirtualRoomSetManager::__AddStbRooms(lua_State* L, uint32_t stageId, int mo
 			for (int i = 0; i < numRooms; i++)
 			{
 				RoomConfig::read_room(&bufferRoomSet, i, stageId, file);
-				// This will create a copy of the RoomConfig_Room, intentional since the copy's RoomSpawns will use memory allocated by us instead of the game.
-				rooms.push_back(bufferRoomSet._configs[i]);
+				const RoomConfig_Room& room = bufferRoomSet._configs[i];
+				if (RoomConfigUtility::IsRoomTypeValid(room.Type)) {
+					// This will create a copy of the RoomConfig_Room, intentional since the copy's RoomSpawns will use memory allocated by us instead of the game.
+					rooms.push_back(room);
+				}
 			}
 
 			// This will properly destroy/free the RoomConfig_Rooms in the RoomSet.
