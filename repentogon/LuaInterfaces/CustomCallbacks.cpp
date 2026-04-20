@@ -39,6 +39,22 @@ HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)->
 	}
 }
 
+HOOK_STATIC(Isaac, GetBuiltInCallbackState, (const int callbackid)-> bool, __cdecl) {
+	size_t id = static_cast<size_t>(callbackid);
+
+	if (id < VanillaCallbackState.size())
+	{
+		return super(id);
+	}
+
+	id = id - 1000;
+	if (id < CallbackState.size())
+	{
+		return CallbackState.test(id);
+	}
+	return false;
+}
+
 // MC_POST_TRIGGER_COLLECTIBLE_ADDED (1053)
 // (Runs for normal items, wisps, and innate collectibles)
 void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collectibleID, bool firsttime, bool wispOrInnate) {
