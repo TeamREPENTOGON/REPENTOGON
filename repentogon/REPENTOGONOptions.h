@@ -47,6 +47,7 @@ struct REPENTOGONOptions {
 			ini["internal"]["LastSaveFile"] = "0";
 			ini["internal"]["FileMap"] = "1";
 			ini["internal"]["ImGuiScale"] = "0";
+			ini["internal"]["SkipArchiveChecks"] = "0";
 			ini["internal"]["RenderDebugFindInRadius"] = "0";
 			iniFile.generate(ini, true);
 		}
@@ -74,6 +75,7 @@ struct REPENTOGONOptions {
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
+		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -123,6 +125,7 @@ struct REPENTOGONOptions {
 		Write("internal", "FileMap", fileMap);
 		Write("internal", "ImGuiScale", imGuiScale);
 		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
+		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 	}
 
 	mINI::INIStructure ini;
@@ -147,6 +150,7 @@ struct REPENTOGONOptions {
 	bool renderDebugFindInRadius;
 	bool ecoMode;
 	bool disableExitPrompt;
+	bool skipArchiveChecks;
 };
 
 extern REPENTOGONOptions repentogonOptions;
