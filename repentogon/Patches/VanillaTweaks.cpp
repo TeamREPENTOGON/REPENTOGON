@@ -68,7 +68,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* gstate, bool loaded) -> void) { //so
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
 	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
 };
-HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, unsigned short unk2)->void, __stdcall) {
+/*HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, unsigned short unk2)->void, __stdcall) {
 	ZHL::Logger logger;
 	static bool unpacked_flag_check_done=false;
 	static bool unpacked_flag_set = false;
@@ -91,7 +91,7 @@ HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, un
 	else {
 		return super(path, unk1, unk2);
 	};
-};
+};*/
 
 //Hornfel rare crash with minecart
 
