@@ -197,6 +197,7 @@ Modified:
 		For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife will now be passed as the ExtraSource!
 		Currently supported: lasers, melee hitbox knives, gello, and brimstone balls.
 		Note that ExtraSource is nil if not available.
+* Modded characters no longer earn completion marks where regular characters would not, such as during challenges.
 /newline/
 Fixes:
 * ModCallbacks:

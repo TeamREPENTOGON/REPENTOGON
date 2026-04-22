@@ -865,28 +865,30 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 
 
 HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void, __stdcall) {
-	int numplayers = g_Game->GetNumPlayers();
-	for (int i = 0; i < numplayers; i++) {
-		int playertype = g_Game->GetPlayer(i)->GetPlayerType();
-		if (playertype > 40) {
-			string idx = GetMarksIdx(playertype);
-			if (CompletionMarks.count(idx) == 0) {
-				CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-			}
-			int marktype = 1;
-			if (g_Game->IsHardMode()) {
-				marktype = 2;
-			}
-			if (CompletionMarks[idx][eEvent] < marktype) {
-				if (PreMarksCallbackTrigger(eEvent, playertype)) {
-					CompletionMarks[idx][eEvent] = marktype;
-					RunTrackersForMark(eEvent, playertype);
-					PostMarksCallbackTrigger(eEvent, playertype);
+	if (g_Game && !g_Game->AchievementUnlocksDisallowed() && !g_Manager->GetPersistentGameData()->readonly) {
+		int numplayers = g_Game->GetNumPlayers();
+		for (int i = 0; i < numplayers; i++) {
+			int playertype = g_Game->GetPlayer(i)->GetPlayerType();
+			if (playertype > 40) {
+				string idx = GetMarksIdx(playertype);
+				if (CompletionMarks.count(idx) == 0) {
+					CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+				}
+				int marktype = 1;
+				if (g_Game->IsHardMode()) {
+					marktype = 2;
+				}
+				if (CompletionMarks[idx][eEvent] < marktype) {
+					if (PreMarksCallbackTrigger(eEvent, playertype)) {
+						CompletionMarks[idx][eEvent] = marktype;
+						RunTrackersForMark(eEvent, playertype);
+						PostMarksCallbackTrigger(eEvent, playertype);
+					}
 				}
 			}
 		}
+		SaveCompletionMarksToJson();
 	}
-	SaveCompletionMarksToJson();
 	super(eEvent);
 }
 

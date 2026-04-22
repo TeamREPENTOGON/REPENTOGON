@@ -239,10 +239,12 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
 }
 
 HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val) -> void) {
-	int numplayers = g_Game->GetNumPlayers();
-	for (int i = 0; i < numplayers; i++) {
-		int playertype = g_Game->GetPlayer(i)->GetPlayerType();
-		RunTrackersForEventCounter(eEvent, playertype);
+	if (!this->readonly) {
+		int numplayers = g_Game->GetNumPlayers();
+		for (int i = 0; i < numplayers; i++) {
+			int playertype = g_Game->GetPlayer(i)->GetPlayerType();
+			RunTrackersForEventCounter(eEvent, playertype);
+		}
 	}
 	return super(eEvent,val);
 }
