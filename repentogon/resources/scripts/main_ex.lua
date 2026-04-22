@@ -1163,6 +1163,7 @@ local function AddToCallbackList(callbackList, newCallback, isAllList)
 end
 
 local DEPRECATED_CALLBACKS = {
+	[ModCallbacks.MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS] = "MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS is deprecated - please use MC_EVALUATE_MULTI_SHOT_PARAMS instead.",
 	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = "MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM is deprecated - please use functions such as player:AddInnateCollectible instead.",
 	[ModCallbacks.MC_PRE_OPENGL_RENDER] = "MC_PRE_OPENGL_RENDER is unused, and does not run.",
 }
@@ -1173,7 +1174,9 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	checkFunctionArg(4, fn)
 
 	if DEPRECATED_CALLBACKS[callbackID] then
-		logWarning(callbackID, mod and mod.Name or "???", DEPRECATED_CALLBACKS[callbackID])
+		local info = debug_getinfo(fn, "S")
+		logWarning(callbackID, mod and mod.Name or "???",
+			info.short_src .. ": " .. info.linedefined .. ": " .. DEPRECATED_CALLBACKS[callbackID])
 	end
 
 	param = ConvertCallbackParam(callbackID, param)
