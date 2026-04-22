@@ -109,7 +109,7 @@ struct PersistentGameData depends (PersistentGameData_Bestiary) { {{
 		return savedata != false; 
 	}
 }}
-	
+	bool changesmade : 0x0;
 	bool readonly : 0x1;
 	KAGE_Filesys_FileStream* file : 0x4;
 	std_string filepath : 0x8;
@@ -119,5 +119,6 @@ struct PersistentGameData depends (PersistentGameData_Bestiary) { {{
 	bool itemsCollection[733] : 0xae8;
 	bool bosses[104] : 0xe07;
 	bool challenges[45] : 0xe6f;
+	bool fileLoadedSucessfully : 0xf8c;
 	PersistentGameData_Bestiary bestiary : 0xf64;
 } : 0xf90;

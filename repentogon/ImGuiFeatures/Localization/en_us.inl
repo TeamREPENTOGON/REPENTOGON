@@ -77,6 +77,12 @@ I(CONSOLE_ADD_PLAYER_HELP, u8"Spawns a new player entity. On default, it spawns 
 I(CONSOLE_CHALLENGE_DESC, u8"Start a challenge run")
 I(CONSOLE_CHALLENGE_HELP, u8"Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n")
 
+I(CONSOLE_CLEAN_BESTIARY, u8"Clear unneeded bestiary data to reduce save file size")
+I(CONSOLE_CLEAN_BESTIARY_HELP, u8"Clears bestiary data (encounters, kills etc) from the current save file for any enemy that cannot appear in the bestiary, or does not currently exist (ie, an enemy from a mod that is not currently enabled). Only useful if your save file is nearing the breaking point of 64KB (difficult, but possible).")
+I(CONSOLE_CLEAN_BESTIARY_NO_SAVE_LOADED, u8"Cannot clean bestiary data - no save file loaded.\n")
+I(CONSOLE_CLEAN_BESTIARY_PROMPT, u8"This will erase the bestiary data (encounters, kills etc) for any enemies that cannot appear in the bestiary, or do not currently exist in your game (such as enemies from mods you do not currently have enabled).\n\nDoing this is only reccomended if your save file is nearing the limit of 64KB (current size: %s).\n\nWould you like to proceed?")
+I(CONSOLE_CLEAN_BESTIARY_RESULT, u8"Bestiary cleanup completed. %d/%d enemies removed.\n")
+
 I(CONSOLE_CLEAR_DESC, u8"Clear the debug console")
 I(CONSOLE_CLEAR_HELP, u8"Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.")
 

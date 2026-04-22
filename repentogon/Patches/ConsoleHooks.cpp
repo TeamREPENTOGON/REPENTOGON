@@ -61,6 +61,82 @@ void LuaReset() {
     }
 }
 
+static void GatherBestiaryKeys(const std::map<int, int>& bestiaryData, std::set<int>& out) {
+	for (const auto [bestiaryKey, count] : bestiaryData) {
+		out.insert(bestiaryKey);
+	}
+}
+
+// Erases bestiary data for:
+//  1. Entities that cannot appear in the bestiary (no portrait, etc)
+//  2. Entities that do not currently exist in the game (ie, enemies from mods that are not currently enabled)
+// The bestiary data is the only uncapped portion of Isaac's save files, so it is possible for them to reach 64KB and break saving to the steam cloud.
+// This provides an option to reduce the size of the save file if it is approaching critial mass.
+static void CleanBestiary() {
+	PersistentGameData& pgd = *g_Manager->GetPersistentGameData();
+
+	const bool inTitleOrFileSelect = !Isaac::IsInGame() && g_MenuManager && (g_MenuManager->_selectedMenuID == 1 || g_MenuManager->_selectedMenuID == 2);
+	if (inTitleOrFileSelect || g_Manager->_currentSaveSlot < 1 || g_Manager->_currentSaveSlot > 3 || !pgd.fileLoadedSucessfully) {
+		g_Game->GetConsole()->Print(LANG.CONSOLE_CLEAN_BESTIARY_NO_SAVE_LOADED, 0xFFFFFFFF, 60);
+		return;
+	}
+
+	long currentSize = 0;
+
+	if (g_Manager->IsSteamCloudEnabled()) {
+		SteamCloudFile file;
+		if (file.OpenRead(pgd.steamcloudfilepath.c_str())) {
+			currentSize = file.GetSize();
+		}
+	} else {
+		KAGE_Filesys_File file;
+		if (file.OpenRead(pgd.filepath.c_str())) {
+			currentSize = file.GetSize();
+		}
+	}
+
+	const std::string currentSizeString = ((currentSize > 0) ? std::to_string((int)std::ceil(currentSize / 1024.f)) : "?") + "KB";
+
+	const std::string prompt = REPENTOGON::StringFormat(LANG.CONSOLE_CLEAN_BESTIARY_PROMPT, currentSizeString.c_str());
+
+	if (MessageBoxA(0, prompt.c_str(), "REPENTOGON", MB_ICONINFORMATION | MB_YESNO) != IDYES) {
+		return;
+	}
+
+	std::set<int> keys;
+	PersistentGameData_Bestiary& bestiary = pgd.bestiary;
+	GatherBestiaryKeys(bestiary.deaths, keys);
+	GatherBestiaryKeys(bestiary.encounters, keys);
+	GatherBestiaryKeys(bestiary.hits, keys);
+	GatherBestiaryKeys(bestiary.kills, keys);
+
+	int removed = 0;
+
+	for (const int bestiaryKey : keys) {
+		const int entityType = (bestiaryKey >> 8) >> 0xC;
+		const int entityVariant = (bestiaryKey >> 8) & 0xFF;
+		EntityConfig_Entity* entity = g_Manager->GetEntityConfig()->GetBestiaryConfig(entityType, entityVariant);
+		const bool isValidBestiaryEntity = entity && entity->variant == entityVariant && entity->portrait > -1 && entity->baseHP > 0 && entity->bestiary;
+		if (!isValidBestiaryEntity) {
+			bestiary.deaths.erase(bestiaryKey);
+			bestiary.encounters.erase(bestiaryKey);
+			bestiary.hits.erase(bestiaryKey);
+			bestiary.kills.erase(bestiaryKey);
+			removed++;
+		}
+	}
+
+	if (removed > 0) {
+		if (g_Manager->IsSteamCloudEnabled()) {
+			pgd.SaveToSteamCloud();
+		} else {
+			pgd.SaveLocally();
+		}
+	}
+
+	g_Game->GetConsole()->Print(REPENTOGON::StringFormat(LANG.CONSOLE_CLEAN_BESTIARY_RESULT, removed, (int)keys.size()), 0xFFFFFFFF, 60);
+}
+
 HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int fadeTime) -> void) {
     // Commands always print in history as (">") with a color of 0xFF808080.
     // Armed with this info, we can fix commands not saving on game crash by saving it every time.
@@ -139,6 +215,11 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         GameRestart();
         return;
     }
+
+	if ((in == "cleanbestiary") || (in.rfind("cleanbestiary ", 0) == 0)) {
+		CleanBestiary();
+		return;
+	}
 
     if ((in == "clearcache") || (in.rfind("clearcache ", 0) == 0)) {
         REPENTOGONFileMap::_filemap.clear();

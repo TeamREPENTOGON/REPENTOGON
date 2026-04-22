@@ -191,6 +191,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("achievement", LANG.CONSOLE_ACHIEVEMENT_DESC, LANG.CONSOLE_ACHIEVEMENT_HELP, true, ACHIEVEMENT);
         RegisterCommand("addplayer", LANG.CONSOLE_ADD_PLAYER_DESC, LANG.CONSOLE_ADD_PLAYER_HELP, false, PLAYER);
         RegisterCommand("challenge", LANG.CONSOLE_CHALLENGE_DESC, LANG.CONSOLE_CHALLENGE_HELP, false, CHALLENGE);
+        RegisterCommand("cleanbestiary", LANG.CONSOLE_CLEAN_BESTIARY, LANG.CONSOLE_CLEAN_BESTIARY_HELP, true);
         RegisterCommand("clear", LANG.CONSOLE_CLEAR_DESC, LANG.CONSOLE_CLEAR_HELP, true);
         RegisterCommand("clearcache", LANG.CONSOLE_CLEARCACHE_DESC, LANG.CONSOLE_CLEARCACHE_HELP, true);
         RegisterCommand("clearseeds", LANG.CONSOLE_CLEARSEEDS_DESC, LANG.CONSOLE_CLEARSEEDS_HELP, false);

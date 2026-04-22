@@ -27,11 +27,14 @@ struct EntityConfig_Entity depends (Vector, ModEntry, Devolve) {
 	unsigned int collisionInterval : 0xD0;
 	unsigned int tags: 0xD8;
 	float shieldStrength : 0xE0;
+	bool bestiary : 0xE8;
 	Vector bestiaryOffset : 0xEC;
 	float bestiaryScale : 0xF4;
 	std_string bestiaryAnm2Path : 0xF8;
 	std_string bestiaryAnim : 0x110;
 	std_string bestiaryOverlay : 0x128;
 	std_string bestiaryFloorAlt : 0x140;
+	int bestiaryParentType : 0x158;
+	int bestiaryParentVariant : 0x15C;
 	ModEntry* modEntry : 0x160;
 } : 0x198;
