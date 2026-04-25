@@ -213,6 +213,27 @@ LUA_FUNCTION(Lua_StartNewGame) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RenderToWorld) {
+	const Vector WORLD_VIEWPORT_SIZE = Vector(338.0, 182.0);
+	const Vector WORLD_RENDER_ORIGIN = Vector(60.0, 140.0);
+	const float WORLD_TO_SCREEN_SCALE = 0.65f;
+
+	Game& game = *g_Game;
+	Room& room = *game._room;
+	Vector screenSize = Vector(g_WIDTH, g_HEIGHT);
+
+	Vector position = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+
+	Vector offset = game._screenShakeOffset + room._renderScrollOffset;
+	Vector uiViewportTopLeft = (screenSize - WORLD_VIEWPORT_SIZE) * 0.5f;
+	Vector worldLocalRenderPos = (position - offset) - uiViewportTopLeft;
+
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = worldLocalRenderPos / WORLD_TO_SCREEN_SCALE + WORLD_RENDER_ORIGIN;
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_DrawLine) {
 	Vector* pos1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* pos2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
@@ -949,6 +970,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// new functions
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderToWorld", Lua_RenderToWorld);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawQuad", Lua_DrawQuad);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawLine", Lua_DrawLine);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetClipboard", Lua_GetClipboard);

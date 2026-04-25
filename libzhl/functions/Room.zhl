@@ -179,6 +179,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
     Camera* _Camera : 0x11f8;
 	uint32_t _bossId : 0x1bb0;
 	Backdrop _backdrop : 0x1bc8;
+	Vector _renderScrollOffset : 0x1204;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
 	FXLayers _fxLayers: 0x1618;

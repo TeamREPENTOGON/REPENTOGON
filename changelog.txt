@@ -51,6 +51,8 @@ Added:
 		Optional param: CollectibleType/TrinketType OR GroupKey
 	- MC_POST_REMOVE_INNATE_COLLECTIBLE/TRINKET(EntityPlayer, CollectibleType/TrinketType, string GroupKey, int Amount, bool ExpiredDuration)
 		Optional param: CollectibleType/TrinketType OR GroupKey
+* Isaac:
+	- RenderToWorld(Vector pos)
 * EntityLaser:
 	- SetInitSound(SoundEffect sound)
 	- Get/SetNumChainedLasers
