@@ -88,6 +88,30 @@ ___
 Destroys the provided [Weapon](Weapon.md) object.
 
 ___
+### RenderToWorld () {: aria-label='Functions' }
+#### [Vector](Vector.md) RenderToWorld ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
+Transfers Render coordinates into World coordinates.
+
+Unlike [Isaac.ScreenToWorld](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#screentoworld) (which transfers Window coordinates into World coordinates), this is the true inverse of [Isaac.WorldToScreen](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#worldtoscreen) (which transfers World coordinates into Render coordinates).
+
+???- info "Screen coordinate systems"
+	The game uses 2 distinct coordinate systems when interacting with the Screen:
+
+	- "Window" coordinates: the actual pixel position within the game window (OS-level).
+	- "Render" coordinates: an abstract coordinate system independent of window size or scaling.
+
+	Almost all functions that are used to interact with the screen use or return a position in **Render** coordinates.
+	The only 2 exceptions are:
+
+	- `Isaac.ScreenToWorld`: which converts **Window** coordinates into World coordinates.
+	- `Input.GetMousePosition(false)`: which returns the mouse position in **Window** coordinates.
+
+???- info "Pixel snapping behavior"
+	Alongside converting the World coordinates into Render coordinates, `Isaac.WorldToScreen` snaps the render coordinates to the closest pixel perfect position.
+	This means that converting Render coordinates into World coordinates, then back into Render coordinates is not guaranteed to return the original result; unless
+	it is in a pixel perfect position.
+
+___
 ### DrawLine () {: aria-label='Functions' }
 #### void DrawLine ( [Vector](Vector.md) StartPos, [Vector](Vector.md) EndPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) StartColor, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) EndColor, int Thickness ) {: .copyable aria-label='Functions' }
 Draws a line between the two given positions this render frame.
