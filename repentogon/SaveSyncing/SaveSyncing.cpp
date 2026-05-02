@@ -705,7 +705,7 @@ FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave, AFTERBIRTH)
 // Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
 void VerifyExpectedSaveFile(const char* path) {
 	std::string filename = std::filesystem::path(path).filename().string();
-	if (!std::regex_match(filename, std::regex("rgon_.*", std::regex_constants::icase))) {
+	if (!std::regex_match(filename, std::regex(R"(([0-9]+\.)*rgon_.*)", std::regex_constants::icase))) {
 		ZHL::Log("[SaveSyncing] Fatal error: Attempt to load unexpected save file `%s`\n", path);
 		MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_NAME, "REPENTOGON", MB_ICONERROR);
 		throw std::runtime_error("Unexpected save file load");
