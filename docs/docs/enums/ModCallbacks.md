@@ -128,9 +128,12 @@ Now optionally accepts returning a table, with any combination of the following 
 
 Modified values are passed along to the remaining callbacks. Returning false to cancel the damage still skips the remaining callbacks.
 
+???+ info "ExtraSource"
+    ExtraSource is a new EntityRef passed to this callback in specific situations where the ""true"" source of the damage is obscured. For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife entity itself will be available as the ExtraSource! Gello and Brimstone Balls are also supported. Note that ExtraSource is nil if not available.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|11 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+|11 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ExtraSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
 ### MC_PRE_MOD_UNLOAD
 Added boolean argument that identifies if it is running due to game shutdown.
@@ -393,9 +396,12 @@ Alternatively accepts `false` to cancel rendering
 ### MC_POST_ENTITY_TAKE_DMG {: .copyable }
 Accepts no return parameters.
 
+???+ info "ExtraSource"
+    ExtraSource is a new EntityRef passed to this callback in specific situations where the ""true"" source of the damage is obscured. For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife entity itself will be available as the ExtraSource! Gello and Brimstone Balls are also supported. Note that ExtraSource is nil if not available.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, <br>float Damage, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, <br>float Damage, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int DamageCountdown, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ExtraSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_PRE_ENTITY_THROW {: .copyable }
 Accepts a [Vector](../Vector.md) which will modify the velocity of the thrown entity.
@@ -1509,13 +1515,6 @@ Return `true` to prevent the split, `false` to allow it even if blacklisted, or 
 |:--|:--|:--|:--|:--|
 |1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, <br>boolean IsBlacklisted) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
 
-### MC_PRE_OPENGL_RENDER {: .copyable }
-Gets called right before the Manager::Render() function gets called.
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1136 | MC_PRE_OPENGL_RENDER {: .copyable } | (VertexBuffer, <br>int shaderId, <br>RenderContext) | - | ? |
-
 ### MC_PRE_PAUSE_SCREEN_RENDER {: .copyable }
 Can return `false` to prevent the pause screen from rendering. Doing so will also prevent the screen from darkening.
 
@@ -1717,12 +1716,6 @@ Alternative accepts `true`, which cancels trinket rendering.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1264 |MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable } | (int Slot, <br>[Vector](../Vector.md) Position, <br>float Scale, <br>[EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) CropOffset) | int Slot | table or boolean |
-
-### MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable }
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | (int ModCount, <br>[EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean OnlyCountTrueItems) | - | int |
 
 ### MC_POST_PLAYER_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.

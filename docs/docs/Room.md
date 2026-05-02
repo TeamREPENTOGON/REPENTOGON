@@ -19,6 +19,11 @@ ___
 Now returns a usable class. Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates.
 
 ___
+### SetRedHeartDamage () {: aria-label='Modified Functions' }
+#### void SetRedHeartDamage ( boolean Value = true ) {: .copyable aria-label='Modified Functions' }
+Now accepts an optional parameter, allowing the flag to be set to false.
+
+___
 ### SpawnGridEntity () {: aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = nil, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }

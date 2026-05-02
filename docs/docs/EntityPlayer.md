@@ -64,6 +64,11 @@ ___
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
+### ShootRedCandle () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) ShootRedCandle ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }
+Now returns the EntityEffect for the flame.
+
+___
 ### UseActiveItem () {: aria-label=' Modified Functions' }
 #### [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md) UseActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Item, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlag.html) UseFlags = 0, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = -1, int CustomVarData = 0 ) {: .copyable aria-label='Modified Functions' }
 Now has a return value, a bitmask of [UseActiveItemResultFlags](enums/UseActiveItemResultFlag.md).
@@ -99,7 +104,7 @@ Returns the true amount of charge added, which may have been capped by the targe
 
 ___
 ### AddBoneOrbital () {: aria-label='Functions' }
-#### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+#### [EntityFamiliar](EntityFamiliar.md) AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddCandyHeartBonus () {: aria-label='Functions' }
@@ -1009,12 +1014,7 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ___
 ### InitTwin () {: aria-label='Functions' }
 #### [EntityPlayer](EntityPlayer.md) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
-Initializes a new player that is controlled by the player's same controller.
-
-???+ bug "Bug"
-    The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.
-	
-	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
+Initializes a "twin" player that is controlled by the player's same controller, similarly to Jacob & Esau.
 
 ___
 ### IsCollectibleAnimFinished () {: aria-label='Functions' }
@@ -1581,7 +1581,7 @@ Sets the active Weapon in the assigned `WeaponSlot`.
 
 ___
 ### ShootBlueCandle () {: aria-label='Functions' }
-#### void ShootBlueCandle ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) ShootBlueCandle ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }
 Makes the player shoot a blue flame from the Candle collectible.
 
 ___

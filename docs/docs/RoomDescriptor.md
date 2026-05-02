@@ -83,6 +83,14 @@ ___
 Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
 
 ___
+### GetValidNeighborPlacementLocations () {: aria-label='Functions' }
+#### int[] GetValidNeighborPlacementLocations ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfig, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
+#### int[] GetValidNeighborPlacementLocations ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape = 1, [DoorMask](enums/DoorMask.md) DoorMask = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
+Returns a table of room grid indices that would be valid locations to place the specified room as a neighbor of this room using [TryPlaceRoom](Level.md#tryplaceroom).
+
+See [TryPlaceRoom](Level.md#tryplaceroom) for more information on room placement and example code.
+
+___
 ### InitSeeds () {: aria-label='Functions' }
 #### void InitSeeds ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
 

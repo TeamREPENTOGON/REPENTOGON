@@ -8,16 +8,16 @@ tags:
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
-### AddAquariusTearFlags () {: aria-label='Functions' }
-#### void GetAquariusTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
-???+ info "Aquarius creep only"
-	Only works for  `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+### AddTearFlags () {: aria-label='Functions' }
+#### void AddTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`, `EffectVariant.BRIMSTONE_BALL`, `EffectVariant.TECH_DOT`, and `EffectVariant.CHAIN_LIGHTNING`.
 
 ___
-### ClearAquariusTearFlags () {: aria-label='Functions' }
-#### void GetAquariusTearFlags ( ) {: .copyable aria-label='Functions' }
-???+ info "Aquarius creep only"
-	Only works for  `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+### ClearTearFlags () {: aria-label='Functions' }
+#### void ClearTearFlags ( ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`, `EffectVariant.BRIMSTONE_BALL`, `EffectVariant.TECH_DOT`, and `EffectVariant.CHAIN_LIGHTNING`.
 
 ___
 ### CreateLight () {: aria-label='Functions' }
@@ -30,21 +30,27 @@ ___
 #### [EntityEffect](EntityEffect.md) CreateLootPreview ( [Vector](Vector.md) Position, [EntityPickup](EntityPickup.md) Owner, [EntityEffect](EntityEffect.md) Effect ) {: .copyable aria-label='Functions' }
 
 ___
-### GetAquariusTearFlags () {: aria-label='Functions' }
-#### [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) GetAquariusTearFlags ( ) {: .copyable aria-label='Functions' }
-???+ info "Aquarius creep only"
-	Only works for  `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+### GetGridEntityDesc () {: aria-label='Functions' }
+#### [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) GetGridEntityDesc ( ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.GRID_ENTITY_PROJECTILE_HELPER`.
 
 ___
-### HasAquariusTearFlags () {: aria-label='Functions' }
-#### boolean GetAquariusTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
-???+ info "Aquarius creep only"
-	Only works for  `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+### GetTearFlags () {: aria-label='Functions' }
+#### [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) GetTearFlags ( ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`, `EffectVariant.BRIMSTONE_BALL`, `EffectVariant.TECH_DOT`, and `EffectVariant.CHAIN_LIGHTNING`.
 
 ___
-### SetAquariusTearFlags () {: aria-label='Functions' }
-#### void GetAquariusTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
-???+ info "Aquarius creep only"
-	Only works for  `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`
+### HasTearFlags () {: aria-label='Functions' }
+#### boolean HasTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`, `EffectVariant.BRIMSTONE_BALL`, `EffectVariant.TECH_DOT`, and `EffectVariant.CHAIN_LIGHTNING`.
+
+___
+### SetTearFlags () {: aria-label='Functions' }
+#### void SetTearFlags ( [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) ) {: .copyable aria-label='Functions' }
+???+ info "Applicable effects only"
+	Only works for `EffectVariant.PLAYER_CREEP_HOLYWATER_TRAIL`, `EffectVariant.BRIMSTONE_BALL`, `EffectVariant.TECH_DOT`, and `EffectVariant.CHAIN_LIGHTNING`.
 
 ___
