@@ -93,7 +93,7 @@ If you wish, you can make it so that launching Isaac through Steam runs the REPE
 * Return to the prior Steam menu and navigate to `General`
 * In the `Launch Options` field, copy and paste the following:
 ```
-echo "%command%" | sed -e 's/isaac-ng.exe/REPENTOGONLauncher\/REPENTOGONLauncher.exe/' | sh
+echo "%command%" | sed 's|isaac-ng.exe|REPENTOGONLauncher/REPENTOGONLauncher.exe|' | sh
 ```
     * Launching Isaac through Steam will now launch the REPENTOGON Launcher instead
 
