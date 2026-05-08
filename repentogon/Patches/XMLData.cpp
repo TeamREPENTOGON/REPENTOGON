@@ -212,13 +212,18 @@ void CharToChar(char** dest, char* source) {
 
 int toint(const string &str) {
 	if (str.length() > 0) {
-		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
+		char* endPtr = NULL;
+		const char* asCString = str.c_str();
+		int returnval = strtol(asCString, &endPtr, 0);
+
+		if (endPtr != asCString) {
 			return returnval;
+		} else {
+			ZHL::Log("[WARN] XMLData: toint: attempting to convert non integer string '%s' to integer\n", asCString);
 		}
 	}
-    return 0;
+
+	return 0;
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
