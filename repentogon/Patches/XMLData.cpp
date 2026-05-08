@@ -362,7 +362,7 @@ ModEntry* GetModEntryByContentPath(const string &path) {
 
 
 void UpdateXMLModEntryData() {
-	std:string enabledmodslist = "-- Enabled Mods START -- \n";
+	std::string enabledmodslist = "-- Enabled Mods START -- \n";
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
 		int idx = 0;
 		XMLAttributes mod;
