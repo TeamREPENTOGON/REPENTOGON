@@ -57,6 +57,17 @@ void SaveChallengesToJson() {
 	logViewer.AddLog("[REPENTOGON]", "Challenges saved to : % s \n", chaljsonpath.c_str());
 }
 
+int tointc(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval;
+		}
+	}
+	return 0;
+}
+
 void LoadChallengesFromJson() {
 	InitChals();
 	rapidjson::Document doc = GetJsonDoc(&chaljsonpath);
@@ -111,7 +122,19 @@ HOOK_METHOD(Manager, StartNewGame, (int playerType, int challenge, Seeds unk, in
 			if ((sel == 1) || ((int)(visiblechallenges.size() - 1) < (sel - 46))) {
 				return super(0, 1, unk, difficulty);
 			}
-			return super(playerType, visiblechallenges[sel - 46], unk, difficulty);
+			int actualchallengeid = visiblechallenges[sel - 46];
+			XMLAttributes chal = XMLStuff.ChallengeData->GetNodeById(actualchallengeid);
+			int aptype = 0;
+			//Seeds aunk = unk;
+			int adifficulty = 0;
+			if (chal.find("playertype") != chal.end()) {
+				aptype = tointc(chal["playertype"]);
+			}
+			if (chal.find("difficulty") != chal.end()) {
+				adifficulty = tointc(chal["difficulty"]);
+			}
+
+			return super(aptype, actualchallengeid, unk, adifficulty);
 		}
 	}
 	return super(playerType, challenge, unk, difficulty);
@@ -277,17 +300,6 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 			}
 		}
 	}
-}
-
-int tointc(const string& str) {
-	if (str.length() > 0) {
-		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
-			return returnval;
-		}
-	}
-	return 0;
 }
 
 HOOK_METHOD(PersistentGameData, AddChallenge, (int challengeid) -> void) {
