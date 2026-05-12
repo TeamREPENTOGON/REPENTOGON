@@ -1131,20 +1131,20 @@ Return a table to specify the [CollectibleType](https://wofsauge.github.io/Isaac
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1027 |MC_PRE_HISTORYHUD_RENDER {: .copyable } | boolean or table | - | void |
+|1027 |MC_PRE_HISTORYHUD_RENDER {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, [Vector](../Vector.md) RenderPos | - | boolean or table |
 
 ### MC_POST_HISTORYHUD_RENDER {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1028 |MC_POST_HISTORYHUD_RENDER {: .copyable } | void | - | void |
+|1028 |MC_POST_HISTORYHUD_RENDER {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, [Vector](../Vector.md) RenderPos | - | void |
 
 ### MC_POST_HISTORYHUD_RECOMPUTE {: .copyable }
 Runs when the contents of the [HistoryHUD](../HistoryHUD.md) are refreshed (typically when some item is added or removed).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1029 |MC_POST_HISTORYHUD_RECOMPUTE {: .copyable } | void | - | void |
+|1029 |MC_POST_HISTORYHUD_RECOMPUTE {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, int PlayerIndex | - | int |
 
 ### MC_POST_HUD_RENDER {: .copyable }
 Accepts no return parameters.
@@ -1777,14 +1777,18 @@ Return a [MultiShotParams](../MultiShotParams.md) object to change the propertie
 |1289 |MC_EVALUATE_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player), [MultiShotParams](../MultiShotParams.md), [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
 
 ### MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable }
-Accepts no return parameters.
+This callback runs after a player's starting items/pills/cards/etc are added, usually following their first initialization in the run, or after certain "resets" such as Genesis.
+
+This callback does not run again on run continues, so it is a good place to initialize similar sorts of "starting items".
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1042 |MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable }
-Accepts no return parameters.
+This callback runs earlier than `MC_POST_PLAYER_INIT`, right before the game initializes the starting health/coins/costume/etc of a player.
+
+Note that this callback still runs on run continues, in which case some of the aforementioned initializations will later be overridden by the player's saved state (such as health).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1803,6 +1807,9 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, bool FromPlayerUpdate, bool PostLevelInitFinished) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+
+???+ note "Note"
+	Please note that this callback triggers when continuing a run as well. In this case, `PostLevelInitFinished` will be `false`.
 
 ### MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS {: .copyable }
 
@@ -2345,14 +2352,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean FirstTimePickingUp) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean FirstTimePickingUp, <br>boolean Innate) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean Innate) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_WEAPON_FIRED {: .copyable }
 Accepts no return parameters.

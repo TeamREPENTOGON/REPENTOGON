@@ -11,7 +11,7 @@ tags:
 
     ???+ example "Example Code"
         ```lua
-        local playerHud = Game():GetHUD():GetHistoryHUD(0)
+        local historyHUD = Game():GetHUD():GetHistoryHUD()
         ```
 
 ## Functions
@@ -29,7 +29,7 @@ A single [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/Collec
 
 ___
 ### GetItems () {: aria-label='Functions' }
-#### [HistoryHUDItems](HistoryHUDItem.md)[] Getitems ( int PlayerIndex, boolean IncludeNotVisible = false ) {: .copyable aria-label='Functions' }
+#### [HistoryHUDItems](HistoryHUDItem.md)[] GetItems ( int PlayerIndex, boolean IncludeNotVisible = false ) {: .copyable aria-label='Functions' }
 By default, only returns items that would actually be rendered on the HUD, based on the current screen size and the [ExtraHUDStyle](https://wofsauge.github.io/IsaacDocs/rep/Options.html#extrahudstyle) settling.
 
 ___
@@ -44,12 +44,12 @@ ___
 ___
 ### GetTrinketOffsets () {: aria-label='Functions' }
 #### [Vector](Vector.md)[] GetTrinketOffsets ( int PlayerIndex, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)[] IDs = nil, boolean IncludeNotVisible = false ) {: .copyable aria-label='Functions' }
-Variant of `GetCollectibles` that only returns the current rendering offsets of the items, relative to the [HistoryHUD](HistoryHUD.md). Provided for efficiency if that is all that you need.
+Variant of `GetTrinkets` that only returns the current rendering offsets of the items, relative to the [HistoryHUD](HistoryHUD.md). Provided for efficiency if that is all that you need.
 
 ___
 ### GetTrinkets () {: aria-label='Functions' }
 #### [HistoryHUDItems](HistoryHUDItem.md)[] GetTrinkets ( int PlayerIndex, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)[] IDs = nil, boolean IncludeNotVisible = false ) {: .copyable aria-label='Functions' }
-Returns only [HistoryHUDItems](HistoryHUDItem.md) for the specified smelted [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)s, or all collectibles if no filter IDs are provided (collectibles are never included).
+Returns only [HistoryHUDItems](HistoryHUDItem.md) for the specified smelted [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)s, or all smelted trinkets if no filter IDs are provided (collectibles are never included).
 
 A single [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) can be used in place of the table.
 
