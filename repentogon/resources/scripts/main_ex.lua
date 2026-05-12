@@ -1020,8 +1020,9 @@ local function GetCallbackIterator(callbackID, param, extraParam)
 	local paramCallback = param and callbackData.PARAM[param] and callbackData.PARAM[param][1]
 	local extraParamCallback = extraParam and callbackData.PARAM[extraParam] and callbackData.PARAM[extraParam][1]
 
-	if not paramCallback then
+	if not paramCallback and extraParamCallback then
 		paramCallback = extraParamCallback
+		extraParamCallback = nil
 	end
 
 	if not paramCallback then
