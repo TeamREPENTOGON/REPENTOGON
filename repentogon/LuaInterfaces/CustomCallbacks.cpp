@@ -58,6 +58,13 @@ HOOK_STATIC(Isaac, GetBuiltInCallbackState, (const int callbackid)-> bool, __cde
 // MC_POST_TRIGGER_COLLECTIBLE_ADDED (1053)
 // (Runs for normal items, wisps, and innate collectibles)
 void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collectibleID, bool firsttime, bool wispOrInnate) {
+	// Fixes a minor bug where the effect/costume for the charge being ready may not trigger.
+	if (wispOrInnate && collectibleID == COLLECTIBLE_MARS) {
+		player._marsCooldown = 0;
+		player._marsUnk2 = -1;
+		player._marsUnkBool = true;
+	}
+
     const int callbackid = 1053;
     if (CallbackState.test(callbackid - 1000)) {
         lua_State* L = g_LuaEngine->_state;
@@ -73,6 +80,7 @@ void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collect
             .call(1);
     }
 }
+
 static bool s_RestoringFamiliarStates = false;
 HOOK_METHOD(Entity_Familiar, WispInit, () -> void) {
     super();
@@ -2994,17 +3002,27 @@ HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (int collectibleID) -> voi
 	const auto flags = s_TriggerCollectibleRemovedContext;
 	s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
 
+	const bool removeFromPlayerForm = flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM);
+	const bool wisp = flags.test(MC_TCR_FLAG_WISP);
+	const bool innate = flags.test(MC_TCR_FLAG_INNATE);
+	const bool wispOrInnate = wisp || innate;
+
     // Reimplementation of nop'd out Stompy decrement.
     // Wisps triggering this was weird, and provides no benefit. Why was it even part of this function when no other playerform counter is?
-    if ((collectibleID == COLLECTIBLE_LEO || collectibleID == COLLECTIBLE_MAGIC_MUSHROOM) && flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM)) {
+    if ((collectibleID == COLLECTIBLE_LEO || collectibleID == COLLECTIBLE_MAGIC_MUSHROOM) && removeFromPlayerForm) {
         this->IncrementPlayerFormCounter(13, -1);  // PLAYERFORM_STOMPY
     }
 
     // Reimplementation of nop'd out Heartbreak broken heart removal.
     // Wisps can keep triggering this since its ""beneficial to the player"" but for innate copies, let's skip it.
-    if (collectibleID == COLLECTIBLE_HEARTBREAK && !flags.test(MC_TCR_FLAG_INNATE)) {
+    if (collectibleID == COLLECTIBLE_HEARTBREAK && !innate) {
         this->AddBrokenHearts(-3);
     }
+
+	// Silly game doesn't remove the Mars null costume if removed as a wisp.
+	if (collectibleID == COLLECTIBLE_MARS && wispOrInnate && !this->HasCollectible(COLLECTIBLE_MARS, false)) {
+		this->RemoveCostume(g_Manager->GetItemConfig()->GetNullItem(58));
+	}
 
     super(collectibleID);
 
@@ -3019,8 +3037,8 @@ HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (int collectibleID) -> voi
             .push(collectibleID)
             .push(this, lua::Metatables::ENTITY_PLAYER)
             .push(collectibleID)
-            .push(flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM))
-            .push(flags.test(MC_TCR_FLAG_WISP) || flags.test(MC_TCR_FLAG_INNATE))
+            .push(removeFromPlayerForm)
+            .push(wispOrInnate)
             .call(1);
     }
 }
