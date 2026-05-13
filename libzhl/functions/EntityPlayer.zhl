@@ -813,6 +813,10 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	EntityPtr _twinPlayer : 0x1e4c;
 	Entity_Player* _backupPlayer : 0x1e50;
 	int _redStewBonusDuration : 0x1e58;
+	int _marsUnk1 : 0x1e70;
+	int _marsCooldown : 0x1e74;
+	int _marsUnk2 : 0x1e78;
+	bool _marsUnkBool : 0x1e7c;
 	float _rockBottomMoveSpeed : 0x1e94, _rockBottomMaxFireDelay : 0x1e98, _rockBottomDamage : 0x1e9c, _rockBottomTearRange : 0x1ea0, _rockBottomShotSpeed : 0x1ea4, _rockBottomLuck : 0x1ea8;
 	uint32_t _revelationChargeTimer : 0x1ec0;
 	uint32_t _montezumaChargeTimer : 0x1ec4;
