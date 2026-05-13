@@ -115,7 +115,7 @@ LUALIB_API int GetFilteredItems(lua_State* L, const bool trinkets, const bool of
 
 	if (lua_type(L, 3) == LUA_TTABLE) {
 		lua_pushnil(L);
-		while (lua_next(L, -2) != 0) {
+		while (lua_next(L, 3) != 0) {
 			if (lua_isinteger(L, -1)) {
 				int id = (int)lua_tointeger(L, -1);
 				if (trinkets) {
