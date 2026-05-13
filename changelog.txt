@@ -1,3 +1,12 @@
+v1.1.2a -
+Fixes:
+* Fixed MC_POST_ADD/REMOVE_INNATE_COLLECTIBLE potentially triggering callbacks twice if they use a GroupKey as their optional param.
+* Fixed MC_PRE/POST_PLAYER_ADD_CARD/PILL sometimes reporting the incorrect slot when the player has their pocket active item selected.
+* Fixed HistoryHUD:GetItems() and variants sometimes crashing the game if the optional boolean parameter "IncludeNotVisible" is explicitly provided.
+* Fixed a bug where the PlayerType used for custom challenges could be incorrect if hidden challenges are present.
+* Fixed the Mars null costume not always being properly added/removed for innate copies (and wisps).
+/newline/
+/versionseparator/
 v1.1.2 -
 Added:
 * ModCallbacks:
@@ -84,6 +93,8 @@ Added:
 * EntityEffect
 	- [Get/Set/Add/Clear/Has]TearFlags
 		Only works for applicable EffectVariants: PLAYER_CREEP_HOLYWATER_TRAIL, BRIMSTONE_BALL, TECH_DOT, and CHAIN_LIGHTNING
+	- GetGridEntityDesc
+		Only works for EffectVariant.GRID_ENTITY_PROJECTILE_HELPER
 * EntityKnife
 	- SetKnifeDistance
 	- SetKnifeVelocity
