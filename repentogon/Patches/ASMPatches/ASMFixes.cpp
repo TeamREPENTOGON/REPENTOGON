@@ -230,6 +230,20 @@ static void suppress_push_render_target_stack_overflow() {
 	sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+// Fixes a couple of spots in MoveRandomlyAxisAligned that do not check if the pathfinding entity is a Familiar instead of an EntityNPC (so the result of the dynamic cast was nullptr).
+// This function does actually check for nullptr, but not enough apparantly.
+static void fix_familiar_pathfinder_move_randomly_axis_aligned(char* patchSig, char* jumpSig, char* testAsm, int patchSize) {
+	void* addr = (void*)sASMDefinitionHolder->GetDefinition(patchSig);
+	void* jumpAddr = (void*)sASMDefinitionHolder->GetDefinition(jumpSig);
+
+	ASMPatch patch;
+	patch.AddBytes(testAsm)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, jumpAddr)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, patchSize))
+		.AddRelativeJump((char*)addr + patchSize);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -242,4 +256,6 @@ void ASMFixes()
     fix_itempool_getpilleffect();
     fix_game_state_read_missing_item_pool_fail_check();
 	suppress_push_render_target_stack_overflow();
+	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA_JumpTarget, "\x85\xc9", 0x6);  // TEST ECX,ECX
+	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 }
