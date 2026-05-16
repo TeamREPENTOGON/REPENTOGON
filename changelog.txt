@@ -1,3 +1,11 @@
+v1.1.2b -
+Fixes:
+* Fixed a bug from v1.1.2a where modded challenges that were supposed to start with modded characters would start as Isaac instead.
+* Fixed a bug from v1.1.2 where Tainted Azazel's brimstone would always start at half charge (as if an enemy was hit with the sneeze).
+* Fixed crashes caused by EntityFamiliar:GetPathFinder():MoveRandomlyAxisAligned()
+* Fix Bethany having Book of Virtues in the Bloody Mary challenge (bug from Repentance+ v1.9.7.12)
+/newline/
+/versionseparator/
 v1.1.2a -
 Fixes:
 * Fixed MC_POST_ADD/REMOVE_INNATE_COLLECTIBLE potentially triggering callbacks twice if they use a GroupKey as their optional param.
