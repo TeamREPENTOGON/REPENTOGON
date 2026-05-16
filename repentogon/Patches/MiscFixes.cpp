@@ -164,3 +164,12 @@ HOOK_STATIC(LuaEngine, Callback_PreEntitySpawn, (int* type, int* variant, Vector
 	super(type, variant, position, velocity, spawner, subType, seed);
 	*seed = std::max(*seed, 1U); // in case some mod changed the seed.
 }
+
+// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
+// I think this happened because this function was newly created in Rep+ due to some refactoring.
+HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
+	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
+		return false;
+	}
+	return super(collectibleType, unused);
+}
