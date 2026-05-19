@@ -58,11 +58,19 @@ HOOK_STATIC(Isaac, GetBuiltInCallbackState, (const int callbackid)-> bool, __cde
 // MC_POST_TRIGGER_COLLECTIBLE_ADDED (1053)
 // (Runs for normal items, wisps, and innate collectibles)
 void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collectibleID, bool firsttime, bool wispOrInnate) {
-	// Fixes a minor bug where the effect/costume for the charge being ready may not trigger.
-	if (wispOrInnate && collectibleID == COLLECTIBLE_MARS) {
-		player._marsCooldown = 0;
-		player._marsUnk2 = -1;
-		player._marsUnkBool = true;
+	if (wispOrInnate) {
+		switch (collectibleID) {
+			// Fixes a minor bug where the effect/costume for the charge being ready may not trigger.
+			case COLLECTIBLE_MARS:
+				player._marsCooldown = 0;
+				player._marsUnk2 = -1;
+				player._marsUnkBool = true;
+				break;
+			// Properly updates the active hud stuff.
+			case COLLECTIBLE_BOOK_OF_VIRTUES:
+				player.UpdateBookOfVirtues(true);
+				break;
+		}
 	}
 
     const int callbackid = 1053;
@@ -3022,6 +3030,16 @@ HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (int collectibleID) -> voi
 	// Silly game doesn't remove the Mars null costume if removed as a wisp.
 	if (collectibleID == COLLECTIBLE_MARS && wispOrInnate && !this->HasCollectible(COLLECTIBLE_MARS, false)) {
 		this->RemoveCostume(g_Manager->GetItemConfig()->GetNullItem(58));
+	}
+
+	// Properly updates the active hud stuff.
+	if (collectibleID == COLLECTIBLE_BOOK_OF_VIRTUES && wispOrInnate) {
+		auto* activeDesc = this->GetActiveItemDesc(0);
+		if (activeDesc->_item == COLLECTIBLE_BOOK_OF_VIRTUES) {
+			activeDesc->_item = COLLECTIBLE_NULL;
+			activeDesc->_batteryCharge = 0;
+		}
+		this->UpdateBookOfVirtues(false);
 	}
 
     super(collectibleID);
