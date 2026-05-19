@@ -403,6 +403,9 @@ __thiscall void Entity_Player::AddUrnSouls(unsigned int amount);
 "558bec83e4f8518b0d????????568b75":
 __thiscall bool Entity_Player::CanAddCollectibleToInventory(int id);
 
+"558bec83e4f8565733ff":
+__thiscall void Entity_Player::UpdateBookOfVirtues(bool addedBookOfVirtues);
+
 "558bec568b75??83fe03":
 __thiscall bool Entity_Player::CanOverrideActiveItem(unsigned int slot);
 
