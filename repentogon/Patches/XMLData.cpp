@@ -2548,7 +2548,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		XMLStuff.ModData->byname[mod["name"]] = idx;
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
 
-		string loadingmodmsg = "Loading: " + mod["name"] + "(" + mod["directory"] +  ") \n";
+		string loadingmodmsg = "Loading: " + mod["directory"] + "(" + mod["id"] +  ") \n";
 		KAGE::LogMessage(0, loadingmodmsg.c_str());
 	}
 	break;
