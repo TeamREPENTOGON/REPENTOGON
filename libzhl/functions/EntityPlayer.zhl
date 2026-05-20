@@ -136,6 +136,13 @@ __thiscall bool Entity_Player::CanUseCollectible(CollectibleType collectible, in
 "558bec83e4f883ec1c538b5d??56578bf98b0d":
 __thiscall bool Entity_Player::HasCollectible(int type, bool ignoreModifiers);
 
+// I think this function was newly added in Rep+ by factoring out some HasCollectible/GetCollectibleNum/etc logic.
+// Returns true for Lilith & Incubus (or Cambion Conception), for example.
+// Not particularly useful now for our purposes since its just a simple function coded to return true for
+// specific PlayerType+CollectibleType combos, but its neat that they did a little refactoring.
+"558bec8b15????????8b82":
+__thiscall bool Entity_Player::HasInnateCollectible(int collectibleType, int unused);
+
 "558bec807d??0056578bf974":
 __thiscall bool Entity_Player::HasTrinket(uint32_t type, bool ignoreModifiers);
 
@@ -395,6 +402,9 @@ __thiscall void Entity_Player::AddUrnSouls(unsigned int amount);
 
 "558bec83e4f8518b0d????????568b75":
 __thiscall bool Entity_Player::CanAddCollectibleToInventory(int id);
+
+"558bec83e4f8565733ff":
+__thiscall void Entity_Player::UpdateBookOfVirtues(bool addedBookOfVirtues);
 
 "558bec568b75??83fe03":
 __thiscall bool Entity_Player::CanOverrideActiveItem(unsigned int slot);
