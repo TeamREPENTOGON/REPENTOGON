@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "LuaCore.h"
+#include "Log.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -172,4 +173,24 @@ HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unuse
 		return false;
 	}
 	return super(collectibleType, unused);
+}
+
+// The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
+// However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
+// with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
+// creating an "empty" duplicate of the mod containing nothing but this "fixed" metadata.xml. In practice this only happens if a mod
+// is uploaded without a version, which is rare but can happen! Shoutout to "Minecraft Explosions"! (And Sacrilege, initially!!)
+//
+// Anyway there is no reason for this function to ever create a new folder. The practical purpose for this function is probably to
+// auto-generate a default metadata xml for local mods that are lacking one, or to populate a version for devs who've neglected to
+// add one to their XML (though ig some people are working around this anyway lmao).
+//
+// So, skip any call to this function that would write to a folder that doesn't already exist, since it is not going to do anything useful.
+// Actually fixing the attempted write would not be worth the effort or potential bugs.
+HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
+	std::filesystem::path basePath(&g_ModdingDataPath);
+	if (!std::filesystem::exists(basePath / this->_directory)) {
+		return;
+	}
+	super();
 }
