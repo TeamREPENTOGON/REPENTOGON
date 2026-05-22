@@ -6,5 +6,6 @@ static cleanup void KAGE::LogMessage(int flag, const char* string);
 struct KAGE  {
     {{
     LIBZHL_API static void _LogMessage(int flag, const char* fmt, ...);
+    LIBZHL_API static void SafeLogMessage(int flag, const char* nonFormatString);
     }}
 } : 0;
