@@ -1,3 +1,11 @@
+v1.1.2c -
+Fixes:
+* Fixed potential freeze/crash on startup if mods that have a "%" symbol in their names are installed
+* Fixed RoomTransition.GetPlayerExtraPortraitSprite returning nil if the PlayerType doesn't use the shaking animation (ie, "noshake")
+* Fixed adding/removing innate Book of Virtues not properly updating the active item HUD
+* Prevent the game from creating empty duplicates of mod folders that have no "version" in their metadata.xml
+/newline/
+/versionseparator/
 v1.1.2b -
 Fixes:
 * Fixed a bug from v1.1.2a where modded challenges that were supposed to start with modded characters would start as Isaac instead.
