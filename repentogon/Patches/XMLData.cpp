@@ -380,7 +380,7 @@ void UpdateXMLModEntryData() {
 		XMLStuff.ModData->byfullpath[mod["fulldirectory"]] = idx;
 		
 	}
-	KAGE::LogMessage(0, enabledmodslist.c_str());
+	KAGE::SafeLogMessage(0, enabledmodslist.c_str());
 	KAGE::LogMessage(0, "-- Enabled Mods END -- \n");
 }
 
@@ -2544,7 +2544,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
 
 		string loadingmodmsg = "Loading: " + mod["directory"] + "(" + mod["id"] +  ") \n";
-		KAGE::LogMessage(0, loadingmodmsg.c_str());
+		KAGE::SafeLogMessage(0, loadingmodmsg.c_str());
 	}
 	break;
 	case 26: //fxlayers
@@ -2571,7 +2571,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 		if ((currpath.length() > 0) && (err != nullptr)){
 			string error = "[XMLError] " + xmlerrors[toint(err->value())] + " in " + currpath;
 			g_Game->GetConsole()->PrintError(error);
-			KAGE::LogMessage(3,(error + "\n").c_str());
+			KAGE::SafeLogMessage(3,(error + "\n").c_str());
 			//ZHL::Log("%s \n", error.c_str());
 		}
 		ProcessXmlNode(node);

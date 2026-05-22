@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 #include <cmath>
+#include <regex>
 
 bool Room::IsValidRailType(int rail) {
 	if (rail < 0 || rail > RailType::RAIL_NONE) {
@@ -461,6 +462,11 @@ void KAGE::_LogMessage(int flag, const char* fmt, ...) {
 	if (n >= 0) {
 		LogMessage(flag, buffer);
 	}
+}
+
+// Sanitizes the % character from the provided string to make sure it is not interpreted as a format specifier.
+void KAGE::SafeLogMessage(int flag, const char* nonFormatString) {
+	LogMessage(flag, std::regex_replace(nonFormatString, std::regex("%"), "%%").c_str());
 }
 
 std::optional<std::string> KAGE_Filesys_ContentManager::GetMountedFilePath(const char* filePath) {

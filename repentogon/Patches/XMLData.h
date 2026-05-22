@@ -1006,7 +1006,7 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 		string reason = err.what() + string(" at line ") + to_string(lineNumber);
 		string error = "[XMLError] " + reason + " in " + dir;
 		g_Game->GetConsole()->PrintError(error);
-		KAGE::LogMessage(3, (error + "\n").c_str());
+		KAGE::SafeLogMessage(3, (error + "\n").c_str());
 		//printf("%s \n", error.c_str());
 		//mclear(xmldoc);
 	}
