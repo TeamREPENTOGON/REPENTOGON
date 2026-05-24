@@ -370,6 +370,7 @@ nav:
     - NullFrame: NullFrame.md
     - Sprite: Sprite.md
   - StageTransition: StageTransition.md
+  - TearParams: TearParams.md
   - Vector: Vector.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
