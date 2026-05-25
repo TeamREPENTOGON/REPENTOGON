@@ -1862,22 +1862,19 @@ rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
 rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 
-  
+
 local function RunPreGenerateDungeonCallback(callbackID, param, dungeonGenerator, rng, dungeonType)
 	for callback in GetCallbackIterator(callbackID, param) do
-		local ret = RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
+		RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
 
-		if type(ret) == "boolean" and ret then
-			local canGenerate = dungeonGenerator:Validate()
-			if canGenerate then
-				return true
-			else
-				dungeonGenerator:Reset()
-			end
+		if dungeonGenerator:Validate() then
+			return true
+		else
+			dungeonGenerator:Reset()
 		end
 	end
 end
-  
+
 
 -- Defines non-default callback handling logic to be used for specific callbacks.
 -- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
