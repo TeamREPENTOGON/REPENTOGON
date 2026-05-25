@@ -15,12 +15,21 @@ DungeonGeneratorRoom::DungeonGeneratorRoom() {
 	this->room = nullptr;
 	this->col = -1;
 	this->row = -1;
-
 	this->doors = -1;
+
+	this->stage = -1;
+	this->type = -1;
 	this->shape = -1;
+	this->shape = -1;
+	this->minVariant = -1;
+	this->maxVariant = -1;
+	this->minDifficulty = -1;
+	this->maxDifficulty = -1;
+	this->subtype = -1;
+	this->mode = -1;
 }
 
-DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, RoomConfig_Room* room, uint32_t col, uint32_t row, int doors) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, RoomConfig_Room* room) {
 	this->list_index = list_index;
 
 	this->room = room;
@@ -28,15 +37,56 @@ DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, RoomConfig_Room* room
 	this->row = row;
 	this->doors = doors;
 
+
+	this->stage = room->StageId;
+	this->type = room->Type;
 	this->shape = room->Shape;
+	this->minVariant = room->Variant;
+	this->maxVariant = room->Variant;
+	this->minDifficulty = room->Difficulty;
+	this->maxDifficulty = room->Difficulty;
+	this->subtype = room->Subtype;
+	this->mode = 0;
 }
 
-RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, int required_doors) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+	this->list_index = list_index;
+
+	this->room = nullptr;
+	this->col = col;
+	this->row = row;
+	this->doors = doors;
+
+	this->stage = stage;
+	this->type = type;
+	this->shape = shape;
+	this->minVariant = minVariant;
+	this->maxVariant = maxVariant;
+	this->minDifficulty = minDifficulty;
+	this->maxDifficulty = maxDifficulty;
+	this->subtype = subtype;
+	this->mode = mode;
+}
+
+RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, uint32_t required_doors) {
 	if (this->room != nullptr) {
 		return this->room;
 	}
 
-	return nullptr;
+	return g_Game->GetRoomConfig()->GetRandomRoom(
+		seed,
+		true,
+		this->stage,
+		this->type,
+		this->shape,
+		this->minVariant,
+		this->maxVariant,
+		this->minDifficulty,
+		this->maxDifficulty,
+		&required_doors,
+		this->subtype,
+		this->mode
+	);
 }
 
 #pragma endregion
@@ -88,7 +138,10 @@ void DungeonGenerator::BlockPositionsFromAllowedDoords(XY& base_coords, int shap
 	}
 }
 
-DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, uint32_t col, uint32_t row, int doors) {
+DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config) {
+	int col = base_coords.x;
+	int row = base_coords.y;
+
 	LevelGenerator_Room level_generator_room;
 	level_generator_room._gridColIdx = col;
 	level_generator_room._gridLineIdx = row;
@@ -99,10 +152,87 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(RoomConfig_Room* room_config, 
 
 	int new_room_list_index = placed_room._generationIndex;
 
-	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, room_config, col, row, doors);
+	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, col, row, doors, room_config);
 	DungeonGeneratorRoom* generatorRoom = &this->rooms[new_room_list_index];
 
 	return generatorRoom;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::PlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+	int col = base_coords.x;
+	int row = base_coords.y;
+	
+	LevelGenerator_Room level_generator_room;
+	level_generator_room._gridColIdx = col;
+	level_generator_room._gridLineIdx = row;
+	level_generator_room._shape = shape;
+	bool result = this->level_generator.place_room(&level_generator_room);
+
+	LevelGenerator_Room placed_room = this->level_generator._rooms.at(this->level_generator._rooms.size() - 1);
+
+	int new_room_list_index = placed_room._generationIndex;
+
+	this->rooms[new_room_list_index] = DungeonGeneratorRoom(new_room_list_index, col, row, doors, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode);
+	DungeonGeneratorRoom* generatorRoom = &this->rooms[new_room_list_index];
+
+	return generatorRoom;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::TryPlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config) {
+	// Can't have more doors than what the config allows.
+	doors = doors & room_config->Doors;
+
+	if (this->CanRoomBePlaced(base_coords, room_config->Shape, doors, true)) {
+		return this->PlaceRoom(base_coords, doors, room_config);
+	}
+
+	return nullptr;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::TryPlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+	if (this->CanRoomBePlaced(base_coords, shape, doors, true)) {
+		return this->PlaceRoom(
+			base_coords,
+			doors,
+			stage,
+			type,
+			shape,
+			minVariant,
+			maxVariant,
+			minDifficulty,
+			maxDifficulty,
+			subtype,
+			mode
+		);
+	}
+
+	return nullptr;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::TryPlaceDefaultStartingRoom(int doors) {
+	uint32_t col = 6;
+	uint32_t row = 6;
+	XY coords(col, row);
+
+	unsigned int required_doors = 0;
+
+	RoomConfig* room_config = g_Game->GetRoomConfig();
+	RoomConfig_Room* config = room_config->GetRandomRoom(
+		this->rng->Next(),
+		false,
+		STB_SPECIAL_ROOMS,
+		ROOM_DEFAULT,
+		ROOMSHAPE_1x1,
+		2,
+		2,
+		0,
+		10,
+		&required_doors,
+		0,
+		-1
+	);
+
+	return this->TryPlaceRoom(coords, doors, config);
 }
 
 void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
@@ -110,6 +240,8 @@ void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
 }
 
 bool DungeonGenerator::ValidateFloor() {
+	this->level_generator.calc_required_doors();
+
 	bool has_final_room = this->final_boss_index >= 0;
 
 	// Check if all rooms can fetch a room config
@@ -134,7 +266,7 @@ bool DungeonGenerator::ValidateFloor() {
 }
 
 void DungeonGenerator::CleanFloor() {
-	this->level->reset_room_list(false);
+	this->level->reset_room_list(true);
 
 	for (size_t i = 0; i < 507; i++)
 	{
@@ -215,24 +347,103 @@ LUA_FUNCTION(Lua_PlaceRoom) {
 	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
 	uint32_t col = (uint32_t)luaL_checkinteger(L, 3);
 	uint32_t row = (uint32_t)luaL_checkinteger(L, 4);
+	XY coords(col, row);
 	int allowed_doors = (int)luaL_optinteger(L, 5, 255);
 
-	// Can't have more doors than what the config allows.
-	allowed_doors = allowed_doors & config->Doors;
+	DungeonGeneratorRoom* generator_room = generator->TryPlaceRoom(coords, allowed_doors, config);
 
-	XY coords(col, row);
-
-	if (generator->CanRoomBePlaced(coords, config->Shape, allowed_doors, true)) {
-		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, allowed_doors);
-
+	if (generator_room != nullptr) {
 		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
 		*ud = generator_room;
 		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
-
-		return 1;
 	} else {
-		return 0;
+		lua_pushnil(L);
 	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlaceRandomRoom) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	uint32_t col = (uint32_t)luaL_checkinteger(L, 2);
+	uint32_t row = (uint32_t)luaL_checkinteger(L, 3);
+	XY coords(col, row);
+
+	int stage = (int)luaL_checkinteger(L, 4);
+	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
+		return luaL_error(L, "Invalid stage %d\n", stage);
+	}
+
+	int type = (int)luaL_checkinteger(L, 5);
+	if (type < 1 || type > 29) {
+		return luaL_error(L, "Invalid type %d\n", type);
+	}
+
+	int shape = (int)luaL_optinteger(L, 6, 13); //NUM_ROOMSHAPES
+	if (shape < 1 || shape > 13) {
+		return luaL_error(L, "Invalid shape %d\n", shape);
+	}
+
+	int minVariant = (int)luaL_optinteger(L, 7, 0);
+	if (minVariant < 0) {
+		minVariant = 0;
+	}
+
+	int maxVariant = (int)luaL_optinteger(L, 8, -1);
+	if (maxVariant < minVariant && maxVariant >= 0) {
+		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
+	}
+	else if (maxVariant < 0) {
+		maxVariant = -1;
+	}
+
+	int minDifficulty = (int)luaL_optinteger(L, 9, 0);
+	if (minDifficulty < 0) {
+		minDifficulty = 0;
+	}
+
+	int maxDifficulty = (int)luaL_optinteger(L, 10, 10);
+	if (maxDifficulty < minDifficulty) {
+		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
+	}
+
+	int subtype = (int)luaL_optinteger(L, 11, -1);
+	if (subtype < -1) {
+		return luaL_error(L, "Invalid subtype %d\n", subtype);
+	}
+	int mode = (int)luaL_optinteger(L, 12, -1);
+	if (mode < -1 || mode > 1) {
+		return luaL_error(L, "Invalid mode %d\n", mode);
+	}
+
+	int allowed_doors = (int)luaL_optinteger(L, 13, 255);
+
+	DungeonGeneratorRoom* generator_room = generator->TryPlaceRoom(
+		coords,
+		allowed_doors,
+		stage,
+		type,
+		shape,
+		minVariant,
+		maxVariant,
+		minDifficulty,
+		maxDifficulty,
+		subtype,
+		mode
+	);
+
+	if (generator_room != nullptr) {
+		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+		*ud = generator_room;
+		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+
 }
 
 LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
@@ -240,32 +451,9 @@ LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 
 	int doors = (int)luaL_optinteger(L, 2, 15);
 
-	uint32_t col = 6;
-	uint32_t row = 6;
+	DungeonGeneratorRoom* generator_room = generator->TryPlaceDefaultStartingRoom(doors);
 
-	XY coords(col, row);
-
-	if (generator->CanRoomBePlaced(coords, ROOMSHAPE_1x1, doors, true)) {
-		unsigned int required_doors = 0;
-
-		RoomConfig* room_config = g_Game->GetRoomConfig();
-		RoomConfig_Room* config = room_config->GetRandomRoom(
-			generator->rng->Next(),
-			false,
-			STB_SPECIAL_ROOMS,
-			ROOM_DEFAULT,
-			ROOMSHAPE_1x1,
-			2,
-			2,
-			0,
-			10,
-			&required_doors, // If I don't do it like this it shits itself
-			0,
-			-1
-		);
-
-		DungeonGeneratorRoom* generator_room = generator->PlaceRoom(config, col, row, doors);
-
+	if (generator_room != nullptr) {
 		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
 		*ud = generator_room;
 		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
@@ -317,6 +505,7 @@ LUA_FUNCTION(Lua_Reset) {
 static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{"PlaceRoom", Lua_PlaceRoom},
+		{"PlaceRandomRoom", Lua_PlaceRandomRoom},
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
 		{"PlaceDefaultStartingRoom", Lua_PlaceDefaultStartingRoom},
 		{"BlockIndex", Lua_BlockIndex},

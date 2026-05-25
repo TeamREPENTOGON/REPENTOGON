@@ -14,15 +14,25 @@ struct DungeonGeneratorRoom {
 	uint32_t col;
 	uint32_t row;
 	int doors;
+
+	int stage;
+	int type;
 	int shape;
+	int minVariant;
+	int maxVariant;
+	int minDifficulty;
+	int maxDifficulty;
+	int subtype;
+	int mode;
 
 	int list_index;
 	
 	DungeonGeneratorRoom();
 
-	DungeonGeneratorRoom(int list_index, RoomConfig_Room* room, uint32_t row, uint32_t col, int doors);
+	DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, RoomConfig_Room* room);
+	DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
 
-	RoomConfig_Room* GetRoomConfig(uint32_t seed, int required_doors);
+	RoomConfig_Room* GetRoomConfig(uint32_t seed, uint32_t required_doors);
 };
 
 struct DungeonGenerator {
@@ -39,7 +49,15 @@ struct DungeonGenerator {
 
 	void BlockPositionsFromAllowedDoords(XY& base_coords, int shape, int allowed_doors);
 
-	DungeonGeneratorRoom* PlaceRoom(RoomConfig_Room* room_config, uint32_t row, uint32_t col, int doors);
+	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config);
+
+	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+
+	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config);
+
+	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+
+	DungeonGeneratorRoom* TryPlaceDefaultStartingRoom(int doors);
 
 	void SetFinalBossRoom(DungeonGeneratorRoom* boss_room);
 

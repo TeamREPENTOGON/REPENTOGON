@@ -6425,8 +6425,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 		.push((int)dungeonType)
 		.call(1);
 
-	if (results || !lua_isboolean(L, -1) || !lua_toboolean(L, -1))
-	{
+	if (results || !lua_isboolean(L, -1) || !lua_toboolean(L, -1)) {
 		return false;
 	}
 
