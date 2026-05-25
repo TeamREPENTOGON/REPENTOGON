@@ -23,3 +23,6 @@ struct GridEntity_Lock : public GridEntity {
 		skip; // InitSubclass
     };
 } : 0x158;
+
+"558bec51538bd95657837b??00":
+__thiscall void GridEntity_Lock::TryUnlock(Entity_Player* player, bool force);

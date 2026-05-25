@@ -2,7 +2,7 @@
 tags:
   - Class
 ---
-  
+
 ## Functions
 
 ### GetDoubleTroubleRoomID () {: aria-label='Functions' }
@@ -18,6 +18,7 @@ The table contains the following fields
 | bossID | [BossType](enums/BossType.md) | |
 | weight | float | |
 | weightAlt | float | |
+| initialWeight | float | |
 | achievementID | [Achievement](enums/Achievement.md) | |
 
 ___

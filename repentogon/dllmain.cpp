@@ -115,23 +115,31 @@ static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_
 	return result;
 }
 
-std::string GetUserPath() {
+std::string GetUserPath()
+{
 	HANDLE token = nullptr;
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) {
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
+		return {};
+
+	DWORD size = 0;
+	GetUserProfileDirectoryW(token, nullptr, &size);
+
+	if (size == 0) {
+		CloseHandle(token);
 		return {};
 	}
 
-	DWORD size = MAX_PATH;
-	std::string path(size, '\0'); // Reserve space
-	if (!GetUserProfileDirectoryA(token, &path[0], &size)) {
+	std::wstring wpath(size, L'\0');
+	if (!GetUserProfileDirectoryW(token, wpath.data(), &size)) {
 		CloseHandle(token);
 		return {};
 	}
 
 	CloseHandle(token);
-	path.resize(strlen(path.c_str())); // Trim nulls
+	wpath.pop_back();
 
-	return path;
+	std::filesystem::path path = std::filesystem::path(wpath);
+	return path.string();
 }
 
 static void FixLuaDump()

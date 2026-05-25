@@ -207,6 +207,8 @@ namespace lua {
         extern LIBZHL_API const char* GridWebMT;
         extern LIBZHL_API const char* HistoryMT;
         extern LIBZHL_API const char* HistoryItemMT;
+        extern LIBZHL_API const char* HistoryHUDMT;
+        extern LIBZHL_API const char* HistoryHUDItemMT;
         extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* ItemOverlayMT;
@@ -332,6 +334,8 @@ namespace lua {
         void* ud = luaL_checkudata(L, idx, mt);
         return (T)ud;
     }
+
+    LIBZHL_API void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function);
 
     struct lua_global_tag_t {};
 
@@ -508,6 +512,18 @@ namespace lua {
         public:
             static T* place(lua_State* L, void* key) {
                 UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
+                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+                lua_setmetatable(L, -2);
+                return (T*)ud->getPointer();
+            }
+            
+            // this is not a function from the original LuaBridge source
+            static T* place_with_vftable(lua_State* L, void* key, void* vtable)
+            {
+                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
+                auto** vptr = reinterpret_cast<void**>(ud);
+                *vptr = vtable;
+
                 lua_rawgetp(L, LUA_REGISTRYINDEX, key);
                 lua_setmetatable(L, -2);
                 return (T*)ud->getPointer();

@@ -9,8 +9,8 @@
 // By default, the void path is "rooms/01.Basement.xml" which is not ideal!
 // Redirect to "rooms/26.The Void_ex.xml" since the game already has a "rooms/26.The Void.xml" that hasn't been tested.
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
-	if (Stage == 26 && g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath == "rooms/01.Basement.xml")
-		g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath = "rooms/26.The Void_ex.xml";
+	if (Stage == STB_THE_VOID && g_Game->GetRoomConfig()->_stages[STB_THE_VOID]._rooms[Mode]._filepath == "rooms/01.Basement.xml")
+		g_Game->GetRoomConfig()->_stages[STB_THE_VOID]._rooms[Mode]._filepath = "rooms/26.The Void_ex.xml";
 	super(Stage, Mode);
 }
 
@@ -68,7 +68,7 @@ HOOK_METHOD(Game, RestoreState, (GameState* gstate, bool loaded) -> void) { //so
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
 	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
 };
-HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, unsigned short unk2)->void, __stdcall) {
+/*HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, unsigned short unk2)->void, __stdcall) {
 	ZHL::Logger logger;
 	static bool unpacked_flag_check_done=false;
 	static bool unpacked_flag_set = false;
@@ -91,7 +91,7 @@ HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, un
 	else {
 		return super(path, unk1, unk2);
 	};
-};
+};*/
 
 //Hornfel rare crash with minecart
 
@@ -153,7 +153,7 @@ void EcoMode_toggle_qos(bool eco_state) {
 bool EcoMode_old_state = 0;
 HOOK_METHOD(Manager, Render, (void)->void) {
 	if (repentogonOptions.ecoMode) {
-		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_unk_HWND->HWND;
+		HWND hwnd = (HWND)__ptr_g_KAGE_Graphics_Manager->_window->HWND;
 		bool EcoMode_new_state = IsIconic(hwnd);
 //		EcoMode_new_state = GetForegroundWindow() != hwnd;
 		if ((EcoMode_new_state ^ EcoMode_old_state) == 1) {

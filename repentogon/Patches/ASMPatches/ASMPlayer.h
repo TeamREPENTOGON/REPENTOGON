@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IsaacRepentance.h"
+
 struct CheckFamiliarStorage {
 	std::vector<Entity_Familiar*> familiars;
 	bool inUse = false;

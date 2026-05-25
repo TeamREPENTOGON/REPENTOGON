@@ -133,6 +133,18 @@ LUA_FUNCTION(Lua_KnifeInHitList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SetKnifeDistance) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	knife->_knifeDistance = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SetKnifeVelocity) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	knife->_knifeVelocity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -154,6 +166,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RemoveFromHitList", Lua_KnifeRemoveFromHitList },
 		{ "AddToHitList", Lua_KnifeAddToHitList },
 		{ "InHitList", Lua_KnifeInHitList },
+		{ "SetKnifeDistance", Lua_SetKnifeDistance },
+		{ "SetKnifeVelocity", Lua_SetKnifeVelocity },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);

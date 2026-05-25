@@ -44,30 +44,30 @@
             <string>Désinstallation de %s</string>
         </key>
         <key name="ONLINE_MODS_NEEDS_RESTART">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>온라인으로 플레이하려면 런처 설정 중 Launch Mode를 Vanilla로 변경하세요.</string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
             <string></string>
         </key>
         <key name="ONLINE_MODS_BANNED">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>온라인으로 플레이하려면 런처 설정 중 Launch Mode를 Vanilla로 변경하세요.</string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
             <string></string>
         </key>
         <key name="ONLINE_MODS_PERMABANNED">
-            <string>Change the Launch Mode to Vanilla    in the launcher options to play Online.</string>
+            <string>Change the Launch Mode to Vanilla in the launcher options to play Online.</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>온라인으로 플레이하려면 런처 설정 중 Launch Mode를 Vanilla로 변경하세요.</string>
+            <string>在启动器中 将Launch mode修改为 Vanilla（原版游戏） 来游玩联网模式。</string>
             <string></string>
             <string></string>
             <string></string>
@@ -76,8 +76,8 @@
         <key name="UNRECOGNIZED_CONTROLLER_HEADER">
             <string>Unrecognized Gamepad!</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>미설정 게임패드 발견!</string>
+            <string>无法识别的手柄！</string>
             <string></string>
             <string></string>
             <string></string>
@@ -86,8 +86,8 @@
         <key name="UNRECOGNIZED_CONTROLLER_MESSAGE">
             <string>Please setup a key config for the connected controller</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>연결된 컨트롤러의 조작 설정을 해주세요</string>
+            <string>请为连接的手柄设置按键</string>
             <string></string>
             <string></string>
             <string></string>
@@ -96,8 +96,8 @@
         <key name="CONFIRM_EXIT_GAME">
             <string>Are you sure you want me to die?</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>정말 내가 죽길 바라니?</string>
+            <string>你真的想让我去死吗？</string>
             <string></string>
             <string></string>
             <string></string>
@@ -106,8 +106,8 @@
         <key name="NOT_CONNECTED_TO_SERVER">
             <string>Connection Failure!\n\nMake sure you are connected to the internet and Steam is running</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>연결 실패!\n\n인터넷의 연결 상태와 Steam이 실행 중인지 확인해주세요</string>
+            <string>连接失败！ 确保你已连接网络， 且Steam正在运行</string>
             <string></string>
             <string></string>
             <string></string>
@@ -116,8 +116,8 @@
         <key name="LOST_CONNECTION_TO_SERVER">
             <string>Lost connection to Steam</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>Steam 연결 끊김</string>
+            <string>失去Steam的连接</string>
             <string></string>
             <string></string>
             <string></string>
@@ -126,8 +126,8 @@
         <key name="AFTERBIRTH_DLC_NOT_INSTALLED">
             <string>You must own The Binding of Isaac: Afterbirth and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>아이작의 번제: 리펜턴스+를 플레이하려면 아이작의 번제: 애프터버스를 소유하고 설치해야 합니다</string>
+            <string>你必须拥有并安装 以撒的结合：胎衣， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>
@@ -136,8 +136,8 @@
         <key name="AFTERBIRTH_PLUS_DLC_NOT_INSTALLED">
             <string>You must own The Binding of Isaac: Afterbirth+ and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>아이작의 번제: 리펜턴스+를 플레이하려면 아이작의 번제: 애프터버스+를 소유하고 설치해야 합니다</string>
+            <string>你必须拥有并安装 以撒的结合：胎衣+， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>
@@ -146,8 +146,8 @@
         <key name="REPENTANCE_DLC_NOT_INSTALLED">
             <string>You must own The Binding of Isaac: Repentance and it must be installed in order to play The Binding of Isaac: Repentance+</string>
             <string></string>
-            <string></string>
-            <string></string>
+            <string>아이작의 번제: 리펜턴스+를 플레이하려면 아이작의 번제: 리펜턴스를 소유하고 설치해야 합니다</string>
+            <string>你必须拥有并安装 以撒的结合：忏悔， 才能游玩 以撒的结合：忏悔+</string>
             <string></string>
             <string></string>
             <string></string>

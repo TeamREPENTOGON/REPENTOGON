@@ -1,3 +1,6 @@
+"558bec6aff68????????64a1????????5081ec2c020000a1????????33c58945??56":
+static void Manager::Init();
+
 "558bec83e4f081ec68040000":
 static void Manager::Update(bool unk);
 
@@ -74,6 +77,9 @@ __thiscall bool Manager::IsSteamCloudEnabled();
 
 "558bec6aff68????????64a1????????50535657a1????????33c5508d45??64a3????????8bd98db3":
 __thiscall void Manager::destructor();
+
+"a1????????8b80????????83f813":
+static char* Manager::GetLanguage();
 
 struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, KAGE_SmartPointer_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music, NetplayManager, DailyChallenge) { {{
 	inline int GetState() { return this->_state; }

@@ -20,6 +20,7 @@ enum SplitTearType {
 	SPLIT_POP,  // Pop! + Lasers
 	SPLIT_MULTIDIMENSIONAL,
 	SPLIT_ANGELIC_PRISM,
+	SPLIT_SWORD_BEAM,
 };
 
 typedef std::variant<SplitTearType, std::string> CustomSplitTearType;

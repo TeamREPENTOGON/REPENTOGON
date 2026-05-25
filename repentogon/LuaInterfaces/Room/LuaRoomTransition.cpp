@@ -41,16 +41,40 @@ LUA_FUNCTION(Lua_RoomTransitionIsRenderingBossIntro) {
 	return 1;
 }
 
+static const int s_VersusScreenPlayerExtraPortraitLayers[4][2] = {
+	{5, 12},
+	{18, 21},
+	{19, 22},
+	{20, 23},
+};
+
+// Previously, RoomTransition contained a single sprite for the first player's "extra portrait" (ie tainted eden's glitchy effect)
+// In REP+, with online co-op showing all players in the versus screen, this was replaced with an std::map of layer (int) to ANM2
+// For backward compatability this function returns a reference to player 1's extra portrait by default.
+// Also note that normally the game does not play the co-op version of the VS screen for local co-op.
+// I think it did for earlier versions of Rep+. It still loads all the (extra) portraits though, so mods could trigger the animaion.
 LUA_FUNCTION(Lua_RoomTransitionGetPlayerExtraPortraitSprite) {
 	RoomTransition* roomTransition = g_Game->GetRoomTransition();
-	// Previously, RoomTransition contained a single sprite for the first player's "extra portrait" (ie tainted eden's glitchy effect)
-	// In REP+, with online co-op showing all players in the versus screen, this was replaced with an std::map of layer (int) to ANM2
-	// For backward compatability's sake, this function returns the sprite for layer 5 (player 1's portrait).
-	auto& map = *roomTransition->GetExtraLayerANM2s();
-	if (map.count(5) == 0) {
+	int playerIndex = (int)luaL_optinteger(L, 1, 0);
+
+	if (playerIndex < 0 || playerIndex > 3) {
 		lua_pushnil(L);
+		return 1;
+	}
+
+	// The "alt" layer is for the "no shake" version of the portrait.
+	// Only one or the other is ever populated in the map, as it is recreated from scratch in StartBossIntro.
+	int layer = s_VersusScreenPlayerExtraPortraitLayers[playerIndex][0];
+	int altLayer = s_VersusScreenPlayerExtraPortraitLayers[playerIndex][1];
+
+	auto& map = *roomTransition->GetExtraLayerANM2s();
+
+	if (map.count(altLayer)) {
+		lua::luabridge::UserdataPtr::push(L, &map[altLayer], lua::GetMetatableKey(lua::Metatables::SPRITE));
+	} else if (map.count(layer)) {
+		lua::luabridge::UserdataPtr::push(L, &map[layer], lua::GetMetatableKey(lua::Metatables::SPRITE));
 	} else {
-		lua::luabridge::UserdataPtr::push(L, &map[5], lua::GetMetatableKey(lua::Metatables::SPRITE));
+		lua_pushnil(L);
 	}
 	return 1;
 }

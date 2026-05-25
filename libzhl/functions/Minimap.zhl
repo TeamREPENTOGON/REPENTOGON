@@ -10,6 +10,9 @@ __thiscall Vector* Minimap::GetDisplayedSize(Vector &buffer);
 "558bec83e4f883ec64a1????????33c4894424??8b45":
 __thiscall void Minimap::RenderIcons(Vector* Position, float Alpha<xmm2>);
 
+"558bec83e4f851568bf18d4e":
+__thiscall void Minimap::Refresh();
+
 struct Minimap depends (MinimapConfig, ANM2, Vector) {
 	int _state : 0x0;
 	bool _unkBool : 0x4;

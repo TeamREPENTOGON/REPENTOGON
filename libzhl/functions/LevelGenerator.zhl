@@ -62,17 +62,17 @@ struct LevelGenerator depends (LevelGenerator_Room, XY, RNG) {
 }} } : 0x394;
 
 {{
-    static inline bool LevelGenerator::IsPositionInBounds(int gridIdx) noexcept
+    static inline bool LevelGenerator::IsPositionInBounds(int gridIdx)
     {
         return 0 <= gridIdx && gridIdx < 169;
     }
 
-    static inline bool LevelGenerator::IsPositionInBounds(const XY& position) noexcept
+    static inline bool LevelGenerator::IsPositionInBounds(const XY& position)
     {
         return (0 <= position.x && position.x < 13) && (0 <= position.y && position.y < 13);
     }
 
-    inline void LevelGenerator::BlockPosition(int gridIdx) noexcept
+    inline void LevelGenerator::BlockPosition(int gridIdx)
     {
         if (IsPositionInBounds(gridIdx))
         {
@@ -80,17 +80,17 @@ struct LevelGenerator depends (LevelGenerator_Room, XY, RNG) {
         }
     }
 
-    inline void LevelGenerator::BlockPosition(const XY& position) noexcept
+    inline void LevelGenerator::BlockPosition(const XY& position)
     {
         this->BlockPosition(position.ToGridIdx());
     }
 
-    inline bool LevelGenerator::CanPlaceShapeAtPosition(XY& position, uint32_t shape) noexcept
+    inline bool LevelGenerator::CanPlaceShapeAtPosition(XY& position, uint32_t shape)
     {
         return is_pos_free(&position, shape) && is_placement_valid((uint32_t*)&position, shape);
     }
 
-    inline bool LevelGenerator::CanPlaceShapeAtPosition(int gridIdx, uint32_t shape) noexcept
+    inline bool LevelGenerator::CanPlaceShapeAtPosition(int gridIdx, uint32_t shape)
     {
         XY position = XY::NewFromGridIdx(gridIdx);
         return CanPlaceShapeAtPosition(position, shape);

@@ -248,6 +248,61 @@ LUA_FUNCTION(Lua_GetNeighboringRooms) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetValidNeighborPlacementLocations) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	
+	int stackIdx = 2;
+
+	int roomShape = ROOMSHAPE_1x1;
+	int doorMask = -1;
+
+	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
+		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+		if (roomConfig) {
+			roomShape = roomConfig->Shape;
+			doorMask = roomConfig->Doors;
+		}
+	} else {
+		roomShape = (int)luaL_optinteger(L, stackIdx++, roomShape);
+		doorMask = (int)luaL_optinteger(L, stackIdx++, doorMask);
+	}
+
+	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
+	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+	const std::set<int> validLocations = FindValidNeighborPlacementLocations(roomDesc, roomShape, doorMask, allowMultipleDoors, allowSpecialNeighbors);
+
+	lua_newtable(L);
+	int i = 0;
+	for (const int gridIndex : validLocations) {
+		lua_pushinteger(L, gridIndex);
+		lua_rawseti(L, -2, i + 1);
+		i++;
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetTaintedKeeperCoinSpawns) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+
+	lua_pushinteger(L, roomDesc->TKeeperCoinSpawns);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetTaintedKeeperCoinSpawns) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+
+	roomDesc->TKeeperCoinSpawns = (short)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetErrorTrinketEffect) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+
+	lua_pushinteger(L, roomDesc->GetErrorTrinketEffect());
+	return 1;
+}
+
 static void RegisterRoomDescriptorMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
@@ -258,6 +313,10 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 		{ "InitSeeds", Lua_InitSeeds },
 		{ "GetDimension", Lua_GetDimension },
 		{ "GetNeighboringRooms", Lua_GetNeighboringRooms },
+		{ "GetValidNeighborPlacementLocations", Lua_GetValidNeighborPlacementLocations },
+		{ "GetTaintedKeeperCoinSpawns", Lua_GetTaintedKeeperCoinSpawns },
+		{ "SetTaintedKeeperCoinSpawns", Lua_SetTaintedKeeperCoinSpawns },
+		{ "GetErrorTrinketEffect", Lua_GetErrorTrinketEffect },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);

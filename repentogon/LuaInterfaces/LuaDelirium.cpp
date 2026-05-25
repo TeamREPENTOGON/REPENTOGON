@@ -223,14 +223,14 @@ namespace delirium {
 		else if (timer > 0x3FF) {
 			return luaL_error(L, "Invalid transformation timer %llu (max value %llu)\n", timer, 0x3FF);
 		}
-		
-		/* Teleportation timer is bits 15 -> 25 (inclusive: 11 bits, 0-indexed).
-		 * Reset bits 15 to 25 (11 bits), keep others: &
-		 *     28   24   20   16   12    8    4    0 
-		 * 0b1111 1100 0000 0000 0111 1111 1111 1111
-		 * 0x   F    C    0    0    7    F    F    F
+
+		/* Teleportation timer is bits 15 -> 25 (inclusive: 10 bits, 0-indexed).
+		 * Reset bits 15 to 24 (10 bits), keep others: &
+		 *     28   24   20   16   12    8    4    0
+		 * 0b1111 1110 0000 0000 0111 1111 1111 1111
+		 * 0x   F    E    0    0    7    F    F    F
 		 */
-		*cycle &= 0xFC007FFF; 
+		*cycle &= 0xFE007FFF;
 		*cycle |= ((timer & 0x3FF) << 0xF);
 
 		return 0;

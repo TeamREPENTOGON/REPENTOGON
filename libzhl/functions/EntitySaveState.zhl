@@ -1,97 +1,37 @@
 "33c0c701000000008941":
 __thiscall void EntitySaveState::constructor();
 
-"558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf98d77??c745??000000008b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048d77??c745??010000008b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595f5e8be55dc3??????????????????????????????????????558bec6aff68????????64a1????????5083ec14":
-__thiscall void** EntitySaveState::Clear();
+"558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf98d77??c745??000000008b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048d77??c745??010000008b4e??85c974??8b018b40??ffd084c074??a1????????85c074??56ffd083c4048b4d??64890d????????595f5e8be55dc3??????????????????????????????????????55":
+__thiscall void EntitySaveState::destructor();
 
-struct EntitySaveState depends (Vector) {
-    int type : 0x0; // 0x0
-    int variant : 0x4; // 0x4
-    int subtype : 0x8; // 0x8
-	unsigned int intStorage1 : 0xc; // 0x1c
-	unsigned int intStorage2 : 0x10; // 0x10
-	unsigned int intStorage3 : 0x14; // 0x14
-    int intStorage4 : 0x18; // 0x18
-	int intStorage5 : 0x1c; // 0x1c
-    int16_t gridSpawnIdx : 0x20; // 0x20
-	bool boolStorage1 : 0x22; // 0x22
-	bool boolStorage2 : 0x23; // 0x23
-	unsigned int intStorage6 : 0x24; // 0x24
-    Vector targetPosition : 0x28; // 0x28
-	unsigned int _intStorage7 : 0x30; // 0x30
-    unsigned int _initSeed : 0x34; // 0x34
-	unsigned int _dropSeed : 0x38; // 0x34
-    int spawnerType : 0x3c; // 0x3C
-    int spawnerVariant : 0x40; // 0x40
-	float floatStorage1 : 0x50; // 0x50
-	float floatStorage2 : 0x54; // 0x54
-	unsigned int intStorage8: 0x5c; // 0x5c
-	int8_t byteStorage : 0x60; // 0x60
+struct EntitySaveState depends (Vector, KAGE_SmartPointer_EntitySaveState) {
+    int type : 0x0;
+    int variant : 0x4;
+    int subtype : 0x8;
+	unsigned int intStorage1 : 0xc;
+	unsigned int intStorage2 : 0x10;
+	unsigned int intStorage3 : 0x14;
+    int intStorage4 : 0x18;
+	int intStorage5 : 0x1c;
+    int16_t gridSpawnIdx : 0x20; // HIJACKED by ESSM
+	bool boolStorage1 : 0x22;
+	bool boolStorage2 : 0x23;
+	unsigned int intStorage6 : 0x24;
+    Vector targetPosition : 0x28;
+	unsigned int _intStorage7 : 0x30; // HIJACKED by ESSM
+    unsigned int _initSeed : 0x34;
+	unsigned int _dropSeed : 0x38;
+    int spawnerType : 0x3c;
+    int spawnerVariant : 0x40;
+	float floatStorage1 : 0x50;
+	float floatStorage2 : 0x54;
+	unsigned int intStorage8: 0x5c;
+	int8_t byteStorage : 0x60;
+	KAGE_SmartPointer_EntitySaveState entitySaveState : 0x6c;
 
 	{{
-		struct Bomb;
-		struct Pickup;
-		struct NPC; // FIREPLACE and MOVABLE_TNT only
-		struct Effect;
-		struct Minecart;
-		
 		EntitySaveState() {
 			this->constructor();
 		}
-		
 	}}
 } : 0x78; // 0x78
-
-{{
-	struct EntitySaveState::Bomb
-	{
-		static inline uint32_t* GetScale(EntitySaveState& saveState) { return (uint32_t*)&saveState.intStorage1; }
-		static inline BitSet128* GetTearFlags(EntitySaveState& saveState) { return (BitSet128*)&saveState.intStorage2; }
-		static inline bool* GetIsFetus(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage2; }
-		static inline float* GetExplosionDamage(EntitySaveState& saveState) { return (float*)&saveState.floatStorage1; }
-		static inline float* GetRadiusMulti(EntitySaveState& saveState) { return (float*)&saveState.floatStorage2; }
-		static inline int8_t* GetSpawnerPlayerIndex(EntitySaveState& saveState) { return (int8_t*)&saveState.byteStorage; } // -1 if not spawned by player
-	};
-
-	struct EntitySaveState::Pickup
-	{
-		static inline int* GetCharge(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; }
-		static inline int* GetPrice(EntitySaveState& saveState) { return (int*)&saveState.intStorage3; }
-		static inline bool* GetAutoUpdatePrice(EntitySaveState& saveState) { return (bool*)&saveState.byteStorage; }
-		static inline int* GetShopItemId(EntitySaveState& saveState) { return (int*)&saveState.intStorage4; }
-		static inline bool* GetTouched(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage1; }
-		static inline int* GetOptionsPickupIndex(EntitySaveState& saveState) { return (int*)&saveState._intStorage7; }
-		static inline int* GetTimeout(EntitySaveState& saveState) { return (int*)&saveState.intStorage5; }
-		static inline bool* GetIsBlind(EntitySaveState& saveState) { return (bool*)&saveState.boolStorage2; }
-		static inline int* GetAlternatePedestal(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
-		static inline int* GetActiveVarData(EntitySaveState& saveState) { return (int*)&saveState.intStorage8; }
-		static inline int* GetSourcePoolType(EntitySaveState& saveState) { return (int*)&saveState.floatStorage1; }
-		static inline float* GetSpriteScale(EntitySaveState& saveState) { return (float*)&saveState.floatStorage2; }
-		static inline std::array<int, 8>* GetCycleCollectibles(EntitySaveState& saveState) { return *(std::array<int, 8>**)((char*)&saveState + 0x64); } // 0 is used as a terminator if < 8
-		static inline EntitySaveState* GetFlipSaveState(EntitySaveState& saveState) { return *(EntitySaveState**)((char*)&saveState + 0x6c); }
-	};
-
-	struct EntitySaveState::Slot
-	{
-		static inline int* GetDonationValue(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
-		static inline int* GetTriggerTimer(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; } // Only used by SHOP_RESTOCK_MACHINE 
-		static inline int* GetPrizeCollectible(EntitySaveState& saveState) { return (int*)&saveState._intStorage7; }
-	};
-
-	struct EntitySaveState::NPC // FIREPLACE and MOVABLE_TNT
-	{
-		static inline int* GetHealth(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; }
-	};
-
-	struct EntitySaveState::Effect
-	{
-		static inline int* GetState(EntitySaveState& saveState) { return (int*)&saveState.intStorage1; } // Used by DIRT_PATCH, SPAWNER and LIL_GHOST
-		static inline int* GetVarData0(EntitySaveState& saveState) { return (int*)&saveState.intStorage4; } // Used by SPAWNER
-		static inline int* GetVarData1(EntitySaveState& saveState) { return (int*)&saveState.intStorage2; } // Used by SPAWNER
-	};
-
-	struct EntitySaveState::Minecart
-	{
-		static inline float* GetAngleDegrees(EntitySaveState& saveState) { return (float*)&saveState.floatStorage1; }
-	};
-}}

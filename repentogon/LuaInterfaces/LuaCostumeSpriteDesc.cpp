@@ -62,15 +62,15 @@ LUA_FUNCTION(CostumeSprDesc_HasSkinAlt) {
 	return 1;
 }
 
-LUA_FUNCTION(CostumeSprDesc_GetHeadColor) {
+LUA_FUNCTION(CostumeSprDesc_GetDefaultSkinColor) {
 	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
-	lua_pushinteger(L, costumeSprDesc->_headColor);
+	lua_pushinteger(L, costumeSprDesc->_defaultSkinColor);
 	return 1;
 }
 
-LUA_FUNCTION(CostumeSprDesc_GetBodyColor) {
+LUA_FUNCTION(CostumeSprDesc_GetSkinColor) {
 	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
-	lua_pushinteger(L, costumeSprDesc->_bodyColor);
+	lua_pushinteger(L, costumeSprDesc->_skinColor);
 	return 1;
 }
 
@@ -103,8 +103,10 @@ static void RegisterCostumeSpriteDesc(lua_State* L) {
 		{ "IsFlying", CostumeSprDesc_IsFlying },
 		{ "HasOverlay", CostumeSprDesc_HasOverlay },
 		{ "HasSkinAlt", CostumeSprDesc_HasSkinAlt },
-		{ "GetHeadColor", CostumeSprDesc_GetHeadColor },
-		{ "GetBodyColor", CostumeSprDesc_GetBodyColor },
+		{ "GetDefaultSkinColor", CostumeSprDesc_GetDefaultSkinColor },
+		{ "GetSkinColor", CostumeSprDesc_GetSkinColor },
+		{ "GetHeadColor", CostumeSprDesc_GetDefaultSkinColor }, // for backwards compatibility
+		{ "GetBodyColor", CostumeSprDesc_GetSkinColor }, // for backwards compatibility
 		{ "CanOverwriteColor", CostumeSprDesc_CanOverwriteColor },
 		{ "IsItemStateOnly", CostumeSprDesc_IsItemStateOnly },
 		{ "GetPlayerType", CostumeSprDesc_GetPlayerType },

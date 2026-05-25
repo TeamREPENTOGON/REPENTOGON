@@ -98,7 +98,7 @@ namespace ASMPatches {
 		ASMPatch patch;
 
 		if ( !( loop_sig.Scan() && if_check_sig.Scan() && loop_end_sig.Scan() ) ) {
-			printf("Failed to find -skipchecksum addresses!\nloop: %p, loop_end: %p, if_check: %p\n",loop_sig.GetAddress(),loop_end_sig.GetAddress(),if_check_sig.GetAddress());
+			printf("Failed to find SkipArchiveChecks addresses!\nloop: %p, loop_end: %p, if_check: %p\n",loop_sig.GetAddress(),loop_end_sig.GetAddress(),if_check_sig.GetAddress());
 			return false;
 		};
 
@@ -111,7 +111,7 @@ namespace ASMPatches {
 
 		for (int i = 1; i < __argc; i++) {
 			char* arg = __argv[i];
-			if (strcmp("-skipchecksum", arg) == 0) {
+			if (repentogonOptions.skipArchiveChecks) {
 				sASMPatcher.FlatPatch(start_ptr,&patch);
 				sASMPatcher.FlatPatch(if_check, &if_patch);
 				break;

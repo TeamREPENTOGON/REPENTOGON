@@ -507,7 +507,7 @@ size_t Type::alignment() const {
     else if (_array) {
         return _base->alignment();
     } else {
-        throw std::runtime_error("Unable to compute alignment constraint");
+        throw std::runtime_error("Unable to compute alignment constraint for type " + type->GetFullName());
         return 0;
     }
 }

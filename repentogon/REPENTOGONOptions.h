@@ -27,6 +27,8 @@ struct REPENTOGONOptions {
 		if (!std::filesystem::exists(optionsPath)) {
 			ZHL::Log("INI doesn't exist, creating\n");
 			
+			ini["OptionsSyncing"]["SyncVanillaOptions"] = "1";
+			ini["OptionsSyncing"]["SyncModsEnabled"] = "1";
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
 			ini["VanillaTweaks"]["HushLaserSpeedFix"] = "1";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
@@ -45,12 +47,15 @@ struct REPENTOGONOptions {
 			ini["internal"]["LastSaveFile"] = "0";
 			ini["internal"]["FileMap"] = "1";
 			ini["internal"]["ImGuiScale"] = "0";
+			ini["internal"]["SkipArchiveChecks"] = "0";
 			ini["internal"]["RenderDebugFindInRadius"] = "0";
 			iniFile.generate(ini, true);
 		}
 
 		iniFile.read(ini);
 
+		syncVanillaOptions = defstoi(ini["OptionsSyncing"]["SyncVanillaOptions"], 1);
+		syncModsEnabled = defstoi(ini["OptionsSyncing"]["SyncModsEnabled"], 1);
 		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
 		hushLaserSpeedFix = defstoi(ini["VanillaTweaks"]["HushLaserSpeedFix"],1);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
@@ -70,6 +75,7 @@ struct REPENTOGONOptions {
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
+		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -99,6 +105,8 @@ struct REPENTOGONOptions {
 	}
 
 	void Save() {
+		Write("OptionsSyncing", "SyncVanillaOptions", syncVanillaOptions);
+		Write("OptionsSyncing", "SyncModsEnabled", syncModsEnabled);
 		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
 		Write("VanillaTweaks", "HushLaserSpeedFix",    hushLaserSpeedFix);
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
@@ -117,9 +125,12 @@ struct REPENTOGONOptions {
 		Write("internal", "FileMap", fileMap);
 		Write("internal", "ImGuiScale", imGuiScale);
 		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
+		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 	}
 
 	mINI::INIStructure ini;
+	bool syncVanillaOptions;
+	bool syncModsEnabled;
 	bool betterVoidGeneration;
 	bool hushLaserSpeedFix;
 	bool quickRoomClear;
@@ -139,6 +150,7 @@ struct REPENTOGONOptions {
 	bool renderDebugFindInRadius;
 	bool ecoMode;
 	bool disableExitPrompt;
+	bool skipArchiveChecks;
 };
 
 extern REPENTOGONOptions repentogonOptions;

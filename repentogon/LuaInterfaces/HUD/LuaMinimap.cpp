@@ -92,6 +92,13 @@ LUA_FUNCTION(Lua_MinimapSetShakeOffset)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_MinimapRefresh)
+{
+	Minimap* minimap = g_Game->GetMinimap();
+	minimap->Refresh();
+	return 0;
+}
+
 static void RegisterMinimap(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
 	lua_newtable(L);
@@ -107,6 +114,7 @@ static void RegisterMinimap(lua_State* L) {
 	lua::TableAssoc(L, "SetShakeDuration", Lua_MinimapSetShakeDuration);
 	lua::TableAssoc(L, "GetShakeOffset", Lua_MinimapGetShakeOffset);
 	lua::TableAssoc(L, "SetShakeOffset", Lua_MinimapSetShakeOffset);
+	lua::TableAssoc(L, "Refresh", Lua_MinimapRefresh);
 	//};
 	lua_setglobal(L, "Minimap");
 	//lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);

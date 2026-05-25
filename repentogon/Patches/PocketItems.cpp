@@ -171,12 +171,22 @@ void RunPostDropPocketItemCallback(Entity_Player* player, const uint32_t pocketI
 // ----------------------------------------------------------------------------------------------------
 
 HOOK_METHOD(Entity_Player, AddPocketItem, (int id, unsigned int pocketItemType) -> void) {
-	std::optional<int> precallbackresult = RunPreAddPocketItemCallback(this, pocketItemType, id, 0);
+	int slot = 0;
+
+	// Account for the Rep+ change where added pocket items will go directly
+	// to slot 1 if slot 0 is occupied by the player's pocket active item.
+	if (PocketItem* firstPocket = this->GetPocketItem(0)) {
+		if (firstPocket->_type == 2 && firstPocket->_id > 0) {
+			slot = 1;
+		}
+	}
+
+	std::optional<int> precallbackresult = RunPreAddPocketItemCallback(this, pocketItemType, id, slot);
 
 	if (precallbackresult) {
 		id = *precallbackresult;
 		super(id, pocketItemType);
-		RunPostAddPocketItemCallback(this, pocketItemType, id, 0);
+		RunPostAddPocketItemCallback(this, pocketItemType, id, slot);
 	}
 }
 

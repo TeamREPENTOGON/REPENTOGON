@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	int stage = (int)luaL_checkinteger(L, 1);
 
-	if (stage < 0 || stage > 36) {
+	if (stage < 0 || stage >= NUM_STB) {
 		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
 	}
 
@@ -54,7 +54,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	bool reduceWeight = lua::luaL_checkboolean(L, 2);
 
 	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
+	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
 		return luaL_error(L, "Invalid stage %d\n", stage);
 	}
 
@@ -152,6 +152,25 @@ LUA_FUNCTION(Lua_RoomConfig_AddRooms)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfig_LoadStb)
+{
+	uint32_t stageId = (uint32_t)luaL_checkinteger(L, 1);
+	int mode = (int)luaL_checkinteger(L, 2);
+
+	if (0 > stageId || stageId >= NUM_STB) {
+		return luaL_argerror(L, 1, REPENTOGON::StringFormat("invalid stage %d", stageId).c_str());
+	}
+
+	if (-1 > mode || mode > 1) {
+		return luaL_argerror(L, 2, REPENTOGON::StringFormat("invalid mode %d", stageId).c_str());
+	}
+
+	const char* filename = luaL_checkstring(L, 3);
+
+	VirtualRoomSetManager::__AddStbRooms(L, stageId, mode, filename);
+	return 1;
+}
+
 static void RegisterRoomConfig(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
 	lua_newtable(L);
@@ -159,6 +178,7 @@ static void RegisterRoomConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
 	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
 	lua::TableAssoc(L, "AddRooms", Lua_RoomConfig_AddRooms);
+	lua::TableAssoc(L, "LoadStb", Lua_RoomConfig_LoadStb);
 	lua_setglobal(L, "RoomConfig");
 }
 

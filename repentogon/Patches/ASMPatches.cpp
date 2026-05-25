@@ -4,6 +4,7 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "../SaveSyncing/SaveSyncing.h"
+#include "../LuaInterfaces/CustomCallbacks.h"
 
 #include "NullItemsAndCostumes.h"
 #include "CustomCache.h"
@@ -22,6 +23,9 @@
 #include "XMLPlayerExtras.h"
 #include "ImagePatches.h"
 #include "MinimapPatches.h"
+#include "ExtraRenderSteps.h"
+#include "EntityManager.h"
+#include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 #include "ASMPatches/ASMBagOfCrafting.h"
 #include "ASMPatches/ASMCallbacks.h"
@@ -30,6 +34,7 @@
 #include "ASMPatches/ASMEntityNPC.h"
 #include "ASMPatches/ASMGridEntityCollision.h"
 #include "ASMPatches/ASMGridEntitySpawn.h"
+#include "ASMPatches/ASMHud.h"
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
@@ -39,6 +44,7 @@
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMTweaks.h"
+#include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
@@ -163,10 +169,11 @@ void PerformASMPatches() {
 	ASMPatchConsoleRunCommand();
 
 	// Callbacks
+	CustomCallbacks::detail::ApplyPatches();
+	ASMCallbacks::detail::ApplyPatches();
 	PatchPreSampleLaserCollision();
 	PatchPreLaserCollision();
-	PatchPreEntityTakeDamageCallbacks();
-	PatchPostEntityTakeDamageCallbacks();
+	PatchEntityTakeDamageCallbacks();
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
 	ASMPatchPreMMorphActiveCallback();
@@ -215,6 +222,7 @@ void PerformASMPatches() {
 	// Level
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
+	ASMPatchesForVoidExSubtype();
 	PatchSpecialQuest();
 	ASMPatchDealRoomVariants();
 	//PatchOverrideDataHandling();  // This was disabled prior to rep+, ignore it!
@@ -225,6 +233,10 @@ void PerformASMPatches() {
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchOnlineMenu();
 	PatchModdedCharacterHiddenByAchievementInMenu();
+
+	// HUD
+	ASMPatchHistoryHudRecompute();
+	ASMPatchRenderHistoryItem();
 
 	// Room
 	ASMPatchAmbushWaveCount();
@@ -262,6 +274,7 @@ void PerformASMPatches() {
 	//PlayerManager
 	ASMPatchSpawnSelectedBaby();
 	ASMPatchCoopWheelRespectModdedAchievements();
+	ASMPatchReassignControllers();
 
 	// Camera
 	ASMPatchCameraBoundClampOverride();
@@ -269,6 +282,8 @@ void PerformASMPatches() {
 
 	ImagePatches::ApplyPatches();
 	MinimapPatches::ApplyPatches();
+	EntitySaveStateManagement::detail::Patches::ApplyPatches();
+	EntityManager::detail::Patches::ApplyPatches();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();
@@ -280,8 +295,10 @@ void PerformASMPatches() {
 	ASMPatchesForCustomActiveGFX();
 	ASMPatches::__ItemPoolManager();
 	ASMPatches::__ItemPoolManagerExtra();
+	ExtraRenderSteps::detail::ApplyPatches();
 	ASMPatchesForCardsExtras();
 	ASMPatchesForCustomModManager();
+	ASMPatchRedirectToLocalizationFolders();
 	ASMFixes();
 	HookImGui();
 

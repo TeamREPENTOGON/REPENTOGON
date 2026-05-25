@@ -426,6 +426,49 @@ namespace lua {
 		lua_pop(L, pop);
 	}
 
+	void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function)
+	{
+		luaL_Buffer b;
+		lua_Debug ar;
+		luaL_buffinit(L, &b);
+		if (msg) {
+			luaL_addstring(&b, msg);
+			luaL_addchar(&b, '\n');
+		}
+
+		luaL_addstring(&b, "Begin Stack Traceback:\n");
+		while (lua_getstack(L, level++, &ar))
+		{
+			lua_getinfo(L, "f", &ar);
+
+			if (lua_iscfunction(L, -1))
+			{
+				lua_CFunction fn = lua_tocfunction(L, -1);
+				if (fn == function) break;
+			}
+
+			lua_getinfo(L, "Sln", &ar);
+			if (*ar.what == 'C')
+			{
+				lua_pushfstring(L, "  %s: in method %s\n", ar.short_src, ar.name ? ar.name : "?");
+			}
+			else
+			{
+				if (ar.name == '\0')
+				{
+					lua_pushfstring(L, "  %s:%d: in function at line %d\n", ar.short_src, ar.currentline, ar.linedefined);
+				}
+				else
+				{
+					lua_pushfstring(L, "  %s:%d: in function '%s'\n", ar.short_src, ar.currentline, ar.name);
+				}
+			}
+			luaL_addvalue(&b);
+		}
+		luaL_addstring(&b, "End Stack Traceback");
+		luaL_pushresult(&b);
+	}
+
 	namespace luabridge {
 		UserdataPtr::UserdataPtr(void* const p) {
 			m_p = p;
@@ -788,6 +831,8 @@ namespace lua {
 		const char* GridWebMT = "GridEntityWeb";
 		const char* HistoryMT = "History";
 		const char* HistoryItemMT = "HistoryItem";
+		const char* HistoryHUDMT = "HistoryHUD";
+		const char* HistoryHUDItemMT = "HistoryHUDItem";
 		const char* HUDMessageMT = "HUDMessage";
 		const char* ImGuiMT = "ImGui";
 		const char* ItemOverlayMT = "ItemOverlay";

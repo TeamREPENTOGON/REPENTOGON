@@ -550,6 +550,13 @@ FodyWeavers.xsd
 
 include/IsaacRepentance.h
 libzhl/IsaacRepentance.cpp
+libzhl/hooks.json
 updater/updater.rc
 updater_rsrc
 include/hooks.json
+
+docs/site
+docs/trace.json
+Launcher/
+libs/cryptopp-cmake/
+libs/curl/

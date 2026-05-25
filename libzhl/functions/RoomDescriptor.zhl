@@ -3,6 +3,9 @@ __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 
 struct RoomDescriptor depends (RoomConfig_Room)
 {
+	{{
+		int LIBZHL_API RoomDescriptor::GetErrorTrinketEffect();
+	}}
     int32_t GridIndex : 0x0;
     int32_t SafeGridIndex : 0x4;
     int32_t ListIndex : 0x8;
@@ -17,7 +20,8 @@ struct RoomDescriptor depends (RoomConfig_Room)
     int16_t unk9 : 0x48;
     int16_t ClearCount : 0x4a;
     int32_t unk10 : 0x4c;
-    int32_t PoopCount : 0x50;
+    int16_t PoopCount : 0x50;
+	int16_t TKeeperCoinSpawns : 0x52;
     int32_t PitsCount : 0x54;
     int32_t DecorationSeed : 0x58;
     int32_t SpawnSeed : 0x5c;

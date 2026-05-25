@@ -17,7 +17,7 @@
  * besides queuing render operations, this causes issues if the shader does not end up being ColorOffset.
  */
 
-static void patch_set_shader_pre_render_image() noexcept
+static void patch_set_shader_pre_render_image()
 {
     ASMPatch patch;
 
@@ -39,7 +39,7 @@ static void patch_set_shader_pre_render_image() noexcept
     sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
-void MinimapPatches::ApplyPatches() noexcept
+void MinimapPatches::ApplyPatches()
 {
     patch_set_shader_pre_render_image();
 }

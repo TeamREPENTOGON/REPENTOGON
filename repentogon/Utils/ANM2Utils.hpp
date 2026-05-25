@@ -8,11 +8,11 @@ namespace ANM2Utils
     /** @internal */
     namespace _detail
     {
-        ColorMod get_frame_color(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags) noexcept;
+        ColorMod get_frame_color(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags);
     }
 }
 
-inline ColorMod ANM2Utils::_detail::get_frame_color(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags) noexcept
+inline ColorMod ANM2Utils::_detail::get_frame_color(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags)
 {
     if ((flags & (uint32_t)eAnimationFlag::IGNORE_COLOR_MODIFIERS))
     {
@@ -33,12 +33,12 @@ inline ColorMod ANM2Utils::_detail::get_frame_color(const ANM2& anm2, const Laye
     return color;
 }
 
-inline BlendMode ANM2Utils::GetFrameBlendMode(const LayerState& layer) noexcept
+inline BlendMode ANM2Utils::GetFrameBlendMode(const LayerState& layer)
 {
     return layer._blendMode;
 }
 
-inline ColorMod ANM2Utils::GetFrameColor(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags) noexcept
+inline ColorMod ANM2Utils::GetFrameColor(const ANM2& anm2, const LayerState& layer, const AnimationFrame& frame, uint32_t flags)
 {
     ColorMod color = ANM2Utils::_detail::get_frame_color(anm2, layer, frame, flags);
     
@@ -50,7 +50,7 @@ inline ColorMod ANM2Utils::GetFrameColor(const ANM2& anm2, const LayerState& lay
     return color;
 }
 
-inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2) noexcept
+inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2)
 {
     SourceQuad sourceQuad;
     AnimationLayer::GetSourceQuad(&sourceQuad, nullptr, frame, layerState, topLeftClamp, bottomRightClamp, anm2);
@@ -58,8 +58,8 @@ inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, Lay
     if (g_ANM2_GlitchRendering)
     {
         Vector pivot = Vector(
-            (frame.width / 2 + frame.crop.x) + layerState._cropOffset.x,
-            (frame.height / 2 + frame.crop.y) + layerState._cropOffset.y
+            frame.width / 2 + frame.crop.x + layerState._cropOffset.x,
+            frame.height / 2 + frame.crop.y + layerState._cropOffset.y
         );
 
         RNG rng = RNG();
@@ -78,7 +78,7 @@ inline SourceQuad ANM2Utils::GetFrameSourceQuad(const AnimationFrame& frame, Lay
     return sourceQuad;
 }
 
-inline DestinationQuad ANM2Utils::GetFrameDestinationQuad(const AnimationFrame& frame, const Vector& position, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2) noexcept
+inline DestinationQuad ANM2Utils::GetFrameDestinationQuad(const AnimationFrame& frame, const Vector& position, LayerState& layerState, const Vector& topLeftClamp, const Vector& bottomRightClamp, const ANM2& anm2)
 {
     DestinationQuad destinationQuad;
     AnimationLayer::GetDestQuad(&destinationQuad, position, frame, layerState, topLeftClamp, bottomRightClamp, anm2);

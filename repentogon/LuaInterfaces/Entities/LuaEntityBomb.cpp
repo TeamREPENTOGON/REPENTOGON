@@ -50,35 +50,75 @@ LUA_FUNCTION(Lua_BombGetExplosionCountdown)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_BombGetHeight)
+LUA_FUNCTION(Lua_BombGetFallSpeed)
 {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	lua_pushnumber(L, bomb->_height);
+	lua_pushnumber(L, bomb->_fallSpeed);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_BombSetHeight)
+LUA_FUNCTION(Lua_BombSetFallSpeed)
 {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	bomb->_height = (float)luaL_checknumber(L, 2);
+	bomb->_fallSpeed = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
-LUA_FUNCTION(Lua_BombGetFallingSpeed)
-{
+LUA_FUNCTION(Lua_BombGetFallAcceleration) {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	lua_pushnumber(L, bomb->_fallingSpeed);
+	lua_pushnumber(L, bomb->_fallAcceleration);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_BombSetFallingSpeed)
-{
+LUA_FUNCTION(Lua_BombSetFallAcceleration) {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	bomb->_fallingSpeed = (float)luaL_checknumber(L, 2);
+	bomb->_fallAcceleration = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+// Deprecated mislabeled Get/SetHeight
+static bool printedHeightWarning = false;
+static void HeightWarning() {
+	if (!printedHeightWarning) {
+		g_Game->GetConsole()->Print("[WARN] EntityBomb:Get/SetHeight is deprecated - It was mislabeled and actually accesses the FallSpeed. For bomb \"height\", use `PositionOffset.Y`. For falling speed, use EntityBomb:Get/SetFallSpeed.\n", 0xFFFCCA03, 0x96u);
+		printedHeightWarning = true;
+	}
+}
+LUA_FUNCTION(Lua_BombGetHeight_Deprecated) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	HeightWarning();
+	lua_pushnumber(L, bomb->_fallSpeed);
+	return 1;
+}
+LUA_FUNCTION(Lua_BombSetHeight_Deprecated) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	HeightWarning();
+	bomb->_fallSpeed = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+// Deprecated mislabeled Get/SetFallingSpeed
+static bool printedFallingSpeedWarning = false;
+static void FallingSpeedWarning() {
+	if (!printedFallingSpeedWarning) {
+		g_Game->GetConsole()->Print("[WARN] EntityBomb:Get/SetFallingSpeed is deprecated - It was mislabeled and actually accesses the FallAcceleration. Please use EntityBomb:Get/SetFallSpeed or EntityBomb:Get/SetFallAcceleration instead.\n", 0xFFFCCA03, 0x96u);
+		printedFallingSpeedWarning = true;
+	}
+}
+LUA_FUNCTION(Lua_BombGetFallingSpeed_Deprecated) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	FallingSpeedWarning();
+	lua_pushnumber(L, bomb->_fallAcceleration);
+	return 1;
+}
+LUA_FUNCTION(Lua_BombSetFallingSpeed_Deprecated) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	FallingSpeedWarning();
+	bomb->_fallAcceleration = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -157,10 +197,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetScale", Lua_BombGetScale },
 		{ "SetScale", Lua_BombSetScale },
 		{ "GetExplosionCountdown", Lua_BombGetExplosionCountdown },
-		{ "GetHeight", Lua_BombGetHeight },
-		{ "SetHeight", Lua_BombSetHeight },
-		{ "GetFallingSpeed", Lua_BombGetFallingSpeed },
-		{ "SetFallingSpeed", Lua_BombSetFallingSpeed },
+		{ "GetFallSpeed", Lua_BombGetFallSpeed },
+		{ "SetFallSpeed", Lua_BombSetFallSpeed },
+		{ "GetFallAcceleration", Lua_BombGetFallAcceleration },
+		{ "SetFallAcceleration", Lua_BombSetFallAcceleration },
 		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
 		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
 		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
@@ -170,6 +210,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRocketSpeed", Lua_BombSetRocketSpeed },
 		{ "IsPrismTouched", Lua_BombIsPrismTouched },
 		{ "SetPrismTouched", Lua_BombSetPrismTouched },
+		// Previously misidentified, kept as legacy
+		{ "GetHeight", Lua_BombGetHeight_Deprecated },
+		{ "SetHeight", Lua_BombSetHeight_Deprecated },
+		{ "GetFallingSpeed", Lua_BombGetFallingSpeed_Deprecated },
+		{ "SetFallingSpeed", Lua_BombSetFallingSpeed_Deprecated },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

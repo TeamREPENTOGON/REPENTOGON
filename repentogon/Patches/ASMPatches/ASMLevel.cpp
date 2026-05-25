@@ -1,4 +1,5 @@
 #include "HookSystem.h"
+#include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
@@ -23,6 +24,9 @@ void ASMPatchBlueWombCurse() {
 }
 
 bool IsFloorUnlocked(unsigned int stageId) {
+	if ((stageId >= STB_UNUSED1 && stageId <= STB_ULTRA_GREED) || stageId >= STB_BACKWARDS) {
+		return false;
+	}
 	int achievement = stageidToAchievement[stageId];
 	if (achievement != -1) {
 		PersistentGameData* pgd = &g_Manager->_persistentGameData;
@@ -37,11 +41,25 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 	if (g_Game->GetDimension() != 2) {
 		// to include Void portal rooms
 		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
-		for (int id = 0; id < 36; ++id) {
-			if (generateLevels.test(id)) {
-				//ZHL::Log("Adding stage id %d\n", id + 1);
-				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id + 1, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-				rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+		for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
+			if (id == STB_THE_VOID || generateLevels.test(id - 1)) {
+				//ZHL::Log("Adding stage id %d\n", id);
+				int getRoomsSubtype = subtype;
+				if (id == STB_THE_VOID && subtype == 0) {
+					// Allow any subtype to be pulled from `26.The Void_ex.xml` 
+					getRoomsSubtype = -1;
+				}
+				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, getRoomsSubtype, mode);
+				if (id == STB_THE_VOID && subtype == 0) {
+					// Respect `generateLevels` for void_ex room subtypes.
+					for (RoomConfig_Room* room : stageRooms) {
+						if (room->Subtype == 0 || room->Subtype == STB_THE_VOID || (room->Subtype > 0 && room->Subtype < NUM_STB && generateLevels.test(room->Subtype - 1))) {
+							rooms->push_back(room);
+						}
+					}
+				} else {
+					rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+				}
 			}
 		}
 		return true;
@@ -91,7 +109,7 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 			RoomConfig* roomConfig = &g_Game->_roomConfig;
 			if (roomConfig != nullptr) {
 				uint8_t mode = g_Game->IsGreedMode();
-				for (int id = 1; id < 37; ++id) {
+				for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
 					if (generateLevels.test(id - 1))
 						roomConfig->ResetRoomWeights(id, mode);
 				}
@@ -99,15 +117,15 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 			generateLevels.reset();
 		}
 		
-		for (int id = 1; id < 37; ++id) {
+		for (int id = STB_BASEMENT; id < NUM_STB; ++id) {
 			if (repentogonOptions.betterVoidGeneration) {
-				if ((id > 17 && id < 26) || id == 34 || id == 35 || !IsFloorUnlocked(id))
+				if ((id >= STB_UNUSED1 && id <= STB_ULTRA_GREED) || id == STB_MORTIS || id == STB_HOME || !IsFloorUnlocked(id))
 					continue;
 			}
 			else
 			{
 				// mimic default generation (except for letting void rooms be added)
-				if ((id > 17 && id != 26) || id == 13)
+				if ((id > STB_CHEST && id != STB_THE_VOID) || id == STB_BLUE_WOMB)
 					continue;
 			}
 			generateLevels.set(id-1, true);
@@ -115,6 +133,182 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 	}
 
 	super(rng);
+}
+
+bool IsVoidExRoom() {
+	Room* room = g_Game->_room;
+	if (room->_descriptor && room->_descriptor->Data) {
+		RoomConfig_Room* roomConfig = room->_descriptor->Data;
+		return roomConfig->StageId == STB_THE_VOID;
+	}
+	return false;
+}
+int GetVoidExRoomStageId() {
+	if (IsVoidExRoom()) {
+		RoomDescriptor* roomDesc = g_Game->_room->_descriptor;
+		RoomConfig_Room* roomConfig = roomDesc->Data;
+		if ((roomConfig->Subtype >= STB_BASEMENT && roomConfig->Subtype <= STB_CHEST) || (roomConfig->Subtype >= STB_DOWNPOUR && roomConfig->Subtype <= STB_HOME)) {
+			return roomConfig->Subtype;
+		} else {
+			RNG rng;
+			rng.SetSeed(roomDesc->DecorationSeed, 7);
+			if (repentogonOptions.betterVoidGeneration && rng.RandomInt(3) == 0) {
+				const int id = STB_DOWNPOUR + rng.RandomInt(1 + STB_CORPSE - STB_DOWNPOUR);
+				if (IsFloorUnlocked(id)) {
+					return id;
+				}
+			}
+			return rng.RandomInt(STB_CHEST) + 1;
+		}
+	}
+	return STB_THE_VOID;
+}
+
+// Interpret the subtype of void_ex rooms as an StbType, and load the backdrop/fx appropriate for that stage.
+int __stdcall LoadBackdropGraphicsVoidExTrampoline(const int original) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return original;
+}
+void PatchLoadBackdropGraphicsVoidEx(void* addr, const bool ecx) {
+	ZHL::Log("[REPENTOGON] Patching Room::LoadBackdropGraphics for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~(ecx ? ASMPatch::SavedRegisters::Registers::ECX : ASMPatch::SavedRegisters::Registers::EAX), true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overwritten bytes
+		.PreserveRegisters(savedRegisters)
+		.Push(ecx ? ASMPatch::Registers::ECX : ASMPatch::Registers::EAX)
+		.AddInternalCall(LoadBackdropGraphicsVoidExTrampoline);
+	if (ecx) {
+		patch.CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX);
+	}
+	patch.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+int __stdcall RoomInitVoidExTrampoline(const bool unused) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return g_Game->GetStageID(unused);
+}
+void PatchRoomInitVoidEx() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RoomInit_VoidEx);
+
+	ZHL::Log("[REPENTOGON] Patching Room::Init for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::ECX)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(RoomInitVoidExTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+int __stdcall PortalsVoidExTrampoline1(const int levelStage, bool* isNonBaseStageType) {
+	if (g_Game->_stage == STAGE7) {
+		int stage = g_Game->_room->GetRoomConfigStage();
+		if (stage == STB_MINES || stage == STB_ASHPIT) {
+			return STAGE2_1;
+		} else if (stage == STB_MAUSOLEUM || stage == STB_GEHENNA) {
+			return STAGE3_1;
+		} else if (stage == STB_MORTIS || stage == STB_CORPSE) {
+			return STAGE4_1;
+		} else if (stage == STB_CHEST || stage == STB_DARK_ROOM) {
+			*isNonBaseStageType = (stage == STB_CHEST);
+			return STAGE5;
+		} else if (stage == STB_BLUE_WOMB) {
+			return STAGE4_1;
+		} else if (stage >= STB_HOME) {
+			*isNonBaseStageType = false;
+			return STAGE1_1;
+		}
+	} else if (levelStage == STAGE4_3) {
+		return STAGE4_1;
+	} else if (levelStage == STAGE6) {
+		return STAGE5;
+	} else if (levelStage >= STAGE8) {
+		*isNonBaseStageType = false;
+		return STAGE1_1;
+	}
+	return levelStage;
+}
+void PatchPortalsVoidEx1() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Portals_VoidEx1);
+
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore overwritten bytes
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::ESP)
+		.PreserveRegisters(savedRegisters)
+		.AddBytes("\x8D\x46\x4F")
+		.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(PortalsVoidExTrampoline1)
+		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+int __stdcall PortalsVoidExTrampoline2(const int stageType) {
+	if (g_Game->_stage == STAGE7) {
+		int stage = g_Game->_room->GetRoomConfigStage();
+		if (stage == STB_DOWNPOUR) {
+			return STAGETYPE_REPENTANCE;
+		} else if (stage == STB_DROSS) {
+			return STAGETYPE_REPENTANCE_B;
+		}
+	}
+	return stageType;
+}
+void PatchPortalsVoidEx2() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Portals_VoidEx2);
+
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal for void_ex @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore overwritten bytes
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(PortalsVoidExTrampoline2)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xA);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchPortalUnaliveSelf() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PortalUnaliveSelf);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::ai_portal self destruction @ %p\n", addr);
+	sASMPatcher.FlatPatch((char*)addr, "\x90\x90\x90", 3);
+}
+void ASMPatchesForVoidExSubtype() {
+	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx1), true);
+	PatchLoadBackdropGraphicsVoidEx(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadBackdropGraphics_VoidEx2), false);
+	PatchRoomInitVoidEx();
+	PatchPortalsVoidEx1();
+	PatchPortalsVoidEx2();
+	PatchPortalUnaliveSelf();
+}
+
+// This function is used to determine Portal (enemy) spawns and certain floor-specific enemy replacements.
+HOOK_METHOD(Room, GetRoomConfigStage, () -> int) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return super();
+}
+
+// Used for a few things including hasFloorAlt skins.
+HOOK_STATIC(Level, GetStageID, () -> int, _stdcall) {
+	if (IsVoidExRoom()) {
+		return GetVoidExRoomStageId();
+	}
+	return super();
 }
 
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
@@ -324,41 +518,36 @@ void PatchOverrideDataHandling() {
 	sASMPatcher.FlatPatch(patchAddr, &patch2);
 }
 
-// https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
-void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls(const char* sig, const char* reg) {
-	SigScan scanner(sig);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
-
-	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
-	for (int i = 0; i < 5; i++) {
-		void* subAddr = (char*)addr + ((7 * i) + 1);
-		ASMPatch patch;
-		patch.AddBytes(reg);
-		sASMPatcher.FlatPatch(subAddr, &patch);
+// See https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
+int __stdcall TryResizeEndroomDoorSlotFix(int* doorSlotsToCheck, int idx) {
+	if (doorSlotsToCheck[2] != doorSlotsToCheck[0]) {
+		// Need to fix the values for large rooms, which are populated wrong.
+		for (int i = 1; i <= 5; i++) {
+			std::swap(doorSlotsToCheck[i * 2], doorSlotsToCheck[i * 2 + 1]);
+		}
 	}
-}
-void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
-	SigScan scanner("8b94??????????b801000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
-
-	// If we attempt to read from index 13 in the DoorSlot array (which seems to be reading outside the bounds of the array) read from index 12 instead.
-	ASMPatch patch;
-	patch.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::ESI)
-		.AddBytes("\x83\xfa\x0d")  // cmp edx, 13
-		.AddBytes("\x0f\x85\x01").AddZeroes(3)  // jne (skips the next command if edx != 13)
-		.AddBytes("\x4a")  // dec edx (skipped if the jump happened)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // mov edx, dword ptr [esp + edx*0x4 + 0x??]
-		.AddRelativeJump((char*)addr + 0x7);
-	sASMPatcher.PatchAt(addr, &patch);
+	// The game may attempt to read outside the bounds of the array with an index of 13.
+	if (idx > 12) {
+		idx = 12;
+	}
+	return doorSlotsToCheck[idx];
 }
 void PatchLevelGeneratorTryResizeEndroom() {
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898c24????????898c24????????898c24????????898c24????????898c24????????898c24????????8b4c24", "\x84");  // Replace ECX with EAX
-	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls("898424????????898424????????898424????????898424????????898424", "\x8C");  // Replace EAX with ECX
-	PatchTryResizeEndroomMissingLongThinRoomDoorSlot();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LevelGenerator_TryResizeEndroom_Fix);
+	const int espOffset = *(int*)((char*)addr + 0x3);
+
+	ZHL::Log("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EDX, true);
+	ASMPatch patch;
+	patch.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::ESP)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)
+		.LoadEffectiveAddress(ASMPatch::Registers::EDX, espOffset, ASMPatch::Registers::EDX)
+		.Push(ASMPatch::Registers::EDX)
+		.AddInternalCall(TryResizeEndroomDoorSlotFix)
+		.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::EAX)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x7);;
+	sASMPatcher.PatchAt(addr, &patch);
 }

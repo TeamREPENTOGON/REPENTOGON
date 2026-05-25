@@ -57,6 +57,17 @@ void SaveChallengesToJson() {
 	logViewer.AddLog("[REPENTOGON]", "Challenges saved to : % s \n", chaljsonpath.c_str());
 }
 
+int tointc(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval;
+		}
+	}
+	return 0;
+}
+
 void LoadChallengesFromJson() {
 	InitChals();
 	rapidjson::Document doc = GetJsonDoc(&chaljsonpath);
@@ -111,7 +122,9 @@ HOOK_METHOD(Manager, StartNewGame, (int playerType, int challenge, Seeds unk, in
 			if ((sel == 1) || ((int)(visiblechallenges.size() - 1) < (sel - 46))) {
 				return super(0, 1, unk, difficulty);
 			}
-			return super(playerType, visiblechallenges[sel - 46], unk, difficulty);
+			int actualchallengeid = visiblechallenges[sel - 46];
+			ChallengeParam* chal = g_Manager->GetChallengeParams(actualchallengeid);
+			return super(chal->_playerType, actualchallengeid, unk, chal->_difficulty);
 		}
 	}
 	return super(playerType, challenge, unk, difficulty);
@@ -163,7 +176,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achievementID) -> bool) {
 }
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
 	super(in,out, player);
-	if (in.find("lockachievement ",15)) {
+	if (in.find("lockachievement ") != std::string::npos) {
 		visibleinit = false;	
 	}
 }
@@ -277,17 +290,6 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 			}
 		}
 	}
-}
-
-int tointc(const string& str) {
-	if (str.length() > 0) {
-		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
-			return returnval;
-		}
-	}
-	return 0;
 }
 
 HOOK_METHOD(PersistentGameData, AddChallenge, (int challengeid) -> void) {

@@ -27,7 +27,15 @@ __thiscall void Console::SaveCommandHistory();
 
 struct Console depends (Console_HistoryEntry) {
 {{
-	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
+	enum Color: unsigned int {
+		WHITE = 0xFFD3D3D3,
+		WARNING = 0xFFFCCA03,
+	};
+
+	void PrintWarning(const std_string& text)
+	{
+		this->Print(text, Color::WARNING, 0x96u);
+	}
 }} 
 int _state : 0x0;
 std_string _input : 0x1c;

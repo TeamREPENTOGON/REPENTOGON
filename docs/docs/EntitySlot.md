@@ -29,6 +29,11 @@ ___
 Seems to only be used by Crane Game and Hell Game. Gets the collectible that will be awarded as the prize when winning.
 
 ___
+### GetPrizeSprite () {: aria-label='Functions' }
+#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetPrizeSprite ( ) {: .copyable aria-label='Functions' }
+Returns the sprite used by Shell Game and Hell Game for the currently selected prize. Plays the "Prizes" animation and hides all layers but one (plus the skull layer) for the selected prize.
+
+___
 ### GetPrizeType () {: aria-label='Functions' }
 #### int GetPrizeType ( ) {: .copyable aria-label='Functions' }
 Returns an integer that varies based on the slot machine.
@@ -55,16 +60,8 @@ Returns the index used by Shell Game and Hell Game to determine which prize anim
 
 ___
 ### GetState () {: aria-label='Functions' }
-#### int GetState ( ) {: .copyable aria-label='Functions' }
+#### [SlotState](enums/SlotState.md) GetState ( ) {: .copyable aria-label='Functions' }
 Returns the current state of the slot.
-???+ info "Return info"
-    All slots have a consistent state based on what it's doing that reflect as follows:
-    
-    - `1`: Idle.
-    - `2`: Reward (Shell Game & Hell Game: Idle Reward)
-    - `3`: Bombed
-    - `4`: Payout
-    - `5`: Reward (only for Shell Game & Hell Game)
 
 ___
 ### GetTimeout () {: aria-label='Functions' }
@@ -116,8 +113,8 @@ Sets the index used by Shell Game and Hell Game to determine which prize animati
 
 ___
 ### SetState () {: aria-label='Functions' }
-#### void SetState ( int State ) {: .copyable aria-label='Functions' }
-Sets the state of the slot. See [GetState](EntitySlot.md#getstate) for more info.
+#### void SetState ( [SlotState](enums/SlotState.md) State ) {: .copyable aria-label='Functions' }
+Sets the state of the slot.
 
 ___
 ### SetTimeout () {: aria-label='Functions' }

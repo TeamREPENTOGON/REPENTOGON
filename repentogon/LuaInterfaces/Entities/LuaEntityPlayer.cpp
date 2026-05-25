@@ -11,8 +11,13 @@
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/PlayerFeatures.h"
 #include "../../Patches/XmlData.h"
+#include "../../Patches/ItemSpoofSystem.h"
+#include "../../MiscFunctions.h"
 
 #include <algorithm>
+#include <array>
+#include <unordered_set>
+#include <unordered_map>
 
 
 /*
@@ -29,139 +34,15 @@
  (copycat of kilburn's ascii art of Isaac)
 */
 
-std::map<int, int> fakeItems;
-
-namespace PlayerItemSpoof {
-	struct CollSpoofEntry { int AppendedCount = 0; bool Blocked = false; };
-	std::unordered_map<int, std::unordered_map<int, CollSpoofEntry>> CollSpoofList;
-	bool GlobalSpoofState = true;	//not async friendly but as if anything ever runs async in this damn game
-	void AddInnateCollectibleNew(Entity_Player* player, int itemID, int amount) {
-		auto& itemlist = CollSpoofList;
-		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
-		}
-		else {
-			itemlist[player->_playerIndex] = {};
-		}
-		auto& playerEntry = itemlist[player->_playerIndex];
-		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
-			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
-			playerEntry[itemID].AppendedCount += amount;
-			playerEntry[itemID].AppendedCount=(std::max)(playerEntry[itemID].AppendedCount,0);
-			if (playerEntry[itemID].AppendedCount == 0 && playerEntry[itemID].Blocked==false) {
-				playerEntry.erase(itemID);
-			};
-		}
-		else {
-			playerEntry[itemID] = { amount, false };
-		};
-	}
-	void BlockCollectible(Entity_Player* player, int itemID) {
-		auto& itemlist = CollSpoofList;
-		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
-		}
-		else {
-			itemlist[player->_playerIndex] = {};
-		}
-		auto& playerEntry = itemlist[player->_playerIndex];
-		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
-			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
-			playerEntry[itemID].Blocked = true;
-		}
-		else {
-			playerEntry[itemID] = { 0, true};
-		};
-	};
-	void UnblockCollectible(Entity_Player* player, int itemID) {
-		auto& itemlist = CollSpoofList;
-		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
-		}
-		else {
-			itemlist[player->_playerIndex] = {};
-		}
-		auto& playerEntry = itemlist[player->_playerIndex];
-		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
-			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
-			playerEntry[itemID].Blocked = false;
-			if (playerEntry[itemID].AppendedCount == 0) {
-				playerEntry.erase(itemID);
-			};
-		};
-	};
-	bool IsCollectibleBlocked(Entity_Player* player, int itemID) {
-		auto& itemlist = CollSpoofList;
-		bool outbool = false;
-		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
-			if (auto searchInner = itemlist[player->_playerIndex].find(itemID); searchInner != itemlist[player->_playerIndex].end()) {
-				outbool = itemlist[player->_playerIndex][itemID].Blocked;
-				goto end;
-			};
-		};
-	end:
-		return outbool;
-	};
-}
-
-HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
-	if (ignoreModifiers) { 
-		return super(type, ignoreModifiers);
-	};
-	if (!PlayerItemSpoof::GlobalSpoofState) { return super(type, ignoreModifiers); };
-	auto& itemlist = PlayerItemSpoof::CollSpoofList;
-	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
-		if (auto searchInner = itemlist[this->_playerIndex].find(type); searchInner != itemlist[this->_playerIndex].end()) {
-			if (itemlist[this->_playerIndex][type].Blocked == false) {
-				return (super(type, ignoreModifiers) || itemlist[this->_playerIndex][type].AppendedCount>0);
-			}
-			return false;
-		};
-	};
-	return super(type, ignoreModifiers);
-};
-
-HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
-	if (onlyCountTrueItems) {
-		return super(collectibleID, onlyCountTrueItems);
-	};
-	if (!PlayerItemSpoof::GlobalSpoofState) { return super(collectibleID, onlyCountTrueItems); };
-	auto& itemlist = PlayerItemSpoof::CollSpoofList;
-	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
-		if (auto searchInner = itemlist[this->_playerIndex].find(collectibleID); searchInner != itemlist[this->_playerIndex].end()) {
-			if (itemlist[this->_playerIndex][collectibleID].Blocked == false) {
-				return super(collectibleID, onlyCountTrueItems) + itemlist[this->_playerIndex][collectibleID].AppendedCount;
-			}
-			return 0;
-		};
-	};
-	return super(collectibleID, onlyCountTrueItems);
-};
-
-HOOK_METHOD(Entity, Remove, ()->void) {
-	if (this && this->_type == 1) {
-		PlayerItemSpoof::CollSpoofList[((Entity_Player*)this)->_playerIndex] = {};		//cleaning pl data
-	}
-	super();
-}
-
-HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
-	PlayerItemSpoof::CollSpoofList = {};
-	super(ShouldSave);
-}
-
 LUA_FUNCTION(Lua_HasCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
-	ignoreSpoof = ignoreSpoof || ignoreModifiers;
-	bool outbool = false;
-	if (ignoreSpoof) {
-		PlayerItemSpoof::GlobalSpoofState = false;
-	}
-	outbool = player->HasCollectible(itemID,ignoreModifiers);
-	if (ignoreSpoof) {
-		PlayerItemSpoof::GlobalSpoofState = true;
-	}
-	lua_pushboolean(L, outbool);
+
+	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
+	lua_pushboolean(L, player->HasCollectible(itemID, ignoreModifiers));
+
 	return 1;
 }
 
@@ -170,16 +51,10 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
-	ignoreSpoof = ignoreSpoof || onlyCountTrueItems;
-	int outnum = 0;
-	if (ignoreSpoof) {
-		PlayerItemSpoof::GlobalSpoofState=false;
-	}
-	outnum = player->GetCollectibleNum(itemID, onlyCountTrueItems);
-	if (ignoreSpoof) {
-		PlayerItemSpoof::GlobalSpoofState = true;
-	}
-	lua_pushinteger(L, outnum);
+
+	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
+	lua_pushinteger(L, player->GetCollectibleNum(itemID, onlyCountTrueItems));
+
 	return 1;
 }
 
@@ -208,44 +83,79 @@ LUA_FUNCTION(Lua_AddCollectible) {
 LUA_FUNCTION(Lua_BlockCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	ItemConfig itemConfig = g_Manager->_itemConfig;
-	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][itemID];
 
-	//ItemConfig_Item* item_ptr = item;
-	if (item == nullptr) {
-		return luaL_error(L, "Invalid item");
+	if (!ItemConfig::IsValidCollectible(itemID)) {
+        return luaL_error(L, "Invalid CollectibleType %d", itemID);
 	}
-	PlayerItemSpoof::BlockCollectible(player, itemID);
-	player->AddCacheFlags(item->cacheFlags);
-	player->EvaluateItems();
-	lua_pushnil(L);
-	return 1;
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetCollectibleSpoof().Block(*player, itemID);
+    }
+
+	return 0;
 }
 
 LUA_FUNCTION(Lua_UnblockCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	ItemConfig itemConfig = g_Manager->_itemConfig;
-	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][itemID];
 
-	//ItemConfig_Item* item_ptr = item;
-	if (item == nullptr) {
-		return luaL_error(L, "Invalid item");
-	}
+    if (!ItemConfig::IsValidCollectible(itemID)) {
+        return luaL_error(L, "Invalid CollectibleType %d", itemID);
+    }
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetCollectibleSpoof().Unblock(*player, itemID);
+    }
 
-	PlayerItemSpoof::UnblockCollectible(player, itemID);
-	player->AddCacheFlags(item->cacheFlags);
-	player->EvaluateItems();
-	lua_pushnil(L);
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_IsCollectibleBlocked) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	bool outbool = PlayerItemSpoof::IsCollectibleBlocked(player, itemID);
-	lua_pushboolean(L, outbool);	//push false if entry is not found
+	bool outbool = false;
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        outbool = playerPlus->itemSpoofs.GetCollectibleSpoof().IsBlocked(itemID);
+    }
+	lua_pushboolean(L, outbool);
 	return 1;
+}
+
+LUA_FUNCTION(Lua_BlockTrinket) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+    int trinket = (int)luaL_checkinteger(L, 2);
+
+    if (!ItemConfig::IsValidTrinket(trinket)) {
+        return luaL_error(L, "Invalid TrinketType %d", trinket);
+    }
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetTrinketSpoof().Block(*player, trinket);
+    }
+
+    return 0;
+}
+
+LUA_FUNCTION(Lua_UnblockTrinket) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+    int trinket = (int)luaL_checkinteger(L, 2);
+
+    if (!ItemConfig::IsValidTrinket(trinket)) {
+        return luaL_error(L, "Invalid TrinketType %d", trinket);
+    }
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetTrinketSpoof().Unblock(*player, trinket);
+    }
+
+    return 0;
+}
+
+LUA_FUNCTION(Lua_IsTrinketBlocked) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+    int trinket = (int)luaL_checkinteger(L, 2);
+    bool outbool = false;
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        outbool = playerPlus->itemSpoofs.GetTrinketSpoof().IsBlocked(trinket);
+    }
+    lua_pushboolean(L, outbool);
+    return 1;
 }
 
 LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, but magically vanished some point after 1.7.8.
@@ -623,7 +533,7 @@ inline void RecalculateBagOfCraftingOutput(Entity_Player* player) {
 		output->itemPoolType = POOL_NULL;
 	}
 	else {
-		player->CalculateBagOfCraftingOutput(output, content);
+		player->CalculateBagOfCraftingOutput(output, content, false);
 	}
 }
 
@@ -730,6 +640,47 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	player->GetBagOfCraftingOutput()->itemPoolType = itemPoolType;
 	g_Game->GetHUD()->InvalidateCraftingItem(player);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_CalculateBagOfCraftingOutput)
+{
+	constexpr const char* FUNC_NAME = "CalculateBagOfCraftingOutput";
+	const int PICKUPS_IDX = 1;
+
+	if (!lua_istable(L, PICKUPS_IDX))
+	{
+		luaL_argerror(L, PICKUPS_IDX, "Expected a table");
+	}
+
+	std::array<BagOfCraftingPickup, 8> pickups;
+
+	size_t length = (size_t)lua_rawlen(L, PICKUPS_IDX);
+	if (length != 8)
+	{
+		luaL_error(L, "bad argument #%d to '%s': Expected 8 pickups, got %d", PICKUPS_IDX, FUNC_NAME, (int)length);
+	}
+
+	size_t index;
+	for (index = 0; index < length; index++)
+	{
+		lua_rawgeti(L, PICKUPS_IDX, index + 1);
+		int pickup = (int)luaL_checkinteger(L, -1);
+		lua_pop(L, 1);
+		if (pickup < 0 || pickup > 29)
+		{
+			luaL_error(L, "bad argument #%d to '%s': Invalid pickup %d at index %d", PICKUPS_IDX, FUNC_NAME, pickup, index + 1);
+		}
+
+		pickups[index] = (BagOfCraftingPickup)pickup;
+	}
+
+	BagOfCraftingOutput output;
+	Entity_Player::CalculateBagOfCraftingOutput(&output, pickups.data(), false);
+
+	lua_pushinteger(L, output.collectibleType);
+	lua_pushinteger(L, output.itemPoolType);
+
+	return 2;
 }
 
 LUA_FUNCTION(Lua_PlayerGetMovingBoxContents)
@@ -1148,53 +1099,289 @@ LUA_FUNCTION(Lua_PlayerGetVoidedCollectiblesList)
 	return 1;
 }
 
+static bool s_printedAddInnateCollectibleNegativeAmountDeprecationWarning = false;
 LUA_FUNCTION(Lua_PlayerAddInnateCollectible)
 {
-	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	/*std::set<uint32_t>& itemWispList = *plr->GetItemWispsList();
-	itemWispList.insert(luaL_checkinteger(L,2));
-	*/
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
 	const int collectibleID = (int)luaL_checkinteger(L, 2);
+
+    if (!ItemConfig::IsValidCollectible(collectibleID)) {
+        return luaL_error(L, "Invalid CollectibleType %d", collectibleID);
+    }
+
 	const int amount = (int)luaL_optinteger(L, 3, 1);
-	const bool evalitems = (bool)lua::luaL_optboolean(L, 4, true);
+    // AddInnateCollectible previously consumed a boolean as arg #4, but it was both undocumented AND completely unused.
+    // Still, at risk of being overly cautious, ignore booleans here.
+    const std::string groupKey = (lua_isnoneornil(L, 4) || lua_isboolean(L, 4)) ? "" : luaL_checkstring(L, 4);
+    const int duration = (int)luaL_optinteger(L, 5, -1);
+    const bool addCostume = lua::luaL_optboolean(L, 6, true);
 
-	ItemConfig itemConfig = g_Manager->_itemConfig;
-	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][collectibleID];
+    if (amount < 0) {
+        constexpr char deprecationWarning[] = "Removing innate collectibles with AddInnateCollectible via a negative `Amount` is deprecated. Please use RemoveInnateCollectible instead.";
+        // Treat negative values an error ONLY IF the call is attempting to use NEW features.
+        // For legacy usage just print a warning.
+        if (lua_isstring(L, 4) || lua_isnumber(L, 5)) {
+            return luaL_argerror(L, 3, deprecationWarning);
+        } else if (!s_printedAddInnateCollectibleNegativeAmountDeprecationWarning) {
+            s_printedAddInnateCollectibleNegativeAmountDeprecationWarning = true;
+            g_Game->GetConsole()->Print(REPENTOGON::StringFormat("[WARN] %s\n%s\n", deprecationWarning, REPENTOGON::Lua::CleanTraceback(L, 2).c_str()), 0xFFFCCA03, 0x96u);
+        }
+        if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+            playerPlus->itemSpoofs.GetCollectibleSpoof().RemoveInnate(*player, collectibleID, -amount, "", true);
+        }
+        return 0;
+    }
 
-	//ItemConfig_Item* item_ptr = item;
-	if (item == nullptr) {
-		return luaL_error(L, "Invalid item");
-	}
-
-//	std::map<int, int>& wispMap = *plr->GetItemWispsList();
-//	wispMap[collectibleID] += amount;
-	PlayerItemSpoof::AddInnateCollectibleNew(plr,collectibleID,amount);
-
-	if (amount > 0 && item->addCostumeOnPickup) {
-		plr->AddCostume(item, false);
-	}
-
-	plr->AddCacheFlags(item->cacheFlags);
-	plr->EvaluateItems();
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetCollectibleSpoof().AddInnate(*player, collectibleID, amount, groupKey, duration, addCostume);
+    }
 
 	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerAddInnateTrinket) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+    const int id = (int)luaL_checkinteger(L, 2);
+
+    if (!ItemConfig::IsValidTrinket(id)) {
+        return luaL_error(L, "Invalid TrinketType %d", id);
+    }
+
+    const int amount = (int)luaL_optinteger(L, 3, 1);
+    const std::string groupKey = luaL_optstring(L, 4, "");
+    const int duration = (int)luaL_optinteger(L, 5, -1);
+    const bool addCostume = lua::luaL_optboolean(L, 6, true);
+
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetTrinketSpoof().AddInnate(*player, id, amount, groupKey, duration, addCostume);
+    }
+
+    return 0;
+}
+
+
+LUALIB_API int RemoveInnateItem(lua_State* L, Entity_Player* player, ItemSpoofSystem::ItemSpoof& spoof) {
+    const int id = (int)luaL_checkinteger(L, 2);
+
+    if (!spoof.IsValidID(id)) {
+        if (spoof.IsTrinket()) {
+            return luaL_error(L, "Invalid TrinketType %d", id);
+        } else {
+            return luaL_error(L, "Invalid CollectibleType %d", id);
+        }
+    }
+
+    const int amount = (int)luaL_optinteger(L, 3, 1);
+    const std::string groupKey = luaL_optstring(L, 4, "");
+
+    const int removed = spoof.RemoveInnate(*player, id, amount, groupKey, false);
+    lua_pushinteger(L, removed);
+
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerRemoveInnateCollectible) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return RemoveInnateItem(L, player, playerPlus->itemSpoofs.GetCollectibleSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerRemoveInnateTrinket) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return RemoveInnateItem(L, player, playerPlus->itemSpoofs.GetTrinketSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+
+LUALIB_API int GetInnateItemCount(lua_State* L, Entity_Player* player, ItemSpoofSystem::ItemSpoof& spoof) {
+    const int id = (int)luaL_checkinteger(L, 2);
+
+    if (!spoof.IsValidID(id)) {
+        if (spoof.IsTrinket()) {
+            return luaL_error(L, "Invalid TrinketType %d", id);
+        } else {
+            return luaL_error(L, "Invalid CollectibleType %d", id);
+        }
+    }
+
+    const std::string groupKey = luaL_optstring(L, 3, "");
+
+    const int change = spoof.GetInnateCount(id, groupKey);
+    lua_pushinteger(L, change);
+
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetInnateCollectibleCount) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return GetInnateItemCount(L, player, playerPlus->itemSpoofs.GetCollectibleSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetInnateTrinketCount) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return GetInnateItemCount(L, player, playerPlus->itemSpoofs.GetTrinketSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+
+LUALIB_API int SetInnateItemCount(lua_State* L, Entity_Player* player, ItemSpoofSystem::ItemSpoof& spoof) {
+    const int id = (int)luaL_checkinteger(L, 2);
+
+    if (!spoof.IsValidID(id)) {
+        if (spoof.IsTrinket()) {
+            return luaL_error(L, "Invalid TrinketType %d", id);
+        } else {
+            return luaL_error(L, "Invalid CollectibleType %d", id);
+        }
+    }
+
+    const int newCount = (int)luaL_optinteger(L, 3, 1);
+    const std::string groupKey = luaL_optstring(L, 4, "");
+    const bool addCostume = lua::luaL_optboolean(L, 5, true);
+
+    const int change = spoof.SetInnateCount(*player, id, newCount, groupKey, addCostume);
+    lua_pushinteger(L, change);
+
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerSetInnateCollectibleCount) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return SetInnateItemCount(L, player, playerPlus->itemSpoofs.GetCollectibleSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerSetInnateTrinketCount) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return SetInnateItemCount(L, player, playerPlus->itemSpoofs.GetTrinketSpoof());
+    }
+    lua_pushinteger(L, 0);
+    return 1;
+}
+
+LUALIB_API int GetInnateItemGroup(lua_State* L, Entity_Player* player, ItemSpoofSystem::ItemSpoof& spoof) {
+    const std::string groupKey = luaL_optstring(L, 2, "");
+    lua_newtable(L);
+    for (const auto& [id, count] : spoof.GetInnateGroupCounts(groupKey)) {
+        lua_pushinteger(L, id);
+        lua_pushinteger(L, count);
+        lua_settable(L, -3);
+    }
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetInnateCollectibleGroup) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return GetInnateItemGroup(L, player, playerPlus->itemSpoofs.GetCollectibleSpoof());
+    }
+    lua_newtable(L);
+    return 1;
+}
+LUA_FUNCTION(Lua_PlayerGetInnateTrinketGroup) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return GetInnateItemGroup(L, player, playerPlus->itemSpoofs.GetTrinketSpoof());
+    }
+    lua_newtable(L);
+    return 1;
+}
+
+LUALIB_API int SetInnateItemGroup(lua_State* L, Entity_Player* player, ItemSpoofSystem::ItemSpoof& spoof) {
+    const std::string groupKey = luaL_checkstring(L, 2);
+    if (!lua_istable(L, 3)) {
+        return luaL_argerror(L, 3, "Expected a table");
+    }
+    const bool addCostumes = lua::luaL_optboolean(L, 4, true);
+
+    std::unordered_map<int, int> counts;
+
+    lua_pushnil(L);
+    while (lua_next(L, 3) != 0) {
+        if (lua_isinteger(L, -2) && lua_isinteger(L, -1)) {
+            int key = (int)lua_tointeger(L, -2);
+            int val = (int)lua_tointeger(L, -1);
+            counts[key] = val;
+        }
+        lua_pop(L, 1);
+    }
+
+    spoof.SetInnateGroup(*player, counts, groupKey, addCostumes);
+
+    return 0;
+}
+LUA_FUNCTION(Lua_PlayerSetInnateCollectibleGroup) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return SetInnateItemGroup(L, player, playerPlus->itemSpoofs.GetCollectibleSpoof());
+    }
+    return 0;
+}
+LUA_FUNCTION(Lua_PlayerSetInnateTrinketGroup) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        return SetInnateItemGroup(L, player, playerPlus->itemSpoofs.GetTrinketSpoof());
+    }
+    return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerClearInnateItemGroup) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    const std::string groupKey = luaL_checkstring(L, 2);
+
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        playerPlus->itemSpoofs.GetCollectibleSpoof().ClearItemGroup(*player, groupKey);
+        playerPlus->itemSpoofs.GetTrinketSpoof().ClearItemGroup(*player, groupKey);
+    }
+
+    return 0;
+}
+
+// Legacy function backwards compat
+LUA_FUNCTION(Lua_PlayerGetSpoofCollList) {
+    Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+    lua_newtable(L);
+    if (EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player)) {
+        const auto& spoofs = playerPlus->itemSpoofs.GetCollectibleSpoof();
+        std::unordered_set<int> spoofedIDs = spoofs.GetBlockedIDs();
+        for (const auto& [id, count] : spoofs.GetInnateTotalCounts())
+            spoofedIDs.insert(id);
+
+        for (const int id : spoofedIDs) {
+            lua_pushinteger(L, id);
+            lua_newtable(L);
+
+            lua_pushstring(L, "CollectibleID");
+            lua_pushinteger(L, id);
+            lua_settable(L, -3);
+
+            lua_pushstring(L, "AppendedCount");
+            lua_pushinteger(L, spoofs.GetInnateCount(id));
+            lua_settable(L, -3);
+
+            lua_pushstring(L, "IsBlocked");
+            lua_pushboolean(L, spoofs.IsBlocked(id));
+            lua_settable(L, -3);
+
+            lua_settable(L, -3);
+        }
+    }
+    return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerGetWispCollecitblesList)
 {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	/*std::set<uint32_t> collectibles = *plr->GetItemWispsList();
-
-	lua_newtable(L);
-	int idx = 1;
-	for (int collectible : collectibles) {
-		lua_pushnumber(L, idx);
-		lua_pushinteger(L, collectible);
-		lua_settable(L, -3);
-		idx++;
-	}
-	*/
 
 	std::map<int, int> wispMap = plr->_itemWispsList;
 
@@ -1336,6 +1523,12 @@ LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua::luabridge::UserdataPtr::push(L, plr->GetHeldSprite(), lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBloodGushSprite) {
+	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::luabridge::UserdataPtr::push(L, &plr->_bloodGushSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
@@ -1612,34 +1805,6 @@ LUA_FUNCTION(Lua_PlayerGetSmeltedTrinketDesc) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerGetSpoofCollList)
-{
-	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	auto& spoofItemList = PlayerItemSpoof::CollSpoofList[plr->_playerIndex];
-	lua_newtable(L);
-	int count = 1;
-	for (auto& spoofEntry : spoofItemList) {
-//		lua_pushinteger(L, count);
-		lua_pushinteger(L, spoofEntry.first);
-		lua_newtable(L);
-
-		lua_pushstring(L, "CollectibleID");
-		lua_pushinteger(L, spoofEntry.first);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "AppendedCount");
-		lua_pushinteger(L, spoofEntry.second.AppendedCount);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "IsBlocked");
-		lua_pushboolean(L, spoofEntry.second.Blocked);
-		lua_settable(L, -3);
-
-		lua_settable(L, -3);
-		count++;
-	};
-	return 1;
-}
 LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
 {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1848,9 +2013,12 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	player->AddBoneOrbital(position);
+	
+	Entity* orbital = player->AddBoneOrbital(position);
 
-	return 0;
+	lua::luabridge::UserdataPtr::push(L, orbital->ToFamiliar(), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+
+	return 1;
 }
 
 /*
@@ -2208,7 +2376,7 @@ int ValidatePool(lua_State* L, unsigned int pos)
 	return ret;
 }
 
-static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pickup, int pool, RNG* rng) noexcept
+static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pickup, int pool, RNG* rng)
 {
 	rng = rng ? rng : &pickup._dropRNG;
 	player.SalvageCollectible(pickup.GetPosition(), pickup._subtype, rng->Next(), pool);
@@ -2218,7 +2386,7 @@ static void salvage_collectible_entity(Entity_Player& player, Entity_Pickup& pic
 	pickup._timeout = 2;
 }
 
-static void salvage_collectible(Entity_Player& player, int subType, int pool, Vector* position, RNG* rng) noexcept
+static void salvage_collectible(Entity_Player& player, int subType, int pool, Vector* position, RNG* rng)
 {
 	position = position ? position : player.GetPosition();
 	rng = rng ? rng : &player._dropRNG;
@@ -2266,7 +2434,8 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int idx = (int)luaL_checkinteger(L, 2);
-	player->SetControllerIndex(idx);
+	bool includePlayerOwned = lua::luaL_checkboolean(L, 3);
+	player->SetControllerIndex(idx, includePlayerOwned);
 
 	return 0;
 }
@@ -2298,9 +2467,11 @@ LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 // todo: asm patch to return effect
 LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	player->ShootBlueCandle(dir);
-	return 0;
+	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity* flame = player->ShootBlueCandle(shotDirection);
+	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
 }
 
 // not sure if this returns the clot or not
@@ -2550,9 +2721,34 @@ LUA_FUNCTION(Lua_PlayerSetHeadDirectionLockTime) {
 LUA_FUNCTION(Lua_PlayerHasGoldenTrinket) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	const unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+	bool ignoreSpoof = lua::luaL_optboolean(L, 3, false);
 
+	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
 	lua_pushboolean(L, player->HasGoldenTrinket(trinket));
 	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerHasTrinket) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
+	bool ignoreSpoof = lua::luaL_optboolean(L, 4, false);
+
+	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
+	lua_pushboolean(L, player->HasTrinket(trinket, ignoreModifiers));
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTrinketMultiplier) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+	bool ignoreSpoof = lua::luaL_optboolean(L, 3, false);
+
+	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
+	lua_pushinteger(L, player->GetTrinketMultiplier(trinket));
+
 	return 1;
 }
 
@@ -3161,6 +3357,134 @@ LUA_FUNCTION(Lua_PlayerSetPotatoPeelerCounter) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetMawOfTheVoidCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_mawOfTheVoidChargeTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMawOfTheVoidCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_mawOfTheVoidChargeTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetMontezumaRevengeCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_montezumaChargeTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMontezumaRevengeCharge) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_montezumaChargeTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBodySprite) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::luabridge::UserdataPtr::push(L, &player->_bodySprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerPlayItemNullAnimation) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const char* animName = (const char*)luaL_checkstring(L, 2);
+
+	lua_pushboolean(L, player->PlayItemNullAnimation(animName));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBlinkLockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_blinkTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBlinkLockTime) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_blinkTime = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetItemStateCooldown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_itemStateCooldown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetItemStateCooldown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_itemStateCooldown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetImExcitedSpeedupCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_imExcitedSpeedupCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetImExcitedSpeedupCountdown) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_imExcitedSpeedupCountdown = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetDonateLuck) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_donateLuck);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetDonateLuck) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_donateLuck = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetRUAWizardTimer) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_rUaWizardTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetRUAWizardTimer) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_rUaWizardTimer = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
+	lua_pushinteger(L, g_Game->GetCurrentRoomDesc()->GetErrorTrinketEffect());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerShootRedCandle) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity* flame = player->ShootRedCandle(shotDirection);
+	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -3175,6 +3499,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },
 		{ "SetItemState", Lua_PlayerSetItemState },
 		{ "AddCacheFlags", Lua_PlayerAddCacheFlags },
+		{ "ShootRedCandle", Lua_PlayerShootRedCandle },
 		{ "GetHealthType", Lua_PlayerGetHealthType },
 		{ "GetTotalActiveCharge", Lua_PlayerGetTotalActiveCharge },
 		{ "GetActiveMaxCharge", Lua_PlayerGetActiveMaxCharge },
@@ -3265,7 +3590,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetPurityState", Lua_PlayerSetPurityState },
 		{ "SetTearPoisonDamage", Lua_PlayerSetTearPoisonDamage },
 		{ "GetVoidedCollectiblesList", Lua_PlayerGetVoidedCollectiblesList },
-		{ "AddInnateCollectible", Lua_PlayerAddInnateCollectible },
+        { "AddInnateCollectible", Lua_PlayerAddInnateCollectible },
+        { "RemoveInnateCollectible", Lua_PlayerRemoveInnateCollectible },
+        { "GetInnateCollectibleCount", Lua_PlayerGetInnateCollectibleCount },
+        { "SetInnateCollectibleCount", Lua_PlayerSetInnateCollectibleCount },
+        { "GetInnateCollectibleGroup", Lua_PlayerGetInnateCollectibleGroup },
+        { "SetInnateCollectibleGroup", Lua_PlayerSetInnateCollectibleGroup },
+        { "AddInnateTrinket", Lua_PlayerAddInnateTrinket },
+        { "RemoveInnateTrinket", Lua_PlayerRemoveInnateTrinket },
+        { "GetInnateTrinketCount", Lua_PlayerGetInnateTrinketCount },
+        { "SetInnateTrinketCount", Lua_PlayerSetInnateTrinketCount },
+        { "GetInnateTrinketGroup", Lua_PlayerGetInnateTrinketGroup },
+        { "SetInnateTrinketGroup", Lua_PlayerSetInnateTrinketGroup },
+        { "ClearInnateItemGroup", Lua_PlayerClearInnateItemGroup },
 		{ "GetWispCollectiblesList", Lua_PlayerGetWispCollecitblesList },
 		{ "GetImmaculateConceptionState", Lua_PlayerGetImmaculateConceptionState },
 		{ "SetImmaculateConceptionState", Lua_PlayerSetImmaculateConceptionState },
@@ -3285,6 +3622,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame },
 		{ "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame },
 		{ "GetHeldSprite", Lua_PlayerGetHeldSprite },
+		{ "GetBloodGushSprite", Lua_PlayerGetBloodGushSprite },
 		{ "GetHeldEntity", Lua_PlayerGetHeldEntity },
 		{ "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired },
 		{ "SetPoopSpell", Lua_PlayerSetPoopSpell },
@@ -3382,10 +3720,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "BlockCollectible", Lua_BlockCollectible },
 		{ "UnblockCollectible", Lua_UnblockCollectible },
 		{ "IsCollectibleBlocked", Lua_IsCollectibleBlocked },
-		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs
+        { "BlockTrinket", Lua_BlockTrinket },
+		{ "UnblockTrinket", Lua_UnblockTrinket },
+		{ "IsTrinketBlocked", Lua_IsTrinketBlocked },
+		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs [NO_DOCS]
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
 		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
+		{ "HasTrinket", Lua_PlayerHasTrinket },
+		{ "GetTrinketMultiplier", Lua_PlayerGetTrinketMultiplier },
 		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
@@ -3444,6 +3787,23 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetPlanCKillCountdown", Lua_PlayerSetPlanCKillCountdown },
 		{ "GetPotatoPeelerUses", Lua_PlayerGetPotatoPeelerCounter },
 		{ "SetPotatoPeelerUses", Lua_PlayerSetPotatoPeelerCounter },
+		{ "GetMawOfTheVoidCharge", Lua_PlayerGetMawOfTheVoidCharge },
+		{ "SetMawOfTheVoidCharge", Lua_PlayerSetMawOfTheVoidCharge },
+		{ "GetMontezumaRevengeCharge", Lua_PlayerGetMontezumaRevengeCharge },
+		{ "SetMontezumaRevengeCharge", Lua_PlayerSetMontezumaRevengeCharge },
+		{ "GetBodySprite", Lua_PlayerGetBodySprite },
+		{ "PlayItemNullAnimation", Lua_PlayerPlayItemNullAnimation },
+		{ "GetBlinkLockTime", Lua_PlayerGetBlinkLockTime },
+		{ "SetBlinkLockTime", Lua_PlayerSetBlinkLockTime },
+		{ "GetItemStateCooldown", Lua_PlayerGetItemStateCooldown },
+		{ "SetItemStateCooldown", Lua_PlayerSetItemStateCooldown },
+		{ "GetImExcitedSpeedupCountdown", Lua_PlayerGetImExcitedSpeedupCountdown },
+		{ "SetImExcitedSpeedupCountdown", Lua_PlayerSetImExcitedSpeedupCountdown },
+		{ "GetDonateLuck", Lua_PlayerGetDonateLuck },
+		{ "SetDonateLuck", Lua_PlayerSetDonateLuck },
+		{ "GetRUAWizardTimer", Lua_PlayerGetRUAWizardTimer },
+		{ "SetRUAWizardTimer", Lua_PlayerSetRUAWizardTimer },
+		{ "GetErrorTrinketEffect", Lua_PlayerGetErrorTrinketEffect },
 
 		{ NULL, NULL }
 	};
@@ -3452,4 +3812,29 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// fix BabySkin Variable
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "BabySkin", Lua_PlayerGetBabySkin, Lua_PlayerSetBabySkin);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
+}
+
+HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
+	super(Debug);
+
+	lua_State* L = _state;
+	lua::LuaStackProtector protector(L);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+
+	lua_pushstring(L, "NewGetData_Entity");
+	lua_getglobal(L, "_CoolerGetData");
+	lua_rawset(L, -3);
+
+	lua_pop(L, 1);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+
+	lua_pushstring(L, "NewGetData_Player");
+	lua_getglobal(L, "_CoolerGetData");
+	lua_rawset(L, -3);
+
+	lua_pop(L, 1);
 }

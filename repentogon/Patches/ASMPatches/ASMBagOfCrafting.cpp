@@ -63,6 +63,7 @@ bool __stdcall TryAddToBagOfCraftingTrampoline(Entity_Player* player, Entity_Pic
 		return false;
 	}
 
+	int8_t numInitialPickups = 0;
 	int8_t initialPickups[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	const std::vector<int>& xmlPickups = XMLStuff.EntityData->GetBagOfCraftingPickups(pickup->_variant, pickup->_subtype);
@@ -70,10 +71,13 @@ bool __stdcall TryAddToBagOfCraftingTrampoline(Entity_Player* player, Entity_Pic
 	if (!xmlPickups.empty()) {
 		for (uint8_t i = 0; i < 8 && i < xmlPickups.size(); i++) {
 			initialPickups[i] = xmlPickups[i];
+			numInitialPickups++;
 		}
 	} else {
 		initialPickups[0] = bagOfCraftingPickups[0];
 		initialPickups[1] = bagOfCraftingPickups[1];
+		if (initialPickups[0] > 0) numInitialPickups++;
+		if (initialPickups[1] > 0) numInitialPickups++;
 	}
 
 	int8_t callbackResultPickups[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -90,10 +94,12 @@ bool __stdcall TryAddToBagOfCraftingTrampoline(Entity_Player* player, Entity_Pic
 		caller.push(callbackid)
 			.push(pickup->_variant)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.push(pickup, lua::Metatables::ENTITY_PICKUP);
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushTable(numInitialPickups, 0);
 		for (int i = 0; i < 8; i++) {
 			if (initialPickups[i] > 0) {
-				caller.push(initialPickups[i]);
+				lua_pushinteger(L, initialPickups[i]);
+				lua_rawseti(L, -2, i+1);
 			} else {
 				break;
 			}

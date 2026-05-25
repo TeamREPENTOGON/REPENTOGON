@@ -1,0 +1,4 @@
+struct HistoryHUD_Item depends (History_HistoryItem) {
+	KAGE_Graphics_ImageBase* _image : 0x4;
+	History_HistoryItem _historyItem : 0xC;
+} : 0x28;

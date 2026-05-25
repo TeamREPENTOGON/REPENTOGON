@@ -1,6 +1,6 @@
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
-
+#include "ASMDefinition.h"
 #include "ASMStatusEffects.h"
 #include "HookSystem.h"
 #include "Log.h"
@@ -42,13 +42,7 @@ void PatchInlinedGetStatusEffectTarget()
 {
 	ZHL::Logger logger;
 	for (const StatusEffectPatchInfo& i : patches) {
-		SigScan scanner(i.signature);
-		if (!scanner.Scan()) {
-			logger.Log("GetStatusEffectTarget patch for %s failed, signature not found!\n", i.comment);
-			continue;
-		}
-		void* addr = (char*)scanner.GetAddress() + i.sigOffset;
-
+		void* addr = sASMDefinitionHolder->GetDefinition(i.asmdef);
 		logger.Log("Patching inlined GetStatusEffectTarget in %s at %p\n", i.comment, addr);
 		ASMPatchInlinedGetStatusEffectTarget(addr, i.entityReg, i.targetReg, i.saveReg, i.jumpOffset, i.preserveXMM1);
 	};

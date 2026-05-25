@@ -1,8 +1,11 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 #include "LuaEntitySaveState.h"
+
+namespace ESSM = EntitySaveStateManagement;
 
 struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	static luaL_Reg methods[];
@@ -162,7 +165,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_GetGridSpawnIdx) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		lua_pushinteger(L, st.gridSpawnIdx);
+		lua_pushinteger(L, ESSM::EntitySaveState_GetGridSpawnIdx(st));
 
 		return 1;
 	}
@@ -170,8 +173,8 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_SetGridSpawnIdx) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		st.gridSpawnIdx = (short)luaL_checkinteger(L, 2);
-
+		ESSM::EntitySaveState_GetGridSpawnIdx(st) = (short)luaL_checkinteger(L, 2);
+		
 		return 0;
 	}
 
@@ -243,7 +246,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_GetI7) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		lua_pushinteger(L, st._intStorage7);
+		lua_pushinteger(L, ESSM::EntitySaveState_GetI7(st));
 
 		return 1;
 	}
@@ -251,7 +254,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_SetI7) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		st._intStorage7 = (unsigned int)luaL_checkinteger(L, 2);
+		ESSM::EntitySaveState_GetI7(st) = (unsigned int)luaL_checkinteger(L, 2);
 
 		return 0;
 	}
@@ -439,11 +442,11 @@ struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 		int j = 1;
 		for (size_t i = 0; i < ud->data->size(); ++i) {
 			EntitySaveState const& st = (*ud->data)[i];
-			if (st.type == type && st.variant == variant && st.subtype == subtype) {
+			if (st.type == type && (variant == -1 || st.variant == variant) && (subtype == -1 || st.subtype == subtype)) {
 				lua_pushinteger(L, j);
 				Lua_EntitySaveStateAPI* result = lua::place<Lua_EntitySaveStateAPI>(L, lua::metatables::EntitySaveStateMT);
 				result->vec = ud->data;
-				result->index = j;
+				result->index = i;
 				lua_rawset(L, -3);
 
 				++j;
@@ -455,11 +458,9 @@ struct Lua_EntitiesSaveStateVectorAPI : Lua_EntitiesSaveStateVector {
 
 	LUA_FUNCTION(Lua_Clear) {
 		Lua_EntitiesSaveStateVectorAPI* ud = GetData(L, 1);
-		//for (size_t i = 0; i < ud->data->capacity(); ++i) {
-		//	EntitySaveState& st = (*ud->data)[i];			//not 100% sure whether all that's needed, if issues arise, uncomment this block
-		//	st.Clear();
-		//};
-		ud->data->clear();
+		auto* vector = ud->data;
+		ESSM::EntitySaveState_ClearBatch(*vector);
+		vector->clear();
 
 		return 0;
 	}

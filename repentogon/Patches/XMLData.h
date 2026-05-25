@@ -84,6 +84,10 @@ inline string stringlower(const char* str)
 	return s;
 }
 
+// Returns the ID string of the current mod being processed, or "BaseGame" for vanilla XMLs.
+// Only relevant at times where XMLs are actually being loaded by the game.
+std::string GetXMLDataLastModId();
+
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;
@@ -148,10 +152,40 @@ public:
 		}
 	}
 
-	XMLAttributes  GetNodeById(int name) {
-		auto iter = this->nodes.find(name);
-		if (iter == this->nodes.end()) { return XMLAttributes(); }
-		else { return iter->second; }
+	XMLAttributes* GetNodeOrNullById(int id) {
+		auto iter = this->nodes.find(id);
+		if (iter != this->nodes.end()) {
+			return &iter->second;
+		}
+		return nullptr;
+	}
+
+	// Note: This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
+	// Not changing everything right away just in case there are possible side effects, but try GetAttributeById.
+	XMLAttributes GetNodeById(int name) {
+		if (XMLAttributes* node = GetNodeOrNullById(name)) {
+			return *node;
+		}
+		return XMLAttributes();
+	}
+
+	std::string GetAttributeById(int id, const std::string& key) {
+		if (XMLAttributes* node = GetNodeOrNullById(id)) {
+			auto iter = node->find(key);
+			if (iter != node->end()) {
+				return iter->second;
+			}
+		}
+		return "";
+	}
+
+	int GetNumberAttributeById(int id, const std::string& key, int defaultValue = -1) {
+		const std::string attr = GetAttributeById(id, key);
+		if (!attr.empty()) {
+			try { return std::stoi(attr); } catch (...) {}
+		}
+		return defaultValue;
+
 	}
 
 	XMLAttributes GetNodeById(const string& name) { //for convenience,lol
@@ -671,23 +705,42 @@ public:
 		//return this->GetNodeById(iter->second);
 	//}
 
-	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub, bool strict ) {
+	XMLAttributes* GetNodesOrNullByTypeVarSub(int type, int var, int sub, bool strict) {
 		auto iter = this->nodes.find({ type, var, sub });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
 		}
 		if (strict) {
-			return XMLAttributes();
+			return nullptr;
 		}
 		iter = this->nodes.find({ type, var, 0 });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
 		}
 		iter = this->nodes.find({ type, 0, 0 });
 		if (iter != this->nodes.end()) {
-			return iter->second;
+			return &iter->second;
+		}
+		return nullptr;
+	}
+
+	// Note: This function returns a copy of the entire XMLAttributes, so it can be a little inefficient.
+	// Not changing everything right away just in case there are possible side effects, but try GetAttributeByTypeVarSub.
+	XMLAttributes GetNodesByTypeVarSub(int type, int var, int sub, bool strict) {
+		if (XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict)) {
+			return *node;
 		}
 		return XMLAttributes();
+	}
+
+	std::string GetAttributeByTypeVarSub(int type, int var, int sub, bool strict, const std::string& key) {
+		if (XMLAttributes* node = GetNodesOrNullByTypeVarSub(type, var, sub, strict)) {
+			auto iter = node->find(key);
+			if (iter != node->end()) {
+				return iter->second;
+			}
+		}
+		return "";
 	}
 
 	const set<string>& GetCustomTags(int type, int var, int sub) {
@@ -748,8 +801,8 @@ struct XMLData {
 	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLBossPortrait* BossPortraitData = new XMLBossPortrait();
 	XMLTrinket* TrinketData = new XMLTrinket();
-	XMLMusic* MusicData = new XMLMusic(118);
-	XMLSound* SoundData = new XMLSound(832);
+	XMLMusic* MusicData = new XMLMusic(119);
+	XMLSound* SoundData = new XMLSound(914);
 	XMLPill* PillData = new XMLPill();
 	XMLCard* CardData = new XMLCard();
 	XMLChallenge* ChallengeData = new XMLChallenge();
@@ -877,6 +930,7 @@ inline void RegisterCustomXMLAttr(XMLDataHolder* XMLDataToUpdate, const string& 
 	xmllatepatches[XMLDataToUpdate][AttributeName] = XMLDataForIds;
 }
 
+
 inline bool MultiValXMLParamParseLATE() {
 	bool did = false;
 	for each (auto patch in xmllatepatches) {
@@ -888,7 +942,7 @@ inline bool MultiValXMLParamParseLATE() {
 				string attrname = toparse.first;
 				if (auxnode.find(attrname) != auxnode.end()) {
 					string parseditemlist = ComaSeparatedNamesToIds(auxnode[attrname], xmldata, auxnode["sourceid"]);
-					printf("DINGUS: %s BINGUS: %s \n", auxnode[attrname].c_str(), parseditemlist.c_str());
+					//printf("DINGUS: %s BINGUS: %s \n", auxnode[attrname].c_str(), parseditemlist.c_str());
 					if (parseditemlist.length() > 0) {
 						auxnode["raw-" + attrname] = auxnode[attrname];
 						auxnode[attrname] = parseditemlist;
@@ -952,7 +1006,7 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 		string reason = err.what() + string(" at line ") + to_string(lineNumber);
 		string error = "[XMLError] " + reason + " in " + dir;
 		g_Game->GetConsole()->PrintError(error);
-		KAGE::LogMessage(3, (error + "\n").c_str());
+		KAGE::SafeLogMessage(3, (error + "\n").c_str());
 		//printf("%s \n", error.c_str());
 		//mclear(xmldoc);
 	}
@@ -960,7 +1014,7 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 }
 
 inline char* GetResources(const string& dir, const string& filename) {
-	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
+	vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string& path : paths) {
 		ifstream file(path.c_str());
 		if (file.is_open()) {
@@ -1065,7 +1119,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
+			vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					targetresource = path;
@@ -1082,7 +1136,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\content-dlc3\\" + xml.filename, dir + "\\content\\" + xml.filename };
+			vector<string> paths = { dir + "\\content-repentogon\\" + xml.filename, dir + "\\content-dlc3\\" + xml.filename, dir + "\\content\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					lastmodid = string(mod->GetId());

@@ -167,6 +167,83 @@ static void fix_itempool_getpilleffect()
     sASMPatcher.PatchAt(addr, &patch);
 }
 
+static void __stdcall asm_log_failed_item_pool_read()
+{
+    KAGE::_LogMessage(2, "Failed to read item pool data from gamestate \n");
+}
+
+/**
+ * 
+ */
+
+/** This patch aims to fix a problem when reading the game state caused by a missing check.
+ *  Currently if the method that reads ItemPool data fails, parsing continues as if it succeeded
+ *  causing the parser to misinterpret the rest of the data.
+ * 
+ *  In practice, this problem only seems to occur when disabling mods that registered trinkets.
+ */
+static void fix_game_state_read_missing_item_pool_fail_check()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GameState_Read_ItemPoolRead);
+    ZHL::Log("[REPENTOGON] Patching GameState::read @ %p\n", addr);
+
+    intptr_t return_addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GameState_Read_Return);
+    ASMPatch patch;
+
+    intptr_t resumeAddr = addr + 5;
+    constexpr size_t RESTORED_BYTES = 5;
+
+    intptr_t callAddr = addr;
+    int32_t call_rel32 = *(int32_t*)(callAddr + 1);
+    intptr_t calleeAddress = callAddr + 5 + call_rel32;
+
+    patch.AddInternalCall((void*)calleeAddress) // restore call to assign
+        .AddBytes("\x84\xC0") // TEST AL, AL
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)resumeAddr)
+        .AddInternalCall(asm_log_failed_item_pool_read)
+        .AddBytes("\x32\xC0") // XOR AL, AL
+        .AddRelativeJump((void*)return_addr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+// https://github.com/epfly6/RepentanceAPIIssueTracker/issues/603
+// I honest to god believe that this log doesn't actually mean anything despite how it sounds, but I will keep ONE in the log.
+// If it appears at all, it's probably being spammed constantly.
+static bool s_LoggedPushRenderTargetStackOverflow = false;
+void __stdcall push_render_target_stack_overflow() {
+	if (!s_LoggedPushRenderTargetStackOverflow) {
+		s_LoggedPushRenderTargetStackOverflow = true;
+		KAGE::LogMessage(3, "PushRenderTarget: stack overflow!\n");
+	}
+}
+static void suppress_push_render_target_stack_overflow() {
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Misc_PushRenderTargetStackOverflow);
+	ZHL::Log("[REPENTOGON] PushRenderTarget: stack overflow! (at %p)\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(push_render_target_stack_overflow)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xC);
+	sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+// Fixes a couple of spots in MoveRandomlyAxisAligned that do not check if the pathfinding entity is a Familiar instead of an EntityNPC (so the result of the dynamic cast was nullptr).
+// This function does actually check for nullptr, but not enough apparantly.
+static void fix_familiar_pathfinder_move_randomly_axis_aligned(char* patchSig, char* jumpSig, char* testAsm, int patchSize) {
+	void* addr = (void*)sASMDefinitionHolder->GetDefinition(patchSig);
+	void* jumpAddr = (void*)sASMDefinitionHolder->GetDefinition(jumpSig);
+
+	ASMPatch patch;
+	patch.AddBytes(testAsm)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, jumpAddr)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, patchSize))
+		.AddRelativeJump((char*)addr + patchSize);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -177,4 +254,8 @@ void ASMFixes()
     fix_render_pocket_item_pill_identified_check();
     fix_use_pill_identify_pill();
     fix_itempool_getpilleffect();
+    fix_game_state_read_missing_item_pool_fail_check();
+	suppress_push_render_target_stack_overflow();
+	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA_JumpTarget, "\x85\xc9", 0x6);  // TEST ECX,ECX
+	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 }

@@ -32,19 +32,12 @@ std::string CodeEmitter::TypeGenerator::operator()(T const& t) {
     return _emitter->GenerateType(t);
 }
 
-CodeEmitter::CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, bool test) :
+CodeEmitter::CodeEmitter(TypeMap* types, AsmDefMap* asmDefs, std::string const& outputHeader,
+    std::string const& outputImpl, std::string const& outputHooks) :
     _types(types), _asmDefs(asmDefs) {
-    if (test) {
-        _decls.open("IsaacRepentance.h");
-        _impl.open("IsaacRepentance.cpp");
-        _json.open("hooks.json");
-    }
-    else {
-        _decls.open("../include/IsaacRepentance.h");
-        _impl.open("../libzhl/IsaacRepentance.cpp");
-        _json.open("../include/hooks.json");
-    }
-
+    _decls.open(outputHeader);
+    _impl.open(outputImpl);
+    _json.open(outputHooks);
 }
 
 bool CodeEmitter::ProcessZHLFiles(fs::path const& base) {

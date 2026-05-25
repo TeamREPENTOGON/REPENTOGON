@@ -9,17 +9,29 @@ tags:
 ### AddBaited () {: aria-label='Functions' }
 #### void AddBaited ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddBleeding () {: aria-label='Functions' }
 #### void AddBleeding ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
+
+???+ info "Duration info"
+    The Duration has a maximum of 4 seconds.
 
 ___
 ### AddBrimstoneMark () {: aria-label='Functions' }
 #### void AddBrimstoneMark ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddIce () {: aria-label='Functions' }
 #### void AddIce ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
+
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
 
 ___
 ### AddKnockback () {: aria-label='Functions' }
@@ -32,13 +44,24 @@ ___
 ### AddMagnetized () {: aria-label='Functions' }
 #### void AddMagnetized ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
 ___
 ### AddWeakness () {: aria-label='Functions' }
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 10 seconds.
+
+___
+### CanDevolve () {: aria-label='Functions' }
+#### boolean CanDevolve ( ) {: .copyable aria-label='Functions' }
+
 ___
 ### ComputeStatusEffectDuration () {: aria-label='Functions' }
 #### int ComputeStatusEffectDuration ( int InitialLength, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
+If the source entity originates from a player with Second Hand, returns the duration multiplied by `(2 × Second Hand multiplier)`, otherwise returns the original duration.
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
@@ -131,6 +154,7 @@ ___
 ___
 ### GetHitListIndex () {: aria-label='Functions' }
 #### int GetHitListIndex ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
 
 ___
 ### GetIceCountdown () {: aria-label='Functions' }
@@ -215,6 +239,11 @@ ___
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetWaterClipFlags () {: aria-label='Functions' }
+#### [WaterClipFlag](enums/WaterClipFlag.md) GetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Gets a bitset that informs some of how this entity interacts with water, primarily rendering related (reflections, etc).
+
+___
 ### GetWeaknessCountdown () {: aria-label='Functions' }
 #### int GetWeaknessCountdown ( ) {: .copyable aria-label='Functions' }
 
@@ -236,6 +265,11 @@ ___
 ### MakeGroundPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
 This function spawns two dust poof effects of subtypes 1 and 2; the second of which will be the the Child of the one returned.
+
+___
+### ResetWaterClipFlags () {: aria-label='Functions' }
+#### void ResetWaterClipFlags ( ) {: .copyable aria-label='Functions' }
+Restores water rendering to the default vanilla state. See `SetWaterClipFlags()`.
 
 ___
 ### SetBaitedCountdown () {: aria-label='Functions' }
@@ -352,6 +386,15 @@ ___
     This variable is actually the Entity's time scale. A properly named replacement function will be added in a future version.
 
 ___
+### SetWaterClipFlags () {: aria-label='Functions' }
+#### void SetWaterClipFlags ( [WaterClipFlag](enums/WaterClipFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Allows modification of how this entity interacts with water, primarily rendering related behaviour such as reflections.
+
+Note that this will also override/disable any natural vanilla changes to these flags, such as the player losing their reflection with Charm of the Vampire.
+
+Vanilla state can be restored with `ResetWaterClipFlags()`.
+
+___
 ### SetWeaknessCountdown () {: aria-label='Functions' }
 #### void SetWeaknessCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
@@ -390,6 +433,23 @@ Used to cast an [Entity](Entity.md) object to an [EntitySlot](EntitySlot.md) obj
 ___
 
 ### TryThrow () {: aria-label='Functions' }
-#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) Velocity, float Height ) {: .copyable aria-label='Functions' }
+Has different effects based on the entity it was used on.
+
+[EntityPlayer](https://repentogon.com/EntityPlayer.html) Players:
+Throws the player into the air, respects grid collision.
+Throw won't be applied if the player is airborne or has flight, unless the source is a player.
+
+[EntityPickup](https://repentogon.com/EntityPickup.html) Pickups:
+Only works on Chests, throws it into the air, respects grid collision.
+When the Chest lands it will always open, no matter the unlock condition.
+
+[EntityNPC](https://repentogon.com/EntityNPC.html) NPCs:
+Only works on poop entities, throws it into the air, ignores grid collision.
+At certain Velocity, the poop will play the `SoundEffect.SOUND_POOPITEM_THROW` sound effect when thrown.
+
+[EntityFamiliar](https://repentogon.com/EntityFamiliar.html) Familiars:
+Only works on Dip familiars and Cube Baby, throws it into the air, ignores grid collision.
+Cube baby will leave creep when thrown, similar to throwing it with Mom's Ring.
 
 ___

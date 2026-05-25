@@ -128,10 +128,35 @@ Now optionally accepts returning a table, with any combination of the following 
 
 Modified values are passed along to the remaining callbacks. Returning false to cancel the damage still skips the remaining callbacks.
 
+???+ info "ExtraSource"
+    ExtraSource is a new EntityRef passed to this callback in specific situations where the ""true"" source of the damage is obscured. For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife entity itself will be available as the ExtraSource! Gello and Brimstone Balls are also supported. Note that ExtraSource is nil if not available.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|11 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+|11 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ExtraSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
+### MC_PRE_MOD_UNLOAD
+Added boolean argument that identifies if it is running due to game shutdown.
+
+Now runs earlier during shutdown, so code is less likely to crash.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|73 |MC_PRE_MOD_UNLOAD {: .copyable } | table Mod, boolean ShuttingDown | - | void |
+
+### MC_GET_PILL_EFFECT
+Now passes EntityPlayer as an argument.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|65 |MC_GET_PILL_EFFECT {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) SelectedPillEffect, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) PillColor, [EntityPlayer](../EntityPlayer.md) Player) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) |
+
+### MC_POST_ENTITY_KILL
+Now passes **Kill Source** as an argument.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|68 |MC_POST_ENTITY_KILL {: .copyable } | ([Entity](../Entity.md) Entity, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) KillSource) | - | void |
 
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE {: .copyable }
@@ -167,6 +192,13 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1005 |MC_POST_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>int Charge, <br>boolean FirstTime, <br>int Slot, <br>int VarData, <br>[EntityPlayer](../EntityPlayer.md) Player) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
+### MC_PRE_ADD_TRINKET {: .copyable }
+Return `false` to cancel, or a different [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) to change the trinket being added.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1014 |MC_PRE_ADD_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean FirstTime) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | boolean or [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) |
+
 ### MC_POST_BACKDROP_PRE_RENDER_WALLS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
@@ -180,17 +212,24 @@ Accepts an `integer` to change [BackdropType](https://wofsauge.github.io/IsaacDo
 |:--|:--|:--|:--|:--|
 |1141 | MC_PRE_BACKDROP_CHANGE {: .copyable } | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) | - | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) |
 
+### MC_POST_BACKDROP_CHANGE {: .copyable }
+Fires after the backdrop changes.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1142 | MC_POST_BACKDROP_CHANGE {: .copyable } | ([BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Type) | [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) | void |
+
 ### MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1107 | MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+|1107 | MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable } | ([Color](../Color.md) Color) | - | void |
 
 ### MC_PRE_BACKDROP_RENDER_WALLS {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1106 | MC_PRE_BACKDROP_RENDER_WALLS {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+|1106 | MC_PRE_BACKDROP_RENDER_WALLS {: .copyable } | ([Color](../Color.md) Color) | - | void |
 
 ### MC_PRE_BACKDROP_RENDER_WATER {: .copyable }
 
@@ -357,9 +396,12 @@ Alternatively accepts `false` to cancel rendering
 ### MC_POST_ENTITY_TAKE_DMG {: .copyable }
 Accepts no return parameters.
 
+???+ info "ExtraSource"
+    ExtraSource is a new EntityRef passed to this callback in specific situations where the ""true"" source of the damage is obscured. For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife entity itself will be available as the ExtraSource! Gello and Brimstone Balls are also supported. Note that ExtraSource is nil if not available.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, <br>float Damage, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, <br>float Damage, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int DamageCountdown, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ExtraSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_PRE_ENTITY_THROW {: .copyable }
 Accepts a [Vector](../Vector.md) which will modify the velocity of the thrown entity.
@@ -461,6 +503,20 @@ Returning any value will have no effect on later callback executions.
 |:--|:--|:--|:--|:--|
 |1255 |MC_POST_FIRE_BRIMSTONE {: .copyable } | ([EntityLaser](../EntityLaser.md) Laser) | - | void |
 
+### MC_PRE_BRIMSTONE_SNEEZE {: .copyable }
+Runs before the Hemoptysis / Tainted Azazel sneeze attack.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1036 |MC_PRE_BRIMSTONE_SNEEZE {: .copyable } | ([Entity](../Entity.md) Source, Vector Direction, float DamageScale) | - | void |
+
+### MC_POST_BRIMSTONE_SNEEZE {: .copyable }
+Runs after the Hemoptysis / Tainted Azazel sneeze attack.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1037 |MC_POST_BRIMSTONE_SNEEZE {: .copyable } | ([Entity](../Entity.md) Source, Vector Direction, float DamageScale) | - | void |
+
 ### MC_POST_FIRE_KNIFE {: .copyable }
 Called when the player fires the knife from Mom's Knife.
 
@@ -471,6 +527,19 @@ Returning any value will have no effect on later callback executions.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1257 |MC_POST_FIRE_KNIFE {: .copyable } | ([EntityKnife](../EntityKnife.md) Knife) | - | void |
+
+### MC_POST_FIRE_SPLIT_TEAR {: .copyable }
+Called when a tear is fired from an existing tear/laser/knife.
+
+This includes various vanilla effects such as Cricket's Body, The Parasite, Mucormycosis, etc. The originating effect is identified by the [SplitTearType](SplitTearType.md) value.
+
+For mods, this callback also runs when a tear is fired via [EntityTear:FireSplitTear()](../EntityTear.md#firesplittear), [EntityLaser:FireSplitTear()](../EntityLaser.md#firesplittear), or [EntityKnife:FireSplitTear()](../EntityKnife.md#firesplittear). The `FireSplitTear` functions allow for a string to be passed in place of a [SplitTearType](SplitTearType.md), and that string will also appear in place of the [SplitTearType](SplitTearType.md) in this callback.
+
+Returning any value will have no effect on later callback executions.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1258 |MC_POST_FIRE_SPLIT_TEAR {: .copyable } | ([EntityTear](../EntityTear.md) Tear, [Entity](../Entity.md) SourceEntity, [SplitTearType](SplitTearType.md) or string) | [SplitTearType](SplitTearType.md) or string | void |
 
 ### MC_POST_FIRE_SWORD {: .copyable }
 Called when the player swings the sword from Spirit Sword.
@@ -989,9 +1058,6 @@ Called before a GridEntity attempts to inflict damage on an entity.
 
 Return false if the entity or player should ignore the damage.
 
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
-
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
@@ -1001,19 +1067,35 @@ Called after a GridEntity attempts to inflict damage on an entity. Note that thi
 
 Accepts no return parameters.
 
-???+ bug "Bug"
-	  The float DamageAmount (the intended damage amount to non-player entities) is currently bugged and always appears to be 0 - will be fixed in a future update.
-
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>[Entity](../Entity.md) Entity, <br>int PlayerDamageAmount, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>float DamageAmount, boolean IgnoreGridCollisionClass) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
-### MC_POST_GRID_ROCK_DESTROY {: .copyable }
-Accepts no return parameters.
+### MC_PRE_GRID_HURT {: .copyable }
+Called before a [GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) or [GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) takes damage.
+
+Return an integer to modify the damage, or false to cancel it.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1011 |MC_POST_GRID_ROCK_DESTROY {: .copyable } | ([GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock, <br>[GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, <br>boolean Immediate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1017 |MC_PRE_GRID_HURT {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>int Damage, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | int or boolean |
+
+### MC_POST_GRID_HURT {: .copyable }
+Called after a [GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) or [GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) takes damage.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1018 |MC_POST_GRID_HURT {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, <br>int Damage, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
+### MC_POST_GRID_ROCK_DESTROY {: .copyable }
+Accepts no return parameters.
+
+???+ note
+	`Source` can be `nil` if [GridEntity:Destroy](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html#destroy) is called instead of [GridEntity:DestroyWithSource](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html#destroywithsource).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1011 |MC_POST_GRID_ROCK_DESTROY {: .copyable } | ([GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock, <br>[GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, <br>boolean Immediate, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_HUD_RENDER {: .copyable }
 Accepts no return parameters.
@@ -1028,6 +1110,57 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1024 |MC_POST_HUD_RENDER {: .copyable } | void | - | void |
+
+### MC_PRE_HISTORYHUD_RENDER {: .copyable }
+Return false to cancel rendering.
+
+Return a table to specify the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) of items to skip rendering their sprites, leaving empty space instead. You can then use the [HistoryHUD](../HistoryHUD.md) class to help you render in that space (preferably in `MC_POST_HISTORYHUD_RENDER`).
+
+???- example "Example Code"
+    ```lua
+    return {
+        HideCollectibles = {
+            CollectibleType.COLLECTIBLE_SAD_ONION,
+            CollectibleType.COLLECTIBLE_INNER_EYE,
+        },
+        HideTrinkets = {
+            TrinketType.TRINKET_SWALLOWED_PENNY,
+        },
+    }
+    ```
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1027 |MC_PRE_HISTORYHUD_RENDER {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, [Vector](../Vector.md) RenderPos | - | boolean or table |
+
+### MC_POST_HISTORYHUD_RENDER {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1028 |MC_POST_HISTORYHUD_RENDER {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, [Vector](../Vector.md) RenderPos | - | void |
+
+### MC_POST_HISTORYHUD_RECOMPUTE {: .copyable }
+Runs when the contents of the [HistoryHUD](../HistoryHUD.md) are refreshed (typically when some item is added or removed).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1029 |MC_POST_HISTORYHUD_RECOMPUTE {: .copyable } | [HistoryHUD](../HistoryHUD.md) HistoryHUD, int PlayerIndex | - | int |
+
+### MC_POST_HUD_RENDER {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1024 |MC_POST_HUD_RENDER {: .copyable } | void | - | void |
+
+### MC_PRE_UPDATE {: .copyable }
+Called before the game's main update cycle begins.
+
+Return `true` to cancel the update, effectively pausing the game.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1026 |MC_PRE_UPDATE {: .copyable } | void | - | boolean |
 
 ### MC_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
@@ -1178,6 +1311,22 @@ Same as MC_INPUT_ACTION, but only works in the main menu.
 |:--|:--|:--|:--|:--|
 |1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md), <br>[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html), <br>[ButtonAction](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html))|[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html) | boolean or float |
 
+### MC_PRE_STATUS_EFFECT_APPLY {: .copyable }
+Triggers before applying a status effect to an Entity.
+
+Return `false` to cancel it.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1465 | MC_PRE_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int duration) | [StatusEffect](StatusEffect.md) | boolean |
+
+### MC_POST_STATUS_EFFECT_APPLY {: .copyable }
+Triggers after applying a status effect to an Entity.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1466 | MC_POST_STATUS_EFFECT_APPLY {: .copyable } | ([StatusEffect](StatusEffect.md) StatusID, <br>[Entity](../Entity.md) Entity, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int duration) | [StatusEffect](StatusEffect.md) | void |
+
 ### MC_POST_MODS_LOADED {: .copyable }
 Called after all Lua scripts have been loaded. Ideal for running code that is expected to run after all mods are initialized, but without the need for load order idiocy!
 
@@ -1261,7 +1410,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | (boolean Unknown) | - | void |
+|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | (boolean IsDogmaNightmare) | - | void |
 
 ### MC_POST_NPC_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
@@ -1309,7 +1458,7 @@ The initial value is always 0. The most recent result can be obtained at any tim
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1224 |MC_EVALUATE_CUSTOM_CACHE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, CustomCacheTag string, float Value) | string CustomCacheTag | void |
+|1224 |MC_EVALUATE_CUSTOM_CACHE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, CustomCacheTag string, float Value) | string CustomCacheTag | float |
 
 ### MC_EVALUATE_FAMILIAR_MULTIPLIER {: .copyable }
 Called when a familiar's cached multiplier needs to be re-evaluated. Return a number to modify the multiplier. Modified values are passed to the next callback.
@@ -1321,6 +1470,29 @@ Note that the result of this callback is cached, so the callback only runs when 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1225 |MC_EVALUATE_FAMILIAR_MULTIPLIER {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, float Mult, [EntityPlayer](../EntityPlayer.md) Player) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+
+### MC_EVALUATE_STAT {: .copyable }
+Used to modify intermediate values of player stat calculations. Refer to [EvaluateStatStage](EvaluateStatStage.md).
+
+Return a float to modify the current value.
+
+???+ note "Note"
+	Unless you need to perform complicated conditions/calculations, it is strongly reccomended that you use the new XML item stats features instead of this callback! See [items.xml](../xml/items.md) for more details.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1226 |MC_EVALUATE_STAT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EvaluateStatStage](EvaluateStatStage.md) Stat, float CurrentValue) | [EvaluateStatStage](EvaluateStatStage.md) | float |
+
+### MC_PRE_ROOM_COLLISION_PASS {: .copyable }
+Called right before collision evaluation.
+
+???- info "Execution information"
+    Called once per game update. Unlike [MC_POST_UPDATE](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html?h=mc+post#MC_POST_UPDATE)
+    can be used to update entity data, add or remove entities, with those changes being correctly applied during collision detection.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1227 |MC_PRE_ROOM_COLLISION_PASS {: .copyable } | () | - | void |
 
 ### MC_PRE_NPC_RENDER {: .copyable }
 Accepts a [Vector](../Vector.md) to modify render offset
@@ -1342,13 +1514,6 @@ Return `true` to prevent the split, `false` to allow it even if blacklisted, or 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, <br>boolean IsBlacklisted) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
-
-### MC_PRE_OPENGL_RENDER {: .copyable }
-Gets called right before the Manager::Render() function gets called.
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1136 | MC_PRE_OPENGL_RENDER {: .copyable } | (VertexBuffer, <br>int shaderId, <br>RenderContext) | - | ? |
 
 ### MC_PRE_PAUSE_SCREEN_RENDER {: .copyable }
 Can return `false` to prevent the pause screen from rendering. Doing so will also prevent the screen from darkening.
@@ -1508,15 +1673,22 @@ Accepts a `float` to modify the chance.
 ### MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable }
 Accepts `true` to cancel rendering.
 
+If a table is returned instead of a boolean, the following fields can be set to a non-nil value for extra functionality:
+
+* HideItem: Boolean. Determines whether the item should be hidden from the active slot or not.
+* HideOutline: Boolean. Determines if item outline should be hidden or not.
+* HideChargeBar: Boolean. Determines if item chargebar should be hidden or not.
+* CropOffset: Vector. Determines rectangle area of the active item image that will rendered in active slot.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1119 |MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, <br>[Vector](../Vector.md) Offset, <br>float Alpha, <br>float Scale, <br>[Vector](../Vector.md) ChargeBarOffset) | - | boolean |
+|1119 |MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, <br>[Vector](../Vector.md) Offset, <br>float Alpha, <br>float Scale, <br>[Vector](../Vector.md) ChargeBarOffset) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | boolean or table |
 
 ### MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, <br>[Vector](../Vector.md) Offset, <br>float Alpha, <br>float Scale, <br>[Vector](../Vector.md) ChargeBarOffset) | - | void |
+|1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, <br>[Vector](../Vector.md) Offset, <br>float Alpha, <br>float Scale, <br>[Vector](../Vector.md) ChargeBarOffset) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable }
 Return `true` to cancel hearts HUD rendering.
@@ -1545,12 +1717,6 @@ Alternative accepts `true`, which cancels trinket rendering.
 |:--|:--|:--|:--|:--|
 |1264 |MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable } | (int Slot, <br>[Vector](../Vector.md) Position, <br>float Scale, <br>[EntityPlayer](../EntityPlayer.md) Player, <br>[Vector](../Vector.md) CropOffset) | int Slot | table or boolean |
 
-### MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable }
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | (int ModCount, <br>[EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean OnlyCountTrueItems) | - | int |
-
 ### MC_POST_PLAYER_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
@@ -1575,9 +1741,23 @@ Accepts an integer to change the minimum charge to use the active item. If the i
 ### MC_PLAYER_GET_HEALTH_TYPE {: .copyable }
 Accepts an [HealthType](HealthType.md) to change health type for the character.
 
+???+ warning "Warning"
+    Using this callback is often not the most efficient option. For setting a players' default health type, prefer to set their `healthtype` in [players.xml](../xml/players.md). For items, effects and the like, prefer to use the ["healthtype" items.xml customcache](../xml/items.md).
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) CurrentHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
+
+### MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable }
+Called when a player's health type changes, but before their existing health is corrected to fit their new health type.
+
+After this callback is finished, if the player's new health type does not support red heart containers, they will automatically be converted to an appropriate type (such as to soul hearts or bone hearts).
+
+You may modify the player's health differently within this callback if you so wish, such as removing the heart containers entirely. Just take care not to leave them with no health!
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1128 |MC_PLAYER_HEALTH_TYPE_CHANGE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [HealthType](HealthType.md) NewHealthType, [HealthType](HealthType.md) PreviousHealthType, [HealthType](HealthType.md) DefaultHealthType) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PLAYER_GET_HEART_LIMIT {: .copyable }
 Accepts an override `integer` for heart limit.
@@ -1589,22 +1769,26 @@ Accepts an override `integer` for heart limit.
 |:--|:--|:--|:--|:--|
 |1074 |MC_PLAYER_GET_HEART_LIMIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>int HeartLimit, <br>boolean IsKeeper) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | int |
 
-### MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS {: .copyable }
-Return a [MultiShotParams](../MultiShotParams.md) object to change the properties of the players shooting behavior in regards to the MultiShotParams object properties.
+### MC_EVALUATE_MULTI_SHOT_PARAMS {: .copyable }
+Return a [MultiShotParams](../MultiShotParams.md) object to change the properties of the players shooting behavior in regards to the MultiShotParams object properties. Modified values will be passed along to the remaining callbacks.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1251 |MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
+|1289 |MC_EVALUATE_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player), [MultiShotParams](../MultiShotParams.md), [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
 
 ### MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable }
-Accepts no return parameters.
+This callback runs after a player's starting items/pills/cards/etc are added, usually following their first initialization in the run, or after certain "resets" such as Genesis.
+
+This callback does not run again on run continues, so it is a good place to initialize similar sorts of "starting items".
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1042 |MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable }
-Accepts no return parameters.
+This callback runs earlier than `MC_POST_PLAYER_INIT`, right before the game initializes the starting health/coins/costume/etc of a player.
+
+Note that this callback still runs on run continues, in which case some of the aforementioned initializations will later be overridden by the player's saved state (such as health).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1622,7 +1806,10 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+|1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, bool FromPlayerUpdate, bool PostLevelInitFinished) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+
+???+ note "Note"
+	Please note that this callback triggers when continuing a run as well. In this case, `PostLevelInitFinished` will be `false`.
 
 ### MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS {: .copyable }
 
@@ -1672,18 +1859,64 @@ Accepts `false` to cancel trigger effects.
 |:--|:--|:--|:--|:--|
 |1069 |MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
+### MC_POST_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1138 |MC_POST_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | void |
+
 ### MC_PRE_PLAYER_USE_BOMB {: .copyable }
 Return `false` to stop the player from using a bomb.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1020 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
+|1220 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
 ### MC_POST_PLAYER_USE_BOMB {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityBomb](../EntityBomb.md) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
+|1221 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityBomb](../EntityBomb.md) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
+
+### MC_PRE_BOMB_DAMAGE {: .copyable }
+Called before [Game():BombDamage()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombdamage) is called, used by the game to damage entities within a radius for explosions and similar effects.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+Return false to cancel, or a table containing changed values for `Position`, `Damage`, `Radius`, `TearFlags`, and/or `DamageFlags`.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1291 |MC_PRE_BOMB_DAMAGE {: .copyable } | (Vector Position, float Damage, float Radius, bool LineCheck, [Entity](../Entity.md) Source, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, bool DamageSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | table or boolean |
+
+### MC_POST_BOMB_DAMAGE {: .copyable }
+Called after [Game():BombDamage()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombdamage) is called, used by the game to damage entities within a radius for explosions and similar effects.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1275 |MC_POST_BOMB_DAMAGE {: .copyable } | (Vector Position, float Damage, float Radius, bool LineCheck, [Entity](../Entity.md) Source, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, bool DamageSource) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_PRE_BOMB_TEARFLAG_EFFECTS {: .copyable }
+Called before [Game():BombTearflagEffects()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombtearflageffects) is called, used by the game when [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html)-based effects are triggered from an explosion.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+Return false to cancel, or a table containing changed values for `Position`, `Radius`, `TearFlags`, and/or `RadiusMult`.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1292 |MC_PRE_BOMB_TEARFLAG_EFFECTS {: .copyable } | (Vector Position, float Radius, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float RadiusMult) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | table or boolean |
+
+### MC_POST_BOMB_TEARFLAG_EFFECTS {: .copyable }
+Called after [Game():BombTearflagEffects()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#bombtearflageffects) is called, used by the game when [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html)-based effects are triggered from an explosion.
+
+The optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the Source entity, if one exists (the Source can be `nil`).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1276 |MC_POST_BOMB_TEARFLAG_EFFECTS {: .copyable } | (Vector Position, float Radius, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float RadiusMult) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_POST_PROJECTILE_COLLISION {: .copyable }
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
@@ -1704,15 +1937,58 @@ Alternatively accepts `false` to cancel rendering
 |:--|:--|:--|:--|:--|
 |1085 |MC_PRE_PROJECTILE_RENDER {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, <br>[Vector](../Vector.md) Offset) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.md) | [Vector](../Vector.md) or boolean |
 
-### MC_PRE_RENDER_CUSTOM_CHARACTER_MENU {: .copyable }
-Accepts no return parameters.
+### MC_PRE_RENDER_CHARACTER_SELECT_PAGE {: .copyable }
+Runs before the background page/stats/etc are rendered for the character currently selected in the character menu. Modifications made to the sprites at this time can affect the upcoming render. Return false to cancel rendering.
 
-???- info "Execution informations"
-    This callback only triggers when a custom character is selected, it doesn't trigger on regular characters.
+`ModdedSprite` can only be non-nil for modded characters. `HasCustomBackground` indicates if `ModdedSprite` includes the background paper.
+
+PlayerType is -1 when "random character" is selected.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1333 |MC_PRE_RENDER_CUSTOM_CHARACTER_MENU {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Vector](../Vector.md) RenderPos, <br>[Sprite](../Sprite.md) DefaultSprite) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+|1329 |MC_PRE_RENDER_CHARACTER_SELECT_PAGE {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Vector](../Vector.md) RenderPos, <br>[Sprite](../Sprite.md) DefaultSprite, <br>[Sprite](../Sprite.md) ModdedSprite, bool HasCustomBackground) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
+
+### MC_POST_RENDER_CHARACTER_SELECT_PAGE {: .copyable }
+Runs after the background page/stats/etc are rendered for the character currently selected in the character menu.
+
+PlayerType is -1 when "random character" is selected.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1330 |MC_POST_RENDER_CHARACTER_SELECT_PAGE {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Vector](../Vector.md) RenderPos, <br>[Sprite](../Sprite.md) DefaultSprite, <br>[Sprite](../Sprite.md) ModdedSprite, bool HasCustomBackground) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+
+### MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable }
+Runs before each character portrait is rendered on the character wheel. Modifications made to the sprite can affect the upcoming render.
+
+Return false to cancel rendering, or a [Vector](../Vector.md) to change the `RenderPos`.
+
+PlayerType is -1 when "random character" is selected.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1331 |MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Sprite](../Sprite.md) PortraitSprite, <br>[Vector](../Vector.md) RenderPos, <br>[Vector](../Vector.md) DefaultScale, <br>[Color](../Color.md) DefaultColor) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean or [Vector](../Vector.md) |
+
+### MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable }
+Runs after each character portrait is rendered on the character wheel.
+
+PlayerType is -1 when "random character" is selected.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1332 |MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, <br>[Sprite](../Sprite.md) PortraitSprite, <br>[Vector](../Vector.md) RenderPos, <br>[Vector](../Vector.md) DefaultScale, <br>[Color](../Color.md) DefaultColor) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+
+### MC_CAN_SELECT_CHARACTER {: .copyable }
+Will only run for characters present in the character select menu that are capable of being selected (IE, not hidden or locked behind an achievement).
+
+Return false to prevent the character from being selectable. This has no visual effects.
+
+IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
+
+Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1328 |MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT {: .copyable } | ([PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, boolean IsBeingSelected) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
 
 ### MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable }
 Accepts an override [Vector](../Vector.md) for Offset.
@@ -1802,6 +2078,15 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>boolean NewLevel) | - | void |
 
+### MC_POST_ROOM_RENDER_ENTITIES {: .copyable }
+Runs after all entities & grid entities in the room have been rendered, but BEFORE effects like overlays, shockwaves, and the mirror world effect are applied.
+
+Rendering done on this callback is also preserved in room transition animations.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1044 |MC_POST_ROOM_RENDER_ENTITIES {: .copyable } | void | - | void |
+
 ### MC_PRE_ROOM_GRID_ENTITY_SPAWN {: .copyable }
 This is called during Room initiization when [GridEntities](../GridEntity.md) from the layout are being spawned.
 
@@ -1819,7 +2104,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1068 |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean PlaySound) | - | void |
+|1068 |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean Silent) | - | void |
+
+### MC_POST_ROOM_TRIGGER_CLEAR {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1143 |MC_POST_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean Silent) | - | void |
 
 ### MC_POST_SAVESLOT_LOAD {: .copyable }
 This is called wheenver a saveslot is loaded by the game.
@@ -1973,12 +2265,43 @@ Alternatively accepts `false` to cancel rendering
 |:--|:--|:--|:--|:--|
 |1084 |MC_PRE_TEAR_RENDER {: .copyable } | ([EntityTear](../EntityTear.md) Tear, <br>[Vector](../Vector.md) Offset) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.md) | [Vector](../Vector.md) or boolean |
 
+### MC_POST_TRIGGER_COLLECTIBLE_ADDED {: .copyable }
+Compared to `MC_POST_ADD_COLLECTIBLE`, this runs for all of "true" items, wisps, and REPENTOGON's innate items.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1053 |MC_POST_TRIGGER_COLLECTIBLE_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean FirstTimePickingUp, <br>boolean WispOrInnate ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
 ### MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>boolean RemoveFromPlayerForm, <br>boolean WispOrInnate ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
+### MC_POST_ADD_INNATE_COLLECTIBLE {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1054 |MC_POST_ADD_INNATE_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>string GroupKey, <br>int Amount, <br>int Duration ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or string | void |
+
+### MC_POST_REMOVE_INNATE_COLLECTIBLE {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1056 |MC_POST_REMOVE_INNATE_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, <br>string GroupKey, <br>int Amount, <br>boolean ExpiredDuration ) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) or string | void |
+
+### MC_POST_ADD_INNATE_TRINKET {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1055 |MC_POST_ADD_INNATE_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>string GroupKey, <br>int Amount, <br>int Duration ) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) or string | void |
+
+### MC_POST_REMOVE_INNATE_TRINKET {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1057 |MC_POST_REMOVE_INNATE_TRINKET {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>string GroupKey, <br>int Amount, <br>boolean ExpiredDuration ) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) or string | void |
 
 ### MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable }
 Fires right before the game over screen, but BEFORE the game checks for vanilla revive effects like 1UP.
@@ -2029,14 +2352,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean FirstTimePickingUp) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean FirstTimePickingUp, <br>boolean Innate) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, <br>boolean Innate) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_WEAPON_FIRED {: .copyable }
 Accepts no return parameters.
@@ -2071,30 +2394,46 @@ Called before the pickup determines its loot content. Accepts a [LootList](../Lo
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1333 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
+|1334 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
 
 ### MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable }
 Called before a ghost pickup of the loot content is applied to the pickup. Return `true` to apply pickup ghost to your pickup entity, `false` to cancel it.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1334 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1335 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md)) Pickup | void | boolean |
+
+### MC_POST_PLAYER_ADD_EFFECT {: .copyable }
+Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is added to a player.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1273 |MC_POST_PLAYER_ADD_EFFECT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem](../ItemConfig_Item.md), <br>boolean addCostume, int Count) | [ItemConfigItem](../ItemConfig_Item.md) | void |
+
+### MC_POST_ROOM_ADD_EFFECT {: .copyable }
+Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is added to the room.
+
+[Room](../Room.md) has its own [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) that are accessed through [Room::GetEffects()](../Room.md#geteffects)
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1274 |MC_POST_ROOM_ADD_EFFECT {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md)) | [ItemConfigItem](../ItemConfig_Item.md) | void |
 
 ### MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable }
-Called after the player's `ItemConfigItem` TemporaryEffect is removed.
+Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is removed from a player.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem](../ItemConfig_Item.md)) | - | void |
+|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem](../ItemConfig_Item.md), <br>int Count) | [ItemConfigItem](../ItemConfig_Item.md) | void |
 
 ### MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable }
-Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) is removed.
+Called after the [TemporaryEffect](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffect.html) of an [ItemConfigItem](../ItemConfig_Item.md) is removed from the room.
 
-[Room](../Room.md) has its own [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) that are accessed through [Room::GetEffects()](../Room.md#geteffects)
+[Room](../Room.md) has its own [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) that are accessed through [Room::GetEffects()](../Room.md#geteffects).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md)) | - | void |
+|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md)) | [ItemConfigItem](../ItemConfig_Item.md) | void |
 
 ### MC_PRE_PLAYER_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2291,7 +2630,7 @@ Called before the costume is added to the player. Return [ItemConfigItem](../Ite
 |1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
 
 ### MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
-Called before the costume is added to the player. Return `true` to cancel the removal.
+Called before the costume is removed to the player. Return `true` to cancel the removal.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -2309,7 +2648,41 @@ Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1284 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+|1284 |MC_POST_PLAYER_REMOVE_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+
+### MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
+Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
+
+Return `true` to cancel vanilla behavior.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1285 |MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | boolean |
+
+### MC_POST_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
+Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and after the hearts addition is applied.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1286 |MC_POST_TRIGGER_BED_SLEEP_EFFECT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | void |
+
+### MC_PRE_PLAYER_POCKET_ITEMS_SWAP {: .copyable }
+Called when the player swaps their pocket items using the action drop button (even if they are empty).
+
+Return `true` to cancel pocket item swap.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1287 |MC_PRE_PLAYER_POCKET_ITEMS_SWAP {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+
+### MC_PRE_BED_SLEEP {: .copyable }
+Triggers on bed collision and before playing sleep sequence.
+
+Return `true` to cancel vanilla behavior.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1288 |MC_PRE_BED_SLEEP {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[EntityPickup](../EntityPickup.md) Bed) | - | boolean |
 
 ### MC_PRE_PLAYER_UPDATE {: .copyable }
 Called before this entity is updated.
@@ -2412,6 +2785,55 @@ Return `false` to cancel showing the item text.
 |:--|:--|:--|:--|:--|
 |1484 |MC_PRE_ITEM_TEXT_DISPLAY {: .copyable } | (string Title, string Subtitle, boolean IsSticky, boolean IsCurseDisplay) | - | boolean |
 
+### MC_GET_STATUS_EFFECT_TARGET {: .copyable }
+Return an [Entity](../Entity.md) to change targets
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1485 |MC_GET_STATUS_EFFECT_TARGET {: .copyable } | ([Entity](../Entity.md) Entity) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Entity](../Entity.md) |
+
+### MC_PRE_ENTITY_SET_COLOR {: .copyable }
+Fires when Entity:SetColor is called
+
+Return a color to override the color. The overridden color is passed into MC_POST_ENTITY_SET_COLOR.
+Return `false` to cancel the color change. Prevents MC_POST_ENTITY_SET_COLOR from firing.
+
+This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#setcolor) and does not fire when changing the entity's color directly.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1486 |MC_PRE_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>[Color](../Color.md) Color, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean OR [Color](../Color.md) |
+
+### MC_POST_ENTITY_SET_COLOR {: .copyable }
+Fires when Entity:SetColor is called
+
+This only fires for [Entity:SetColor](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#setcolor) and does not fire when changing the entity's color directly.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1487 |MC_POST_ENTITY_SET_COLOR {: .copyable } | ([Entity](../Entity.md) Entity, <br>[Color](../Color.md) Color, <br>int Duration, <br>int Priority, <br>boolean FadeOut, <br>boolean Share) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_POST_START_AMBUSH_WAVE {: .copyable }
+Fires at the start of a challenge/boss rush room wave.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1488 |MC_POST_START_AMBUSH_WAVE {: .copyable } | (boolean BossAmbush) | - | void |
+
+### MC_POST_START_GREED_WAVE {: .copyable }
+Fires at the start of a Greed Mode wave.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1489 |MC_POST_START_GREED_WAVE {: .copyable } | void | - | void |
+
+### MC_EVALUATE_TEAR_HIT_PARAMS {: .copyable }
+Used to modify mutable TearParams object.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1490 |MC_EVALUATE_TEAR_HIT_PARAMS {: .copyable } | [EntityPlayer](../EntityPlayer.md),<br>[TearParams](https://wofsauge.github.io/IsaacDocs/rep/TearParams.html),<br>[WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html),<br>float DamageScale,<br>integer TearDisplacement,<br>[Entity](../Entity.md) Source | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+
 ### MC_PRE_GET_RANDOM_ROOM_INDEX {: .copyable }
 Called when the game wishes to get a random available room index on the floor.
 
@@ -2448,6 +2870,43 @@ Called after the Glowing Hourglass state is loaded.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1301 |MC_POST_GLOWING_HOURGLASS_LOAD {: .copyable } | (int Slot) | - | void |
+
+### MC_PRE_ROOM_RESTORE_STATE {: .copyable }
+Fires before the room respawns all saved entities.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1305 |MC_PRE_ROOM_RESTORE_STATE {: .copyable } | [Room](../Room.md), [RoomDescriptor](../RoomDescriptor.md) | - | void |
+
+### MC_POST_ROOM_SAVE_STATE {: .copyable }
+Fires after the room saves all entities and grid entities.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1304 |MC_POST_ROOM_SAVE_STATE {: .copyable } | [Room](../Room.md), [RoomDescriptor](../RoomDescriptor.md) | - | void |
+
+### MC_POST_SWAP_ROOMS {: .copyable }
+Fires after two rooms have been swapped, due to Curse of the Maze.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1306 |MC_POST_SWAP_ROOMS {: .copyable } | [RoomDescriptor](../RoomDescriptor.md), [RoomDescriptor](../RoomDescriptor.md) | - | void |
+
+### MC_POST_BACKWARDS_ROOM_SAVE {: .copyable }
+Fires after a room has been saved; to then be restored when generating the Ascent.
+The string key (e.g. "boss_0", "treasure_0") identifies which slot the room was saved in.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1307 |MC_POST_BACKWARDS_ROOM_SAVE {: .copyable } | [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html), [RoomDescriptor](../RoomDescriptor.md), string Key | - | void |
+
+### MC_POST_BACKWARDS_ROOM_RESTORE {: .copyable }
+Fires when generating the Ascent layout and one of the previously saved rooms is restored.
+The string key (e.g. "boss_0", "treasure_0") identifies which slot the room was saved into.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1308 |MC_POST_BACKWARDS_ROOM_RESTORE {: .copyable } | [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html), [RoomDescriptor](../RoomDescriptor.md), string Key | - | void |
 
 ### MC_PRE_PLAYER_ADD_CARD {: .copyable }
 Called before a card gets added to the player's inventory.
@@ -2541,6 +3000,22 @@ Called after a player drops a pill onto the ground from their inventory.
 |:--|:--|:--|:--|:--|
 |1361 |MC_POST_PLAYER_DROP_PILL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityPickup](../EntityPickup.md) Pickup, [PillCardSlot](PillCardSlot.md) Slot) | [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) | void |
 
+### MC_POST_PLAYER_DROP_TRINKET {: .copyable }
+Called after a player drops a trinket onto the ground from their inventory.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1144 |MC_POST_PLAYER_DROP_TRINKET {: .copyable } | ([TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html), [Vector](../Vector.md) DropPos, [EntityPlayer](../EntityPlayer.md) Player, boolean IsGoldenTrinket, boolean ReplaceTick, [EntityPickup]() DroppedTrinket) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+
+### MC_PRE_FAMILIAR_CAN_CHARM {: .copyable }
+Fires when `EntityFamiliar:CanCharm` is called. This is typically used by Siren's familiar charm attack.
+
+Return `false` to prevent the familiar from being charmed.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1473 |MC_PRE_FAMILIAR_CAN_CHARM {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean |
+
 ### MC_PRE_PLAYER_GIVE_BIRTH_CAMBION {: .copyable }
 Called before Cambion Conception spawns a familiar after the player takes damage.
 
@@ -2562,3 +3037,104 @@ Note that if you cancel this, the game will not attempt to spawn another familia
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1475 |MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md)) | [ConceptionFamiliarFlag](ConceptionFamiliarFlag.md) | boolean |
+
+### MC_PRE_APPLY_TEARFLAG_EFFECTS {: .copyable }
+Called before the effects of [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) are applied to an enemy upon being hit or damaged by virtually any source entity (tears, lasers, certain effects, etc). Note that the source can also be `nil`.
+
+Can be triggered by mods using [EntityNPC::ApplyTearflagEffects()](../EntityNPC.md#applytearflageffects).
+
+Return `false` to prevent application of effects, or return a table to modify certain values:
+
+* Position
+* TearFlags
+* Damage
+
+Please note that the optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the **Source** entity.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1277 |MC_PRE_APPLY_TEARFLAG_EFFECTS {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Vector](../Vector.md) Position, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float Damage) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+
+### MC_POST_APPLY_TEARFLAG_EFFECTS {: .copyable }
+Called after the effects of [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) are applied to an enemy upon being hit or damaged by virtually any source entity (tears, lasers, certain effects, etc). Great for on-hit effects! Note that the source can be `nil`.
+
+Can be triggered by mods using [EntityNPC::ApplyTearflagEffects()](../EntityNPC.md#applytearflageffects).
+
+Please note that the optional parameter is the [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the **Source** entity.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1278 |MC_POST_APPLY_TEARFLAG_EFFECTS {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Vector](../Vector.md) Position, [TearFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/TearFlags.html) TearFlags, [Entity](../Entity.md) Source, float Damage) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_PRE_BOSS_SELECT {: .copyable}
+Called when selecting a boss from the [BossPoolManager](../BossPoolManager.md).
+
+You can return an integer from this callback in order to change the returned boss type.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1280 |MC_PRE_BOSS_SELECT {: .copyable } | ([BossType](../enums/BossType.md) Boss, [BossPool](../BossPool.md) Pool, [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) Stage, [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) StageType) | [BossType](../enums/BossType.md) Boss | int |
+
+### MC_TRY_ADD_TO_BAG_OF_CRAFTING {: .copyable }
+Called before a pickup is "added" to the player's Bag of Crafting.
+
+The provided table contains the [BagOfCraftingPickups](BagOfCraftingPickup.md) that would be added to the bag. **Note that this table can be empty**, if the pickup would not normally provide any pickups!
+
+Return false to prevent the pickup from being added. Return a different table of [BagOfCraftingPickups](BagOfCraftingPickup.md) to modify what is going to be added.
+
+If false is returned, or the pickup does not provide any [BagOfCraftingPickups](BagOfCraftingPickup.md), it will be knocked away instead of "collected".
+
+???+ note "Note"
+	For custom pickups, please prefer to set their `bagofcrafting` attribute in [entities2.xml](../xml/entities.md) instead!
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1015 |MC_TRY_ADD_TO_BAG_OF_CRAFTING {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityPickup](../EntityPickup.md) Pickup, [BagOfCraftingPickup](BagOfCraftingPickup.md)[] BagOfCraftingPickupsTable) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean or table |
+
+### MC_POST_ADD_TO_BAG_OF_CRAFTING {: .copyable }
+Called after a pickup is successfully "added" to the player's Bag of Crafting.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1016 |MC_POST_ADD_TO_BAG_OF_CRAFTING {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant | void |
+
+### MC_POST_ITEM_OVERLAY_RENDER {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1139 |MC_POST_ITEM_OVERLAY_RENDER  {: .copyable } | ([Giantbook](Giantbook.md) Giantbook) | [Giantbook](Giantbook.md) | void |
+
+### MC_POST_DISCHARGE_ACTIVE_ITEM {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1140 |MC_POST_DISCHARGE_ACTIVE_ITEM {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean CollectibleRemoved, [EntityPlayer](../EntityPlayer.md) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html?h=activeslot) slot) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
+### MC_PRE_OPEN_CHEST {: .copyable }
+Fires before a chest is opened. Return false to prevent it from opening.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1491 |MC_PRE_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+
+### MC_POST_OPEN_CHEST {: .copyable }
+Fires after a chest opened.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1492 |MC_POST_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
+
+### MC_GET_BOSS_THEMATIC_ITEM {: .copyable }
+Fires after boss room clean.
+
+`Spawned` is true if the game is going to spawn a extra "thematic" reward for the boss defeated, separate from the usual boss pool item. `SpawnedCollectible` or `SpawnedTrinket` are only non-zero if the game is planning to spawn one.
+
+Return a table with a "Collectible" field to spawn a collectible, or a "Trinket" field to spawn a trinket. In either case, this overwrites any previously planned spawn.
+
+For example, `return { Collectible = CollectibleType.COLLECTIBLE_SAD_ONION }` or `return { Trinket = TrinketType.TRINKET_SWALLOWED_PENNY }`.
+
+Alternatively, return `true` to prevent any item from spawning.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1493 |MC_GET_BOSS_THEMATIC_ITEM  {: .copyable } | (boolean Spawned, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) SpawnedCollectible, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) SpawnedTrinket) | void | table or boolean |

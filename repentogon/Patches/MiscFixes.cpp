@@ -1,6 +1,11 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "LuaCore.h"
+#include "Log.h"
+#include <filesystem>
+#include <algorithm>
+
+#undef max
 
 // The GameOver class stores an EntityConfig_Entity reference for the modded entity that the player dies to,
 // in order to access the mod's death portraits. However, it does not clear this reference when the
@@ -52,6 +57,23 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 	super();
 };
 
+// Fix mods folder redir for fonts
+HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
+	std::string newPath = path;
+	std::string lower = newPath;
+	std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+	if (lower._Starts_with("mods/") || lower._Starts_with("mods\\"))
+	{
+		char buffer[65535];
+		DWORD len = GetModuleFileNameA(NULL, buffer, 65535);
+		std::filesystem::path newerPath = std::filesystem::path(std::string(buffer, len));
+		newPath = newerPath.parent_path().parent_path().string() + "/" + newPath;
+		return super(newPath.c_str(), unusedIsLoading);
+	}
+	super(path, unusedIsLoading);
+}
+
+
 // Fix crash if nil is passed as the string from luaside.
 HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
 	if (str) {
@@ -70,6 +92,18 @@ HOOK_METHOD(ItemPool, IsPillIdentified, (uint32_t pillColor) -> bool) {
 		return super(pillColor);
 	}
 	return false;
+}
+
+// Fixes rendering bugs caused by starting a new render operation before presenting the previous one.
+HOOK_STATIC(Rendering, PushCurrentRenderTarget, () -> void, __stdcall)
+{
+	KAGE_Graphics_ImageManager& imageManager = g_KAGE_Graphics_ImageManager;
+	if (!(imageManager._frameImages.empty() && imageManager._transparentBatches.empty()))
+	{
+		g_KAGE_Graphics_Manager.Present();
+	}
+
+	super();
 }
 
 // Set patched out deselectable buttons on the online and daily menus to render at 0.5 alpha.
@@ -120,4 +154,43 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 HOOK_METHOD(ModManager, ListMods, () -> void) {
 	super();
 	_modBanStatus = 3;
+}
+
+// Fixes game crashing when spawning an entity with a seed of 0.
+// Since Game::Spawn is inlined in some places, and vanilla spawns can still end up with a seed of 0,
+// we enforce a valid seed in the callback function, as all spawns ultimately pass through it.
+HOOK_STATIC(LuaEngine, Callback_PreEntitySpawn, (int* type, int* variant, Vector* position, Vector* velocity, Entity* spawner, int* subType, uint32_t* seed) -> void, __stdcall)
+{
+	*seed = std::max(*seed, 1U); // avoid mods getting a seed of 0
+	super(type, variant, position, velocity, spawner, subType, seed);
+	*seed = std::max(*seed, 1U); // in case some mod changed the seed.
+}
+
+// Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
+// I think this happened because this function was newly created in Rep+ due to some refactoring.
+HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
+	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
+		return false;
+	}
+	return super(collectibleType, unused);
+}
+
+// The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
+// However, for workshop mods, because WriteMetadata uses the "_directory" value, which at this point in time has not been appended
+// with the workshop ID, the game will create a new folder for "modname" instead of "modname_123456" and write the metadata there,
+// creating an "empty" duplicate of the mod containing nothing but this "fixed" metadata.xml. In practice this only happens if a mod
+// is uploaded without a version, which is rare but can happen! Shoutout to "Minecraft Explosions"! (And Sacrilege, initially!!)
+//
+// Anyway there is no reason for this function to ever create a new folder. The practical purpose for this function is probably to
+// auto-generate a default metadata xml for local mods that are lacking one, or to populate a version for devs who've neglected to
+// add one to their XML (though ig some people are working around this anyway lmao).
+//
+// So, skip any call to this function that would write to a folder that doesn't already exist, since it is not going to do anything useful.
+// Actually fixing the attempted write would not be worth the effort or potential bugs.
+HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
+	std::filesystem::path basePath(&g_ModdingDataPath);
+	if (!std::filesystem::exists(basePath / this->_directory)) {
+		return;
+	}
+	super();
 }

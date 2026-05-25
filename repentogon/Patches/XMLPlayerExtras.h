@@ -9,3 +9,6 @@ bool IsCharacterHiddenByAchievementRgon(const int playerType);
 
 // Patch that enables modded character to be "hidden" in the character menu until some achievement is unlocked, via the "hideachievement" attribute.
 void PatchModdedCharacterHiddenByAchievementInMenu();
+
+// Renders the modded character's portait, such as for the character wheel, with rgon-specific features (like being locked on the character wheel) supported.
+void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color, Vector* scale, bool isCharacterWheel);

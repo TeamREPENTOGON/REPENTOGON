@@ -4,6 +4,9 @@ __thiscall void ScoreSheet::Calculate();
 "558bec83e4c083ec345356578b3d":
 __thiscall void ScoreSheet::AddKilledEnemy(Entity_NPC * ent);
 
+"558bec8b55??83ec0c":
+__thiscall void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time, bool repeatedStage);
+
 struct ScoreSheet
 {
     int _stageBonus : 0x0;
@@ -11,19 +14,22 @@ struct ScoreSheet
 	int _blueBabyBonus : 0x8;
 	int _lambBonus : 0xc;
 	int _megaSatanBonus : 0x10;
-	int _rushBonus : 0x14;
-	int _explorationBonus : 0x18;
-	int _damagePenalty : 0x1c;
-	int _timePenalty : 0x20;
-	int _itemPenalty : 0x24;
-	int _totalScore : 0x28;
-	int _runTimeLevel : 0x2c;
-	int _runTimeLevelType : 0x30;
-	uint32_t _runTime : 0x34;
-	int _runEnding : 0x40;
+	int _motherBonus : 0x14;
+	int _deliriumBonus : 0x18;
+	int _beastBonus : 0x1c;
+	int _rushBonus : 0x20;
+	int _explorationBonus : 0x24;
+	int _damagePenalty : 0x28;
+	int _timePenalty : 0x2c;
+	int _itemPenalty : 0x30;
+	int _totalScore : 0x34;
+	int _runTimeLevel : 0x38;
+	int _runTimeLevelType : 0x3c;
+	uint32_t _runTime : 0x40;
+	int _runEnding : 0x58;
 	
 	{{
-		void LIBZHL_API AddFinishedStage(int stage, int stageType, unsigned int time);
+		//void LIBZHL_API AddFinishedStage(int stage, int stageType, unsigned int time);
 	
 		/*inline void AddFinishedStage(int stage, int stageType, uint32_t time) {
 			if ((this->_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {

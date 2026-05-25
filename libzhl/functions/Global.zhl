@@ -20,6 +20,7 @@
 #include <queue>
 #include <cstdint>
 #include <bitset>
+#include <optional>
 #include <rttidata.h>
 #include <lua.hpp>
 #undef LoadImage
@@ -67,6 +68,7 @@ typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
 typedef std::vector<Vector> std_vector_vector2;
 typedef std::vector<History_HistoryItem> std_vector_history_historyitem;
+typedef std::vector<HistoryHUD_Item> std_vector_HistoryHUDItem;
 typedef std::vector<unsigned int> std_vector_uint;
 typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
@@ -94,6 +96,7 @@ typedef std::vector<KAGE_Graphics_ImageBase*> vector_ImagePtr;
 typedef std::vector<KAGE_Graphics_RenderBatch*> vector_RenderBatchPtr;
 typedef std::vector<std::pair<KAGE_Graphics_RenderBatch*, KAGE_Graphics_ImageBase*>> vector_pair_RenderBatchPtr_ImagePtr;
 typedef std::deque<ColorMod> deque_ColorMod;
+typedef std::vector<FamiliarData> vector_FamiliarData;
 typedef KColor KAGE_Graphics_Color;
 
 struct PoolItem {
@@ -3316,7 +3319,12 @@ enum class eAnimationFlag : int {
     PROCEDURAL = 1 << 9,
 };
 
+enum class eImageFlag : uint64_t {
+    PROCEDURAL = 1 << 1,
+};
+
 enum class eVertexAttributeFormat : int {
+    TERMINATOR = 0, // Used to define the end of the VertexAttributeDescriptor array
     FLOAT = 1,
     VEC_2 = 2,
     VEC_3 = 3,
@@ -3363,6 +3371,11 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
+
+// The last thing that's run by this function is KAGE_engine_startup_base, which returns a bool.
+// The caller never makes use of the returned AL value, so it's unknown if this is meant to return a bool or void.
+"53576a00":
+cleanup void KAGE_EngineStartup(int numArgs<ecx>, const char** args<edx>);
 
 "558bec6aff68????????64a1????????5081ece8010000a1????????33c58945??5657508d45??64a3????????8bc2":
 __x86_64 void IsaacStartup(int param_1, int param_2, int param_3);

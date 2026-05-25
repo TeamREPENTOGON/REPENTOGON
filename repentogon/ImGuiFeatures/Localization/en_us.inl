@@ -77,6 +77,12 @@ I(CONSOLE_ADD_PLAYER_HELP, u8"Spawns a new player entity. On default, it spawns 
 I(CONSOLE_CHALLENGE_DESC, u8"Start a challenge run")
 I(CONSOLE_CHALLENGE_HELP, u8"Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n")
 
+I(CONSOLE_CLEAN_BESTIARY, u8"Clear unneeded bestiary data to reduce save file size")
+I(CONSOLE_CLEAN_BESTIARY_HELP, u8"Clears bestiary data (encounters, kills etc) from the current save file for any enemy that cannot appear in the bestiary, or does not currently exist (ie, an enemy from a mod that is not currently enabled). Only useful if your save file is nearing the breaking point of 64KB (difficult, but possible).")
+I(CONSOLE_CLEAN_BESTIARY_NO_SAVE_LOADED, u8"Cannot clean bestiary data - no save file loaded.\n")
+I(CONSOLE_CLEAN_BESTIARY_PROMPT, u8"This will erase the bestiary data (encounters, kills etc) for any enemies that cannot appear in the bestiary, or do not currently exist in your game (such as enemies from mods you do not currently have enabled).\n\nDoing this is only reccomended if your save file is nearing the limit of 64KB (current size: %s).\n\nWould you like to proceed?")
+I(CONSOLE_CLEAN_BESTIARY_RESULT, u8"Bestiary cleanup completed. %d/%d enemies removed.\n")
+
 I(CONSOLE_CLEAR_DESC, u8"Clear the debug console")
 I(CONSOLE_CLEAR_HELP, u8"Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.")
 
@@ -411,6 +417,10 @@ I(OPT_MISC_USE_STEAM_CLOUD, u8"Use Steam Cloud")
 I(OPT_MISC_PAUSE_ON_FOCUS_LOST, u8"Pause on focus lost")
 
 I(OPT_REPENTOGON, u8"REPENTOGON")
+I(OPT_REPENTOGON_SYNC_OPTIONS, u8"Sync Vanilla Game Options")
+I(OPT_REPENTOGON_SYNC_OPTIONS_MARK, u8"Use the same values for game options shared by Vanilla and REPENTOGON. Disable this to allow options to be set differently for REPENTOGON.")
+I(OPT_REPENTOGON_SYNC_MODS_ENABLED, u8"Sync 'Mods Enabled' Option")
+I(OPT_REPENTOGON_SYNC_MODS_ENABLED_MARK, u8"Disable this to allow mods to be disabled in Vanilla but enabled in REPENTOGON, while still syncing all other options.")
 I(OPT_REPENTOGON_BETTER_VOID_GEN, u8"Better Void Generation")
 I(OPT_REPENTOGON_BETTER_VOID_GEN_MARK, u8"The Void now pulls rooms from all unlocked floors, including alt path.")
 I(OPT_REPENTOGON_HUSH_LASER_FIX, u8"Hush Laser Speed Fix")
@@ -462,6 +472,8 @@ I(OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_MARK, u8"Unlocks any achievements you
 I(OPT_SAVE_MANAGEMENT_EXPORT_TO_REPENTANCE_PROMPT, u8"This will export any new achievements/progress you've earned in your REPENTOGON/Repentance+ save file back to your base Repentance save file.\n\nWould you like to continue?")
 I(OPT_SAVE_MANAGEMENT_SUCCESS, u8"Success!")
 I(OPT_SAVE_MANAGEMENT_FAILED, u8"Failed. See 'repentogon.log' for details.")
+I(OPT_SAVE_MANAGEMENT_SUCCESS_NOT_FOUND, u8"Success, but some files not found.")
+I(OPT_SAVE_MANAGEMENT_NOT_FOUND, u8"Save file not found.")
 
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
@@ -671,3 +683,4 @@ I(TRANS_COUNT_HINT, u8"total count: %d translated: %d")
 I(ERROR_SAVE_SYNC_FAILED, u8"REPENTOGON save file synchronization failed.\n\nYour progress will not be lost. However, progress while playing on REPENTOGON may temporarily not be reflected when playing in vanilla, and vice versa.\n")
 I(FATAL_SAVE_FILE_WRONG_ACHIEVEMENTS, u8"Fatal error: Attempt to load a save file with the wrong number of achievements! Terminating to prevent corruption!\n")
 I(FATAL_SAVE_FILE_WRONG_NAME, u8"Fatal error: Attempt to load an unexpected save file! Terminating to prevent possible corruption!\n")
+I(ERROR_OPTIONS_FILE_READONLY, u8"The following file is set as \"Read Only\"! This may cause issues with syncing your options between Vanilla and REPENTOGON. Check the Properties of the following file/directory to fix:\n")

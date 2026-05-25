@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 #include <cmath>
+#include <regex>
 
 bool Room::IsValidRailType(int rail) {
 	if (rail < 0 || rail > RailType::RAIL_NONE) {
@@ -463,6 +464,30 @@ void KAGE::_LogMessage(int flag, const char* fmt, ...) {
 	}
 }
 
+// Sanitizes the % character from the provided string to make sure it is not interpreted as a format specifier.
+void KAGE::SafeLogMessage(int flag, const char* nonFormatString) {
+	LogMessage(flag, std::regex_replace(nonFormatString, std::regex("%"), "%%").c_str());
+}
+
+std::optional<std::string> KAGE_Filesys_ContentManager::GetMountedFilePath(const char* filePath) {
+	const char* rawPath = GetMountedFilePath_DeleteMe(filePath);
+	if (rawPath) {
+		std::string path(rawPath);
+		delete[] rawPath;
+		return path;
+	}
+	return std::nullopt;
+}
+std::optional<std::string> KAGE_Filesys_ContentManager::GetMountedFilePath(const std::string& filePath) {
+	return GetMountedFilePath(filePath.c_str());
+}
+bool KAGE_Filesys_ContentManager::MountedFileExists(const char* filePath) {
+	return GetMountedFilePath(filePath).has_value();
+}
+bool KAGE_Filesys_ContentManager::MountedFileExists(const std::string& filePath) {
+	return MountedFileExists(filePath.c_str());
+}
+
 bool Game::IsErased(int type, int variant, int subtype) {
 	for (EntityId const& entity : _erasedEntities) {
 		if (entity.type == type) {
@@ -535,10 +560,85 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 	return false;
 }
 
+int RoomDescriptor::GetErrorTrinketEffect() {
+	if (this->SpawnSeed != 0) {
+		unsigned int seed = this->SpawnSeed;
+		seed = seed >> 2 ^ seed;
+		seed = seed << 7 ^ seed;
+		seed = seed >> 25 ^ seed;
+		return seed % (NUM_TRINKETS-1) + 1;
+	}
+	return TRINKET_ERROR;
+}
+
+Vector HistoryHUD::GetPosition() const {
+	Vector minimapDisplaySize;
+	g_Game->GetMinimap()->GetDisplayedSize(minimapDisplaySize);
+	const float hudOffset = 1 - g_Manager->GetOptions()->_hudOffset;
+	return Vector(g_WIDTH - 87 + hudOffset * 24, hudOffset * -14 + minimapDisplaySize.y + 32);
+}
+
+bool HistoryHUD::HasTwin() const {
+	return _playerHistoryHuds[1]._player != nullptr;
+}
+
+bool HistoryHUD::IsMini() const {
+	return g_Manager->GetOptions()->_historyHudMode == 2;
+}
+
+float HistoryHUD::GetScale() const {
+	return IsMini() ? 0.5f : 1.0f;
+}
+
+float HistoryHUD::GetIconSize() const {
+	return GetScale() * 32.f;
+}
+
+int HistoryHUD::GetNumRows() const {
+	const float hudOffset = 1 - g_Manager->GetOptions()->_hudOffset;
+	return (int)std::ceil(((hudOffset * 14 + (g_HEIGHT - 64)) - GetPosition().y) / GetIconSize());
+}
+
+// This is per-player, if there are twins.
+int HistoryHUD::GetNumColumns() const {
+	int col = HasTwin() ? 1 : 2;
+	if (IsMini()) {
+		col *= 2;
+	}
+	return col;
+}
+
+// This is per-player, if there are twins.
+int HistoryHUD::GetNumVisibleItems() const {
+	return GetNumRows() * GetNumColumns();
+}
+
+int Menu_Character::GetPlayerTypeFromMenuID(int menuID, bool taintedMenu) {
+	if (menuID > 0) {
+		if (menuID < 18) {
+			return __ptr_g_MenuCharacterEntries[taintedMenu ? (menuID + 18) : menuID].playerType;
+		} else if (menuID < (int)g_ModCharacterMap.size() + 18) {
+			const auto& modChar = g_ModCharacterMap[menuID - 18];
+			return taintedMenu ? modChar.tainted : modChar.normal;
+		}
+	}
+	return -1;
+}
+
+int Menu_Character::GetPlayerTypeFromCurrentMenuID(int menuID) {
+	const bool taintedMenu = GetSelectedCharacterMenu() == 1;
+	return Menu_Character::GetPlayerTypeFromMenuID(menuID, taintedMenu);
+}
+
+int Menu_Character::GetSelectedPlayerType() {
+	return GetPlayerTypeFromCurrentMenuID(SelectedCharacterID);
+}
+
 bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }
 
+/*
 void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 	if ((_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {
 		_runTimeLevel = stage;
@@ -547,6 +647,7 @@ void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 	}
 	return;
 }
+*/
 
 void EntityList_EL::Untie() {
 	if (!_sublist) {
@@ -600,82 +701,67 @@ void Entity_Bomb::UpdateDirtColor() {
     }
 }
 
-void Entity_Pickup::InitFlipState(CollectibleType collectType, bool setupCollectibleGraphics) {
-	 
-	if (_variant == PICKUP_COLLECTIBLE && CanReroll() && !_dead) {
-
-		EntitySaveState* emptySaveState = new EntitySaveState();
-
-		_flipSaveState.SetP(emptySaveState);
-		EntitySaveState* flipState = _flipSaveState.saveState;
-
-		flipState->type = _type, flipState->variant = _variant;
-
-		RNG rng = RNG();
-		rng.SetSeed(_initSeed, 39);
-		unsigned int seed = rng.Next();
-
-		flipState->_initSeed = seed;
-
-		int collectibleID = (collectType != COLLECTIBLE_NULL) ? collectType :  g_Game->_itemPool.GetSeededCollectible(flipState->_initSeed, true, g_Game->_room->_descriptor); //to-do: add valid itemconfig check
-
-		flipState->subtype = collectibleID;
-
-		_altPedestalANM2.Reset();
-		if (setupCollectibleGraphics) {
-			
-
-			ANM2 copySprite = ANM2();
-			copySprite.construct_from_copy(&_sprite);
-
-			Isaac::SwapANM2(&_altPedestalANM2, &copySprite);
-
-			Entity_Pickup::SetupCollectibleGraphics(&_altPedestalANM2, 1, (CollectibleType)flipState->subtype, flipState->_initSeed, false);
-
-			_altPedestalANM2.LoadGraphics(true);
-
-			_altPedestalANM2.Play(_sprite.GetAnimationData(0)->GetName().c_str(), true);
-			_altPedestalANM2.Update();
-		}
-	}
-
-	
-
-	return;
-}
-
-void DestinationQuad::RotateRadians(const Vector& pivot, float radians) noexcept
+inline void SourceQuad::ConvertToPixelSpace(KAGE_Graphics_ImageBase& image)
 {
-	if (radians == 0.0)
+	if (this->_coordinateSpace == eCoordinateSpace::PIXEL)
 	{
 		return;
 	}
 
-	float sin = std::sin(radians);
-	float cos = std::cos(radians);
+	float width = (float)image.GetWidth();
+	float height = (float)image.GetHeight();
 
-	// translate
-	_topLeft -= pivot;
-	_topRight -= pivot;
-	_bottomLeft -= pivot;
-	_bottomRight -= pivot;
+	this->_topLeft.x *= width;
+	this->_topLeft.y *= height;
+	this->_topRight.x *= width;
+	this->_topRight.y *= height;
+	this->_bottomLeft.x *= width;
+	this->_bottomLeft.y *= height;
+	this->_bottomRight.x *= width;
+	this->_bottomRight.y *= height;
+}
 
-	// apply rotation
-	_topLeft.x = cos * _topLeft.x - sin * _topLeft.y;
-	_topLeft.y = sin * _topLeft.x + cos * _topLeft.y;
+inline void SourceQuad::ConvertToUVSpace(KAGE_Graphics_ImageBase& image)
+{
+	if (this->_coordinateSpace == eCoordinateSpace::NORMALIZED_UV)
+	{
+		return;
+	}
 
-	_topRight.x = cos * _topRight.x - sin * _topRight.y;
-	_topRight.y = sin * _topRight.x + cos * _topRight.y;
+	int width = image.GetWidth();
+	int height = image.GetHeight();
 
-	_bottomLeft.x = cos * _bottomLeft.x - sin * _bottomLeft.y;
-	_bottomLeft.y = sin * _bottomLeft.x + cos * _bottomLeft.y;
+	float inverseWidth = 1.0f / (float)width;
+	float inverseHeight = 1.0f / (float)height;
 
-	_bottomRight.x = cos * _bottomRight.x - sin * _bottomRight.y;
-	_bottomRight.y = sin * _bottomRight.x + cos * _bottomRight.y;
+	this->_topLeft.x *= inverseWidth;
+	this->_topLeft.y *= inverseHeight;
+	this->_topRight.x *= inverseWidth;
+	this->_topRight.y *= inverseHeight;
+	this->_bottomLeft.x *= inverseWidth;
+	this->_bottomLeft.y *= inverseHeight;
+	this->_bottomRight.x *= inverseWidth;
+	this->_bottomRight.y *= inverseHeight;
+}
 
-	// undo translation
-	_topLeft += pivot;
-	_topRight += pivot;
-	_bottomLeft += pivot;
-	_bottomRight += pivot;
+ModReference* LuaEngine::GetModRefByTable(int tblIdx)
+{
+	lua_State* L = this->_state;
+	int tblAbsIdx = lua_absindex(L, tblIdx);
+	std::list<ModReference>& mods = g_Mods;
+
+	for (ModReference& mod : mods)
+	{
+		int modRefTbl = mod._luaTableRef->_ref;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, modRefTbl);
+		bool eq = lua_rawequal(L, tblAbsIdx, -1);
+		lua_pop(L, 1);
+
+		if (eq)
+		{
+			return &mod;
+		}
+	}
+
+	return nullptr;
 }

@@ -39,6 +39,13 @@ LUA_FUNCTION(Lua_RoomConfigSetAddRooms)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfigSetLoadStb) {
+	VirtualRoomSetManager::RoomSet* set = *lua::GetRawUserdata<VirtualRoomSetManager::RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	const char* filename = luaL_checkstring(L, 2);
+	VirtualRoomSetManager::__AddStbRooms(L, set->GetStageId(), set->GetMode(), filename);
+	return 1;
+}
+
 static void RegisterRoomConfigSet(lua_State* L) {
 	luaL_newmetatable(L, lua::metatables::RoomConfigSetMT);
 	lua_pushstring(L, "__index");
@@ -66,6 +73,7 @@ static void RegisterRoomConfigSet(lua_State* L) {
 		{ "Get", Lua_RoomConfigSetGetRoom },
 		{ "__len", Lua_RoomConfigSetGetSize },
 		{ "AddRooms", Lua_RoomConfigSetAddRooms },
+		{ "LoadStb", Lua_RoomConfigSetLoadStb },
 		{ NULL, NULL }
 	};
 

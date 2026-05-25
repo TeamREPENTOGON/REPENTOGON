@@ -1,7 +1,312 @@
-v1.0.x -
+v1.1.2c -
+Fixes:
+* Fixed potential freeze/crash on startup if mods that have a "%" symbol in their names are installed
+* Fixed RoomTransition.GetPlayerExtraPortraitSprite returning nil if the PlayerType doesn't use the shaking animation (ie, "noshake")
+* Fixed adding/removing innate Book of Virtues not properly updating the active item HUD
+* Prevent the game from creating empty duplicates of mod folders that have no "version" in their metadata.xml
+/newline/
+/versionseparator/
+v1.1.2b -
+Fixes:
+* Fixed a bug from v1.1.2a where modded challenges that were supposed to start with modded characters would start as Isaac instead.
+* Fixed a bug from v1.1.2 where Tainted Azazel's brimstone would always start at half charge (as if an enemy was hit with the sneeze).
+* Fixed crashes caused by EntityFamiliar:GetPathFinder():MoveRandomlyAxisAligned()
+* Fix Bethany having Book of Virtues in the Bloody Mary challenge (bug from Repentance+ v1.9.7.12)
+/newline/
+/versionseparator/
+v1.1.2a -
+Fixes:
+* Fixed MC_POST_ADD/REMOVE_INNATE_COLLECTIBLE potentially triggering callbacks twice if they use a GroupKey as their optional param.
+* Fixed MC_PRE/POST_PLAYER_ADD_CARD/PILL sometimes reporting the incorrect slot when the player has their pocket active item selected.
+* Fixed HistoryHUD:GetItems() and variants sometimes crashing the game if the optional boolean parameter "IncludeNotVisible" is explicitly provided.
+* Fixed a bug where the PlayerType used for custom challenges could be incorrect if hidden challenges are present.
+* Fixed the Mars null costume not always being properly added/removed for innate copies (and wisps).
+/newline/
+/versionseparator/
+v1.1.2 -
+Added:
+* ModCallbacks:
+	- MC_PRE_UPDATE()
+		Triggers before the game's main update cycle.
+		Can be used to prevent the normal update, effectively pausing the game.
+	- MC_PRE_ROOM_COLLISION_PASS()
+		Triggers right before collision detection.
+	- MC_GET_BOSS_THEMATIC_ITEM(boolean Spawned, CollectibleType SpawnedCollectible, TrinketType SpawnedTrinket)
+		Triggers after boss room clean. Used to spawn/overwrite result of second collectible or trinket.
+		Return table with field "Collectible" to spawn collectible, or "Trinket" to spawn trinket.
+		Alternatively you can return ``true`` to cancel item spawn altogether.
+	- MC_PRE/POST_RENDER_CHARACTER_SELECT_PORTRAIT(PlayerType, Sprite, Vector Position, Vector DefaultScale, Color DefaultColor)
+		On PRE, return false to cancel rendering, or a Vector to change the Position.
+		Modifications made to the Sprite during this callback WILL apply to the natural render.
+		PlayerType is -1 when "random character" is selected.
+		Optional param: PlayerType
+	- MC_PRE/POST_RENDER_CHARACTER_SELECT_PAGE(PlayerType, Vector Position, Sprite DefaultSprite, Sprite ModdedSprite, bool HasCustomBackground)
+		PRE supports returning false to cancel rendering. Modifications made to the Sprites will apply to the natural render.
+		ModdedSprite can only be non-nil for modded characters. HasCustomBackground indicates if ModdedSprite includes a background paper.
+		PlayerType is -1 when "random character" is selected.
+		Optional param: PlayerType
+	- MC_PRE_BOMB_DAMAGE(Vector Position, float Damage, float Radius, bool LineCheck, Entity Source, TearFlags, DamageFlags, bool DamageSource)
+		Called before Game():BombDamage(), used to damage entities in a radius for explosions, etc.
+		Return false to cancel, or a table containing changed values for Position, Damage, Radius, TearFlags, and/or DamageFlags.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_PRE_BOMB_TEARFLAG_EFFECTS(Vector Position, float Radius, TearFlags, Entity Source, float RadiusMult)
+		Called before Game():BombTearflagEffects(), used when TearFlags-based effects are triggered by an explosion.
+		Return false to cancel, or a table containing changed values for Position, Radius, TearFlags, and/or RadiusMult.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_PRE/POST_BRIMSTONE_SNEEZE(Entity Source, Vector Direction, float DamageScale)
+		Runs for the Hemoptysis / Tainted Azazel sneeze attack.
+	- MC_CAN_SELECT_CHARACTER(PlayerType, bool IsBeingSelected)
+		Will only run for characters present in the character select menu that are capable of being selected (IE, not hidden or locked behind an achievement).
+		Return false to prevent the character from being selectable. This has no visual effects.
+		IsBeingSelected is true if the player is actually trying to start a run with the character. Returning false in this case will play the error buzzer sound.
+		Otherwise, this is just a check by some other logic (such as deciding which characters are eligible for random character selection).
+		Optional param: PlayerType
+	- MC_PRE/POST_HISTORYHUD_RENDER
+		Return false to cancel rendering. Return a table to skip rendering the icons for specific items.
+		Example: `return { HideCollectibles = { CollectibleType.COLLECTIBLE_SAD_ONION, CollectibleType.COLLECTIBLE_INNER_EYE }, HideTrinkets = { TrinketType.TRINKET_SWALLOWED_PENNY } }`
+	- MC_POST_HISTORYHUD_RECOMPUTE
+	- MC_PRE/POST_GRID_HURT(GridEntity, int Damage, EntityRef Source)
+		Runs when a Poop or TNT GridEntity takes damage.
+		On PRE, you can return an integer to modify the damage, or return false to cancel the damage.
+		Optional param: GridEntityType
+	- MC_POST_TRIGGER_COLLECTIBLE_ADDED(EntityPlayer, CollectibleType, FirstTimePickingUp, IsWispOrInnate)
+		Runs for real collectibles, wisps AND innate items.
+		Optional param: CollectibleType
+	- MC_POST_ADD_INNATE_COLLECTIBLE/TRINKET(EntityPlayer, CollectibleType/TrinketType, string GroupKey, int Amount, int Duration)
+		Optional param: CollectibleType/TrinketType OR GroupKey
+	- MC_POST_REMOVE_INNATE_COLLECTIBLE/TRINKET(EntityPlayer, CollectibleType/TrinketType, string GroupKey, int Amount, bool ExpiredDuration)
+		Optional param: CollectibleType/TrinketType OR GroupKey
+* Isaac:
+	- RenderToWorld(Vector pos)
+* EntityLaser:
+	- SetInitSound(SoundEffect sound)
+	- Get/SetNumChainedLasers
+		This is used by the Monstro's Lung + Technology synergy
+* EntityPlayer:
+	- ShootRedCandle and ShootBlueCandle now returns an EntityEffect for the flame.
+	- AddBoneOrbital now returns the bone orbital familiar spawned.
+	- [Get/Set]ImExcitedSpeedupCountdown
+	- [Get/Set]DonateLuck
+	- GetErrorTrinketEffect
+	- [Get/Set]RUAWizardTimer
+	- GetBloodGushSprite
+	- CalculateBagOfCraftingOutput
+	- RemoveInnateCollectible(CollectibleType, int Amount = 1, string GroupKey = "") -> int
+	- GetInnateCollectibleCount(CollectibleType, string GroupKey = "")
+	- SetInnateCollectibleCount(TrinketType, int NewCount, string GroupKey = "", bool AddCostume = true)
+	- GetInnateCollectibleGroup(string GroupKey) -> table
+	- SetInnateCollectibleGroup(string GroupKey, table, bool AddCostumes = true)
+	- AddInnateTrinket(TrinketType, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true)
+	- RemoveInnateTrinket(TrinketType, int Amount = 1, string GroupKey = "") -> int
+	- GetInnateTrinketCount(TrinketType, string GroupKey = "")
+	- SetInnateTrinketCount(TrinketType, int NewCount, string GroupKey = "", bool AddCostume = true)
+	- GetInnateTrinketGroup(string GroupKey) -> table
+	- SetInnateTrinketGroup(string GroupKey, table, bool AddCostumes = true)
+	- ClearInnateItemGroup(string GroupKey)
+	- BlockTrinket
+	- UnblockTrinket
+	- IsTrinketBlocked
+* EntityEffect
+	- [Get/Set/Add/Clear/Has]TearFlags
+		Only works for applicable EffectVariants: PLAYER_CREEP_HOLYWATER_TRAIL, BRIMSTONE_BALL, TECH_DOT, and CHAIN_LIGHTNING
+	- GetGridEntityDesc
+		Only works for EffectVariant.GRID_ENTITY_PROJECTILE_HELPER
+* EntityKnife
+	- SetKnifeDistance
+	- SetKnifeVelocity
+* TearParams
+	- MassMultiplier
+	- KnockbackMultiplier
+	- SpeedMultiplier
+	- TearDisplacement
+* PersistentGameData:
+	- Unlock: same as TryUnlock but it overrides situations where TryUnlock would be blocked normally (Challenges)
+* RoomDescriptor
+	- GetErrorTrinketEffect
+	- GetValidNeighborPlacementLocations(RoomShape = RoomShape.ROOMSHAPE_1x1, DoorMask = -1, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+	- GetValidNeighborPlacementLocations(RoomConfigRoom, bool AllowMultipleDoors = true, bool AllowSpecialNeighbors = false)
+* RoomConfig:
+	- LoadStb(StbType, int Mode, string StbFileName)
+* RoomConfigSet:
+	- LoadStb(string StbFileName)
+* CharacterMenu
+	- GetCompletionMarksSprite
+* History
+	- SearchCollectibles(int or table)
+	- SearchTrinkets(int or table)
+* HUD
+	- GetHistoryHUD
+* Sprite:
+	- Copy()
+	- GetSpritesheet(int layerId)
+	- SetSpritesheet(int layerId, Image)
+* LayerState:
+	- GetSpritesheet()
+	- SetSpritesheet(Image)
+* Renderer:
+	- CreateImage(int width, int height, string name)
+	- RenderToImage(Image, function)
+	- LoadShader(string path, table vertexDesc)
+	- GetShaderByType(ShaderType)
+	- GetPixelationAmount()
+	- GetClipPaneNormal()
+	- GetClipPaneThreshold()
+	- VertexAttributeFormat enum
+* Image:
+	- GetWidth()
+	- GetHeight()
+	- GetPaddedWidth()
+	- GetPaddedHeight()
+	- GetName()
+	- GetTexelRegion(int x, int y, int width, int height)
+	- Render(SourceQuad, DestinationQuad, KColor, ColorMod)
+	- RenderWithShader(SourceQuad, DestinationQuad, KColor, Shader, table shaderParams)
+* DestinationQuad:
+	- NewFromBounds(Vector topLeft, Vector bottomRight)
+	- NewFromRectangle(Vector topLeft, float width, float height)
+	- Copy()
+	- Translate(Vector)
+	- Scale(Vector, Vector anchor)
+	- Rotate(number, Vector anchor)
+	- Shear(Vector, Vector anchor)
+	- ApplyMatrix(table renderMatrix, Vector anchor)
+	- Flip(bool flipX, bool flipY)
+	- __tostring
+* SourceQuad:
+	- NewFromBounds(Vector topLeft, Vector bottomRight, bool uv)
+	- NewFromRectangle(Vector topLeft, float width, float height, bool uv)
+	- Copy() override
+	- IsUVSpace()
+	- ConvertToPixelSpace()
+	- ConvertToUVSpace()
+	- __tostring override
+* BlendMode:
+	- New(int rgbSrc, int rgbDest, int alphaSrc, int alphaDest, int equation)
+	- NewFromType(BlendType type)
+* Enums:
+	- PillEffectSubClass
+	- CompletionStatus
+	- ChargeType
+	- EnemyTargetFlags
+	- TrinketSlot
+* Added EntitySaveStateManager class to support persistent, modded save data for entities.
+* Added HistoryHUD and HistoryHUDItem classes
+* Backported new enums for GameStateFlag
+* Added "isActiveEnemy" attribute for EntityNPCs in entities2.xml (set to "true" or "false")
+* Added "innateitems" and "innatetrinkets" attributes for players.xml (comma-separated list of IDs or names)
+* Added SplitTearType.SWORD_BEAM
+* The "Error" and "Modeling Clay" trinkets now use the sprite of the item they are mimicking when smelted, like how they do in later versions of Repentance+.
+* Removed unused class constructors in Renderer.
+/newline/
+Modified:
+* Isaac:
+	- StartNewGame
+		Added optional param "bool isCustomRun".
+		Added function variant that takes a whole Seeds object instead of a seed integer.
+* Room:
+	- SetRedHeartDamage
+		Added optional param "bool value".
+* EntityPlayer:
+	- SetControllerIndex(int ControllerIndex, boolean IncludePlayerOwned = false)
+		If IncludePlayerOwned set to true, then sets ControllerIndex for player's subplayer/twinplayer
+	- AddInnateCollectible(CollectibleType, int Amount = 1, string GroupKey = "", int Duration = -1, bool AddCostume = true)
+		A "GroupKey" represents a distinct set of innate items. Innate item functions that take a GroupKey will only interact with items under that key.
+		This enables complete separation between different mechanics/mods/effects utilizing innate items, assuming distinct GroupKeys are used.
+		IMPORTANT: Using a non-empty GroupKey also enables persistence across save & continue and proper gamestate handling overall.
+		Various additional functions were added to take advantage of the GroupKey system for innate items.
+		Note: Removing innate items via a negative "Amount" is deprecated and does not support new features. Use RemoveInnateCollectible instead.
+* CostumeSpriteDesc:
+	- Renamed GetHeadColor -> GetDefaultSkinColor
+	- Renamed GetBodyColor -> GetSkinColor
+* ModCallbacks:
+	- MC_POST_PLAYER_DROP_TRINKET
+		Added DroppedTrinket param.
+	- MC_(POST_)ENTITY_TAKE_DMG
+		Added ExtraSource param. This is an additional EntityRef provided in specific situations where the "Source" of the damage may be indirect.
+		For example, lasers and melee hitboxes provide their parent (ie, the player) instead of themselves as the damage Source. The laser/knife will now be passed as the ExtraSource!
+		Currently supported: lasers, melee hitbox knives, gello, and brimstone balls.
+		Note that ExtraSource is nil if not available.
+* Modded characters no longer earn completion marks where regular characters would not, such as during challenges.
+/newline/
+Fixes:
+* ModCallbacks:
+	- Fixed MC_GET_STATUS_EFFECT_TARGET not running for the "shrink" status effect.
+* EntityPlayer:
+	- Fixed SetPoopSpell & RemovePoopSpell not working correctly and messing up the poop mana value.
+* EntityPickup
+	- Fix some crashes related to GetLootList
+* CharacterMenu:
+	- Fixed GetCharacterMenuIDFromPlayerType not returning the correct value for Tainted Isaac
+* Fixed modded characters' locked/door sprites rendering on the "continue" widget if they are locked behind an achievement.
+* Fixed custom caches not running for golden trinkets.
+* Fixed multiple instances where the "Controller Disconnected" popup could trigger when continuing a run, such as modded twins/coplayers, and a vanilla bug with Jacob & Esau as a co-op player.
+* Fixed a vanilla bug that caused Blood Baby familiars to render incorrectly when using Dataminer.
+* Fixed custom revives on twins (especially the non-main twin, ie Esau) not reliably preventing save deletion or the run ending, alongside other quirks.
+* Reviving a coin health character will now leave them with a whole coin heart instead of half of one.
+* Fixed some cases where the "Attempt to load a save file with the wrong number of achievements!" error could trigger undesirably when saves are manually replaced.
+* Fixed the "Attempt to load an unexpected save file" unintentionally triggering when recovering backup saves.
+/newline/
+/versionseparator/
+v1.1.1a -
+* Fixed inconsistent syncing of game options (options.ini) between vanilla and REPENTOGON for some users.
+	- These options were intended to fully sync between vanilla and REPENTOGON. Being able to have different settings (such as the Mods Enabled setting) was a bug, but...
+	- Options Syncing can now be disabled in the Imgui Console's REPENTOGON Options menu (added toggles for "Sync Vanilla Game Options" & "Sync Mods Enabled Option")
+/newline/
+/versionseparator/
+v1.1.1 -
+Added:
+* Mods can now load assets from resources-repentogon and content-repentogon folders for compatibility. Takes priority over -dlc3 folders (e.g resources-repentogon > resources-dlc3 > resources).
+* Game:
+	- IsStartingFromState
+		Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+* EntityBomb
+	- Get/SetFallSpeed
+		Formerly mislabeled as Get/SetHeight
+	- Get/SetFallAcceleration
+		Formerly mislabeled as Get/SetFallingSpeed
+* EntityTear
+	- SetInitSound(SoundEffect sound)
+* MenuSave
+	- SetSlotSpritesheet(int slot, string pngfilename)
+		Overrides the spritesheet used for a save file drawing. MC_POST_SAVESLOT_LOAD is a good place to use this.
+* ModCallbacks:
+	- Added "RemoveFromPlayerForm" and "Wisp" args to MC_POST_TRIGGER_COLLECTIBLE_REMOVED.
+* Enums:
+	- SlotState
+	- BloodClotSubtype
+	- RoomDisplayFlags
+/newline/
+Fixes:
+* Isaac:
+	- Restored deprecated Isaac.ClearBossHazards for compatibility, but Room:ClearBossHazards should be used instead.
+	- Fixed possible crashes involving ClearChallenge and MarkChallengeAsNotDone.
+* Vector:
+	- Lerp now returns a reference to the modified vector like it now does in vanilla.
+* RoomDescriptor:
+	- Fixed GetNeighboringRooms returning a number instead of a table.
+* Room:
+	- SetItemPool no longer crashes or errors on POOL_NULL
+* ScoreSheet:
+	- Fixed crash related to AddFinishedStage
+* ModCallbacks:
+	- Fixed broken color userdata in MC_POST_ENTITY_SET_COLOR
+* XMLData:
+	- Fixed GetEntryByOrder results for XMLNode.NULLCOSTUME
+	- Fixed crashes on invalid node types
+* Dear ImGui Console Menus:
+	- Game Options: Music Volume slider now immediately updates the volume of the currently-playing music.
+	- Save Management: "Import from Repentance" no longer "fails" if a file doesn't exist.
+* Fixed possible crash on the secrets menu.
+* Fixed the custom challenges menu resetting when any console command is executed.
+* Fixed the game potentially getting stuck trying to generate an ascent floor if a modded boss room has certain door layouts (again)
+/newline/
+/versionseparator/
+v1.1.0 -
 * Welcome to REPENTOGON+ !
 /newline/
 Additions:
+* GridEntityLock
+	- TryUnlock(EntityPlayer player, bool force)
 * Camera:
 	- Update(bool Interpolated = false)
 	- SetClampEnabled(bool clamped)
@@ -32,14 +337,23 @@ Additions:
 	- GetFlipCollectible
 		Returns CollectibleType if flip save state exists, nil otherwise.
 	- InitFlipState(CollectibleType = CollectibleType.COLLECTIBLE_NULL, SetupCollectibleGraphics = true)
+	- ReloadGraphics(boolean IgnoreBlind)
+	- SetupCollectibleGraphics(Sprite Sprite, integer Layer, CollectibleType Collectible, boolean Blind, integer Seed = Random(), boolean LoadGraphics)
+		Static method. Used to replace layer's spritesheet of the sprite object with collectible sprite. Seed is used for April Fools challenge to choose random collectible.
 * EntityPlayer:
 	- [Get/Set]ActionHoldDrop - how long player holds action drop button.
+	- [Get/Set]BlinkLockTime - how long player's head will play fired frame sprite
+	- GetBodySprite
+		Temporary copy of body player sprite while null animation is active.
 	- SetD8DamageModifier
 	- SetD8FireDelayModifier
 	- SetD8RangeModifier
 	- SetD8SpeedModifier
 	- [Get/Set]ForgottenSwapFormCooldown
+	- [Get/Set]ItemStateCooldown
 	- [Get/Set]MaggyHealthDrainCooldown
+	- [Get/Set]MawOfTheVoidCharge
+	- [Get/Set]MontezumaRevengeCharge
 	- [Get/Set]PlanCKillCountdown
 	- [Get/Set]PotatoPeelerUses
 		Used to increment Cube of Meat familiar form
@@ -66,6 +380,8 @@ Additions:
 	- HasForcedCamoEffect
 	- SetForceCamoEffect
 	- HasCamoEffect
+	- PlayItemNullAnimation
+		Returns true if animation was set successfully, false otherwise. Useful for item state/hold items.
 * EntityFamiliar:
 	- IsLilDelirium
 	- SetLilDelirium
@@ -96,6 +412,14 @@ Additions:
 	- GetRandomTrinketOwner
 * Isaac:
 	- GetButtonsSprite
+	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
+	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
+	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
+	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
+	- RenderCollectionItem(CollectibleType Collectible, Vector Position, Vector Scale = Vector.One, Color Color = Color.Default)
+	- ReworkCollectible(Collectible): marks the collectible as reworked, making the game not execute the item's original logic.
+	- ReworkBirthright(PlayerType): marks the birthright as reworked, making the game not execute the item's original logic.
+	- ReworkTrinket(Trinket): marks the trinket as reworked, making the game not execute the trinket's original logic.
 * ItemPool:
 	- AddCollectible
 	- AddTemporaryCollectible
@@ -106,6 +430,8 @@ Additions:
 * HUD:
 	- GetStackedStreakSprite
 	- GetPlayerStreakSprite
+* Minimap:
+	- Refresh
 * PlayerHUD:
 	- GetIndex
 	- GetLayout
@@ -114,11 +440,20 @@ Additions:
 	- GetScore
 	- GetTriggerChanceScale
 * Room:
+	- ClearBossHazards(boolean IgnoreNPCs = true, EntityNPC Entity = nil)
 	- TriggerOutput(RoomEventOutput GroupIdx)
+	- GetWallColor()
 * RoomConfig:
 	- AddRooms
 * RoomConfigSet:
 	- AddRooms
+* RoomDescriptor:
+	- [Get/Set]TaintedKeeperCoinSpawns
+		Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
+* ScoreSheet:
+	- GetBeastBonus
+	- GetDeliriumBonus
+	- GetMotherBonus
 * Seeds:
 	- SetStageSeed(LevelStage, Seed)
 * FXLayers:
@@ -180,7 +515,7 @@ Additions:
 	- MC_POST_START_AMBUSH_WAVE(boolean BossAmbush)
 		Fires at the start of challenge/boss rush room wave
 	- MC_POST_START_GREED_WAVE
-		(add description later)
+		Fires at the start of a Greed Mode wave
 	- MC_EVALUATE_MULTI_SHOT_PARAMS(EntityPlayer, MultiShotParams, WeaponType)
 		Optional param: PlayerType
 		Replacement for the legacy MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS that passes along a mutable MultiShotParams and allows all mods to modify it.
@@ -228,6 +563,19 @@ Additions:
 		Fires after a chest opened.
 	- MC_POST_DISCHARGE_ACTIVE_ITEM(CollectibleType, boolean CollectibleRemoved, EntityPlayer, ActiveSlot)
 	- MC_POST_ROOM_TRIGGER_CLEAR(boolean Silent)
+	- MC_POST_PLAYER_DROP_TRINKET(TrinketType, Vector DropPosition, EntityPlayer, boolean IsGolden, boolean ReplaceTick)
+		Optional param : TrinketType
+		Fires after player dropped trinket.
+	- MC_POST_PLAYER_ADD_EFFECT(EntityPlayer, ItemConfigItem, boolean addCostume, int count)
+		Optional param: ItemConfigItem
+	- MC_POST_ROOM_ADD_EFFECT(ItemConfigItem)
+		Optional param: ItemConfigItem
+	- MC_POST_BOMB_DAMAGE(Vector Position, float Damage, float Radius, bool LineCheck, Entity Source, TearFlags, DamageFlags, bool DamageSource)
+		Called after Game():BombDamage(), used to damage entities in a radius for explosions, etc.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
+	- MC_POST_BOMB_TEARFLAG_EFFECTS(Vector Position, float Radius, TearFlags, Entity Source, float RadiusMult)
+		Called after Game():BombTearflagEffects(), used when TearFlags-based effects are triggered by an explosion.
+		Optional param is the EntityType of the Source entity, if one exists (the Source can be nil).
 * New Enums:
 	- DoorMask
 	- WaterClipFlag
@@ -237,13 +585,6 @@ Additions:
 	- EvaluateStatStage
 	- SplitTearType
 	- UseActiveItemResultFlag
-* Room:
-	- GetWallColor()
-* Isaac:
-	- GetAllowedDoorsMaskForRoomShape: Returns a DoorMask representing all DoorSlots that are allowed for the given RoomShape.
-	- UnClearChallenge(challenge id): sets the target challenge id as not cleared. Not recommended with vanilla ones, it should still work tho!
-	- SpawnBoss(Type,Variant,SubType,Position,Velocity,Spawner,Seed = ?) Spawns an NPC forcing it to be a Boss, giving it a boss bar and boss-lile qualities.
-	- GetNanoTime(): Returns a high-resolution timestamp in nanoseconds.
 * Options:
 	- AimLockEnabled
 	- AscentVoiceOver
@@ -361,6 +702,9 @@ Modified:
 * ModCallbacks:
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED(EntityPlayer Player, int Count)
 		Added Count argument (how many instances of this effect were removed)
+		Can now use ItemConfigItem as an optional param.
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED
+		Can now use ItemConfigItem as an optional param.
 	- MC_PRE_MOD_UNLOAD(Mod, bool ShuttingDown)
 		Added boolean argument that identifies if it is running due to game shutdown
 		Now runs earlier during shutdown, so code is less likely to crash

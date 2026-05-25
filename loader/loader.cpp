@@ -259,7 +259,7 @@ extern "C" {
 		}
 
 		DumpThreadsContext(f);
-
+		/*
 		Log(f, "INFO", "Redirect calls to Lua 5.3.3 to Lua 5.4\n");
 		DWORD redirectResult = RedirectLua(f, &luaHandle);
 		if (redirectResult != 0) {
@@ -270,6 +270,7 @@ extern "C" {
 				luaHandle = NULL;
 			}
 		}
+		*/
 
 		if (initConsole) {
 			ConsoleWindow::Init();

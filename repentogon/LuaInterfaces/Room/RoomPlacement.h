@@ -83,5 +83,7 @@ bool CanPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoo
 RoomDescriptor* TryPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* existingRoom, const int doorSlot, const uint32_t seed, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 
 // Returns a set of GridIndexes that would be valid locations to place this room.
+std::set<int> FindValidNeighborPlacementLocations(RoomDescriptor* roomDesc, const int roomShape, const int doorMask, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
+std::set<int> FindValidNeighborPlacementLocations(RoomDescriptor* roomDesc, RoomConfig_Room* roomConfig, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 std::set<int> FindValidRoomPlacementLocations(const int roomShape, const int doorMask, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors);
 std::set<int> FindValidRoomPlacementLocations(RoomConfig_Room* roomConfig, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors);

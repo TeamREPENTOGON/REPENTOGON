@@ -49,6 +49,10 @@ ___
 #### boolean IsDeleteActive ( ) {: .copyable aria-label='Functions' }
 
 ___
+### SetSlotSpritesheet () {: aria-label='Functions' }
+#### void SetSlotSpritesheet ( int Slot, string PngFilename ) {: .copyable aria-label='Functions' }
+
+___
 ### SetSelectedElement () {: aria-label='Functions' }
 #### void SetSelectedElement ( int Element ) {: .copyable aria-label='Functions' }
 

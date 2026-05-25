@@ -16,6 +16,13 @@ ___
 
 ## Functions
 
+### FireSplitTear () {: aria-label='Functions' }
+#### [EntityTear](EntityTear.md) FireSplitTear ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity, float DamageMultiplier = 0.5, float SizeMultiplier = 0.6, int Variant = 0, [SplitTearType](enums/SplitTearType.md) splitType = SplitTearType.SPLIT_GENERIC ) {: .copyable aria-label='Functions' }
+Fire a new tear that inherits many attributes from this laser (flags, damage, size, color, etc).
+
+This will also trigger the `MC_POST_FIRE_SPLIT_TEAR` callback. For custom effects, a string may be passed in place of the [SplitTearType](enums/SplitTearType.md).
+
+___
 ### GetDamageMultiplier () {: aria-label='Functions' }
 #### float GetDamageMultiplier ( ) {: .copyable aria-label='Functions' }
 
@@ -26,6 +33,12 @@ ___
 ___
 ### GetHitList () {: aria-label='Functions' }
 #### int GetHitList ( ) {: .copyable aria-label='Functions' }
+Returns an array of hit entities using their [Index](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#index) field.
+
+___
+### GetNumChainedLasers () {: aria-label='Functions' }
+#### int GetNumChainedLasers ( ) {: .copyable aria-label='Functions' }
+Related to the effect used by the Monstro's Lung + Technology synergy. If >0, may cause an additional laser to spawn at the end point of this laser, up to this many times.
 
 ___
 ### GetOneHit () {: aria-label='Functions' }
@@ -73,6 +86,16 @@ ___
 ___
 ### SetDisableFollowParent () {: aria-label='Functions' }
 #### void SetDisableFollowParent ( boolean Value ) {: .copyable aria-label='Functions' }
+
+___
+### SetInitSound () {: aria-label='Functions' }
+#### void SetInitSound ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/SoundEffect.html) Sound ) {: .copyable aria-label='Functions' }
+Set after a laser is spawned but before it updates (for example, [MC_POST_LASER_INIT](https://wofsauge.github.io/IsaacDocs/rep/enums/ModCallbacks.html#mc_post_laser_init)) to change the sound it makes. Can be set to `SoundEffect.SOUND_NULL` to make no sound play.
+
+___
+### SetNumChainedLasers () {: aria-label='Functions' }
+#### void SetNumChainedLasers ( int Value ) {: .copyable aria-label='Functions' }
+Controls the effect used by the Monstro's Lung + Technology synergy. If >0, may cause an additional laser to spawn at the end point of this laser, up to this many times. May not function for all laser variants.
 
 ___
 ### SetPrismTouched () {: aria-label='Functions' }

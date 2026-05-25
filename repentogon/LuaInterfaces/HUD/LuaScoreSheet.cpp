@@ -152,10 +152,31 @@ LUA_FUNCTION(Lua_ScoreSheetAddFinishedStage)
 	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
 	const int stage = (int)luaL_checkinteger(L, 1);
 	const int stageType = (int)luaL_checkinteger(L, 2);
-	CONST int time = (int)luaL_checkinteger(L, 3);
-	scoreSheet->AddFinishedStage(stage, stageType, time);
+	const unsigned int time = (unsigned int)luaL_checkinteger(L, 3);
+	scoreSheet->AddFinishedStage(stage, stageType, time, false);
 
 	return 0;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetGetMotherBonus) {
+	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
+	lua_pushinteger(L, scoreSheet->_motherBonus);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetGetDeliriumBonus) {
+	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
+	lua_pushinteger(L, scoreSheet->_deliriumBonus);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetGetBeastBonus) {
+	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
+	lua_pushinteger(L, scoreSheet->_beastBonus);
+
+	return 1;
 }
 
 static void RegisterScoreSheet(lua_State* L) {
@@ -180,6 +201,9 @@ static void RegisterScoreSheet(lua_State* L) {
 		lua::TableAssoc(L, "GetRunEnding", Lua_ScoreSheetGetRunEnding );
 		lua::TableAssoc(L, "SetRunEnding", Lua_ScoreSheetSetRunEnding );
 		lua::TableAssoc(L, "AddFinishedStage", Lua_ScoreSheetAddFinishedStage);
+		lua::TableAssoc(L, "GetMotherBonus", Lua_ScoreSheetGetMotherBonus);
+		lua::TableAssoc(L, "GetDeliriumBonus", Lua_ScoreSheetGetDeliriumBonus);
+		lua::TableAssoc(L, "GetBeastBonus", Lua_ScoreSheetGetBeastBonus);
 		//{ NULL, NULL }
 	//};
 	//lua::RegisterNewClass(L, lua::metatables::ScoreSheetMT, lua::metatables::ScoreSheetMT, functions);

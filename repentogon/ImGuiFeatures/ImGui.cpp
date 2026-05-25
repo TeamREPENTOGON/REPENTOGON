@@ -710,12 +710,14 @@ HOOK_METHOD(Console, Render, ()->void)
 
 void __stdcall LogMessageCallback(const char* logMessage)
 {
-	logViewer.AddLog("[GAME]", logMessage);
+	logViewer.AddLogNoFormat("[GAME]", logMessage);
 };
 
 HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int unk)->void)
 {
-	logViewer.AddLog("[CONSOLE]", text.c_str());
+	if (!text.empty() && text != "\n") {
+		logViewer.AddLogNoFormat("[CONSOLE]", text.c_str());
+	}
 	super(text, color, unk);
 }
 

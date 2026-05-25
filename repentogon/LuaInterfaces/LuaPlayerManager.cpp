@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/ItemSpoofSystem.h"
 
 /*LUA_FUNCTION(Lua_GetPlayerManager) {
 	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -16,7 +17,10 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
 	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+
+	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, lazSharedGlobalTag);
+
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -31,7 +35,10 @@ LUA_FUNCTION(Lua_AnyoneHasCollectible)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
+
+	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, true);
+
 	if (!player) {
 		lua_pushboolean(L, false);
 	}
@@ -65,6 +72,8 @@ LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectibleID = (int)luaL_checkinteger(L, 1);
+
+	ItemSpoofSystem::StartLuaRequest();
 	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
 
 	return 1;
@@ -74,6 +83,8 @@ LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int trinketID = (int)luaL_checkinteger(L, 1);
+
+	ItemSpoofSystem::StartLuaRequest();
 	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
 
 	return 1;
@@ -214,6 +225,8 @@ LUA_FUNCTION(Lua_FirstBirthrightOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+
+	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
 
 	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
@@ -225,6 +238,8 @@ LUA_FUNCTION(Lua_AnyPlayerTypeHasBirthright)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+
+	ItemSpoofSystem::StartLuaRequest();
 	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
 
 	lua_pushboolean(L, player ? true : false);

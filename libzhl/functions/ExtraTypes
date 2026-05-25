@@ -159,6 +159,11 @@ TypeInfo std_vector_history_historyitem {
     Align 4;
 };
 
+TypeInfo std_vector_HistoryHUDItem {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_ModEntryPointer {
     Size 12;
     Align 4;
@@ -311,6 +316,11 @@ TypeInfo vector_RenderBatchPtr {
 };
 
 TypeInfo vector_pair_RenderBatchPtr_ImagePtr {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo vector_FamiliarData {
     Size 12;
     Align 4;
 };

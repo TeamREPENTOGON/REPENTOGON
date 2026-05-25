@@ -7,9 +7,9 @@ tags:
 ## Modified Constructors
 
 ### Sprite () {: aria-label='Modified Constructors' }
-#### [Sprite](Sprite.md),bool Sprite ( string ANM2Path, bool LoadGraphics = true ) {: .copyable aria-label='Modified Constructors' }
+#### [Sprite](Sprite.md),boolean Sprite ( string ANM2Path, boolean LoadGraphics = true ) {: .copyable aria-label='Modified Constructors' }
 
-Added two optional arguments, the function now returns two values: [Sprite](Sprite.md) object and the bool signifying whether the sprite was loaded successfully or not.
+Added two optional arguments, the function now returns two values: [Sprite](Sprite.md) object and the boolean signifying whether the sprite was loaded successfully or not.
 ___
 ## Modified Functions
 
@@ -31,6 +31,10 @@ ___
 
 ## Functions
 
+### Copy () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
+
+___
 ### ClearCustomChampionShader () {: aria-label='Functions' }
 #### void ClearCustomChampionShader ( ) {: .copyable aria-label='Functions' }
 Removes any custom `coloroffset_champion` shader applied by `sprite:SetCustomChampionShader(path)`.
@@ -157,3 +161,9 @@ ___
 #### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
+
+___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }

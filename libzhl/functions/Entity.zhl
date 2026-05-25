@@ -120,6 +120,9 @@ __thiscall void Entity::ClearBossHazards(bool excludeNPCs);
 "8b89????????85c974??8b81":
 __thiscall bool Entity::CanDevolve();
 
+"558beca1????????8bd1":
+__thiscall bool Entity::IsActiveEnemy(bool includeDead);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 {{
 	inline int GetIndex() { return this->_index; }
@@ -170,7 +173,9 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     inline Entity_NPC* ToNPC() { return Downcast<Entity_NPC*>(__ptr_EntityNPCRTTI); } 
     inline Entity_Player* ToPlayer() { return Downcast<Entity_Player*>(__ptr_EntityPlayerRTTI); }
     inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
+    inline Entity_Pickup* ToPickup() { return Downcast<Entity_Pickup*>(__ptr_EntityPickupRTTI); }
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
+	inline Entity_Effect* ToEffect() { return Downcast<Entity_Effect*>(__ptr_EntityEffectRTTI); }
 
     Vector LIBZHL_API Entity::GetPredictedTargetPosition(Entity* target, float multiplier);
 	
@@ -193,6 +198,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     bool _visible : 0x171;
     bool _exists : 0x172;
     bool _dead : 0x173;
+	bool _removedByFactory : 0x177;
     int _entityGridCollisionClass : 0x184;
     int _entityCollisionClass : 0x188;
     // 0x18c is a boolean related to collisions. Seems to be essentially a "_collidesWithEntity"
@@ -246,7 +252,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 	LuaBridgeRef* _luaBridgeRef: 0x408;
 
     __vtable {
-        skip; // Free
+        "558bec568bf1e8????????f645??0174??6810040000":
+		void Free(unsigned int flags);
 		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
@@ -279,7 +286,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
 		
 		skip; // SetCollisionDamage
-		skip; // ClearReferences
+
+		"558bec515356578bf98b8f":
+		void ClearReferences();
+
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget

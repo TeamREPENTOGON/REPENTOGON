@@ -157,6 +157,13 @@ vector <XMLDataHolder*> xmlnodetypetodata = {
 };
 
 
+std::string GetXMLDataLastModId() {
+	if (lastmodid) {
+		return lastmodid;
+	}
+	return "BaseGame";
+}
+
 void ClearXMLData() {
 	XMLStuff.PlayerData->Clear();
 	XMLStuff.ItemData->Clear();
@@ -205,13 +212,18 @@ void CharToChar(char** dest, char* source) {
 
 int toint(const string &str) {
 	if (str.length() > 0) {
-		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
+		char* endPtr = NULL;
+		const char* asCString = str.c_str();
+		int returnval = strtol(asCString, &endPtr, 0);
+
+		if (endPtr != asCString) {
 			return returnval;
+		} else {
+			ZHL::Log("[WARN] XMLData: toint: attempting to convert non integer string '%s' to integer\n", asCString);
 		}
 	}
-		return 0;
+
+	return 0;
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
@@ -275,7 +287,7 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	else {
 		lastmodid = "BaseGame";
 	}
-	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
+	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-repentogon/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
 		iscontent = true;
 	}
 	else {
@@ -289,7 +301,10 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 			last = path.find("/resources");
 		}
 		else if (last <= 0) {
-			last = path.find("/content-dlc3");
+			size_t repentogonPos = path.find("/content-repentogon");
+			size_t dlc3Pos = path.find("/content-dlc3");
+			last = (repentogonPos != string::npos && (dlc3Pos == string::npos || repentogonPos < dlc3Pos))
+				? repentogonPos : dlc3Pos;
 		}
 		path = path.substr(first, last - first); //when the id is null(which it can fucking be) just use the folder name as ID...
 		lastmodid = new char[path.length() + 1]; //this is the sort of stuff I dont like about C++
@@ -328,28 +343,26 @@ ModEntry* GetModEntryByDir(const string &Dir) {
 }
 
 ModEntry* GetModEntryByContentPath(const string &path) {
-	if ((path.find("/content/") != string::npos) && (path.find("/mods/") != string::npos)) {
-		std::regex regex("/mods/(.*?)/content/");
-		std::smatch match;
-		if (std::regex_search(path, match, regex)) {
-			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
-				return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
-			}
-		}
+	if (path.find("/mods/") == string::npos) {
+		return NULL;
 	}
-	else if ((path.find("/content-dlc3/") != string::npos) && (path.find("/mods/") != string::npos)) {
-		std::regex regex("/mods/(.*?)/content-dlc3/");
-		std::smatch match;
-		if (std::regex_search(path, match, regex)) {
-			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
-				return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
+	for (const std::string& contentfolder : std::vector<std::string>({ "/content-repentogon/", "/content-dlc3/", "/content/" })) {
+		if (path.find(contentfolder) != string::npos) {
+			std::regex regex("/mods/(.*?)" + contentfolder);
+			std::smatch match;
+			if (std::regex_search(path, match, regex)) {
+				if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
+					return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
+				}
 			}
 		}
 	}
 	return NULL;
 }
 
+
 void UpdateXMLModEntryData() {
+	std::string enabledmodslist = "-- Enabled Mods START -- \n";
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
 		int idx = 0;
 		XMLAttributes mod;
@@ -364,7 +377,7 @@ void UpdateXMLModEntryData() {
 
 		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
 		
-		if (entry->IsEnabled()) { mod["enabled"] = "true";}
+		if (entry->IsEnabled()) { mod["enabled"] = "true"; enabledmodslist += mod["realdirectory"] + "\n"; }
 		else { mod["enabled"] = "false"; }
 		XMLStuff.ModData->nodes[idx] = mod;
 		XMLStuff.ModData->modentries[idx] = entry;
@@ -372,6 +385,8 @@ void UpdateXMLModEntryData() {
 		XMLStuff.ModData->byfullpath[mod["fulldirectory"]] = idx;
 		
 	}
+	KAGE::SafeLogMessage(0, enabledmodslist.c_str());
+	KAGE::LogMessage(0, "-- Enabled Mods END -- \n");
 }
 
 //Shameless chatgpt copypaste function
@@ -392,9 +407,18 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
+
+//Menu Daily challenge fix! (pretty serious shit)
+HOOK_METHOD(Game, StartDailyChallenge, (DailyChallenge* params)-> void) {
+	params->_seed = params->_seed + 2;
+	if (params->_seed <= 0) { params->_seed = 1; }
+	params->_isPractice = true;
+	super(params);
+}
+
 //Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
 HOOK_METHOD(MenuManager, Update, ()-> void) {
-	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19) {
+	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19 || g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
 		g_MenuManager->_selectedMenuID = 1;
 	}
 	super();
@@ -1144,7 +1168,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.PlayerData->byorder[XMLStuff.PlayerData->nodes.size()] = id;
 			XMLStuff.PlayerData->bymod[lastmodid].push_back(id);
 			XMLStuff.ModData->players[lastmodid] += 1;
-			}
+		}
 	break;
 	case 3: //pocketitems
 		id = 1;
@@ -1246,7 +1270,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			string meh = stringlower(auxnode->name());
 			const char* auxnodename = meh.c_str();
-			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0) || (strcmp(auxnodename, "item") == 0)) {
+			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0) || ((strcmp(auxnodename, "item") == 0) && isitemmetadata)) {
 				XMLAttributes item;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{
@@ -1585,7 +1609,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 			inheritdaddyatts(daddy, &achievement);
 			//string oldid = achievement["id"];
-			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && (XMLStuff.AchievementData->maxid < 637)) {
+			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && (XMLStuff.AchievementData->maxid < static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 				id = toint(achievement["id"]);
 			}
 			else {
@@ -2235,7 +2259,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.NullCostumeData->byfilepathmulti.tab[currpath].push_back(idnull);
 				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
 				XMLStuff.NullCostumeData->nodes[idnull] = costume;
-				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = id;
+				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = idnull;
 				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
 			
 			}
@@ -2523,6 +2547,9 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
+
+		string loadingmodmsg = "Loading: " + mod["directory"] + "(" + mod["id"] +  ") \n";
+		KAGE::SafeLogMessage(0, loadingmodmsg.c_str());
 	}
 	break;
 	case 26: //fxlayers
@@ -2549,7 +2576,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 		if ((currpath.length() > 0) && (err != nullptr)){
 			string error = "[XMLError] " + xmlerrors[toint(err->value())] + " in " + currpath;
 			g_Game->GetConsole()->PrintError(error);
-			KAGE::LogMessage(3,(error + "\n").c_str());
+			KAGE::SafeLogMessage(3,(error + "\n").c_str());
 			//ZHL::Log("%s \n", error.c_str());
 		}
 		ProcessXmlNode(node);
@@ -2783,15 +2810,14 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };
 	if (Node.empty() || (Node["type"].length() == 0)) {
 		lua_pushnil(L);
-		return 0;
 	}
 	else{
 		if (Node.end() != Node.begin()) {
 			Childs = XMLStuff.EntityData->childs[idx];
 		}
-	Lua_PushXMLNode(L, Node, Childs);
-	return 1;
+		Lua_PushXMLNode(L, Node, Childs);
 	}
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
@@ -2801,15 +2827,15 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 	int evar = (int)luaL_optnumber(L ,2 ,0);
 	int esub = (int)luaL_optnumber(L, 3, 0);
 	tuple idx = { etype,evar };
-		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
-			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-			if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
-				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
-				return 1;
-			}
+	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
+		vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
+		if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
+			Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
+			return 1;
 		}
-			lua_pushnil(L);
-			return 0;
+	}
+	lua_pushnil(L);
+	return 1;
 	
 }
 
@@ -2882,10 +2908,8 @@ LUA_FUNCTION(Lua_GetFromEntity)
 		}
 		else { Childs = XMLChilds(); }
 	}
-	if (Lua_PushXMLNode(L, Node, Childs)) {
-		return 1;
-	}
-	else { return 0; }
+	Lua_PushXMLNode(L, Node, Childs);
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetModByIdXML)
@@ -2893,10 +2917,11 @@ LUA_FUNCTION(Lua_GetModByIdXML)
 	string id = luaL_checkstring(L, 1);
 	if (XMLStuff.ModData->byid.find(id) != XMLStuff.ModData->byid.end()) {
 		Lua_PushXMLNode(L, XMLStuff.ModData->nodes[XMLStuff.ModData->byid[id]], XMLChilds());
-		return 1;
 	}
-	lua_pushnil(L);
-	return 0;
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
 }
 
 
@@ -2916,14 +2941,11 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 			else { Childs = XMLChilds(); }
 			daddychild = tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
-	else {
-
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsById(id);
 	}
-	if (Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild))) {
-		return 1;
-	}
-	else { return 0; }
+	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetEntryByNameXML)
@@ -2936,7 +2958,7 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByName(entityname);
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByName(entityname);
 	}
 	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
@@ -2953,7 +2975,7 @@ LUA_FUNCTION(Lua_GetEntryByOrderXML)
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByOrder(order);
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByOrder(order);
 	}
 	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
@@ -2971,8 +2993,11 @@ LUA_FUNCTION(Lua_GetNumEntries)
 	if (nodetype == 1) {
 		lua_pushinteger(L, XMLStuff.EntityData->nodes.size());
 	}
-	else {
+	else if (nodetype >= 0 && nodetype < xmlnodetypetodata.size() && xmlnodetypetodata[nodetype]) {
 		lua_pushinteger(L, xmlnodetypetodata[nodetype]->nodes.size());
+	}
+	else {
+		lua_pushinteger(L, 0);
 	}
 	return 1;
 }
@@ -3360,6 +3385,15 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = string(&g_ModsDirectory) + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
+
+			string rgoncontentsdir = dir + "\\content-repentogon\\" + filename;
+			string dlc3contentsdir = dir + "\\content-dlc3\\" + filename;
+			if (std::filesystem::exists(rgoncontentsdir)) {
+				contentsdir = rgoncontentsdir;
+			} else if (std::filesystem::exists(dlc3contentsdir)) {
+				contentsdir = dlc3contentsdir;
+			}
+
 			// Skip this mod if it does not even have the corresponding XML, to save time and memory during startup.
 			// However, DON'T skip if we are in the middle of hijacking a cutscenes XML reload as part of the custom cutscenes support,
 			// since that messes things up and causes all cutscenes to become the intro cutscene.

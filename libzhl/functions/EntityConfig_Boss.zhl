@@ -8,7 +8,7 @@ struct EntityConfig_Boss depends (Vector, EntityConfig_Boss_Alt) {
 	vector_EntityConfig_Boss_Alt alts : 0x58;
 
 	{{
-		EntityConfig_Boss() noexcept
+		EntityConfig_Boss()
 		{
 			bossID = 0;
 			pivot.x = 0.0f;

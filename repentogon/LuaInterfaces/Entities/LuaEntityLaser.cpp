@@ -206,6 +206,34 @@ LUA_FUNCTION(Lua_EntityLaserInHitList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityLaserGetNumChainedLasers) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushinteger(L, laser->_chainedLasers);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetNumChainedLasers) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	laser->_chainedLasers = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetInitSound) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	uint32_t soundId = (uint32_t)luaL_checkinteger(L, 2);
+
+	if (soundId >= g_Manager->_sfxManager._sounds.size()) {
+		luaL_argerror(L, 2, "Invalid SoundEffect");
+	}
+
+	EntityLaserPlus* laserPlus = GetEntityLaserPlus(laser);
+	assert(laserPlus);
+	if (laserPlus) {
+		laserPlus->initSound = soundId;
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -233,6 +261,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RemoveFromHitList", Lua_EntityLaserRemoveFromHitList },
 		{ "AddToHitList", Lua_EntityLaserAddToHitList },
 		{ "InHitList", Lua_EntityLaserInHitList },
+		{ "GetNumChainedLasers", Lua_EntityLaserGetNumChainedLasers },
+		{ "SetNumChainedLasers", Lua_EntityLaserSetNumChainedLasers },
+		{ "SetInitSound", Lua_EntityLaserSetInitSound },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);

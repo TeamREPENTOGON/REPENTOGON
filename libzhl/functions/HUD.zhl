@@ -44,7 +44,7 @@ __thiscall int HUD::GetPlayerHUDLayout(int playerHudIndex, Entity_Player* player
 
 
 
-struct HUD depends (PlayerHUD, ANM2, StatHUD, HUD_Message) { {{
+struct HUD depends (PlayerHUD, ANM2, StatHUD, HUD_Message, HistoryHUD) { {{
 	inline PlayerHUD* GetPlayerHUD(int index) {
 		if (index < 0 || index > 7) {
 			return nullptr;
@@ -71,4 +71,5 @@ struct HUD depends (PlayerHUD, ANM2, StatHUD, HUD_Message) { {{
 	ANM2 _craftingTableSprite : 0x571c;
 	ANM2 _poopSpellsSprite : 0x5830;
 	StatHUD _statHUD : 0x59b4;
+	HistoryHUD _historyHUD : 0x5c64;
 } : 0x5c90;

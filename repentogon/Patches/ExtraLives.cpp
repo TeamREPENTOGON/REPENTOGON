@@ -1,5 +1,7 @@
 #include "ExtraLives.h"
 
+#include <unordered_set>
+
 #include "ASMPatches.h"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
@@ -81,10 +83,41 @@ bool __stdcall PlayerHasChanceRevive(Entity_Player* player) {
 	return false;
 }
 
+// TriggerDeath calls (that aren't `checkOnly`) are done in PlayerManager::Update, where it iterates over the players to look for dead ones no longer playing an animation.
+// We may call TriggerDeath earlier than normal on the non-main twin, in order to allow mods to save the main twin with the other twin's revives.
+// Since the game is going to iterate to the non-main twin still, we mark the twin's player index here to prevent callbacks from getting excecuted twice.
+static std::unordered_set<int> s_EarlyTriggeredTwinDeaths;
+
+HOOK_METHOD(PlayerManager, Update, () -> void) {
+    super();
+    s_EarlyTriggeredTwinDeaths.clear();
+}
+
+void PostReviveChecks(Entity_Player* player) {
+    // Sync with twin
+    Entity_Player* twin = player->GetTwinPlayer();
+    if (twin) {
+        const int damageCooldown = std::max(player->_damageCooldown, twin->_damageCooldown);
+        if (twin->_dead) {
+            twin->Revive();
+        }
+        player->_damageCooldown = damageCooldown;
+        twin->_damageCooldown = damageCooldown;
+    }
+
+    // Players can sometimes be invisible after revival.
+    if (g_Game->GetRoomTransition()->GetTransitionMode() == 0) {
+        player->_visible = true;
+        if (twin) {
+            twin->_visible = true;
+        }
+    }
+}
+
 // Shared behaviour for MC_PRE_TRIGGER_PLAYER_DEATH (1050) and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES (1051)
 // Returns true if the player was revived during or due to the callback.
 bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
-	if (CallbackState.test(callbackid - 1000)) {
+	if (player->_exists && CallbackState.test(callbackid - 1000) && !s_EarlyTriggeredTwinDeaths.count(player->_playerIndex)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -95,8 +128,13 @@ bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
+		if (!player->_exists) {
+			// It's possible for this to happen semi-naturally if ChangePlayerType was called on Jacob, which removes Esau.
+			return false;
+		}
+
 		// Mods can return false to revive the player.
-		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1) && player->_dead) {
 			// Small convenience - if a mod sets the damage cooldown and returns false, maintain that damage cooldown (calling Revive resets it normally).
 			const int damageCooldown = player->_damageCooldown;
 			player->Revive();
@@ -104,11 +142,8 @@ bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
 		}
 
 		// It's possible that someone revived the player manually, without returning false.
-		// Just make sure the player is visible.
 		if (!player->_dead) {
-			if (g_Game->GetRoomTransition()->GetTransitionMode() == 0) {
-				player->_visible = true;
-			}
+            PostReviveChecks(player);
 			return true;
 		}
 	}
@@ -118,15 +153,43 @@ bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
 // MC_PRE_TRIGGER_PLAYER_DEATH (id: 1050)
 HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 	if (checkOnly) {
-		return super(checkOnly) || GetCustomReviveCount(this, /*includeHidden=*/true) > 0;
+        if (super(checkOnly) || GetCustomReviveCount(this, /*includeHidden=*/true) > 0) {
+            return true;
+        }
+        if (Entity_Player* twin = this->GetTwinPlayer()) {
+            return GetCustomReviveCount(twin, /*includeHidden=*/true) > 0;
+        }
+        return false;
 	}
 	this->_damageCooldown = 1;
-	return RunTriggerDeathCallback(this, 1050) || super(checkOnly);
+	if (RunTriggerDeathCallback(this, 1050)) {
+		return true;
+	}
+	if (!this->_exists) {
+		return false;
+	}
+	return super(checkOnly);
 }
 
 // MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES (id: 1051)
 void __stdcall RunPostTriggerPlayerDeathCheckRevivesCallback(Entity_Player* player) {
 	RunTriggerDeathCallback(player, 1051);
+    if (player->_exists && player->_dead) {
+		if (Entity_Player* twin = player->GetTwinPlayer(); twin && twin->_exists) {
+            if (!twin->_dead) {
+                player->Revive();
+                PostReviveChecks(player);
+            } else if (player->_playerIndex < twin->_playerIndex) {
+                // If the main twin is about to die, trigger death on the other twin early to fish for modded revives.
+                // Otherwise by the time this happens naturally it may be too late for mods to prevent the run from ending!
+                twin->TriggerDeath(false);
+				if (!player->_dead) {
+					PostReviveChecks(player);
+				}
+                s_EarlyTriggeredTwinDeaths.insert(twin->_playerIndex);
+            }
+        }
+    }
 }
 
 // Include custom extra lives in the count, but not hidden ones.

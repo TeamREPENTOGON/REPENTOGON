@@ -435,9 +435,12 @@ struct CustomImGui {
 
     void RemoveMenu(const char* menuId) IM_FMTARGS(2)
     {
-        for (auto menu = menuElements->begin(); menu != menuElements->end(); ++menu) {
-            if (menu->id.compare(menuId) == 0) {
-                menuElements->erase(menu);
+        for (auto it = menuElements->begin(); it != menuElements->end(); ) {
+            if (it->id.compare(menuId) == 0) {
+                it = menuElements->erase(it); //since, apparently, there can be multiple menus with the same id...
+            }
+            else {
+                ++it;
             }
         }
     }
@@ -1139,8 +1142,8 @@ struct CustomImGui {
                 if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children, overflowElements);
-                    ImGui::EndChild();
                 }
+                ImGui::EndChild();
                 break;
             }
             case IMGUI_ELEMENT::Menu:

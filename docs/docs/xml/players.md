@@ -13,6 +13,8 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
 |items|string|This now supports modded items by using the names of the items instead of the ids. Same format as in vanilla, a comma separated list of values|
+|innateitems|string|Same as `items`, but innate to the character|
+|innatetrinkets|string|Trinket effects innate to the character. Comma separated list of ids or names|
 |heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
 |redhearts|int|The amount of red hearts the character should start with. 1 unit = 1/2 a heart|
 |soulhearts|int|The amount of soul hearts the character should start with. 1 unit = 1/2 a heart|
@@ -31,11 +33,14 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |shotspeedmodifier|float|An inherent offset to the shot speed stat the character should start with. Base this offset off of Isaac's stats.|
 |luckmodifier|float|An inherent offset to the luck stat the character should start with. Base this offset off of Isaac's stats.|
 |gigabombs|int|The amount of giga bombs the character should start with. These do not replace normal bombs.|
-|completionparent|string|Used for characters that have shared completion marks with a preexistent character, like Dark Judas and Judas. The name of the parent character should be used for this attribute|
+|completionparent|string|Used for characters that have shared completion marks with a preexistent character, like Dark Judas and Judas. The name of the parent character should be used for this attribute. For a tainted character with the same name as the normal one, add "-Tainted-" at the end|
 |nomarks|bool|If it has any value other than 'false', it will hide the completion marks for the given character|
 |noshake|bool|Will prevent character's shaking during stage/boss screen transition (similarly to Keeper) if set to 'true'|
 |achievement|int or string|This is now respected on modded characters. For mods, it's best to define this as the *name* of the achievement (for example, `achievement='TaintedPeter'`, TaintedPeter being the name attribute of the achievement). Characters with this tag should have a second frame in their `characterportraits(alt).anm2` which should be the "locked" picture for the character. In addition, all stat/item layers on the main menu will be hidden and the `Unlocked By` layer will be visible. See the [achievements XML section](achievements.md) for more info.|
+|hideachievement|int or string|Hides the character from the menu until this achievement is earned. Must be used on the non-tainted version of a character.|
 |modcostume|int|Set this to match the "id" attribute of a costume with type="none" defined in the same mod (in [costumes2.xml](costumes.md)) to have that costume permanantly applied to the character (including during the mineshaft chase sequence). You cannot set both this and the "costume" attribute for vanilla costumes at the same time.|
+|hurtsound|int or string|Set this to define a hurt sound for the character whenever they would take damage.|
+|deathsound|int or string|Set this to define a death sound for the character whenever they would die or touch a White Fireplace.|
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/players.html).

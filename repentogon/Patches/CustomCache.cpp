@@ -297,7 +297,7 @@ void TriggerCollectibleCustomCache(Entity_Player* player, const int id, const bo
 }
 
 void TriggerTrinketCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.TrinketData, id, immediate);
+	TriggerCustomCache(player, XMLStuff.TrinketData, id & TRINKET_ID_MASK, immediate);
 }
 
 void TriggerItemCustomCache(Entity_Player* player, ItemConfig_Item* item, const bool immediate) {
@@ -349,7 +349,7 @@ HOOK_METHOD_PRIORITY(Entity_Familiar, WispInit, -1, () -> void) {
 	}
 }
 
-HOOK_METHOD_PRIORITY(Entity_Player, TriggerCollectibleRemoved, -1, (unsigned int collectibleType) -> void) {
+HOOK_METHOD_PRIORITY(Entity_Player, TriggerCollectibleRemoved, -1, (int collectibleType) -> void) {
 	super(collectibleType);
 	TriggerCollectibleCustomCache(this, collectibleType, true);
 }

@@ -20,12 +20,12 @@ tags:
 #### boolean CanOverwriteColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetBodyColor () {: aria-label='Functions' }
-#### int GetBodyColor ( ) {: .copyable aria-label='Functions' }
+### GetSkinColor () {: aria-label='Functions' }
+#### int GetSkinColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetHeadColor () {: aria-label='Functions' }
-#### int GetHeadColor ( ) {: .copyable aria-label='Functions' }
+### GetDefaultSkinColor () {: aria-label='Functions' }
+#### int GetDefaultSkinColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetItemConfig () {: aria-label='Functions' }

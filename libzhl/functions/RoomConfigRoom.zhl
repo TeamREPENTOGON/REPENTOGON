@@ -1,28 +1,28 @@
 struct RoomConfig_Room depends (RoomSpawn)
 {
-    int32_t StageId : 0x0; // 0x0
-    int32_t Mode : 0x4; // 0x4
-    int32_t Type : 0x8; // 0x8
-    uint32_t Variant : 0xc; // 0xC
-    int32_t Subtype : 0x10; // 0x10
-    std_string Name : 0x14; // 0x14
-    int32_t Difficulty : 0x2c; // 0x2C
-    float InitialWeight : 0x30; // 0x30
-    float Weight : 0x34; // 0x34
-    uint32_t Doors : 0x38; // 0x38
-    DoorsBitSet QuestDoors : 0x3c; // 0x3C
-    RoomSpawn* Spawns : 0x40; // 0x40
-    uint16_t SpawnCount : 0x44; // 0x44
-    int8_t Width : 0x46; // 0x46
-    int8_t Height : 0x47; // 0x47
-    int32_t Shape : 0x48; // 0x48
-    RoomConfigFlags Flags : 0x4c; // 0x4C
-    RoomConfig_Room* MergedData[2] : 0x50; // 0x50
-    uint32_t originalVariant : 0x58; // 0x58
+    int32_t StageId : 0x0;
+    int32_t Mode : 0x4;
+    int32_t Type : 0x8;
+    uint32_t Variant : 0xC;
+    int32_t Subtype : 0x10;
+    std_string Name : 0x14;
+    int32_t Difficulty : 0x2C;
+    float InitialWeight : 0x30;
+    float Weight : 0x34; 
+    uint32_t Doors : 0x38;
+    DoorsBitSet QuestDoors : 0x3C;
+    RoomSpawn* Spawns : 0x40;
+    uint16_t SpawnCount : 0x44;
+    int8_t Width : 0x46;
+    int8_t Height : 0x47;
+    int32_t Shape : 0x48;
+    RoomConfigFlags Flags : 0x4C;
+    RoomConfig_Room* MergedData[2] : 0x50;
+    uint32_t originalVariant : 0x58;
 
     {{
     private:
-        void copy(const RoomConfig_Room& other) noexcept
+        void copy(const RoomConfig_Room& other)
         {
             StageId = other.StageId;
             Mode = other.Mode;
@@ -56,7 +56,7 @@ struct RoomConfig_Room depends (RoomSpawn)
             }
         }
 
-        void move(RoomConfig_Room&& other) noexcept
+        void move(RoomConfig_Room&& other)
         {
             StageId = other.StageId;
             Mode = other.Mode;
@@ -115,17 +115,17 @@ struct RoomConfig_Room depends (RoomSpawn)
             originalVariant = 0;
         }
 
-        RoomConfig_Room(const RoomConfig_Room& other) noexcept
+        RoomConfig_Room(const RoomConfig_Room& other)
         {
             this->copy(other);
         }
 
-        RoomConfig_Room(RoomConfig_Room&& other) noexcept
+        RoomConfig_Room(RoomConfig_Room&& other)
         {
             this->move(std::move(other));
         }
 
-        RoomConfig_Room& operator=(const RoomConfig_Room& other) noexcept
+        RoomConfig_Room& operator=(const RoomConfig_Room& other)
         {
             if (this != &other)
             {
@@ -136,7 +136,7 @@ struct RoomConfig_Room depends (RoomSpawn)
             return *this;
         }
 
-        RoomConfig_Room& operator=(RoomConfig_Room&& other) noexcept
+        RoomConfig_Room& operator=(RoomConfig_Room&& other)
         {
             if (this != &other)
             {
@@ -157,4 +157,4 @@ struct RoomConfig_Room depends (RoomSpawn)
     bool LIBZHL_API IsValidGridIndex(int index, bool includeWalls = true) const;
     bool LIBZHL_API IsAllowedGridIndex(int index) const;
     }}
-} : 0x5C; // 0x5C 
+} : 0x5C;

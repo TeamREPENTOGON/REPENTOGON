@@ -170,8 +170,7 @@ LUALIB_API uint32_t LuaCheckRoomPlacementSeed(lua_State* L, int arg, const int r
 	lua_Integer inputSeed = luaL_optinteger(L, arg, 0);
 	if (inputSeed < 0) {
 		luaL_argerror(L, arg, "Invalid Seed");
-	}
-	else if (inputSeed == 0) {
+	} else if (inputSeed == 0) {
 		return GetRoomPlacementSeed(roomShape, x, y);
 	}
 	return (uint32_t)inputSeed;
@@ -189,8 +188,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
 		}
-	}
-	else {
+	} else {
 		roomShape = (int)luaL_checkinteger(L, stackIdx++);
 		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
 	}
@@ -226,8 +224,7 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
 	RoomDescriptor* newRoom = TryPlaceRoom(roomConfig, coords.x, coords.y, dimension, seed, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 	if (newRoom) {
 		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
-	}
-	else {
+	} else {
 		lua_pushnil(L);
 	}
 	return 1;
@@ -245,8 +242,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
 		}
-	}
-	else {
+	} else {
 		roomShape = (int)luaL_checkinteger(L, stackIdx++);
 		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
 	}
@@ -282,8 +278,7 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
 	RoomDescriptor* newRoom = TryPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors);
 	if (newRoom) {
 		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
-	}
-	else {
+	} else {
 		lua_pushnil(L);
 	}
 	return 1;
@@ -292,8 +287,8 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
 LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 	int stackIdx = 2;
 
-	int roomShape = 0;
-	int doorMask = 0;
+	int roomShape = ROOMSHAPE_1x1;
+	int doorMask = -1;
 
 	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
 		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
@@ -302,8 +297,8 @@ LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 			doorMask = roomConfig->Doors;
 		}
 	} else {
-		roomShape = (int)luaL_checkinteger(L, stackIdx++);
-		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
+		roomShape = (int)luaL_optinteger(L, stackIdx++, roomShape);
+		doorMask = (int)luaL_optinteger(L, stackIdx++, doorMask);
 	}
 
 	const int dimension = LuaCheckDimension(L, stackIdx++);

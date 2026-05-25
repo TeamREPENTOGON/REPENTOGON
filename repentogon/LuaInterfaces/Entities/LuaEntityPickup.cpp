@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Utils/Entity/PickupUtils.h"
 
 LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
@@ -265,7 +266,7 @@ LUA_FUNCTION(Lua_PickupInitFlipState) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	const CollectibleType collectID = (CollectibleType)luaL_optinteger(L, 2, 0);
 	bool setupCollectibleGraphics = lua::luaL_optboolean(L, 3, true);
-	pickup->InitFlipState(collectID, setupCollectibleGraphics);
+	PickupUtils::InitFlipState(*pickup, collectID, setupCollectibleGraphics);
 	return 0;
 }
 
@@ -273,6 +274,47 @@ LUA_FUNCTION(Lua_PickupHasFlipData) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	lua_pushboolean(L, pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr);
 	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupReloadGraphics) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	bool ignoreBlind = lua::luaL_checkboolean(L, 2);
+
+	pickup->ReloadGraphics(ignoreBlind);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PickupSetupCollectibleGraphics) {
+	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const int layerId = (int)luaL_checkinteger(L, 2);
+
+	if (layerId < 0 || sprite->_layerCount <= layerId ) {
+		std::string error("No Layed with Id ");
+		error.append(std::to_string(layerId));
+		return luaL_argerror(L, 2, error.c_str());
+	}
+
+	const int collectibleType = (int)luaL_checkinteger(L, 3);
+	if (!g_Manager->GetItemConfig()->GetCollectible(collectibleType)) {
+		std::string error("Invalid collectible with ID ");
+		error.append(std::to_string(collectibleType));
+		return luaL_argerror(L, 3, error.c_str());
+	}
+
+	bool blind = lua::luaL_checkboolean(L, 4);
+
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 5, Isaac::genrand_int32());
+	if (seed == 0) seed = 1;
+
+	bool loadGraphics = lua::luaL_checkboolean(L, 6);
+
+	Entity_Pickup::SetupCollectibleGraphics(sprite, layerId, (CollectibleType)collectibleType, seed, blind);
+
+	if (loadGraphics) {
+		sprite->LoadGraphics(false);
+	}
+
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -311,10 +353,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetFlipCollectible", Lua_PickupGetFlippedCollectibleID },
 		{ "InitFlipState", Lua_PickupInitFlipState },
 		{ "HasFlipData", Lua_PickupHasFlipData },
+		{ "ReloadGraphics", Lua_PickupReloadGraphics },
 		{ NULL, NULL }
 	};
 
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PICKUP, functions);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity);
+	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "SetupCollectibleGraphics", Lua_PickupSetupCollectibleGraphics);
 }

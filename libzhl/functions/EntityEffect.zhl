@@ -52,3 +52,6 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 	int _lifespan : 0x460;
 
 } : 0x490;
+
+"6a0068(????????)f30f584308":
+reference void* EntityEffectRTTI;

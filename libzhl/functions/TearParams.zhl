@@ -8,9 +8,16 @@ struct TearParams depends (BitSet128, ColorMod) {
 		this->constructor();
 	}
 }} 
-	unsigned int _tearVariant : 0x0, _bombVariant : 0x4;
+	int _tearVariant : 0x0;
+	int _bombVariant : 0x4;  // Does the game even use this?
 	ColorMod _tearColor : 0x8;
+	int _unused : 0x34;  // Not set by constructor
 	BitSet128 _flags : 0x38;
-	float _tearDamage : 0x48, _tearScale : 0x4c, _tearHeight : 0x50;
-	
-} : 0x68;
+	float _tearDamage : 0x48;
+	float _tearScale : 0x4c;
+	float _tearHeight : 0x50;
+	float _massMultiplier : 0x54;
+	float _knockbackMultiplier : 0x58;
+	float _speedMultiplier : 0x5c;  // Vanilla only uses this for Stye, but it works fine
+	int _tearDisplacement : 0x60;
+} : 0x64;

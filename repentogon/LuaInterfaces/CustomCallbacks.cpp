@@ -15,23 +15,99 @@
 #include "../Patches/MainMenuBlock.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/EntityPlus.h"
+#include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
+#include "CustomCallbacks.h"
 #include "LuaDungeonGenerator.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
 std::bitset<75> VanillaCallbackState;  // For vanilla callbacks & reimplementations of them.
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)-> void, __cdecl){
-	if (callbackid > 1000) {
-		CallbackState.set(callbackid - 1000, enable);
+	size_t id = static_cast<size_t>(callbackid);
+
+	if (id < VanillaCallbackState.size())
+	{
+		VanillaCallbackState.set(id, enable);
+		super(id, enable);
+		return;
 	}
-	else {
-		VanillaCallbackState.set(callbackid, enable);
-		super(callbackid, enable);
+
+	id = id - 1000;
+	if (id < CallbackState.size())
+	{
+		CallbackState.set(id, enable);
 	}
+}
+
+HOOK_STATIC(Isaac, GetBuiltInCallbackState, (const int callbackid)-> bool, __cdecl) {
+	size_t id = static_cast<size_t>(callbackid);
+
+	if (id < VanillaCallbackState.size())
+	{
+		return super(id);
+	}
+
+	id = id - 1000;
+	if (id < CallbackState.size())
+	{
+		return CallbackState.test(id);
+	}
+	return false;
+}
+
+// MC_POST_TRIGGER_COLLECTIBLE_ADDED (1053)
+// (Runs for normal items, wisps, and innate collectibles)
+void CustomCallbacks::TriggerCollectibleAdded(Entity_Player& player, int collectibleID, bool firsttime, bool wispOrInnate) {
+	if (wispOrInnate) {
+		switch (collectibleID) {
+			// Fixes a minor bug where the effect/costume for the charge being ready may not trigger.
+			case COLLECTIBLE_MARS:
+				player._marsCooldown = 0;
+				player._marsUnk2 = -1;
+				player._marsUnkBool = true;
+				break;
+			// Properly updates the active hud stuff.
+			case COLLECTIBLE_BOOK_OF_VIRTUES:
+				player.UpdateBookOfVirtues(true);
+				break;
+		}
+	}
+
+    const int callbackid = 1053;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+        lua::LuaCaller(L).push(callbackid)
+            .push(collectibleID)
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(collectibleID)
+            .push(firsttime)
+            .push(wispOrInnate)
+            .call(1);
+    }
+}
+
+static bool s_RestoringFamiliarStates = false;
+HOOK_METHOD(Entity_Familiar, WispInit, () -> void) {
+    super();
+
+    if (!s_RestoringFamiliarStates && this->_variant == 237 && this->_player && ItemConfig::IsValidCollectible(this->_subtype)) {
+        CustomCallbacks::TriggerCollectibleAdded(*this->_player, this->_subtype, false, true);
+    }
+}
+HOOK_METHOD(Entity_Player, RestoreGameState_PostLevelInit, (GameStatePlayer* saveState) -> void) {
+    s_RestoringFamiliarStates = true;
+    super(saveState);
+    s_RestoringFamiliarStates = false;
 }
 
 //PRE/POST_ADD_COLLECTIBLE (1004/1005)
 void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, int vardata, Entity_Player* player) {
+    CustomCallbacks::TriggerCollectibleAdded(*player, type, firsttime, false);
+
 	const int callbackid = 1005;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -489,6 +565,20 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	return unmodifiedTarget;
 }
 
+// PRE_ROOM_COLLISION_PASS (1227)
+void CustomCallbacks::PRE_ROOM_COLLISION_PASS()
+{
+	const int callbackId = 1227;
+	if (!CallbackState.test(callbackId - 1000)) { return; }
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackId)
+		.pushnil()
+		.call(1);
+}
 
 // PRE_PLAYER_TAKE_DMG
 // (Runs before holy mantle, etc)
@@ -855,7 +945,10 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				super((int)lua_tointeger(L, -1), volume);
+				int newId = (int)lua_tointeger(L, -1);
+				if (g_Manager->_musicmanager._currentId != newId) {
+					super(newId, volume);
+				}
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -1484,12 +1577,8 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 	int defaultHealthType = vanillaHealthType;
 
 	// Check for HealthType specified in players.xml
-	XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-	if (!playerXML["healthtype"].empty()) {
-		const int xmlHealthType = stoi(playerXML["healthtype"]);
-		if (xmlHealthType >= 0 && xmlHealthType <= 4) {
-			defaultHealthType = xmlHealthType;
-		}
+	if (const int xmlHealthType = XMLStuff.PlayerData->GetNumberAttributeById(this->GetPlayerType(), "healthtype"); xmlHealthType >= 0 && xmlHealthType <= 4) {
+		defaultHealthType = xmlHealthType;
 	}
 
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
@@ -2610,24 +2699,6 @@ HOOK_METHOD(Entity_Player, TriggerNewStage, (bool FromPlayerUpdate) -> void) {
 	}
 }
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	super(CharacterId, RenderPos, DefaultSprite);
-	const int callbackid = 1333;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.push(CharacterId)
-			.push(CharacterId)
-			.pushUserdataValue(*RenderPos, lua::Metatables::VECTOR)
-			.push(DefaultSprite, lua::Metatables::SPRITE)
-			.call(1);
-	}
-}
-
 //COMPLETION_MARK_GET 1047
 //POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
 //(PRE/POST)_COMPLETION_EVENT (1049/1052) 
@@ -2782,8 +2853,8 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 	super(grid, offset);
 }
 
-//MC_PRE_ENTITY_LIGHTING_RENDER
-HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
+static bool MC_PRE_ENTITY_LIGHT_RENDER(Entity* ent, Vector& offset)
+{
 	const int callbackid = 1152;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2800,7 +2871,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 		if (!result) {
 			if (lua_isboolean(L, -1)) {
 				if (!lua_toboolean(L, -1)) {
-					return;
+					return true;
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
@@ -2808,10 +2879,26 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 			}
 		}
 	}
+
+	return false;
+}
+
+//MC_PRE_ENTITY_LIGHTING_RENDER
+HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
+	
+	ANM2::StartLightRendering();
+	bool skip = MC_PRE_ENTITY_LIGHT_RENDER(ent, offset);
+	ANM2::EndLightRendering();
+
+	if (skip)
+	{
+		return;
+	}
+
 	super(ent, offset);
 }
 
-//PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM (1092)
+//PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM (1092) (DEPRECATED)
 HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCountTrueItems) -> int) {
 	const int callbackid = 1092;
 	int originalCount = super(CollectibleID, OnlyCountTrueItems);
@@ -2894,27 +2981,184 @@ HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> 
 	super(musicId, unusedInt, unusedBool);
 }
 
+
+enum class eTriggerCollectibleRemovedFlags
+{
+	FLAG_REMOVE_FROM_PLAYER_FORM = 0,
+	FLAG_WISP = 1,
+	FLAG_INNATE = 2,
+
+	NUM_FLAGS
+};
+
+static constexpr uint32_t MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_REMOVE_FROM_PLAYER_FORM;
+static constexpr uint32_t MC_TCR_FLAG_WISP = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_WISP;
+static constexpr uint32_t MC_TCR_FLAG_INNATE = (uint32_t)eTriggerCollectibleRemovedFlags::FLAG_INNATE;
+static constexpr uint32_t MC_TCR_NUM_FLAGS = (uint32_t)eTriggerCollectibleRemovedFlags::NUM_FLAGS;
+
+static constexpr std::bitset<MC_TCR_NUM_FLAGS> DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT = 1 << MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM;
+static auto s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
+
+void CustomCallbacks::TriggerInnateCollectibleRemoved(Entity_Player& player, int collectibleID)
+{
+    s_TriggerCollectibleRemovedContext.reset();
+    s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_INNATE, true);
+    player.TriggerCollectibleRemoved(collectibleID);
+}
+
 //POST_TRIGGER_COLLECTIBLE_REMOVED (1095) 
-HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleID) -> void) {
-	super(collectibleID);
-	const int callbackid = 1095;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (int collectibleID) -> void) {
+	const auto flags = s_TriggerCollectibleRemovedContext;
+	s_TriggerCollectibleRemovedContext = DEFAULT_TRIGGER_COLLECTIBLE_REMOVED_CONTEXT;
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	const bool removeFromPlayerForm = flags.test(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM);
+	const bool wisp = flags.test(MC_TCR_FLAG_WISP);
+	const bool innate = flags.test(MC_TCR_FLAG_INNATE);
+	const bool wispOrInnate = wisp || innate;
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(collectibleID)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(collectibleID)
-			.call(1);
+    // Reimplementation of nop'd out Stompy decrement.
+    // Wisps triggering this was weird, and provides no benefit. Why was it even part of this function when no other playerform counter is?
+    if ((collectibleID == COLLECTIBLE_LEO || collectibleID == COLLECTIBLE_MAGIC_MUSHROOM) && removeFromPlayerForm) {
+        this->IncrementPlayerFormCounter(13, -1);  // PLAYERFORM_STOMPY
+    }
+
+    // Reimplementation of nop'd out Heartbreak broken heart removal.
+    // Wisps can keep triggering this since its ""beneficial to the player"" but for innate copies, let's skip it.
+    if (collectibleID == COLLECTIBLE_HEARTBREAK && !innate) {
+        this->AddBrokenHearts(-3);
+    }
+
+	// Silly game doesn't remove the Mars null costume if removed as a wisp.
+	if (collectibleID == COLLECTIBLE_MARS && wispOrInnate && !this->HasCollectible(COLLECTIBLE_MARS, false)) {
+		this->RemoveCostume(g_Manager->GetItemConfig()->GetNullItem(58));
 	}
+
+	// Properly updates the active hud stuff.
+	if (collectibleID == COLLECTIBLE_BOOK_OF_VIRTUES && wispOrInnate) {
+		auto* activeDesc = this->GetActiveItemDesc(0);
+		if (activeDesc->_item == COLLECTIBLE_BOOK_OF_VIRTUES) {
+			activeDesc->_item = COLLECTIBLE_NULL;
+			activeDesc->_batteryCharge = 0;
+		}
+		this->UpdateBookOfVirtues(false);
+	}
+
+    super(collectibleID);
+
+    const int callbackid = 1095;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(collectibleID)
+            .push(this, lua::Metatables::ENTITY_PLAYER)
+            .push(collectibleID)
+            .push(removeFromPlayerForm)
+            .push(wispOrInnate)
+            .call(1);
+    }
+}
+
+// __fastcall to simulate __thiscall
+static void __fastcall asm_add_remove_collectible_context(Entity_Player& player, bool removeFromPlayerForm, int32_t collectibleID)
+{
+	s_TriggerCollectibleRemovedContext.reset();
+	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_REMOVE_FROM_PLAYER_FORM, removeFromPlayerForm);
+	player.TriggerCollectibleRemoved(collectibleID);
+}
+
+static void Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved()
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RemoveCollectible_TriggerCollectibleRemoved);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::RemoveCollectible for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
+
+	ASMPatch patch;
+
+	intptr_t resumeAddr = addr + 5;
+	constexpr size_t REMOVE_FROM_PLAYER_FORM_PARAM_NUMBER = 4;
+	constexpr size_t REMOVE_FROM_PLAYER_FORM_EBP_OFFSET = REMOVE_FROM_PLAYER_FORM_PARAM_NUMBER * 4 + 4; // stack offset + function prologue
+
+	patch.MoveFromMemory(ASMPatch::Registers::EBP, REMOVE_FROM_PLAYER_FORM_EBP_OFFSET, ASMPatch::Registers::EDX)
+		.AddInternalCall(asm_add_remove_collectible_context)
+		.AddRelativeJump((void*)resumeAddr);
+
+	sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
+// __fastcall to simulate __thiscall
+static void __fastcall asm_add_remove_wisp_collectible_context(Entity_Player& player, void* unused_EDX, int32_t collectibleID)
+{
+	s_TriggerCollectibleRemovedContext.reset();
+	s_TriggerCollectibleRemovedContext.set(MC_TCR_FLAG_WISP, true);
+	player.TriggerCollectibleRemoved(collectibleID);
+}
+
+static void Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved()
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_RecomputeWispCollectibles_TriggerCollectibleRemoved);
+	ZHL::Log("[REPENTOGON] Patching Entity_Player::RecomputeWispCollectibles for MC_POST_TRIGGER_COLLECTIBLE_REMOVED at %p\n", addr);
+
+	ASMPatch patch;
+	patch.AddInternalCall(asm_add_remove_wisp_collectible_context);
+
+	sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+// Nop out the reduction of the PlayerForm counter for Stompy from TriggerCollectibleRemoved so that we can handle it and make it not trigger for wisps and innate items.
+static void Patch_PlayerTriggerCollectibleRemoved_Stompy()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Stompy);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::RecomputeWispCollectibles for Stompy at %p\n", addr);
+
+    ASMPatch patch;
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 0xB);
+    patch.AddBytes(buffer);
+
+    sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+// Nop out the removal of 3 broken hearts for Heartbreak in TriggerCollectibleRemoved so that we can prevent it for innate items.
+static void Patch_PlayerTriggerCollectibleRemoved_Heartbreak()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Heartbreak);
+    ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerCollectibleRemoved for Heartbreak at %p\n", addr);
+
+    ASMPatch patch;
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 0x11);
+    patch.AddBytes(buffer);
+
+    sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+
+
+static int s_AddingInnateTrinkets = 0;
+
+void CustomCallbacks::TriggerInnateTrinketsAdded(Entity_Player& player, unsigned int trinketID, int num) {
+    s_AddingInnateTrinkets = num;
+    player.TriggerTrinketAdded(trinketID, false);
 }
 
 //POST_TRIGGER_TRINKET_ADDED (1096) 
 HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool firstTimePickingUp) -> void) {
-	super(trinketID, firstTimePickingUp);
+    int times = 1;
+    bool innate = false;
+
+    if (s_AddingInnateTrinkets > 0) {
+        times = s_AddingInnateTrinkets;
+        s_AddingInnateTrinkets = 0;
+        innate = true;
+        for (int i = 0; i < times; i++) {
+            super(trinketID, firstTimePickingUp);
+        }
+    } else {
+        super(trinketID, firstTimePickingUp);
+    }
+
 	const int callbackid = 1096;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2927,13 +3171,35 @@ HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool fi
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(trinketID)
 			.push(firstTimePickingUp)
+            .push(innate)
 			.call(1);
 	}
 }
 
+
+static int s_RemovingInnateTrinkets = 0;
+
+void CustomCallbacks::TriggerInnateTrinketsRemoved(Entity_Player& player, unsigned int trinketID, int num) {
+    s_RemovingInnateTrinkets = num;
+    player.TriggerTrinketRemoved(trinketID);
+}
+
 //POST_TRIGGER_TRINKET_REMOVED (1097) 
 HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> void) {
-	super(trinketID);
+    int times = 1;
+    bool innate = false;
+
+    if (s_RemovingInnateTrinkets > 0) {
+        times = s_RemovingInnateTrinkets;
+        s_RemovingInnateTrinkets = 0;
+        innate = true;
+        for (int i = 0; i < times; i++) {
+            super(trinketID);
+        }
+    } else {
+        super(trinketID);
+    }
+
 	const int callbackid = 1097;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2945,9 +3211,11 @@ HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> vo
 			.push(trinketID)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(trinketID)
+            .push(innate)
 			.call(1);
 	}
 }
+
 
 //POST_TRIGGER_WEAPON_FIRED (1098)
 HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> void) {
@@ -3047,7 +3315,91 @@ HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> boo
 	int gridType = gridRock->GetDesc()->_type;
 	if (result) ProcessGridRockDestroy(gridRock,Immediate, Source, gridType);
 	return result;
-	
+}
+
+// MC_PRE_GRID_HURT (1017)
+bool RunPreGridHurtCallback(GridEntity* grid, lua::Metatables mt, int* damage, EntityRef* source) {
+	const int callbackid = 1017;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, mt)
+			.push(*damage)
+			.push(source, lua::Metatables::ENTITY_REF)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				const int newDamage = (int)lua_tointeger(L, -1);
+				if (newDamage >= 0) {
+					*damage = newDamage;
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+// MC_POST_GRID_HURT (1018)
+void RunPostGridHurtCallback(GridEntity* grid, lua::Metatables mt, int damage, EntityRef* source) {
+	const int callbackid = 1018;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, mt)
+			.push(damage)
+			.push(source, lua::Metatables::ENTITY_REF)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(GridEntity_Poop, Hurt, (int damage, EntityRef* source) -> bool) {
+	const bool canBeHurt = this->_desc._state != 1000;
+	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, &damage, source)) {
+		return false;
+	}
+	bool result = super(damage, source);
+	if (canBeHurt && result) {
+		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, damage, source);
+	}
+	return result;
+}
+
+HOOK_METHOD(GridEntity_TNT, Hurt, (int damage, EntityRef* source) -> bool) {
+	const bool canBeHurt = this->_desc._state < 4;
+	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, &damage, source)) {
+		return false;
+	}
+	bool result = super(damage, source);
+	if (canBeHurt && result) {
+		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, damage, source);
+	}
+	return result;
+}
+
+HOOK_METHOD(GridEntity_TNT, Destroy, (bool immediate, EntityRef* source) -> bool) {
+	if (!immediate) {
+		// The game doesn't pass along the source when it does this itself but there's no reason not to.
+		return this->Hurt(4, source);
+	}
+	return super(immediate, source);
 }
 
 //(POST_)GRID_HURT_DAMAGE (1012/1013)
@@ -3450,7 +3802,7 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 static std::unordered_map<int, std::set<int>> _getMultiShotParamsRecursionProtection;
 
 // MC_EVALUATE_MULTI_SHOT_PARAMS (1289)
-// Formerly MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
+// Formerly MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251, now deprecated)
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
 	std::set<int>* recursionProtection = &_getMultiShotParamsRecursionProtection[this->_playerIndex];
 
@@ -3468,12 +3820,17 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		// Custom RunCallback function that runs the legacy callback first for backwards compatibility.
+		// Otherwise the legacy callback should be considered deprecated.
+		static const int customRunCallbackRef = [L]() {
+			lua_getglobal(L, "_RunGetMultiShotParamsCallbackWithLegacyCompat");
+			return luaL_ref(L, LUA_REGISTRYINDEX);
+		}();
+		lua_rawgeti(L, LUA_REGISTRYINDEX, customRunCallbackRef);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid)
-			.push(this->GetPlayerType())
-			.push(this, lua::Metatables::ENTITY_PLAYER);
+		caller.push(this->GetPlayerType());
+		caller.push(this, lua::Metatables::ENTITY_PLAYER);
 		Weapon_MultiShotParams* luaParams = caller.pushUd<Weapon_MultiShotParams>(lua::metatables::MultiShotParamsMT);
 		*luaParams = *params;
 		lua::LuaResults results = caller.push(weaponType).call(1);
@@ -4250,6 +4607,48 @@ HOOK_METHOD(TemporaryEffects, AddEffect, (TemporaryEffect* effect, bool addCostu
 	}
 }
 
+// MC_POST_ADD_INNATE_COLLECTIBLE/TRINKET (1054/1055)
+void CustomCallbacks::TriggerInnateItemAddedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, int duration) {
+    int callbackid = isTrinket ? 1055 : 1054;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::runCallbackWithTwoParams);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(id)
+            .push(key.c_str())
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(id)
+            .push(key.c_str())
+            .push(amount)
+            .push(duration)
+            .call(1);
+    }
+}
+
+// MC_POST_REMOVE_INNATE_COLLECTIBLE/TRINKET (1056/1057)
+void CustomCallbacks::TriggerInnateItemRemovedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, bool expiredDuration) {
+    int callbackid = isTrinket ? 1057 : 1056;
+    if (CallbackState.test(callbackid - 1000)) {
+        lua_State* L = g_LuaEngine->_state;
+        lua::LuaStackProtector protector(L);
+
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::runCallbackWithTwoParams);
+
+        lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+            .push(id)
+            .push(key.c_str())
+            .push(&player, lua::Metatables::ENTITY_PLAYER)
+            .push(id)
+            .push(key.c_str())
+            .push(amount)
+            .push(expiredDuration)
+            .call(1);
+    }
+}
+
 //MC_PRE/POST_PLAYER_REVIVE (1482)
 HOOK_METHOD(Entity_Player, Revive, () -> void) {
 	const int precallbackid = 1481;
@@ -4286,6 +4685,11 @@ HOOK_METHOD(Entity_Player, Revive, () -> void) {
 			this->_boneHeartsMask = 1;
 		}
 	}
+
+    // Prevent reviving with half a coin heart (keeper)
+    if (this->GetHealthType() == 3 && this->_redHearts == 1) {
+        this->_redHearts = 2;
+    }
 
 	const int postcallbackid = 1482;
 	if (CallbackState.test(postcallbackid - 1000)) {
@@ -4382,32 +4786,120 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 }
 
 //MC_PRE_BOSS_SELECT (1280)
+static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int levelType, int levelVariant)
+{
+	const int callbackid = 1280;
+
+	if (!CallbackState.test(callbackid - 1000))
+	{
+		return std::nullopt;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.push(bossId)
+		.push(bossId)
+		.push(&pool, lua::metatables::BossPoolMT)
+		.push(levelType)
+		.push(levelVariant)
+		.call(1);
+
+	if (result || !lua_isinteger(L, -1))
+	{
+		return std::nullopt;
+	}
+
+	return (int)lua_tointeger(L, -1);
+}
+
+BossPool_Entry* s_lastPickedBoss = nullptr;
+
+HOOK_METHOD(BossPool, PickBoss, (BossPool_Pool* pool) -> BossPool_Entry*)
+{
+	BossPool_Entry* boss = super(pool);
+	// ASSUMPTION: PickBoss only ever returns a non null boss when it confirms it is available and after staging it for removal in the _levelBlacklist
+	// This is true for 1.9.7.12
+	s_lastPickedBoss = boss;
+	return boss;
+}
+
+static const size_t BOSS_DEATH_IDX = 3;
+static const size_t s_specialBosses[] = {
+	eBossId::BOSS_FAMINE, eBossId::BOSS_PESTILENCE, eBossId::BOSS_WAR,
+	eBossId::BOSS_DEATH, eBossId::BOSS_HEADLESS_HORSEMAN, eBossId::BOSS_CONQUEST
+};
+
+//MC_PRE_BOSS_SELECT (1280)
 HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRNG) -> int) {
+	constexpr size_t NUM_SPECIAL_BOSSES = std::extent_v<decltype(s_specialBosses)>;
+
+	s_lastPickedBoss = nullptr;
+	std::bitset<NUM_SPECIAL_BOSSES> specialBossStagedState;
+	auto& stagedRemoves = this->_levelBlacklist;
+
+	for (size_t i = 0; i < NUM_SPECIAL_BOSSES; i++)
+	{
+		size_t id = s_specialBosses[i];
+		specialBossStagedState[i] = stagedRemoves[id];
+	}
+
 	int bossId = super(leveltype, levelvariant, unusedRNG);
 
-	const int callbackid = 1280;
 	const auto stageId = RoomConfig::GetStageID(leveltype, levelvariant, -1);
+	BossPool_Pool& pool = this->_pool[stageId];
+	std::optional<int> callbackResult = PRE_BOSS_SELECT(bossId, this->_pool[stageId], leveltype, levelvariant);
 
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (!callbackResult)
+	{
+		return bossId;
+	}
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	int callbackBossId = callbackResult.value();
+	if (callbackBossId >= (int)stagedRemoves.size()) // this should always be equal to the number of boss ids
+	{
+		return bossId;
+	}
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(bossId)
-			.push(bossId)
-			.push(&_pool[stageId], lua::metatables::BossPoolMT)
-			.push(leveltype)
-			.push(levelvariant)
-			.call(1);
+	// Double trouble support is currently limited.
+	// From this function, you can only indicate that one should occur
+	// not fully control which boss should appear in it.
+	// It also needs to be the start of a valid variant range.
+	// For now, it is probably best to ignore negative indices.
+	if (callbackBossId < 0)
+	{
+		return bossId;
+	}
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				bossId = (int)lua_tointeger(L, -1);
+	// Undo GetBossId side effects
+	if (s_lastPickedBoss)
+	{
+		stagedRemoves[s_lastPickedBoss->_id] = false;
+	}
+	else
+	{
+		for (size_t i = 0; i < NUM_SPECIAL_BOSSES; i++)
+		{
+			size_t id = s_specialBosses[i];
+			if (id != bossId)
+			{
+				continue;
 			}
+
+			stagedRemoves[id] = specialBossStagedState[i];
+			if (id == eBossId::BOSS_CONQUEST)
+			{
+				stagedRemoves[eBossId::BOSS_DEATH] = specialBossStagedState[BOSS_DEATH_IDX];
+			}
+			break;
 		}
 	}
+
+	bossId = callbackBossId;
+	stagedRemoves[bossId] = true;
 	return bossId;
 }
 
@@ -4495,7 +4987,7 @@ static int get_glowing_hourglass_slot(GameState* gameState) { //g_Game->_current
 }
 
 //PRE/POST_GLOWING_HOURGLASS_SAVE (1300 - 1302)
-HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
+HOOK_METHOD_PRIORITY(Game, SaveState, -100, (GameState* gameState) -> void) {
 	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	const int preCallbackId = 1302;
@@ -4533,7 +5025,7 @@ HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
 }
 
 //PRE/POST_GLOWING_HOURGLASS_LOAD (1301 - 1303)
-HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
+HOOK_METHOD_PRIORITY(Game, RestoreState, -100, (GameState* gameState, bool startGame) -> void) {
 	int currentSlot = get_glowing_hourglass_slot(gameState);
 
 	if (currentSlot != -1)
@@ -4740,7 +5232,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
-			.push(color)
+			.push(color, lua::Metatables::COLOR)
 			.push(duration)
 			.push(priority)
 			.push(fadeOut)
@@ -5367,7 +5859,7 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 
 }
 
-// MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1491)
+// MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1492)
 HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 	const int preCallbackId = 1491;
 	const int postCallbackId = 1492;
@@ -5407,23 +5899,94 @@ HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
 	return opened;
 }
 
+// MC_PRE/POST_BOMB_DAMAGE (1291/1275)
 HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource) -> void) {
-	super(pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+	Vector posCopy = *pos;
 
-	const int callbackid = 1275;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int precallbackid = 1291;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid);
+		caller.push(precallbackid);
 		if (source) {
 			caller.push(source->_type);
 		} else {
 			caller.pushnil();
 		}
-		caller.push(pos, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
+			.push(damage)
+			.push(radius)
+			.push(lineCheck);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		lua::LuaResults results = caller.push(&tearFlags, lua::Metatables::BITSET_128)
+			.push(damageFlags)
+			.push(damageSource)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Radius" && lua_isnumber(L, -1)) {
+							float newRadius = (float)lua_tonumber(L, -1);
+							if (newRadius < 0) {
+								newRadius = 0;
+							}
+							radius = newRadius;
+						} else if (key == "Damage" && lua_isnumber(L, -1)) {
+							float newDamage = (float)lua_tonumber(L, -1);
+							if (newDamage < 0) {
+								newDamage = 0;
+							}
+							damage = newDamage;
+						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
+							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							if (newFlags) {
+								tearFlags = *newFlags;
+							}
+						} else if (key == "DamageFlags" && lua_isnumber(L, -1)) {
+							damageFlags = (uint64_t)std::max(0.0, lua_tonumber(L, -1));
+						} else if (key == "Position" && lua_isuserdata(L, -1)) {
+							Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							if (newPos) {
+								posCopy = *newPos;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	
+	super(&posCopy, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);
+
+	const int postcallbackid = 1275;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(postcallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(damage)
 			.push(radius)
 			.push(lineCheck);
@@ -5439,23 +6002,88 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 	}
 }
 
+// MC_PRE/POST_BOMB_TEARFLAG_EFFECTS (1292/1276)
 HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult) -> void) {
-	super(pos, radius, tearFlags, source, radiusMult);
-
-	const int callbackid = 1276;
-	if (CallbackState.test(callbackid - 1000)) {
+	Vector posCopy = *pos;
+	
+	const int precallbackid = 1292;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller caller(L);
-		caller.push(callbackid);
+		caller.push(precallbackid);
 		if (source) {
 			caller.push(source->_type);
 		} else {
 			caller.pushnil();
 		}
-		caller.push(pos, lua::Metatables::VECTOR)
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
+			.push(radius)
+			.push(&tearFlags, lua::Metatables::BITSET_128);
+		if (source) {
+			caller.push(source, lua::Metatables::ENTITY);
+		} else {
+			caller.pushnil();
+		}
+		lua::LuaResults results = caller.push(radiusMult).call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Radius" && lua_isnumber(L, -1)) {
+							float newRadius = (float)lua_tonumber(L, -1);
+							if (newRadius < 0) {
+								newRadius = 0;
+							}
+							radius = newRadius;
+						} else if (key == "RadiusMult" && lua_isnumber(L, -1)) {
+							float newRadiusMult = (float)lua_tonumber(L, -1);
+							if (newRadiusMult < 0) {
+								newRadiusMult = 0;
+							}
+							radiusMult = newRadiusMult;
+						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
+							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							if (newFlags) {
+								tearFlags = *newFlags;
+							}
+						} else if (key == "Position" && lua_isuserdata(L, -1)) {
+							Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							if (newPos) {
+								posCopy = *newPos;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	
+	super(&posCopy, radius, tearFlags, source, radiusMult);
+
+	const int postcallbackid = 1276;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+		caller.push(postcallbackid);
+		if (source) {
+			caller.push(source->_type);
+		} else {
+			caller.pushnil();
+		}
+		caller.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(radius)
 			.push(&tearFlags, lua::Metatables::BITSET_128);
 		if (source) {
@@ -5501,7 +6129,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 			caller.pushnil();
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
-			.push(&posCopy, lua::Metatables::VECTOR)
+			.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(&flags, lua::Metatables::BITSET_128);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
@@ -5559,7 +6187,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 			caller.pushnil();
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
-			.push(&posCopy, lua::Metatables::VECTOR)
+			.pushUserdataValue(posCopy, lua::Metatables::VECTOR)
 			.push(&flags, lua::Metatables::BITSET_128);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
@@ -5649,6 +6277,133 @@ HOOK_STATIC(LuaEngine, PostEntityKill, (Entity* ent) -> void, __stdcall) {
 	}
 }
 
+//MC_POST_PLAYER_DROP_TRINKET (id : 1144)
+HOOK_METHOD(Entity_Player, DropTrinket, (Vector* DropPos, bool ReplaceTick) -> Entity_Pickup*) {
+	Entity_Pickup* retTrinket = super(DropPos, ReplaceTick);
+
+	const int callbackid = 1144;
+
+	if (retTrinket && CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		const int trinketID = retTrinket->_subtype;
+
+		bool isGoldenTrinket = (trinketID & TrinketType::TRINKET_GOLDEN_FLAG) > 0;
+		const int maskedTrinket = trinketID & TrinketType::TRINKET_ID_MASK;
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(maskedTrinket)
+			.push(maskedTrinket)
+			.pushUserdataValue(*DropPos, lua::Metatables::VECTOR)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(isGoldenTrinket)
+			.push(ReplaceTick)
+			.push(retTrinket, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+	}
+
+	return retTrinket;
+}
+
+//MC_GET_BOSS_THEMATIC_ITEM (id : 1493)
+HOOK_METHOD(Room, GetBossThematicItem, (int* retCollectibleType, int* retTrinketType, unsigned int* seed) -> bool) {
+	bool spawned = super(retCollectibleType, retTrinketType, seed);
+	const int callbackid = 1493;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(spawned)
+			.push(*retCollectibleType)
+			.push(*retTrinketType)
+			.call(1);
+
+		if (!results) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2)) { //
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Collectible" && lua_isinteger(L, -1)) {
+							int newCollectible = (int)lua_tointeger(L, -1);
+							if (g_Manager->_itemConfig.GetCollectible(newCollectible)) {
+								*retCollectibleType = newCollectible;
+								*retTrinketType = 0;
+								spawned = true;
+							}
+							
+						}
+						else if (key == "Trinket" && lua_isinteger(L, -1)) {
+							int newTrinket = (int)lua_tointeger(L, -1);
+							if (g_Manager->_itemConfig.GetTrinket(newTrinket)) {
+								*retTrinketType = newTrinket;
+								*retCollectibleType = 0;
+								spawned = true;
+							}
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+
+	return spawned;
+}
+
+// MC_PRE/POST_BRIMSTONE_SNEEZE (1036/1037)
+HOOK_METHOD(Weapon_Brimstone, do_baby_brimstone_burst, (Vector* unused1, Vector* dir, int unused2, float damageScale) -> bool) {
+	const int precallbackid = 1036;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(precallbackid)
+			.pushnil()
+			.push(this->_owner, lua::Metatables::ENTITY)
+			.pushUserdataValue(*dir, lua::Metatables::VECTOR)
+			.push(damageScale)
+			.call(1);
+	}
+
+	bool result = super(unused1, dir, unused2, damageScale);
+
+	const int postcallbackid = 1037;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.pushnil()
+			.push(this->_owner, lua::Metatables::ENTITY)
+			.pushUserdataValue(*dir, lua::Metatables::VECTOR)
+			.push(damageScale)
+			.call(1);
+	}
+
+	return result;
+}
+
+void CustomCallbacks::detail::ApplyPatches()
+{
+	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
+	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
+    Patch_PlayerTriggerCollectibleRemoved_Stompy();
+    Patch_PlayerTriggerCollectibleRemoved_Heartbreak();
+}
 
 //MC_PRE_GENERATE_DUNGEON(1340)
 bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationType dungeonType) {

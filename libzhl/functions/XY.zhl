@@ -15,7 +15,7 @@ struct XY { {{
 } : 0x8;
 
 {{
-	static inline XY XY::NewFromGridIdx(int gridIdx) noexcept
+	static inline XY XY::NewFromGridIdx(int gridIdx)
 	{
 		if (!(0 <= gridIdx && gridIdx < 169))
 		{
@@ -25,7 +25,7 @@ struct XY { {{
 		return XY(gridIdx % 13, gridIdx / 13);
 	}
 
-	inline int XY::ToGridIdx() const noexcept
+	inline int XY::ToGridIdx() const
 	{
 		if (!(0 <= x && x < 13) || !(0 <= y && y < 13))
 		{

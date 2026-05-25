@@ -2,5 +2,5 @@
 
 namespace MinimapPatches
 {
-    void ApplyPatches() noexcept;
+    void ApplyPatches();
 }

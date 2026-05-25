@@ -14,6 +14,15 @@ LUA_FUNCTION(Lua_GridToGridLock) {
 	return 1;
 }
 
+
+LUA_FUNCTION(Lua_GridLock_TryUnlock) {
+	GridEntity_Lock* lock = lua::UserdataToData<GridEntity_Lock*>(lua_touserdata(L, 1));
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 2, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool force = lua::luaL_checkboolean(L, 3);
+	lock->TryUnlock(player, force);
+	return 0;
+}
+
 void RegisterLockMetatable(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::GRID_ENTITY, "ToLock", Lua_GridToGridLock);
 
@@ -55,6 +64,7 @@ void RegisterLockMetatable(lua_State* L) {
 	lua_rawset(L, -3); // meta
 
 	luaL_Reg funcs[] = {
+		{"TryUnlock", Lua_GridLock_TryUnlock},
 		{ NULL, NULL }
 	};
 
@@ -62,6 +72,7 @@ void RegisterLockMetatable(lua_State* L) {
 
 	lua_pop(L, 1); // clean stack
 }
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();

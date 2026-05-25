@@ -4,6 +4,7 @@ __thiscall void EntityRef::constructor(Entity* entity);
 struct EntityRef depends (Vector)
 {
   {{
+    EntityRef() { this->constructor(nullptr); }
     EntityRef(Entity* entity) { this->constructor(entity); }
   }}
   int  _type : 0x0; //TODO: EntityType enum

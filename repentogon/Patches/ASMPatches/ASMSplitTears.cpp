@@ -427,8 +427,8 @@ void ASMPatchesForSplitTearCallback() {
 	PatchKnifeCricketsBodyParasiteTears("parasite", &AsmDefinitions::SplitTears_KnifeParasite, SPLIT_PARASITE);
 	PatchKnifeStickyTears();
 
-	// This is kinda similar functionally but eh, doesn't feel right including this.
-	//PatchSplitTears("Entity_Knife::Update", "sword beam", &AsmDefinitions::SplitTears_SwordBeam, SPLIT_SWORD_BEAM);
+	// I didn't include this initially, but upon inspection it does inherit TearFlags directly from the EntityKnife so I think it counts.
+	PatchSplitTears("Entity_Knife::Update", "sword beam", &AsmDefinitions::SplitTears_SwordBeam, SPLIT_SWORD_BEAM);
 
 	PatchAngelicPrismTears();
 }

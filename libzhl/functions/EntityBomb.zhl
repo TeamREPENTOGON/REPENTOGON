@@ -46,8 +46,8 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	};
 	
 	int _explosionCountdown1 : 0x410;
-	float _height : 0x41c;
-	float _fallingSpeed : 0x420;
+	float _fallSpeed : 0x41c;  // formerly mislabeled as _height
+	float _fallAcceleration : 0x420;  // formerly mislabeled as _fallingSpeed
 	float _rocketAngle : 0x428;
 	float _rocketSpeed : 0x42c;
 	float _scale : 0x434;

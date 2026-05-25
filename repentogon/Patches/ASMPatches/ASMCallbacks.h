@@ -3,10 +3,12 @@
 #include "IsaacRepentance.h"
 
 bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity);
+void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, int playerType);
+bool RunCanSelectCharacterCallback(int playerType, bool isBeingSelected);
+
 void PatchPreSampleLaserCollision();
 void PatchPreLaserCollision();
-void PatchPreEntityTakeDamageCallbacks();
-void PatchPostEntityTakeDamageCallbacks();
+void PatchEntityTakeDamageCallbacks();
 void ASMPatchPrePlayerUseBomb();
 void ASMPatchPostPlayerUseBomb();
 void ASMPatchBombPreApplyTearflagEffects();
@@ -33,3 +35,8 @@ void ASMPatchPreItemTextDisplayCallback();
 void ASMPatchHideChargeBar();
 void ASMPatchesForCustomActiveGFX();
 void ASMPatchPostBackwardsRoomRestore();
+
+namespace ASMCallbacks::detail
+{
+    void ApplyPatches();
+}

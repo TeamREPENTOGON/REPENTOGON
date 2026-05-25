@@ -10,7 +10,10 @@ struct GridEntity_Fire : public GridEntity {
 		"558bec83e4f883ec145356578d4424??8bf9":
         void Render(Vector& Offset);
 		
-		skip; // Hurt
+		override
+		"558bec83e4f881ecac000000":
+		bool Hurt(int damage, EntityRef* source);
+		
 		skip; // Destroy
 		
 		override

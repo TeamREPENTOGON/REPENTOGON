@@ -97,7 +97,7 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else {
-		luaL_error(L, "Invalid types for division: %s * %s\n", lua_typename(L, t1), lua_typename(L, t2));
+		luaL_error(L, "Invalid types for division: %s / %s\n", lua_typename(L, t1), lua_typename(L, t2));
 	}
 
 	return 1;
@@ -118,6 +118,19 @@ LUA_FUNCTION(Lua_VectorUD_metasub) {
 
 	Vector result(v1->x - v2->x, v1->y - v2->y);
 	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_VectorUD_Lerp) {
+	Vector* v1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	const float t = (float)luaL_checknumber(L, 3);
+
+	v1->Lerp(v2, t);
+
+	// Return another reference to v1, like was apparantly added somewhere between v1.9.7.13 and v1.9.7.15 for some reason.
+	// In vanilla its a const reference but whatever.
+	lua_pushvalue(L, 1);
 	return 1;
 }
 
@@ -165,6 +178,9 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 		lua_rawset(L, -3);
 		lua_pushstring(L, "__sub");
 		lua_pushcfunction(L, Lua_VectorUD_metasub);
+		lua_rawset(L, -3);
+		lua_pushstring(L, "Lerp");
+		lua_pushcfunction(L, Lua_VectorUD_Lerp);
 		lua_rawset(L, -3);
 		lua_pop(L, 1);
 	}

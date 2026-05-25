@@ -1,6 +1,7 @@
 "558bec518b45??535657":
 __thiscall Entity* EntityFactory::Create(unsigned int type, bool force);
 
-struct EntityFactory depends(Entity, Entity_Familiar){
-	Entity_Familiar _familiar[64] : 0xf8008;
+struct EntityFactory depends(Entity, Entity_Familiar, Entity_Pickup){
+	Entity_Familiar _familiar[64] : 0x130008;
+	Entity_Pickup _pickup[512] : 0x357630;
 } : 0x695c60 ;

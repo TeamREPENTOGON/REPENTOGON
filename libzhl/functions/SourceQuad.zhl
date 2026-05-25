@@ -1,3 +1,15 @@
 struct SourceQuad depends(Vector, DestinationQuad) : public DestinationQuad {
-    int __coordinateSpaceEnum : 0x20;
+    int _coordinateSpace : 0x20;
+
+    {{
+        enum eCoordinateSpace
+        {
+            PIXEL = 0,
+            NORMALIZED_UV = 1,
+        };
+
+        LIBZHL_API void ConvertToPixelSpace(KAGE_Graphics_ImageBase& image);
+        LIBZHL_API void ConvertToUVSpace(KAGE_Graphics_ImageBase& image);
+    }}
+
 } : 0x24;

@@ -16,6 +16,9 @@ static __stdcall void LuaEngine::PostGameStart(unsigned int state);
 "558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????8965??8b0d????????c745??02000000":
 static __stdcall void LuaEngine::PostRender();
 
+"558bec6aff68????????64a1????????5083ec30535657a1????????33c5508d45??64a3????????8965??8b0d????????c745??18000000":
+static __stdcall void LuaEngine::Callback_PreEntitySpawn(int* type, int* variant, Vector* position, Vector* velocity, Entity* spawner, int* subType, uint32_t* seed);
+
 "558bec83e4f8a1????????83ec10803d????????00":
 static __cdecl Vector* LuaEngine::GetMousePosition(Vector* buffer,bool gamecoords);
 
@@ -86,7 +89,8 @@ struct LuaEngine depends (RunCallbackRegistry, Entity_Player) {
 	{{
 	
 		inline bool GetLuaDebug() {return this->_debug; }
-
+        inline uintptr_t GetMaskedPointer(uintptr_t pointer) { return pointer ^ this->_pointerMask; }
+        LIBZHL_API ModReference* GetModRefByTable(int tblIdx);
 	}}
 	
 	bool _debug : 0xc;
@@ -94,4 +98,5 @@ struct LuaEngine depends (RunCallbackRegistry, Entity_Player) {
     LuaBridgeRef* _unloadModFuncRef : 0x14;
     lua_State* _state : 0x18;
     int32_t _runCallbackRegistryKey : 0x1c;
+    uint32_t _pointerMask : 0x20;
 } : 0x268;

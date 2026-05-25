@@ -96,4 +96,4 @@ struct ColorModState {
 	inline float* GetBrightness() { return &this->brightness; }
 	inline float* GetContrast() { return &this->contrast; }
 	}}
-}; // 0x18
+} : 0x18;

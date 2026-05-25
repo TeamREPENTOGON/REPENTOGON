@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 
+#include "ASMCallbacks.h"
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
@@ -8,6 +9,8 @@
 #include "../../LuaInit.h"
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
+#include "../../Patches/EntityManager.h"
+#include "../XMLPlayerExtras.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -18,6 +21,93 @@ static inline void* get_sig_address(const char* signature, const char* location,
 		assert(false);
 	}
 	return scanner.GetAddress();
+}
+
+bool s_callbackPause = false;
+
+HOOK_METHOD(Game, Update, () -> void)
+{
+	s_callbackPause = false; // reset at beginning of Update
+	super();
+}
+
+HOOK_METHOD(Game, IsPaused, () -> bool)
+{
+	return s_callbackPause || super();
+}
+
+// MC_PRE_UPDATE (1026)
+/**
+ * @return whether or not the update needs to be skipped
+ */
+static bool MC_PRE_UPDATE()
+{
+	const int callbackid = 1026;
+	if (!CallbackState.test(callbackid - 1000))
+	{
+		return false;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.call(1);
+
+	if (!result)
+	{
+		if (lua_isboolean(L, -1))
+		{
+			return lua_toboolean(L, -1);
+		}
+	}
+
+	return false;
+}
+
+static void handle_skipped_update()
+{
+	Game* game = g_Game;
+	EntityManager::CommitRemovedEntities();
+	game->_room->GetEntityList()->render_sort();
+	game->GetHUD()->PostUpdate();
+}
+
+static bool __stdcall asm_run_pre_update_callback()
+{
+	s_callbackPause = true; // also set it at the beginning (avoiding problems with IsFrame)
+	bool skip = MC_PRE_UPDATE();
+	if (skip)
+	{
+		handle_skipped_update();
+	}
+
+	s_callbackPause = skip;
+	return skip;
+}
+
+static void Patch_GameUpdate_MainUpdate()
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_Update_MainUpdate);
+	intptr_t skipAddr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Game_Update_Return);
+	ZHL::Log("[REPENTOGON] Patching Game::Update for MC_PRE_UPDATE at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	intptr_t resumeAddr = addr + 6;
+	constexpr size_t RESTORED_BYTES = 6;
+
+	patch.PreserveRegisters(savedRegisters)
+		.AddInternalCall(asm_run_pre_update_callback)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (void*)skipAddr)
+		.AddBytes(ByteBuffer().AddAny((void*)addr, RESTORED_BYTES))
+		.AddRelativeJump((void*)resumeAddr);
+
+	sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
 /* * MC_PRE_LASER_COLLISION * *
@@ -93,6 +183,88 @@ void PatchPreLaserCollision() {
 
 // End of PRE_LASER_COLLISION patches
 
+
+// ---------- Beginning of MC_(POST_)ENTITY_TAKE_DMG related patches --------------------------------------------------
+
+// Place to temporarily store "extra sources" to pass to the TakeDamage callbacks.
+// These refs are keyed by the address of the primary EntityRef created for, and passed to, the TakeDamage call.
+// An entry in this map is added right before the TakeDamage call, and removed immediately afterwards,
+// allowing access to the extra source for the duration of the TakeDamage call.
+// Should not be modified outside of `TakeDamageWithExtraSource`.
+static std::unordered_map<uintptr_t, EntityRef> _TakeDamageExtraSources;
+
+// Fetch the extra source for a TakeDamage source, if any exists.
+static EntityRef* GetExtraTakeDamageSource(EntityRef* source) {
+	if (source && _TakeDamageExtraSources.find((uintptr_t)source) != _TakeDamageExtraSources.end()) {
+		EntityRef* extraSource = &_TakeDamageExtraSources[(uintptr_t)source];
+		if (extraSource && extraSource->_entity != source->_entity) {
+			return extraSource;
+		}
+	}
+	return nullptr;
+}
+
+// Call TakeDamage with an "extra source", available via the standard "source" for the TAKE_DMG callbacks.
+// Patches are used to overwrite relevant TakeDamage calls with this one that enables the extra source.
+bool __stdcall TakeDamageWithExtraSource(Entity* damagedEntity, float damage, uint64_t damageFlags, EntityRef* source, int damageCountdown, Entity* extraSourceEntity) {
+	_TakeDamageExtraSources[(uintptr_t)source] = EntityRef(extraSourceEntity);
+	bool result = damagedEntity->TakeDamage(damage, damageFlags, source, damageCountdown);
+	_TakeDamageExtraSources.erase((uintptr_t)source);
+	return result;
+}
+void PatchLaserDoDamageExtraSourcePushEbx(char* asmDef, int overriddenBytes) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+	printf("[REPENTOGON] Patching Entity_Laser::DoDamage at %p\n", addr);
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EBX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, overriddenBytes))
+		.AddRelativeJump((char*)addr + overriddenBytes);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchLaserDoDamageExtraSource(char* asmDef, int bytesToCopy) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+	void* exitAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LaserDoDamageExit);
+
+	printf("[REPENTOGON] Patching Entity::TakeDamage call in Entity_Laser::DoDamage at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS) & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, bytesToCopy))
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(TakeDamageWithExtraSource)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump(exitAddr);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchTakeDamageWithExtraSource(char* desc, char* asmDef, ASMPatch::Registers extraSourceRegister, char* offsetAsmDef, int bytesToCopy, int addJump) {
+	void* addr = sASMDefinitionHolder->GetDefinition(asmDef);
+
+	int offset = 0;
+	if (offsetAsmDef) {
+		offset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(offsetAsmDef) + 0x2);
+	}
+
+	printf("[REPENTOGON] Patching Entity::TakeDamage call for ExtraSource (%s) at %p\n", desc, addr);
+
+	ASMPatch::SavedRegisters savedRegisters((ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS | ASMPatch::SavedRegisters::Registers::XMM_REGISTERS) & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters);
+	if (offsetAsmDef) {
+		patch.Push(extraSourceRegister, offset);
+	} else {
+		patch.Push(extraSourceRegister);
+	}
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, bytesToCopy))
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(TakeDamageWithExtraSource)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + bytesToCopy + addJump);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 /* * MC_ENTITY_TAKE_DMG REIMPLEMENTATION * *
 * This section patches in a new ENTITY_TAKE_DMG callback with table returns for overridding.
 * A patch is used because ENTITY_TAKE_DMG runs in the middle of the TakeDamage functions,
@@ -102,8 +274,9 @@ void PatchPreLaserCollision() {
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* damageHearts, uint64_t* damageFlags, EntityRef* source, int* damageCountdown, const bool isPlayer) {
-	const int callbackid = 11;
+	EntityRef* extraSource = GetExtraTakeDamageSource(source);
 
+	const int callbackid = 11;
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -122,7 +295,8 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* dama
 		}
 		caller.push(*damageFlags)
 			.push(source, lua::Metatables::ENTITY_REF)
-			.push(*damageCountdown);
+			.push(*damageCountdown)
+			.push(extraSource, lua::Metatables::ENTITY_REF);
 		lua::LuaResults lua_result = caller.call(1);
 
 		if (!lua_result) {
@@ -193,7 +367,6 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, float* damage, int* dama
 
 	return true;
 }
-
 void InjectPreDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 
@@ -247,17 +420,8 @@ void InjectPreDamageCallback(void* addr, bool isPlayer) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// Patches overtop the existing calls to LuaEngine::Callback::EntityTakeDamage,
-// within the Entity::TakeDamage and EntityPlayer::TakeDamage functions respectively.
-void PatchPreEntityTakeDamageCallbacks() {
-	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PreEntityCallback), false);
-	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PrePlayerCallback), true);
-}
-
 // Even though I patched overtop the calls to this callback, super kill it for good measure.
 HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) { return true; }
-
-// End of ENTITY_TAKE_DMG patches
 
 /* * MC_POST_ENTITY_TAKE_DMG * *
 * A hook worked just fine for ""POST_TAKE_DMG"" initially, but now that we support overidding
@@ -265,8 +429,9 @@ HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned
 * those modified values. That means another patch!!
 * Like before, we need to patch into both Entity::TakeDamage and EntityPlayer::TakeDamage.
 */
-
 void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, const uint64_t damageFlags, EntityRef* source, const int damageCountdown, const bool isPlayer) {
+	EntityRef* extraSource = GetExtraTakeDamageSource(source);
+
 	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		if (isPlayer && source->_type == 33 && source->_variant == 4) {
@@ -291,10 +456,10 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, const float damage, con
 		caller.push(damageFlags)
 			.push(source, lua::Metatables::ENTITY_REF)
 			.push(damageCountdown)
+			.push(extraSource, lua::Metatables::ENTITY_REF)
 			.call(1);
 	}
 };
-
 void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	printf("[REPENTOGON] Patching %s::TakeDamage for MC_POST_ENTITY_TAKE_DMG at %p\n", isPlayer ? "Entity_Player" : "Entity", addr);
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
@@ -336,15 +501,32 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
-// The overridden bytes are restored by the patch.
-void PatchPostEntityTakeDamageCallbacks() {
-	// Sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
+void PatchEntityTakeDamageCallbacks() {
+	// Patches overtop the existing calls to LuaEngine::Callback::EntityTakeDamage,
+	// within the Entity::TakeDamage and EntityPlayer::TakeDamage functions respectively.
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PreEntityCallback), false);
+	InjectPreDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PrePlayerCallback), true);
+
+	// These patches overwrite suitably-sized commands near where the respective TakeDamage functions would return.
+	// The overridden bytes are restored by the patch.
+	// First sig is 6 bytes before where we actually want to patch to avoid bleeding past the end of the function.
 	InjectPostDamageCallback((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostEntityCallback) + 0x6, false);
 	InjectPostDamageCallback(sASMDefinitionHolder->GetDefinition(&AsmDefinitions::TakeDmg_PostPlayerCallback), true);
+
+	// Patches over TakeDamage calls to allow providing an ExtraSource.
+	PatchLaserDoDamageExtraSourcePushEbx(&AsmDefinitions::LaserDoDamagePushEbxA, 0x7);
+	PatchLaserDoDamageExtraSourcePushEbx(&AsmDefinitions::LaserDoDamagePushEbxB, 0x8);
+	PatchLaserDoDamageExtraSource(&AsmDefinitions::LaserDoDamageA, 0x14);
+	PatchLaserDoDamageExtraSource(&AsmDefinitions::LaserDoDamageB, 0xF);
+	PatchTakeDamageWithExtraSource("Entity_Laser::do_damage, player", &AsmDefinitions::LaserDoDamagePlayer, ASMPatch::Registers::EBX, nullptr, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Knife::update_bone_swing", &AsmDefinitions::UpdateBoneSwingDamage, ASMPatch::Registers::ESI, nullptr, 0x1A, 0x2);
+	PatchTakeDamageWithExtraSource("Entity_Knife::update_bone_swing, fireplace", &AsmDefinitions::UpdateBoneSwingDamageFireplace, ASMPatch::Registers::ESI, nullptr, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Familiar::ai_umbilical_baby", &AsmDefinitions::GelloDamage, ASMPatch::Registers::EBP, &AsmDefinitions::GelloDamageEbpOffset, 0x1A, 0x2);
+	PatchTakeDamageWithExtraSource("Entity_Familiar::ai_umbilical_baby, fireplace", &AsmDefinitions::GelloDamageFireplace, ASMPatch::Registers::EBP, &AsmDefinitions::GelloDamageEbpOffset, 0x11, 0x3);
+	PatchTakeDamageWithExtraSource("Entity_Effect::Update, Brimstone Ball", &AsmDefinitions::BrimstoneBallDamage, ASMPatch::Registers::EBP, &AsmDefinitions::BrimstoneBallDamageEbpOffset, 0x36, 0x2);
 }
 
-// End of POST_ENTITY_TAKE_DMG patches
+// ---------- End of MC_(POST_)ENTITY_TAKE_DMG related patches --------------------------------------------------
 
 
 // MC_PRE_PLAYER_USE_BOMB
@@ -471,23 +653,22 @@ int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleI
 // MC_PRE_M_MORPH_ACTIVE
 // This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
 void ASMPatchPreMMorphActiveCallback() {
-	SigScan scanner("85f674??6a016a00");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreMMorphCallback);
+	void* jumpAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::PreMMorphJump);
 
 	ZHL::Log("[REPENTOGON] Patching Entity_Player::TriggerActiveItemUsed at %p\n", addr);
 
-	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::ESI, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(registers)
 		.Push(ASMPatch::Registers::ESI) // push the item id
-		.Push(ASMPatch::Registers::EDI) // push the player
+		.Push(ASMPatch::Registers::EBX) // push the player
 		.AddInternalCall(RunPreMMorphActiveCallback) // run MC_PRE_M_MORPH_ACTIVE
-		.AddBytes("\x89\xC6") // mov esi, eax
+		.CopyRegister(ASMPatch::Registers::ESI, ASMPatch::Registers::EAX)
 		.AddBytes("\x85\xF6") // test esi, esi
 		.RestoreRegisters(registers)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x27) // jump for 0 (don't reroll the active)
-		.AddBytes(ByteBuffer().AddAny((char*)addr + 4, 0x2)) // restore the instruction we overwrote
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, jumpAddr) // jump for 0 (don't reroll the active)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6)) // restore the instructions we overwrote
 		.AddRelativeJump((char*)addr + 0x6); // jump for everything else (reroll the active)
 
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1378,6 +1559,321 @@ void ASMPatchMainMenuCallback() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// MC_PRE/POST_RENDER_CHARACTER_SELECT_PORTRAIT (1331/1332)
+void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playerType) {
+	Vector scaleCopy = sprite->_scale;
+	ColorMod colorCopy = sprite->_color;
+
+	const int precallbackid = 1331;
+	if (CallbackState.test(precallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(sprite, lua::Metatables::SPRITE)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(&colorCopy, lua::Metatables::COLOR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				*pos = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+
+	Vector zeroVector(0, 0);
+	sprite->Render(pos, &zeroVector, &zeroVector);
+
+	const int postcallbackid = 1332;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(sprite, lua::Metatables::SPRITE)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(&colorCopy, lua::Metatables::COLOR)
+			.call(1);
+	}
+}
+
+void __stdcall RenderVanillaCharacterWheelTrampoline(const int menuid, Vector* pos) {
+	ANM2* sprite = &g_MenuManager->GetMenuCharacter()->_CharacterPortraitsSprite;
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetPlayerTypeFromCurrentMenuID(menuid);
+	if (playerType < NUM_PLAYER_TYPES) {
+		RunRenderCharacterWheelCallbacks(sprite, pos, playerType);
+	} else {
+		// Failsafe
+		Vector zeroVector(0, 0);
+		sprite->Render(pos, &zeroVector, &zeroVector);
+	}
+}
+void ASMPatchVanillaCharacterWheel() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_PreRenderVanillaCharacter);
+	void* postAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_PostRenderVanillaCharacter);
+	void* getCharacterIdAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_GetMenuCharacterIndex);
+
+	const int8_t renderPositionStackOffset = *(int8_t*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_RenderPositionStackOffset) + 0x5);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, renderPositionStackOffset, ASMPatch::Registers::EAX)
+		.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EAX)  // Vector* pos
+		.AddBytes(ByteBuffer().AddAny((char*)getCharacterIdAddr, 0x8))  // MOV EAX,[0x????????]; ECX,dword ptr [EAX + EBX*0x1];
+		.Push(ASMPatch::Registers::ECX)  // int menuid
+		.AddInternalCall(RenderVanillaCharacterWheelTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump(postAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+void __stdcall RenderModdedCharacterWheelTrampoline(int id, Vector* pos, ColorMod* color, Vector* scale) {
+	RenderModdedCharacterPortrait(id, pos, color, scale, true);
+}
+void ASMPatchModdedCharacterWheel() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCharacterWheel_RenderModdedCharacter);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.LoadEffectiveAddress(ASMPatch::Registers::ESP, 0xC, ASMPatch::Registers::EAX)
+		.PreserveRegisters(reg)
+		.AddBytes("\xFF\x30")  // push [EAX]  // Vector* scale
+		.Push(ASMPatch::Registers::EAX, -0x4)  // ColorMod* color
+		.Push(ASMPatch::Registers::EAX, -0x8)  // Vector* pos
+		.Push(ASMPatch::Registers::EAX, -0xC)  // int id
+		.AddInternalCall(RenderModdedCharacterWheelTrampoline)
+		.RestoreRegisters(reg)
+		.AddBytes("\x83\xC4\x10")  // ADD ESP,0x10
+		.AddRelativeJump((char*)patchAddr + 0x5);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+bool RunPreRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* vanillaSprite, ANM2* customSprite, const bool renderCustomBackground) {
+	// MC_PRE_RENDER_CHARACTER_SELECT_PAGE
+	const int callbackid = 1329;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(vanillaSprite, lua::Metatables::SPRITE)
+			.push(customSprite, lua::Metatables::SPRITE)
+			.push(renderCustomBackground)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* vanillaSprite, ANM2* customSprite, const bool renderCustomBackground, const bool runLegacyCallback) {
+	if (runLegacyCallback) {
+		// Legacy MC_PRE_RENDER_CUSTOM_CHARACTER_MENU callback that actually ran AFTER the menu got rendered.
+		// We still run it for backwards compat.
+		const int legacycallbackid = 1333;
+		if (CallbackState.test(legacycallbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaCaller(L).push(legacycallbackid)
+				.push(playerType)
+				.push(playerType)
+				.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+				.push(vanillaSprite, lua::Metatables::SPRITE)
+				.call(1);
+		}
+	}
+
+	// MC_POST_RENDER_CHARACTER_SELECT_PAGE
+	const int callbackid = 1330;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(vanillaSprite, lua::Metatables::SPRITE)
+			.push(customSprite, lua::Metatables::SPRITE)
+			.push(renderCustomBackground)
+			.call(1);
+	}
+}
+
+// Set to true when we skipped rendering the character menu. Always gets updated before the game would consider rendering the tokens.
+static bool _skipEdenTokensRender = false;
+
+void __stdcall RenderVanillaCharacterMenuTrampoline(Vector* pos) {
+	ANM2* vanillaSprite = g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite();
+	Vector zeroVector(0, 0);
+	_skipEdenTokensRender = false;
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+	if (playerType < NUM_PLAYER_TYPES) {
+		if (RunPreRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false)) {
+			vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+			RunPostRenderCharacterMenuCallback(playerType, pos, vanillaSprite, nullptr, false, false);
+		} else {
+			_skipEdenTokensRender = true;
+		}
+	} else {
+		// Failsafe
+		vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+	}
+}
+void ASMPatchRenderVanillaCharacterMenu() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderVanillaCharacterMenu);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::ESI)  // Vector* pos
+		.AddInternalCall(RenderVanillaCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + 0x12);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+bool __stdcall ShouldRenderEdenTokens() {
+	return g_MenuManager->GetMenuCharacter()->SelectedCharacterID == 10 && !_skipEdenTokensRender;
+}
+void ASMPatchRenderVanillaCharacterMenu_EdenTokens() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderVanillaCharacterMenu_EdenTokens);
+	const int skipJump = *(int*)((char*)patchAddr + 0x6) + 0xA;
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.AddInternalCall(ShouldRenderEdenTokens)
+		.AddBytes("\x84\xC0")  // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)patchAddr + skipJump)  // Jump for false
+		.AddRelativeJump((char*)patchAddr + 0xA);  // Jump for true
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+void __stdcall RenderCustomCharacterMenuTrampoline(int playerType, ANM2* customSprite, Vector* pos) {
+	ANM2* vanillaSprite = g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite();
+	
+	EntityConfig_Player* conf = g_Manager->GetEntityConfig()->GetPlayer(playerType);
+	const bool renderCustomBackground = customSprite && conf && conf->_renderCustomBackground;
+
+	if (RunPreRenderCharacterMenuCallback(playerType, pos, vanillaSprite, customSprite, renderCustomBackground)) {
+		Vector zeroVector(0, 0);
+		if (customSprite) {
+			EntityConfig_Player* conf = g_Manager->GetEntityConfig()->GetPlayer(playerType);
+			if (conf && !conf->_renderCustomBackground) {
+				g_MenuManager->GetMenuCharacter()->GetBigCharPageSprite()->RenderLayer(0, pos, &zeroVector, &zeroVector);
+			}
+			customSprite->Render(pos, &zeroVector, &zeroVector);
+		} else {
+			vanillaSprite->Render(pos, &zeroVector, &zeroVector);
+		}
+		
+		RunPostRenderCharacterMenuCallback(playerType, pos, vanillaSprite, customSprite, renderCustomBackground, true);
+	}
+}
+void ASMPatchRenderCustomCharacterMenu_Custom() {
+	void* nopAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_Nop);
+	ASMPatch nopPatch(ByteBuffer().AddByte(0x90, 0x16));
+	sASMPatcher.FlatPatch(nopAddr, &nopPatch);
+
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_RenderCustom);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes("\x83\xC4\x0C")  // ADD ESP,0xC
+		.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EBP, 0xC)  // Vector* pos
+		.Push(ASMPatch::Registers::ECX)  // ANM2*
+		.Push(ASMPatch::Registers::EBP, 0x8)  // PlayerType
+		.AddInternalCall(RenderCustomCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + 0x5);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+void ASMPatchRenderCustomCharacterMenu_Default() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::RenderCustomCharacterMenu_RenderDefault);
+	const int jump = *(int*)((char*)patchAddr + 0x9) + 0xD;
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EBP, 0xC)  // Vector* pos
+		.Push(0x0)  // ANM2*
+		.Push(ASMPatch::Registers::EBP, 0x8)  // PlayerType
+		.AddInternalCall(RenderCustomCharacterMenuTrampoline)
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)patchAddr + jump);
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
+// MC_CAN_SELECT_CHARACTER
+bool RunCanSelectCharacterCallback(const int playerType, const bool isBeingSelected) {
+	const int callbackid = 1328;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(playerType)
+			.push(playerType)
+			.push(isBeingSelected)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool __stdcall CharacterMenuPreSelectCharacterTrampoline() {
+	const int playerType = g_MenuManager->GetMenuCharacter()->GetSelectedPlayerType();
+	return RunCanSelectCharacterCallback(playerType, true);
+}
+void ASMPatchCharacterMenuPreSelectCharacter() {
+	void* patchAddr = (char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::MenuCharacter_PreSelectCharacter) + 0x2;
+	const int8_t jump = *(int8_t*)((char*)patchAddr - 0x1);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.AddInternalCall(CharacterMenuPreSelectCharacterTrampoline)
+		.AddBytes("\x84\xC0")  // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)patchAddr + jump)  // Jump for false
+		.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x5))  // Restore the push we overwrote
+		.AddRelativeJump((char*)patchAddr + 0x5);  // Continue for true
+	sASMPatcher.PatchAt(patchAddr, &patch);
+}
+
 // Historically, MC_PRE_MOD_UNLOAD also runs during game shutdown, when the LuaEngine is being destroyed.
 // However, this happens late into the shutdown process, after Game and Manager are already destroyed,
 // so any code running on this callback at this time is very likely to crash the game.
@@ -1887,4 +2383,16 @@ void ASMPatchPostBackwardsRoomRestore()
 {
 	patch_post_backwards_boss_restore("894d??8955??85c90f89", "Level::place_rooms_backwards (Post Boss Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
 	patch_post_backwards_treasure_restore("4883ea0c", "Level::place_rooms_backwards (Post Treasure Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
+}
+
+void ASMCallbacks::detail::ApplyPatches()
+{
+	Patch_GameUpdate_MainUpdate();
+	ASMPatchVanillaCharacterWheel();
+	ASMPatchModdedCharacterWheel();
+	ASMPatchRenderVanillaCharacterMenu();
+	ASMPatchRenderVanillaCharacterMenu_EdenTokens();
+	ASMPatchRenderCustomCharacterMenu_Custom();
+	ASMPatchRenderCustomCharacterMenu_Default();
+	ASMPatchCharacterMenuPreSelectCharacter();
 }

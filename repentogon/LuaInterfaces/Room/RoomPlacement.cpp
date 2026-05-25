@@ -322,21 +322,42 @@ RoomDescriptor* TryPlaceRoomAtDoor(RoomConfig_Room* roomConfig, RoomDescriptor* 
 	return nullptr;
 }
 
-std::set<int> FindValidRoomPlacementLocations(const int roomShape, const int doorMask, const int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
-	const int trueDimension = dimension > -1 ? dimension : g_Game->GetDimension();
+std::set<int> FindValidNeighborPlacementLocations(RoomDescriptor* roomDesc, const int roomShape, const int doorMask, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	std::set<int> out;
+	
+	if (roomDesc && roomDesc->Data) {
+		for (int doorSlot = 0; doorSlot < 8; doorSlot++) {
+			const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomShape, roomDesc, doorSlot);
+			for (const XY& coords : possiblePlacements) {
+				if (CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, roomDesc->Dimension, allowMultipleDoors, allowSpecialNeighbors, false)) {
+					out.insert(RoomCoordsToIndex(coords.x, coords.y));
+				}
+			}
+		}
+	}
 
+	return out;
+}
+
+std::set<int> FindValidNeighborPlacementLocations(RoomDescriptor* roomDesc, RoomConfig_Room* roomConfig, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	if (!roomConfig) {
+		return std::set<int>();
+	}
+	return FindValidNeighborPlacementLocations(roomDesc, roomConfig->Shape, roomConfig->Doors, allowMultipleDoors, allowSpecialNeighbors);
+}
+
+std::set<int> FindValidRoomPlacementLocations(const int roomShape, const int doorMask, int dimension, const bool allowMultipleDoors, const bool allowSpecialNeighbors) {
+	if (dimension < 0) {
+		dimension = g_Game->GetDimension();
+	}
+	
 	std::set<int> out;
 
 	for (uint32_t i = 0; i < g_Game->_nbRooms; i++) {
-		RoomDescriptor* roomDesc = &g_Game->_gridRooms[i];
-		if (roomDesc && roomDesc->Data && roomDesc->Dimension == trueDimension) {
-			for (int doorSlot = 0; doorSlot < 8; doorSlot++) {
-				const std::vector<XY> possiblePlacements = FindPlacementsForRoomAtDoor(roomShape, roomDesc, doorSlot);
-				for (const XY& coords : possiblePlacements) {
-					if (CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, false)) {
-						out.insert(RoomCoordsToIndex(coords.x, coords.y));
-					}
-				}
+		RoomDescriptor& roomDesc = g_Game->_gridRooms[i];
+		if (roomDesc.Data && roomDesc.Dimension == dimension) {
+			for (const int index : FindValidNeighborPlacementLocations(&roomDesc, roomShape, doorMask, allowMultipleDoors, allowSpecialNeighbors)) {
+				out.insert(index);
 			}
 		}
 	}

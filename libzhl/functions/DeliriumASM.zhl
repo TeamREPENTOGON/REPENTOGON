@@ -1,0 +1,3 @@
+asm DeliriumSpawnCompanion "e8????????837b2854c683d30b000008";
+asm DeliriumAggression "e8????????f30f1097600300008bc8";
+asm DeliriumVadeRetro "8b80d800000083e008";

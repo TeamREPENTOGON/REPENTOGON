@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
+#include "../Patches/ItemSpoofSystem.h"
 
 #include "Windows.h"
 #include <string>
@@ -13,8 +14,20 @@
 
 #include "../MiscFunctions.h"
 
+constexpr uint32_t CONSOLE_COLOR_WARN = 0xFFFCCA03;
+
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
+
+static bool s_modsLoaded = false;
+
+// make it so that the MC_POST_MODS_LOADED callback runs before marking mods as loaded
+HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -1, () -> void)
+{
+	s_modsLoaded = false;
+	super();
+	s_modsLoaded = true;
+}
 
 LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
@@ -184,12 +197,41 @@ LUA_FUNCTION(Lua_StartNewGame) {
 	int pltype = (int)luaL_optinteger(L, 1, 0);
 	int challenge = (int)luaL_optinteger(L, 2, 0);
 	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
-	unsigned int seed = (int)luaL_optinteger(L, 4, 0);
-	Seeds seedobj;	//am avoiding heap corruption this way
-	seedobj.constructor();	
-	seedobj.set_start_seed(seed);
+	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors ourselves.
+	// However, StartNewGame will handle it for us. Just be aware of this.
+	Seeds seedobj;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		seedobj.construct_from_copy(lua::GetLuabridgeUserdata<Seeds*>(L, 4, lua::Metatables::SEEDS, "Seeds"));
+	} else {
+		unsigned int seed = (unsigned int)luaL_optinteger(L, 4, 0);
+		bool isCustomRun = lua::luaL_optboolean(L, 5, false);
+		seedobj.constructor();
+		seedobj.set_start_seed(seed);
+		seedobj._isCustomRun = isCustomRun;
+	}
 	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_RenderToWorld) {
+	const Vector WORLD_VIEWPORT_SIZE = Vector(338.0, 182.0);
+	const Vector WORLD_RENDER_ORIGIN = Vector(60.0, 140.0);
+	const float WORLD_TO_SCREEN_SCALE = 0.65f;
+
+	Game& game = *g_Game;
+	Room& room = *game._room;
+	Vector screenSize = Vector(g_WIDTH, g_HEIGHT);
+
+	Vector position = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+
+	Vector offset = game._screenShakeOffset + room._renderScrollOffset;
+	Vector uiViewportTopLeft = (screenSize - WORLD_VIEWPORT_SIZE) * 0.5f;
+	Vector worldLocalRenderPos = (position - offset) - uiViewportTopLeft;
+
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = worldLocalRenderPos / WORLD_TO_SCREEN_SCALE + WORLD_RENDER_ORIGIN;
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_DrawLine) {
@@ -683,24 +725,20 @@ LUA_FUNCTION(Lua_GetRGON_Changelog) {
 
 namespace {
 	std::string currentIconPath = "";
-	HANDLE currentIcon = NULL;
+	HANDLE currentIconSmall = NULL;
+	HANDLE currentIconBig = NULL;
 }
 
 LUA_FUNCTION(Lua_SetIcon) {
-//	int iconsize = luaL_optinteger(L, 2, ICON_SMALL);
-	int resolution=16;
-	bool ignorecap=lua::luaL_optboolean(L,2,false);
+	int smallIconResolution = 16;
+	int bigIconResolution = std::min(GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+
+	bool ignorecap = lua::luaL_optboolean(L,2,false);
 	if(ignorecap){
-		resolution=LR_DEFAULTSIZE;
+		smallIconResolution = LR_DEFAULTSIZE;
+		bigIconResolution = std::max(bigIconResolution, LR_DEFAULTSIZE);
 	};
-	// switch (iconsize) {
-	// case 0:
-	// 	iconsize = ICON_SMALL;
-	// 	break;
-	// case 1:
-	// 	iconsize = ICON_BIG;
-	// 	break;
-	// };
+
 	if (lua_isinteger(L, 1)) {
 		int icontoset = (int)luaL_checkinteger(L, 1);
 		switch (icontoset) {
@@ -713,37 +751,44 @@ LUA_FUNCTION(Lua_SetIcon) {
 		default:
 			icontoset = 0x65;
 		};
-		HANDLE icon = LoadImageA(GetModuleHandle(nullptr), (LPCSTR)icontoset, IMAGE_ICON, resolution, resolution, 0);
-		HANDLE icon_big = LoadImageA(GetModuleHandle(nullptr), (LPCSTR)icontoset, IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, 0);
+		HANDLE icon = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, smallIconResolution, smallIconResolution, 0);
+		HANDLE icon_big = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, bigIconResolution, bigIconResolution, 0);
 		if (icon) {
 			SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
 			SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon_big);
 		};
 		return 0;
 	};
-	const char* str=nullptr;
-	str=luaL_optstring(L, 1, str);
-	if (!str) {
-		return 0;
-	};
-	std::string modpath = str;
-	std::string fullpath;
-	g_Manager->GetModManager()->TryRedirectPath(&fullpath,&modpath);
 
-	if (currentIcon == NULL || currentIconPath.empty() || currentIconPath != fullpath) {
-		HANDLE newIcon = LoadImageA(nullptr, fullpath.c_str(), IMAGE_ICON, resolution, resolution, LR_LOADFROMFILE);
-		if (newIcon == NULL) {
+	std::string modpath = luaL_optstring(L, 1, "");
+	if (modpath.empty()) {
+		return 0;
+	}
+	std::string fullpath;
+	g_Manager->GetModManager()->TryRedirectPath(&fullpath, &modpath);
+
+	if (currentIconSmall == NULL || currentIconBig == NULL || currentIconPath.empty() || currentIconPath != fullpath) {
+		HANDLE newIconSmall = LoadImageA(NULL, fullpath.c_str(), IMAGE_ICON, smallIconResolution, smallIconResolution, LR_LOADFROMFILE);
+		if (newIconSmall == NULL) {
 			return luaL_error(L, "Icon has failed to load!");
 		}
-		if (currentIcon != NULL) {
-			DestroyIcon((HICON)currentIcon);
+		HANDLE newIconBig = LoadImageA(NULL, fullpath.c_str(), IMAGE_ICON, bigIconResolution, bigIconResolution, LR_LOADFROMFILE);
+		if (newIconBig == NULL) {
+			return luaL_error(L, "Icon has failed to load!");
 		}
-		currentIcon = newIcon;
+		if (currentIconSmall != NULL) {
+			DestroyIcon((HICON)currentIconSmall);
+		}
+		if (currentIconBig != NULL) {
+			DestroyIcon((HICON)currentIconBig);
+		}
+		currentIconSmall = newIconSmall;
+		currentIconBig = newIconBig;
 		currentIconPath = fullpath;
 	}
 
-	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)currentIcon);
-	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)currentIcon);
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)currentIconSmall);
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)currentIconBig);
 
 	return 0;
 };
@@ -769,11 +814,17 @@ LUA_FUNCTION(Lua_GetAxisAlignedUnitVectorFromDir) {
 
 LUA_FUNCTION(Lua_StartDailyGame) {
 	const unsigned int date = (unsigned int)luaL_checkinteger(L, 1);
-	auto* dailychallenge = g_Manager->GetDailyChallenge();
-	dailychallenge->Init(date);
-	dailychallenge->_isPractice = true;
 
-	g_Game->StartDailyChallenge(dailychallenge);
+	// defer start to the manager
+	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors by ourselves.
+	// However, StartNewGame will handle it for us. Just be aware of this.
+	Seeds seeds; seeds.constructor();
+	g_Manager->StartNewGame(ePlayerType::PLAYER_ISAAC, eChallenge::CHALLENGE_NULL, seeds, 0);
+
+	// setup daily challenge, so that the newly started game is treated as a daily challenge
+	auto* dailyChallenge = g_Manager->GetDailyChallenge();
+	dailyChallenge->Init(date);
+	dailyChallenge->_isPractice = true;
 
 	return 0;
 }
@@ -802,6 +853,110 @@ LUA_FUNCTION(Lua_GetNanoTime)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ReworkCollectible)
+{
+	int collectible = (int)luaL_checkinteger(L, 1);
+	if (!(CollectibleType::COLLECTIBLE_NULL < collectible && collectible < CollectibleType::NUM_COLLECTIBLES))
+	{
+		return luaL_argerror(L, 1, "invalid CollectibleType");
+	}
+	
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkCollectible() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkCollectible(collectible);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ReworkBirthright)
+{
+	int playerType = (int)luaL_checkinteger(L, 1);
+	if (!(0 <= playerType && playerType < ePlayerType::NUM_PLAYER_TYPES))
+	{
+		return luaL_argerror(L, 1, "invalid PlayerType");
+	}
+
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkBirthright(playerType);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ReworkTrinket)
+{
+	int trinket = (int)luaL_checkinteger(L, 1);
+	if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
+	{
+		return luaL_argerror(L, 1, "invalid TrinketType");
+	}
+
+	if (s_modsLoaded)
+	{
+		g_Game->GetConsole()->Print("[WARN] ReworkTrinket() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		return 0;
+	}
+
+	ItemSpoofSystem::ReworkTrinket(trinket);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RenderCollectionItem)
+{
+	const int itemID = (int)luaL_checkinteger(L, 1);
+
+	if (!g_Manager->_itemConfig.GetCollectible(itemID)) {
+		return luaL_argerror(L, 1, "Invalid collectible ID");
+	}
+
+	Vector posVec = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	Vector scaleVec;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		scaleVec = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	}
+	else {
+		scaleVec = Vector(1, 1);
+	}
+
+	ColorMod color;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+	}
+	else {
+		color = ColorMod();
+	}
+
+	BlendMode blendMode = BlendMode(1);
+
+	g_Game->_gameOver.RenderItemSprite(itemID, &posVec, &color, &scaleVec, &blendMode);
+
+	return 0;
+}
+
+//Deprecated methods
+
+
+LUA_FUNCTION(Lua_IsaacClearBossHazards) {
+	if (g_Game == nullptr || g_Game->_room == nullptr) {
+		return luaL_error(L, "Must be in a room to use this!");
+	}
+	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);
+
+	Entity_NPC* entity = nullptr;
+	entity->ClearBossHazards(ignoreNPCs);
+	
+	g_Game->GetConsole()->Print("[WARN] Isaac.ClearBossHazards is deprecated. Use Room:ClearBossHazards instead", CONSOLE_COLOR_WARN, 0x96u);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -818,6 +973,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// new functions
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderToWorld", Lua_RenderToWorld);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawQuad", Lua_DrawQuad);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawLine", Lua_DrawLine);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetClipboard", Lua_GetClipboard);
@@ -858,9 +1014,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNanoTime", Lua_GetNanoTime);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkCollectible", Lua_ReworkCollectible);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkBirthright", Lua_ReworkBirthright);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkTrinket", Lua_ReworkTrinket);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
+
+	//deprecated methods
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearBossHazards", Lua_IsaacClearBossHazards);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
