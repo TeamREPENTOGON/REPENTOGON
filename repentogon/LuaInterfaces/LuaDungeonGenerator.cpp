@@ -576,6 +576,11 @@ bool DungeonGenerator::Generate() {
 				this->level->generate_mines_dungeon();
 			}
 		}
+
+		g_Game->_gameStateFlags &= ~(1 << 30); // STATE_DONATION_SLOT_BLOWN
+		g_Game->_gameStateFlags &= ~(1 << 31); // STATE_SHOPKEEPER_KILLED
+
+		g_Game->_donationModGreed = 0;
 	}
 
 	return could_place_rooms;
