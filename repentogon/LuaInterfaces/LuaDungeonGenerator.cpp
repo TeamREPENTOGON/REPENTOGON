@@ -398,8 +398,8 @@ void DungeonGenerator::InitializeDefaultGridRooms() {
 			-1
 		);
 
-		if (this->level->_stageType == STAGETYPE_REPENTANCE || this->level->_stageType == STAGETYPE_REPENTANCE_B) {
-			if ((this->level->_stage == STAGE4_1 && this->level->GetCurses()) || this->level->_stage == STAGE4_2) {
+		if (this->level->IsAltPath()) {
+			if ((this->level->_stage == STAGE4_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE4_2) {
 				this->PlaceOffGridRoom(
 					ROOM_SECRET_EXIT_IDX,
 					this->level->GetStageID(),
@@ -567,6 +567,17 @@ bool DungeonGenerator::Generate() {
 		KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
 		Reset();
 	}
+	else {
+		if (!g_Game->IsGreedMode() && this->level->IsAltPath()) {
+			if (((this->level->_stage == STAGE1_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE1_2)) {
+				KAGE::_LogMessage(1, "[SEX] Manually creating mirror world");
+				this->level->generate_mirror_world();
+			}
+			else if (((this->level->_stage == STAGE2_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE2_2)) {
+				this->level->generate_mines_dungeon();
+			}
+		}
+	}
 
 	return could_place_rooms;
 }
@@ -684,7 +695,7 @@ LUA_FUNCTION(Lua_PlaceRandomRoom) {
 LUA_FUNCTION(Lua_PlaceOffGridRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 
-	int off_grid_index = luaL_checkinteger(L, 2);
+	int off_grid_index = (int)luaL_checkinteger(L, 2);
 	if (off_grid_index < -20 || off_grid_index > -1) {
 		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
 	}
@@ -708,7 +719,7 @@ LUA_FUNCTION(Lua_PlaceOffGridRoom) {
 LUA_FUNCTION(Lua_PlaceRandomOffGridRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 
-	int off_grid_index = luaL_checkinteger(L, 2);
+	int off_grid_index = (int)luaL_checkinteger(L, 2);
 	if (off_grid_index < -20 || off_grid_index > -1) {
 		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
 	}
