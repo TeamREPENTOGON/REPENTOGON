@@ -668,6 +668,110 @@ LUA_FUNCTION(Lua_PlaceRandomRoom) {
 
 }
 
+LUA_FUNCTION(Lua_PlaceOffGridRoom) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	int off_grid_index = luaL_checkinteger(L, 2);
+	if (off_grid_index < -20 || off_grid_index > -1) {
+		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
+	}
+
+	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+
+	DungeonGeneratorRoom* generator_room = generator->PlaceOffGridRoom(off_grid_index, config);
+
+	if (generator_room != nullptr) {
+		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+		*ud = generator_room;
+		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlaceRandomOffGridRoom) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+
+	int off_grid_index = luaL_checkinteger(L, 2);
+	if (off_grid_index < -20 || off_grid_index > -1) {
+		return luaL_error(L, "Invalid grid index %d\n", off_grid_index);
+	}
+
+	int stage = (int)luaL_checkinteger(L, 3);
+	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
+		return luaL_error(L, "Invalid stage %d\n", stage);
+	}
+
+	int type = (int)luaL_checkinteger(L, 4);
+	if (type < 1 || type > 29) {
+		return luaL_error(L, "Invalid type %d\n", type);
+	}
+
+	int shape = (int)luaL_optinteger(L, 5, 13); //NUM_ROOMSHAPES
+	if (shape < 1 || shape > 13) {
+		return luaL_error(L, "Invalid shape %d\n", shape);
+	}
+
+	int minVariant = (int)luaL_optinteger(L, 6, 0);
+	if (minVariant < 0) {
+		minVariant = 0;
+	}
+
+	int maxVariant = (int)luaL_optinteger(L, 7, -1);
+	if (maxVariant < minVariant && maxVariant >= 0) {
+		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
+	}
+	else if (maxVariant < 0) {
+		maxVariant = -1;
+	}
+
+	int minDifficulty = (int)luaL_optinteger(L, 8, 0);
+	if (minDifficulty < 0) {
+		minDifficulty = 0;
+	}
+
+	int maxDifficulty = (int)luaL_optinteger(L, 9, 10);
+	if (maxDifficulty < minDifficulty) {
+		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
+	}
+
+	int subtype = (int)luaL_optinteger(L, 10, -1);
+	if (subtype < -1) {
+		return luaL_error(L, "Invalid subtype %d\n", subtype);
+	}
+	int mode = (int)luaL_optinteger(L, 11, -1);
+	if (mode < -1 || mode > 1) {
+		return luaL_error(L, "Invalid mode %d\n", mode);
+	}
+
+	DungeonGeneratorRoom* generator_room = generator->PlaceOffGridRoom(
+		off_grid_index,
+		stage,
+		type,
+		shape,
+		minVariant,
+		maxVariant,
+		minDifficulty,
+		maxDifficulty,
+		subtype,
+		mode
+	);
+
+	if (generator_room != nullptr) {
+		DungeonGeneratorRoom** ud = (DungeonGeneratorRoom**)lua_newuserdata(L, sizeof(DungeonGeneratorRoom*));
+		*ud = generator_room;
+		luaL_setmetatable(L, lua::metatables::DungeonGeneratorRoomMT);
+	}
+	else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlaceDefaultStartingRoom) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 
@@ -728,6 +832,8 @@ static void RegisterDungeonGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{"PlaceRoom", Lua_PlaceRoom},
 		{"PlaceRandomRoom", Lua_PlaceRandomRoom},
+		{"PlaceOffGridRoom", Lua_PlaceOffGridRoom},
+		{"PlaceRandomOffGridRoom", Lua_PlaceRandomOffGridRoom},
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
 		{"PlaceDefaultStartingRoom", Lua_PlaceDefaultStartingRoom},
 		{"BlockIndex", Lua_BlockIndex},
