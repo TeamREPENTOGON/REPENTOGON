@@ -570,7 +570,6 @@ bool DungeonGenerator::Generate() {
 	else {
 		if (!g_Game->IsGreedMode() && this->level->IsAltPath()) {
 			if (((this->level->_stage == STAGE1_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE1_2)) {
-				KAGE::_LogMessage(1, "[SEX] Manually creating mirror world");
 				this->level->generate_mirror_world();
 			}
 			else if (((this->level->_stage == STAGE2_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE2_2)) {
