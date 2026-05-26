@@ -37,13 +37,15 @@ struct DungeonGeneratorRoom {
 
 struct DungeonGenerator {
 	DungeonGeneratorRoom rooms[169];
+	DungeonGeneratorRoom off_grid_rooms[20];
 	RNG* rng;
 	Level* level;
 	LevelGenerator level_generator;
+	DungeonGenerationType generation_type;
 
 	int final_boss_index = -1;
 
-	DungeonGenerator(RNG* rng, Level* level);
+	DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type);
 
 	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected);
 
@@ -57,7 +59,13 @@ struct DungeonGenerator {
 
 	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
 
+	DungeonGeneratorRoom* PlaceOffGridRoom(int off_grid_index, RoomConfig_Room* room_config);
+
+	DungeonGeneratorRoom* PlaceOffGridRoom(int off_grid_index, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+
 	DungeonGeneratorRoom* TryPlaceDefaultStartingRoom(int doors);
+
+	void InitializeDefaultGridRooms();
 
 	void SetFinalBossRoom(DungeonGeneratorRoom* boss_room);
 
@@ -65,7 +73,7 @@ struct DungeonGenerator {
 
 	void CleanFloor();
 
-	bool DungeonGenerator::PlaceRoomsInFloor();
+	bool PlaceRoomsInFloor();
 
 	bool Generate();
 

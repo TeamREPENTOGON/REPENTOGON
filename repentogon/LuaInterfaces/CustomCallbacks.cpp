@@ -6416,7 +6416,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	lua::LuaStackProtector protector(L);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	DungeonGenerator generator(&rng, level);
+	DungeonGenerator generator(&rng, level, dungeonType);
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push((int)dungeonType)
@@ -6434,8 +6434,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	return correctGeneration;
 }
 
-HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
-{
+HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void) {
 	bool skip = ProcessGenerateDungeonCallback(this, *rng, DEFAULT);
 	if (skip) {
 		return;

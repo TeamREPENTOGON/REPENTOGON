@@ -73,35 +73,42 @@ RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, uint32_t req
 		return this->room;
 	}
 
-	return g_Game->GetRoomConfig()->GetRandomRoom(
-		seed,
-		true,
-		this->stage,
-		this->type,
-		this->shape,
-		this->minVariant,
-		this->maxVariant,
-		this->minDifficulty,
-		this->maxDifficulty,
-		&required_doors,
-		this->subtype,
-		this->mode
-	);
+	if (this->stage >= 0) {
+		return g_Game->GetRoomConfig()->GetRandomRoom(
+			seed,
+			true,
+			this->stage,
+			this->type,
+			this->shape,
+			this->minVariant,
+			this->maxVariant,
+			this->minDifficulty,
+			this->maxDifficulty,
+			&required_doors,
+			this->subtype,
+			this->mode
+		);
+	}
+
+	return nullptr;
 }
 
 #pragma endregion
 
 #pragma region DungeonGenerator Impl
 
-DungeonGenerator::DungeonGenerator(RNG* rng, Level* level) {
+DungeonGenerator::DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type) {
 	this->rng = rng;
 	this->level = level;
+	this->generation_type = generation_type;
 
 	this->level_generator._rng = *rng;
 	this->level_generator._isChapter6 = false;
 	this->level_generator._isStageVoid = false;
 	this->level_generator._isXL = false;
+	
 	this->ResetLevelGenerator();
+	this->InitializeDefaultGridRooms();
 }
 
 bool DungeonGenerator::CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected) {
@@ -209,6 +216,24 @@ DungeonGeneratorRoom* DungeonGenerator::TryPlaceRoom(XY& base_coords, int doors,
 	return nullptr;
 }
 
+DungeonGeneratorRoom* DungeonGenerator::PlaceOffGridRoom(int off_grid_index, RoomConfig_Room* room_config) {
+	int index = -off_grid_index - 1;
+	
+	this->off_grid_rooms[index] = DungeonGeneratorRoom(-1, -1, -1, 0, room_config);
+	DungeonGeneratorRoom* generatorRoom = &this->off_grid_rooms[index];
+
+	return generatorRoom;
+}
+
+DungeonGeneratorRoom* DungeonGenerator::PlaceOffGridRoom(int off_grid_index, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+	int index = -off_grid_index - 1;
+
+	this->off_grid_rooms[index] = DungeonGeneratorRoom(-1, -1, -1, 0, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode);
+	DungeonGeneratorRoom* generatorRoom = &this->off_grid_rooms[index];
+
+	return generatorRoom;
+}
+
 DungeonGeneratorRoom* DungeonGenerator::TryPlaceDefaultStartingRoom(int doors) {
 	uint32_t col = 6;
 	uint32_t row = 6;
@@ -233,6 +258,183 @@ DungeonGeneratorRoom* DungeonGenerator::TryPlaceDefaultStartingRoom(int doors) {
 	);
 
 	return this->TryPlaceRoom(coords, doors, config);
+}
+
+void DungeonGenerator::InitializeDefaultGridRooms() {
+	this->PlaceOffGridRoom(
+		ROOM_ERROR_IDX,
+		STB_SPECIAL_ROOMS,
+		ROOM_ERROR,
+		NUM_ROOMSHAPES,
+		0,
+		-1,
+		1,
+		10,
+		-1,
+		-1
+	);
+
+	this->PlaceOffGridRoom(
+		ROOM_DUNGEON_IDX,
+		STB_SPECIAL_ROOMS,
+		ROOM_DUNGEON,
+		NUM_ROOMSHAPES,
+		0,
+		-1,
+		1,
+		10,
+		-1,
+		-1
+	);
+
+	this->PlaceOffGridRoom(
+		ROOM_BLACK_MARKET_IDX,
+		STB_SPECIAL_ROOMS,
+		ROOM_BLACK_MARKET,
+		NUM_ROOMSHAPES,
+		0,
+		-1,
+		1,
+		10,
+		-1,
+		-1
+	);
+
+	if (this->generation_type != BACKWARDS && this->generation_type != HOME) {
+		PersistentGameData* data = g_Manager->GetPersistentGameData();
+		int a = 1;
+		if (data->Unlocked(152)) { // Shop upgrade 2
+			a = 2;
+		}
+
+		int b = 1;
+		if (data->Unlocked(153)) { // Shop upgrade 3
+			b = 2;
+		}
+
+		if (data->Unlocked(154)) { // Shop upgrade 4
+			a++;
+		}
+
+		int shop_subtype = rng->RandomInt(a) + rng->RandomInt(b);
+
+		this->PlaceOffGridRoom(
+			ROOM_SECRET_SHOP_IDX,
+			STB_SPECIAL_ROOMS,
+			ROOM_SHOP,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			1,
+			10,
+			shop_subtype,
+			-1
+		);
+	}
+	
+	if (this->generation_type != HOME) {
+		this->PlaceOffGridRoom(
+			ROOM_ANGEL_SHOP_IDX,
+			STB_SPECIAL_ROOMS,
+			ROOM_ANGEL,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			1,
+			10,
+			1,
+			-1
+		);
+	}
+
+	if (this->generation_type == DEFAULT)
+	{
+		Entity_Player* player_with_broken_shovel = g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_BROKEN_SHOVEL_1, nullptr, false);
+		if (player_with_broken_shovel == nullptr) {
+			this->PlaceOffGridRoom(
+				ROOM_BOSSRUSH_IDX,
+				STB_SPECIAL_ROOMS,
+				ROOM_BOSSRUSH,
+				NUM_ROOMSHAPES,
+				0,
+				-1,
+				1,
+				10,
+				-1,
+				-1
+			);
+		}
+		else {
+			this->PlaceOffGridRoom(
+				ROOM_BOSSRUSH_IDX,
+				g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(STB_SPECIAL_ROOMS, ROOM_BOSSRUSH, 0, -1)
+			);
+		}
+
+		this->PlaceOffGridRoom(
+			ROOM_MEGA_SATAN_IDX,
+			STB_SPECIAL_ROOMS,
+			ROOM_BOSS,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			1,
+			10,
+			BOSS_MEGA_SATAN,
+			-1
+		);
+
+		if (g_Game->_stage != STAGE4_3) {
+			this->PlaceOffGridRoom(
+				ROOM_BLUE_WOOM_IDX,
+				STB_BLUE_WOMB,
+				ROOM_DEFAULT,
+				NUM_ROOMSHAPES,
+				0,
+				-1,
+				0,
+				0,
+				1,
+				-1
+			);
+		} else {
+			this->PlaceOffGridRoom(
+				ROOM_THE_VOID_IDX,
+				STB_BLUE_WOMB,
+				ROOM_DEFAULT,
+				NUM_ROOMSHAPES,
+				0,
+				-1,
+				0,
+				0,
+				1,
+				-1
+			);
+		}
+
+		if (this->level->_stageType == STAGETYPE_REPENTANCE || this->level->_stageType == STAGETYPE_REPENTANCE_B) {
+			if ((this->level->_stage == STAGE4_1 && this->level->GetCurses()) || this->level->_stage == STAGE4_2) {
+				this->PlaceOffGridRoom(
+					ROOM_SECRET_EXIT_IDX,
+					this->level->GetStageID(),
+					ROOM_BOSS,
+					NUM_ROOMSHAPES,
+					0,
+					-1,
+					1,
+					10,
+					BOSS_MOTHER,
+					-1
+				);
+			}
+		}
+	}
+	else if (this->generation_type == HOME) {
+		this->PlaceOffGridRoom(
+			ROOM_SECRET_EXIT_IDX,
+			g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(STB_HOME, ROOM_DUNGEON, 666, -1)
+		);
+	}
 }
 
 void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
@@ -310,6 +512,26 @@ bool DungeonGenerator::PlaceRoomsInFloor() {
 		uint32_t seed = this->rng->Next();
 
 		g_Game->PlaceRoom(&room, room_config, seed, 0);
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		int offGridIndex = -(i + 1);
+		DungeonGeneratorRoom generator_room = this->off_grid_rooms[i];
+		RoomConfig_Room* room_config = generator_room.GetRoomConfig(this->rng->Next(), 0);
+		
+		if (room_config == nullptr) {
+			continue;
+		}
+
+		RoomDescriptor* room_desc = this->level->GetRoomByIdx(offGridIndex, -1);
+		room_desc->Data = room_config;
+		room_desc->InitSeeds(this->rng);
+	}
+
+	RoomDescriptor* lil_portal_room = this->level->GetRoomByIdx(ROOM_LIL_PORTAL_IDX, -1);
+	if (lil_portal_room == nullptr || lil_portal_room->Data == nullptr) {
+		this->level->initialize_lil_portal_room();
 	}
 
 	g_Game->_lastBossRoomListIdx = this->final_boss_index;
