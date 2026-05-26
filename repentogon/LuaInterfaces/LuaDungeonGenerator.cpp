@@ -97,10 +97,11 @@ RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, uint32_t req
 
 #pragma region DungeonGenerator Impl
 
-DungeonGenerator::DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type) {
+DungeonGenerator::DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type, bool reset_lil_portal) {
 	this->rng = rng;
 	this->level = level;
 	this->generation_type = generation_type;
+	this->reset_lil_portal = reset_lil_portal;
 
 	this->level_generator._rng = *rng;
 	this->level_generator._isChapter6 = false;
@@ -468,7 +469,7 @@ bool DungeonGenerator::ValidateFloor() {
 }
 
 void DungeonGenerator::CleanFloor() {
-	this->level->reset_room_list(true);
+	this->level->reset_room_list(this->reset_lil_portal);
 
 	for (size_t i = 0; i < 507; i++)
 	{

@@ -6406,6 +6406,12 @@ void CustomCallbacks::detail::ApplyPatches()
 }
 
 //MC_PRE_GENERATE_DUNGEON(1340)
+bool should_reset_lil_portal = false;
+HOOK_METHOD(Level, Init, (bool reset_lil_portal) -> void) {
+	should_reset_lil_portal = reset_lil_portal;
+	super(reset_lil_portal);
+}
+
 bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationType dungeonType) {
 	const int callbackId = 1340;
 	if (!CallbackState.test(callbackId - 1000)) {
@@ -6416,7 +6422,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	lua::LuaStackProtector protector(L);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	DungeonGenerator generator(&rng, level, dungeonType);
+	DungeonGenerator generator(&rng, level, dungeonType, should_reset_lil_portal);
 	lua::LuaResults results = lua::LuaCaller(L)
 		.push(callbackId)
 		.push((int)dungeonType)

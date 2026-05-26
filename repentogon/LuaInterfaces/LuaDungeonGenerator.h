@@ -43,9 +43,10 @@ struct DungeonGenerator {
 	LevelGenerator level_generator;
 	DungeonGenerationType generation_type;
 
+	bool reset_lil_portal = false;
 	int final_boss_index = -1;
 
-	DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type);
+	DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type, bool reset_lil_portal);
 
 	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected);
 
