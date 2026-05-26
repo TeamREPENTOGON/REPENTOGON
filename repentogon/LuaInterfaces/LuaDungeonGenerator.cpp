@@ -560,7 +560,7 @@ bool DungeonGenerator::Generate() {
 
 #pragma endregion
 
-DungeonGenerator* GetDungeonGenerator(lua_State* L) {
+LUALIB_API DungeonGenerator* GetDungeonGenerator(lua_State* L) {
 	return *lua::GetRawUserdata<DungeonGenerator**>(L, 1, lua::metatables::DungeonGeneratorMT);
 }
 
