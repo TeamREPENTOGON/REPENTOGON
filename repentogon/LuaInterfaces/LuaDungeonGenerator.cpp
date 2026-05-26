@@ -385,33 +385,18 @@ void DungeonGenerator::InitializeDefaultGridRooms() {
 			-1
 		);
 
-		if (g_Game->_stage != STAGE4_3) {
-			this->PlaceOffGridRoom(
-				ROOM_BLUE_WOOM_IDX,
-				STB_BLUE_WOMB,
-				ROOM_DEFAULT,
-				NUM_ROOMSHAPES,
-				0,
-				-1,
-				0,
-				0,
-				1,
-				-1
-			);
-		} else {
-			this->PlaceOffGridRoom(
-				ROOM_THE_VOID_IDX,
-				STB_BLUE_WOMB,
-				ROOM_DEFAULT,
-				NUM_ROOMSHAPES,
-				0,
-				-1,
-				0,
-				0,
-				1,
-				-1
-			);
-		}
+		this->PlaceOffGridRoom(
+			ROOM_BLUE_WOOM_IDX,
+			STB_BLUE_WOMB,
+			ROOM_DEFAULT,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			0,
+			0,
+			1,
+			-1
+		);
 
 		if (this->level->_stageType == STAGETYPE_REPENTANCE || this->level->_stageType == STAGETYPE_REPENTANCE_B) {
 			if ((this->level->_stage == STAGE4_1 && this->level->GetCurses()) || this->level->_stage == STAGE4_2) {
@@ -429,6 +414,33 @@ void DungeonGenerator::InitializeDefaultGridRooms() {
 				);
 			}
 		}
+	}
+	else if (this->generation_type == BLUE_WOMB) {
+		this->PlaceOffGridRoom(
+			ROOM_THE_VOID_IDX,
+			STB_BLUE_WOMB,
+			ROOM_DEFAULT,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			0,
+			0,
+			1,
+			-1
+		);
+
+		this->PlaceOffGridRoom(
+			ROOM_MEGA_SATAN_IDX,
+			STB_SPECIAL_ROOMS,
+			ROOM_BOSS,
+			NUM_ROOMSHAPES,
+			0,
+			-1,
+			1,
+			10,
+			BOSS_MEGA_SATAN,
+			-1
+		);
 	}
 	else if (this->generation_type == HOME) {
 		this->PlaceOffGridRoom(
