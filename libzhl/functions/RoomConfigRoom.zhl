@@ -21,6 +21,8 @@ struct RoomConfig_Room depends (RoomSpawn)
     uint32_t originalVariant : 0x58;
 
     {{
+        static constexpr uint32_t VIRTUAL_ROOM_FLAG = 1 << 31;
+
     private:
         void copy(const RoomConfig_Room& other)
         {

@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/VirtualRoomSets.h"
+#include "LuaRoomConfigSet.h"
 
 LUA_FUNCTION(Lua_RoomConfigStageGetBackdrop)
 {
@@ -48,15 +49,13 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 		return luaL_error(L, "Invalid RoomSet mode %d", mode);
 	}
 	
-	auto& roomSet = stage->_rooms[mode];
+	RoomSet& roomSet = stage->_rooms[mode];
 	if (!roomSet._loaded)
 	{
 		g_Game->GetRoomConfig()->LoadStageBinary(stage->_id, mode);
 	}
-	VirtualRoomSetManager::RoomSet** ud = (VirtualRoomSetManager::RoomSet**)lua_newuserdata(L, sizeof(VirtualRoomSetManager::RoomSet*));
-	*ud = &VirtualRoomSetManager::GetRoomSet(stage->_id, mode);
-	luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
 
+	LuaRoomConfigSet::NewUserdata(L, *stage, mode);
 	return 1;
 }
 

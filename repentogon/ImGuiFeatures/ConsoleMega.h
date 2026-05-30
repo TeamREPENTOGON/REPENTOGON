@@ -691,8 +691,8 @@ struct ConsoleMega : ImGuiWindowObject {
                                 addEntry(*config);
                                 config++;
                             }
-                            for (const auto& room : VirtualRoomSetManager::Get().GetRoomSet(stbID, mode)) {
-                                addEntry(room);
+                            for (const RoomConfig_Room* room : VirtualRoomSetManager::GetVanillaSet(stbID, mode)) {
+                                addEntry(*room);
                             }
 
                             // Add special rooms.
@@ -703,8 +703,8 @@ struct ConsoleMega : ImGuiWindowObject {
                                 addEntry(*config);
                                 config++;
                             }
-                            for (const auto& room : VirtualRoomSetManager::Get().GetRoomSet(STB_SPECIAL_ROOMS, mode)) {
-                                addEntry(room);
+                            for (const RoomConfig_Room* room : VirtualRoomSetManager::GetVanillaSet(STB_SPECIAL_ROOMS, mode)) {
+                                addEntry(*room);
                             }
 
                             break;
