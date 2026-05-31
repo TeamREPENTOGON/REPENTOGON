@@ -26,11 +26,11 @@ namespace {
 	
 	using _VirtualRoomSet = std::vector<RoomConfig_Room*>;
 	static constexpr size_t NUM_VANILLA_ROOM_SETS = eStbType::NUM_STB * 2; // one for each mode
-
+	
 	struct RestoreRoomsDB
 	{
-		std::vector<RoomConfig_Room*> restoredRooms; // can be nullptr for failed room
-		bool initialized = false; // used to encode if the DB has been loaded at least once.
+		std::vector<RoomConfig_Room*> restoredRooms; // can be nullptr for failed restored room
+		bool initialized = false; // used to encode if this DB has been loaded at least once.
 
 		void reset();
 		void init();
@@ -41,9 +41,13 @@ namespace {
 
 struct Data
 {
+	static constexpr size_t NUM_SAVE_FILES = 3;
+	// it's unlikely that the game will switch between SteamCloud and local saves, but just in case.
+	static constexpr size_t TOTAL_SAVE_FILES = NUM_SAVE_FILES * 2; // 2 sets of 3 save slots, one set for cloud and the other for local saves.
+
 	std::vector<std::unique_ptr<RoomChunk>> roomChunks;
 	size_t totalRooms = 0;
-	std::array<RestoreRoomsDB, 3> saveFileDB;
+	std::array<RestoreRoomsDB, TOTAL_SAVE_FILES> saveFileDB;
 	std::vector<_VirtualRoomSet> roomSets;
 };
 
@@ -82,8 +86,7 @@ static bool is_vanilla_set(size_t id);
 static std::pair<uint32_t, int> id_to_stage_mode(size_t id);
 static size_t stage_mode_to_id(uint32_t stageId, int mode);
 /// @brief Gets the DB for the specified slot.
-/// Mainly asserts the slot is valid.
-static RestoreRoomsDB& get_db_for_slot(uint32_t slot);
+static RestoreRoomsDB& get_db_for_slot(uint32_t slot, bool remote);
 
 static void Init();
 static _VirtualRoomSet& GetVanillaRoomSet(uint32_t stage, int mode);
@@ -111,10 +114,10 @@ static void init_base_game_room_set(uint32_t stageId, int mode);
 static void commit_base_game_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode);
 
 static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored);
-static OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, int tableIndex);
-static OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::string& filename, uint32_t stageId);
-static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const std::vector<bool>& failedBuilds, size_t placedRoomsBegin);
-static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, OutAddStbRooms outStbRooms);
+static const OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, int tableIndex);
+static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::string& filename, uint32_t stageId);
+static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddLuaRooms& outLuaRooms);
+static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddStbRooms& outStbRooms);
 
 static int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex);
 static int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename);
@@ -183,10 +186,12 @@ size_t stage_mode_to_id(uint32_t stageId, int mode)
     return stageId * 2 + mode;
 }
 
-RestoreRoomsDB& get_db_for_slot(uint32_t slot)
+RestoreRoomsDB& get_db_for_slot(uint32_t slot, bool remote)
 {
-    assert(slot < s_Data.saveFileDB.size());
-	return s_Data.saveFileDB[slot];
+	slot = slot - 1; // slot is a 1-based index
+    assert(slot < Data::NUM_SAVE_FILES);
+	size_t setOffset = Data::NUM_SAVE_FILES * remote;
+	return s_Data.saveFileDB[slot + setOffset];
 }
 
 void RestoreRoomsDB::init()
@@ -290,8 +295,8 @@ static void set_is_virtual_room(RoomConfig_Room& roomConfig)
 static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored)
 {
 	size_t capacity = s_Data.roomChunks.size() * CHUNK_SIZE;
-	assert(!(capacity < s_Data.totalRooms)); // the number of total rooms should never be above the capacity
-	if (capacity <= s_Data.totalRooms)
+	assert(capacity >= s_Data.totalRooms); // the number of total rooms should never be above the capacity
+	if (capacity <= s_Data.totalRooms) // this should only be triggered when capacity == totalRooms
 	{
 		s_Data.roomChunks.push_back(std::make_unique<RoomChunk>());
 	}
@@ -322,15 +327,17 @@ static void commit_base_game_room_set_insertion(_VirtualRoomSet& virtualSet, siz
 	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
 	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
 
-	for (size_t i = begin; i < begin; i++)
+	for (size_t i = begin; i < end; i++)
 	{
 		RoomConfig_Room& room = *virtualSet[i];
+		room.StageId = stageId;
+		room.Mode = mode;
 		auto* variantSet = vanillaRoomSet.GetVariantSet(room.Type);
 		room.Variant = variantSet->AddUnique(room.originalVariant);
 	}
 }
 
-static OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, int tableIndex)
+static const OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, int tableIndex)
 {
 	OutAddLuaRooms out;
 	out.placedRooms_begin = virtualSet.size();
@@ -340,20 +347,21 @@ static OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, i
 	virtualSet.reserve(virtualSet.size() + table_size);
 
 	LogUtility::LogContext logContext;
-	for (size_t i = 1; i <= table_size; i++)
+	for (size_t lua_it = 1; lua_it <= table_size; lua_it++)
 	{
-		lua_rawgeti(L, tableIndex, i);
+		size_t c_it = lua_it - 1;
+		lua_rawgeti(L, tableIndex, lua_it);
 
 		auto room = RoomConfigUtility::BuildRoomFromLua(L, -1, logContext);
 		if (!room)
 		{
-			out.failedBuilds[i] = true;
+			out.failedBuilds[c_it] = true;
 		}
 		else
 		{
 			auto* placedRoom = add_room(room.value(), false);
 			virtualSet.emplace_back(placedRoom);
-			out.failedBuilds[i] = false;
+			out.failedBuilds[c_it] = false;
 		}
 	}
 
@@ -361,34 +369,37 @@ static OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, i
 	return out;
 }
 
-static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const std::vector<bool>& failedBuilds, size_t placedRoomsBegin)
+static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddLuaRooms& outLuaRooms)
 {
+	const std::vector<bool>& failedBuilds = outLuaRooms.failedBuilds;
+
 	size_t table_size = failedBuilds.size();
 	lua_createtable(L, table_size, 0); // outTable
 	int outTable_index = lua_absindex(L, -1);
+	size_t set_it = outLuaRooms.placedRooms_begin;
 
-	int room_offset = placedRoomsBegin;
-
-	for (size_t i = 0; i < table_size; i++)
+	for (size_t c_it = 0; c_it < table_size; c_it++)
 	{
-		if (failedBuilds[i])
+		size_t lua_it = c_it + 1;
+		if (failedBuilds[c_it])
 		{
 			lua_pushnil(L);
-			lua_rawseti(L, outTable_index, i);
-			continue;
+		}
+		else
+		{
+			assert(set_it < virtualSet.size());
+			RoomConfig_Room* room = virtualSet[set_it];
+			set_it++;
+			lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
 		}
 
-		size_t room_idx = i + room_offset;
-		room_offset++;
-		RoomConfig_Room* room = virtualSet[room_idx];
-		lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
-		lua_rawseti(L, outTable_index, i);
+		lua_rawseti(L, outTable_index, lua_it);
 	}
 	
 	return 1; // outTable
 }
 
-static OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::string& filename, uint32_t stageId)
+static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::string& filename, uint32_t stageId)
 {
 	OutAddStbRooms out;
 
@@ -473,7 +484,7 @@ static OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::stri
 	return out;
 }
 
-static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, OutAddStbRooms outStbRooms)
+static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddStbRooms& outStbRooms)
 {
 	size_t placedRooms_begin = outStbRooms.placedRooms_begin;
 	size_t placedRooms_end = outStbRooms.placedRooms_end;
@@ -484,10 +495,10 @@ static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& vi
 
 	for (size_t i = placedRooms_begin; i < placedRooms_end; i++)
 	{
-		size_t outTable_i = (i - placedRooms_begin) + 1;
+		size_t relativeIt = (i - placedRooms_begin);
 		RoomConfig_Room* room = virtualSet[i];
 		lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
-		lua_rawseti(L, outTable_index, outTable_i);
+		lua_rawseti(L, outTable_index, relativeIt + 1);
 	}
 
 	return 1; // outTable
@@ -511,7 +522,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 	}
 
 	_VirtualRoomSet& virtualSet = s_Data.roomSets[id];
-	auto outLuaRooms = add_lua_rooms(virtualSet, L, table_index);
+	const OutAddLuaRooms outLuaRooms = add_lua_rooms(virtualSet, L, table_index);
 	size_t placedRooms_begin = outLuaRooms.placedRooms_begin;
 	size_t placedRooms_end = outLuaRooms.placedRooms_end;
 
@@ -520,7 +531,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 		commit_base_game_room_set_insertion(virtualSet, placedRooms_begin, placedRooms_end, stageId, mode);
 	}
 
-	return build_add_lua_rooms_out_table(L, virtualSet, outLuaRooms.failedBuilds, placedRooms_begin);
+	return build_add_lua_rooms_out_table(L, virtualSet, outLuaRooms);
 }
 
 int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
@@ -538,7 +549,7 @@ int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
 	}
 
 	_VirtualRoomSet& virtualSet = s_Data.roomSets[id];
-	OutAddStbRooms outAddStbRooms = add_stb_rooms(virtualSet, filename, stageId);
+	const OutAddStbRooms outAddStbRooms = add_stb_rooms(virtualSet, filename, stageId);
 
 	if (isVanilla)
 	{
@@ -685,7 +696,7 @@ static void DbGameStateRoom_constructor(GameStateRoomConfig& room, size_t index)
 
 	room.SetStageID(DB_STAGE_ID);
 	room.SetMode(0);
-	room.SetFlags(GameStateRoomConfig::VIRTUAL_ROOM_FLAG);
+	room.SetFlags(GameStateRoomConfig::DB_ROOM_FLAG);
 	room._type = eRoomType::ROOM_ERROR;
 	room._variant = (unsigned int)index;
 }
@@ -797,12 +808,18 @@ static void InitDB(GameState& gameState, RestoreRoomsDB& db)
 		RoomConfig_Room* roomData = VirtualGameStateRoom_get_address(room);
 		auto [it, inserted] = processedRooms.try_emplace(roomData, db_currentIndex);
 
+		size_t roomDBIndex;
 		if (inserted)
 		{
+			roomDBIndex = db_currentIndex;
 			db.restoredRooms.emplace_back(roomData);
 		}
+		else
+		{
+			roomDBIndex = it->second;
+		}
 
-		DbGameStateRoom_constructor(room, db_currentIndex);
+		DbGameStateRoom_constructor(room, roomDBIndex);
 	}
 }
 
@@ -1026,21 +1043,21 @@ int VirtualRoomSetManager::detail::Lua_AddStbRooms(lua_State *L, VirtualRoomSet 
     return ::Lua_AddStbRooms(L, virtualSet.m_id, fullFilename);
 }
 
-void VirtualRoomSetManager::detail::ClearDB(uint32_t slot)
+void VirtualRoomSetManager::detail::ClearDB(const GameStateSaveInfo& saveInfo)
 {
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 	db.init();
 }
 
-void VirtualRoomSetManager::detail::PreWriteGameState(GameState &gameState, uint32_t slot)
+void VirtualRoomSetManager::detail::PreWriteGameState(GameState &gameState, const GameStateSaveInfo& saveInfo)
 {
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 	InitDB(gameState, db);
 }
 
-void VirtualRoomSetManager::detail::PostWriteGameState(GameState& gameState, uint32_t slot)
+void VirtualRoomSetManager::detail::PostWriteGameState(GameState& gameState, const GameStateSaveInfo& saveInfo)
 {
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 	bool success = RestoreDB(gameState, db);
 	assert(success); // this should always succeed.
 }
@@ -1050,7 +1067,7 @@ bool VirtualRoomSetManager::detail::GameStateNeedsHandling(GameState& gameState)
     return filter_db_game_state_rooms(gameState).size() > 0;
 }
 
-bool VirtualRoomSetManager::detail::WriteSave(const std::string& fileName, uint32_t slot, uint32_t gameChecksum, bool isRerun)
+bool VirtualRoomSetManager::detail::WriteSave(const GameState& gameState, const GameStateSaveInfo& saveInfo, bool isRerun)
 {
 	// rooms are not saved on Rerun
 	if (isRerun)
@@ -1058,9 +1075,10 @@ bool VirtualRoomSetManager::detail::WriteSave(const std::string& fileName, uint3
 		return true;
 	}
 
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	size_t gameChecksum = gameState._checksum;
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 
-	std::string filePath = get_db_path(fileName);
+	std::string filePath = get_db_path(saveInfo.fileName);
 	bool successfulWrite = WriteDB(filePath, gameChecksum, db);
 	bool failure = !successfulWrite &&
 		db.restoredRooms.size() > 0; // at least one hijack
@@ -1068,7 +1086,7 @@ bool VirtualRoomSetManager::detail::WriteSave(const std::string& fileName, uint3
 	return !failure;
 }
 
-bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const std::string& fileName, uint32_t slot, bool isRerun)
+bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const GameStateSaveInfo& saveInfo, bool isRerun)
 {
 	// rooms are not saved on Rerun
 	if (isRerun)
@@ -1076,12 +1094,12 @@ bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const std::st
 		return true;
 	}
 
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 	// read db on first load for this slot
 	if (!db.initialized)
 	{
 		uint32_t gameChecksum = gameState._checksum;
-		std::string filePath = get_db_path(fileName);
+		std::string filePath = get_db_path(saveInfo.fileName);
 		bool successfulRead = ReadDB(filePath, gameChecksum, db);
 		if (!successfulRead)
 		{
@@ -1093,19 +1111,19 @@ bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const std::st
 	bool success = RestoreDB(gameState, db);
 	if (!success)
 	{
-		ZHL::Log(LOG_ERROR_HEADER "Failed DB restore for slot %u.\n", slot);
+		ZHL::Log(LOG_ERROR_HEADER "Failed DB restore for slot %u.\n", saveInfo.saveSlot);
 	}
 	else
 	{
-		ZHL::Log(LOG_INFO_HEADER "Successfully restored DB for slot %u.\n", slot);
+		ZHL::Log(LOG_INFO_HEADER "Successfully restored DB for slot %u.\n", saveInfo.saveSlot);
 	}
 	return success;
 }
 
-void VirtualRoomSetManager::detail::DeleteSave(const std::string fileName, uint32_t slot, bool isRerun)
+void VirtualRoomSetManager::detail::DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun)
 {
 	// reset db
-	RestoreRoomsDB& db = get_db_for_slot(slot);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.isRemote, saveInfo.isRemote);
 	db.init();
 
 	// rooms are not saved on Rerun
@@ -1115,7 +1133,7 @@ void VirtualRoomSetManager::detail::DeleteSave(const std::string fileName, uint3
 	}
 
 	// delete file
-	std::filesystem::path filePath = get_db_path(fileName);
+	std::filesystem::path filePath = get_db_path(saveInfo.fileName);
 	std::error_code errorCode;
 	if (!std::filesystem::exists(filePath, errorCode))
 	{

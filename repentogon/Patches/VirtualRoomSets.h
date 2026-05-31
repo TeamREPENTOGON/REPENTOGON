@@ -5,6 +5,7 @@
 #include "../RoomConfigUtility.h"
 #include "../LogUtility.h"
 #include "LuaCore.h"
+#include "GameStateManagement.h"
 
 #include <string>
 #include <vector>
@@ -24,22 +25,22 @@ public:
 		using _VirtualRoomSet = std::vector<RoomConfig_Room*>;
 	public:
 		/// @brief Clears the restore rooms DB on rerun, as there are no rooms.
-		static void ClearDB(uint32_t slot);
+		static void ClearDB(const GameStateSaveInfo& saveInfo);
 		/// @brief Hijacks the GameState structure and prepares it for Save
-		static void PreWriteGameState(GameState& gameState, uint32_t slot);
+		static void PreWriteGameState(GameState& gameState, const GameStateSaveInfo& saveInfo);
 		/// @brief Restores the GameState structure to it's "normal" form after Save.
-		static void PostWriteGameState(GameState& gameState, uint32_t slot);
+		static void PostWriteGameState(GameState& gameState, const GameStateSaveInfo& saveInfo);
 		/// @brief Checks if the game state has at least one structure that has been hijacked by
 		/// the manager, which requires normalizing.
 		static bool GameStateNeedsHandling(GameState& gameState);
 
 		/// @brief Writes the restored rooms DB to permanent storage.
-		static bool WriteSave(const std::string& fileName, uint32_t slot, uint32_t gameChecksum, bool isRerun);
+		static bool WriteSave(const GameState& gameState, const GameStateSaveInfo& saveInfo, bool isRerun);
 		/// @brief Reads the restore rooms DB for the save slot, if it hasn't been loaded yet, then
 		/// restores the game state to it's "normal" form.
-		static bool ReadSave(GameState& gameState, const std::string& fileName, uint32_t slot, bool isRerun);
+		static bool ReadSave(GameState& gameState, const GameStateSaveInfo& saveInfo, bool isRerun);
 		/// @brief Deletes the restored rooms DB file, also clears the DB itself.
-		static void DeleteSave(const std::string fileName, uint32_t slot, bool isRerun);
+		static void DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun);
 
 		// The lua functions are placed here since they are just details for the LUA API
 		// rather than functionality of a VirtualRoomSet

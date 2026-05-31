@@ -13,18 +13,7 @@ namespace ESSM = EntitySaveStateManagement;
 
 #pragma region Helpers
 
-namespace
-{
-	struct GameStateInfo
-	{
-		uint32_t saveSlot = -1; // also encodes unknown save slot
-		std::string fileName;
-	
-		bool IsUnknown();
-	};
-}
-
-static GameStateInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun);
+static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun);
 static GameStateSlot get_game_state_slot(GameState* state);
 static bool is_remote_save(GameState* gameState);
 static uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun);
@@ -32,14 +21,9 @@ static std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, 
 static std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun);
 static bool is_file_name_valid(const std::string& fileName);
 
-bool GameStateInfo::IsUnknown()
+static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun)
 {
-	return this->saveSlot < 0;
-}
-
-static GameStateInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun)
-{
-	GameStateInfo info;
+	GameStateSaveInfo info;
 	if (!isRerun && get_game_state_slot(gameState) != GameStateSlot::SAVE_FILE) // This can occur when (presumably) the save state is being sent to online players joining mid-run
 	{
 		return info;
@@ -52,6 +36,7 @@ static GameStateInfo get_info(GameState* gameState, GameStateIO* io, bool isReru
 		return info;
 	}
 
+	info.isRemote = is_remote_save(gameState);
 	info.fileName = get_state_file_name(gameState, info.saveSlot, isRerun);
 	if (!is_file_name_valid(info.fileName))
 	{
@@ -192,12 +177,11 @@ static inline void clear_game_state(uint32_t slot)
 	ItemPoolManager::__ClearSaveState(slot);
 }
 
-static inline bool write_save(GameState& gameState, const GameStateInfo& info, bool isRerun)
+static inline bool write_save(GameState& gameState, const GameStateSaveInfo& info, bool isRerun)
 {
 	const std::string& fileName = info.fileName;
-	uint32_t gameChecksum = isRerun ? gameState._rerunChecksum : gameState._checksum;
 
-	if (!VirtualRoomSetManager::detail::WriteSave(fileName, info.saveSlot, gameChecksum,isRerun))
+	if (!VirtualRoomSetManager::detail::WriteSave(gameState, info, isRerun))
 	{
 		return false;
 	}
@@ -207,11 +191,11 @@ static inline bool write_save(GameState& gameState, const GameStateInfo& info, b
 }
 
 // Return false to invalidate the game state
-static inline bool read_save(GameState& gameState, const GameStateInfo& info, bool isRerun)
+static inline bool read_save(GameState& gameState, const GameStateSaveInfo& info, bool isRerun)
 {
 	const std::string& fileName = info.fileName;
 
-	if (!VirtualRoomSetManager::detail::ReadSave(gameState, fileName, info.saveSlot, isRerun))
+	if (!VirtualRoomSetManager::detail::ReadSave(gameState, info, isRerun))
 	{
 		return false;
 	}
@@ -220,13 +204,13 @@ static inline bool read_save(GameState& gameState, const GameStateInfo& info, bo
 	return true;
 }
 
-static inline void delete_save(const GameStateInfo& info, bool isRerun)
+static inline void delete_save(const GameStateSaveInfo& info, bool isRerun)
 {
 	const std::string& fileName = info.fileName;
 	uint32_t slot = info.saveSlot;
 
 	ItemPoolManager::__DeleteGameState(fileName);
-	VirtualRoomSetManager::detail::DeleteSave(fileName, slot, isRerun);
+	VirtualRoomSetManager::detail::DeleteSave(info, isRerun);
 	ESSM::detail::SaveData::DeleteGameState(fileName);
 }
 
@@ -277,7 +261,7 @@ HOOK_METHOD(GameState, Clear, () -> void)
 HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 {
 	bool isRerun = false;
-	GameStateInfo info = get_info(this, *io, isRerun);
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
 	if (info.IsUnknown())
 	{
 		ZHL::Log("[INFO] [GameStateManagement] skipping GameState write.\n");
@@ -285,12 +269,12 @@ HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 	}
 
 	ESSM::detail::SaveData::WriteState state = ESSM::detail::SaveData::WriteGameState();
-	VirtualRoomSetManager::detail::PreWriteGameState(*this, info.saveSlot);
+	VirtualRoomSetManager::detail::PreWriteGameState(*this, info);
 
 	bool success = super(io);
 
 	ESSM::detail::SaveData::RestoreWrittenStates(state);
-	VirtualRoomSetManager::detail::PostWriteGameState(*this, info.saveSlot);
+	VirtualRoomSetManager::detail::PostWriteGameState(*this, info);
 
 	if (!success)
 	{
@@ -305,10 +289,10 @@ HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 {
 	bool isRerun = true;
-	GameStateInfo info = get_info(this, *io, isRerun);
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
 
 	ESSM::detail::SaveData::WriteState state = ESSM::detail::SaveData::WriteGameState();
-	VirtualRoomSetManager::detail::ClearDB(info.saveSlot);
+	VirtualRoomSetManager::detail::ClearDB(info);
 
 	bool success = super(io);
 
@@ -332,7 +316,7 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 {
 	bool isRerun = false;
-	GameStateInfo info = get_info(this, *io, isRerun);
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
 
 	bool originalSuccess = super(io, isLocalRun);
 	ESSM::detail::SaveData::ReadState essmReadState = ESSM::detail::SaveData::ReadGameState();
@@ -373,7 +357,7 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 {
 	bool isRerun = true;
-	GameStateInfo info = get_info(this, *io, isRerun);
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
 
 	bool originalSuccess = super(io);
 	ESSM::detail::SaveData::ReadState essmReadState = ESSM::detail::SaveData::ReadGameState();
@@ -406,7 +390,7 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 HOOK_METHOD(GameState, Delete, () -> void)
 {
 	bool isRerun = false;
-	GameStateInfo info = get_info(this, this->_saveFile, false);
+	GameStateSaveInfo info = get_info(this, this->_saveFile, false);
 
 	super();
 
@@ -422,7 +406,7 @@ HOOK_METHOD(GameState, Delete, () -> void)
 HOOK_METHOD(GameState, DeleteRerun, () -> void)
 {
 	bool isRerun = true;
-	GameStateInfo info = get_info(this, this->_saveFile, false);
+	GameStateSaveInfo info = get_info(this, this->_saveFile, false);
 
 	super();
 
