@@ -1,10 +1,9 @@
-#include "VirtualRoomSets.h"
+#include "VirtualRoomSetManager.h"
 
 #include "Log.h"
 #include "../RoomConfigUtility.h"
 #include "../MiscFunctions.h"
 #include "HookSystem.h"
-#include "GameStateManagement.h"
 #include "writer.h" // rapidjson
 #include "stringbuffer.h" // rapidjson
 #include <map>
@@ -16,9 +15,9 @@
 typedef std::optional<std::string> Error;
 typedef LogUtility::LogContext LogContext;
 
-#define LOG_INFO_HEADER "[INFO] [VirtualRoomManager] - "
-#define LOG_WARN_HEADER "[WARN] [VirtualRoomManager] -"
-#define LOG_ERROR_HEADER "[ERROR] [VirtualRoomManager] - "
+#define LOG_INFO_HEADER "[INFO] [VirtualRoomSetManager] - "
+#define LOG_WARN_HEADER "[WARN] [VirtualRoomSetManager] -"
+#define LOG_ERROR_HEADER "[ERROR] [VirtualRoomSetManager] - "
 
 namespace {
 	static constexpr size_t CHUNK_SIZE = 64 * 1024 / sizeof(RoomConfig_Room); // 64 KB
@@ -47,6 +46,8 @@ struct Data
 
 	std::vector<std::unique_ptr<RoomChunk>> roomChunks;
 	size_t totalRooms = 0;
+	/// @brief RestoreRoomsDB maintains the set of rooms that are currently being used by the game when writing and reading the GameState.
+	/// It is what makes the conversion DbGameStateRoom -> VirtualGameStateRoom possible.
 	std::array<RestoreRoomsDB, TOTAL_SAVE_FILES> saveFileDB;
 	std::vector<_VirtualRoomSet> roomSets;
 };
@@ -59,43 +60,112 @@ static Data s_Data;
 
 // ExtraData
 
+/// @brief Gets the encoded `isVirtualRoom` property of a RoomConfig_Room
 static bool is_virtual_room(const RoomConfig_Room& roomConfig);
+/// @brief Sets the encoded `isVirtualRoom` property of a RoomConfig_Room
 static void set_is_virtual_room(RoomConfig_Room& roomConfig);
 
 // GameStateRoom
 
-static void GameStateRoom_default(GameStateRoomConfig& room);
-static bool GameStateRoom_is_virtual(const GameStateRoomConfig& room);
-static bool GameStateRoom_is_database(const GameStateRoomConfig& room);
-static RoomConfig_Room* VirtualGameStateRoom_get_address(const GameStateRoomConfig& room);
-static size_t DbGameStateRoom_get_index(const GameStateRoomConfig& room);
+/** 
+ * GameStateRoomConfig is hijacked by this system to properly store newly added virtual rooms.
+ * Normally the GameStateRoomConfig would simply store the "vanilla RoomConfig_Room id", but that is
+ * not a reliable id for virtual rooms.
+ * 
+ * Because of this 2 new "structs" have been created:
+ * 
+ * struct VirtualGameStateRoom
+ * {
+ *     RoomConfig_Room* room;
+ * };
+ * 
+ * struct DbGameStateRoom
+ * {
+ *     size_t dbIndex;
+ * };
+ * 
+ * VirtualGameStateRoom is the canonical representation used at runtime.
+ * It stores a direct pointer to the associated RoomConfig_Room, which is
+ * safe due to the required pointer stability of all RoomConfig_Room instances.
+ *
+ * DbGameStateRoom is a serialization-only representation. It stores an index
+ * into the RestoreRoomsDB and exists solely to reconstruct a
+ * VirtualGameStateRoom when loading a save file.
+ *
+ * Conversion flow:
+ * - Runtime:
+ * 		VirtualGameStateRoom -> RoomConfig_Room*
+ *
+ * - Serialization:
+ * 		VirtualGameStateRoom -> DbGameStateRoom -> save file
+ *
+ * - Deserialization:
+ * 		save file -> DbGameStateRoom -> VirtualGameStateRoom
+ */
 
+/// @brief Gets the encoded `isVirtual` property of a GameStateRoomConfig
+static bool GameStateRoom_is_virtual(const GameStateRoomConfig& room);
+/// @brief Gets the encoded `isDatabase` property of a GameStateRoomConfig
+static bool GameStateRoom_is_database(const GameStateRoomConfig& room);
+/// @brief Gets the encoded `room` property of a VirtualGameStateRoom
+static RoomConfig_Room* VirtualGameStateRoom_get_room(const GameStateRoomConfig& room);
+/// @brief Gets the encoded `dbIndex` property of a DbGameStateRoom
+static size_t DbGameStateRoom_get_db_index(const GameStateRoomConfig& room);
+
+/// @brief Hijacks a GameStateRoomConfig and "constructs" a VirtualGameStateRoom.
 static void VirtualGameStateRoom_FromRoomConfig(GameStateRoomConfig& room, const RoomConfig_Room& roomConfig);
+/// @brief Converts a DbGameStateRoom into a VirtualGameStateRoom.
 static bool VirtualGameStateRoom_FromDbGameStateRoom(GameStateRoomConfig& room, const RestoreRoomsDB& db);
+/// @brief Hijacks a GameStateRoomConfig and "constructs" a DbGameStateRoom.
 static void DbGameStateRoom_constructor(GameStateRoomConfig& room, size_t index);
 
+/// @brief Iterates over all GameStateRoomConfig and returns only those that match the given filter.
 template <typename Func>
 static std::vector<GameStateRoomConfig*> get_game_state_rooms(GameState& gameState, Func&& filter);
+/// @brief Returns all VirtualGameStateRooms in the gameState.
 static std::vector<GameStateRoomConfig*> filter_virtual_game_state_rooms(GameState& gameState);
+/// @brief Returns all DbGameStateRooms in the gameState.
 static std::vector<GameStateRoomConfig*> filter_db_game_state_rooms(GameState& gameState);
 
 // DataManagement
 
-static int get_mode(int mode);
+/// @brief Normalizes the given mode.
+///
+/// Practically just returns the current mode when passing -1.
+static int normalize_mode(int mode);
+/// @brief Returns whether the given virtual room set id is a vanilla room set extension.
 static bool is_vanilla_set(size_t id);
+/// @brief Converts a virtual room set id into a StageID, Mode pair.
+/// @param id Expected to be a vanilla set.
+/// See `is_vanilla_set`()
 static std::pair<uint32_t, int> id_to_stage_mode(size_t id);
+/// @brief Converts a StageID, Mode pair into it's virtual room set id.
 static size_t stage_mode_to_id(uint32_t stageId, int mode);
-/// @brief Gets the DB for the specified slot.
+/// @brief Gets the restore rooms DB for the specified slot.
 static RestoreRoomsDB& get_db_for_slot(uint32_t slot, bool remote);
 
+/// @brief Initializes the system's Data.
 static void Init();
+/// @brief Returns the vanilla room set extension for the given stage.
 static _VirtualRoomSet& GetVanillaRoomSet(uint32_t stage, int mode);
+/// @brief Resets room weights of all rooms.
 static void ResetAllRoomWeights();
+/// @brief Resets room weights for the given set.
 static void ResetRoomWeights(_VirtualRoomSet& virtualSet);
+/// @brief Returns the room matching the "vanilla RoomConfig_Room id".
 static RoomConfig_Room* GetRoomById(uint32_t stageId, int type, uint32_t variant, int mode);
-static void FilterRooms(std::vector<RoomConfig_Room*>& result, _VirtualRoomSet& virtualSet, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType);
+/// @brief Adds the rooms that match the given filter to the buffer.
+static void FilterRooms(std::vector<RoomConfig_Room*>& buffer, _VirtualRoomSet& virtualSet, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType);
 
 // AddRooms
+
+/**
+ * The main requirements for the room holder are:
+ * - Guarantee pointer stability for added rooms throughout the entire runtime.
+ * - Provide relatively fast iteration over rooms, primarily for filtering operations.
+ * - Preserve the relative ordering of elements within a RoomSet, as it affects
+ *   the outcome of seeded random room selection.
+ */
 
 struct OutAddLuaRooms
 {
@@ -110,16 +180,46 @@ struct OutAddStbRooms
 	size_t placedRooms_end = 0;
 };
 
-static void init_base_game_room_set(uint32_t stageId, int mode);
-static void commit_base_game_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode);
+/// @brief Loads the vanilla room set, if it has not already been loaded.
+static void init_vanilla_room_set(uint32_t stageId, int mode);
+/// @brief Commits the placement of room in the vanilla RoomConfig system,
+/// as if it were part of the room set.
+///
+/// Details:
+/// - Initializes the StageID and Mode of all placed rooms.
+/// - Registers the variant in the VariantSet, and assigns a new variant if it is not unique.
+static void commit_vanilla_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode);
 
+/// @brief Adds the room to the room holder.
+///
+/// The input room is copied, not moved, into the room holder.
+/// @param isRestored unused, but included for potential future use.
 static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored);
+/// @brief Parses the LuaRooms in the given table and adds them to the room holder.
 static const OutAddLuaRooms add_lua_rooms(_VirtualRoomSet& virtualSet, lua_State* L, int tableIndex);
+/// @brief Parses the rooms in the given .stb and adds them to the room holder.
 static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std::string& filename, uint32_t stageId);
+/// @brief Builds the lua return table for AddLuaRooms
+///
+/// The return table is index-aligned with the input table.
+/// If an input room could not be parsed, the corresponding output entry is nil.
+/// @return number of values the function has pushed on the stack.
 static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddLuaRooms& outLuaRooms);
+/// @brief Builds the lua return table for AddStbRooms
+/// @return number of values the function has pushed on the stack.
 static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& virtualSet, const OutAddStbRooms& outStbRooms);
 
+/// @brief Adds the rooms stored in the passed table to the room holder and
+/// ties them to the specified set.
+///
+/// Places the return table on the Lua stack.
+/// @return number of values the function has pushed on the stack.
 static int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex);
+/// @brief Adds the rooms stored in the .stb to the room holder and
+/// ties them to the specified set.
+///
+/// Places the return table on the Lua stack.
+/// @return number of values the function has pushed on the stack.
 static int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename);
 
 // RestoreRoomDB
@@ -129,7 +229,7 @@ namespace
 	// currently unused, meant to detect rooms on ReadDB and
 	// avoid wasting memory, however the actual amount of memory
 	// this would save is relatively small, due to it being based entirely
-	// on the presence of duplicate rooms across save files (the db already
+	// on the presence of duplicate rooms across save files (db initialization already
 	// prevents duplicates on each save).
 
 	// The implementation of content hash and comparison has not been deleted
@@ -145,24 +245,36 @@ namespace
 	};
 }
 
+/// @brief Returns the path to the DB file, with the given fileName.
 static std::string get_db_path(const std::string& fileName);
+/// @brief Writes the used rooms to the DB, and converts all VirtualGameStateRoom instances into DbGameStateRoom.
 static void InitDB(GameState& gameState, RestoreRoomsDB& db);
+/// @brief Converts all DbGameStateRoom instances into VirtualGameStateRoom.
 static bool RestoreDB(GameState& gameState, const RestoreRoomsDB& db);
-// restored rooms are always added, this should only run once
+/// @brief Parses the DB file, adds the rooms to the room holder
+/// and writes the used rooms to the DB.
+///
+/// Details:
+/// - All parsed rooms are added to the room holder, even if a room with the same id and content already exists;
+///   As such this function should be called once for each save slot.
+/// - If a room could not be parsed, then the RoomConfig_Room* at that index will be nullptr.
+/// @return Successful parse.
 static bool ReadDB(const std::string& filePath, uint32_t gameChecksum, RestoreRoomsDB& db);
+/// @brief Saves all rooms in the given DB into the specified file.
 static bool WriteDB(const std::string& filePath, uint32_t gameChecksum, RestoreRoomsDB& db);
 
 #pragma endregion
 
 #pragma region DataManagement
 
-static int get_mode(int mode)
+static int normalize_mode(int mode)
 {
 	if (mode == -1)
 	{
-		return g_Game->GetMode();
+		mode = g_Game->GetMode();
 	}
 
+	assert(0 <= mode && mode <= 1);
 	return mode;
 }
 
@@ -212,13 +324,13 @@ static _VirtualRoomSet& GetVanillaRoomSet(uint32_t stage, int mode)
 	return s_Data.roomSets[index];
 }
 
-static void FilterRooms(std::vector<RoomConfig_Room*>& result, _VirtualRoomSet& virtualSet, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType)
+static void FilterRooms(std::vector<RoomConfig_Room*>& buffer, _VirtualRoomSet& virtualSet, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType)
 {
 	for (auto* room : virtualSet)
 	{
 		if (RoomConfigUtility::RoomPassesFilter(*room, roomType, roomShape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subType))
 		{
-			result.emplace_back(room);
+			buffer.emplace_back(room);
 		}
 	}
 }
@@ -259,7 +371,7 @@ static void ResetAllRoomWeights()
 
 static RoomConfig_Room* GetRoomById(uint32_t stageId, int type, uint32_t variant, int mode)
 {
-	mode = get_mode(mode);
+	mode = normalize_mode(mode);
 	_VirtualRoomSet& virtualSet = GetVanillaRoomSet(stageId, mode);
 	for (auto* room : virtualSet)
 	{
@@ -312,7 +424,7 @@ static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored)
 	return storage;
 }
 
-static void init_base_game_room_set(uint32_t stageId, int mode)
+static void init_vanilla_room_set(uint32_t stageId, int mode)
 {
 	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
 	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
@@ -322,7 +434,7 @@ static void init_base_game_room_set(uint32_t stageId, int mode)
 	}
 }
 
-static void commit_base_game_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
+static void commit_vanilla_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
 {
 	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
 	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
@@ -518,7 +630,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 		auto& vanillaId = id_to_stage_mode(id);
 		stageId = vanillaId.first;
 		mode = vanillaId.second;
-		init_base_game_room_set(stageId, mode);
+		init_vanilla_room_set(stageId, mode);
 	}
 
 	_VirtualRoomSet& virtualSet = s_Data.roomSets[id];
@@ -528,7 +640,7 @@ int Lua_AddLuaRooms(lua_State* L, size_t id, int tableIndex)
 
 	if (isVanilla)
 	{
-		commit_base_game_room_set_insertion(virtualSet, placedRooms_begin, placedRooms_end, stageId, mode);
+		commit_vanilla_room_set_insertion(virtualSet, placedRooms_begin, placedRooms_end, stageId, mode);
 	}
 
 	return build_add_lua_rooms_out_table(L, virtualSet, outLuaRooms);
@@ -545,7 +657,7 @@ int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
 		auto& vanillaId = id_to_stage_mode(id);
 		stageId = vanillaId.first;
 		mode = vanillaId.second;
-		init_base_game_room_set(stageId, mode);
+		init_vanilla_room_set(stageId, mode);
 	}
 
 	_VirtualRoomSet& virtualSet = s_Data.roomSets[id];
@@ -553,7 +665,7 @@ int Lua_AddStbRooms(lua_State* L, size_t id, const std::string& filename)
 
 	if (isVanilla)
 	{
-		commit_base_game_room_set_insertion(virtualSet, outAddStbRooms.placedRooms_begin, outAddStbRooms.placedRooms_end, stageId, mode);
+		commit_vanilla_room_set_insertion(virtualSet, outAddStbRooms.placedRooms_begin, outAddStbRooms.placedRooms_end, stageId, mode);
 	}
 
 	return build_add_stb_rooms_out_table(L, virtualSet, outAddStbRooms);
@@ -625,15 +737,6 @@ static std::vector<GameStateRoomConfig*> filter_db_game_state_rooms(GameState& g
 	});
 }
 
-static void GameStateRoom_default(GameStateRoomConfig& room)
-{
-	room.SetStageID(eStbType::STB_SPECIAL_ROOMS);
-	room.SetMode(0);
-	room.SetFlags(0);
-	room._type = eRoomType::ROOM_ERROR;
-	room._variant = 16;
-}
-
 static bool GameStateRoom_is_virtual(const GameStateRoomConfig& room)
 {
 	return (room.GetFlags() & GameStateRoomConfig::VIRTUAL_ROOM_FLAG) != 0;
@@ -644,13 +747,13 @@ static bool GameStateRoom_is_database(const GameStateRoomConfig& room)
 	return (room.GetFlags() & GameStateRoomConfig::DB_ROOM_FLAG) != 0;
 }
 
-static RoomConfig_Room* VirtualGameStateRoom_get_address(const GameStateRoomConfig& room)
+static RoomConfig_Room* VirtualGameStateRoom_get_room(const GameStateRoomConfig& room)
 {
 	assert(GameStateRoom_is_virtual(room));
 	return (RoomConfig_Room*)room._variant;
 }
 
-static size_t DbGameStateRoom_get_index(const GameStateRoomConfig& room)
+static size_t DbGameStateRoom_get_db_index(const GameStateRoomConfig& room)
 {
 	assert(GameStateRoom_is_database(room));
 	return (size_t)room._variant;
@@ -671,7 +774,7 @@ static void VirtualGameStateRoom_FromRoomConfig(GameStateRoomConfig& room, const
 static bool VirtualGameStateRoom_FromDbGameStateRoom(GameStateRoomConfig& room, const RestoreRoomsDB& db)
 {
 	assert(GameStateRoom_is_database(room));
-	size_t db_index = DbGameStateRoom_get_index(room);
+	size_t db_index = DbGameStateRoom_get_db_index(room);
 
 	bool success = db.restoredRooms.size() > db_index &&
 		db.restoredRooms[db_index] != nullptr;
@@ -805,7 +908,7 @@ static void InitDB(GameState& gameState, RestoreRoomsDB& db)
 		}
 
 		size_t db_currentIndex = db.restoredRooms.size();
-		RoomConfig_Room* roomData = VirtualGameStateRoom_get_address(room);
+		RoomConfig_Room* roomData = VirtualGameStateRoom_get_room(room);
 		auto [it, inserted] = processedRooms.try_emplace(roomData, db_currentIndex);
 
 		size_t roomDBIndex;
@@ -1103,7 +1206,7 @@ bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const GameSta
 		bool successfulRead = ReadDB(filePath, gameChecksum, db);
 		if (!successfulRead)
 		{
-			// don't return we might still be able to handle the save file.
+			// don't return false, we might still be able to handle the save file.
 			ZHL::Log(LOG_WARN_HEADER "Failed DB read, restore might fail.\n");
 		}
 	}
@@ -1176,7 +1279,7 @@ HOOK_METHOD(RoomConfig, ResetRoomWeights, (uint32_t Stage, int Mode) -> void)
 	super(Stage, Mode);
 
 	// reset room weights
-	Mode = get_mode(Mode);
+	Mode = normalize_mode(Mode);
 	_VirtualRoomSet& virtualSet = GetVanillaRoomSet(Stage, Mode);
 	::ResetRoomWeights(virtualSet);
 }
@@ -1186,9 +1289,9 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void
 	super(Stage, Mode);
 
 	// recommit all insertions
-	Mode = get_mode(Mode);
+	Mode = normalize_mode(Mode);
 	_VirtualRoomSet& virtualSet = GetVanillaRoomSet(Stage, Mode);
-	commit_base_game_room_set_insertion(virtualSet, 0, virtualSet.size(), Stage, Mode);
+	commit_vanilla_room_set_insertion(virtualSet, 0, virtualSet.size(), Stage, Mode);
 }
 
 HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsigned int type, unsigned int variant, int mode) -> RoomConfig_Room*)
@@ -1210,7 +1313,7 @@ HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsig
 HOOK_METHOD(RoomConfig, GetRooms, (int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) -> RoomConfigRoomPtrVector)
 {
 	auto rooms = super(stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-	mode = get_mode(mode);
+	mode = normalize_mode(mode);
 	_VirtualRoomSet& virtualSet = GetVanillaRoomSet(stage, mode);
 	FilterRooms(rooms, virtualSet, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, *doors, subtype);
 
@@ -1233,7 +1336,7 @@ HOOK_STATIC(Level, read_room_config, (GameStateRoomConfig* room, std_deque_RoomC
 	assert(!GameStateRoom_is_database(*room));
 	if (GameStateRoom_is_virtual(*room))
 	{
-		RoomConfig_Room* restoredRoom = VirtualGameStateRoom_get_address(*room);
+		RoomConfig_Room* restoredRoom = VirtualGameStateRoom_get_room(*room);
 		return restoredRoom;
 	}
 

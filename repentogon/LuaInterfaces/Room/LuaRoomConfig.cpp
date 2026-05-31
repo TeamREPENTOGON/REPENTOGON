@@ -2,7 +2,7 @@
 #include "Log.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "../../Patches/VirtualRoomSets.h"
+#include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 /*LUA_FUNCTION(Lua_GameGetRoomConfig) {
 	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");

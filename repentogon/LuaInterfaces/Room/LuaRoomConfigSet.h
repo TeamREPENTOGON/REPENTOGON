@@ -1,5 +1,5 @@
 #include "LuaCore.h"
-#include "../../Patches/VirtualRoomSets.h"
+#include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 namespace LuaRoomConfigSet
 {

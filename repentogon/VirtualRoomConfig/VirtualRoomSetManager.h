@@ -5,7 +5,7 @@
 #include "../RoomConfigUtility.h"
 #include "../LogUtility.h"
 #include "LuaCore.h"
-#include "GameStateManagement.h"
+#include "../Patches/GameStateManagement.h"
 
 #include <string>
 #include <vector>
@@ -45,7 +45,14 @@ public:
 		// The lua functions are placed here since they are just details for the LUA API
 		// rather than functionality of a VirtualRoomSet
 
+		/// @brief Adds the rooms stored in the passed table to the specified set.
+		/// Places the return table on the Lua stack.
+		/// @return number of return Lua values the function has pushed on the stack.
 		static int Lua_AddLuaRooms(lua_State* L, VirtualRoomSet& virtualSet, int tableIdx);
+		/// @brief Adds the rooms stored in the .stb to the specified set.
+		/// Places the return table on the Lua stack.
+		/// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
+		/// @return number of return Lua values the function has pushed on the stack.
 		static int Lua_AddStbRooms(lua_State* L, VirtualRoomSet& virtualSet, const std::string& fileName);
 	};
 
@@ -53,13 +60,15 @@ public:
 	/// @brief Gets the vanilla set extension, using the vanilla RoomSet id.
 	static VirtualRoomSet GetVanillaSet(uint32_t stageId, int mode);
 	/// @brief Creates a new room set.
-	static VirtualRoomSet CreateSet();
+	// static VirtualRoomSet CreateSet();
 };
 
 class VirtualRoomSet
 {
 	friend class VirtualRoomSetManager;
+
 	using _VirtualRoomSet = VirtualRoomSetManager::detail::_VirtualRoomSet;
+public:
 	using Iterator = _VirtualRoomSet::const_iterator;
 
 private:
