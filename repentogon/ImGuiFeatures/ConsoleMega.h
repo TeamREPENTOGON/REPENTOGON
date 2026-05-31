@@ -7,7 +7,7 @@
 #include "UnifontSupport.h"
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
-#include "../Patches/VirtualRoomSets.h"
+#include "../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 #include <sstream>
 #include <cctype>

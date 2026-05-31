@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "../../Patches/VirtualRoomSets.h"
+#include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 #include "LuaRoomConfigSet.h"
 
 LuaRoomConfigSet::Userdata::Userdata(RoomConfig_Stage& stage, int mode)

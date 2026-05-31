@@ -5,7 +5,7 @@
 
 #include <filesystem>
 #include "ItemPoolManager.h"
-#include "VirtualRoomSets.h"
+#include "../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
 
