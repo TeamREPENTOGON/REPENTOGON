@@ -515,13 +515,7 @@ static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std
 {
 	OutAddStbRooms out;
 
-	LogUtility::LogContext logContext;
-	//logContext.emplace_back(REPENTOGON::StringFormat("[LUA] Add Rooms from `.../content/rooms/%s` to set (%u, %i): ", filename.c_str(), stageId, mode));
-	//std::string luaCaller = LogUtility::Lua::GetStackLevelInfo(L, 1);
-	//if (!luaCaller.empty())
-	//{
-	//	logContext.emplace_back(luaCaller + " -> ");
-	//}
+	ZHL::Log(LOG_INFO_HEADER "Adding Rooms from `/content/rooms/%s`\n", filename.c_str());
 
 	// Find the full expanded filepaths for matching files from ALL enabled mods.
 	std::vector<std::string> modfilepaths = REPENTOGON::GetAllModContentPaths(filename);
@@ -541,7 +535,7 @@ static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std
 		header[4] = '\0';
 		if (strcmp(header, "STB1") != 0)
 		{
-			logContext.LogMessage(LogUtility::eLogType::ERROR, REPENTOGON::StringFormat("Invalid room file header '%s' in %s", header, filepath.c_str()).c_str());
+			ZHL::Log(LOG_INFO_HEADER "Invalid room file header '%s' in %s", header, filepath.c_str());
 		}
 		else
 		{
@@ -549,7 +543,7 @@ static const OutAddStbRooms add_stb_rooms(_VirtualRoomSet& virtualSet, const std
 			int numRooms = 0;
 			file->Read(&numRooms, 4, 1);
 
-			//logContext.emplace_back(REPENTOGON::StringFormat("Reading %d Rooms from `%s`...", numRooms, filepath.c_str()));
+			ZHL::Log(LOG_INFO_HEADER "Reading %d Rooms from '%s'\n", numRooms, filepath.c_str());
 
 			// The game's logic to load a RoomConfig_Room from a .stb file is tied to the RoomSet class.
 			// Additionally, we can run into issues if we try to move/destroy a RoomConfig_Room/RoomSpawns allocated by the game.
