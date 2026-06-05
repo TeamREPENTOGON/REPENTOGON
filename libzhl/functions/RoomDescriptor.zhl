@@ -1,3 +1,9 @@
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??33c0":
+__thiscall RoomConfig_Room* RoomDescriptor::constructor();
+
+"56578bf98d8f????????e8????????8b87":
+__thiscall void RoomDescriptor::destructor();
+
 "558bec83e4f883ec1453568b75??8bd9":
 __thiscall void RoomDescriptor::InitSeeds(RNG * rng);
 
@@ -5,6 +11,12 @@ struct RoomDescriptor depends (RoomConfig_Room)
 {
 	{{
 		int LIBZHL_API RoomDescriptor::GetErrorTrinketEffect();
+
+        void RoomDescriptor::Reset()
+        {
+            this->destructor();
+            this->constructor();
+        }
 	}}
     int32_t GridIndex : 0x0;
     int32_t SafeGridIndex : 0x4;
