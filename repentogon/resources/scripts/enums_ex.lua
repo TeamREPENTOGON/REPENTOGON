@@ -284,6 +284,8 @@ ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS = 1335
 --ModCallbacks.MC_PRE_NPC_GET_LOOT_LIST = 1336 (Reserved for the future)
 --ModCallbacks.MC_PRE_NPC_UPDATE_GHOST_PICKUPS = 1337 (Reserved for the future)
 
+ModCallbacks.MC_PRE_GENERATE_DUNGEON = 1340
+
 ModCallbacks.MC_PRE_PLAYER_ADD_CARD = 1350
 ModCallbacks.MC_POST_PLAYER_ADD_CARD = 1351
 ModCallbacks.MC_PRE_PLAYER_ADD_PILL = 1352
@@ -3169,6 +3171,15 @@ TrinketSlot = {
 	SECONDARY = 1,
 	MOMS_PURSE = 1,
 	BELLY_BUTTON = 1,
+}
+
+GenerateDungeonType = {
+	NORMAL = 0,
+	BLUE_WOMB = 1,
+	BACKWARDS = 2,
+	HOME = 3,
+	RED_REDEMPTION = 4,
+	GREED = 5
 }
 
 --deprecated enums

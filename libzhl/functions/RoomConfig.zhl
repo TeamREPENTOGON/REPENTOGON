@@ -18,6 +18,9 @@ __thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t st
 "558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
 __thiscall RoomConfig_Room* RoomConfig::GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
 
+"558bec83e4f851566aff":
+__thiscall RoomConfig_Room* RoomConfig::GetRandomRoomFromOptionalStage(unsigned int seed, bool reduceWeight, int stage, int backup_stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype);
+
 "558bec6aff68????????64a1000000005083ec18535657a1????????33c5508d45f464a3000000008b7d0c8b553069f7c4000000":
 RoomConfigRoomPtrVector RoomConfig::GetRooms(int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode);
 

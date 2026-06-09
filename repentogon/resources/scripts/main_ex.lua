@@ -1855,10 +1855,25 @@ end
 function _RunTriggerPlayerDeathCallback(callbackID, param, ...)
 	return RunTriggerPlayerDeathCallback(callbackID, GetCallbackIterator(callbackID, param), ...)
 end
+
+-- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
 rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
+
+
+local function RunPreGenerateDungeonCallback(callbackID, param, dungeonGenerator, rng, dungeonType)
+	for callback in GetCallbackIterator(callbackID, param) do
+		RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
+
+		if dungeonGenerator:Validate() then
+			return true
+		else
+			dungeonGenerator:Reset()
+		end
+	end
+end
 
 
 -- Defines non-default callback handling logic to be used for specific callbacks.
@@ -1910,6 +1925,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_CAN_SELECT_CHARACTER] = RunFalseBreakCallbackLogic,
 	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_GENERATE_DUNGEON] = RunPreGenerateDungeonCallback
 }
 
 for _, callback in ipairs({

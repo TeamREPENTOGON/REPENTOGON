@@ -18,6 +18,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
 #include "CustomCallbacks.h"
+#include "LuaDungeonGenerator.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -6402,4 +6403,93 @@ void CustomCallbacks::detail::ApplyPatches()
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
     Patch_PlayerTriggerCollectibleRemoved_Stompy();
     Patch_PlayerTriggerCollectibleRemoved_Heartbreak();
+}
+
+//MC_PRE_GENERATE_DUNGEON(1340)
+bool should_reset_lil_portal = false;
+HOOK_METHOD(Level, Init, (bool reset_lil_portal) -> void) {
+	should_reset_lil_portal = reset_lil_portal;
+	super(reset_lil_portal);
+}
+
+bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationType dungeonType) {
+	const int callbackId = 1340;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return false;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	DungeonGenerator generator(&rng, level, dungeonType, should_reset_lil_portal);
+	lua::LuaResults results = lua::LuaCaller(L)
+		.push(callbackId)
+		.push((int)dungeonType)
+		.push(&generator, lua::metatables::DungeonGeneratorMT)
+		.push(&rng, lua::Metatables::RNG)
+		.push((int)dungeonType)
+		.call(1);
+
+	if (results || !lua_isboolean(L, -1) || !lua_toboolean(L, -1)) {
+		return false;
+	}
+
+	bool correctGeneration = generator.Generate();
+
+	return correctGeneration;
+}
+
+HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, *rng, DEFAULT);
+	if (skip) {
+		return;
+	}
+
+	super(rng);
+}
+
+HOOK_METHOD(Level, generate_blue_womb, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, BLUE_WOMB);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_backwards_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, BACKWARDS);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_home_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, HOME);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_redkey_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, RED_REDEMPTION);
+	if (skip) {
+		return;
+	}
+
+	super();
+}
+
+HOOK_METHOD(Level, generate_greed_dungeon, () -> void) {
+	bool skip = ProcessGenerateDungeonCallback(this, g_Game->_generationRNG, GREED);
+	if (skip) {
+		return;
+	}
+
+	super();
 }
