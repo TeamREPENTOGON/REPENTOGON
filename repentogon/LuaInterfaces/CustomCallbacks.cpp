@@ -6460,7 +6460,7 @@ HOOK_METHOD(Weapon_Brimstone, do_baby_brimstone_burst, (Vector* unused1, Vector*
 	return result;
 }
 
-// MC_PRE/POST_SHUFFLE_COSTUME (1494/1945)
+// MC_PRE/POST_SHUFFLE_COSTUMES (1494/1945)
 HOOK_METHOD(Entity_Player, ShuffleCostumes, (unsigned int seed) -> void) {
 	const int preCallbackId = 1494;
 
