@@ -389,6 +389,8 @@ ModCallbacks.MC_EVALUATE_TEAR_HIT_PARAMS = 1490
 ModCallbacks.MC_PRE_OPEN_CHEST = 1491
 ModCallbacks.MC_POST_OPEN_CHEST = 1492
 ModCallbacks.MC_GET_BOSS_THEMATIC_ITEM = 1493
+ModCallbacks.MC_PRE_SHUFFLE_COSTUME = 1494
+ModCallbacks.MC_POST_SHUFFLE_COSTUME = 1945
 
 --Repentance+ Enums (🐱 catin: https://github.com/epfly6/RepentanceAPIIssueTracker/issues/597)
 EffectVariant.MEGA_BEAN_EXPLOSION = 202

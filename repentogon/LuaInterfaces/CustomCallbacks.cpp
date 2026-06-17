@@ -6460,6 +6460,43 @@ HOOK_METHOD(Weapon_Brimstone, do_baby_brimstone_burst, (Vector* unused1, Vector*
 	return result;
 }
 
+// MC_PRE/POST_SHUFFLE_COSTUME (1494/1945)
+HOOK_METHOD(Entity_Player, ShuffleCostumes, (unsigned int seed) -> void) {
+	const int preCallbackId = 1494;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetPlayerType())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(seed)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return;
+		}
+	}
+
+	super(seed);
+
+	const int postCallbackId = 1495;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetPlayerType())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(seed)
+			.call(0);
+	}
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
