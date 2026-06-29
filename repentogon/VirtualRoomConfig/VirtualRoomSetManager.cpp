@@ -1220,7 +1220,7 @@ bool VirtualRoomSetManager::detail::ReadSave(GameState& gameState, const GameSta
 void VirtualRoomSetManager::detail::DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun)
 {
 	// reset db
-	RestoreRoomsDB& db = get_db_for_slot(saveInfo.isRemote, saveInfo.isRemote);
+	RestoreRoomsDB& db = get_db_for_slot(saveInfo.saveSlot, saveInfo.isRemote);
 	db.init();
 
 	// rooms are not saved on Rerun
