@@ -137,7 +137,7 @@ void __stdcall LoadMods() {
 		if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || !strcmp(data.cFileName, "zhlLoader.dll")) {
 			HMODULE mod = LoadLibraryA(data.cFileName);
 			if (!mod) {
-				Log(f, "WARN", "Unable to load mod %s\n", data.cFileName);
+				Log(f, "WARN", "Unable to load mod %s (%d)\n", data.cFileName, GetLastError());
 			}
 			else {
 				int (*init)() = (int(*)())GetProcAddress(mod, "ModInit");

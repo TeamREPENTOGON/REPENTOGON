@@ -1,4 +1,5 @@
 #include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 #include "libzhl.h"
 #include "HookSystem.h"
 #include "HookSystem_private.h"
@@ -115,31 +116,75 @@ static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_
 	return result;
 }
 
+// If all attempts to get the user's profile folder fail, the vanilla game falls back to "./", which ends up being:
+// `...\steamapps\common\The Binding of Isaac Rebirth\Documents\My Games\Binding of Isaac Repentance+\`
+// While stupid and rare, we try to maintain parity with that by going up one level, to that same location.
+// If we don't, syncing options and local saves would be impossible, and savedata would be deleted when RGON is reinstalled.
+static constexpr char FallbackSaveLocation[] = "../";
+
+static void PatchSaveDirectoryFallback() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SetupSaveDirectoryFinalFallback);
+
+	printf("[REPENTOGON] Patching SetupSaveDirectory fallback @ %p\n", addr);
+
+	const char* ptr = FallbackSaveLocation;
+
+	ASMPatch patch;
+	patch.AddBytes("\x68").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4))
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+static bool IsWritableDirectory(const std::string& path) {
+	DWORD attr = GetFileAttributesA(path.c_str());
+	if (attr == INVALID_FILE_ATTRIBUTES) {
+		return false;
+	}
+	const bool isDirectory = (attr & FILE_ATTRIBUTE_DIRECTORY);
+	const bool isReadOnly = (attr & FILE_ATTRIBUTE_READONLY);
+	return isDirectory && !isReadOnly;
+}
+
 std::string GetUserPath()
 {
+	// Note: We do not use UTF-16 functions like GetUserProfileDirectoryW here because the game doesn't either.
+	// This code is attempting to recreate the logic that the game uses to decide its save folder (SetupSaveDirectory),
+	// since we need to fetch that location earlier/independantly from g_SaveDataPath.
 	HANDLE token = nullptr;
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
-		return {};
-
-	DWORD size = 0;
-	GetUserProfileDirectoryW(token, nullptr, &size);
-
-	if (size == 0) {
-		CloseHandle(token);
-		return {};
+	if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token)) {
+		DWORD size = 0;
+		GetUserProfileDirectoryA(token, NULL, &size);
+		if (size > 0) {
+			std::string path(size, '\0');
+			if (GetUserProfileDirectoryA(token, path.data(), &size)) {
+				path.pop_back();  // Remove excess null terminator.
+				if (IsWritableDirectory(path)) {
+					CloseHandle(token);
+					return path;
+				}
+			}
+		}
 	}
-
-	std::wstring wpath(size, L'\0');
-	if (!GetUserProfileDirectoryW(token, wpath.data(), &size)) {
-		CloseHandle(token);
-		return {};
-	}
-
 	CloseHandle(token);
-	wpath.pop_back();
 
-	std::filesystem::path path = std::filesystem::path(wpath);
-	return path.string();
+	const char* userprofile = std::getenv("USERPROFILE");
+	if (userprofile) {
+		const std::string path = userprofile;
+		if (IsWritableDirectory(path)) {
+			return path;
+		}
+	}
+
+	const char* homedrive = std::getenv("HOMEDRIVE");
+	const char* homepath = std::getenv("HOMEPATH");
+	if (homedrive && homepath) {
+		const std::string path = std::string(homedrive) + homepath;
+		if (IsWritableDirectory(path)) {
+			return path;
+		}
+	}
+	
+	return FallbackSaveLocation;
 }
 
 static void FixLuaDump()
@@ -205,6 +250,7 @@ MOD_EXPORT int InitRepentogon(void* poisonAddr, char poisonedValue)
 	logger.Log("REPENTOGON: Initialized options\n");
 	REPENTOGON::UpdateProgressDisplay("Perform ASMPatches");
 	logger.Log("REPENTOGON: Performing ASM patches\n");
+	PatchSaveDirectoryFallback();
 	PerformASMPatches();
 	logger.Log("REPENTOGON: Done performing ASM patches\n");
 

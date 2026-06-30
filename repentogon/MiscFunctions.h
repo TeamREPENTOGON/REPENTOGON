@@ -205,20 +205,58 @@ namespace REPENTOGON {
 		bool existed = std::filesystem::is_directory(optionsPath.c_str());
 		std::filesystem::create_directories(optionsPath.c_str(), err);
 		if (err) {
-				ZHL::Log("Error %s creating Repentogon Save directory: %s\n", err.message().c_str(), optionsPath.c_str());
-				return "";
+			ZHL::Log("Error %s creating Repentogon Save directory: %s\n", err.message().c_str(), optionsPath.c_str());
+			return "";
 		}
 		if (!existed) {
 			ZHL::Log("Newly created REPENTOGON savedata folder @ %s\n", optionsPath.c_str());
-			std::string optionsPathMinus = optionsPath;
-			optionsPathMinus.erase(optionsPathMinus.find_last_of('+'), 1);  // REP- savedata path is the same, just without the '+'
-			ZHL::Log("Checking for legacy REPENTOGON savedata @ %s\n", optionsPathMinus.c_str());
-			if (std::filesystem::is_directory(optionsPathMinus)) {
-				ZHL::Log("Legacy REPENTOGON savedata directory found. Copying contents to new savedata folder...\n");
-				std::filesystem::copy(optionsPathMinus, optionsPath, std::filesystem::copy_options::recursive);
-				ZHL::Log("...Done!\n");
-			} else {
-				ZHL::Log("No legacy REPENTOGON savedata directory found.\n");
+
+			// The following code is only relevant for users where the game cannot access their user profile folder for some reason.
+			// The vanilla game doesn't handle this too gracefully - it will fall back to creating its expected `Documents/My Games` path IN THE GAME'S INSTALLATION.
+			// So you end up with something like: `D:\SteamLibrary\steamapps\common\The Binding of Isaac Rebirth\Documents\My Games\Binding of Isaac Repentance+\`
+			// Previously REPENTOGON didn't follow this behaviour accurately, and also just crashed if the path contained unicode characters. We are more aligned now.
+			// There's a good chance that these backwards-compatibility checks never actually come up in a way anyone would notice, but I'm playing it safe.
+			try {
+				// Case 1: Someone somehow had their save folder end up at `...\The Binding of Isaac Rebirth\Repentogon\Documents\...`
+				// Would require GetUserProfile failing despite not containing unsupported unicode characters (which used to lead to a crash instead).
+				// This would make it impossible to sync vanilla options and local saves, and re-installing REPENTOGON would delete everything.
+				// We try to push this up one level now to use the same folder that the game uses. If someone seems to have had this case, copy back any missing files.
+				const std::filesystem::path stupidOptionsPath("./Documents/My Games/Binding of Isaac Repentance+/Repentogon/");
+				if (std::filesystem::exists(stupidOptionsPath) && !std::filesystem::equivalent(optionsPath, stupidOptionsPath)) {
+					ZHL::Log("Copying from stupid save folder @ %s\n", stupidOptionsPath.string().c_str());
+					std::filesystem::copy(stupidOptionsPath, optionsPath, std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing);
+				}
+			} catch (const std::filesystem::filesystem_error& e) {
+				ZHL::Log("Caught exception while trying to migrate stupid save folder: %s\n", e.what());
+			}
+			try {
+				// Case 2: Previously, if REPENTOGON failed to get the user's profile directory, it would put saves at the drive root, lol.
+				// So `C:/Documents/My Games/Binding of Isaac Repentance+/Repentogon/`
+				// This was also pretty silly in its own way (not that the vanilla way we now try to align with is much better).
+				// Still, if it seems like this was the situation, copy the options over from the old location.
+				const std::filesystem::path dumbOptionsPath("/Documents/My Games/Binding of Isaac Repentance+/Repentogon/");
+				if (std::filesystem::exists(dumbOptionsPath) && !std::filesystem::equivalent(optionsPath, dumbOptionsPath)) {
+					ZHL::Log("Copying from dumb save folder @ %s\n", dumbOptionsPath.string().c_str());
+					std::filesystem::copy(dumbOptionsPath, optionsPath, std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing);
+				}
+			} catch (const std::filesystem::filesystem_error& e) {
+				ZHL::Log("Caught exception while trying to migrate dumb save folder: %s\n", e.what());
+			}
+
+			// Imports REPENTOGON savedata (options, marks, etc) from the legacy Repentance- version.
+			try {
+				std::string optionsPathMinus = optionsPath;
+				optionsPathMinus.erase(optionsPathMinus.find_last_of('+'), 1);  // REP- savedata path is the same, just without the '+'
+				ZHL::Log("Checking for legacy REPENTOGON savedata @ %s\n", optionsPathMinus.c_str());
+				if (std::filesystem::is_directory(optionsPathMinus)) {
+					ZHL::Log("Legacy REPENTOGON savedata directory found. Copying contents to new savedata folder...\n");
+					std::filesystem::copy(optionsPathMinus, optionsPath, std::filesystem::copy_options::recursive | std::filesystem::copy_options::skip_existing);
+					ZHL::Log("...Done!\n");
+				} else {
+					ZHL::Log("No legacy REPENTOGON savedata directory found.\n");
+				}
+			} catch (const std::filesystem::filesystem_error& e) {
+				ZHL::Log("Caught exception while trying to migrate legacy save folder: %s\n", e.what());
 			}
 		}
 
