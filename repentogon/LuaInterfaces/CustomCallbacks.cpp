@@ -5322,7 +5322,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
@@ -5353,7 +5353,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
@@ -5375,7 +5375,7 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -5399,7 +5399,7 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);

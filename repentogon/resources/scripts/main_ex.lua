@@ -950,6 +950,10 @@ local CALLBACK_PARAM_CONVERSION_FUNCS = {
 	[ModCallbacks.MC_POST_ROOM_TRIGGER_EFFECT_REMOVED] = ConvertItemConfigItemParam,
 	[ModCallbacks.MC_POST_PLAYER_ADD_EFFECT] = ConvertItemConfigItemParam,
 	[ModCallbacks.MC_POST_ROOM_ADD_EFFECT] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_PRE_PLAYER_ADD_COSTUME] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_POST_PLAYER_ADD_COSTUME] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_PRE_PLAYER_REMOVE_COSTUME] = ConvertItemConfigItemParam,
+	[ModCallbacks.MC_POST_PLAYER_REMOVE_COSTUME] = ConvertItemConfigItemParam,
 }
 local function ConvertCallbackParam(callbackID, param)
 	if callbackID and param then
