@@ -281,8 +281,9 @@ ModCallbacks.MC_POST_RENDER_CHARACTER_SELECT_PORTRAIT = 1332
 ModCallbacks.MC_PRE_RENDER_CUSTOM_CHARACTER_MENU = 1333
 ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST = 1334
 ModCallbacks.MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS = 1335
---ModCallbacks.MC_PRE_NPC_GET_LOOT_LIST = 1336 (Reserved for the future)
---ModCallbacks.MC_PRE_NPC_UPDATE_GHOST_PICKUPS = 1337 (Reserved for the future)
+ModCallbacks.MC_POST_PICKUP_GET_LOOT_LIST = 1336
+--ModCallbacks.MC_PRE_NPC_GET_LOOT_LIST = 1337 (Reserved for the future)
+--ModCallbacks.MC_PRE_NPC_UPDATE_GHOST_PICKUPS = 1338 (Reserved for the future)
 
 ModCallbacks.MC_PRE_PLAYER_ADD_CARD = 1350
 ModCallbacks.MC_POST_PLAYER_ADD_CARD = 1351
@@ -388,6 +389,8 @@ ModCallbacks.MC_EVALUATE_TEAR_HIT_PARAMS = 1490
 ModCallbacks.MC_PRE_OPEN_CHEST = 1491
 ModCallbacks.MC_POST_OPEN_CHEST = 1492
 ModCallbacks.MC_GET_BOSS_THEMATIC_ITEM = 1493
+ModCallbacks.MC_PRE_SHUFFLE_COSTUMES = 1494
+ModCallbacks.MC_POST_SHUFFLE_COSTUMES = 1945
 
 --Repentance+ Enums (🐱 catin: https://github.com/epfly6/RepentanceAPIIssueTracker/issues/597)
 EffectVariant.MEGA_BEAN_EXPLOSION = 202

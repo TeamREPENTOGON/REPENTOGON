@@ -50,6 +50,7 @@
 #include "ASMPatches/ASMCamera.h"
 
 #include "ASMPatcher.hpp"
+#include "ASMDefinition.h"
 
 /* This patch hooks KAGE_LogMessage by hand. LibZHL can't properly hook functions with varargs, and we need varargs to properly get log messages.
 *  So, we'll just do it manually, not a big deal.
@@ -131,36 +132,33 @@ void ModSavesReReoute() {
 }
 
 void ASMPatchModReRoute() {
-	SigScan scanner("83c4446a0068????????ffd7");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SetupSaveDirectoryModFolder);
 
-	printf("[REPENTOGON] Patching Mod Dir::Point to original mods dir %p\n", addr);
+	printf("[REPENTOGON] Patching SetupSaveDirectory to redirect to original 'mods/' dir %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.AddInternalCall(ModReReoute)
-		.RestoreRegisters(savedRegisters);
-	sASMPatcher.FlatPatch(addr, &patch);
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overwritten bytes
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
 
-	//Mod save data
+void ASMPatchModDataReRoute() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::SetupSaveDirectoryModSaveDataFolder);
 
-	SigScan scanner2("83c4246a0068????????ffd7803d????????00");
-	scanner2.Scan();
-	void* addr2 = scanner2.GetAddress();
+	printf("[REPENTOGON] Patching SetupSaveDirectory to redirect to original mod 'data/' dir %p\n", addr);
 
-	printf("[REPENTOGON] Patching Mod SaveData Dir::Point to original data dir %p\n", addr);
-
-	ASMPatch::SavedRegisters savedRegisters2(ASMPatch::SavedRegisters::GP_REGISTERS, true);
-	ASMPatch patch2;
-	patch2.PreserveRegisters(savedRegisters2)
+	ASMPatch::SavedRegisters savedRegisters2(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters2)
 		.AddInternalCall(ModSavesReReoute)
-		.RestoreRegisters(savedRegisters2);
-	sASMPatcher.FlatPatch(addr2, &patch2);
-	printf("%s \n", &g_ModSaveDataPath);
-
-
+		.RestoreRegisters(savedRegisters2)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore overwritten bytes
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 void PerformASMPatches() {
@@ -304,6 +302,7 @@ void PerformASMPatches() {
 
 	//Mod folder redirect
 	ASMPatchModReRoute();
+	ASMPatchModDataReRoute();
 
 	// Tweaks (bug crashes)
 	if (!ASMPatches::FixGodheadEntityPartition()) {

@@ -165,7 +165,7 @@ namespace ESSM
     {
         std::vector<uint32_t> reusableIds;
         uint32_t totalIds = 0;
-        std::vector<HijackedState> hijackedStates; 
+        std::vector<HijackedState> hijackedStates;
     };
 
     class LuaCallbacks
@@ -1065,6 +1065,24 @@ namespace ESSM::Utils
             CollectLambda(state, collection);
         }
     }
+
+    /// @brief Resets all rooms for the given backwards stage.
+    /// The game normally doesn't do this, and leaves the "invalid" rooms
+    /// in their old state, which makes the saved entities still active.
+    ///
+    /// The room count is not altered, as that is handled by the game.
+    static void ResetBackwardsStage(BackwardsStageDesc& backwardsStage)
+    {
+        for (size_t i = 0; i < backwardsStage._bossRoomsCount; i++)
+        {
+            backwardsStage._bossRooms[i].Reset();
+        }
+
+        for (size_t i = 0; i < backwardsStage._treasureRoomsCount; i++)
+        {
+            backwardsStage._treasureRooms[i].Reset();
+        }
+    }
 }
 
 namespace ESSM::Core
@@ -1866,6 +1884,8 @@ namespace ESSM::detail::SaveData
 
     WriteState WriteGameState()
     {
+        ScopedDebugContext context("WriteGameState");
+
         Manager* manager = g_Manager;
         GameState& gameState = manager->_gamestate;
     
@@ -1896,6 +1916,8 @@ namespace ESSM::detail::SaveData
 
     ReadState ReadGameState()
     {
+        ScopedDebugContext dbgCtx("ReadGameState");
+
         Manager* manager = g_Manager;
         GameState& gameState = manager->_gamestate;
 
@@ -2129,6 +2151,8 @@ namespace ESSM::detail::SaveData
 
     void Serialize(const std::string& fileName, WriteState& writeState)
     {
+        ScopedDebugContext context("Serialize");
+
         _WriteState& _writeState = writeState.m_writeState;
         serialize(fileName, _writeState);
         EntitySaveStateEx::WriteSaveFile(fileName, _writeState.writeEntityIdPairs);
@@ -2187,6 +2211,8 @@ namespace ESSM::detail::SaveData
 
     bool Deserialize(const std::string& fileName, ReadState& readState)
     {
+        ScopedDebugContext dbgCtx("Deserialize");
+
         _ReadState& _readState = readState.m_readState;
         bool success = deserialize(fileName, _readState);
         EntitySaveStateEx::LoadSaveFile(fileName, _readState.restoreEntityIdPairs);
@@ -2221,12 +2247,16 @@ namespace ESSM::detail::SaveData
 
 #pragma region Hooks
 
-static std::pair<Entity*, EntitySaveState*> s_minecartEntity = {nullptr, nullptr};
+using MinecartEntity = std::pair<Entity*, EntitySaveState*>;
+
+static MinecartEntity s_minecartEntity = {nullptr, nullptr};
 
 // ASSUMPTION: It is assumed that every time a save_entity with 'isSavingMinecartEntity' set to true is successful, it is immediately followed by another call to save_entity,
 // with the saved entity being the minecart that holds the previous saved entity.
 HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savingMinecartEntity) -> bool)
 {
+    ScopedDebugContext dbgCtx("Room::save_entity");
+
     std::pair<Entity*, EntitySaveState*> minecartEntity = s_minecartEntity;
     s_minecartEntity.first = nullptr; s_minecartEntity.second = nullptr;
 
@@ -2235,6 +2265,8 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
 
     if (!saved)
     {
+        // check if a minecart entity was saved before, and if so unhijack it
+        // as it will not be added to the RoomDescriptor::SavedEntities vector
         if (minecartEntity.first)
         {
             assert(entity->_type == eEntityType::ENTITY_MINECART); // the next thing after a minecart entity save must always be a minecart
@@ -2261,7 +2293,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
         EntitySaveState* flipState = minecartEntity.second->entitySaveState.saveState;
         if (flipState)
         {
-            CollectedStates collection = {flipState};
+            CollectedStates collection = { flipState };
             ESSM::Core::CopySaveStates(collection);
         }
 
@@ -2272,7 +2304,7 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
     EntitySaveState* flipState = data->entitySaveState.saveState;
     if (flipState)
     {
-        CollectedStates collection = {flipState};
+        CollectedStates collection = { flipState };
         ESSM::Core::CopySaveStates(collection);
     }
 
@@ -2283,6 +2315,8 @@ HOOK_METHOD(Room, save_entity, (Entity* entity, EntitySaveState* data, bool savi
 
 HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> void)
 {
+    ScopedDebugContext dbgCtx("Room::restore_entity");
+
     uint32_t id = ESSM::EntityHijackManager::UnHijack(*data);
 
     super(entity, data);
@@ -2293,6 +2327,8 @@ HOOK_METHOD(Room, restore_entity, (Entity* entity, EntitySaveState* data) -> voi
 
 HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 {
+    ScopedDebugContext dbgCtx("Level::Init");
+
     auto& myosotisPickups = g_Game->_myosotisPickups;
 
     CollectedStates collection;
@@ -2305,6 +2341,8 @@ HOOK_METHOD(Level, Init, (bool resetLilPortalRoom) -> void)
 
 HOOK_METHOD(Level, reset_room_list, (bool resetLilPortalRoom) -> void)
 {
+    ScopedDebugContext dbgCtx("Level::reset_room_list");
+
     Game* game = g_Game;
     RoomDescriptor* roomList = game->_gridRooms;
     const size_t LIL_PORTAL_IDX = MAX_GRID_ROOMS + (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
@@ -2337,6 +2375,8 @@ static void reset_single_room(RoomDescriptor& room)
 
 HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 {
+    ScopedDebugContext dbgCtx("Level::DEBUG_goto_room");
+
     const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_DEBUG_IDX) - 1;
 
     Game* game = g_Game;
@@ -2348,6 +2388,8 @@ HOOK_METHOD(Level, DEBUG_goto_room, (RoomConfig_Room * roomConfig) -> void)
 
 HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 {
+    ScopedDebugContext dbgCtx("Level::InitializeGenesisRoom");
+
     const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_GENESIS_IDX) - 1;
 
     Game* game = g_Game;
@@ -2359,6 +2401,8 @@ HOOK_METHOD(Level, InitializeGenesisRoom, () -> void)
 
 HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, int direction) -> bool)
 {
+    ScopedDebugContext dbgCtx("Level::TryInitializeBlueRoom");
+
     const uint32_t FLAG_BLUE_REDIRECT = 1 << 18;
     const size_t LIST_IDX = eGridRooms::MAX_GRID_ROOMS + (-eGridRooms::ROOM_BLUE_ROOM_IDX) - 1;
 
@@ -2374,11 +2418,16 @@ HOOK_METHOD(Level, TryInitializeBlueRoom, (int currentIdx, int destinationIdx, i
 
 HOOK_METHOD(Game, SaveBackwardsStage, (int stage) -> void)
 {
+    ScopedDebugContext dbgCtx("Level::SaveBackwardsStage");
+
     BackwardsStageDesc& backwardsStage = g_Game->_backwardsStages[stage - 1];
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
     ESSM::EntityIterators::Structure::ForEachBackwardsStage(backwardsStage, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
+
+    // Reset the rooms
+    ESSM::Utils::ResetBackwardsStage(backwardsStage);
 
 	super(stage);
 
@@ -2403,7 +2452,7 @@ HOOK_STATIC(Entity_NPC, moms_heart_mausoleum_death, () -> void, __cdecl)
         return super();
     }
 
-    ScopedDebugContext context("Mom Heart Mausoleum Death");
+    ScopedDebugContext context("Entity_NPC::moms_heart_mausoleum_death");
 
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
@@ -2455,10 +2504,21 @@ HOOK_STATIC(Entity_NPC, moms_heart_mausoleum_death, () -> void, __cdecl)
 // Clear backwards stage save state, even though the game simply sets room count to 0, to avoid having to iterate "uninitialized" RoomDescriptors in the BackwardsStage. 
 HOOK_METHOD(Game, ResetState, () -> void)
 {
+    ScopedDebugContext context("GameState::ResetState");
+
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
     ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
+
+    // Reset backwards rooms
+    BackwardsStageDesc* backwardsStages = g_Game->_backwardsStages;
+
+    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+    {
+        BackwardsStageDesc& backwardsStage = backwardsStages[i];
+        ESSM::Utils::ResetBackwardsStage(backwardsStage);
+    }
 
 	super();
 }
@@ -2472,6 +2532,15 @@ HOOK_METHOD(GameState, Clear, () -> void)
     ESSM::EntityIterators::InGameState::ForEachInRooms(*this, ESSM::Utils::CollectLambda, collection);
     ESSM::EntityIterators::InGameState::ForEachInBackwardsStages(*this, ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates_HijackedOnly(collection);
+
+    // Reset backwards rooms
+    BackwardsStageDesc* backwardsStages = this->_backwardsStages;
+
+    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+    {
+        BackwardsStageDesc& backwardsStage = backwardsStages[i];
+        ESSM::Utils::ResetBackwardsStage(backwardsStage);
+    }
 
     // player save states are handled by GameStatePlayer::Init
     super();
@@ -2503,12 +2572,23 @@ HOOK_METHOD(Game, RestoreState, (GameState* state, bool startGame) -> void)
     ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
     ESSM::Core::ClearSaveStates(collection);
 
+    // Reset backwards rooms
+    BackwardsStageDesc* backwardsStages = g_Game->_backwardsStages;
+
+    for (size_t i = 0; i < NUM_BACKWARDS_STAGES; i++)
+    {
+        BackwardsStageDesc& backwardsStage = backwardsStages[i];
+        ESSM::Utils::ResetBackwardsStage(backwardsStage);
+    }
+
     super(state, startGame);
     // copy is in a separate patch as copying it here might cause problems due to callbacks running in the mean time.
 }
 
 HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 {
+    ScopedDebugContext dbgCtx("Level::RestoreGameState");
+
     // ASSUMPTION: Confirm that the function does not reset the LilPortalRoom when calling reset_room_list (through params), since we currently have to perform that clear manually.
     const size_t LIL_PORTAL_IDX = (-eGridRooms::ROOM_LIL_PORTAL_IDX) - 1;
     reset_single_room(g_Game->_negativeGridRooms[LIL_PORTAL_IDX]);
@@ -2517,6 +2597,8 @@ HOOK_METHOD(Level, RestoreGameState, (GameState* state) -> void)
 
 HOOK_METHOD(GameStatePlayer, Init, () -> void)
 {
+    ScopedDebugContext dbgCtx("GameStatePlayer::Init");
+
     CollectedStates collection;
     collection.reserve(this->_movingBoxContents.size() + this->_familiarData.size() + 1);
     ESSM::Utils::CollectStates(this->_movingBoxContents, collection);
@@ -2532,12 +2614,16 @@ HOOK_METHOD(GameStatePlayer, Init, () -> void)
 
 HOOK_METHOD(Entity_Player, constructor, () -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::constructor");
+
     super();
     ESSM::PlayerHijackManager::DefaultRestore(this->_unlistedRestoreState);
 }
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::Init");
+
     CollectedStates collection;
     collection.reserve(this->_movingBoxContents.size());
     ESSM::Utils::CollectStates(this->_movingBoxContents, collection);
@@ -2559,6 +2645,8 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 
 HOOK_METHOD(Entity_Player, destructor, () -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::destructor");
+
     GameStatePlayer& playerState = this->_unlistedRestoreState;
 
     CollectedStates collection;
@@ -2579,6 +2667,8 @@ HOOK_METHOD(Entity_Player, destructor, () -> void)
 
 HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool saveTemporaryFamiliars) -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::StoreGameState");
+
     // ASSUMPTION: It is assumed that the initial state is equivalent to an initialized or newly constructed state.
     assert(ESSM::PlayerHijackManager::IsCleared(*saveState));
 
@@ -2597,6 +2687,8 @@ HOOK_METHOD(Entity_Player, StoreGameState, (GameStatePlayer* saveState, bool sav
 
 HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::RestoreGameState");
+
     // if this player was replaced then don't restore the state
     if (this->_replacedPlayer)
     {
@@ -2623,6 +2715,8 @@ HOOK_METHOD(Entity_Player, RestoreGameState, (GameStatePlayer * saveState) -> vo
 
 HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
 {
+    ScopedDebugContext dbgCtx("Entity_Familiar::RestoreState");
+
     uint32_t id = ESSM::FamiliarHijackManager::UnHijack(*saveState);
     super(saveState);
     ESSM::FamiliarHijackManager::Hijack(*saveState, id);
@@ -2631,6 +2725,8 @@ HOOK_METHOD(Entity_Familiar, RestoreState, (FamiliarData* saveState) -> void)
 
 static void __stdcall asm_restore_game_state_backwards_rooms()
 {
+    ScopedDebugContext dbgCtx("Game::RestoreState (PostBackwardsStageDescRestore)");
+
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
     ESSM::EntityIterators::InGame::ForEachInBackwardsStages(ESSM::Utils::CollectLambda, collection);
@@ -2659,6 +2755,8 @@ static void Patch_GameRestoreState_PostBackwardsStageDescRestore()
 
 static void __stdcall asm_clear_room_saved_entities()
 {
+    ScopedDebugContext dbgCtx("ASM Clear Room Saved Entities");
+
     RoomDescriptor& room = *g_Game->_room->_descriptor;
 
     CollectedStates collection;
@@ -2699,6 +2797,7 @@ static void Patch_RoomRestoreState_ClearSavedEntities()
 
 static void __stdcall asm_copy_myosotis_pickups()
 {
+    ScopedDebugContext dbgCtx("Level::Init (PostMyosotisEffect)");
     auto& vector = g_Game->_myosotisPickups;
 
     CollectedStates collection;
@@ -2729,6 +2828,8 @@ static void Patch_LevelInit_PostMyosotisEffect()
 
 static void __stdcall asm_restore_level_game_state()
 {
+    ScopedDebugContext dbgCtx("Level::RestoreGameState (PreRoomLoad)");
+
     CollectedStates collection;
     collection.reserve(DEFAULT_COLLECT_RESERVE);
     ESSM::EntityIterators::InGame::ForEachInRooms(ESSM::Utils::CollectLambda, collection);
@@ -2757,6 +2858,8 @@ static void Patch_LevelRestoreGameState_PreRoomLoad()
 
 static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
+    ScopedDebugContext dbgCtx("Level::place_rooms_backwards (PreAssign)");
+
     auto& vector = *saveStateVector;
 
     CollectedStates collection;
@@ -2767,6 +2870,7 @@ static void __stdcall asm_clear_vector_pre_backwards_assign(std::vector<EntitySa
 
 static void __stdcall asm_copy_vector_post_backwards_assign(std::vector<EntitySaveState>* saveStateVector)
 {
+    ScopedDebugContext dbgCtx("Level::place_rooms_backwards (PostAssign)");
     auto& vector = *saveStateVector;
 
     CollectedStates collection;
@@ -2831,6 +2935,7 @@ static void Patch_LevelPlaceRoomsBackwards_Treasure_AssignEntitySaveStateVector(
 
 static void __fastcall asm_hijack_dark_closet_collectible(EntitySaveState& saveState)
 {
+    ScopedDebugContext dbgCtx("Level::generate_dark_closet (PostGenerateCollectibleSaveState)");
     ESSM::EntityHijackManager::NewHijack(saveState);
 }
 
@@ -2862,6 +2967,7 @@ static void Patch_LevelGenerateDarkCloset_PostGenerateCollectibleSaveState()
 
 static void __stdcall asm_clear_moving_box_vector(Entity_Player& player)
 {
+    ScopedDebugContext dbgCtx("Entity_Player::UseActiveItem (MovingBox ClearVector)");
     auto& vector = player._movingBoxContents;
 
     CollectedStates collection;
@@ -2893,6 +2999,8 @@ static void Patch_PlayerUseActiveItem_MovingBoxClearVector()
 
 static void __fastcall asm_store_familiar_data(FamiliarData& saveState, size_t updateELIndex)
 {
+    ScopedDebugContext dbgCtx("EntityPlayer::StoreGameState (FamiliarStoreState)");
+
     EntityList_EL& updateEL = *g_Game->_room->_entityList.GetUpdateEL();
     assert(updateELIndex < updateEL._size);
     Entity* entity = updateEL._data[updateELIndex];
@@ -2926,6 +3034,7 @@ static void Patch_PlayerStoreGameState_FamiliarStoreState()
 
 static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
+    ScopedDebugContext dbgCtx("Pre AssignFamiliarData");
     auto& vector = *saveStateVector;
 
     CollectedStates collection;
@@ -2936,6 +3045,7 @@ static void __stdcall asm_clear_familiar_vector(std::vector<FamiliarData>* saveS
 
 static void __stdcall asm_copy_familiar_vector(std::vector<FamiliarData>* saveStateVector)
 {
+    ScopedDebugContext dbgCtx("Post AssignFamiliarData");
     auto& vector = *saveStateVector;
 
     CollectedStates collection;
@@ -3001,6 +3111,8 @@ static void Patch_PlayerManagerRestoreGameState_AssignBackupFamiliarData()
 // use fastcall to emulate thiscall
 static void __fastcall asm_clear_smart_pointer(EntitySaveState* saveState)
 {
+    ScopedDebugContext dbgCtx("KAGE::ReferenceCount<EntitySaveState>::DecrementReference");
+
     if (ESSM::EntityHijackManager::IsHijacked(*saveState))
     {
         uint32_t id = ESSM::EntityHijackManager::GetId(*saveState);
@@ -3027,6 +3139,8 @@ static void Patch_ReferenceCount_EntitySaveStateDestructor()
 
 static void __stdcall asm_hijack_new_flip_state(EntitySaveState& saveState)
 {
+    ScopedDebugContext dbgCtx("Entity_Pickup::InitFlipState (PostSaveStateConstructor)");
+
     uint32_t id = ESSM::EntityHijackManager::NewHijack(saveState);
     LogDebug("New Flip State: %u\n", id);
 }
@@ -3054,6 +3168,7 @@ static void Patch_PickupInitFlipState_CreateSaveState()
 
 static void __fastcall asm_flip_restore(Entity& entity, EntitySaveState& saveState)
 {
+    ScopedDebugContext dbgCtx("Entity_Pickup::TryFlip (PostRestoreFlipState)");
     ESSM::Core::RestoreEntity(entity, ESSM::EntityHijackManager::GetId(saveState));
 }
 
@@ -3087,6 +3202,8 @@ static void Patch_PickupTryFlip_RestoreFlipState()
 
 static void __stdcall asm_change_mineshaft_room(size_t listIdx)
 {
+    ScopedDebugContext dbgCtx("Entity_NPC::ai_mothers_shadow (ChangeMineshaftRoom)");
+
     Game* game = g_Game;
     RoomDescriptor& room = game->_gridRooms[listIdx];
     auto& vector = room.SavedEntities;

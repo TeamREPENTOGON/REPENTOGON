@@ -303,7 +303,7 @@ __thiscall void Entity_Player::AddRottenHearts(int amount, bool unk);
 __thiscall void Entity_Player::AddGigaBombs(int amount);
 
 "558bec83ec68a1????????33c58945??a1":
-__thiscall void Entity_Player::ShuffleCostumes(int seed);
+__thiscall void Entity_Player::ShuffleCostumes(unsigned int seed);
 
 "558bec83ec2ca1????????33c58945??538b5d":
 __thiscall void Entity_Player::RemoveCollectible(unsigned int CollectibleType, bool IgnoreModifiers, unsigned int ActiveSlot, bool RemoveFromPlayerForm);

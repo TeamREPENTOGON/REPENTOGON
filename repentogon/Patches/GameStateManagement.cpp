@@ -5,13 +5,47 @@
 
 #include <filesystem>
 #include "ItemPoolManager.h"
-#include "VirtualRoomSets.h"
+#include "../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
 
 namespace ESSM = EntitySaveStateManagement;
 
 #pragma region Helpers
+
+static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun);
+static GameStateSlot get_game_state_slot(GameState* state);
+static bool is_remote_save(GameState* gameState);
+static uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun);
+static std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun);
+static std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun);
+static bool is_file_name_valid(const std::string& fileName);
+
+static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool isRerun)
+{
+	GameStateSaveInfo info;
+	if (!isRerun && get_game_state_slot(gameState) != GameStateSlot::SAVE_FILE) // This can occur when (presumably) the save state is being sent to online players joining mid-run
+	{
+		return info;
+	}
+
+	info.saveSlot = get_state_slot(gameState, io, isRerun);
+	if (!(1 <= info.saveSlot && info.saveSlot <= 3))
+	{
+		info.saveSlot = -1;
+		return info;
+	}
+
+	info.isRemote = is_remote_save(gameState);
+	info.fileName = get_state_file_name(gameState, info.saveSlot, isRerun);
+	if (!is_file_name_valid(info.fileName))
+	{
+		info.saveSlot = -1;
+		return info;
+	}
+
+	return info;
+};
 
 static GameStateSlot get_game_state_slot(GameState* state)
 {
@@ -37,7 +71,7 @@ static GameStateSlot get_game_state_slot(GameState* state)
 	return it->second;
 }
 
-static inline bool is_remote_save(GameState* gameState)
+static bool is_remote_save(GameState* gameState)
 {
 	auto gameStateIOPtr = reinterpret_cast<void**>(gameState->_saveFile);
 	if (!gameStateIOPtr)
@@ -48,12 +82,12 @@ static inline bool is_remote_save(GameState* gameState)
 	return *gameStateIOPtr == &SteamCloudFile_vftable;
 }
 
-static inline std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun)
+static std::string get_state_file_name(GameState* gameState, uint32_t saveSlot, bool isRerun)
 {
 	return (is_remote_save(gameState) ? "remote" : "local") + std::string("_") + (isRerun ? "rerunstate" : "gamestate") + std::to_string(saveSlot);
 }
 
-static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun)
+static uint32_t get_state_slot(GameState* gameState, GameStateIO* io, bool isRerun)
 {
 	const char* filePath = nullptr;
 	if (io)
@@ -96,7 +130,7 @@ static inline uint32_t get_state_slot(GameState* gameState, GameStateIO* io, boo
 	return slot;
 }
 
-static inline std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun)
+static std::string get_state_file_name(GameState* gameState, GameStateIO* io, bool isRerun)
 {
 	uint32_t save_slot = get_state_slot(gameState, io, isRerun);
 	if (!(1 <= save_slot && save_slot <= 3))
@@ -131,7 +165,6 @@ static bool is_file_name_valid(const std::string& fileName)
 static inline void save_game_state(uint32_t slot)
 {
 	ItemPoolManager::__SaveState(slot);
-	VirtualRoomSetManager::__SaveGameState(slot);
 }
 
 static inline void restore_game_state(uint32_t slot, bool startGame)
@@ -144,17 +177,25 @@ static inline void clear_game_state(uint32_t slot)
 	ItemPoolManager::__ClearSaveState(slot);
 }
 
-static inline bool write_save(const std::string& fileName, bool isRerun)
+static inline bool write_save(GameState& gameState, const GameStateSaveInfo& info, bool isRerun)
 {
+	const std::string& fileName = info.fileName;
+
+	if (!VirtualRoomSetManager::detail::WriteSave(gameState, info, isRerun))
+	{
+		return false;
+	}
+
 	ItemPoolManager::__SaveToDisk(fileName, isRerun);
-	VirtualRoomSetManager::__WriteSave(fileName, isRerun);
 	return true;
 }
 
 // Return false to invalidate the game state
-static inline bool read_save(const std::string& fileName, bool isRerun)
+static inline bool read_save(GameState& gameState, const GameStateSaveInfo& info, bool isRerun)
 {
-	if (!VirtualRoomSetManager::__ReadSave(fileName, isRerun))
+	const std::string& fileName = info.fileName;
+
+	if (!VirtualRoomSetManager::detail::ReadSave(gameState, info, isRerun))
 	{
 		return false;
 	}
@@ -163,10 +204,13 @@ static inline bool read_save(const std::string& fileName, bool isRerun)
 	return true;
 }
 
-static inline void delete_save(const std::string& fileName, bool isRerun)
+static inline void delete_save(const GameStateSaveInfo& info, bool isRerun)
 {
+	const std::string& fileName = info.fileName;
+	uint32_t slot = info.saveSlot;
+
 	ItemPoolManager::__DeleteGameState(fileName);
-	VirtualRoomSetManager::__DeleteSave(fileName, isRerun);
+	VirtualRoomSetManager::detail::DeleteSave(info, isRerun);
 	ESSM::detail::SaveData::DeleteGameState(fileName);
 }
 
@@ -216,36 +260,42 @@ HOOK_METHOD(GameState, Clear, () -> void)
 
 HOOK_METHOD(GameState, write, (GameStateIO** io) -> bool)
 {
+	bool isRerun = false;
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
+	if (info.IsUnknown())
+	{
+		ZHL::Log("[INFO] [GameStateManagement] skipping GameState write.\n");
+		return super(io);
+	}
+
 	ESSM::detail::SaveData::WriteState state = ESSM::detail::SaveData::WriteGameState();
+	VirtualRoomSetManager::detail::PreWriteGameState(*this, info);
+
 	bool success = super(io);
+
 	ESSM::detail::SaveData::RestoreWrittenStates(state);
+	VirtualRoomSetManager::detail::PostWriteGameState(*this, info);
 
 	if (!success)
 	{
 		return false;
 	}
 
-	if (get_game_state_slot(this) != GameStateSlot::SAVE_FILE) // This can occur when (presumably) the save state is being sent to online players joining mid-run
-	{
-		ZHL::Log("[INFO] [GameStateManagement] writing non save file GameState, skipping write.\n");
-		return true;
-	}
-
-	auto fileName = get_state_file_name(this, *io, false);
-	if (!is_file_name_valid(fileName))
-	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping write.\n", fileName.c_str());
-		return true;
-	}
-
+	const std::string& fileName = info.fileName;
 	ESSM::detail::SaveData::Serialize(fileName, state);
-	return write_save(fileName, false);
+	return write_save(*this, info, isRerun);
 }
 
 HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 {
+	bool isRerun = true;
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
+
 	ESSM::detail::SaveData::WriteState state = ESSM::detail::SaveData::WriteGameState();
+	VirtualRoomSetManager::detail::ClearDB(info);
+
 	bool success = super(io);
+
 	ESSM::detail::SaveData::RestoreWrittenStates(state);
 
 	if (!success)
@@ -253,19 +303,21 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 		return false;
 	}
 
-	auto fileName = get_state_file_name(this, *io, true);
-	if (!is_file_name_valid(fileName))
+	if (info.IsUnknown())
 	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping write.\n", fileName.c_str());
+		ZHL::Log("[INFO] [GameStateManagement] skipping GameState write.\n");
 		return true;
 	}
 
-	ESSM::detail::SaveData::Serialize(fileName, state);
-	return write_save(fileName, true);
+	ESSM::detail::SaveData::Serialize(info.fileName, state);
+	return write_save(*this, info, isRerun);
 }
 
 HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 {
+	bool isRerun = false;
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
+
 	bool originalSuccess = super(io, isLocalRun);
 	ESSM::detail::SaveData::ReadState essmReadState = ESSM::detail::SaveData::ReadGameState();
 	bool success = originalSuccess && !ESSM::detail::SaveData::CheckErrors(essmReadState);
@@ -279,7 +331,8 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 		return false;
 	}
 
-	bool needsHandling = ESSM::detail::SaveData::NeedsHandling(essmReadState);
+	bool needsHandling = ESSM::detail::SaveData::NeedsHandling(essmReadState) ||
+		VirtualRoomSetManager::detail::GameStateNeedsHandling(*this);
 
 	if (!isLocalRun) // This occurs when loading a game state upon joining an already existing match.
 	{
@@ -287,23 +340,25 @@ HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 		return !needsHandling;
 	}
 
-	auto fileName = get_state_file_name(this, *io, false);
-	if (!is_file_name_valid(fileName))
+	if (info.IsUnknown())
 	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
+		ZHL::Log("[INFO] [GameStateManagement] skipping GameState read.\n");
 		return !needsHandling;
 	}
 
-	if (!ESSM::detail::SaveData::Deserialize(fileName, essmReadState))
+	if (!ESSM::detail::SaveData::Deserialize(info.fileName, essmReadState))
 	{
 		return false;
 	}
 
-	return read_save(fileName, false);
+	return read_save(*this, info, isRerun);
 }
 
 HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 {
+	bool isRerun = true;
+	GameStateSaveInfo info = get_info(this, *io, isRerun);
+
 	bool originalSuccess = super(io);
 	ESSM::detail::SaveData::ReadState essmReadState = ESSM::detail::SaveData::ReadGameState();
 	bool success = originalSuccess && !ESSM::detail::SaveData::CheckErrors(essmReadState);
@@ -318,45 +373,49 @@ HOOK_METHOD(GameState, read_rerun, (GameStateIO** io) -> bool)
 	}
 
 	bool needsHandling = ESSM::detail::SaveData::NeedsHandling(essmReadState);
-
-	auto fileName = get_state_file_name(this, *io, true);
-	if (!is_file_name_valid(fileName))
+	if (info.IsUnknown())
 	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping read.\n", fileName.c_str());
+		ZHL::Log("[INFO] [GameStateManagement] skipping GameState read.\n");
 		return !needsHandling;
 	}
 
-	if (!ESSM::detail::SaveData::Deserialize(fileName, essmReadState))
+	if (!ESSM::detail::SaveData::Deserialize(info.fileName, essmReadState))
 	{
 		return false;
 	}
 
-	return read_save(fileName, true);
+	return read_save(*this, info, isRerun);
 }
 
 HOOK_METHOD(GameState, Delete, () -> void)
 {
-	auto fileName = get_state_file_name(this, this->_saveFile, false);
+	bool isRerun = false;
+	GameStateSaveInfo info = get_info(this, this->_saveFile, false);
+
 	super();
-	if (!is_file_name_valid(fileName))
+
+	if (info.IsUnknown())
 	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
+		ZHL::Log("[INFO] [GameStateManagement] Unknown game state, skipping delete.\n");
 		return;
 	}
 
-	delete_save(fileName, false);
+	delete_save(info, isRerun);
 }
 
 HOOK_METHOD(GameState, DeleteRerun, () -> void)
 {
-	auto fileName = get_state_file_name(this, this->_saveFile, true);
+	bool isRerun = true;
+	GameStateSaveInfo info = get_info(this, this->_saveFile, false);
+
 	super();
-	if (!is_file_name_valid(fileName))
+
+	if (info.IsUnknown())
 	{
-		ZHL::Log("[INFO] [GameStateManagement] Unknown file name \"%s\", skipping delete.\n", fileName.c_str());
+		ZHL::Log("[INFO] [GameStateManagement] Unknown game state, skipping delete.\n");
 		return;
 	}
 
-	delete_save(fileName, true);
+	delete_save(info, isRerun);
 }
 #pragma endregion

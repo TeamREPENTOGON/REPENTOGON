@@ -3855,7 +3855,7 @@ HOOK_METHOD(Entity_Familiar, FireProjectile, (const Vector& AimDirection, bool u
 	Entity_Tear* tear = super(AimDirection, unk);
 	const int callbackid = 1252;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (tear && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -4517,28 +4517,92 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 	}
 }
 
-//MC_PRE_PICKUP_GET_LOOT_LIST (1334)
+//MC_PRE/POST_PICKUP_GET_LOOT_LIST (1334 / 1336)
 HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
+	RNG rngCopy = this->_dropRNG;
+	RNG& rng = this->_dropRNG;
 	LootList list = super(shouldAdvance, player);
 
-	const int callbackid = 1334;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int MC_PRE_PICKUP_GET_LOOT_LIST = 1334;
+	const int MC_POST_PICKUP_GET_LOOT_LIST = 1336;
+
+	if (CallbackState.test(MC_PRE_PICKUP_GET_LOOT_LIST - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(MC_PRE_PICKUP_GET_LOOT_LIST)
 			.pushnil()
-			//.push(&list, lua::metatables::LootListMT) //can't work with loot directly for now
 			.push(this, lua::Metatables::ENTITY_PICKUP)
 			.push(shouldAdvance)
+			.push(&rng, lua::Metatables::RNG)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
 		if (!result && lua_isuserdata(L, -1)) {
-			return *lua::GetRawUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+			LootList& override = *lua::GetRawUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+			list = std::move(override);
 		}
 	}
+
+	if (CallbackState.test(MC_POST_PICKUP_GET_LOOT_LIST - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		// prepare LuaLootList
+		LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
+		luaL_setmetatable(L, lua::metatables::LootListMT);
+		new (toLua) LootList(std::move(list));
+
+		int lootListAbsIdx = lua_absindex(L, -1);
+
+		// RAII scope used so LuaResults destructor will run after the call,
+		// restoring/popping the Lua stack after the function call, leaving only the LuaLootList.
+		{
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(MC_POST_PICKUP_GET_LOOT_LIST)
+				.pushnil()
+				.push(this, lua::Metatables::ENTITY_PICKUP)
+				.pushvalue(lootListAbsIdx)
+				.push(shouldAdvance)
+				.push(&rng, lua::Metatables::RNG)
+				.push(player, lua::Metatables::ENTITY_PLAYER)
+				.call(0);
+		}
+		
+		list = std::move(*toLua);
+		lua_pop(L, 1); // LuaLootList
+	}
+
+	if (!shouldAdvance)
+	{
+		this->_dropRNG = rngCopy;
+	}
+
 	return list;
+}
+
+/// @brief Patches the conditional move that selects the entity's dropRNG
+/// as the RNG to use when `shouldAdvance` is true.
+/// 
+/// This replaces the CMOV with an unconditional MOV so that dropRNG is always
+/// selected, ensuring access to the correct RNG state for PRE_LOOT / POST_LOOT callbacks.
+///
+/// To compensate, the hook in GetLootList is now responsible for restoring the original
+/// RNG state.
+static void Patch_EntityPlayerGetLootList_SelectRNG()
+{
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Heartbreak);
+	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::GetLootList for LootList callbacks at %p\n", addr);
+
+	ASMPatch patch;
+	ByteBuffer buffer;
+	buffer.AddString("\x89\xF7\x90"); // Replace CMOV with MOV + NOP padding
+	patch.AddBytes(buffer);
+
+	sASMPatcher.FlatPatch((void*)addr, &patch);
 }
 
 //MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (1268)
@@ -5258,7 +5322,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
@@ -5289,7 +5353,7 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
@@ -5311,7 +5375,7 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -5335,7 +5399,7 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.pushnil()
+			.push(item, lua::Metatables::ITEM)
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
@@ -6396,10 +6460,48 @@ HOOK_METHOD(Weapon_Brimstone, do_baby_brimstone_burst, (Vector* unused1, Vector*
 	return result;
 }
 
+// MC_PRE/POST_SHUFFLE_COSTUMES (1494/1945)
+HOOK_METHOD(Entity_Player, ShuffleCostumes, (unsigned int seed) -> void) {
+	const int preCallbackId = 1494;
+
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetPlayerType())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(seed)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+			return;
+		}
+	}
+
+	super(seed);
+
+	const int postCallbackId = 1495;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetPlayerType())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(seed)
+			.call(0);
+	}
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
     Patch_PlayerTriggerCollectibleRemoved_Stompy();
     Patch_PlayerTriggerCollectibleRemoved_Heartbreak();
+	Patch_EntityPlayerGetLootList_SelectRNG();
 }

@@ -261,7 +261,7 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 }
 
 bool LockAchievement(int achievementid) {
-	if (!achset) { return false; }
+	if (!achset || achievementid <= 0) { return false; }
 	if (achievementid < 641) {
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		bool had = ps->achievements[achievementid];
@@ -287,7 +287,7 @@ static std::vector<std::string> ParseCommandA(std::string command, int size = 0)
 	std::string cmdlet;
 	char space = ' ';
 	while (std::getline(sstream, cmdlet, space)) {
-		cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+		// cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
 		cmdlets.push_back(cmdlet);
 		if (size > 0 && cmdlets.size() == size) {
 			break;
@@ -317,7 +317,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		if (cmdlets.size() > 1) {
 			int id = toint(cmdlets[1]);
-			if (id == 0) {
+			if (id <= 0) {
 				g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
 			}
 			else if (LockAchievement(id)) {
@@ -334,7 +334,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		if (cmdlets.size() < 2) { g_Game->GetConsole()->PrintError("No achievement Id Provided. \n"); super(in, out, player); return; }
 		int id = toint(cmdlets[1]);
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
-		if (id == 0) {
+		if (id <= 0) {
 			g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
 		}
 		else if (ps->TryUnlock(id)) {

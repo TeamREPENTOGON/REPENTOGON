@@ -106,6 +106,8 @@ void ASMPatchHistoryHudRecompute() {
 
 // MC_POST_HISTORYHUD_RECOMPUTE (1029)
 HOOK_METHOD(HistoryHUD, Recompute, (int idx, bool immediate) -> void) {
+	if (idx < 0 || idx > 1) return;  // This can be -1 in some funny cases like Strawman+EsauJR but the game doesn't account for it!
+
 	super(idx, immediate);
 
 	const int callbackid = 1029;

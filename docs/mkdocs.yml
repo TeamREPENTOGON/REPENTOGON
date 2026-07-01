@@ -126,6 +126,7 @@ nav:
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BlendFactor: enums/BlendFactor.md
     - BlendType: enums/BlendType.md
+    - BlendEquation: enums/BlendEquation.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
@@ -203,6 +204,7 @@ nav:
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
     - UseActiveItemResultFlag: enums/UseActiveItemResultFlag.md
+    - VertexAttributeFormat: enums/VertexAttributeFormat.md
     - WaterClipFlag: enums/WaterClipFlag.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
@@ -244,6 +246,7 @@ nav:
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
   - EntityDesc: EntityDesc.md
+  - EntitySaveStateManager: EntitySaveStateManager.md
   - Font: Font.md
   - FXLayers: FXLayers.md
   - FXParams: FXParams.md
@@ -341,6 +344,7 @@ nav:
     - Shader: renderer/Shader.md
     - SourceQuad: renderer/SourceQuad.md
     - Shape: renderer/Shape.md
+    - SurfaceRenderController: renderer/SurfaceRenderController.md
     - Transformer: renderer/Transformer.md
     - Vertex: renderer/Vertex.md
     - VertexBuffer: renderer/VertexBuffer.md
@@ -366,6 +370,7 @@ nav:
     - NullFrame: NullFrame.md
     - Sprite: Sprite.md
   - StageTransition: StageTransition.md
+  - TearParams: TearParams.md
   - Vector: Vector.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md

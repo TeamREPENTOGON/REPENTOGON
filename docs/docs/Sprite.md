@@ -31,6 +31,10 @@ ___
 
 ## Functions
 
+### Copy () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
+
+___
 ### ClearCustomChampionShader () {: aria-label='Functions' }
 #### void ClearCustomChampionShader ( ) {: .copyable aria-label='Functions' }
 Removes any custom `coloroffset_champion` shader applied by `sprite:SetCustomChampionShader(path)`.
@@ -157,3 +161,9 @@ ___
 #### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
+
+___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }

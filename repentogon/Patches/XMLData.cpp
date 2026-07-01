@@ -212,13 +212,18 @@ void CharToChar(char** dest, char* source) {
 
 int toint(const string &str) {
 	if (str.length() > 0) {
-		char* endPtr;
-		int returnval = strtol(str.c_str(), &endPtr, 0);
-		if (endPtr != "\0") {
+		char* endPtr = NULL;
+		const char* asCString = str.c_str();
+		int returnval = strtol(asCString, &endPtr, 0);
+
+		if (endPtr != asCString) {
 			return returnval;
+		} else {
+			ZHL::Log("[WARN] XMLData: toint: attempting to convert non integer string '%s' to integer\n", asCString);
 		}
 	}
-    return 0;
+
+	return 0;
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
@@ -357,7 +362,7 @@ ModEntry* GetModEntryByContentPath(const string &path) {
 
 
 void UpdateXMLModEntryData() {
-	std:string enabledmodslist = "-- Enabled Mods START -- \n";
+	std::string enabledmodslist = "-- Enabled Mods START -- \n";
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
 		int idx = 0;
 		XMLAttributes mod;
@@ -3687,6 +3692,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "trinket");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "card");
 				}
 			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {

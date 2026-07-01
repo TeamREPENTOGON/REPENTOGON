@@ -16,6 +16,7 @@ tags:
 | bagofcrafting | string | Pickups only. Space-separated list of ingredients to add to Bag of Crafting when collected, up to 8. Example: `bagofcrafting="penny bomb key"` Accepted values: [none, redheart, soulheart, blackheart, eternalheart, goldheart, boneheart, rottenheart, penny, nickel, dime, luckypenny, key, goldkey, chargedkey, bomb, goldbomb, gigabomb, minibattery, battery, megabattery, card, pill, rune, diceshard, crackedkey, goldpenny, goldpill, goldbattery, poop] |
 | meleecollide | boolean | Pickups only. Whether or not to trigger a collision with the player when hit with a Bone Club / Spirit Sword / etc. |
 | boomerang | boolean | Pickups only. Whether to allow this pickup to be "grabbed" by Boomerang and Jawbone. |
+| isactiveenemy | boolean | Whether this EntityNPC is treated as an "Active Enemy". |
 
 ## CustomTags
 

@@ -28,7 +28,7 @@ ___
 ___
 ### FindValidRoomPlacementLocations () {: aria-label='Functions' }
 #### int[] FindValidRoomPlacementLocations ( [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfig, [Dimension](enums/Dimension.md) Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
-#### int[] FindValidRoomPlacementLocations ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape, [DoorMask](enums/DoorMask.md) DoorMask, [Dimension](enums/Dimension.md) Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
+#### int[] FindValidRoomPlacementLocations ( [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) RoomShape = 1, [DoorMask](enums/DoorMask.md) DoorMask = -1, [Dimension](enums/Dimension.md) Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false ) {: .copyable aria-label='Functions' }
 Returns a table of room grid indices that would be valid locations to place the specified room using [TryPlaceRoom](Level.md#tryplaceroom).
 
 Note that if you set `AllowSpecialNeighbors` to `true`, you can get weird placements next to the ultra secret room. You can use [GetNeighboringRooms](Level.md#getneighboringrooms) to confirm that potential neighbors are desired before placing your room.
