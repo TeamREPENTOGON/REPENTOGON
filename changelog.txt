@@ -1,3 +1,32 @@
+v1.1.2d -
+Added:
+* In players.xml, you can now specify a modded card in the "card" attribute, by name.
+* ModCallbacks:
+	- MC_POST_PICKUP_GET_LOOT_LIST(EntityPickup, LootList, bool ShouldAdvance, RNG, EntityPlayer)
+		The provided LootList can be modified (ie, can add things to it).
+		This callback may be better than the existing MC_PRE_PICKUP_GET_LOOT_LIST for certain use cases.
+		No return value.
+	- MC_PRE/POST_PLAYER_SHUFFLE_COSTUMES(EntityPlayer, int seed)
+		Return false in PRE to prevent shuffle.
+		Optional param: PlayerType
+/newline/
+Modified:
+* ModCallbacks:
+	- MC_PRE_PICKUP_GET_LOOT_LIST: Added RNG and EntityPlayer params
+		Changes make to the pickup's DropRNG (or the new RNG provided to this callback) will now be reverted once the callback ends, if ShouldAdvance is false.
+		This makes it easier to properly respect the intended RNG, without the pickups changing between "preview" and actually being spawned.
+	- MC_PRE/POST_ADD/REMOVE_CUSTOME: Now support using an ItemConfigItem as an optional param
+/newline/
+Fixes:
+* Fixed startup failure if your windows user profile contains non-latin UTF-8 characters.
+* Fixed save folder selection being inconsistent with vanilla in cases where the user's profile folder cannot be accessed.
+* Fixed an EESM Stability Checker ERROR_LEAK case.
+* Fixed "not a writable directory!" warnings on startup if Vanilla was never launched prior to launching REPENTOGON.
+* Fixed certain wisps (such as Urn of Souls wisps) triggering MC_POST_FAMILIAR_FIRE_PROJECTILE with nil passed for the tear.
+* Fixed MC_POST_HISTORYHUD_RECOMPUTE running with -1 as the index in rare cases (such as Esau JR + Strawman).
+* Fixed the (lock)achievement console commands treating negative values as positive (for example, `lockachievement -1` locking Maggy).
+/newline/
+/versionseparator/
 v1.1.2c -
 Fixes:
 * Fixed potential freeze/crash on startup if mods that have a "%" symbol in their names are installed
