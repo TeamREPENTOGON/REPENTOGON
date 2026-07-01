@@ -3692,6 +3692,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "trinket");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.CardData, "card");
 				}
 			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
