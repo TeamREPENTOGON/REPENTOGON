@@ -3855,7 +3855,7 @@ HOOK_METHOD(Entity_Familiar, FireProjectile, (const Vector& AimDirection, bool u
 	Entity_Tear* tear = super(AimDirection, unk);
 	const int callbackid = 1252;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (tear && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
