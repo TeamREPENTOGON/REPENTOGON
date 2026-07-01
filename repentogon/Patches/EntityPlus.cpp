@@ -8,6 +8,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
 #include "Log.h"
+#include "../MiscFunctions.h"
 
 // ----------------------------------------------------------------------------------------------------
 // -- EntityPlusHolder
@@ -36,7 +37,9 @@ void InitEntityPlusHolder(Entity* entity) {
 EntityPlusHolder* GetEntityPlusHolder(Entity* entity, const bool initIfMissing) {
 	if (entity->_entityExtraDataPtrUpperBytes == 0 && entity->_entityExtraDataPtrLowerBytes == 0) {
 		if (initIfMissing) {
-			g_Game->GetConsole()->PrintError("[REPENTOGON] EntityPlusHolder was not initialized!\n");
+			const std::string err = REPENTOGON::StringFormat("[REPENTOGON] EntityPlusHolder was not initialized! (Entity: %d.%d.%d)\n", entity->_type, entity->_variant, entity->_subtype);
+			ZHL::Log(err.c_str());
+			g_Game->GetConsole()->PrintError(err);
 			// Since the EntityPlusHolder is initialized in the Entity constructor,
 			// this should never happen, but leaving this here for now just in case.
 			InitEntityPlusHolder(entity);
