@@ -13,6 +13,7 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
 |items|string|This now supports modded items by using the names of the items instead of the ids. Same format as in vanilla, a comma separated list of values|
+|trinket|string|This now supports a modded trinket by using the name of the trinket instead of the id.|
 |innateitems|string|Same as `items`, but innate to the character|
 |innatetrinkets|string|Trinket effects innate to the character. Comma separated list of ids or names|
 |heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|

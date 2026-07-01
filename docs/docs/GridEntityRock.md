@@ -40,5 +40,8 @@ ___
 ___
 ### UpdateNeighbors () {: aria-label='Functions' }
 #### void UpdateNeighbors ( ) {: .copyable aria-label='Functions' }
+If the rock is currently "connected" to other rocks as a "big rock", this function will break its connections to its neighbors. The graphics of the neighboring rocks will be updated appropriately, but note that THIS rock's graphics will not be updated.
+
+The game calls this function when a rock is destroyed or lifted. For it to succeed, the rock must still have the appropriate Variant for a big rock (1000+).
 
 ___
