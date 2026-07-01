@@ -390,14 +390,16 @@ void TryInitRepentogonSaveFile(const int slot) {
 	ZHL::Log("[SaveSyncing] Initializing REPENTOGON save file for slot %d @ %s\n", slot, rgonPath);
 	
 	// Start by initializing the PersistentGameData normally, importing from a previous DLC if available (Repentance, AB+, etc)
-	PersistentGameData pgd;
-	if (steamCloudEnabled) {
-		pgd.steamcloudfilepath = rgonPath;
-		pgd.LoadFromSteamCloud();
-		pgd.SaveToSteamCloud();
-	} else {
-		pgd.Load(rgonPath.c_str());
-		pgd.SaveLocally();
+	{
+		PersistentGameData pgd;
+		if (steamCloudEnabled) {
+			pgd.steamcloudfilepath = rgonPath;
+			pgd.LoadFromSteamCloud();
+			pgd.SaveToSteamCloud();
+		} else {
+			pgd.Load(rgonPath.c_str());
+			pgd.SaveLocally();
+		}
 	}
 
 	// Attempt to overwrite with achievements/progress from the corresponding vanilla Rep+ save file.
@@ -658,6 +660,11 @@ static bool BlockSaveImport(const std::string& path, const GameVersion version, 
 		ZHL::Log("[SaveSyncing] Error: Failed to parse slot number from `%s`\n", path.c_str());
 		return false;
 	}
+
+	// In any situation where we are importing a save from an old version, we should invalidate our save sync checksum.
+	// Should hopefully mitigate some weird edge cases where we initialized the repentogon save file but then the game somehow failed to read it.
+	ZHL::Log("[SaveSyncing] Save import detected. Invalidating save sync checksum for slot %d\n", slot);
+	syncStatus.ClearChecksum(SyncStatus::GetKey(slot, /*isRepentogon=*/true));
 
 	const std::string importPath = GetPersistentGameDataPath(version, slot, steamCloud);
 
