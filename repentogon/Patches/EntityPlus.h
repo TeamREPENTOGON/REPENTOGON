@@ -56,6 +56,12 @@ class EntityKnifePlus : public EntityPlus {
 	EntityPtr hitboxSource;
 };
 
+// Attributes for EntityNPC.
+class EntityNPCPlus : public EntityPlus {
+	public:
+		int gridPathThreshold = 900;
+};
+
 // Returns a ptr to the base EntityPlus class held by the entity.
 // In theory should typically not be nullptr as it, or a child class, is initialized on entity Init.
 EntityPlus* GetEntityPlus(Entity* entity);
@@ -67,5 +73,6 @@ EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar);
 EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
 EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife);
+EntityNPCPlus* GetEntityNPCPlus(Entity_NPC* npc);
 
 void ASMPatchesForEntityPlus();

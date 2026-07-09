@@ -136,6 +136,10 @@ EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife) {
 	return dynamic_cast<EntityKnifePlus*>(GetEntityPlusHolder(knife, true)->data.get());
 }
 
+EntityNPCPlus* GetEntityNPCPlus(Entity_NPC* npc) {
+	return dynamic_cast<EntityNPCPlus*>(GetEntityPlusHolder(npc, true)->data.get());
+}
+
 
 // ----------------------------------------------------------------------------------------------------
 // -- Make entities obey EntityPlus.isFlyingOverride
