@@ -10,10 +10,17 @@ ___
 #### int PreviousState  {: .copyable aria-label='Modified Variables' }
 Same as default, but now returns a proper integer value instead of userdata.
 
+???+ note "notes"
+    This is only updated when initializing a door subclass or playing an animation!
+
 ___
 ### PreviousVariant {: aria-label='Modified Variables' }
 #### int PreviousVariant  {: .copyable aria-label='Modified Variables' }
 Same as default, but now returns a proper integer value instead of userdata.
+
+
+???+ note "notes"
+    This is only updated when initializing a door subclass or playing an animation!
 
 ___
 
