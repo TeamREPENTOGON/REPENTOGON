@@ -2,9 +2,11 @@
 #include "../ASMPatches.h"
 
 #include "ASMEntityNPC.h"
+#include "../EntityPlus.h"
 
 #include "HookSystem.h"
 #include "../XMLData.h"
+#include "ASMDefinition.h"
 
 thread_local FireProjectilesStorage projectilesStorage;
 
@@ -131,6 +133,40 @@ void ASMPatchApplyFrozenEnemyDeathEffects() {
 		.RestoreRegisters(reg)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))
 		.AddRelativeJump((char*)addr + 0x6);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+
+int __stdcall GetLineOfSightThresholdOverride(Entity* entity) {
+	EntityPlus* plus = GetEntityPlus(entity);
+
+	if (plus) {
+		return plus->lineOfSightCostThreshold;
+	}
+	else {
+		return 900;
+	}
+}
+
+void ASMPatchLineOfSightThreshold() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::NPCAI_Pathfinder_LineOfSightThresholdOverride);
+	printf("[REPENTOGON] Patching NPCAI_Pathfinder::FindGridPath line of sight threshold at %p\n", addr);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::ECX) // Original threshold
+		.AddBytes("\x8B\x07")			// mov eax, [edi] (Get Entity* from Pathfinder)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(GetLineOfSightThresholdOverride)
+		// Restore our registers and call our functions as is.
+		.RestoreRegisters(reg)
+		.Push(ASMPatch::Registers::EAX)
+		.Push((int8_t)0)
+		.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x48, ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x6);
+
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

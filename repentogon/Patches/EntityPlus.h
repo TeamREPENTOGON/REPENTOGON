@@ -11,6 +11,7 @@ class EntityPlus {
   public:
 	virtual ~EntityPlus() {}
 
+	int lineOfSightCostThreshold = 900;
 	std::optional<bool> isFlyingOverride = std::nullopt;
 	std::optional<uint32_t> waterClipInfoFlagsOverride = std::nullopt;
 };
@@ -59,7 +60,6 @@ class EntityKnifePlus : public EntityPlus {
 // Attributes for EntityNPC.
 class EntityNPCPlus : public EntityPlus {
 	public:
-		int gridPathThreshold = 900;
 };
 
 // Returns a ptr to the base EntityPlus class held by the entity.
