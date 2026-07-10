@@ -661,14 +661,16 @@ static bool BlockSaveImport(const std::string& path, const GameVersion version, 
 		return false;
 	}
 
-	// In any situation where we are importing a save from an old version, we should invalidate our save sync checksum.
-	// Should hopefully mitigate some weird edge cases where we initialized the repentogon save file but then the game somehow failed to read it.
 	ZHL::Log("[SaveSyncing] Save import detected. Invalidating save sync checksum for slot %d\n", slot);
 	syncStatus.ClearChecksum(SyncStatus::GetKey(slot, /*isRepentogon=*/true));
 
 	const std::string importPath = GetPersistentGameDataPath(version, slot, steamCloud);
 
 	const SaveFile save(importPath.c_str(), steamCloud);
+	if ((version == AFTERBIRTH || version == REBIRTH) && save.GetHeader() == EXPECTED_SAVE_HEADER) {
+		ZHL::Log("[SaveSyncing] Error: Unexpected AB+~REP+ save found @ `%s`\n", importPath.c_str());
+		return true;
+	}
 	if (auto* achievements = save.GetSaveChunkDesc(SAVE_CHUNK_ACHIEVEMENTS); achievements && achievements->numElements > (int)eAchievement::NUM_ACHIEVEMENTS) {
 		ZHL::Log("[SaveSyncing] Error: Unexpected Repentance+ save found @ `%s`\n", importPath.c_str());
 		return true;
@@ -706,25 +708,49 @@ FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportRepCloudSave, REPENTANCE)
 FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABPCloudSave, AFTERBIRTH_PLUS)
 FIX_STEAM_CLOUD_SAVE_IMPORT(TryImportABCloudSave, AFTERBIRTH)
 
-// An attempt to load anything other than our designated repentogon save file(s) most likely means something broke.
-// In such a case, throw an exception to avoid possible save data corruption.
-// This should never occur unless something in REPENTOGON is broken.
-// Note: If we ever update to v1.9.7.14 or later, this may not be necessary.
-void VerifyExpectedSaveFile(const char* path) {
-	std::string filename = std::filesystem::path(path).filename().string();
-	if (!std::regex_match(filename, std::regex(R"(([0-9]+\.)*rgon_.*)", std::regex_constants::icase))) {
+// Returns true if the path provided is for a REPENTOGON save file.
+// For detecting unintended attempts to write out vanilla saves.
+bool IsExpectedSaveFile(std::string_view path) {
+	const std::string filename = std::filesystem::path(path).filename().string();
+	return std::regex_match(filename, std::regex(R"(([0-9]+\.)*rgon_.*)", std::regex_constants::icase));
+}
+
+// If the path provided is not a REPENTOGON save file, throw an error messagebox and crash.
+void VerifyExpectedSaveFileOrDie(std::string_view path) {
+	if (!IsExpectedSaveFile(path)) {
 		ZHL::Log("[SaveSyncing] Fatal error: Attempt to load unexpected save file `%s`\n", path);
 		MessageBox(0, LANG.FATAL_SAVE_FILE_WRONG_NAME, "REPENTOGON", MB_ICONERROR);
 		throw std::runtime_error("Unexpected save file load");
 	}
 }
+
+// An attempt to load anything other than our designated REPENTOGON save file(s) most likely means something broke.
+// In such a case, throw an exception to avoid possible save data corruption.
+// This should never occur unless something in REPENTOGON is broken.
 HOOK_METHOD(PersistentGameData, Load, (const char* path) -> bool) {
-	VerifyExpectedSaveFile(path);
+	VerifyExpectedSaveFileOrDie(path);
 	return super(path);
 }
 HOOK_METHOD(PersistentGameData, LoadFromSteamCloud, () -> bool) {
-	VerifyExpectedSaveFile(this->steamcloudfilepath.c_str());
+	VerifyExpectedSaveFileOrDie(this->steamcloudfilepath.c_str());
 	return super();
+}
+
+// Ignore attempts to write unexpected save files, no need to crash.
+// This can sometimes happen with Afterbirth save imports, of all things.
+HOOK_METHOD(PersistentGameData, SaveLocally, () -> void) {
+	if (IsExpectedSaveFile(filepath)) {
+		super();
+	} else {
+		ZHL::Log("[SaveSyncing] Warning: Attempt to write unexpected save file `%s`\n", filepath.c_str());
+	}
+}
+HOOK_METHOD(PersistentGameData, SaveToSteamCloud, () -> void) {
+	if (IsExpectedSaveFile(steamcloudfilepath)) {
+		super();
+	} else {
+		ZHL::Log("[SaveSyncing] Warning: Attempt to write unexpected save file `%s`\n", steamcloudfilepath.c_str());
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
