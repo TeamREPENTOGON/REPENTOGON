@@ -765,3 +765,11 @@ ModReference* LuaEngine::GetModRefByTable(int tblIdx)
 
 	return nullptr;
 }
+
+void PersistentGameData::Save() {
+	if (g_Manager->IsSteamCloudEnabled()) {
+		SaveToSteamCloud();
+	} else {
+		SaveLocally();
+	}
+}

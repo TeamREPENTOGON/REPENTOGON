@@ -54,9 +54,6 @@ __thiscall int PersistentGameData::GetBestiaryEncounterCount(int EntityType, int
 __thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
 
 "558bec518b15????????535657":
-__thiscall void PersistentGameData::Save();
-
-"558bec518b15????????535657":
 __thiscall void PersistentGameData::SaveLocally();
 
 "558bec83e4f88b15????????83ec088b82":
@@ -108,6 +105,8 @@ struct PersistentGameData depends (PersistentGameData_Bestiary) { {{
 		bool savedata = this->challenges[challengeID];
 		return savedata != false; 
 	}
+	
+	LIBZHL_API void Save();
 }}
 	bool changesmade : 0x0;
 	bool readonly : 0x1;
