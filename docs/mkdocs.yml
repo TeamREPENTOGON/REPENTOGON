@@ -134,7 +134,7 @@ nav:
     - CharacterMenuStatus: enums/CharacterMenuStatus.md
     - ChargeType: enums/ChargeType.md
     - CompletionType: enums/CompletionType.md
-    - CompletionType: enums/CompletionStatus.md
+    - CompletionStatus: enums/CompletionStatus.md
     - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md
     - CustomCacheTag: enums/CustomCacheTag.md
