@@ -139,6 +139,13 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 	}
 
 	super(rgonPath.c_str());
+
+	// For some reason, this option sometimes ends up corrupted the first time a user upgrades to Rep+.
+	// Not certain why, it could be a vanilla issue since we don't really mess with it beyond this syncing.
+	// Anyway, just avoid it if it happens. We haven't observed this with any other option.
+	if (_jacobEsauControls < 0 || _jacobEsauControls > 1) {
+		_jacobEsauControls = 1;
+	}
 }
 
 constexpr char RGON_INI_DISCLAIMER[] = "Note: The options in this file are overwritten by the ones in `.../Binding of Isaac Repentance+/options.ini` when REPENTOGON starts. Modifying this file may have no effect.";
