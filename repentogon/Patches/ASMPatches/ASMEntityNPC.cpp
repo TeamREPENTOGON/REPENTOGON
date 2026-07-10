@@ -136,15 +136,15 @@ void ASMPatchApplyFrozenEnemyDeathEffects() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-int __stdcall GetLineOfSightThresholdOverride(Entity* entity) {
+
+int __stdcall GetLineOfSightThresholdOverride(Entity* entity, int originalThreshold) {
 	EntityPlus* plus = GetEntityPlus(entity);
 
-	if (plus) {
-		return plus->lineOfSightCostThreshold;
+	if (plus && plus->lineOfSightCostThreshold.has_value()) {
+		return plus->lineOfSightCostThreshold.value();
 	}
-	else {
-		return 900;
-	}
+
+	return originalThreshold;
 }
 
 void ASMPatchLineOfSightThreshold() {
@@ -157,6 +157,7 @@ void ASMPatchLineOfSightThreshold() {
 	patch.PreserveRegisters(reg)
 		.Push(ASMPatch::Registers::ECX) // Original threshold
 		.AddBytes("\x8B\x07")			// mov eax, [edi] (Get Entity* from Pathfinder)
+		.Push(ASMPatch::Registers::EAX)
 		.AddInternalCall(GetLineOfSightThresholdOverride)
 		// Restore our registers and call our functions as is.
 		.RestoreRegisters(reg)

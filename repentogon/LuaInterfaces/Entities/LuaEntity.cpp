@@ -865,13 +865,13 @@ LUA_FUNCTION(Lua_EntityGetLineOfSightCostThreshold) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityPlus* plus = GetEntityPlus(ent);
 
-	if (plus) {
-		lua_pushinteger(L, plus->lineOfSightCostThreshold);
+	if (plus && plus->lineOfSightCostThreshold.has_value()) {
+		lua_pushinteger(L, plus->lineOfSightCostThreshold.value());
 	}
 	else {
+		// TODO: Have fallback match what decomp does internally
 		lua_pushinteger(L, 900);
 	}
-
 	return 1;
 }
 
@@ -892,7 +892,7 @@ LUA_FUNCTION(Lua_EntityResetLineOfSightCostThreshold) {
 	EntityPlus* plus = GetEntityPlus(ent);
 
 	if (plus) {
-		plus->lineOfSightCostThreshold = 900;
+		plus->lineOfSightCostThreshold = std::nullopt;
 	}
 	
 	return 0;

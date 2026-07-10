@@ -11,7 +11,7 @@ class EntityPlus {
   public:
 	virtual ~EntityPlus() {}
 
-	int lineOfSightCostThreshold = 900;
+	std::optional<int> lineOfSightCostThreshold = std::nullopt;
 	std::optional<bool> isFlyingOverride = std::nullopt;
 	std::optional<uint32_t> waterClipInfoFlagsOverride = std::nullopt;
 };
