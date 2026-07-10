@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "CompletionStatus"
+# Enum "ChargeType"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |0 |NORMAL {: .copyable } |  |
