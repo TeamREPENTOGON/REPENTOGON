@@ -2,6 +2,7 @@
 #include "ASMDefinition.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
+#include "rapidxml.hpp"
 
 #include <cstddef>
 #include <algorithm>
@@ -244,6 +245,33 @@ static void fix_familiar_pathfinder_move_randomly_axis_aligned(char* patchSig, c
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// A malformed inputconfigs.dat crashes the game on v1.9.7.12 but seemingly not on later version (defaults are used instead).
+// While unlikely to happen without manually editing the file, avoid the crash for parity.
+void __stdcall parse_input_config_xml(xml_document<char>* doc, char* text) {
+	try {
+		doc->parse<0>(text);
+	} catch (const rapidxml::parse_error& e) {
+		ZHL::Log("[ERROR] Failed to parse inputconfigs.dat: %s\n", e.what());
+		doc->clear();
+	}
+}
+static void fix_load_button_maps_crash() {
+	void* addr = (void*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::ButtonMapManager_LoadButtonMaps_RapidXmlParse);
+
+	ZHL::Log("[REPENTOGON] Patching ButtonMapManager::LoadButtonMaps crash on invalid XML @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(parse_input_config_xml)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -258,4 +286,5 @@ void ASMFixes()
 	suppress_push_render_target_stack_overflow();
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA_JumpTarget, "\x85\xc9", 0x6);  // TEST ECX,ECX
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
+	fix_load_button_maps_crash();
 }

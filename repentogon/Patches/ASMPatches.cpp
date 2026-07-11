@@ -4,6 +4,7 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "../SaveSyncing/SaveSyncing.h"
+#include "../SaveSyncing/InputConfigs.h"
 #include "../LuaInterfaces/CustomCallbacks.h"
 
 #include "NullItemsAndCostumes.h"
@@ -163,6 +164,7 @@ void ASMPatchModDataReRoute() {
 
 void PerformASMPatches() {
 	SaveSyncing::ASMPatchesForSaveSyncing();
+	ASMPatchInputConfigsPaths();
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
 
