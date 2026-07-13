@@ -863,7 +863,7 @@ LUA_FUNCTION(Lua_ReworkCollectible)
 	
 	if (s_modsLoaded)
 	{
-		g_Game->GetConsole()->Print("[WARN] ReworkCollectible() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		g_Game->GetConsole()->Print("[WARN] ReworkCollectible() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
 		return 0;
 	}
 
@@ -881,7 +881,7 @@ LUA_FUNCTION(Lua_ReworkBirthright)
 
 	if (s_modsLoaded)
 	{
-		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
 		return 0;
 	}
 
@@ -899,7 +899,7 @@ LUA_FUNCTION(Lua_ReworkTrinket)
 
 	if (s_modsLoaded)
 	{
-		g_Game->GetConsole()->Print("[WARN] ReworkTrinket() ignored: Reworks can only be set during startup.", CONSOLE_COLOR_WARN, 0x96u);
+		g_Game->GetConsole()->Print("[WARN] ReworkTrinket() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
 		return 0;
 	}
 
