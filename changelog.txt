@@ -16,15 +16,21 @@ Modified:
 		Changes make to the pickup's DropRNG (or the new RNG provided to this callback) will now be reverted once the callback ends, if ShouldAdvance is false.
 		This makes it easier to properly respect the intended RNG, without the pickups changing between "preview" and actually being spawned.
 	- MC_PRE/POST_ADD/REMOVE_CUSTOME: Now support using an ItemConfigItem as an optional param
+* PlayerManager:
+	- Added "ignoreModifiers" boolean param to AnyoneHasCollectible / GetNumCollectibles / AnyoneHasTrinket
 /newline/
 Fixes:
 * Fixed startup failure if your windows user profile contains non-latin UTF-8 characters.
+* Fixed controller mappings getting scrambled when switching between vanilla and REPENTOGON due to version differences (we now use a separated config file).
 * Fixed save folder selection being inconsistent with vanilla in cases where the user's profile folder cannot be accessed.
+* Fixed a rare bug where vanilla Rep+ progress could be lost when first using REPENTOGON if no Repentance/Afterbirth+ save is available, but an Afterbirth one is.
 * Fixed an EESM Stability Checker ERROR_LEAK case.
+* Fixed various PlayerManager functions (and player:HasTrinket) not properly handling "Reworked" items.
 * Fixed "not a writable directory!" warnings on startup if Vanilla was never launched prior to launching REPENTOGON.
 * Fixed certain wisps (such as Urn of Souls wisps) triggering MC_POST_FAMILIAR_FIRE_PROJECTILE with nil passed for the tear.
 * Fixed MC_POST_HISTORYHUD_RECOMPUTE running with -1 as the index in rare cases (such as Esau JR + Strawman).
 * Fixed the (lock)achievement console commands treating negative values as positive (for example, `lockachievement -1` locking Maggy).
+* Added handling for the JacobEsauControls option being corrupted.
 /newline/
 /versionseparator/
 v1.1.2c -

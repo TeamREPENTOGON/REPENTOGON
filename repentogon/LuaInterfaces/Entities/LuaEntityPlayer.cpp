@@ -2736,7 +2736,13 @@ LUA_FUNCTION(Lua_PlayerHasTrinket) {
 	bool ignoreSpoof = lua::luaL_optboolean(L, 4, false);
 
 	ItemSpoofSystem::StartLuaRequest(ignoreSpoof);
-	lua_pushboolean(L, player->HasTrinket(trinket, ignoreModifiers));
+	if (!ignoreModifiers) {
+		// HasTrinket will defer to GetTrinketMultiplier instead, which messes up the ItemSpoofSystem context.
+		// Directly call it ourselves instead.
+		lua_pushboolean(L, player->GetTrinketMultiplier(trinket) > 0);
+	} else {
+		lua_pushboolean(L, player->HasTrinket(trinket, ignoreModifiers));
+	}
 	
 	return 1;
 }
