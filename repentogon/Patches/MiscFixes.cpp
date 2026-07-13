@@ -166,6 +166,27 @@ HOOK_STATIC(LuaEngine, Callback_PreEntitySpawn, (int* type, int* variant, Vector
 	*seed = std::max(*seed, 1U); // in case some mod changed the seed.
 }
 
+// While rare, crawlspaces in the mineshaft can cause softlocks if the mineshaft room involves keys.
+// Versions of Rep+ after v1.9.7.12 don't allow them to spawn.
+HOOK_METHOD(GridEntity_Rock, TrySpawnLadder, () -> bool) {
+	if (g_Game->_room->HasCurseMist()) {
+		return false;
+	}
+	return super();
+}
+HOOK_METHOD(Room, SpawnGridEntity, (int gridIndex, unsigned int type, unsigned int variant, unsigned int seed, int vardata) -> bool) {
+	if (type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
+		return false;
+	}
+	return super(gridIndex, type, variant, seed, vardata);
+}
+HOOK_METHOD(Room, SpawnGridEntityDesc, (int gridIndex, GridEntityDesc* desc) -> bool) {
+	if (desc && desc->_type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
+		return false;
+	}
+	return super(gridIndex, desc);
+}
+
 // Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
 // I think this happened because this function was newly created in Rep+ due to some refactoring.
 HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
