@@ -75,6 +75,19 @@ void CopySharedOptions(const mINI::INIStructure& src, mINI::INIStructure& dst) {
 	}
 }
 
+void SanitizeOptions(OptionsConfig& options) {
+	// For some reason, this option occasionally ends up corrupted the first time a user upgrades to Rep+.
+	// Not certain why, it could be a vanilla issue since we don't really mess with it beyond this syncing.
+	// Anyway, just avoid it if it happens. We haven't observed this with any other option.
+	if (options._jacobEsauControls < 0 || options._jacobEsauControls > 1) {
+		options._jacobEsauControls = 1;
+	}
+
+	// twice in one day??
+	if (options._maxScale < 1) options._maxScale = 1;
+	if (options._maxRenderScale < 1) options._maxRenderScale = 1;
+}
+
 HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 	const std::string vanillaPath = GetVanillaOptionsIniPath();
 	const std::string rgonPath = GetRgonVanillaOptionsIniPath();
@@ -140,17 +153,14 @@ HOOK_METHOD(OptionsConfig, Load, (const char* defaultLoadPath) -> void) {
 
 	super(rgonPath.c_str());
 
-	// For some reason, this option sometimes ends up corrupted the first time a user upgrades to Rep+.
-	// Not certain why, it could be a vanilla issue since we don't really mess with it beyond this syncing.
-	// Anyway, just avoid it if it happens. We haven't observed this with any other option.
-	if (_jacobEsauControls < 0 || _jacobEsauControls > 1) {
-		_jacobEsauControls = 1;
-	}
+	SanitizeOptions(*this);
 }
 
 constexpr char RGON_INI_DISCLAIMER[] = "Note: The options in this file are overwritten by the ones in `.../Binding of Isaac Repentance+/options.ini` when REPENTOGON starts. Modifying this file may have no effect.";
 
 HOOK_METHOD(OptionsConfig, Save, () -> void) {
+	SanitizeOptions(*this);
+
 	super();
 
 	const std::string vanillaPath = GetVanillaOptionsIniPath();
