@@ -14,6 +14,7 @@ With REPENTOGON, the following xml attributes have changed functionality for reg
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
 | achievement | int or string | Ties the item/trinket to be unlocked by an achievement. For modded achievements use the corresponding `name` xml attribute value. |
+| activegfxpath | string | Path to spritesheet to use when item is in an active slot (vs as a collectible). |
 
 ## Item stats
 
