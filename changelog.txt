@@ -31,6 +31,7 @@ Fixes:
 * Fixed MC_POST_HISTORYHUD_RECOMPUTE running with -1 as the index in rare cases (such as Esau JR + Strawman).
 * Fixed the (lock)achievement console commands treating negative values as positive (for example, `lockachievement -1` locking Maggy).
 * Added handling for the JacobEsauControls option being corrupted.
+* Crawlspace ladders cannot be spawned in Mines Chase sequence (such as from rocks) to prevent possible key-related softlocks, as in later versions of Repentance+.
 /newline/
 /versionseparator/
 v1.1.2c -

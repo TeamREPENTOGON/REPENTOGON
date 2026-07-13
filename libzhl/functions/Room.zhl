@@ -143,6 +143,9 @@ __thiscall int Room::GetRoomConfigStage();
 "558bec83ec30a1????????33c58945??538b5d??8bc1":
 __thiscall bool Room::GetBossThematicItem(int* retCollectibleType, int* retTrinketType, unsigned int* seed);
 
+"8b41??8b40??c1e80d":
+__thiscall bool Room::HasCurseMist();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }
