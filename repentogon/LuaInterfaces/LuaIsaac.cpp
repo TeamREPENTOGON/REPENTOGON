@@ -940,6 +940,48 @@ LUA_FUNCTION(Lua_RenderCollectionItem)
 	return 0;
 }
 
+// Returns true if the string can be used as a singular folder name (no sneaky things like "../folder" allowed).
+bool IsSafeFolderName(std::string_view name) {
+	// Reject "current directory" or "parent directory"
+	if (name.empty() || name == "." || name == "..") {
+		return false;
+	}
+	// Reject any string with slashes
+	if (name.find('/') != std::string_view::npos || name.find('\\') != std::string_view::npos) {
+		return false;
+	}
+	return true;
+}
+
+LUA_FUNCTION(Lua_IsaacLoadModDataFromFolder) {
+	const char* folderName = luaL_checkstring(L, 1);
+
+	int slot = g_Manager->_currentSaveSlot;
+	if (slot < 0 || slot > 3 || !IsSafeFolderName(folderName)) {
+		lua_pushnil(L);
+		return 1;
+	} else if (slot == 0) {
+		// Isaac.LoadModData does this too
+		slot = 1;
+	}
+
+	const std::string path = REPENTOGON::StringFormat("../data/%s/save%d.dat", folderName, slot);
+
+	// Could have used a std::ifstream or something instead, but who knows maybe the consistency with Isaac.LoadModData means something
+	KAGE_Filesys_File file;
+	if (file.OpenRead(path.c_str()) && file.IsOpen()) {
+		const long size = file.GetSize();
+		std::string data(size + 1, '\0');
+		file.Read(data.data(), 1, size);
+		lua_pushstring(L, data.c_str());
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+
 //Deprecated methods
 
 
@@ -1017,7 +1059,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkCollectible", Lua_ReworkCollectible);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkBirthright", Lua_ReworkBirthright);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkTrinket", Lua_ReworkTrinket);
-
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "LoadModDataFromFolder", Lua_IsaacLoadModDataFromFolder);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
