@@ -444,6 +444,8 @@ namespace ASMPatches {
 			 }
 
 			 sASMPatcher.FlatPatch(setCurrentLanguageAddr, modifiedContent, patch_length);
+
+			 delete[] modifiedContent;
 		 }
 
 		 printf("[REPENTOGON] Removing outdate language resources.\n");
@@ -468,17 +470,17 @@ namespace ASMPatches {
 				 if (strncmp(file, "packed/repentance_", 18) == 0) {
 					 if (strcmp(file, "packed/repentance_de.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_es.a") == 0)
+					 else if (strcmp(file, "packed/repentance_es.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_jp.a") == 0)
+					 else if (strcmp(file, "packed/repentance_jp.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_kr.a") == 0)
+					 else if (strcmp(file, "packed/repentance_kr.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_ru.a") == 0)
+					 else if (strcmp(file, "packed/repentance_ru.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_zh.a") == 0)
+					 else if (strcmp(file, "packed/repentance_zh.a") == 0)
 						 del = true;
-					 if (strcmp(file, "packed/repentance_fr.a") == 0)
+					 else if (strcmp(file, "packed/repentance_fr.a") == 0)
 						 del = true;
 				 }
 
