@@ -272,6 +272,29 @@ static void fix_load_button_maps_crash() {
 	sASMPatcher.PatchAt((void*)addr, &patch);
 }
 
+constexpr int OPENAL_ATTRIBUTES[] = {
+	0x19AC, // ALC_OUTPUT_MODE_SOFT
+	0x19AE, // ALC_STEREO_BASIC_SOFT
+	NULL
+};
+
+static void fix_openal_attributes() {
+	void* patchAddr = (void*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::KAGE_Sound_Manager_Initialize_OpenAL32_pre_alcCreateContext);
+	void* jumpAddr = (void*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::KAGE_Sound_Manager_Initialize_OpenAL32_call_alcCreateContext);
+
+	ZHL::Log("[REPENTOGON] Patching KAGE::Sound::Manager::Initialize to set OPENAL32 attributes (for alcCreateContext) @ %p\n", patchAddr);
+
+	const int* ptr = OPENAL_ATTRIBUTES;
+
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x5))  // MOV dword ptr[EDI+0x34],EAX; TEST EAX,EAX
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)patchAddr + 0x7)
+		.AddBytes("\x68").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4))
+		.Push(ASMPatch::Registers::EAX)
+		.AddRelativeJump(jumpAddr);
+	sASMPatcher.PatchAt((void*)patchAddr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -287,4 +310,5 @@ void ASMFixes()
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckA_JumpTarget, "\x85\xc9", 0x6);  // TEST ECX,ECX
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 	fix_load_button_maps_crash();
+	fix_openal_attributes();
 }
