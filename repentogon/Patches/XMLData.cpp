@@ -3325,51 +3325,6 @@ void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
 	}
 }
 
-struct xmlchild_it {
-	xml_node<char>* node;
-	xmlchild_it(xml_node<char>* node) :node(node) {}
-	xmlchild_it& operator++() { node = node->next_sibling(); return *this; }
-	bool operator!=(const xmlchild_it& other)const { return node != other.node; }
-	bool operator==(const xmlchild_it& other)const { return node == other.node; }
-	xml_node<char>* operator*()const { return node; }
-};
-struct xmlchilds {
-	xml_document<char>* xmldoc;
-	xml_node<char>* parent;
-	xmlchilds(xml_document<char>* xmldoc) :xmldoc(xmldoc), parent(nullptr) {}
-	xmlchilds(xml_node<char>* parent) :xmldoc(nullptr), parent(parent) {}
-	xmlchild_it begin()const { return (parent ? parent : xmldoc)->first_node(); }
-	xmlchild_it end()const { return nullptr; }
-};
-struct xmlattrib_it {
-	xml_attribute<char>* attrib;
-	xmlattrib_it(xml_attribute<char>* attrib) :attrib(attrib) {}
-	xmlattrib_it& operator++() { attrib = attrib->next_attribute(); return *this; }
-	bool operator!=(const xmlattrib_it& other)const { return attrib != other.attrib; }
-	std::pair<char*, char*> operator*()const { return std::make_pair(attrib->name(), attrib->value()); }
-};
-struct xmlattribs {
-	xml_node<char>* xmlnode;
-	xmlattribs(xml_node<char>* xmlnode) :xmlnode(xmlnode) {}
-	xmlattrib_it begin() const { return xmlnode->first_attribute(); }
-	xmlattrib_it end() const { return nullptr; }
-
-	std::optional<std::string> operator[](const std::string & key) {
-		if (!cache.has_value()) {
-			std::unordered_map<std::string,std::string> map;
-			for (auto [name, value] : *this) {
-				map[name] = value;
-			}
-			cache = std::move(map);
-		}
-		auto it = cache.value().find(key);
-		if (it == cache.value().end())
-			return std::nullopt;
-		return it->second;
-	}
-private:
-	std::optional<std::unordered_map<std::string, std::string>> cache;
-};
 
 char* BuildModdedSta(char* xml) {
 	// we hard code these info from stringtable.sta.
@@ -3394,28 +3349,30 @@ char* BuildModdedSta(char* xml) {
 	xml_node<char>* stringtable_node = nullptr;
 	std::map<std::string/*catetory*/, std::map<std::string/*keyname*/, xml_node<char>*>> category_key_nodes;
 	std::map<std::string/*category*/, xml_node<char>*> category_nodes;
-	for (auto rootnode : xmlchilds(&*xmldoc)) {
-		for (auto subnode : xmlchilds(rootnode)) {
+	for (xml_node<char>* rootnode = xmldoc->first_node(); rootnode; rootnode = rootnode->next_sibling()) {
+		for (xml_node<char>* subnode = rootnode->first_node(); subnode; subnode = subnode->next_sibling()) {
 			stringtable_node = rootnode;
 			if (strcmp(subnode->name(), "category") != 0)
 				continue;
-			std::string category_name = xmlattribs(subnode)["name"].value_or("");
-			if (category_name == "")
-				continue;
+			auto name_attrib = subnode->first_attribute("name");
+			if (!name_attrib) continue;
+			std::string category_name = name_attrib->value();
+			if (category_name == "") continue;
 			category_nodes[category_name] = subnode;
 			auto& key_nodes = category_key_nodes[category_name];
-			for (auto key : xmlchilds(subnode)) {
+			for (xml_node<char>* key = subnode->first_node(); key; key = key->next_sibling()) {
 				if (strcmp(key->name(), "key") != 0)
 					continue;
-				std::string key_name = xmlattribs(key)["name"].value_or("");
-				if (key_name == "")
-					continue;
+				auto key_name_attrib = key->first_attribute("name");
+				if (!key_name_attrib) continue;
+				std::string key_name = key_name_attrib->value();
+				if (key_name == "") continue;
 				key_nodes[key_name] = key;
 				int translated_items = 0;
 				int untranslated_items = 0;
 				const char* english_text = nullptr;
 				int i = 0;
-				for (auto str : xmlchilds(key)) {
+				for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 					if (strcmp(str->name(), "string") != 0) continue;
 					if (is_translated(str->value()))
 						translated_items++;
@@ -3427,7 +3384,7 @@ char* BuildModdedSta(char* xml) {
 				}
 				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && is_translated(english_text)) {
 					i = 0;
-					for (auto str : xmlchilds(key)) {
+					for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 						if (strcmp(str->name(), "string") != 0) continue;
 						if (i++ != english_index) {
 							str->value(english_text);
@@ -3489,13 +3446,14 @@ char* BuildModdedSta(char* xml) {
 				KAGE::SafeLogMessage(3, msg.c_str());
 				printf("%s", msg.c_str());
 			}
-			for (auto rootnode : xmlchilds(&*mod_xml)) {
-				for (auto subnode : xmlchilds(rootnode)) {
+			for (xml_node<char>* rootnode = mod_xml->first_node(); rootnode; rootnode = rootnode->next_sibling()) {
+				for (xml_node<char>* subnode = rootnode->first_node(); subnode; subnode = subnode->next_sibling()) {
 					if (strcmp(subnode->name(), "category") != 0)
 						continue;
-					std::string category_name = xmlattribs(subnode)["name"].value_or("");
-					if (category_name == "")
-						continue;
+					auto name_attrib = subnode->first_attribute("name");
+					if (!name_attrib) continue;
+					std::string category_name = name_attrib->value();
+					if (category_name == "") continue;
 					if (category_nodes.count(category_name) == 0) {
 						auto node = xmldoc->allocate_node(node_type::node_element, "category");
 						node->append_attribute(xmldoc->allocate_attribute("name", tmp_str(category_name)));
@@ -3504,9 +3462,11 @@ char* BuildModdedSta(char* xml) {
 					}
 					auto& category_node = category_nodes[category_name];
 					auto& key_nodes = category_key_nodes[category_name];
-					for (auto key : xmlchilds(subnode)) {
+					for (xml_node<char>* key = subnode->first_node(); key; key = key->next_sibling()) {
 						if (strcmp(key->name(), "key") != 0) continue;
-						auto& keyname = xmlattribs(key)["name"].value_or("");
+						auto key_name_attrib = key->first_attribute("name");
+						if (!key_name_attrib) continue;
+						std::string keyname = key_name_attrib->value();
 						if (keyname == "") continue;
 						int child_count = 0;
 
@@ -3520,26 +3480,24 @@ char* BuildModdedSta(char* xml) {
 							key_nodes[keyname] = node;
 						}
 
-						auto merged_key_node = xmlchilds(key_nodes[keyname]);
-						auto merged_key_node_it = merged_key_node.begin(), merged_key_node_end = merged_key_node.end();
-						auto new_key_node = xmlchilds(key);
-						auto new_key_node_it = new_key_node.begin(), new_key_node_end = new_key_node.end();
+						auto merged_key_node_it = key_nodes[keyname]->first_node();
+						auto new_key_node_it = key->first_node();
 						for (;;) {
-							if (new_key_node_it == new_key_node_end)
+							if (!merged_key_node_it)
 								break;
-							if (merged_key_node_it == merged_key_node_end)
+							if (!new_key_node_it)
 								break;
 
-							if (strcmp((*new_key_node_it)->name(), "string") != 0) {
+							if (strcmp(new_key_node_it->name(), "string") != 0) {
 								++new_key_node_it;
 								continue;
 							}
 
-							if ((*new_key_node_it)->value())
-								(*merged_key_node_it)->value(tmp_str((*new_key_node_it)->value()));
+							if (new_key_node_it->value() && is_translated(new_key_node_it->value()))
+								merged_key_node_it->value(tmp_str(new_key_node_it->value()));
 
-							++new_key_node_it;
-							++merged_key_node_it;
+							new_key_node_it = new_key_node_it->next_sibling();
+							merged_key_node_it = merged_key_node_it->next_sibling();
 						}
 					}
 				}
