@@ -6,7 +6,7 @@ Added:
 		The provided LootList can be modified (ie, can add things to it).
 		This callback may be better than the existing MC_PRE_PICKUP_GET_LOOT_LIST for certain use cases.
 		No return value.
-	- MC_PRE/POST_PLAYER_SHUFFLE_COSTUMES(EntityPlayer, int seed)
+	- MC_PRE/POST_SHUFFLE_COSTUMES(EntityPlayer, int seed)
 		Return false in PRE to prevent shuffle.
 		Optional param: PlayerType
 /newline/
