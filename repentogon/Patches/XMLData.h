@@ -996,6 +996,7 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 		else {
 			char* zeroTerminatedStr = new char[strlen(xml) + 1];
 			strcpy(zeroTerminatedStr, xml);
+			xml = zeroTerminatedStr; // for exception handler
 			xmldoc->parse<0>(zeroTerminatedStr);
 		}
 		return true;
@@ -1005,7 +1006,8 @@ inline bool XMLParse(xml_document<char>* xmldoc, char* xml, const string& dir) {
 		string a = stringlower((char*)string(xml).substr(0, 60).c_str());
 		string reason = err.what() + string(" at line ") + to_string(lineNumber);
 		string error = "[XMLError] " + reason + " in " + dir;
-		g_Game->GetConsole()->PrintError(error);
+		if(g_Game && g_Game->GetConsole())
+			g_Game->GetConsole()->PrintError(error);
 		KAGE::SafeLogMessage(3, (error + "\n").c_str());
 		//printf("%s \n", error.c_str());
 		//mclear(xmldoc);
