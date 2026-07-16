@@ -2149,6 +2149,8 @@ pcall(require, "repentogon_extras/bestiary_menu")
 -- pcall(require, "repentogon_extras/onlinestub") let's not load it
 pcall(require, "repentogon_extras/mods_menu_tweaks")
 
+pcall(require, "repentogon_api/room_descriptor")
+
 local ESSM = _GetModule("repentogon_extras.entity_save_state_manager")
 
 local ESSM_OnNewEntity = ESSM._OnNewEntity

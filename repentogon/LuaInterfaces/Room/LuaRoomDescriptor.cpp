@@ -178,7 +178,7 @@ LUA_FUNCTION(Lua_GetEntitiesSaveState) {
 LUA_FUNCTION(Lua_GetDecoSaveState) {
 	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
-	ud->data = &(descriptor->SavedEntities2);
+	ud->data = &(descriptor->SavedEffects);
 	return 1;
 }
 
@@ -296,6 +296,20 @@ LUA_FUNCTION(Lua_SetTaintedKeeperCoinSpawns) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetGroup) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+
+	lua_pushinteger(L, roomDesc->Group);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetGroup) {
+	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+
+	roomDesc->Group = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_GetErrorTrinketEffect) {
 	RoomDescriptor* roomDesc = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 
@@ -316,6 +330,8 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 		{ "GetValidNeighborPlacementLocations", Lua_GetValidNeighborPlacementLocations },
 		{ "GetTaintedKeeperCoinSpawns", Lua_GetTaintedKeeperCoinSpawns },
 		{ "SetTaintedKeeperCoinSpawns", Lua_SetTaintedKeeperCoinSpawns },
+		{ "GetGroup", Lua_GetGroup },
+		{ "SetGroup", Lua_SetGroup },
 		{ "GetErrorTrinketEffect", Lua_GetErrorTrinketEffect },
 		{ NULL, NULL }
 	};

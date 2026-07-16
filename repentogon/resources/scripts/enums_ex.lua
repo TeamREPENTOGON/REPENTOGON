@@ -865,6 +865,11 @@ RoomSubType = {
 	DEPTHS_FOOL_ROOM = 1, DEPTHS_MARKED_SKULL = 1,
 }
 
+RoomGroup = {
+	GROUP_NONE = -1,
+	GROUP_ULTRA_SECRET = 99,
+}
+
 Achievement = {
 	MAGDALENE = 1,
 	CAIN = 2,

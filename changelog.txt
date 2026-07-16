@@ -1,3 +1,12 @@
+v1.1.2e -
+Added:
+* RoomDescriptor:
+	- GetGroup() -> integer
+	- SetGroup(integer group)
+	- static CreateGroup(string name) -> integer
+	- static GetGroupByName(string name) -> integer
+/newline/
+/versionseparator/
 v1.1.2d -
 Added:
 * In players.xml, you can now specify a modded card in the "card" attribute, by name.
