@@ -2100,14 +2100,14 @@ Accepts `false` to cancel spawning the grid or a table of `{Type, Variant, Varda
 |1192 |MC_PRE_ROOM_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, <br>int Variant, <br>int VarData, <br>int GridIdx, <br>int SpawnSeed) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean or table |
 
 ### MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable }
-Accepts no return parameters.
+Triggered the moment a room is cleared and doors have been opened, but before spawning clear awards or any special doors. if `Silent`, no sound effects will be played.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1068 |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean Silent) | - | void |
 
 ### MC_POST_ROOM_TRIGGER_CLEAR {: .copyable }
-Accepts no return parameters.
+Triggered when a room has been cleared, after all awards and effects.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
