@@ -18,12 +18,12 @@ tags:
 ## Functions
 
 ### AnyoneHasCollectible () {: aria-label='Functions' }
-#### boolean AnyoneHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### boolean AnyoneHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
 Returns true when any player has the item and false when no one does.
 
 ___
 ### AnyoneHasTrinket () {: aria-label='Functions' }
-#### boolean AnyoneHasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+#### boolean AnyoneHasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean IgnoreModifiers = false) {: .copyable aria-label='Functions' }
 Returns true when any player has the trinket and false when no one does.
 
 ___
@@ -66,7 +66,7 @@ ___
 
 ___
 ### GetNumCollectibles () {: aria-label='Functions' }
-#### int GetNumCollectibles ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### int GetNumCollectibles ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
 Returns the number of collectibles held by all players.
 
 ___

@@ -16,6 +16,7 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |trinket|string|This now supports a modded trinket by using the name of the trinket instead of the id.|
 |innateitems|string|Same as `items`, but innate to the character|
 |innatetrinkets|string|Trinket effects innate to the character. Comma separated list of ids or names|
+|card|string|This now supports a modded card by using the name of the card instead of the id.|
 |heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
 |redhearts|int|The amount of red hearts the character should start with. 1 unit = 1/2 a heart|
 |soulhearts|int|The amount of soul hearts the character should start with. 1 unit = 1/2 a heart|

@@ -2390,11 +2390,24 @@ Accepts no return parameters.
 |1105 |MC_POST_WEAPON_FIRE {: .copyable } | ([Weapon](../Weapon.md) Weapon, <br>[Vector](../Vector.md) FireDirection, <br>boolean IsShooting, <br>boolean IsInterpolated) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
 
 ### MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable }
-Called before the pickup determines its loot content. Accepts a [LootList](../LootList.md) to change loot content.
+Called before the pickup determines its loot content. Accepts a [LootList](../LootList.md) to completely replace loot content.
+
+If ShouldAdvance is false, the loot is being checked (such as for a Guppy's Eye preview) but the RNG should not be advanced. The provided RNG (the DropRNG of the entity) will be reset at the end of the callback to preserve the original seed, so you can use the provided RNG for easy consistent results between loot previews and when the loot actually spawns.
+
+If you only want to slightly modify the loot (such as adding an extra pickup) use `MC_POST_PICKUP_GET_LOOT_LIST` instead to access a mutable list.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1334 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
+|1334 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance, <br>[RNG](../RNG.md) RNG, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | [LootList](../LootList.md) |
+
+### MC_POST_PICKUP_GET_LOOT_LIST {: .copyable }
+Called after the pickup determines its loot content. The provided [LootList](../LootList.md) can be modified, so this is a good place to make small modifications such as adding to the loot.
+
+If ShouldAdvance is false, the loot is being checked (such as for a Guppy's Eye preview) but the RNG should not be advanced. The provided RNG (the DropRNG of the entity) will be reset at the end of the callback to preserve the original seed, so you can use the provided RNG for easy consistent results between loot previews and when the loot actually spawns.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1336 |MC_POST_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>[LootList](../LootList.md) LootList, <br>boolean ShouldAdvance, <br>[RNG](../RNG.md) RNG, <br>[EntityPlayer](../EntityPlayer.md) Player) | - | void |
 
 ### MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable }
 Called before a ghost pickup of the loot content is applied to the pickup. Return `true` to apply pickup ghost to your pickup entity, `false` to cancel it.
@@ -2627,28 +2640,41 @@ Called before the costume is added to the player. Return [ItemConfigItem](../Ite
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
+|1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | [ItemConfigItem](../ItemConfig_Item.md) | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
 
 ### MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
 Called before the costume is removed to the player. Return `true` to cancel the removal.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1282 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | boolean |
+|1282 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | [ItemConfigItem](../ItemConfig_Item.md) | boolean |
 
 ### MC_POST_PLAYER_ADD_COSTUME {: .copyable }
 Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1283 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+|1283 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | [ItemConfigItem](../ItemConfig_Item.md) | void |
 
 ### MC_POST_PLAYER_REMOVE_COSTUME {: .copyable }
 Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1284 |MC_POST_PLAYER_REMOVE_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+|1284 |MC_POST_PLAYER_REMOVE_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | [ItemConfigItem](../ItemConfig_Item.md) | void |
+
+### MC_PRE_SHUFFLE_COSTUMES {: .copyable }
+Return false to prevent the costume shuffle.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1494 |MC_PRE_SHUFFLE_COSTUMES {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int Seed) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
+
+### MC_POST_SHUFFLE_COSTUMES {: .copyable }
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1495 |MC_POST_SHUFFLE_COSTUMES {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int Seed) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PRE_TRIGGER_BED_SLEEP_EFFECT {: .copyable }
 Called if Bed target (bed.Target) is set to player and "SleepFillHP" item overlay sprite's event is triggered, and before the hearts addition is applied.
