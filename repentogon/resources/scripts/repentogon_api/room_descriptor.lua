@@ -2,6 +2,8 @@
 local s_groupNames = {}
 local s_nextGroupId = 0
 
+local ModManager = _GetModule("repentogon_extras.mod_manager")
+
 ---@param groupName string
 ---@return integer groupId
 local function CreateGroup(groupName)
@@ -9,9 +11,17 @@ local function CreateGroup(groupName)
         error(string.format("bad argument #%d (string expected, got %s)", 1, type(groupName)), 2)
     end
 
-    local exists = s_groupNames[groupName] ~= nil
-    if exists then
-        error(string.format("group \"%s\" already exists", groupName), 2)
+    local existingId = s_groupNames[groupName]
+    if existingId then
+        if not ModManager.ModsLoaded() then
+            Console.PrintWarning(string.format("[WARN] [RGON] group \"%s\" already exists", groupName))
+        end
+
+        return existingId
+    end
+
+    if ModManager.ModsLoaded() then
+        error("groups can only be created during Mod Load", 2)
     end
 
     local groupId = s_nextGroupId

@@ -8,6 +8,8 @@ local s_modIds = {}
 ---@type table<REPENTOGON.ModId, ModReference[]>
 local s_modReferences = {}
 
+local s_modsLoaded = false
+
 --#endregion
 
 local table_insert = table.insert
@@ -50,6 +52,10 @@ local function _UnloadMod(modReference)
     end
 end
 
+local function _OnModsLoaded()
+    s_modsLoaded = true
+end
+
 ---@param modReference ModReference
 ---@return REPENTOGON.ModId?
 local function GetModIdByReference(modReference)
@@ -65,12 +71,19 @@ local function GetModReferenceById(modId)
     end
 end
 
+---@return boolean
+local function ModsLoaded()
+    return s_modsLoaded
+end
+
 Module = {}
 Module.detail = {}
 
 Module.detail.RegisterMod = _RegisterMod
 Module.detail.UnloadMod = _UnloadMod
+Module.detail.OnModsLoaded = _OnModsLoaded
 Module.GetModIdByReference = GetModIdByReference
 Module.GetModReferenceById = GetModReferenceById
+Module.ModsLoaded = ModsLoaded
 
 return Module
