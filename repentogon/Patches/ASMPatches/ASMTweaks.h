@@ -16,4 +16,6 @@ namespace ASMPatches {
 	void DisableExitPrompt();
 	void PatchLeaderboardGoalSprite();
 	void PatchOptionsSetMusicBound();
+
+	void ReEnableGameLanguageSettings();
 }

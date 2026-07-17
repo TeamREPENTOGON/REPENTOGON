@@ -3326,6 +3326,227 @@ void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
 }
 
 
+char* BuildModdedSta(char* xml) {
+	// we hard code these info from stringtable.sta.
+	constexpr int language_count = 8, english_index = 0;
+
+	// this function is only called twice, the first time it parse "stringtable.sta", the seconed is "stringtable_pc.sta"
+	static int call_count = 0;
+	const char* filename = call_count++ % 2 == 0 ? "stringtable.sta" : "stringtable_pc.sta";
+	
+	std::unique_ptr<xml_document<char>> xmldoc = std::make_unique<xml_document<char>>();
+	if (!XMLParse(&*xmldoc, xml, filename))
+		return xml;
+
+
+	auto is_empty_value = [](const char* str) {
+		// they do leave a space as empty value.
+		if (str == nullptr || str[0] == '\0' || (str[0] == ' ' && str[1] == '\0'))
+			return true;
+		return false;
+		};
+	auto is_mod_empty_value= [](const char* str) {
+		if (str == nullptr || str[0] == '\0')
+			return true;
+		return false;
+		};
+
+	// fix fallback behavior of official untranslated items, copy english and paste to other empty language, also record nodes
+	xml_node<char>* stringtable_node = nullptr;
+	std::map<std::string/*catetory*/, std::map<std::string/*keyname*/, xml_node<char>*>> category_key_nodes;
+	std::map<std::string/*category*/, xml_node<char>*> category_nodes;
+	for (xml_node<char>* rootnode = xmldoc->first_node(); rootnode; rootnode = rootnode->next_sibling()) {
+		for (xml_node<char>* subnode = rootnode->first_node(); subnode; subnode = subnode->next_sibling()) {
+			stringtable_node = rootnode;
+			if (strcmp(subnode->name(), "category") != 0)
+				continue;
+			auto name_attrib = subnode->first_attribute("name");
+			if (!name_attrib) continue;
+			std::string category_name = name_attrib->value();
+			if (category_name == "") continue;
+			category_nodes[category_name] = subnode;
+			auto& key_nodes = category_key_nodes[category_name];
+			for (xml_node<char>* key = subnode->first_node(); key; key = key->next_sibling()) {
+				if (strcmp(key->name(), "key") != 0)
+					continue;
+				auto key_name_attrib = key->first_attribute("name");
+				if (!key_name_attrib) continue;
+				std::string key_name = key_name_attrib->value();
+				if (key_name == "") continue;
+				key_nodes[key_name] = key;
+				int translated_items = 0;
+				int untranslated_items = 0;
+				const char* english_text = nullptr;
+				int i = 0;
+				for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
+					if (strcmp(str->name(), "string") != 0) continue;
+					if (!is_empty_value(str->value()))
+						translated_items++;
+					else
+						untranslated_items++;
+					if (i++ == english_index) {
+						english_text = str->value();
+					}
+				}
+				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && !is_empty_value(english_text)) {
+					i = 0;
+					for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
+						if (strcmp(str->name(), "string") != 0) continue;
+						if (i++ != english_index) {
+							str->value(english_text);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (!stringtable_node) {
+		std::string err = std::string("[ERROR] Repentogon can't find root node while parsing file:") + filename + "\n";
+		KAGE::SafeLogMessage(3, err.c_str());
+	}
+
+	// merge sta files from mods. we need manually find all enabled mods because it's too early and GetModManager is not avaliable.
+	std::string mods_dir(&g_ModsDirectory);
+	std::vector<std::unique_ptr<const std::string>> tmp_string_pool;
+	auto tmp_str = [&](const std::string str) {
+		std::unique_ptr<const std::string> s = std::make_unique<const std::string>(str);
+		auto ret = s->c_str();
+		tmp_string_pool.push_back(std::move(s));
+		return ret;
+		};
+	if (stringtable_node && std::filesystem::exists(mods_dir) && std::filesystem::is_directory(mods_dir)) {
+		for (auto& entry : std::filesystem::directory_iterator(mods_dir)) {
+			if (!entry.is_directory())
+				continue;
+			std::filesystem::path disable_it = entry.path() / "disable.it";
+			if (std::filesystem::exists(disable_it))
+				continue;
+			
+			// FIXME: We didn't follow the mod load order to overwrite resources.
+			std::filesystem::path mod_content_dir = entry.path() / "content-repentogon";
+			if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
+				mod_content_dir = entry.path() / "content-dlc3";
+				if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
+					mod_content_dir = entry.path() / "content";
+					if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
+						continue;
+					}
+				}
+			}
+
+			std::filesystem::path file = mod_content_dir / filename;
+
+			if (!std::filesystem::exists(file))
+				continue;
+			if (!std::filesystem::is_regular_file(file))
+				continue;
+			std::unique_ptr<xml_document<char>> mod_xml = std::make_unique<xml_document<char>>();
+			if (!GetContent(file.string(), &*mod_xml)) {
+				std::string err = "[ERROR] Repentogon can't load file:" + file.string() + "\n";
+				KAGE::SafeLogMessage(3, err.c_str());
+				continue;
+			}
+			{
+				std::string msg = "[REPENTOGON] Loading " + file.string() + "\n";
+				KAGE::SafeLogMessage(3, msg.c_str());
+				printf("%s", msg.c_str());
+			}
+			{
+				/* for future compat we force mods add <info rgon_sta_ver="0" /> to their xml file. */
+				xml_node<char>* root = mod_xml->first_node();
+				if (!root || strcmp(root->name(), "stringtable") != 0) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid root node. <stringtable> required.\n");
+					continue;
+				}
+				xml_node<char>* info = root->first_node("info");
+				if (!info) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid info node. <info> not found.\n");
+					continue;
+				}
+				auto sta_version_attrib = info->first_attribute("rgon_sta_version");
+				if (!sta_version_attrib || strcmp(sta_version_attrib->value(), "0") != 0) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid version. <info rgon_sta_version=\"0\"/> is missing.\n");
+					continue;
+				}
+			}
+
+			for (xml_node<char>* rootnode = mod_xml->first_node(); rootnode; rootnode = rootnode->next_sibling()) {
+				for (xml_node<char>* subnode = rootnode->first_node(); subnode; subnode = subnode->next_sibling()) {
+					if (strcmp(subnode->name(), "category") != 0)
+						continue;
+					auto name_attrib = subnode->first_attribute("name");
+					if (!name_attrib) continue;
+					std::string category_name = name_attrib->value();
+					if (category_name == "") continue;
+					if (category_nodes.count(category_name) == 0) {
+						auto node = xmldoc->allocate_node(node_type::node_element, "category");
+						node->append_attribute(xmldoc->allocate_attribute("name", tmp_str(category_name)));
+						stringtable_node->append_node(node);
+						category_nodes[category_name] = node;
+					}
+					auto& category_node = category_nodes[category_name];
+					auto& key_nodes = category_key_nodes[category_name];
+					for (xml_node<char>* key = subnode->first_node(); key; key = key->next_sibling()) {
+						if (strcmp(key->name(), "key") != 0) continue;
+						auto key_name_attrib = key->first_attribute("name");
+						if (!key_name_attrib) continue;
+						std::string keyname = key_name_attrib->value();
+						if (keyname == "") continue;
+						int child_count = 0;
+
+						if (key_nodes.count(keyname) == 0) {
+							auto node = xmldoc->allocate_node(node_type::node_element, "key");
+							node->append_attribute(xmldoc->allocate_attribute("name", tmp_str(keyname)));
+							for (int i = 0; i < language_count; i++) {
+								node->append_node(xmldoc->allocate_node(node_type::node_element, "string"));
+							}
+							category_node->append_node(node);
+							key_nodes[keyname] = node;
+						}
+
+						auto merged_key_node_it = key_nodes[keyname]->first_node();
+						auto new_key_node_it = key->first_node();
+						for (;;) {
+							if (!merged_key_node_it)
+								break;
+							if (!new_key_node_it)
+								break;
+
+							if (strcmp(new_key_node_it->name(), "string") != 0) {
+								++new_key_node_it;
+								continue;
+							}
+
+							if (new_key_node_it->value() && !is_mod_empty_value(new_key_node_it->value()))
+								merged_key_node_it->value(tmp_str(new_key_node_it->value()));
+
+							new_key_node_it = new_key_node_it->next_sibling();
+							merged_key_node_it = merged_key_node_it->next_sibling();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	ostringstream modifiedXmlStream;
+	modifiedXmlStream << *xmldoc;
+	string modifiedXml = modifiedXmlStream.str();
+	xml = new char[modifiedXml.length() + 1];
+	std::strcpy(xml, modifiedXml.c_str());
+
+	mclear(&*xmldoc);
+	/*
+	{
+		std::string ofname = std::string("D:/") + filename;
+		ofstream of(ofname);
+		of << modifiedXml;
+	}
+	*/
+
+	return xml;
+}
 
 char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch) {
 	if (no) {return xml;}
@@ -3917,11 +4138,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
-		//}
-		//else if (charfind(xmldata, "<stringtab", 50)) {		//disableddue to mem corruption 
-			//char * notxmldata = new char[strlen(xmldata) + 1];
-			//strcpy(notxmldata, xmldata);
-			//super(BuildModdedXML(notxmldata, "stringtable.sta", true));
+		}
+		else if (charfind(xmldata, "<stringtab", 50)) {
+			super(BuildModdedSta(xmldata));
 		}else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
