@@ -295,6 +295,38 @@ static void fix_openal_attributes() {
 	sASMPatcher.PatchAt((void*)patchAddr, &patch);
 }
 
+static Room* __fastcall asm_room_reset(Room* room)
+{
+    if (room == nullptr)
+    {
+        room = (Room*)operator new(sizeof(Room));
+    }
+    else
+    {
+        room->destructor();
+    }
+
+    room->constructor();
+    return room;
+}
+
+static void patch_in_place_room_reset()
+{
+    intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Reset_RoomReset);
+    intptr_t resumeAddr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::Level_Reset_PostRoomReset);
+    ZHL::Log("[REPENTOGON] Patching Level::Reset for in-place Room reset at %p\n", addr);
+
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(savedRegisters)
+        .AddBytes("\x8B\xCF") // MOV ECX, EDI // room
+        .AddInternalCall(asm_room_reset)
+        .RestoreRegisters(savedRegisters)
+        .AddRelativeJump((void*)resumeAddr);
+
+    sASMPatcher.PatchAt((void*)addr, &patch);
+}
+
 void ASMFixes()
 {
     fix_modded_crafting_quality("8b0eba????????85c9c745", "ItemConfig::Load");
@@ -311,4 +343,5 @@ void ASMFixes()
 	fix_familiar_pathfinder_move_randomly_axis_aligned(&AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB, &AsmDefinitions::MoveRandomlyAxisAligned_FamiliarCheckB_JumpTarget, "\x85\xc0", 0x7);  // TEST EAX,EAX
 	fix_load_button_maps_crash();
 	fix_openal_attributes();
+    patch_in_place_room_reset();
 }
