@@ -5,6 +5,8 @@ Added:
 	- SetGroup(integer group)
 	- static CreateGroup(string name) -> integer
 	- static GetGroupByName(string name) -> integer
+* Game language option is now avaliable. You can change game language in launcher and make it avaliable in the game.
+* Mod support for stringtable.sta. Now mods can add/overwrite strings in sta files. See docs for more details.
 /newline/
 /versionseparator/
 v1.1.2d -
