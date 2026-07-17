@@ -397,6 +397,7 @@ nav:
   - itempools.xml: xml/itempools.md
   - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
+  - stringtable.sta: xml/stringtable.md
 # - Custom Rendering: renderer/CustomRendering.md
 - Example Mods:
   - Capsules: examples/Capsules.md
