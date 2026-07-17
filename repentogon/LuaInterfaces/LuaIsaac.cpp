@@ -860,6 +860,10 @@ LUA_FUNCTION(Lua_ReworkCollectible)
 	{
 		return luaL_argerror(L, 1, "invalid CollectibleType");
 	}
+
+	if (ItemSpoofSystem::IsReworkedCollectible(collectible, -1)) {
+		return 0;
+	}
 	
 	if (s_modsLoaded)
 	{
@@ -879,6 +883,10 @@ LUA_FUNCTION(Lua_ReworkBirthright)
 		return luaL_argerror(L, 1, "invalid PlayerType");
 	}
 
+	if (ItemSpoofSystem::IsReworkedCollectible(COLLECTIBLE_BIRTHRIGHT, playerType)) {
+		return 0;
+	}
+
 	if (s_modsLoaded)
 	{
 		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
@@ -895,6 +903,10 @@ LUA_FUNCTION(Lua_ReworkTrinket)
 	if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
 	{
 		return luaL_argerror(L, 1, "invalid TrinketType");
+	}
+
+	if (ItemSpoofSystem::IsReworkedTrinket(trinket)) {
+		return 0;
 	}
 
 	if (s_modsLoaded)

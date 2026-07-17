@@ -28,6 +28,9 @@ namespace ItemSpoofSystem
     void ReworkBirthright(int playerType);
     void ReworkTrinket(int trinket);
 
+	bool IsReworkedCollectible(int collectible, int playerType);
+	bool IsReworkedTrinket(int trinket);
+
     // Represents a set of innate items, either collectibles or trinkets.
     // Can contain both persistent or temporary copies of items.
     class InnateItems {
