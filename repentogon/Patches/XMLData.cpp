@@ -3339,10 +3339,16 @@ char* BuildModdedSta(char* xml) {
 		return xml;
 
 
-	auto is_translated = [](const char* str) {
+	auto is_empty_value = [](const char* str) {
+		// they do leave a space as empty value.
 		if (str == nullptr || str[0] == '\0' || (str[0] == ' ' && str[1] == '\0'))
-			return false;
-		return true;
+			return true;
+		return false;
+		};
+	auto is_mod_empty_value= [](const char* str) {
+		if (str == nullptr || str[0] == '\0')
+			return true;
+		return false;
 		};
 
 	// fix fallback behavior of official untranslated items, copy english and paste to other empty language, also record nodes
@@ -3374,7 +3380,7 @@ char* BuildModdedSta(char* xml) {
 				int i = 0;
 				for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 					if (strcmp(str->name(), "string") != 0) continue;
-					if (is_translated(str->value()))
+					if (!is_empty_value(str->value()))
 						translated_items++;
 					else
 						untranslated_items++;
@@ -3382,7 +3388,7 @@ char* BuildModdedSta(char* xml) {
 						english_text = str->value();
 					}
 				}
-				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && is_translated(english_text)) {
+				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && !is_empty_value(english_text)) {
 					i = 0;
 					for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 						if (strcmp(str->name(), "string") != 0) continue;
@@ -3446,6 +3452,25 @@ char* BuildModdedSta(char* xml) {
 				KAGE::SafeLogMessage(3, msg.c_str());
 				printf("%s", msg.c_str());
 			}
+			{
+				/* for future compat we force mods add <info rgon_sta_ver="0" /> to their xml file. */
+				xml_node<char>* root = mod_xml->first_node();
+				if (!root || strcmp(root->name(), "stringtable") != 0) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid root node. <stringtable> required.\n");
+					continue;
+				}
+				xml_node<char>* info = root->first_node("info");
+				if (!info) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid info node. <info> not found.\n");
+					continue;
+				}
+				auto sta_version_attrib = info->first_attribute("rgon_sta_version");
+				if (!sta_version_attrib || strcmp(sta_version_attrib->value(), "0") != 0) {
+					KAGE::SafeLogMessage(3, "[REPENTOGON] Invalid version. <info rgon_sta_version=\"0\"/> is missing.\n");
+					continue;
+				}
+			}
+
 			for (xml_node<char>* rootnode = mod_xml->first_node(); rootnode; rootnode = rootnode->next_sibling()) {
 				for (xml_node<char>* subnode = rootnode->first_node(); subnode; subnode = subnode->next_sibling()) {
 					if (strcmp(subnode->name(), "category") != 0)
@@ -3493,7 +3518,7 @@ char* BuildModdedSta(char* xml) {
 								continue;
 							}
 
-							if (new_key_node_it->value() && is_translated(new_key_node_it->value()))
+							if (new_key_node_it->value() && !is_mod_empty_value(new_key_node_it->value()))
 								merged_key_node_it->value(tmp_str(new_key_node_it->value()));
 
 							new_key_node_it = new_key_node_it->next_sibling();
