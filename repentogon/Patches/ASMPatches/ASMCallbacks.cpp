@@ -2059,6 +2059,11 @@ bool __stdcall ShouldHideChargebar() {
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
 HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector& pos, int playerHudLayout, float size, float alpha, bool unused) -> void) {
+	if (this->GetPlayer()->_isCoopGhost) {
+		super(activeSlot, pos, playerHudLayout, size, alpha, unused);
+		return;
+	}
+
 	const bool isSchoolbagSlot = (activeSlot == 1);
 
 	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.

@@ -2751,6 +2751,11 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 
 //PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
 HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLayout, float scale, Vector pos) -> void) {
+	if (this->GetPlayer()->_isCoopGhost) {
+		super(unk, sprite, playerHudLayout, scale, pos);
+		return;
+	}
+
 	lua_State* L = g_LuaEngine->_state;
 
 	Vector posToSend = pos;
