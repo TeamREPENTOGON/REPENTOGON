@@ -3325,6 +3325,35 @@ void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
 	}
 }
 
+// Attempts to read the metadata.xml file at the provided path and return the value of the "name" node.
+// Returns an empty string if unsuccessful.
+std::string TryReadModNameFromMetadataXml(const std::filesystem::path& metadata_xml) {
+	if (!std::filesystem::exists(metadata_xml)) {
+		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] File does not exist: %s\n", metadata_xml.string().c_str());
+		return "";
+	}
+	std::string buffer((std::istreambuf_iterator<char>(std::ifstream(metadata_xml))), std::istreambuf_iterator<char>());
+	if (buffer.empty()) {
+		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] Failed to read %s\n", metadata_xml.string().c_str());
+		return "";
+	}
+
+	auto doc = std::make_unique<xml_document<char>>();
+	if (!XMLParse(doc.get(), buffer.data(), metadata_xml.string()))
+		return "";
+
+	xml_node<char>* metadata = doc->first_node("metadata");
+	if (!metadata) {
+		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] No metadata node found in %s\n", metadata_xml.string().c_str());
+		return "";
+	}
+	xml_node<char>* name = metadata->first_node("name");
+	if (!name) {
+		ZHL::Log("[XMLData::TryReadModNameFromMetadataXml] [ERROR] No name node found in %s\n", metadata_xml.string().c_str());
+		return "";
+	}
+	return name->value();
+}
 
 char* BuildModdedSta(char* xml) {
 	// we hard code these info from stringtable.sta.
@@ -3335,7 +3364,7 @@ char* BuildModdedSta(char* xml) {
 	const char* filename = call_count++ % 2 == 0 ? "stringtable.sta" : "stringtable_pc.sta";
 	
 	std::unique_ptr<xml_document<char>> xmldoc = std::make_unique<xml_document<char>>();
-	if (!XMLParse(&*xmldoc, xml, filename))
+	if (!XMLParse(xmldoc.get(), xml, filename))
 		return xml;
 
 
@@ -3388,11 +3417,15 @@ char* BuildModdedSta(char* xml) {
 						english_text = str->value();
 					}
 				}
-				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && !is_empty_value(english_text)) {
+				if (english_text && untranslated_items > 0 && !is_empty_value(english_text)) {
 					i = 0;
 					for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 						if (strcmp(str->name(), "string") != 0) continue;
-						if (i++ != english_index) {
+						if (i++ != english_index && is_empty_value(str->value())) {
+							// RapidXML can parse a node's value as a child node of type "node_data" instead.
+							// If both a child node and a value exist, only the child node will be kept when printing.
+							// Remove any child nodes before setting the value.
+							str->remove_all_nodes();
 							str->value(english_text);
 						}
 					}
@@ -3416,27 +3449,33 @@ char* BuildModdedSta(char* xml) {
 		return ret;
 		};
 	if (stringtable_node && std::filesystem::exists(mods_dir) && std::filesystem::is_directory(mods_dir)) {
-		for (auto& entry : std::filesystem::directory_iterator(mods_dir)) {
+		// Find all enabled mods and attempt to sort them based on the standard mod load order (alphabetically by "name" metadata attribute).
+		std::map<std::pair<std::string, std::string>, std::filesystem::path> modded_stas;
+		for (const auto& entry : std::filesystem::directory_iterator(mods_dir)) {
 			if (!entry.is_directory())
 				continue;
-			std::filesystem::path disable_it = entry.path() / "disable.it";
-			if (std::filesystem::exists(disable_it))
+			if (std::filesystem::exists(entry.path() / "disable.it"))
 				continue;
-			
-			// FIXME: We didn't follow the mod load order to overwrite resources.
-			std::filesystem::path mod_content_dir = entry.path() / "content-repentogon";
-			if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
-				mod_content_dir = entry.path() / "content-dlc3";
-				if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
-					mod_content_dir = entry.path() / "content";
-					if (!std::filesystem::exists(mod_content_dir) || !std::filesystem::is_directory(mod_content_dir)) {
-						continue;
-					}
-				}
+
+			const std::string folder_name = entry.path().filename().string();
+			const std::string mod_name = TryReadModNameFromMetadataXml(entry.path() / "metadata.xml");
+			// Empty or tied mod names will fall back to folder name, which is deterministic.
+			const std::pair<std::string, std::string> mod_order_key(mod_name, folder_name);
+
+			std::filesystem::path rgon_path = entry.path() / "content-repentogon" / filename;
+			std::filesystem::path dlc3_path = entry.path() / "content-dlc3" / filename;
+			std::filesystem::path base_path = entry.path() / "content" / filename;
+
+			if (std::filesystem::exists(rgon_path)) {
+				modded_stas[mod_order_key] = rgon_path;
+			} else if (std::filesystem::exists(dlc3_path)) {
+				modded_stas[mod_order_key] = dlc3_path;
+			} else if (std::filesystem::exists(base_path)) {
+				modded_stas[mod_order_key] = base_path;
 			}
+		}
 
-			std::filesystem::path file = mod_content_dir / filename;
-
+		for (const auto& [_, file] : modded_stas) {
 			if (!std::filesystem::exists(file))
 				continue;
 			if (!std::filesystem::is_regular_file(file))
@@ -3518,8 +3557,13 @@ char* BuildModdedSta(char* xml) {
 								continue;
 							}
 
-							if (new_key_node_it->value() && !is_mod_empty_value(new_key_node_it->value()))
+							if (new_key_node_it->value() && !is_mod_empty_value(new_key_node_it->value())) {
+								// RapidXML can parse a node's value as a child node of type "node_data" instead.
+								// If both a child node and a value exist, only the child node will be kept when printing.
+								// Remove any child nodes before setting the value.
+								merged_key_node_it->remove_all_nodes();
 								merged_key_node_it->value(tmp_str(new_key_node_it->value()));
+							}
 
 							new_key_node_it = new_key_node_it->next_sibling();
 							merged_key_node_it = merged_key_node_it->next_sibling();
