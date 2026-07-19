@@ -1,12 +1,24 @@
 v1.1.2e -
 Added:
+* RoomGroup enum
 * RoomDescriptor:
 	- GetGroup() -> integer
 	- SetGroup(integer group)
+		If a RoomDescriptor has a Group set other than `RoomGroup.GROUP_NONE`, random teleports will not take you to that room unless you are already in a room with the same Group.
 	- static CreateGroup(string name) -> integer
+		Creating a group via a distinct name on initial mod load is recommended for best mod compatibility.
 	- static GetGroupByName(string name) -> integer
-* Game language option is now avaliable. You can change game language in launcher and make it avaliable in the game.
+* Isaac.LoadModDataFromFolder(string FolderName)
+	- Lets you read the saveX.dat from any existing mod data folder, even if the mod is not enabled.
+* The game language option is now supported. You can change your game language in REPENTOGON Launcher's "Change Game Options" menu.
+	- Note that Repentance+ currently lacks updated localized sprite resources (such as translated main menu / pause screen).
 * Mod support for stringtable.sta. Now mods can add/overwrite strings in sta files. See docs for more details.
+/newline/
+Modified:
+* MC_PRE/POST_PLAYERHUD_RENDER_HEARTS/ACTIVE_ITEM no longer run for co-op ghosts.
+/newline/
+Fixes:
+* Fixed an OpenAL-related issue causing muffled or quiet audio for certain users.
 /newline/
 /versionseparator/
 v1.1.2d -
