@@ -1407,6 +1407,11 @@ local function RunAdditiveFourthArgCallback(callbackID, callbackIterator, arg1, 
 	return value
 end
 
+local function RunPostModsLoadedCallback(callbackID, callbackIterator, ...)
+	DefaultRunCallbackLogic(callbackID, callbackIterator, ...)
+	ModManager.detail.OnModsLoaded()
+end
+
 local function RunPreAddCardPillCallback(callbackID, callbackIterator, player, pillCard, ...)
 	for callback in callbackIterator do
 		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
@@ -1914,6 +1919,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_CAN_SELECT_CHARACTER] = RunFalseBreakCallbackLogic,
 	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_MODS_LOADED] = RunPostModsLoadedCallback,
 }
 
 for _, callback in ipairs({
@@ -2148,6 +2154,8 @@ pcall(require, "repentogon_extras/stats_menu")
 pcall(require, "repentogon_extras/bestiary_menu")
 -- pcall(require, "repentogon_extras/onlinestub") let's not load it
 pcall(require, "repentogon_extras/mods_menu_tweaks")
+
+pcall(require, "repentogon_api/room_descriptor")
 
 local ESSM = _GetModule("repentogon_extras.entity_save_state_manager")
 

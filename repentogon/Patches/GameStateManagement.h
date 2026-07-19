@@ -14,7 +14,7 @@ struct GameStateSaveInfo
 {
 	/// @brief saveSlot is a 1-based index.
 	/// also encodes isUnknown
-	uint32_t saveSlot = 0;
+	int saveSlot = 0;
 	std::string fileName;
 	bool isRemote = false;
 

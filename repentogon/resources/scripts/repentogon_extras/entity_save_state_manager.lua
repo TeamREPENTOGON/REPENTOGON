@@ -37,6 +37,7 @@ local s_saveStateData = {}
 ---mod references for the same mod point to the same data.
 ---@type table<ModReference, REPENTOGON._Internals.ESSM.ModLookup>
 local s_modLookup = {}
+setmetatable(s_modLookup, { __mode = "k" })
 
 --#endregion
 

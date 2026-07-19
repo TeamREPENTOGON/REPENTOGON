@@ -32,7 +32,7 @@ static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool is
 	info.saveSlot = get_state_slot(gameState, io, isRerun);
 	if (!(1 <= info.saveSlot && info.saveSlot <= 3))
 	{
-		info.saveSlot = -1;
+		info.saveSlot = 0;
 		return info;
 	}
 
@@ -40,7 +40,7 @@ static GameStateSaveInfo get_info(GameState* gameState, GameStateIO* io, bool is
 	info.fileName = get_state_file_name(gameState, info.saveSlot, isRerun);
 	if (!is_file_name_valid(info.fileName))
 	{
-		info.saveSlot = -1;
+		info.saveSlot = 0;
 		return info;
 	}
 

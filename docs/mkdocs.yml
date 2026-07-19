@@ -132,7 +132,9 @@ nav:
     - ButtonActionBitwise: enums/ButtonActionBitwise.md
     - CameraStyle: enums/CameraStyle.md
     - CharacterMenuStatus: enums/CharacterMenuStatus.md
+    - ChargeType: enums/ChargeType.md
     - CompletionType: enums/CompletionType.md
+    - CompletionStatus: enums/CompletionStatus.md
     - ConceptionFamiliarFlag: enums/ConceptionFamiliarFlag.md
     - ConsoleFont: enums/ConsoleFont.md
     - CustomCacheTag: enums/CustomCacheTag.md

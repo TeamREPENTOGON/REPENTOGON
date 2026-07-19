@@ -345,4 +345,6 @@ void PerformASMPatches() {
 	ASMPatches::DisableExitPrompt();
 	ASMPatches::PatchLeaderboardGoalSprite();
 	ASMPatches::PatchOptionsSetMusicBound();
+	
+	ASMPatches::ReEnableGameLanguageSettings();
 }

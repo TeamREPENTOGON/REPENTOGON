@@ -57,7 +57,7 @@ void ItemSpoofSystem::ReworkTrinket(int trinket)
     s_reworkedTrinkets.set(trinket, true);
 }
 
-static bool is_reworked_collectible(int collectible, int playerType)
+bool ItemSpoofSystem::IsReworkedCollectible(int collectible, int playerType)
 {
     if (collectible == CollectibleType::COLLECTIBLE_BIRTHRIGHT)
     {
@@ -77,7 +77,7 @@ static bool is_reworked_collectible(int collectible, int playerType)
     return s_reworkedCollectibles.test(collectible);
 }
 
-static bool is_reworked_trinket(int trinket)
+bool ItemSpoofSystem::IsReworkedTrinket(int trinket)
 {
     if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
     {
@@ -169,7 +169,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, HasCollectible, -9999, (int collectible, boo
 {
     const auto context = GetContextAndReset();
 
-    if (!context.isLuaRequest && is_reworked_collectible(collectible, this->_playerType))
+    if (!context.isLuaRequest && ItemSpoofSystem::IsReworkedCollectible(collectible, this->_playerType))
     {
         return false;
     }
@@ -201,7 +201,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetCollectibleNum, -9999, (int collectible, 
 {
     const auto context = GetContextAndReset();
 
-    if (!context.isLuaRequest && is_reworked_collectible(collectible, this->_playerType))
+    if (!context.isLuaRequest && ItemSpoofSystem::IsReworkedCollectible(collectible, this->_playerType))
     {
         return 0;
     }
@@ -230,7 +230,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, HasTrinket, -9999, (unsigned int trinket, bo
 {
     const auto context = GetContextAndReset();
 
-    if (!context.isLuaRequest && is_reworked_trinket(trinket))
+    if (!context.isLuaRequest && ItemSpoofSystem::IsReworkedTrinket(trinket))
     {
         return false;
     }
@@ -262,7 +262,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetTrinketMultiplier, -9999, (unsigned int t
 {
     const auto context = GetContextAndReset();
 
-    if (!context.isLuaRequest && is_reworked_trinket(trinket))
+    if (!context.isLuaRequest && ItemSpoofSystem::IsReworkedTrinket(trinket))
     {
         return 0;
     }
@@ -299,7 +299,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, HasGoldenTrinket, -9999, (unsigned int trink
 {
     const auto context = GetContextAndReset();
 
-    if (!context.isLuaRequest && is_reworked_trinket(trinket))
+    if (!context.isLuaRequest && ItemSpoofSystem::IsReworkedTrinket(trinket))
     {
         return 0;
     }

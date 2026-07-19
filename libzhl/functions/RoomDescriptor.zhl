@@ -29,9 +29,9 @@ struct RoomDescriptor depends (RoomConfig_Room)
     int32_t DisplayFlags : 0x3c;
     int32_t VisitedCount : 0x40;
     int32_t Flags : 0x44;
-    int16_t unk9 : 0x48;
+    int16_t TotalMoneySpent : 0x48;
     int16_t ClearCount : 0x4a;
-    int32_t unk10 : 0x4c;
+    int32_t GreedSubType : 0x4c;
     int16_t PoopCount : 0x50;
 	int16_t TKeeperCoinSpawns : 0x52;
     int32_t PitsCount : 0x54;
@@ -42,9 +42,9 @@ struct RoomDescriptor depends (RoomConfig_Room)
 	vector_GridEntityDesc SavedGridEntities : 0x68;
     vector_EntitySaveState SavedEntities : 0x74;
 	std_set_int RestrictedGridIndexes : 0x80;
-	vector_EntitySaveState SavedEntities2 : 0x88;
+	vector_EntitySaveState SavedEffects : 0x88;
     int16_t ShopItemIdx: 0xac;
     int16_t ShopItemDiscountIdx : 0xae;
     int32_t DeliriumDistance : 0xb0;
-    int32_t unk29 : 0xb4;
+    int32_t Group : 0xb4;
 } : 0xb8;

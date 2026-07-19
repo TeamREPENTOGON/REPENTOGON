@@ -394,4 +394,105 @@ namespace ASMPatches {
 
 		 sASMPatcher.FlatPatch((char*)addr + 0x4, &patch);
 	 }
+
+	 void ReEnableGameLanguageSettings() {
+		 printf("[REPENTOGON] Apply patch to re-enable game language.\n");
+		 std::string vanilla_option(GetUserPath() + "/Documents/My Games/Binding of Isaac Repentance+/options.ini");
+		 if (!std::filesystem::exists(vanilla_option)) {
+			 ZHL::Log("[REPENTOGON] Vanilla option file(%s) doesn't exists.\n", vanilla_option.c_str());
+			 return;
+		 }
+		 mINI::INIFile iniFile(vanilla_option);
+		 mINI::INIStructure ini;
+		 ini["Options"]["Language"] = "0";
+		 iniFile.read(ini);
+
+		 const int language_id = defstoi(ini["Options"]["Language"], 0);
+		 if (language_id == 0) {
+			 ZHL::Log("[REPENTOGON] ReEnableGameLanguageSettings: does nothing because target language is English.");
+			 return;
+		 }
+		 else {
+			 ZHL::Log("[REPENTOGON] Switch language ID to %d", language_id);
+		 }
+
+		 {
+			 // this is the SetCurrentLanguage function. The language ID is inlined with '0', which is marked as `~` below.
+			 char patch[] = "558bec83ec10568bf1c745fc~~0000008d45fc508d45f08d8e20a6040050e8????????8b45f880780d007518837810~~7f123b8620a60400740ac7861ca60400~~0000008d45fcc745fc~~000000508d45f08d8e38a6040050e8????????8b45f880780d007518837810~~7f123b8638a60400740ac78634a60400~~000000";
+			 std::vector<int> patch_offset;
+			 size_t patch_length = 0;
+			 for (int i = 0; patch[i] && patch[i + 1]; i += 2) {
+				 if (patch[i] == '~' && patch[i + 1] == '~') {
+					 patch_offset.push_back(i / 2);
+					 patch[i] = patch[i + 1] = '0';
+					 patch_length = (i / 2) + 1;
+				 }
+			 }
+
+			 SigScan languageSetupScanner(patch);
+			 if (!languageSetupScanner.Scan()) {
+				 ZHL::Log("[ERROR] Unable to find signature to change game language(%s)\n", patch);
+				 return;
+			 }
+			 void* setCurrentLanguageAddr = languageSetupScanner.GetAddress();
+			 printf("[REPENTOGON] Patching ReEnableGameLanguageSettings at %p\n", setCurrentLanguageAddr);
+
+			 char* modifiedContent = new char[patch_length];
+			 memcpy(modifiedContent, setCurrentLanguageAddr, patch_length);
+			 for (auto offset : patch_offset) {
+				 modifiedContent[offset] = language_id;
+			 }
+
+			 sASMPatcher.FlatPatch(setCurrentLanguageAddr, modifiedContent, patch_length);
+
+			 delete[] modifiedContent;
+		 }
+
+		 printf("[REPENTOGON] Removing outdate language resources.\n");
+		 {
+			 // this is before the while-loop of the call-site of LoadArchiveFile.
+			 SigScan loadArchiveScanner("ffd78b0d????????be????????a3????????85c9741b66900fb7410850ff7104");
+			 if (!loadArchiveScanner.Scan()) {
+				 ZHL::Log("[ERROR] Unable to find signature of load archive.");
+				 return;
+			 }
+			 char* addr = (char*)loadArchiveScanner.GetAddress();
+			 printf("[REPENTOGON] Fix archive file, the list is referenced at %p\n", addr);
+			 void* list_addr = *(void**)(addr + 4);
+			 // the archive file list is a nullptr terminated pointer array in the data section.
+			 char*** archive_file_list = (char***)list_addr;
+
+			 char*** write_tail = archive_file_list;
+			 while (*archive_file_list) {
+				 bool del = false;
+
+				 char* file = **archive_file_list;
+				 if (strncmp(file, "packed/repentance_", 18) == 0) {
+					 if (strcmp(file, "packed/repentance_de.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_es.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_jp.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_kr.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_ru.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_zh.a") == 0)
+						 del = true;
+					 else if (strcmp(file, "packed/repentance_fr.a") == 0)
+						 del = true;
+				 }
+
+				 if (del) {
+					 archive_file_list++;
+				 }
+				 else {
+					 *write_tail++ = *archive_file_list++;
+				 }
+			 }
+			 *write_tail = NULL;
+		 }
+
+	 }
 }
