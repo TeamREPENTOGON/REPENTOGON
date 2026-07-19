@@ -2887,6 +2887,19 @@ LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetTearDisplacement) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int value = (int)luaL_checkinteger(L, 2);
+	if (value < -1 || value > 1) {
+		// 0 is technically "valid", in that it works. It appears to disable the usual alternating fire and stays at 0.
+		// However, this behaviour may not be entirely intentional. Still, could be useful.
+		// Not treating 0 as an error, but also not going to mention it in the error message.
+		return luaL_argerror(L, 2, "TearDisplacement may only be set to -1 or 1");
+	}
+	player->_tearDisplacement = value;
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerGetActionHoldDrop) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_actionHoldDrop);
@@ -3749,6 +3762,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaxKeys", Lua_PlayerGetMaxKeys },
 		{ "GetMaxBombs", Lua_PlayerGetMaxBombs },
 		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
+		{ "SetTearDisplacement", Lua_PlayerSetTearDisplacement },
 		{ "GetActionHoldDrop", Lua_PlayerGetActionHoldDrop },
 		{ "SetActionHoldDrop", Lua_PlayerSetActionHoldDrop },
 		{ "GetForgottenSwapFormCooldown", Lua_PlayerGetForgottenSwapFormCooldown },
