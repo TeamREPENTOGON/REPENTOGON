@@ -3417,11 +3417,11 @@ char* BuildModdedSta(char* xml) {
 						english_text = str->value();
 					}
 				}
-				if (english_text && untranslated_items > 0 && !is_empty_value(english_text)) {
+				if (english_text && translated_items == 1 && translated_items + untranslated_items == language_count && !is_empty_value(english_text)) {
 					i = 0;
 					for (xml_node<char>* str = key->first_node(); str; str = str->next_sibling()) {
 						if (strcmp(str->name(), "string") != 0) continue;
-						if (i++ != english_index && is_empty_value(str->value())) {
+						if (i++ != english_index) {
 							// RapidXML can parse a node's value as a child node of type "node_data" instead.
 							// If both a child node and a value exist, only the child node will be kept when printing.
 							// Remove any child nodes before setting the value.
