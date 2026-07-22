@@ -23,6 +23,11 @@ ___
 
 ## Functions
 
+### GetCurrentJingleID () {: aria-label='Functions' }
+#### [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) GetCurrentJingleID ( ) {: .copyable aria-label='Functions' }
+Returns the id of the currently playing jingle, or 0 if no jingle is playing/current jingle is fading out.
+
+___
 ### GetCurrentPitch () {: aria-label='Functions' }
 #### float GetCurrentPitch ( ) {: .copyable aria-label='Functions' }
 
