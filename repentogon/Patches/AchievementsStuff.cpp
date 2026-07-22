@@ -204,16 +204,23 @@ void ReplaceAchievementSprite(ANM2* AchievPop, int achieveemntid) {
 
 HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 	super();
-	if ((this->status == 1) && (!achievdone) && (this->displayedachievement == dummyachiev)) {
+	if ((this->status) == 1 && (!achievdone)) {
 		achievdone = true;
-		lastdummyachievframe = this->frame;
-		int achieveemntid = pendingachievs.front();
-		pendingachievs.pop();
 		ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
-		ReplaceAchievementSprite(AchievPop, achieveemntid);
+		if (this->displayedachievement == dummyachiev) {
+			lastdummyachievframe = this->frame;
+			int achieveemntid = pendingachievs.front();
+			pendingachievs.pop();
+			ReplaceAchievementSprite(AchievPop, achieveemntid);
 
-		if (pendingachievs.size() == 0) {
-			dummyachiev = -1;
+			if (pendingachievs.size() == 0) {
+				dummyachiev = -1;
+			}
+		} else {
+			// If we previously displayed an achievement with a custom background,
+			// make sure that we reset the graphics for a vanilla one.
+			AchievPop->ReplaceSpritesheet(2, string("gfx/ui/achievement/paper.png"));
+			AchievPop->LoadGraphics(true);
 		}
 	}
 	else if (this->status != 1) { achievdone = false; }
