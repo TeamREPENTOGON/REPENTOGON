@@ -42,5 +42,5 @@ ___
 ___
 ### StopJingle () {: aria-label='Functions' }
 #### void StopJingle ( ) {: .copyable aria-label='Functions' }
-
+Force currently playing jingle to immediately fade out.
 ___
