@@ -62,7 +62,8 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 }
 
 // stuff the jingle id into unused bytes
-HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> void) {
+// Altered priority so that this correctly gets the modified jingle from MC_PRE_MUSIC_PLAY_JINGLE
+HOOK_METHOD_PRIORITY(Music, PlayJingle, 1, (int musicId, int unusedInt, bool unusedBool) -> void) {
 	super(musicId, unusedInt, unusedBool);
 	// if someone's got 65,417 custom songs loaded there are bigger issues
 	this->_jingleId = (std::uint16_t)musicId;
@@ -79,7 +80,7 @@ LUA_FUNCTION(Lua_MusicManager_GetCurrentJingleID) {
 LUA_FUNCTION(Lua_MusicManager_StopJingle) {
 	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	// magic offset is music->_jingleStream.playing
-	if (music->_jingleCountdownMaybe < 0 || *(bool*)((char*)music + 0x354) == false)
+	if (music->_jingleCountdownMaybe > 0 || *(bool*)((char*)music + 0x354) == true)
 		music->StopJingle();
 
 	return 0;
