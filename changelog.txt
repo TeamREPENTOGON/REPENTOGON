@@ -1,5 +1,7 @@
 v1.1.2e -
 Added:
+* EntityPlayer:
+	- SetTearDisplacement
 * RoomGroup enum
 * RoomDescriptor:
 	- GetGroup() -> integer
@@ -19,6 +21,8 @@ Modified:
 /newline/
 Fixes:
 * Fixed an OpenAL-related issue causing muffled or quiet audio for certain users.
+* Fixed vanilla achievement popups sometimes using the custom gfxback of a prior modded achievement.
+* Fixed ItemConfigCard.SetAvailabilityCondition potentially having its lua reference get broken and point to something unintended.
 /newline/
 /versionseparator/
 v1.1.2d -
