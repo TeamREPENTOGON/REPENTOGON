@@ -2,6 +2,7 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../Utils/SmartLuaRef.h"
 
 enum eCardPool
 {
@@ -32,9 +33,8 @@ struct ItemConfig_Card_EX
     bool invalidateVanillaMethod = false;
     float initialWeight = 1.0f;
     float weight = 1.0f;
-    int availabilityFuncRef = LUA_NOREF;
+	SmartLuaRef availabilityFuncRef;
 
-    ~ItemConfig_Card_EX();
     void ClearAvailabilityCondition(lua_State* L);
     void SetAvailabilityCondition(lua_State* L, int idx);
 };
