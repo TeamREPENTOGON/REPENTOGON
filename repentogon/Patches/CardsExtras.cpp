@@ -108,29 +108,16 @@ static inline bool is_card_available_ex(ItemConfig_Card* card)
     return true;
 }
 
-ItemConfig_Card_EX::~ItemConfig_Card_EX()
-{
-    if (g_LuaEngine)
-    {
-        this->ClearAvailabilityCondition(g_LuaEngine->_state);
-    }
-}
-
 void ItemConfig_Card_EX::ClearAvailabilityCondition(lua_State* L)
 {
-    if (this->availabilityFuncRef == LUA_NOREF)
-        return;
-
-    luaL_unref(L, LUA_REGISTRYINDEX, this->availabilityFuncRef);
-    this->availabilityFuncRef = LUA_NOREF;
+	this->availabilityFuncRef.Free(L);
 }
 
 void ItemConfig_Card_EX::SetAvailabilityCondition(lua_State* L, int idx)
 {
     luaL_checktype(L, idx, LUA_TFUNCTION);
-    this->ClearAvailabilityCondition(L);
     lua_pushvalue(L, idx);
-    this->availabilityFuncRef = luaL_ref(L, LUA_REGISTRYINDEX);
+    this->availabilityFuncRef.Set(luaL_ref(L, LUA_REGISTRYINDEX));
 }
 
 void CardPool::ClearPool()
