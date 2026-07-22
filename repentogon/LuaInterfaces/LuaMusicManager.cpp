@@ -2,6 +2,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
+
+
 LUA_FUNCTION(Lua_MusicManager_Play) {
 	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
@@ -49,7 +51,7 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int duration = (int)luaL_optinteger(L, 3, 140);
-	if (duration < 0)
+	if (duration <= 0)
 		return luaL_argerror(L, 3, "Duration must be greater than zero!");
 	music->PlayJingle(musicId, 140, false);
 
@@ -57,6 +59,20 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 	music->_jingleCountdownMaybe = duration;
 
 	return 0;
+}
+
+HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> void) {
+	super(musicId, unusedInt, unusedBool);
+	// if someone's got 65,417 custom songs loaded there are bigger issues
+	this->_jingleId = (std::uint16_t)musicId;
+}
+
+LUA_FUNCTION(Lua_MusicManager_GetCurrentJingleID) {
+	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	std::uint16_t ret = music->_jingleId;
+	lua_pushinteger(L, music->_jingleCountdownMaybe < 1 ? 0 : ret);
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_MusicManager_StopJingle) {
@@ -90,6 +106,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// New Functions
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "StopJingle", Lua_MusicManager_StopJingle);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "GetCurrentJingleID", Lua_MusicManager_GetCurrentJingleID);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "GetCurrentPitch", Lua_MusicManager_GetCurrentPitch);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "SetCurrentPitch", Lua_MusicManager_SetCurrentPitch);
 }

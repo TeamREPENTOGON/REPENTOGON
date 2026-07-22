@@ -43,8 +43,13 @@ __thiscall void Music::VolumeSlide(float TargetVolume, float FadeRate);
 struct Music depends (MusicEntry) {
 {{
 	inline void StopJingle() {
-		*(int*)((char*)this + 0x348) = 0;
-		*(int*)((char*)this + 0x364) = -100;
+		// this is inside _jingleStream
+		*(int*)((char*)this + 0x348) = 0; // _volume
+		*(int*)((char*)this + 0x34c) = 0; // _targetVolume
+		*(bool*)((char*)this + 0x354) = false; // _playing
+		
+		this->_jingleVolumeMaybe = 0.0f;
+		this->_jingleCountdownMaybe = 0;
 	};
 	
 	  bool LIBZHL_API ValidateMusicID(int id, int& max);
@@ -57,6 +62,7 @@ struct Music depends (MusicEntry) {
 	float _targetPitch : 0x318;
 	vector_MusicEntry _entries : 0x31c;
 	bool _enabled : 0x328;
+	uint16_t _jingleId : 0x32a; // doesn't exist, hacked in
 	// and Stream
 	float _jingleVolumeMaybe : 0x360;
 	int _jingleCountdownMaybe : 0x364;
