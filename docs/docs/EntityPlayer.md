@@ -1543,6 +1543,17 @@ ___
 #### void SetSuplexTargetPosition ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
+### SetTearDisplacement () {: aria-label='Functions' }
+#### void SetTearDisplacement ( int Displacement ) {: .copyable aria-label='Functions' }
+Sets the player's TearDisplacement value, which represents which eye the player is shooting from.
+
+Note that the game will typically alternate this value BEFORE shooting a tear.
+
+???+ info "TearDisplacement"
+    - `1` Right eye
+    - `-1` Left eye
+
+___
 ### SetTearPoisonDamage () {: aria-label='Functions' }
 #### void SetTearPoisonDamage ( float Damage ) {: .copyable aria-label='Functions' }
 
