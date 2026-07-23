@@ -3179,6 +3179,13 @@ TrinketSlot = {
 	BELLY_BUTTON = 1,
 }
 
+GridPathThreshold = {
+    DEFAULT = 900,
+    IGNORE_DECAY = 950,
+    IGNORE_FIREPLACES_AND_DECAY = 1000,
+    IGNORE_EVERYTHING = 1001
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

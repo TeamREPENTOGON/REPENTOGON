@@ -861,6 +861,42 @@ LUA_FUNCTION(Lua_EntitySetVariant) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityGetLineOfSightCostThreshold) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus && plus->lineOfSightCostThreshold.has_value()) {
+		lua_pushinteger(L, plus->lineOfSightCostThreshold.value());
+	}
+	else {
+		// TODO: Have fallback match what decomp does internally
+		lua_pushinteger(L, 900);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetLineOfSightCostThreshold) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	int threshold = (int)luaL_checkinteger(L, 2);
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus) {
+		plus->lineOfSightCostThreshold = threshold;
+	}
+	
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityResetLineOfSightCostThreshold) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus) {
+		plus->lineOfSightCostThreshold = std::nullopt;
+	}
+	
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -955,6 +991,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetWaterClipFlags", Lua_EntitySetWaterClipFlags },
 		{ "ResetWaterClipFlags", Lua_EntityResetWaterClipFlags },
 		{ "CanDevolve", Lua_EntityCanDevolve },
+		{ "GetLineOfSightCostThreshold", Lua_EntityGetLineOfSightCostThreshold },
+		{ "SetLineOfSightCostThreshold", Lua_EntitySetLineOfSightCostThreshold },
+		{ "ResetLineOfSightCostThreshold", Lua_EntityResetLineOfSightCostThreshold },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

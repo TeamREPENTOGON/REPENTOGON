@@ -210,6 +210,7 @@ void PerformASMPatches() {
 	ASMPatchHushBug();
 	ASMPatchFireProjectiles();
 	ASMPatchFireBossProjectiles();
+	ASMPatchLineOfSightThreshold();
 	//ASMPatchApplyFrozenEnemyDeathEffects();  // This was disabled prior to rep+, ignore it!
 
 	// EntityKnife
