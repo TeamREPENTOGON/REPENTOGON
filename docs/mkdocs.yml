@@ -182,6 +182,7 @@ nav:
     - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
+    - PillEffectSubClass: enums/PillEffectSubClass.md
     - PlayerHUDLayout: enums/PlayerHUDLayout.md
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
@@ -206,6 +207,7 @@ nav:
     - StbType: enums/StbType.md
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - TrinketSlot: enums/TrinketSlot.md
     - UseActiveItemResultFlag: enums/UseActiveItemResultFlag.md
     - VertexAttributeFormat: enums/VertexAttributeFormat.md
     - WaterClipFlag: enums/WaterClipFlag.md
