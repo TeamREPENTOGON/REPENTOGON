@@ -148,6 +148,7 @@ nav:
     - DoorMask: enums/DoorMask.md
     - DwmWindowAttribute: enums/DwmWindowAttribute.md
     - Ending: enums/Ending.md
+    - EnemyTargetFlags: enums/EnemyTargetFlags.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EntityTag: enums/EntityTag.md
     - EvaluateStatStage: enums/EvaluateStatStage.md
