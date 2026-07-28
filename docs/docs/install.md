@@ -42,7 +42,7 @@ There are two ways you may obtain the REPENTOGON Launcher- either by downloading
     If the launcher says your installation of Isaac is *not* compatible with REPENTOGON, note that you must have either:
 
     * The Binding of Isaac+ Repentance+ **v1.9.7.12.J273**
-    * The latest official Steam version of The Binding of Isaac+ Repentance+
+    * The latest official Steam version of The Binding of Isaac: Repentance+
         * If a new update just released, try updating the launcher, and if that doesn't work, be patient! It may take us up to a day to release a new patch for that version.
 
 
@@ -57,7 +57,7 @@ There are two ways you may obtain the REPENTOGON Launcher- either by downloading
 
 If you wish, you can make it so that launching Isaac through Steam runs the REPENTOGON Launcher instead. **This is REQUIRED for Steam Remote Play to function properly with REPENTOGON!**
 
-* Within Steam, navigate to *The Binding of Isaac* Rebirth*
+* Within Steam, navigate to *The Binding of Isaac: Rebirth*
 * Click on the gear towards the right side of the screen, and select `Properties`
     * This will open a new window
 
@@ -75,7 +75,7 @@ If you wish, you can make it so that launching Isaac through Steam runs the REPE
 # Instructions (Linux / Steam Deck) 
 
 * On Steam Deck, exit to **Desktop Mode**
-* Within Steam, navigate to *The Binding of Isaac* Rebirth*
+* Within Steam, navigate to *The Binding of Isaac: Rebirth*
 * Click on the gear towards the right side of the screen, and select `Properties`
     * This will open a new window
 
@@ -156,11 +156,12 @@ Porting a project like REPENTOGON to a newer version of the game takes a long ti
 ## The Launcher says that my REPENTOGON installation is broken/invalid!
 
 You may need to try the following:
-    * **Be sure you followed the above installation instructions, *especially* if you use Linux or a Steam Deck!**
-    * Restart the Launcher and make sure to accept any update prompts
-    * Click `Choose exe` in the main Launcher window to repeat first-time setup, and make sure the correct Isaac executable is selected
-    * Click `Advanced options...` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
-    * If all of the above fails, navigate to the game's installation folder, delete the `repentogon` subfolder and launch the launcher again
+
+* **Be sure you followed the above installation instructions, *especially* if you use Linux or a Steam Deck!**
+* Restart the Launcher and make sure to accept any update prompts
+* Click `Choose exe` in the main Launcher window to repeat first-time setup, and make sure the correct Isaac executable is selected
+* Click `Advanced options...` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
+* If all of the above fails, navigate to the game's installation folder, delete the `repentogon` subfolder and launch the launcher again
 
 If you still have issues, or if this issue occurs repeatedly, [feel free to reach out for help](#reporting--contact).
 
