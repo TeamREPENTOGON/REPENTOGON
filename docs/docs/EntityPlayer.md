@@ -640,6 +640,15 @@ The returned table has [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/en
 Note that golden trinkets are counted separately.
 
 ___
+### GetInventoryHistoryIndex () {: aria-label='Functions' }
+#### int GetInventoryHistoryIndex ( int Slot ) {: .copyable aria-label='Functions' }
+Returns an zero-based index into History's collectibles list.
+
+___
+### GetInventoryCollectible () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetInventoryCollectible ( int Slot ) {: .copyable aria-label='Functions' }
+
+___
 ### GetItemStateCooldown () {: aria-label='Functions' }
 #### int GetItemStateCooldown ( ) {: .copyable aria-label='Functions' }
 
@@ -694,6 +703,11 @@ ___
 ### GetMaxCoins () {: aria-label='Functions' }
 #### int GetMaxCoins ( ) {: .copyable aria-label='Functions' }
 Returns the maximum number of coins the player can currently hold.
+
+___
+### GetMaxInventorySize () {: aria-label='Functions' }
+#### int GetMaxInventorySize ( ) {: .copyable aria-label='Functions' }
+Returns the maximum size of Tainted Isaac's inventory.
 
 ___
 ### GetMaxKeys () {: aria-label='Functions' }
