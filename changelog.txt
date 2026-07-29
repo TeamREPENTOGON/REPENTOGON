@@ -1,3 +1,15 @@
+v1.1.2f -
+Added:
+* EntityPlayer:
+	- GetInventoryHistoryIndex
+	- GetInventoryCollectible
+	- GetMaxInventorySize
+/newline/
+Modified:
+* "Extra debug render" feature now also visualizes "FindInCapsule".
+/newline/
+/versionseparator/
+
 v1.1.2e -
 Added:
 * EntityPlayer:
