@@ -89,3 +89,12 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 void ASMPatchRedirectToLocalizationFolders() {
 	ASMPatchRedirectToLocalizedResources();
 }
+
+HOOK_METHOD(Cutscene_PartBase, LoadSubtitle, ()->void) {
+	std::string redirectPath, originalPath = this->subtitlePath;
+	// FIXME: an invalid srt file will stuck the game.
+	g_Manager->GetModManager()->TryRedirectPath(&redirectPath, &this->subtitlePath);
+	this->subtitlePath = redirectPath;
+	super();
+	this->subtitlePath = originalPath;
+}

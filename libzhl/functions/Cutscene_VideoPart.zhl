@@ -1,0 +1,3 @@
+struct Cutscene_VideoPart depends (Cutscene_PartBase) : public Cutscene_PartBase {
+
+} : 0x58;

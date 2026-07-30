@@ -1,0 +1,7 @@
+struct Cutscene_PartBase {
+	std_string subtitlePath : 0x8;
+	void* loadedSubtitle : 0x20;
+} : 0x24; // unknown size because it's a base class
+
+"558bec6aff68????????64a1000000005081ec6c010000a1????????33c58945f05657508d45f464a3000000008bf189b5b0feffff8b462085c0741050e8????????83c404c74620000000008d4608c7462400000000c7462800000000c7462c000000008378141072028b0050b9????????e8????????8bf085f6":
+__thiscall void Cutscene_PartBase::LoadSubtitle();
