@@ -16,10 +16,10 @@ REPENTOGON是为《以撒的结合：忏悔+》的v1.9.7.12J273开发的Lua接�
 REPENTOGON为Lua接口进行增改，增加了大量新特性。在这里查看文档：[https://repentogon.com/docs.html](https://repentogon.com/docs.html)
 
 # 安装
-关于详细安装指南，参考[我们的网站](https://repentogon.com/install.html)。
+关于详细安装指南，参考[我们的网站](https://repentogon.com/install_zh.html)。
 
 # 构建
-（如果你不是开发者，建议按照[我们网站](https://repentogon.com/install.html)上的安装指南进行，而不是进行这个步骤。）
+（如果你不是开发者，建议按照[我们网站](https://repentogon.com/install_zh.html)上的安装指南进行，而不是进行这个步骤。）
 ### 构建要求
 此项目要求使用与游戏相同的编译器。因此，必需使用Windows系统，以及以下内容：
 * CMake 3.13或以上版本

@@ -3,6 +3,8 @@
 ???+ info
     If you prefer a video guide, check out [Catinsurance's installation instructions video](https://youtu.be/hF4ngfDn364)!
 
+    This page has been translated into: [简体中文(Simplified Chinese)](install_zh.md).
+
 In order to install and run REPENTOGON, you'll need:
 
 * The REPENTOGON Launcher (see OS-appropriate installation steps below)
