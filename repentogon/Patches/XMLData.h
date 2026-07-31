@@ -1099,12 +1099,22 @@ inline void LoadGenericXMLData(XMLDataHolder* data, xml_node<char>* daddy, bool 
 		}
 		data->ProcessChilds(auxnode, id);
 		
+		StringTable* stringTable = g_Manager->GetStringTable();
+		bool unk = false;
+		if (attributes["name"].find("#") != string::npos) {
+			attributes["untranslatedname"] = attributes["name"];
+			attributes["name"] = string(stringTable->GetString("Default", 0, attributes["name"].substr(1, attributes["name"].length()).c_str(), &unk));
+			if (attributes["name"].compare("StringTable::InvalidKey") == 0) { attributes["name"] = attributes["untranslatedname"]; }
+		}
+
 		if (attributes.find("relativeid") != attributes.end()) { data->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 		data->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+		data->bynamemod[attributes["untranslatedname"] + attributes["sourceid"]] = id;
 		data->bymod[attributes["sourceid"]].push_back(id);
 		data->byfilepathmulti.tab[currpath].push_back(id);
 		if (attributes.find("name") != attributes.end()) {
 			data->byname[attributes["name"]] = id;
+			data->byname[attributes["untranslatedname"]] = id;
 		}
 		data->nodes[id] = attributes;
 		data->byorder[data->nodes.size()] = id;

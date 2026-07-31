@@ -1101,6 +1101,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.EntityData->nodes[idx] = entity;
 			XMLStuff.EntityData->byorder[XMLStuff.EntityData->nodes.size()] = idx;
 			XMLStuff.EntityData->byname[entity["name"]] = idx;
+			XMLStuff.EntityData->byname[entity["untranslatedname"]] = idx;
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
 			XMLStuff.EntityData->bybossid[entity["bossid"]] = idx;
 		}
@@ -1144,15 +1145,19 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 
 			if ((player.find("bskinparent") != player.end()) || ((id > 20) && (id <= 40))){
-				XMLStuff.PlayerData->byname[player["name"] + "-Tainted-"] = id; }
+				XMLStuff.PlayerData->byname[player["name"] + "-Tainted-"] = id; 
+				XMLStuff.PlayerData->byname[player["untranslatedname"] + "-Tainted-"] = id; }
 			else{ 
-				XMLStuff.PlayerData->byname[player["name"]] = id; }
+				XMLStuff.PlayerData->byname[player["name"]] = id; 
+				XMLStuff.PlayerData->byname[player["untranslatedname"]] = id; }
 
 			if (player.find("bskinparent") != player.end()) {
 				XMLStuff.PlayerData->bynamemod[player["name"] + lastmodid + "-Tainted-"] = id;
+				XMLStuff.PlayerData->bynamemod[player["untranslatedname"] + lastmodid + "-Tainted-"] = id;
 			}
 			else {
 				XMLStuff.PlayerData->bynamemod[player["name"] + lastmodid] = id;
+				XMLStuff.PlayerData->bynamemod[player["untranslatedname"] + lastmodid] = id;
 			}
 
 			// If only "hideachievement" was specified, use that value for "achievement" too.
@@ -1208,10 +1213,12 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				XMLStuff.CardData->ProcessChilds(auxnode, id);
 				XMLStuff.CardData->nodes[id] = card;
 				XMLStuff.CardData->bynamemod[card["name"] + lastmodid] = id;
+				XMLStuff.CardData->bynamemod[card["untranslatedname"] + lastmodid] = id;
 				XMLStuff.CardData->bymod[lastmodid].push_back(id);
 				XMLStuff.CardData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CardData->byorder[XMLStuff.CardData->nodes.size()] = id;
 				XMLStuff.CardData->byname[card["name"]] = id;
+				XMLStuff.CardData->byname[card["untranslatedname"]] = id;
 				XMLStuff.ModData->cards[lastmodid] += 1;
 				if (toint(card["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 					XMLStuff.CardData->customachievitems.push_back(card);
@@ -1252,7 +1259,9 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (pill.find("relativeid") != pill.end()) { XMLStuff.PillData->byrelativeid[lastmodid + pill["relativeid"]] = id; }
 				XMLStuff.PillData->ProcessChilds(auxnode, id);
 				XMLStuff.PillData->byname[pill["name"]] = id;
+				XMLStuff.PillData->byname[pill["untranslatedname"]] = id;
 				XMLStuff.PillData->bynamemod[pill["name"] + lastmodid] = id;
+				XMLStuff.PillData->bynamemod[pill["untranslatedname"] + lastmodid] = id;
 				XMLStuff.PillData->bymod[lastmodid].push_back(id);
 				XMLStuff.PillData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PillData->nodes[id] = pill;
@@ -1344,9 +1353,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
+					XMLStuff.ItemData->bynamemod[item["untranslatedname"] + lastmodid] = id;
 					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
 					XMLStuff.ItemData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.ItemData->byname[item["name"]] = id;
+					XMLStuff.ItemData->byname[item["untranslatedname"]] = id;
 					XMLStuff.ItemData->nodes[id] = item;
 					XMLStuff.ItemData->byorder[XMLStuff.ItemData->nodes.size()] = id;
 					XMLStuff.ModData->items[lastmodid] += 1;
@@ -1417,9 +1428,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
+					XMLStuff.TrinketData->bynamemod[trinket["untranslatedname"] + lastmodid] = id;
 					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
 					XMLStuff.TrinketData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.TrinketData->byname[trinket["name"]] = id;
+					XMLStuff.TrinketData->byname[trinket["untranslatedname"]] = id;
 					XMLStuff.TrinketData->nodes[id] = trinket;
 					XMLStuff.TrinketData->byorder[XMLStuff.TrinketData->nodes.size()] = id;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
@@ -1469,9 +1482,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
 				XMLStuff.NullItemData->bynamemod[item["name"] + lastmodid] = id;
+				XMLStuff.NullItemData->bynamemod[item["untranslatedname"] + lastmodid] = id;
 				XMLStuff.NullItemData->bymod[lastmodid].push_back(id);
 				XMLStuff.NullItemData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.NullItemData->byname[item["name"]] = id;
+				XMLStuff.NullItemData->byname[item["untranslatedname"]] = id;
 				XMLStuff.NullItemData->nodes[id] = item;
 				XMLStuff.NullItemData->byorder[XMLStuff.NullItemData->nodes.size()] = id;
 				XMLStuff.ModData->nullitems[lastmodid] += 1;
@@ -1508,9 +1523,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.BombCostumeData->ProcessChilds(auxnode, id);
 			if (bombcostume.count("relativeid") > 0) { XMLStuff.BombCostumeData->byrelativeid[lastmodid + bombcostume["relativeid"]] = id; }
 			XMLStuff.BombCostumeData->bynamemod[bombcostume["name"] + lastmodid] = id;
+			XMLStuff.BombCostumeData->bynamemod[bombcostume["untranslatedname"] + lastmodid] = id;
 			XMLStuff.BombCostumeData->bymod[lastmodid].push_back(id);
 			XMLStuff.BombCostumeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BombCostumeData->byname[bombcostume["name"]] = id;
+			XMLStuff.BombCostumeData->byname[bombcostume["untranslatedname"]] = id;
 			XMLStuff.BombCostumeData->nodes[id] = bombcostume;
 			XMLStuff.BombCostumeData->byorder[XMLStuff.BombCostumeData->nodes.size()] = id;
 			XMLStuff.ModData->bombcostumes[lastmodid] += 1;
@@ -1546,9 +1563,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			XMLStuff.MusicData->ProcessChilds(auxnode, id);
 			if (music.find("relativeid") != music.end()) { XMLStuff.MusicData->byrelativeid[lastmodid + music["relativeid"]] = id; }
 			XMLStuff.MusicData->bynamemod[music["name"] + lastmodid] = id;
+			XMLStuff.MusicData->bynamemod[music["untranslatedname"] + lastmodid] = id;
 			XMLStuff.MusicData->bymod[lastmodid].push_back(id);
 			XMLStuff.MusicData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.MusicData->byname[music["name"]] = id;
+			XMLStuff.MusicData->byname[music["untranslatedname"]] = id;
 			XMLStuff.MusicData->nodes[id] = music;
 			XMLStuff.MusicData->byorder[XMLStuff.MusicData->nodes.size()] = id;
 			XMLStuff.ModData->musictracks[lastmodid] += 1;
@@ -1588,9 +1607,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("sound: %s (%d) \n",sound["name"].c_str(),id);
 			if (sound.find("relativeid") != sound.end()) { XMLStuff.SoundData->byrelativeid[lastmodid + sound["relativeid"]] = id; }
 			XMLStuff.SoundData->bynamemod[sound["name"] + lastmodid] = id;
+			XMLStuff.SoundData->bynamemod[sound["untranslatedname"] + lastmodid] = id;
 			XMLStuff.SoundData->bymod[lastmodid].push_back(id);
 			XMLStuff.SoundData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.SoundData->byname[sound["name"]] = id;
+			XMLStuff.SoundData->byname[sound["untranslatedname"]] = id;
 			XMLStuff.SoundData->nodes[id] = sound;
 			XMLStuff.SoundData->byorder[XMLStuff.SoundData->nodes.size()] = id;
 			XMLStuff.ModData->sounds[lastmodid] += 1;
@@ -1632,12 +1653,22 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (achievement["name"].length() == 0) {
 				achievement["name"] = achievement["steam_name"];
 			}
+
+
+			if (achievement["name"].find("#") != string::npos) {
+				achievement["untranslatedname"] = achievement["name"];
+				achievement["name"] = string(stringTable->GetString("Default", 0, achievement["name"].substr(1, achievement["name"].length()).c_str(), &unk));
+				if (achievement["name"].compare("StringTable::InvalidKey") == 0) { achievement["name"] = achievement["untranslatedname"]; }
+			}
+
 			//ZHL::Log("achievement: %s (%d) \n", achievement["name"].c_str(),id);			
 				if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[achievement["sourceid"] + achievement["relativeid"]] = id; }
 				XMLStuff.AchievementData->bynamemod[achievement["name"] + achievement["sourceid"]] = id;
+				XMLStuff.AchievementData->bynamemod[achievement["untranslatedname"] + achievement["sourceid"]] = id;
 				XMLStuff.AchievementData->bymod[achievement["sourceid"]].push_back(id);
 				//XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.AchievementData->byname[achievement["name"]] = id;
+				XMLStuff.AchievementData->byname[achievement["untranslatedname"]] = id;
 				XMLStuff.AchievementData->nodes[id] = achievement;
 				XMLStuff.AchievementData->byorder[XMLStuff.AchievementData->nodes.size()] = id;
 				XMLStuff.ModData->achievements[achievement["sourceid"]] += 1;
@@ -1676,9 +1707,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (challenge.find("relativeid") != challenge.end()) { XMLStuff.ChallengeData->byrelativeid[lastmodid + challenge["relativeid"]] = id; }
 			XMLStuff.ChallengeData->ProcessChilds(auxnode, id);
 			XMLStuff.ChallengeData->bynamemod[challenge["name"] + lastmodid] = id;
+			XMLStuff.ChallengeData->bynamemod[challenge["untranslatedname"] + lastmodid] = id;
 			XMLStuff.ChallengeData->bymod[lastmodid].push_back(id);
 			XMLStuff.ChallengeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.ChallengeData->byname[challenge["name"]] = id;
+			XMLStuff.ChallengeData->byname[challenge["untranslatedname"]] = id;
 			XMLStuff.ChallengeData->nodes[id] = challenge;
 			XMLStuff.ChallengeData->byorder[XMLStuff.ChallengeData->nodes.size()] = id;
 			XMLStuff.ModData->challenges[lastmodid] += 1;
@@ -1722,9 +1755,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (backdrop.find("relativeid") != backdrop.end()) { XMLStuff.BackdropData->byrelativeid[lastmodid + backdrop["relativeid"]] = id; }
 			XMLStuff.BackdropData->ProcessChilds(auxnode, id);
 			XMLStuff.BackdropData->bynamemod[backdrop["name"] + lastmodid] = id;
+			XMLStuff.BackdropData->bynamemod[backdrop["untranslatedname"] + lastmodid] = id;
 			XMLStuff.BackdropData->bymod[lastmodid].push_back(id);
 			XMLStuff.BackdropData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BackdropData->byname[backdrop["name"]] = id;
+			XMLStuff.BackdropData->byname[backdrop["untranslatedname"]] = id;
 			XMLStuff.BackdropData->nodes[id] = backdrop;
 			XMLStuff.BackdropData->byorder[XMLStuff.BackdropData->nodes.size()] = id;
 			XMLStuff.ModData->backdrops[lastmodid] += 1;
@@ -1767,9 +1802,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (cutscene.find("relativeid") != cutscene.end()) { XMLStuff.CutsceneData->byrelativeid[cutscene["sourceid"] + cutscene["relativeid"]] = id; }
 			XMLStuff.CutsceneData->ProcessChilds(auxnode, id);
 			XMLStuff.CutsceneData->bynamemod[cutscene["name"] + cutscene["sourceid"]] = id;
+			XMLStuff.CutsceneData->bynamemod[cutscene["untranslatedname"] + cutscene["sourceid"]] = id;
 			XMLStuff.CutsceneData->bymod[cutscene["sourceid"]].push_back(id);
 			XMLStuff.CutsceneData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.CutsceneData->byname[cutscene["name"]] = id;
+			XMLStuff.CutsceneData->byname[cutscene["untranslatedname"]] = id;
 			XMLStuff.CutsceneData->nodes[id] = cutscene;
 			XMLStuff.CutsceneData->byorder[XMLStuff.CutsceneData->nodes.size()] = id;
 			XMLStuff.ModData->cutscenes[cutscene["sourceid"]] += 1;
@@ -1806,9 +1843,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("stage: %s (%d)", stage["name"].c_str(), id);
 			XMLStuff.StageData->ProcessChilds(auxnode, id);
 			XMLStuff.StageData->bynamemod[stage["name"] + stage["sourceid"]] = id;
+			XMLStuff.StageData->bynamemod[stage["untranslatedname"] + stage["sourceid"]] = id;
 			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
 			//XMLStuff.StageData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.StageData->byname[stage["name"]] = id;
+			XMLStuff.StageData->byname[stage["untranslatedname"]] = id;
 			if (stage.find("consoleid") != stage.end()) {
 				tuple<int, int> idx = { toint(stage["consoleid"]), toint(stage["stagealt"]) };
 				XMLStuff.StageData->bystagealt[idx] = id;
@@ -1851,9 +1890,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (recipe.find("relativeid") != recipe.end()) { XMLStuff.RecipeData->byrelativeid[lastmodid + recipe["relativeid"]] = id; }
 			XMLStuff.RecipeData->ProcessChilds(auxnode, id);
 			XMLStuff.RecipeData->bynamemod[recipe["name"] + lastmodid] = id;
+			XMLStuff.RecipeData->bynamemod[recipe["untranslatedname"] + lastmodid] = id;
 			XMLStuff.RecipeData->bymod[lastmodid].push_back(id);
 			XMLStuff.RecipeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.RecipeData->byname[recipe["name"]] = id;
+			XMLStuff.RecipeData->byname[recipe["untranslatedname"]] = id;
 			XMLStuff.RecipeData->nodes[id] = recipe;
 			XMLStuff.RecipeData->byorder[XMLStuff.RecipeData->nodes.size()] = id;
 			XMLStuff.ModData->recipes[lastmodid] += 1;
@@ -1892,9 +1933,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (color.find("relativeid") != color.end()) { XMLStuff.WispColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
 				XMLStuff.WispColorData->ProcessChilds(auxnode, id);
 				XMLStuff.WispColorData->bynamemod[color["name"] + lastmodid] = id;
+				XMLStuff.WispColorData->bynamemod[color["untranslatedname"] + lastmodid] = id;
 				XMLStuff.WispColorData->bymod[lastmodid].push_back(id);
 				XMLStuff.WispColorData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.WispColorData->byname[color["name"]] = id;
+				XMLStuff.WispColorData->byname[color["untranslatedname"]] = id;
 				XMLStuff.WispColorData->nodes[id] = color;
 				XMLStuff.WispColorData->byorder[XMLStuff.WispColorData->nodes.size()] = id;
 				XMLStuff.ModData->wispcolors[lastmodid] += 1;
@@ -1941,9 +1984,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
 					XMLStuff.WispData->ProcessChilds(auxnode, id);
 					XMLStuff.WispData->bynamemod[wisp["name"] + lastmodid] = id;
+					XMLStuff.WispData->bynamemod[wisp["untranslatedname"] + lastmodid] = id;
 					XMLStuff.WispData->bymod[lastmodid].push_back(id);
 					XMLStuff.WispData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.WispData->byname[wisp["name"]] = id;
+					XMLStuff.WispData->byname[wisp["untranslatedname"]] = id;
 					XMLStuff.WispData->nodes[id] = wisp;
 					XMLStuff.WispData->byorder[XMLStuff.WispData->nodes.size()] = id;
 					XMLStuff.ModData->wisps[lastmodid] += 1;
@@ -1985,9 +2030,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (color.find("relativeid") != color.end()) { XMLStuff.LocustColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
 				XMLStuff.LocustColorData->ProcessChilds(auxnode, id);
 				XMLStuff.LocustColorData->bynamemod[color["name"] + lastmodid] = id;
+				XMLStuff.LocustColorData->bynamemod[color["untranslatedname"] + lastmodid] = id;
 				XMLStuff.LocustColorData->bymod[lastmodid].push_back(id);
 				XMLStuff.LocustColorData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.LocustColorData->byname[color["name"]] = id;
+				XMLStuff.LocustColorData->byname[color["untranslatedname"]] = id;
 				XMLStuff.LocustColorData->nodes[id] = color;
 				XMLStuff.LocustColorData->byorder[XMLStuff.LocustColorData->nodes.size()] = id;
 				XMLStuff.ModData->locustcolors[lastmodid] += 1;
@@ -2034,9 +2081,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
 				XMLStuff.LocustData->ProcessChilds(auxnode, id);
 				XMLStuff.LocustData->bynamemod[locust["name"] + lastmodid] = id;
+				XMLStuff.LocustData->bynamemod[locust["untranslatedname"] + lastmodid] = id;
 				XMLStuff.LocustData->bymod[lastmodid].push_back(id);
 				XMLStuff.LocustData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.LocustData->byname[locust["name"]] = id;
+				XMLStuff.LocustData->byname[locust["untranslatedname"]] = id;
 				XMLStuff.LocustData->nodes[id] = locust;
 				XMLStuff.LocustData->byorder[XMLStuff.LocustData->nodes.size()] = id;
 				XMLStuff.ModData->locusts[lastmodid] += 1;
@@ -2080,9 +2129,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (nightmare.find("relativeid") != nightmare.end()) { XMLStuff.NightmareData->byrelativeid[lastmodid + nightmare["relativeid"]] = id; }
 			XMLStuff.NightmareData->ProcessChilds(auxnode, id);
 			XMLStuff.NightmareData->bynamemod[nightmare["name"] + lastmodid] = id;
+			XMLStuff.NightmareData->bynamemod[nightmare["untranslatedname"] + lastmodid] = id;
 			XMLStuff.NightmareData->bymod[lastmodid].push_back(id);
 			XMLStuff.NightmareData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.NightmareData->byname[nightmare["name"]] = id;
+			XMLStuff.NightmareData->byname[nightmare["untranslatedname"]] = id;
 			XMLStuff.NightmareData->nodes[id] = nightmare;
 			XMLStuff.NightmareData->byorder[XMLStuff.NightmareData->nodes.size()] = id;
 			XMLStuff.ModData->nightmares[lastmodid] += 1;
@@ -2123,10 +2174,12 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.CurseData->ProcessChilds(auxnode, id);
 			XMLStuff.CurseData->bynamemod[curse["name"] + lastmodid] = id;
+			XMLStuff.CurseData->bynamemod[curse["untranslatedname"] + lastmodid] = id;
 			XMLStuff.CurseData->bymod[lastmodid].push_back(id);
 			XMLStuff.CurseData->byfilepathmulti.tab[currpath].push_back(id);
 			if (XMLStuff.CurseData->byname.count(curse["name"]) == 0) { //to prioritize vanilla in case of Curse of the Giant hacky
 				XMLStuff.CurseData->byname[curse["name"]] = id;
+				XMLStuff.CurseData->byname[curse["untranslatedname"]] = id;
 			}
 			XMLStuff.CurseData->nodes[id] = curse;
 			if (!XMLStuff.CurseData->stuffset) {XMLStuff.CurseData->byorder[XMLStuff.CurseData->nodes.size()] = id;}
@@ -2158,10 +2211,12 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.BossPortraitData->ProcessChilds(auxnode, id);
 			XMLStuff.BossPortraitData->bynamemod[boss["name"] + lastmodid] = id;
+			XMLStuff.BossPortraitData->bynamemod[boss["untranslatedname"] + lastmodid] = id;
 			XMLStuff.BossPortraitData->bymod[lastmodid].push_back(id);
 			XMLStuff.BossPortraitData->byfilepathmulti.tab[currpath].push_back(id);
 			if (XMLStuff.BossPortraitData->byname.count(boss["name"]) == 0) { //to prioritize vanilla in case of Curse of the Giant hacky
 				XMLStuff.BossPortraitData->byname[boss["name"]] = id;
+				XMLStuff.BossPortraitData->byname[boss["untranslatedname"]] = id;
 			}
 			XMLStuff.BossPortraitData->nodes[id] = boss;
 			XMLStuff.BossPortraitData->byorder[XMLStuff.BossPortraitData->nodes.size()] = id;
@@ -2214,9 +2269,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (costume.count("relativeid") > 0) { XMLStuff.CostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
 				XMLStuff.CostumeData->ProcessChilds(auxnode, id);
 				XMLStuff.CostumeData->bynamemod[costume["name"] + lastmodid] = id;
+				XMLStuff.CostumeData->bynamemod[costume["untranslatedname"] + lastmodid] = id;
 				XMLStuff.CostumeData->bymod[lastmodid].push_back(id);
 				XMLStuff.CostumeData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CostumeData->byname[costume["name"]] = id;
+				XMLStuff.CostumeData->byname[costume["untranslatedname"]] = id;
 				XMLStuff.CostumeData->nodes[id] = costume;
 				XMLStuff.CostumeData->byorder[XMLStuff.CostumeData->nodes.size()] = id;
 				XMLStuff.ModData->costumes[lastmodid] += 1;
@@ -2255,9 +2312,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				//ZHL::Log("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
 				XMLStuff.NullCostumeData->ProcessChilds(auxnode, idnull);
 				XMLStuff.NullCostumeData->bynamemod[costume["name"] + lastmodid] = idnull;
+				XMLStuff.NullCostumeData->bynamemod[costume["untranslatedname"] + lastmodid] = idnull;
 				XMLStuff.NullCostumeData->bymod[lastmodid].push_back(idnull);
 				XMLStuff.NullCostumeData->byfilepathmulti.tab[currpath].push_back(idnull);
 				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
+				XMLStuff.NullCostumeData->byname[costume["untranslatedname"]] = idnull;
 				XMLStuff.NullCostumeData->nodes[idnull] = costume;
 				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = idnull;
 				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
@@ -2293,9 +2352,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			if (isNewPool)
 			{
 				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
+				XMLStuff.PoolData->bynamemod[itempool["untranslatedname"] + lastmodid] = id;
 				XMLStuff.PoolData->bymod[lastmodid].push_back(id);
 				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PoolData->byname[itempool["name"]] = id;
+				XMLStuff.PoolData->byname[itempool["untranslatedname"]] = id;
 				XMLStuff.PoolData->nodes[id] = itempool;
 				XMLStuff.PoolData->byorder[XMLStuff.PoolData->nodes.size()] = id;
 			}
@@ -2330,9 +2391,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
 				XMLStuff.BossPoolData->bynamemod[bosspool["name"] + lastmodid] = id;
+				XMLStuff.BossPoolData->bynamemod[bosspool["untranslatedname"] + lastmodid] = id;
 				XMLStuff.BossPoolData->bymod[lastmodid].push_back(id);
 				XMLStuff.BossPoolData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.BossPoolData->byname[bosspool["name"]] = id;
+				XMLStuff.BossPoolData->byname[bosspool["untranslatedname"]] = id;
 				XMLStuff.BossPoolData->nodes[id] = bosspool;
 				XMLStuff.BossPoolData->byorder[XMLStuff.BossPoolData->nodes.size()] = id;
 			}
@@ -2377,9 +2440,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.GiantBookData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.GiantBookData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.GiantBookData->bynamemod[attributes["untranslatedname"] + attributes["sourceid"]] = id;
 			XMLStuff.GiantBookData->bymod[attributes["sourceid"]].push_back(id);
 			XMLStuff.GiantBookData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.GiantBookData->byname[attributes["name"]] = id;
+			XMLStuff.GiantBookData->byname[attributes["untranslatedname"]] = id;
 			XMLStuff.GiantBookData->nodes[id] = attributes;
 			XMLStuff.GiantBookData->byorder[XMLStuff.GiantBookData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
@@ -2409,9 +2474,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.BossRushData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.BossRushData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.BossRushData->bynamemod[attributes["untranslatedname"] + attributes["sourceid"]] = id;
 			XMLStuff.BossRushData->bymod[attributes["sourceid"]].push_back(id);
 			XMLStuff.BossRushData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BossRushData->byname[attributes["name"]] = id;
+			XMLStuff.BossRushData->byname[attributes["untranslatedname"]] = id;
 			XMLStuff.BossRushData->nodes[id] = attributes;
 			XMLStuff.BossRushData->byorder[XMLStuff.BossRushData->nodes.size()] = id;
 			id++;
@@ -2462,9 +2529,11 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//ZHL::Log("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.PlayerFormData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.PlayerFormData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.PlayerFormData->bynamemod[attributes["untranslatedname"] + attributes["sourceid"]] = id;
 			XMLStuff.PlayerFormData->bymod[attributes["sourceid"]].push_back(id);
 			XMLStuff.PlayerFormData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.PlayerFormData->byname[attributes["name"]] = id;
+			XMLStuff.PlayerFormData->byname[attributes["untranslatedname"]] = id;
 			XMLStuff.PlayerFormData->nodes[id] = attributes;
 			XMLStuff.PlayerFormData->byorder[XMLStuff.PlayerFormData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
@@ -2503,6 +2572,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			//XMLStuff.BossColorData->bymod[attributes["sourceid"]].push_back(id);
 			XMLStuff.BossColorData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BossColorData->byname[attributes["name"]] = id;
+			XMLStuff.BossColorData->byname[attributes["untranslatedname"]] = id;
 			XMLStuff.BossColorData->nodes[id] = attributes;
 			XMLStuff.BossColorData->byorder[XMLStuff.BossColorData->nodes.size()] = id;
 			tuple idx = { toint(attributes["id"]), toint(attributes["variant"])};
@@ -2546,6 +2616,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		XMLStuff.ModData->byid[mod["id"]] = idx;
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
+		XMLStuff.ModData->byname[mod["untranslatedname"]] = idx;
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
 
 		string loadingmodmsg = "Loading: " + mod["directory"] + "(" + mod["id"] +  ") \n";
