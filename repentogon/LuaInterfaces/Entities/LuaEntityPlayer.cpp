@@ -3408,7 +3408,7 @@ LUA_FUNCTION(Lua_PlayerGetBodySprite) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua::luabridge::UserdataPtr::push(L, &player->_bodySprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
-	return 0;
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerPlayItemNullAnimation) {
