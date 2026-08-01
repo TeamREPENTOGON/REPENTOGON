@@ -4,6 +4,9 @@ Added:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
 	- GetMaxInventorySize
+* XMLData
+	- XMLData.GetCurrentMod()
+		Gets xmldata node of the running mod metadata
 /newline/
 Modified:
 * "Extra debug render" feature now also visualizes "FindInCapsule".

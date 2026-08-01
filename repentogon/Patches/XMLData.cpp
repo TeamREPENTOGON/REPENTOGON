@@ -3073,6 +3073,33 @@ LUA_FUNCTION(Lua_GetNumEntries)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetCurrentMod) {
+	lua_Debug ar;
+	if (lua_getstack(L, 1, &ar)) 
+	{
+		lua_getinfo(L, "S", &ar);
+		filesystem::path callpath(ar.source);
+		string callpathstr = callpath.string();
+		for (auto it = callpath.begin(); it != callpath.end(); ++it)
+		{
+			if (*it == "mods")
+			{
+				++it;
+				if (it != callpath.end()) {
+					string ret = it->string();
+					if (XMLStuff.ModData->bydirectory.find(ret) != XMLStuff.ModData->bydirectory.end()) {
+						Lua_PushXMLNode(L, XMLStuff.ModData->nodes[XMLStuff.ModData->bydirectory[ret]], XMLChilds());
+						return 1;
+					}
+				}
+				break;
+			}
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	ClearXMLData();
 	super();
@@ -3087,6 +3114,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::TableAssoc(_state, "GetBossColorByTypeVarSub", Lua_GetBossColorByTypeVarSub);
 	lua::TableAssoc(_state, "GetEntryFromEntity", Lua_GetFromEntity);
 	lua::TableAssoc(_state, "GetModById", Lua_GetModByIdXML);
+	lua::TableAssoc(_state, "GetCurrentMod", Lua_GetCurrentMod);
 	lua_setglobal(_state, "XMLData");
 }
 
