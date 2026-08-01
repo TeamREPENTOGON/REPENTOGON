@@ -81,6 +81,15 @@ HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor
 	}
 }
 
+//Fix nasty behaviour when calling getgrident with a negative value
+HOOK_METHOD(Room, GetGridEntity, (unsigned int idx) -> GridEntity*) {
+	if (idx < 0) {
+		return 0;
+	}
+	return super(idx);
+}
+
+
 // Do nothing for invalid PillColor values.
 HOOK_METHOD(ItemPool, IdentifyPill, (uint32_t pillColor) -> void) {
 	if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
