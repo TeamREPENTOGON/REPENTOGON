@@ -11,8 +11,11 @@ Added:
 Modified:
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
+Fixes:
+* Fixed player:GetBodySprite() not returning anything
+* Fixed the new RNG object being passed to MC_PRE/POST_PICKUP_GET_LOOT_LIST not being consistent between preview and spawning as intended.
+/newline/
 /versionseparator/
-
 v1.1.2e -
 Added:
 * EntityPlayer:

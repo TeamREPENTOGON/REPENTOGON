@@ -4624,7 +4624,7 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 /// RNG state.
 static void Patch_EntityPlayerGetLootList_SelectRNG()
 {
-	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPlayer_TriggerCollectibleRemoved_Heartbreak);
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_GetLootList_SelectRNG);
 	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::GetLootList for LootList callbacks at %p\n", addr);
 
 	ASMPatch patch;
