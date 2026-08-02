@@ -149,7 +149,7 @@ struct Data {
     bool newSizeRequested = false;
     ImVec2 size = ImVec2(0, 0); // 0,0 initializes elements with dynamic size
     ImGuiWindowFlags windowFlags = 0;
-    ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
+    ImGuiChildFlags childFlags = ImGuiChildFlags_Borders;
 };
 
 struct ElementData : Data {

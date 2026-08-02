@@ -484,7 +484,7 @@ void RenderLuamodErrorPopup() {
 		if (ImGui::BeginPopupModal("Luamod Error", NULL)) {
 				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
 				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
-				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Border)) {
+				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Borders)) {
 					ImGui::TextWrapped(luamoderrorcache.c_str());
 					if (!popupscrolled) {
 						ImGui::SetScrollHereY(1.0f);
@@ -541,53 +541,32 @@ void __stdcall RunImGui(HDC hdc) {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
-		ImGui::CaptureMouseFromApp();
-		ImGui::CaptureKeyboardFromApp();
+		ImGui::SetNextFrameWantCaptureMouse(true);
+		ImGui::SetNextFrameWantCaptureKeyboard(true);
+		
 		ImFontConfig cfg;
-		cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
-		cfg.OversampleH = 1;
-		cfg.OversampleV = 1;
-		cfg.PixelSnapH = 1;
+		//cfg.OversampleH = cfg.OversampleV = 2;
+		ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(window)/96.);
+		//ImGui::GetStyle().FontScaleDpi = 1;
+		ImGui::GetStyle().FontSizeBase = 20;
 
-		RegisterSaveDataHandler();
-
-		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		static UnifontRange unifont_ranges;
-
-		float font_base_size = 13;
-		cfg.MergeMode = false;
-		cfg.SizePixels = font_base_size;
-		if (!repentogonOptions.enableUnifont) {
-			imFontUnifont = io.Fonts->AddFontDefault(&cfg);
-			cfg.MergeMode = true;
+		io.Fonts->AddFontDefaultBitmap();
+		if (repentogonOptions.enableUnifont) {
+			imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 0, &cfg);
 		}
 		else {
-			// the pixel perfect size for unifont is 16px
-			float size_config[5][2] = {
-				{13,1},
-				{16,1},
-				{14,1},//12px unifont can't tell 3 and 9, so use 14 here
-				{16,0.5},
-				{8,1}
-			};
-			font_base_size = size_config[repentogonOptions.unifontRenderMode][0];
-			unifont_global_scale = size_config[repentogonOptions.unifontRenderMode][1];
-
-			if (repentogonOptions.unifontRenderMode == UNIFONT_RENDER_NORMAL) {
-				imFontUnifont = io.Fonts->AddFontDefault(&cfg); // this font is better for english word, but only perfect in 13px
-			}
-			else {
-				cfg.SizePixels = font_base_size;
-				imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, ImGui::GetIO().Fonts->GetGlyphRangesDefault());
-			}
-			cfg.MergeMode = true;
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, unifont_ranges.Get());
+			imFontUnifont = io.Fonts->AddFontDefault();
 		}
+		static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		cfg.MergeMode = true;
 		ImGui::GetIO().FontDefault = imFontUnifont;
 		// icon font
-		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
-		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
+		cfg.Flags = ImFontFlags_LockBakedSizes;
+		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
+
+
+		RegisterSaveDataHandler();;
+
 	
 		imguiInitialized = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
@@ -597,29 +576,7 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
-	float scale_to_set = g_PointScale;
-	if (repentogonOptions.imGuiScale != 0) {
-		scale_to_set = (float)repentogonOptions.imGuiScale;
-	}
-	if (g_PointScale > 0) {
-		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
-		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;
-		ImGui::GetStyle().ItemSpacing.x = 6 * scale_to_set * unifont_global_scale;
-	}
 		
-
-	static bool unifont_tex_nearest = false;
-	if(!unifont_tex_nearest)
-	{
-		unifont_tex_nearest = true;
-		// use nearest scale to ensure unifont is pixel perfect. must do this after ImGui_ImplOpenGL3_NewFrame()
-		GLint last_texture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)imFontUnifont->ContainerAtlas->TexID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glBindTexture(GL_TEXTURE_2D, last_texture);
-	}
 	
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {

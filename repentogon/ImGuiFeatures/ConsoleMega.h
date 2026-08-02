@@ -355,16 +355,16 @@ struct ConsoleMega : ImGuiWindowObject {
             focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
-
+            
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);
+            bool textInputScrollbarVisible = ImGui::CalcTextSize(inputBuf, inputBuf + strlen(inputBuf), false, 0).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (ImGui::GetTextLineHeight()) - (textInputScrollbarVisible ? 14 : 0);
 
             if (!isImGuiActive)
             {
               textboxHeight = 0;
             }
-            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Border)) {
+            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Borders)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
@@ -437,7 +437,7 @@ struct ConsoleMega : ImGuiWindowObject {
               ImVec2 drawPos = ImGui::GetCursorPos();
 
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
-                
+
               // This works around multiline losing focus on enter (genius!)
               //if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
               //   ImGui::SetKeyboardFocusHere(0);
@@ -447,7 +447,7 @@ struct ConsoleMega : ImGuiWindowObject {
                   reclaimFocus = false;
               }
 
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (ImGui::GetTextLineHeight()) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   if (!ImGui::GetIO().KeyShift) { // Prevent submission when Shift+Enter is pressed
                       char* s = inputBuf;
                       Strtrim(s);
