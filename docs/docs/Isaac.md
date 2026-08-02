@@ -305,6 +305,11 @@ ___
 Sets the challenge as not done.
 
 ___
+### OpenConsole () {: aria-label='Functions' }
+#### int OpenConsole () {: .copyable aria-label='Functions' }
+Opens the Imgui interface which pops up the console by default, similar functionality as hitting the Open Console key (idem ImGui.Show()).
+
+___
 ### PlayCutscene () {: aria-label='Functions' }
 #### int PlayCutscene ( int ID, boolean ClearGameState = false ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
