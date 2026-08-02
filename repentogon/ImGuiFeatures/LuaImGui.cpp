@@ -1090,6 +1090,8 @@ static void RegisterCustomImGui(lua_State* L)
 			//{ NULL, NULL }
 	//};
 	lua_setglobal(L, "ImGui");
+	
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "OpenConsole", Lua_ImGui_Show);
 	//lua::RegisterNewClass(L, lua::metatables::ImGuiMT, lua::metatables::ImGuiMT, functions);
 }
 
