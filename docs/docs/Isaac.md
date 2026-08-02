@@ -306,7 +306,7 @@ Sets the challenge as not done.
 
 ___
 ### OpenConsole () {: aria-label='Functions' }
-#### int OpenConsole () {: .copyable aria-label='Functions' }
+#### void OpenConsole () {: .copyable aria-label='Functions' }
 Opens the Imgui interface which pops up the console by default, similar functionality as hitting the Open Console key (idem ImGui.Show()).
 
 ___
