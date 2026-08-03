@@ -25,6 +25,7 @@
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
+#include "MultiViewportEnhanced.h"
 
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
@@ -523,8 +524,13 @@ void __stdcall RunImGui(HDC hdc) {
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
 		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
 		ImGui::CreateContext();
-		ImGui_ImplWin32_Init(window);
+		ImGui_ImplWin32_InitForOpenGL(window);
 		ImGui_ImplOpenGL2_Init();
+		ImGui::GetPlatformIO().Renderer_CreateWindow = Repentogon_Renderer_CreateWindow;
+		ImGui::GetPlatformIO().Renderer_DestroyWindow = Repentogon_Renderer_DestroyWindow;
+		ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
+		ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
+
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -538,7 +544,7 @@ void __stdcall RunImGui(HDC hdc) {
 		iniFilePath = std::string(REPENTOGON::GetRepentogonDataPath()) + "imgui.ini";
 
 		// mouse, keyboard and gamepad support
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::SetNextFrameWantCaptureMouse(true);
@@ -627,6 +633,19 @@ void __stdcall RunImGui(HDC hdc) {
 	glUseProgram(0);
 	// Draw the overlay
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		HDC hdc = wglGetCurrentDC();
+		HGLRC glrc = wglGetCurrentContext();
+		mainGLContextForCreateImGuiWindow = glrc;
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+
+		wglMakeCurrent(hdc, glrc);
+	}
+
 	glUseProgram(last_program);
 }
 
