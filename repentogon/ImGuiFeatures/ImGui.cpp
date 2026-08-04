@@ -500,6 +500,8 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::SetNextFrameWantCaptureKeyboard(true);
 		
 		ImFontConfig cfg;
+		cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
+
 		//cfg.OversampleH = cfg.OversampleV = 2;
 		ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(window)/96.f);
 		//ImGui::GetStyle().FontScaleDpi = 1;
@@ -518,8 +520,12 @@ void __stdcall RunImGui(HDC hdc) {
 		// icon font
 		cfg.Flags = ImFontFlags_LockBakedSizes;
 		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
-
-
+		if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
+			io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
+		}
+		else {
+			ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
+		}
 		RegisterSaveDataHandler();;
 
 	
