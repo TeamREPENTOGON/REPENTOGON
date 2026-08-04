@@ -526,10 +526,7 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::CreateContext();
 		ImGui_ImplWin32_InitForOpenGL(window);
 		ImGui_ImplOpenGL2_Init();
-		ImGui::GetPlatformIO().Renderer_CreateWindow = Repentogon_Renderer_CreateWindow;
-		ImGui::GetPlatformIO().Renderer_DestroyWindow = Repentogon_Renderer_DestroyWindow;
-		ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
-		ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
+		ImGui_ImplRepentogon_InitMultiViewport();
 
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
@@ -552,7 +549,7 @@ void __stdcall RunImGui(HDC hdc) {
 		
 		ImFontConfig cfg;
 		//cfg.OversampleH = cfg.OversampleV = 2;
-		ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(window)/96.);
+		ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(window)/96.f);
 		//ImGui::GetStyle().FontScaleDpi = 1;
 		ImGui::GetStyle().FontSizeBase = 20;
 

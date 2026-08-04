@@ -88,3 +88,10 @@ void Repentogon_Platform_SwapBuffers(ImGuiViewport* vp, void* render_arg) {
 	SwapBuffers(dc);
 	ReleaseDC(vd->Hwnd, dc);
 }
+
+void ImGui_ImplRepentogon_InitMultiViewport() {
+	ImGui::GetPlatformIO().Renderer_CreateWindow = Repentogon_Renderer_CreateWindow;
+	ImGui::GetPlatformIO().Renderer_DestroyWindow = Repentogon_Renderer_DestroyWindow;
+	ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
+	ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
+}
