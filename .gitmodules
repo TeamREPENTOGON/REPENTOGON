@@ -31,7 +31,7 @@
 	url = https://github.com/pulzed/mINI
 [submodule "libs/imgui"]
 	path = libs/imgui
-	url = https://github.com/TeamREPENTOGON/imgui
+	url = https://github.com/ocornut/imgui.git
 [submodule "libs/injector"]
 	path = libs/injector
 	url = https://github.com/TeamREPENTOGON/injector.git
