@@ -217,7 +217,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
 	if (shutdownInitiated)
 		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
-
+	
 	// Enable the overlay using the grave key, disable using ESC
 	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
@@ -472,6 +472,7 @@ void __stdcall RunImGui(HDC hdc) {
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
+		mainGameWindowForCreateImGuiWindow = window;
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
 		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");

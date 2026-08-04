@@ -23,11 +23,13 @@ struct ImGui_ImplWin32_ViewportData
 
 HGLRC mainGLContextForCreateImGuiWindow;
 std::map<HWND, HGLRC> RepentogonRendererMap;
-
+HWND mainGameWindowForCreateImGuiWindow;
 
 void Repentogon_Renderer_CreateWindow(ImGuiViewport* vp) {
 	ImGui_ImplWin32_ViewportData* vd = (ImGui_ImplWin32_ViewportData*)vp->PlatformUserData;
 	
+	SetWindowLongPtr(vd->Hwnd, GWLP_HWNDPARENT, (LONG_PTR)mainGameWindowForCreateImGuiWindow);
+
 	HDC dc = GetDC(vd->Hwnd);
 	
 	PIXELFORMATDESCRIPTOR pfd = { 0 };
