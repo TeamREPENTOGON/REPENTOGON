@@ -70,14 +70,15 @@ struct REPENTOGONOptions {
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		disableExitPrompt = defstoi(ini["VanillaTweaks"]["DisableExitPrompt"], 0);
-		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
-		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
+//		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
+//		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
+		fontSize = defstoi(ini["internal"]["FontSize"], 16);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -121,14 +122,15 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
-		Write("internal",	   "EnableUnifont",		   enableUnifont);
-		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
+//		Write("internal",	   "EnableUnifont",		   enableUnifont);
+//		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
 		Write("internal", "FileMap", fileMap);
 		Write("internal", "ImGuiScale", imGuiScale);
 		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
 		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 		Write("internal", "DidInputConfigsImport", didInputConfigsImport);
+		Write("internal", "FontSize", fontSize);
 	}
 
 	mINI::INIStructure ini;
@@ -138,9 +140,10 @@ struct REPENTOGONOptions {
 	bool hushLaserSpeedFix;
 	bool quickRoomClear;
 	bool preventModUpdates;
-	bool enableUnifont;
+	//bool enableUnifont;
+	int fontSize;
 	bool statHUDPlanetarium;
-	int unifontRenderMode;
+	//int unifontRenderMode;
 	bool fastLasers;
 	int lastSaveFile;
 	bool skipIntro;

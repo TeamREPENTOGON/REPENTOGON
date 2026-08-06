@@ -464,6 +464,42 @@ ImFont* imFontUnifont = NULL;
 
 PFNGLUSEPROGRAMPROC glUseProgram;
 
+bool requestFontReload = true;
+
+void LoadImGuiFont() {
+	if (!requestFontReload)
+		return;
+	requestFontReload = false;
+
+	if (imFontUnifont) {
+		ImGui::GetIO().FontDefault = NULL;
+		ImGui::GetIO().Fonts->ClearFonts();
+		imFontUnifont = NULL;
+	}
+
+	ImFontConfig cfg;
+	cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
+
+	cfg.OversampleH = cfg.OversampleV = 1;
+	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(mainGameWindowForCreateImGuiWindow) / 96.f);
+	//ImGui::GetStyle().FontScaleDpi = 1;
+	//ImGui::GetStyle().FontSizeBase = 16;
+	auto & io = ImGui::GetIO();
+	io.Fonts->AddFontDefaultBitmap();
+	imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 0, &cfg);
+	static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	cfg.MergeMode = true;
+	// icon font
+	cfg.Flags = ImFontFlags_LockBakedSizes;
+	if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
+		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
+	}
+	else {
+		ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
+	} 
+	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
+}
+
 void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
@@ -481,6 +517,7 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui_ImplWin32_InitForOpenGL(window);
 		ImGui_ImplOpenGL2_Init();
 		ImGui_ImplRepentogon_InitMultiViewport();
+		ImGui::GetPlatformIO().DrawCallback_SetSamplerNearest(NULL,NULL); // this is implemented by ImplOpenGL2
 
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
@@ -500,44 +537,20 @@ void __stdcall RunImGui(HDC hdc) {
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::SetNextFrameWantCaptureMouse(true);
 		ImGui::SetNextFrameWantCaptureKeyboard(true);
-		
-		ImFontConfig cfg;
-		cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
 
-		//cfg.OversampleH = cfg.OversampleV = 2;
-		ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(window)/96.f);
-		//ImGui::GetStyle().FontScaleDpi = 1;
-		ImGui::GetStyle().FontSizeBase = 20;
+		RegisterSaveDataHandler();
 
-		io.Fonts->AddFontDefaultBitmap();
-		if (repentogonOptions.enableUnifont) {
-			imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 0, &cfg);
-		}
-		else {
-			imFontUnifont = io.Fonts->AddFontDefault();
-		}
-		static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		cfg.MergeMode = true;
-		ImGui::GetIO().FontDefault = imFontUnifont;
-		// icon font
-		cfg.Flags = ImFontFlags_LockBakedSizes;
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
-		if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
-			io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
-		}
-		else {
-			ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
-		}
-		RegisterSaveDataHandler();;
-
-	
 		imguiInitialized = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		ZHL::Log("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
+
+	LoadImGuiFont();
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	ImGui::PushFont(imFontUnifont, clamp(repentogonOptions.fontSize, 12, 32));
 	UpdateImGuiSettings();
 		
 	
@@ -582,7 +595,7 @@ void __stdcall RunImGui(HDC hdc) {
 	notificationHandler.Draw(menuShown);
 
 	HandleZoomWithMouseWheel();
-
+	ImGui::PopFont();
 	ImGui::Render();
 
 

@@ -448,7 +448,7 @@ struct ConsoleMega : ImGuiWindowObject {
                   reclaimFocus = false;
               }
 
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (ImGui::GetTextLineHeight()) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (ImGui::GetTextLineHeight() * imFontUnifont->Scale) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   if (!ImGui::GetIO().KeyShift) { // Prevent submission when Shift+Enter is pressed
                       char* s = inputBuf;
                       Strtrim(s);

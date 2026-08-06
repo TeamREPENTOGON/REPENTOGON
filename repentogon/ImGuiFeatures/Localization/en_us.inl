@@ -454,6 +454,9 @@ I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES fl
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT, u8"Disable exit prompt")
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you try to quit the game, restoring original behavior.")
 
+I(OPT_HUD_IMGUI_FONT_SETTINGS, ICON_U8_FA_FONT u8"Font Settings(REPENTOGON IMGUI)")
+I(OPT_HUD_FONT_SIZE, u8"Font Size")
+
 I(OPT_SAVE_MANAGEMENT, u8"Save Management")
 I(OPT_SAVE_MANAGEMENT_DISABLED_REASON, u8"Some options/utilities are disabled since a save file is currently opened.")
 I(OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING, u8"Automatically sync progress between vanilla and REPENTOGON")

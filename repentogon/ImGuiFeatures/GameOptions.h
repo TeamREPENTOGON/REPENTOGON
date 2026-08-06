@@ -206,15 +206,13 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SliderInt(LANG.OPT_CONSOLE_CONSOLE_FONT, &g_Manager->GetOptions()->_consoleFont, 0, 2, consoleFontModes[g_Manager->GetOptions()->_consoleFont], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_consoleFont, 0);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_CONSOLE_ENABLE_UNICODE_FONT, &repentogonOptions.enableUnifont);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_CONSOLE_ENABLE_UNICODE_FONT_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.enableUnifont, true);
+
+                        ImGui::SeparatorText(LANG.OPT_HUD_IMGUI_FONT_SETTINGS);
                         AddNewTableRow();
-                        ImGui::SliderInt(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE, &repentogonOptions.unifontRenderMode, 0, 4, unifontRenderMode[repentogonOptions.unifontRenderMode], ImGuiSliderFlags_NoInput);
+                        ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 12, 32);
                         ImGui::SameLine();
-                        HelpMarker(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.unifontRenderMode, 0);
+                        AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
+
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();
