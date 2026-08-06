@@ -543,6 +543,7 @@ void __stdcall RunImGui(HDC hdc) {
 	
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
+			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
 			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
 				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
