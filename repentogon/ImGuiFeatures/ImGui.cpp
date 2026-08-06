@@ -438,6 +438,7 @@ void RenderLuamodErrorPopup() {
 				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
 				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Borders)) {
+					ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
 					ImGui::TextWrapped(luamoderrorcache.c_str());
 					if (!popupscrolled) {
 						ImGui::SetScrollHereY(1.0f);

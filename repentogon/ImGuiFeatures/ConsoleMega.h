@@ -358,13 +358,14 @@ struct ConsoleMega : ImGuiWindowObject {
             
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
             bool textInputScrollbarVisible = ImGui::CalcTextSize(inputBuf, inputBuf + strlen(inputBuf), false, 0).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (ImGui::GetTextLineHeight()) - (textInputScrollbarVisible ? 14 : 0);
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (ImGui::GetTextLineHeight() * imFontUnifont->Scale) - (textInputScrollbarVisible ? 14 : 0);
 
             if (!isImGuiActive)
             {
               textboxHeight = 0;
             }
             if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Borders)) {
+                ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
