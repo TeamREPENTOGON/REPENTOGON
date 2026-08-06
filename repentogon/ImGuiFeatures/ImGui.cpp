@@ -12,7 +12,7 @@
 #include "SavedataHandler.h"
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
-#include "UnifontSupport.h"
+#include "FontSupport.h"
 #include "Lang.h"
 
 #include <Windows.h>
@@ -466,6 +466,15 @@ PFNGLUSEPROGRAMPROC glUseProgram;
 
 bool requestFontReload = true;
 
+std::vector<PredefinedFont> predefinedFonts = {
+	PredefinedFont{"Unifont", "resources-repentogon\\fonts\\unifont-15.1.04.otf", false /* the first font must not missing*/},
+	//PredefinedFont{"Unifont(jp)", "resources-repentogon\\fonts\\unifont_jp-15.1.04.otf"},
+	//PredefinedFont{"MiSans", "resources-repentogon\\fonts\\MiSans-Regular.ttf"},
+	//PredefinedFont{"MiSans-Bold", "resources-repentogon\\fonts\\MiSans-Bold.ttf"},
+	//PredefinedFont{"MS YaHei", "C:\\Windows\\Fonts\\msyh.ttc"},
+};
+
+
 void LoadImGuiFont() {
 	if (!requestFontReload)
 		return;
@@ -486,7 +495,16 @@ void LoadImGuiFont() {
 	//ImGui::GetStyle().FontSizeBase = 16;
 	auto & io = ImGui::GetIO();
 	io.Fonts->AddFontDefaultBitmap();
-	imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 0, &cfg);
+	int selected_font = repentogonOptions.fontSelectedPredefined;
+	if (selected_font < 0 || selected_font >= predefinedFonts.size())
+		selected_font = 0;
+	auto& font = predefinedFonts[selected_font];
+	if (font.maybe_missing && !std::filesystem::exists(font.fontPath)) {
+		imFontUnifont = io.Fonts->AddFontFromFileTTF(predefinedFonts[0].fontPath, 0, &cfg);
+	}
+	else {
+		imFontUnifont = io.Fonts->AddFontFromFileTTF(predefinedFonts[selected_font].fontPath, 0, &cfg);
+	}
 	static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	cfg.MergeMode = true;
 	// icon font

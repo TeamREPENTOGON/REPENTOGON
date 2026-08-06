@@ -4,7 +4,7 @@
 #include "../Patches/XMLData.h"
 #include "natural_sort.hpp"
 #include "LuaCore.h"
-#include "UnifontSupport.h"
+#include "FontSupport.h"
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"

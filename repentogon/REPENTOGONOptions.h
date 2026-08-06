@@ -79,6 +79,7 @@ struct REPENTOGONOptions {
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
 		fontSize = defstoi(ini["internal"]["FontSize"], 16);
+		fontSelectedPredefined = defstoi(ini["internal"]["FontSelectedPredefined"], 0);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -131,6 +132,7 @@ struct REPENTOGONOptions {
 		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 		Write("internal", "DidInputConfigsImport", didInputConfigsImport);
 		Write("internal", "FontSize", fontSize);
+		Write("internal", "FontSelectedPredefined", fontSelectedPredefined);
 	}
 
 	mINI::INIStructure ini;
@@ -142,6 +144,7 @@ struct REPENTOGONOptions {
 	bool preventModUpdates;
 	//bool enableUnifont;
 	int fontSize;
+	int fontSelectedPredefined;
 	bool statHUDPlanetarium;
 	//int unifontRenderMode;
 	bool fastLasers;

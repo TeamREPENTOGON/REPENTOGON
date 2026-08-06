@@ -456,6 +456,7 @@ I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you 
 
 I(OPT_HUD_IMGUI_FONT_SETTINGS, ICON_U8_FA_FONT u8"Font Settings(REPENTOGON IMGUI)")
 I(OPT_HUD_FONT_SIZE, u8"Font Size")
+I(OPT_HUD_FONT_SELECT, u8"Font Select")
 
 I(OPT_SAVE_MANAGEMENT, u8"Save Management")
 I(OPT_SAVE_MANAGEMENT_DISABLED_REASON, u8"Some options/utilities are disabled since a save file is currently opened.")

@@ -10,6 +10,7 @@
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
+extern bool requestFontReload;
 
 static bool PromptUserYesNo(const char* prompt) {
     const int response = MessageBoxA(0, prompt, "REPENTOGON", MB_ICONINFORMATION | MB_YESNO);
@@ -212,6 +213,25 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 12, 32);
                         ImGui::SameLine();
                         AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
+                        AddNewTableRow();
+
+                        if (predefinedFonts.size() > 1) {
+                            ImGui::Text(LANG.OPT_HUD_FONT_SELECT);
+                            AddNewTableRow();
+                            for (int i = 0; i < predefinedFonts.size(); i++) {
+                                ImGui::SameLine();
+                                ImGui::BeginDisabled(i == repentogonOptions.fontSelectedPredefined);
+                                if (ImGui::SmallButton(predefinedFonts[i].fontName)) {
+                                    repentogonOptions.fontSelectedPredefined = i;
+                                    requestFontReload = true;
+                                }
+                                ImGui::EndDisabled();
+                            }
+                            ImGui::SameLine();
+                            if (AddResetButton(++resetCounter, repentogonOptions.fontSelectedPredefined, 0)) {
+                                requestFontReload = true;
+                            }
+                        }
 
                         ImGui::EndTable();
                     }
