@@ -25,4 +25,6 @@ struct GridEntity_TNT : public GridEntity {
 		skip; // EndBatches
 		skip; // InitSubclass
     };
+	
+	int _frameCount : 0x154;
 } : 0x158;
