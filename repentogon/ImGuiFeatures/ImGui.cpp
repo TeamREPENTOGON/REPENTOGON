@@ -496,7 +496,7 @@ void LoadImGuiFont() {
 	auto & io = ImGui::GetIO();
 	io.Fonts->AddFontDefaultBitmap();
 	int selected_font = repentogonOptions.fontSelectedPredefined;
-	if (selected_font < 0 || selected_font >= predefinedFonts.size())
+	if (selected_font < 0 || selected_font >= (int)predefinedFonts.size())
 		selected_font = 0;
 	auto& font = predefinedFonts[selected_font];
 	if (font.maybe_missing && !std::filesystem::exists(font.fontPath)) {
@@ -568,7 +568,7 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::PushFont(imFontUnifont, clamp(repentogonOptions.fontSize, 12, 32));
+	ImGui::PushFont(imFontUnifont, (float)clamp(repentogonOptions.fontSize, 12, 32));
 	UpdateImGuiSettings();
 		
 	

@@ -218,7 +218,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         if (predefinedFonts.size() > 1) {
                             ImGui::Text(LANG.OPT_HUD_FONT_SELECT);
                             AddNewTableRow();
-                            for (int i = 0; i < predefinedFonts.size(); i++) {
+                            for (size_t i = 0; i < predefinedFonts.size(); i++) {
                                 ImGui::SameLine();
                                 ImGui::BeginDisabled(i == repentogonOptions.fontSelectedPredefined);
                                 if (ImGui::SmallButton(predefinedFonts[i].fontName)) {
