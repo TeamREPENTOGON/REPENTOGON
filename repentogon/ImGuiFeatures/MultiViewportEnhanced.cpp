@@ -1,6 +1,7 @@
 #include "MultiViewportEnhanced.h"
 #include "imgui_internal.h"
 #include <map>
+#include "IsaacRepentance.h"
 
 /*
 
@@ -20,15 +21,14 @@ struct ImGui_ImplWin32_ViewportData
 	~ImGui_ImplWin32_ViewportData() { IM_ASSERT(Hwnd == nullptr); }
 };
 
+RgonImGuiMultiViewportConfig rgonImGuiMultiViewportConfig = { 0,0 };
 
-HGLRC mainGLContextForCreateImGuiWindow;
 std::map<HWND, HGLRC> RepentogonRendererMap;
-HWND mainGameWindowForCreateImGuiWindow;
 
 void Repentogon_Renderer_CreateWindow(ImGuiViewport* vp) {
 	ImGui_ImplWin32_ViewportData* vd = (ImGui_ImplWin32_ViewportData*)vp->PlatformUserData;
 	
-	SetWindowLongPtr(vd->Hwnd, GWLP_HWNDPARENT, (LONG_PTR)mainGameWindowForCreateImGuiWindow);
+	SetWindowLongPtr(vd->Hwnd, GWLP_HWNDPARENT, (LONG_PTR)rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow);
 
 	HDC dc = GetDC(vd->Hwnd);
 	
@@ -59,7 +59,7 @@ void Repentogon_Renderer_CreateWindow(ImGuiViewport* vp) {
 	RepentogonRendererMap[vd->Hwnd] = newRC;// wglCreateContext(dc);
 	wglMakeCurrent(dc, newRC);
 
-	wglShareLists(mainGLContextForCreateImGuiWindow,newRC);
+	wglShareLists(rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow,newRC);
 
 
 	ReleaseDC(vd->Hwnd, dc);
@@ -96,4 +96,14 @@ void ImGui_ImplRepentogon_InitMultiViewport() {
 	ImGui::GetPlatformIO().Renderer_DestroyWindow = Repentogon_Renderer_DestroyWindow;
 	ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
 	ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
+}
+void ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow() {
+	if (g_Manager) {
+		auto opts = g_Manager->GetOptions();
+		if (opts) {
+			if (opts->_isFullscreen) {
+				ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
+			}
+		}
+	}
 }

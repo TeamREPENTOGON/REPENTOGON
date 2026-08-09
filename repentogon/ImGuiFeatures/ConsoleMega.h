@@ -8,6 +8,7 @@
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"
+#include "MultiViewportEnhanced.h"
 
 #include <sstream>
 #include <cctype>
@@ -350,7 +351,7 @@ struct ConsoleMega : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
-        
+        ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();

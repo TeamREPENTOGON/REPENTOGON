@@ -646,7 +646,7 @@ LUA_FUNCTION(Lua_ImGui_GetGameWindowPos)
 	float x = 0;
 	float y = 0;
 	RECT rect;
-	if (GetWindowRect(mainGameWindowForCreateImGuiWindow, &rect)) {
+	if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
 		x = rect.left;
 		y = rect.top;
 	}

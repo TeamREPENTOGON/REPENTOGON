@@ -6,6 +6,7 @@
 #include "IsaacRepentance.h"
 #include "imgui.h"
 #include "Lang.h"
+#include "MultiViewportEnhanced.h"
 
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
@@ -130,7 +131,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
-
+        ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {

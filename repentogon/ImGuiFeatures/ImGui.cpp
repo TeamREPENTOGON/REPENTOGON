@@ -490,7 +490,7 @@ void LoadImGuiFont() {
 	cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
 
 	cfg.OversampleH = cfg.OversampleV = 1;
-	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(mainGameWindowForCreateImGuiWindow) / 96.f);
+	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow) / 96.f);
 	//ImGui::GetStyle().FontScaleDpi = 1;
 	//ImGui::GetStyle().FontSizeBase = 16;
 	auto & io = ImGui::GetIO();
@@ -527,7 +527,7 @@ void __stdcall RunImGui(HDC hdc) {
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
-		mainGameWindowForCreateImGuiWindow = window;
+		rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow = window;
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
 		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
@@ -573,6 +573,7 @@ void __stdcall RunImGui(HDC hdc) {
 		
 	
 	if (menuShown) {
+		ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
@@ -599,6 +600,7 @@ void __stdcall RunImGui(HDC hdc) {
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
+		ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
 		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();
@@ -628,7 +630,7 @@ void __stdcall RunImGui(HDC hdc) {
 	{
 		HDC hdc = wglGetCurrentDC();
 		HGLRC glrc = wglGetCurrentContext();
-		mainGLContextForCreateImGuiWindow = glrc;
+		rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow = glrc;
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 
