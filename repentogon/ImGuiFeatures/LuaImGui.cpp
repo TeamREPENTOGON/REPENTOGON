@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "NotificationHandler.h"
+#include "MultiViewportEnhanced.h"
 
 extern CustomImGui customImGui;
 extern NotificationHandler notificationHandler;
@@ -640,6 +641,20 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ImGui_GetGameWindowPos)
+{
+	float x = 0;
+	float y = 0;
+	RECT rect;
+	if (GetWindowRect(mainGameWindowForCreateImGuiWindow, &rect)) {
+		x = rect.left;
+		y = rect.top;
+	}
+	lua::LuaCaller(L).pushUserdataValue(Vector(x, y), lua::Metatables::VECTOR);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ImGui_AddInputController)
 {
 	ElementData data = ElementData();
@@ -1077,6 +1092,7 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetSize ); // deprecated. now its an alias of SetSize
 			lua::TableAssoc(L, "SetTooltip", Lua_ImGui_SetTooltip );
 			lua::TableAssoc(L, "RemoveColor", Lua_ImGui_RemoveColor );
+			lua::TableAssoc(L, "GetGameWindowPos", Lua_ImGui_GetGameWindowPos);
 			lua::TableAssoc(L, "GetMousePosition", Lua_ImGui_GetMousePos );
 			lua::TableAssoc(L, "GetVisible", Lua_ImGui_GetVisible );
 			lua::TableAssoc(L, "GetWindowPinned", Lua_ImGui_GetWindowPinned );
