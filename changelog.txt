@@ -1,5 +1,7 @@
-v1.1.2f -
+v1.1.2g -
 Added:
+* Isaac:
+	- OpenConsole()
 * EntityPlayer:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
@@ -12,6 +14,15 @@ Modified:
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
 Fixes:
+* Fixed some strings not being translated in XMLData
+/newline/
+/versionseparator/
+v1.1.2f -
+/newline/
+Fixes:
+* Fixed some ESSM errors related to RoomDescriptor:GetDecoSaveState():Clear()
+* Fixed GridEntityTNT.FrameCnt being MIA since forever
+* Fixed room:GetGridEntity() potentially returning a garbage reference
 * Fixed player:GetBodySprite() not returning anything
 * Fixed the new RNG object being passed to MC_PRE/POST_PICKUP_GET_LOOT_LIST not being consistent between preview and spawning as intended.
 /newline/
