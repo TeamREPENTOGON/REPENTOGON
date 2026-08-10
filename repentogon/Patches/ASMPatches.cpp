@@ -44,11 +44,11 @@
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
-#include "ASMPatches/ASMTweaks.h"
 #include "ASMPatches/ASMLocalization.h"
 #include "ASMPatches/ASMFixes.h"
 #include "ASMPatches/ASMSplitTears.h"
 #include "ASMPatches/ASMCamera.h"
+#include "ASMPatches/ASMLuaJIT.h"
 
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
@@ -318,6 +318,9 @@ void PerformASMPatches() {
 	if (!ASMPatches::SkipArchiveChecksums()) {
 		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
 	};
+
+	// LuaJIT
+	ASMPatchLuaJIT();
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {

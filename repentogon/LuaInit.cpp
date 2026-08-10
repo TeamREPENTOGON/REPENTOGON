@@ -88,12 +88,12 @@ static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string
 			const char* name = lua_tostring(L, -2);
 			if (lua_type(L, -1) == LUA_TFUNCTION) {
 				const void* addr = lua_topointer(L, -1);
-				unsigned char nupvalues = *(unsigned char*)((char*)addr + 0x6);
+				unsigned char nupvalues = *(unsigned char*)((char*)addr + 0x7);
 
 				if (nupvalues == 1) {
-					TValue* upvalue = (TValue*)((char*)addr + 0x10);
-					if ((upvalue->tt_ & 0xF) == LUA_TUSERDATA) {
-						Udata* closure_udata = (Udata*)upvalue->value_.p;
+					TValue* upvalue = (TValue*)((char*)addr + 0x18);
+					if ((upvalue->it & 0xF) == ~LJ_TUDATA) {
+						GCudata* closure_udata = (GCudata*)gcref(upvalue->gcr);
 						void* fn_addr = *(void**)((char*)closure_udata + 0x18);
 						// fprintf(f, "Found addr of %s at %p\n", name, fn_addr);
 						functions.push_back(std::make_pair(name, fn_addr));
@@ -209,12 +209,16 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	const char* LUA_BINDINGS_NAME = "_LuaBindings";
 
 	super(Debug);
-
 	lua_State* L = g_LuaEngine->_state;
 	luaL_requiref(L, "debug", luaopen_debug, 1);
 	lua_pop(L, 1);
 	luaL_requiref(L, "os", luaopen_os, 1);
 	lua_pop(L, 1);
+
+	// These are just needed for upstream 53compat, we'll pop em later.
+	luaL_requiref(L, "io", luaopen_io, 1);
+	lua_pop(L, 1);
+
 
 	lua_newtable(L);
 	LuaInternals::RegisterInternals(L);

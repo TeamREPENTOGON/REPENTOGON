@@ -5,7 +5,32 @@ REPENTOGON = {
 	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
-collectgarbage("generational")
+require("compat53.init")
+
+-- Cursed - but we need to remove integer division automatically.
+local old_loadfile = loadfile
+global_loadfile = old_loadfile
+
+_G.loadfile = function(filename, mode, env)
+    if not filename then return old_loadfile(filename, mode, env) end
+
+    local f = io.open(filename, "r")
+    if not f then return nil, "cannot open " .. filename end
+    local content = f:read("*all")
+    f:close()
+
+    content = content:gsub("(%S+)%s*//%s*(%S+)", "math.floor((%1) / (%2))")
+
+    return load(content, filename, mode, env)
+end
+
+-- Also override dofile if mods use it directly
+_G.dofile = function(filename)
+    local fn, err = loadfile(filename)
+    if not fn then error(err) end
+    return fn()
+end
+
 
 --- Each module is a { module, loaded } pair
 local s_modules = {}

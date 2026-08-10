@@ -7,6 +7,8 @@
 #include "LuaCore.h"
 #include "Signature.h"
 
+#define LUA_LOADED_TABLE "_LOADED"
+
 namespace Debug {
 	LUA_FUNCTION(GetSignature) {
 		lua_Integer addr = luaL_checkinteger(L, 1);
