@@ -642,21 +642,21 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_GetGameWindowPos)
+LUA_FUNCTION(Lua_ImGui_GetGameWindowRect)
 {
 	float x = 0;
 	float y = 0;
-	RECT rect;
+	RECT rect = { 0,0,0,0 };
 
-	if (/* repentogonOptions.enableImGuiMultiView && */!(g_Manager->GetOptions()->_isFullscreen)) {
+	//if (/* repentogonOptions.enableImGuiMultiView && */!(g_Manager->GetOptions()->_isFullscreen)) {
 		if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
 			x = rect.left;
 			y = rect.top;
 		}
-	}
-	lua::LuaCaller(L).pushUserdataValue(Vector(x, y), lua::Metatables::VECTOR);
-
-	return 1;
+	//}
+	lua::LuaCaller(L).pushUserdataValue(Vector(rect.left,rect.top), lua::Metatables::VECTOR);
+	lua::LuaCaller(L).pushUserdataValue(Vector(rect.right - rect.left, rect.bottom - rect.top), lua::Metatables::VECTOR);
+	return 2;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputController)
@@ -1096,7 +1096,7 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetSize ); // deprecated. now its an alias of SetSize
 			lua::TableAssoc(L, "SetTooltip", Lua_ImGui_SetTooltip );
 			lua::TableAssoc(L, "RemoveColor", Lua_ImGui_RemoveColor );
-			lua::TableAssoc(L, "GetGameWindowPos", Lua_ImGui_GetGameWindowPos);
+			lua::TableAssoc(L, "GetGameWindowRect", Lua_ImGui_GetGameWindowRect);
 			lua::TableAssoc(L, "GetMousePosition", Lua_ImGui_GetMousePos );
 			lua::TableAssoc(L, "GetVisible", Lua_ImGui_GetVisible );
 			lua::TableAssoc(L, "GetWindowPinned", Lua_ImGui_GetWindowPinned );
