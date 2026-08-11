@@ -215,6 +215,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_requiref(L, "os", luaopen_os, 1);
 	lua_pop(L, 1);
 
+	int n = luaopen_jit(L);
+	lua_pop(L, n);
+
 	// These are just needed for upstream 53compat, we'll pop em later.
 	luaL_requiref(L, "io", luaopen_io, 1);
 	lua_pop(L, 1);
