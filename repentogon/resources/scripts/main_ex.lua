@@ -7,29 +7,135 @@ REPENTOGON = {
 
 require("compat53.init")
 
--- Cursed - but we need to remove integer division automatically.
-local old_loadfile = loadfile
-global_loadfile = old_loadfile
-
-_G.loadfile = function(filename, mode, env)
-    if not filename then return old_loadfile(filename, mode, env) end
-
-    local f = io.open(filename, "r")
-    if not f then return nil, "cannot open " .. filename end
-    local content = f:read("*all")
+-- Cursed. But we need to preprocess // to math.floor (x / y)
+_RGON_PREPROCESS = function(filename)
+    local f, err = io.open(filename, "rb")
+    if not f then return nil end
+    local src = f:read("*a")
     f:close()
 
-    content = content:gsub("(%S+)%s*//%s*(%S+)", "math.floor((%1) / (%2))")
+    if not src:find("//", 1, true) then return src end
 
-    return load(content, filename, mode, env)
+    local out = {}
+    local i = 1
+    local len = #src
+
+    while i <= len do
+        local c = src:sub(i, i)
+
+        if src:sub(i, i+1) == "--" then
+            if src:sub(i, i+3) == "--[[" then
+                local e = src:find("%]%]", i + 4)
+                if e then
+                    out[#out+1] = src:sub(i, e + 1)
+                    i = e + 2
+                else
+                    out[#out+1] = src:sub(i)
+                    i = len + 1
+                end
+            else
+                local e = src:find("\n", i, true)
+                if e then
+                    out[#out+1] = src:sub(i, e)
+                    i = e + 1
+                else
+                    out[#out+1] = src:sub(i)
+                    i = len + 1
+                end
+            end
+
+        elseif src:sub(i, i+1) == "[[" then
+            local e = src:find("%]%]", i + 2)
+            if e then
+                out[#out+1] = src:sub(i, e + 1)
+                i = e + 2
+            else
+                out[#out+1] = src:sub(i)
+                i = len + 1
+            end
+
+        elseif c == '"' or c == "'" then
+            local q = c
+            local j = i + 1
+            while j <= len do
+                local sc = src:sub(j, j)
+                if sc == "\\" then
+                    j = j + 2
+                elseif sc == q then
+                    j = j + 1
+                    break
+                else
+                    j = j + 1
+                end
+            end
+            out[#out+1] = src:sub(i, j - 1)
+            i = j
+
+        elseif src:sub(i, i+1) == "//" then
+            local emitted = table.concat(out)
+            local lhs_end = #emitted
+            while lhs_end >= 1 and emitted:sub(lhs_end, lhs_end):match("[ \t]") do
+                lhs_end = lhs_end - 1
+            end
+
+            local lhs_start = lhs_end
+            local depth = 0
+            while lhs_start >= 1 do
+                local sc = emitted:sub(lhs_start, lhs_start)
+                if sc == ")" or sc == "]" then
+                    depth = depth + 1
+                    lhs_start = lhs_start - 1
+                elseif sc == "(" or sc == "[" then
+                    if depth == 0 then break end
+                    depth = depth - 1
+                    lhs_start = lhs_start - 1
+                elseif depth > 0 then
+                    lhs_start = lhs_start - 1
+                elseif sc:match("[%w_%.%:]") then
+                    lhs_start = lhs_start - 1
+                else
+                    break
+                end
+            end
+
+            local prefix = emitted:sub(1, lhs_start)
+            local lhs    = emitted:sub(lhs_start + 1, lhs_end)
+
+            local j = i + 2
+            while j <= len and src:sub(j, j):match("[ \t]") do j = j + 1 end
+
+            local rhs_start = j
+            local rdepth = 0
+            if src:sub(j, j) == "-" then j = j + 1 end
+            while j <= len do
+                local sc = src:sub(j, j)
+                if sc == "(" or sc == "[" then
+                    rdepth = rdepth + 1; j = j + 1
+                elseif sc == ")" or sc == "]" then
+                    if rdepth == 0 then break end
+                    rdepth = rdepth - 1; j = j + 1
+                elseif rdepth > 0 then
+                    j = j + 1
+                elseif sc:match("[%w_%.%:]") then
+                    j = j + 1
+                else
+                    break
+                end
+            end
+            local rhs = src:sub(rhs_start, j - 1)
+
+            out = { prefix, "math.floor(", lhs, "/", rhs, ")" }
+            i = j
+
+        else
+            out[#out+1] = c
+            i = i + 1
+        end
+    end
+
+    return table.concat(out)
 end
 
--- Also override dofile if mods use it directly
-_G.dofile = function(filename)
-    local fn, err = loadfile(filename)
-    if not fn then error(err) end
-    return fn()
-end
 
 
 --- Each module is a { module, loaded } pair

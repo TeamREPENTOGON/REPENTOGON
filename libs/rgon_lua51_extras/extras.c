@@ -4,7 +4,6 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-
 #undef lua_getglobal
 LUA_API int lua_getglobal(lua_State* L, const char* name) {
     lua_getfield(L, LUA_GLOBALSINDEX, name);
@@ -160,26 +159,30 @@ LUA_API int luaopen_utf8(lua_State* L) {
     return 1;
 }
 
-// Add some more verbose logging to pcallk too for debugging purposes
-LUA_API int lua_pcallk(lua_State* L, int nargs, int nresults, int errfunc,
-    intptr_t ctx, void* k) {
+LUA_API int lua_pcallk(lua_State* L, int nargs, int nresults, int errfunc, intptr_t ctx, void* k) {
     (void)ctx;
     (void)k;
-    int status = lua_pcall(L, nargs, nresults, errfunc);
-    if (status != LUA_OK) {
-        int top = lua_gettop(L);
-        const char* msg = lua_tostring(L, -1);
-        if (msg == NULL) msg = "(error object is not a string)";
-        luaL_traceback(L, L, msg, 1);
-        const char* trace = lua_tostring(L, -1);
-        if (trace == NULL) trace = "(no traceback)";
-        FILE* f = fopen("luajit_error.log", "ab");
-        if (f != NULL) {
-            fprintf(f, "lua_pcallk error %d: %s\nStack traceback:\n%s\n-----------------\n",
-                status, msg, trace);
-            fclose(f);
+    return lua_pcall(L, nargs, nresults, errfunc);
+}
+
+// I do not apologize, except to Mike Pall.
+LUA_API int rgon_luaL_loadfilex(lua_State *L, const char *filename, const char *mode) {
+    (void)mode;
+
+    lua_getglobal(L, "_RGON_PREPROCESS");
+    if (lua_isfunction(L, -1)) {
+        lua_pushstring(L, filename);
+        if (lua_pcall(L, 1, 1, 0) == 0 && lua_isstring(L, -1)) {
+            size_t len;
+            const char *src = lua_tolstring(L, -1, &len);
+            int r = luaL_loadbuffer(L, src, len, filename);
+            lua_remove(L, -2);
+            return r;
         }
-        lua_settop(L, top);
+        lua_pop(L, 1);
+    } else {
+        lua_pop(L, 1);
     }
-    return status;
+
+    return luaL_loadfile(L, filename);
 }

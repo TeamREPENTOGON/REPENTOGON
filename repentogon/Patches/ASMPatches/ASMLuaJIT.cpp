@@ -21,19 +21,20 @@ void ASMPatchLuaJIT()
 	ASMPatch globalPatch;
 	globalPatch.AddBytes("\xF0\xD8\xFF\xFF");
 	
-	unsigned int globalAmount = 0;
+	unsigned int amount = 0;
 
-	PerformLuaASMPatch(&globalScanner, &globalPatch, &globalAmount);
+	PerformLuaASMPatch(&globalScanner, &globalPatch, &amount);
 
-	printf("Patched %d global indices\n", globalAmount);
+	printf("Patched %d global indices\n", amount);
 
-	SigScan twoScanner("d7b9f0ff");
-	ASMPatch twoPatch;
-	twoPatch.AddBytes("\xED\xD8\xFF\xFF");
+	SigScan uplevelScanner("d7b9f0ff");
 
-	unsigned int twoAmount = 0;
+	ASMPatch uplevelPatch;
+	uplevelPatch.AddBytes("\xED\xD8\xFF\xFF");
+
+	amount = 0;
 	
-	PerformLuaASMPatch(&twoScanner, &twoPatch, &twoAmount);
+	PerformLuaASMPatch(&uplevelScanner, &uplevelPatch, &amount);
 
-	printf("Patched %d ??? indices\n", twoAmount);
+	printf("Patched %d uplevel indices\n", amount);
 }

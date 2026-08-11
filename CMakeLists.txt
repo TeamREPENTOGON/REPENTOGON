@@ -63,7 +63,7 @@ target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd42
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
 # LuaJIT
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 set(LUAJIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJIT")
 set(LUAJIT_SOURCE_DIR "${LUAJIT_DIR}/src")
 set(DASM_DIR "${LUAJIT_DIR}/dynasm")
@@ -94,7 +94,8 @@ FILE(GLOB LUAJIT_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c
 LIST(APPEND LUAJIT_SRC ${LJ_GEN})
 add_library(Lua5.3.3r SHARED ${LUAJIT_SRC})
 target_compile_options(Lua5.3.3r PUBLIC "/MD")
-target_compile_definitions(Lua5.3.3r PRIVATE LUA_BUILD_AS_DLL LUA_CORE)
+target_compile_definitions(Lua5.3.3r PRIVATE LUA_BUILD_AS_DLL LUA_CORE LUAJIT_ENABLE_LUA52COMPAT)
+target_link_options(Lua5.3.3r PRIVATE "/DEF:${CMAKE_CURRENT_SOURCE_DIR}/libs/rgon_lua51_extras/extras.def" )
 add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m peobj -o "${LUAJIT_SOURCE_DIR}/lj_vm.obj" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
 add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m bcdef -o "${LUAJIT_SOURCE_DIR}/lj_bcdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
 add_custom_command(TARGET Lua5.3.3r PRE_BUILD COMMAND buildvm -m ffdef -o "${LUAJIT_SOURCE_DIR}/lj_ffdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
@@ -119,7 +120,7 @@ FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
-target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996" "/FI${CMAKE_SOURCE_DIR}/libs/rgon_lua51_extras/rgon_lua_compat.h")
+target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996" "/FI${CMAKE_SOURCE_DIR}/libs/rgon_lua51_extras/extras.h")
 target_compile_options(libzhl PRIVATE "/EHs")
 target_compile_definitions(libzhl PRIVATE CMAKE_ZHL_VERSION="${CMAKE_ZHL_VERSION}")
 add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/libzhl/hooks.json" "$<TARGET_FILE_DIR:zhlparser>")
