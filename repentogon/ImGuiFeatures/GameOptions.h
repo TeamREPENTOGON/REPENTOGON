@@ -78,7 +78,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
             ImGui::BeginDisabled();
         }
         ImGui::TableSetColumnIndex(1);
-        ImGui::PushID("RESET_" + id);
+        char idstr[256];
+        sprintf(idstr, "RESET_%d", id);
+        ImGui::PushID(idstr);
         const bool clicked = ImGui::SmallButton(ICON_FA_ROTATE_LEFT);
         if (clicked) {
             valueRef = defaultValue;
