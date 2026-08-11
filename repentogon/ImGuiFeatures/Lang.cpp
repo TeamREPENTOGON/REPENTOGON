@@ -171,7 +171,7 @@ void Lang::DrawReportWindow(bool isImGuiActive) {
 
     int total_count = 0;
     int translated_count = 0;
-    ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
+    ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
     if (WindowBeginEx(LANG.TRANS_REPORT_WIN_NAME, &reportWindowEnabled, 0)) {
         ImGui::Text(LANG.TRANS_LANGUAGE_HINT, currentDisplayLanguageName);
         ImGui::Text(LANG.TRANS_UNTRANS_ITEMS);

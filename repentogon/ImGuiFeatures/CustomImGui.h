@@ -1030,7 +1030,7 @@ struct CustomImGui {
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 RunPreRenderCallbacks(&(*window));
-                ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
+                ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
                 if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);

@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "NotificationHandler.h"
 #include "MultiViewportEnhanced.h"
+#include "../REPENTOGONOptions.h"
 
 extern CustomImGui customImGui;
 extern NotificationHandler notificationHandler;
@@ -646,9 +647,12 @@ LUA_FUNCTION(Lua_ImGui_GetGameWindowPos)
 	float x = 0;
 	float y = 0;
 	RECT rect;
-	if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
-		x = rect.left;
-		y = rect.top;
+
+	if (/* repentogonOptions.enableImGuiMultiView && */!(g_Manager->GetOptions()->_isFullscreen)) {
+		if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+			x = rect.left;
+			y = rect.top;
+		}
 	}
 	lua::LuaCaller(L).pushUserdataValue(Vector(x, y), lua::Metatables::VECTOR);
 

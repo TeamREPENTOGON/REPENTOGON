@@ -573,7 +573,7 @@ void __stdcall RunImGui(HDC hdc) {
 		
 	
 	if (menuShown) {
-		ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
+		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
@@ -600,7 +600,7 @@ void __stdcall RunImGui(HDC hdc) {
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
+		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();

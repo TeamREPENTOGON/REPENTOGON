@@ -2,7 +2,7 @@
 #include "imgui_internal.h"
 #include <map>
 #include "IsaacRepentance.h"
-
+#include "../REPENTOGONOptions.h"
 /*
 
 The following struct SHOULD be checked when upgrade imgui.
@@ -97,13 +97,18 @@ void ImGui_ImplRepentogon_InitMultiViewport() {
 	ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
 	ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
 }
-void ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow() {
-	if (g_Manager) {
+void ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow() {
+	bool useMultiview = true;
+	if (!repentogonOptions.enableImGuiMultiView)
+		useMultiview = false;
+	if (useMultiview && g_Manager) {
 		auto opts = g_Manager->GetOptions();
 		if (opts) {
 			if (opts->_isFullscreen) {
-				ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
+				useMultiview = false;
 			}
 		}
 	}
+	if (!useMultiview)
+		ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
 }

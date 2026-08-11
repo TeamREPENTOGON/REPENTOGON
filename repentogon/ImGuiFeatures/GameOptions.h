@@ -133,7 +133,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
-        ImGui_ImplRepentogon_FixFullScreenViewportForNextWindow();
+        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
@@ -211,8 +211,14 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_consoleFont, 0);
                         AddNewTableRow();
 
-                        ImGui::SeparatorText(LANG.OPT_HUD_IMGUI_FONT_SETTINGS);
+                        ImGui::SeparatorText(LANG.OPT_HUD_IMGUI_UI_OPTION);
                         AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_HUD_IMGUI_ENABLE_MULTIVIEW, &repentogonOptions.enableImGuiMultiView);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_HUD_IMGUI_ENABLE_MULTIVIEW_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.enableImGuiMultiView, true);
+                        AddNewTableRow();
+
                         ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 12, 32);
                         ImGui::SameLine();
                         AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
