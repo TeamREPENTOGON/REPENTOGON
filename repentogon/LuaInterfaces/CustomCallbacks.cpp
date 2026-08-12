@@ -4629,7 +4629,7 @@ static void Patch_EntityPlayerGetLootList_SelectRNG()
 
 	ASMPatch patch;
 	ByteBuffer buffer;
-	buffer.AddString("\x89\xF7\x90"); // Replace CMOV with MOV + NOP padding
+	buffer.AddString("\x89\xFE\x90"); // Replace CMOV with MOV + NOP padding
 	patch.AddBytes(buffer);
 
 	sASMPatcher.FlatPatch((void*)addr, &patch);
