@@ -6,6 +6,10 @@ Added:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
 	- GetMaxInventorySize
+* PlayerHUD:
+	- Get/SetFlashRedHearts
+	- Get/SetFlashSoulHearts
+	- Get/SetFlashGoldHearts
 * XMLData
 	- XMLData.GetCurrentMod()
 		Gets xmldata node of the running mod metadata
