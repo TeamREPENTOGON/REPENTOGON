@@ -518,6 +518,8 @@ void LoadImGuiFont() {
 	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
 }
 
+void ImGuiDrawMultiViewports();
+std::optional<HDC> drawImGuiAt = std::nullopt;
 void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
@@ -625,21 +627,49 @@ void __stdcall RunImGui(HDC hdc) {
 	// Draw the overlay
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		HDC hdc = wglGetCurrentDC();
 		HGLRC glrc = wglGetCurrentContext();
 		rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow = glrc;
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-
+		ImGui::UpdatePlatformWindows(); 
+		// update only, don't draw
 		wglMakeCurrent(hdc, glrc);
+
+		// obs compat: we'll draw these windows later
+		drawImGuiAt = hdc;
 	}
 
 	glUseProgram(last_program);
 }
 
+void ImGuiDrawMultiViewports() {
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLint last_program;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+		glUseProgram(0);
+
+		HDC hdc = wglGetCurrentDC();
+		HGLRC glrc = wglGetCurrentContext();
+
+		rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow = glrc;
+		ImGui::RenderPlatformWindowsDefault(); // already updated, render only
+
+		wglMakeCurrent(hdc, glrc);
+
+		glUseProgram(last_program);
+	}
+}
+
+HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall) {
+	if (drawImGuiAt.has_value() && drawImGuiAt.value() == hdc) {
+		drawImGuiAt = std::nullopt;
+		//obs compat: now we're safe, obs hook already done.
+		ImGuiDrawMultiViewports();
+	}
+	return super(hdc);
+}
 
 /*
 * Initially, we were hooking wglSwapBuffers directly for ImGui. This worked, but wouldn't appear in screen sharing in Discord and streaming in OBS.
