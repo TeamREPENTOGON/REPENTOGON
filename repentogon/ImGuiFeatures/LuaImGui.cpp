@@ -630,6 +630,12 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 		if (ImGui::IsMousePosValid()) {
 			x = io.MousePos.x;
 			y = io.MousePos.y;
+			
+			RECT rect = { 0,0,0,0 };
+			if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+				x -= rect.left;
+				y -= rect.top;
+			}
 		}
 	}
 	else {
@@ -1014,6 +1020,13 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 	const char* elementId = luaL_checkstring(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
+
+	RECT rect = { 0,0,0,0 };
+	if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+		x += rect.left;
+		y += rect.top;
+	}
+
 
 	bool success = customImGui.SetWindowPosition(elementId, x, y);
 
