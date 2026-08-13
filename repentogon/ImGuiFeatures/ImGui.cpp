@@ -26,7 +26,7 @@
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
 #include "MultiViewportEnhanced.h"
-
+#include "RepentogonImGuiHook.h"
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -213,11 +213,8 @@ float WINMouseWheelMove_Hori = 0;
 
 static std::vector<WPARAM> pressedKeys;
 
-LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	if (shutdownInitiated)
-		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
-	
+// this function is called by both game window and imgui created window
+std::optional<LRESULT> windowProc_ImGuiCreatedWindow(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	// Enable the overlay using the grave key, disable using ESC
 	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
@@ -259,7 +256,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				return true;
 			}
 			buff = (wchar_t*)nbuff;
-			
+
 			ImmGetCompositionStringW(
 				hIMC,
 				GCS_RESULTSTR,
@@ -282,6 +279,17 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		// don't call imgui's ime handle, it's buggy. we've handled by WM_IME_COMPOSITION
 		return true;
 	}
+	return std::nullopt;
+}
+
+LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (shutdownInitiated)
+		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+	
+	auto ret = windowProc_ImGuiCreatedWindow(hWnd, uMsg, wParam, lParam);
+	if (ret.has_value())
+		return ret.value();
 
 	if (menuShown && g_Game->GetConsole()->_state != 2) {
 		// Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
@@ -528,6 +536,7 @@ void __stdcall RunImGui(HDC hdc) {
 	WINMouseWheelMove_Hori = 0;
 
 	if (!imguiInitialized) {
+		repentogonImGuiHookData.MultiViewport_WndProcHandler = windowProc_ImGuiCreatedWindow;
 		HWND window = WindowFromDC(hdc);
 		rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow = window;
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
