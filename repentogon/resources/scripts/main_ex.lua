@@ -97,7 +97,11 @@ local function MeetsVersion(targetVersion)
         end
     end
     
-    return true
+	
+	local targetsuffix = targetVersion:match("%a+$")
+	local currsuffix = REPENTOGON.Version:match("%a+$")
+	
+    return (not targetsuffix) or (targetsuffix <= currsuffix)
 end
 
 REPENTOGON.MeetsVersion = MeetsVersion
