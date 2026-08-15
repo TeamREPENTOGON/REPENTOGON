@@ -1542,7 +1542,7 @@ Accepts `false` to cancel the pickup getting consumed.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1267 |MC_PRE_PICKUP_VOIDED {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1267 |MC_PRE_PICKUP_COMPOSTED {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_PICKUP_GET_COIN_VALUE {: .copyable }
 Accepts `int` CoinValue to modify the amount of coins a coin can give you on pickup.
