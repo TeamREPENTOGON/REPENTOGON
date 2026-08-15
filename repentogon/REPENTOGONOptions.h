@@ -80,6 +80,7 @@ struct REPENTOGONOptions {
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
 		fontSize = defstoi(ini["internal"]["FontSize"], 16);
 		fontSelectedPredefined = defstoi(ini["internal"]["FontSelectedPredefined"], 0);
+		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
 		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], 1);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
@@ -134,6 +135,7 @@ struct REPENTOGONOptions {
 		Write("internal", "DidInputConfigsImport", didInputConfigsImport);
 		Write("internal", "FontSize", fontSize);
 		Write("internal", "FontSelectedPredefined", fontSelectedPredefined);
+		Write("internal", "FontRenderStyle", fontRenderStyle);
 		Write("internal", "EnableImGuiMultiView", enableImGuiMultiView);
 	}
 
@@ -164,6 +166,7 @@ struct REPENTOGONOptions {
 	bool skipArchiveChecks;
 	bool didInputConfigsImport;
 	bool enableImGuiMultiView;
+	int fontRenderStyle;
 };
 
 extern REPENTOGONOptions repentogonOptions;

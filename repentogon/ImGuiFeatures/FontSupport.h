@@ -7,6 +7,11 @@
 
 extern ImFont* imFontUnifont;
 
+enum ImGuiFontRenderStyle {
+	ImGuiFontRenderStyle_PIXELATED,
+	ImGuiFontRenderStyle_SMOOTH
+};
+
 struct PredefinedFont {
 	const char * fontName;
 	const char * fontPath;

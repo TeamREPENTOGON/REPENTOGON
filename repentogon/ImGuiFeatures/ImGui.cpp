@@ -489,6 +489,7 @@ void LoadImGuiFont() {
 	requestFontReload = false;
 
 	if (imFontUnifont) {
+		// maybe memleak because old font not be released, this only happen when player change their font, so fine.
 		ImGui::GetIO().FontDefault = NULL;
 		ImGui::GetIO().Fonts->ClearFonts();
 		imFontUnifont = NULL;
@@ -496,11 +497,20 @@ void LoadImGuiFont() {
 
 	ImFontConfig cfg;
 	cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
+	
+	switch (repentogonOptions.fontRenderStyle) {
+	case ImGuiFontRenderStyle::ImGuiFontRenderStyle_PIXELATED:
+	default:
+		// don't forget check emoji render if someone change this flag
+		cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_Monochrome;
+		break;
+	case ImGuiFontRenderStyle::ImGuiFontRenderStyle_SMOOTH:
+		break;
+	}
 
-	cfg.OversampleH = cfg.OversampleV = 1;
+	cfg.OversampleH = cfg.OversampleV = 1; // do not oversample fonts, because freetype will font size it now.
 	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow) / 96.f);
-	//ImGui::GetStyle().FontScaleDpi = 1;
-	//ImGui::GetStyle().FontSizeBase = 16;
+
 	auto & io = ImGui::GetIO();
 	io.Fonts->AddFontDefaultBitmap();
 	int selected_font = repentogonOptions.fontSelectedPredefined;

@@ -29,6 +29,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
     const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
+    const char* fontRenderStyle[2] = { "Pixelated", "Smooth" };
     const char* jacobAndEsauControlModes[2] = { "Classic", "Better" };
 
     const char* saveImportExportSlots[4] = { "ALL", "1", "2", "3"};
@@ -68,6 +69,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
         unifontRenderMode[4] = LANG.OPT_UNIFONT_RENDER_MODE_TINY_LOW;
 
         saveImportExportSlots[0] = LANG.OPT_SAVE_MANAGEMENT_ALL_SLOTS;
+
+        fontRenderStyle[0] = LANG.OPT_HUD_FONT_RENDER_STYLE_PIXELATED;
+        fontRenderStyle[1] = LANG.OPT_HUD_FONT_RENDER_STYLE_SMOOTH;
     }
 
     template <typename T>
@@ -222,6 +226,13 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 12, 32);
                         ImGui::SameLine();
                         AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
+                        AddNewTableRow();
+
+                        if (ImGui::SliderInt(LANG.OPT_HUD_FONT_RENDER_STYLE, &repentogonOptions.fontRenderStyle, 0, 1, fontRenderStyle[repentogonOptions.fontRenderStyle]))
+                            requestFontReload = true;
+                        ImGui::SameLine();
+                        if (AddResetButton(++resetCounter, repentogonOptions.fontRenderStyle, 0))
+                            requestFontReload = true;
                         AddNewTableRow();
 
                         if (predefinedFonts.size() > 1) {
