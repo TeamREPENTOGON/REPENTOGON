@@ -1,3 +1,7 @@
+#include "ASMLocalization.h"
+
+#include <string>
+
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
@@ -88,4 +92,99 @@ HOOK_METHOD(ModEntry, GetContentPath, (std::string* resFileString, const std::st
 
 void ASMPatchRedirectToLocalizationFolders() {
 	ASMPatchRedirectToLocalizedResources();
+}
+
+std::string GetLocalizedPlayerAnimationForAnm2(EntityConfig_Player* player, ANM2* sprite) {
+	std::string displayName = player->GetDisplayName(nullptr);
+	if (!sprite->GetAnimationData(displayName) && !player->_name.empty() && player->_name.front() == '#') {
+		// No animation available for the translated name. Look for a fallback.
+		if (sprite->GetAnimationData(player->_name)) {
+			// Fall back to raw string.
+			return player->_name;
+		} else {
+			std::string stringkey = player->_name;
+			stringkey.erase(0, 1);  // Remove the '#'
+			bool failed = false;
+			if (const char* english = g_Manager->GetStringTable()->GetString("Players", 0, stringkey.c_str(), &failed); !failed && english && sprite->GetAnimationData(english)) {
+				// Fall back to English.
+				return english;
+			}
+		}
+	}
+	return displayName;
+}
+
+// Patch overtop calls to GetDisplayName that will be used to look for an animation in a particular Player-related menu ANM2.
+// We'll provide the untranslated or english names as fallbacks if needed to find an available animation.
+void __stdcall LocalizedPlayerAnimationNameTrampoline(EntityConfig_Player* player, ANM2* sprite, std::string* buffer) {
+	new (buffer) std::string(GetLocalizedPlayerAnimationForAnm2(player, sprite));
+}
+void ASMPatchLocalizedPlayerAnimationName(char* sig, std::optional<size_t> offset = std::nullopt) {
+	void* addr = sASMDefinitionHolder->GetDefinition(sig);
+
+	printf("[REPENTOGON] Patching EntityConfig_Player::GetDisplayName call for localized ANM2 animations @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)
+		.AddBytes("\x83\xC4\x04")  // add esp,0x4
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX);
+	if (offset) {
+		patch.Push(ASMPatch::Registers::ECX, *offset);
+	} else {
+		patch.Push(ASMPatch::Registers::ESI);
+	}
+	patch.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(LocalizedPlayerAnimationNameTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// For some reason the game uses the raw name string to match the tainted with their regular counterpart,
+// but then goes through GetDisplayName to match the regular character with their tainted.
+// This can prevent the tainted from appearing on the menu.
+// Here we make it use the raw name too.
+void __stdcall GetNameToMatchBSkinParent(EntityConfig_Player* player, std::string* buffer) {
+	new (buffer) std::string(player->_name);
+}
+void ASMPatchGetBSkinParentName() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityConfig_PostLoadMods_BSkinParentGetName);
+
+	printf("[REPENTOGON] Patching EntityConfig::PostLoadMods for BSkinParent check @ %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.Pop(ASMPatch::Registers::EAX)
+		.AddBytes("\x83\xC4\x04")  // add esp,0x4
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(GetNameToMatchBSkinParent)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchLocalizedPlayerAnimations() {
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CharacterMenuAlt);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CharacterPortraitsAlt);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_DeathScreenAlt);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CoopMenuAlt);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_ControlsAlt);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CharacterMenu);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CharacterPortraits);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_DeathScreen);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CoopMenu);
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_Controls);
+
+	ASMPatchGetBSkinParentName();
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::EntityConfig_LoadPlayers_CustomBackgroundCheck, offsetof(EntityConfig_Player, _moddedMenuBackgroundANM2));
+
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::RenderCustomCharacters_GetAnimName, offsetof(EntityConfig_Player, _moddedMenuPortraitANM2));
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::RenderCustomCharacterMenu_GetAnimName, offsetof(EntityConfig_Player, _moddedMenuBackgroundANM2));
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::RenderCustomCharacterCoopMenu_GetAnimName, offsetof(EntityConfig_Player, _moddedCoopMenuANM2));
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::Backdrop_PreRenderControls_GetCharacterAnimName, offsetof(EntityConfig_Player, _moddedControlsANM2));
+	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::GameOver_Render_GetCharacterAnimName, offsetof(EntityConfig_Player, _moddedGameOverANM2));
 }

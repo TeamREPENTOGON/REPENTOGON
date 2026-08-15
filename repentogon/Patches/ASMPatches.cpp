@@ -299,6 +299,7 @@ void PerformASMPatches() {
 	ASMPatchesForCardsExtras();
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();
+	ASMPatchLocalizedPlayerAnimations();
 	ASMFixes();
 	HookImGui();
 
