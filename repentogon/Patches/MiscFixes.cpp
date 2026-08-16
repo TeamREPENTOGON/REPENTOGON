@@ -188,9 +188,9 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 }
 
 //prevents playing online modes
-// [ONLINE-EXPERIMENT] Instrumented only. Behavior unchanged: we still force _modBanStatus = 3
-// at the end, exactly as before. Logging added around super() to observe what the game's own
-// ListMods logic (mod check) sets _modBanStatus to before REPENTOGON overrides it.
+// [ONLINE-EXPERIMENT] Causality test: instead of forcing _modBanStatus = 3, preserve whatever
+// value the game's own ListMods logic computed (postCallBanStatus), to measure whether
+// online_mods_check() still rejects online with the native value. Logging unchanged.
 HOOK_METHOD(ModManager, ListMods, () -> void) {
 	int preCallBanStatus = _modBanStatus;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods ENTER, _modBanStatus (original, pre-super) = %d\n", preCallBanStatus);
@@ -200,7 +200,7 @@ HOOK_METHOD(ModManager, ListMods, () -> void) {
 	int postCallBanStatus = _modBanStatus;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods after game logic (post-super), _modBanStatus = %d\n", postCallBanStatus);
 
-	_modBanStatus = 3;
+	_modBanStatus = postCallBanStatus;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods REPENTOGON forces _modBanStatus = %d (unchanged behavior)\n", _modBanStatus);
 }
 
