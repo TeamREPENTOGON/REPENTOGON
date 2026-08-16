@@ -138,9 +138,37 @@ HOOK_METHOD(Menu_DailyChallenge, Render, () -> void) {
 	super();
 }
 
-//prevents joining lobbies
-HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void) {
+// [ONLINE-EXPERIMENT] Instrumentation only, no behavior change.
+// Logs each time the Online menu's internal state changes (eg. first reached, sub-screen changes),
+// using the _prevState/_state fields already exposed in the Menu_Online ZHL struct, to avoid
+// spamming the log every single frame this menu is open.
+HOOK_METHOD(Menu_Online, Update, () -> void) {
+	int stateBefore = this->_state;
+	super();
+	if (this->_state != stateBefore) {
+		ZHL::Log("[ONLINE] -> menu reached: Menu_Online state changed %d -> %d (prevState=%d)\n", stateBefore, this->_state, this->_prevState);
+	}
+}
 
+// [ONLINE-EXPERIMENT] Instrumentation only, no behavior change.
+// Menu_Game::online_mods_check is a native Repentance+ function (signature already known via
+// MenuGame.zhl) that REPENTOGON does not otherwise hook or alter. Logging its entry/return value
+// tells us whether the game's own mod-gating check is what actually rejects REPENTOGON for online,
+// independently of REPENTOGON's own menu/lobby blocks.
+HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
+	ZHL::Log("[ONLINE] -> online_mods_check: ENTER\n");
+	bool result = super();
+	ZHL::Log("[ONLINE] -> online_mods_check: EXIT result=%d\n", result ? 1 : 0);
+	return result;
+}
+
+//prevents joining lobbies
+// [ONLINE-EXPERIMENT] Instrumented only. Behavior unchanged: the hook body is still empty,
+// so the game's native lobby-join handling is still skipped entirely. This logging exists
+// solely to confirm whether the game even reaches this call during an online attempt.
+HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void) {
+	ZHL::Log("[ONLINE] -> lobby/join attempt: Menu_Game::UnknownJoinLobby ENTER (unk1=%d, unk2=%d, unk3=%d)\n", unk1, unk2, unk3);
+	ZHL::Log("[ONLINE] -> lobby/join attempt: Menu_Game::UnknownJoinLobby EXIT (no-op, original body intentionally left empty by REPENTOGON)\n");
 }
 
 //Prints log message about redirected configs
@@ -160,9 +188,20 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 }
 
 //prevents playing online modes
+// [ONLINE-EXPERIMENT] Instrumented only. Behavior unchanged: we still force _modBanStatus = 3
+// at the end, exactly as before. Logging added around super() to observe what the game's own
+// ListMods logic (mod check) sets _modBanStatus to before REPENTOGON overrides it.
 HOOK_METHOD(ModManager, ListMods, () -> void) {
+	int preCallBanStatus = _modBanStatus;
+	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods ENTER, _modBanStatus (original, pre-super) = %d\n", preCallBanStatus);
+
 	super();
+
+	int postCallBanStatus = _modBanStatus;
+	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods after game logic (post-super), _modBanStatus = %d\n", postCallBanStatus);
+
 	_modBanStatus = 3;
+	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods REPENTOGON forces _modBanStatus = %d (unchanged behavior)\n", _modBanStatus);
 }
 
 // Fixes game crashing when spawning an entity with a seed of 0.

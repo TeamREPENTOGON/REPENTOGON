@@ -2,6 +2,8 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include <algorithm>
+
 LUA_FUNCTION(Lua_GetPlayerHUD) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	int index = (int)luaL_optinteger(L, 2, 0);

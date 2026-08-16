@@ -231,7 +231,10 @@ void PerformASMPatches() {
 	// Menu
 	ASMPatchModsMenu();
 	ASMPatchMenuOptionsLanguageChange();
-	ASMPatchOnlineMenu();
+	// [ONLINE-EXPERIMENT] Temporarily disabled to observe the game's own online/mod gating.
+	// See ASMMenu.cpp:ASMPatchOnlineMenu for the original rationale (desync risk from gameplay ASM patches).
+	// Do not re-enable removal permanently without re-auditing gameplay-affecting patches first.
+	// ASMPatchOnlineMenu();
 	PatchModdedCharacterHiddenByAchievementInMenu();
 
 	// HUD
