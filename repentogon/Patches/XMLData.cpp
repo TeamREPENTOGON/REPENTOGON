@@ -3731,6 +3731,16 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 
 	EvaluateStats::UpdateItemConfig();
 
+	// _collectibleNameMap is pretty much exclusively used for mod-related stuff.
+	// Ofc the basegame does not account for translation string support. It puts only the TRANSLATED names in the map.
+	// Here we shove all of the raw, untranslated strings into the map too.
+	// This fixes putting mod items into item pools, and GetItemIdByName.
+	for (ItemConfig_Item* item : *g_Manager->GetItemConfig()->GetCollectibles()) {
+		if (item && !item->name.empty() && item->id > 0) {
+			g_Manager->GetItemConfig()->_collectibleNameMap[item->name] = item->id;
+		}
+	}
+
 	//retroactively patch playertype for challenges because the game sucks ass and loads modded challenges before players
 	for (int i = 46; i<=XMLStuff.ChallengeData->maxid; i++) {
 		ChallengeParam* chalpram = g_Manager->GetChallengeParams(i);
