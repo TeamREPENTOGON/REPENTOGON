@@ -534,6 +534,7 @@ void LoadImGuiFont() {
 		ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
 	} 
 	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
+	io.FontDefault = imFontUnifont;
 }
 
 void ImGuiDrawMultiViewports();
