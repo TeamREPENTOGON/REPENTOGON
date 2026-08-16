@@ -2691,6 +2691,7 @@ ImGuiWindowFlags = {
 	NoNavInputs = 1 << 16,  									-- No gamepad/keyboard navigation within the window
 	NoNavFocus = 1 << 17,  										-- No focusing toward this window with gamepad/keyboard navigation (e.g. skipped by CTRL+TAB)
 	UnsavedDocument = 1 << 18,									-- Display a dot next to the title. When used in a tab/docking context, tab is selected when clicking the X + closure is not assumed (will wait for user to stop submitting the tab). Otherwise closure is assumed
+	NoDocking = 1 << 19,										-- Disable docking of this window
 
 	NoNav =	(1 << 16) | (1 << 17),								-- ImGuiWindowFlags.NoNavInputs | ImGuiWindowFlags.NoNavFocus
 	NoDecoration = (1 << 0) | (1 << 1) | (1 << 3) | (1 << 5),	-- ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse
