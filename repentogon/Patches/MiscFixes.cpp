@@ -4,6 +4,7 @@
 #include "Log.h"
 #include <filesystem>
 #include <algorithm>
+#include <chrono>
 
 #undef max
 
@@ -150,15 +151,237 @@ HOOK_METHOD(Menu_Online, Update, () -> void) {
 	}
 }
 
+// [ONLINE-TRACE] Shared state for correlating online_mods_check()==false with what Menu_Game and
+// Menu_Title do immediately afterward. onlineCheckFalseWindowActive/Start are set by the
+// online_mods_check hook further below; lastMenuGameUpdateTime is set by Menu_Game::Update below
+// and read by Menu_Title::Update further below to compute gapFromMenuGame.
+static std::chrono::steady_clock::time_point onlineCheckFalseWindowStart{};
+static bool onlineCheckFalseWindowActive = false;
+static std::chrono::steady_clock::time_point lastMenuGameUpdateTime{};
+
+// [HOOK-ORDER experiment] TEMPORARY instrumentation only, no behavior change to any hook.
+// Shared (non-static, external linkage) so CutsceneSkip.cpp, ModsMenuStuff.cpp and XMLData.cpp
+// can log into the same call-grouping counter/time window from their own existing
+// HOOK_METHOD(MenuManager, Update, ...) hooks, via extern declarations added at each of those
+// call sites. Goal: determine the real runtime nesting order of the 4 hooks currently on
+// MenuManager::Update, and see exactly which one (if any) turns _selectedMenuID from 19 into 1.
+//
+// g_MMUpdateDepth counts how many of the 4 hooks are currently nested inside each other for the
+// SAME logical MenuManager::Update() invocation (super() chains them); a transition from depth 0
+// to 1 marks the start of a brand new invocation, so g_MMUpdateCallID is only incremented then -
+// whichever hook happens to run outermost gets it "for free", without needing to know in advance
+// which one that is.
+int g_MMUpdateDepth = 0;
+int g_MMUpdateCallID = 0;
+std::chrono::steady_clock::time_point g_HookOrderWindowStart{};
+bool g_HookOrderWindowActive = false;
+
+int HookOrder_Enter(const char* fileTag, int selectedMenuID) {
+	if (g_MMUpdateDepth == 0) {
+		g_MMUpdateCallID++;
+	}
+	g_MMUpdateDepth++;
+	if (g_HookOrderWindowActive) {
+		long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - g_HookOrderWindowStart).count();
+		if (ms <= 1000) {
+			ZHL::Log("[HOOK-ORDER] UPDATE#%d %s ENTER selected=%d\n", g_MMUpdateCallID, fileTag, selectedMenuID);
+		} else {
+			g_HookOrderWindowActive = false;
+		}
+	}
+	return g_MMUpdateCallID;
+}
+void HookOrder_BeforeSuper(const char* fileTag, int callID, int selectedMenuID) {
+	if (g_HookOrderWindowActive) {
+		ZHL::Log("[HOOK-ORDER] UPDATE#%d %s BEFORE_SUPER selected=%d\n", callID, fileTag, selectedMenuID);
+	}
+}
+void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMenuID) {
+	if (g_HookOrderWindowActive) {
+		ZHL::Log("[HOOK-ORDER] UPDATE#%d %s AFTER_SUPER selected=%d\n", callID, fileTag, selectedMenuID);
+	}
+	g_MMUpdateDepth--;
+}
+
+// [ONLINE-TRACE] Instrumentation only, no behavior change.
+// Logs Menu_Game's main list cursor and SelectedElement only when either changes across an
+// Update() call (unchanged from before), plus a short windowed trace: for up to 2 seconds after
+// online_mods_check() returns false, every Menu_Game::Update() call is logged with its `this`
+// pointer, to determine whether the Menu_Game object keeps updating, stops, or is a different
+// instance. The offset 0x22C field is not a named field in MenuGame.zhl, but its address is
+// directly evidenced by ASMPatchOnlineSelection (ASMMenu.cpp); we reuse that known offset as-is,
+// we do not re-assume what it represents.
+HOOK_METHOD(Menu_Game, Update, () -> void) {
+	int stateBefore = *(int*)((char*)this + 0x22C);
+	int selectedBefore = this->SelectedElement;
+
+	super();
+
+	int stateAfter = *(int*)((char*)this + 0x22C);
+	int selectedAfter = this->SelectedElement;
+
+	auto now = std::chrono::steady_clock::now();
+	lastMenuGameUpdateTime = now;
+
+	if (onlineCheckFalseWindowActive) {
+		long long elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - onlineCheckFalseWindowStart).count();
+		if (elapsedMs <= 2000) {
+			ZHL::Log("[ONLINE-TRACE] Menu_Game::Update window\nselected=%d\nstate=%d\nthis=%p\n", selectedAfter, stateAfter, (void*)this);
+		} else {
+			onlineCheckFalseWindowActive = false;
+		}
+	}
+
+	if (stateAfter != stateBefore || selectedAfter != selectedBefore) {
+		ZHL::Log("[ONLINE-TRACE] Menu_Game::Update state %d->%d selected %d->%d\n", stateBefore, stateAfter, selectedBefore, selectedAfter);
+	}
+}
+
+// [ONLINE-TRACE] Helper: human-readable name for MenuManager::_selectedMenuID values, per the
+// real, documented eMainMenuType enum (libzhl/functions/Global.zhl). Used only for log clarity.
+static const char* GetMainMenuTypeName(int id) {
+	switch (id) {
+		case 0: return "NONE(0, unusable per Global.zhl comment)";
+		case 1: return "TITLE";
+		case 2: return "SAVES";
+		case 3: return "GAME";
+		case 4: return "DAILYRUN";
+		case 5: return "CHARACTER";
+		case 6: return "SPECIALSEEDS";
+		case 7: return "CHALLENGE";
+		case 8: return "COLLECTION";
+		case 9: return "STATS";
+		case 10: return "OPTIONS";
+		case 11: return "CONTROLS";
+		case 12: return "KEYCONFIG";
+		case 13: return "ENDINGS";
+		case 14: return "BESTIARY";
+		case 15: return "MODCHALLENGES";
+		case 16: return "MODS";
+		case 17: return "ONLINELOBBY";
+		case 18: return "FRIENDLOBBIES";
+		case 19: return "MULTIPLAYER";
+		case 20: return "OPTIONSONLINE";
+		case 21: return "CREATELOBBY";
+		case 22: return "ONLINEAWARDS";
+		default: return "UNKNOWN";
+	}
+}
+
+// [ONLINE-TRACE] Instrumentation only, no behavior change.
+// MenuManager::_selectedMenuID (0x40, MenuManager.zhl) is the real, documented field for the
+// currently active top-level menu screen (per eMainMenuType in Global.zhl, and per its existing
+// use throughout the codebase, eg. ConsoleHooks.cpp's "inTitleOrFileSelect" check). We log only
+// changes to this field, instead of _state/_returnState (already confirmed to never change).
+// MenuManager::Update is already hooked elsewhere (CutsceneSkip.cpp, ModsMenuStuff.cpp,
+// XMLData.cpp) for unrelated purposes - notably XMLData.cpp's hook unconditionally resets
+// _selectedMenuID back to 1 (TITLE) whenever it is 4/17/18/19/21 (DAILYRUN/ONLINELOBBY/
+// FRIENDLOBBIES/MULTIPLAYER/CREATELOBBY), labeled "Menu Bug Crash fix and backwards compat". ZHL
+// chains multiple hooks via super(), so adding this one does not remove or duplicate that hook -
+// but it is the strongest known candidate for explaining the return to title, so this log is
+// intended to directly confirm or refute it.
+HOOK_METHOD(MenuManager, Update, () -> void) {
+	int stateBefore = this->_state;
+	int returnStateBefore = this->_returnState;
+	int selectedMenuIDBefore = this->_selectedMenuID;
+
+	// [HOOK-ORDER experiment] TEMPORARY, no behavior change.
+	int hookOrderCallID = HookOrder_Enter("MiscFixes.cpp", selectedMenuIDBefore);
+	HookOrder_BeforeSuper("MiscFixes.cpp", hookOrderCallID, this->_selectedMenuID);
+	super();
+	HookOrder_AfterSuper("MiscFixes.cpp", hookOrderCallID, this->_selectedMenuID);
+
+	int stateAfter = this->_state;
+	int returnStateAfter = this->_returnState;
+	int selectedMenuIDAfter = this->_selectedMenuID;
+
+	if (stateAfter != stateBefore) {
+		ZHL::Log("[ONLINE-TRACE] MenuManager::_state old=%d new=%d\n", stateBefore, stateAfter);
+	}
+	if (returnStateAfter != returnStateBefore) {
+		ZHL::Log("[ONLINE-TRACE] MenuManager::_returnState old=%d new=%d\n", returnStateBefore, returnStateAfter);
+	}
+	if (selectedMenuIDAfter != selectedMenuIDBefore) {
+		ZHL::Log("[ONLINE-TRACE] MenuManager::_selectedMenuID old=%d(%s) new=%d(%s)\n",
+			selectedMenuIDBefore, GetMainMenuTypeName(selectedMenuIDBefore),
+			selectedMenuIDAfter, GetMainMenuTypeName(selectedMenuIDAfter));
+	}
+}
+
+// [ONLINE-TRACE] Instrumentation only, no behavior change.
+// MenuManager::Init() is a real, confirmed signature (MenuManager.zhl) and is not currently
+// hooked anywhere else in the codebase. Logging its entry tells us whether MenuManager is being
+// reconstructed/reinitialized (as opposed to just changing _state) when returning to the title
+// screen. Init() takes no parameters, so there is nothing else to log.
+HOOK_METHOD(MenuManager, Init, () -> void) {
+	ZHL::Log("[ONLINE-TRACE] MenuManager::Init ENTER\n");
+	super();
+}
+
+// [ONLINE-TRACE] Instrumentation only, no behavior change.
+// Menu_Title::Update() runs every frame while the title screen is active/rendering, so we cannot
+// log every call. We log only: (a) the very first call this session, and (b) any call that
+// follows a gap of more than 500ms since the previous call - ie. the title screen was NOT being
+// updated for a while and has just become active again. Also logs `this` and the time elapsed
+// since Menu_Game's own last Update() call (gapFromMenuGame), to correlate ownership handoff
+// between the two menus. No Menu_Title::Init/constructor/destructor signature exists in
+// MenuTitle.zhl (only Update and Render are documented), so we do not hook anything there - only
+// Update is a real, confirmed signature.
+static std::chrono::steady_clock::time_point lastMenuTitleUpdateTime{};
+static bool hasLoggedFirstMenuTitleUpdate = false;
+
+HOOK_METHOD(Menu_Title, Update, () -> void) {
+	auto now = std::chrono::steady_clock::now();
+
+	if (!hasLoggedFirstMenuTitleUpdate) {
+		ZHL::Log("[ONLINE-TRACE] Menu_Title ACTIVE\nthis=%p\n(first Update() call this session)\n", (void*)this);
+		hasLoggedFirstMenuTitleUpdate = true;
+	} else {
+		long long gapMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastMenuTitleUpdateTime).count();
+		if (gapMs > 500) {
+			long long gapFromMenuGameMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastMenuGameUpdateTime).count();
+			ZHL::Log("[ONLINE-TRACE] Menu_Title ACTIVE\nthis=%p\ngapFromMenuGame=%lldms\n(gap %lldms since its own last Update() call)\n", (void*)this, gapFromMenuGameMs, gapMs);
+		}
+	}
+	lastMenuTitleUpdateTime = now;
+
+	super();
+}
+
+// [ONLINE-TRACE] Instrumentation only, no behavior change.
+// Isaac::Shutdown is a real, confirmed static signature (Isaac.zhl) already hooked elsewhere
+// (ImGui.cpp, LuaIsaac.cpp) for unrelated purposes; ZHL chains multiple hooks via super(), so
+// this one does not remove or duplicate those. Logging only its entry lets us distinguish a real
+// process shutdown (this line present) from a menu transition back to the title screen (this
+// line absent) in the log, per the task's request.
+HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
+	ZHL::Log("[ONLINE-TRACE] GAME SHUTDOWN\n");
+	super();
+}
+
 // [ONLINE-EXPERIMENT] Instrumentation only, no behavior change.
 // Menu_Game::online_mods_check is a native Repentance+ function (signature already known via
 // MenuGame.zhl) that REPENTOGON does not otherwise hook or alter. Logging its entry/return value
 // tells us whether the game's own mod-gating check is what actually rejects REPENTOGON for online,
-// independently of REPENTOGON's own menu/lobby blocks.
+// independently of REPENTOGON's own menu/lobby blocks. When it returns false, we also open the
+// 2-second Menu_Game::Update observation window (see onlineCheckFalseWindowActive/Start above).
+//
+// On identifying the caller: we deliberately do NOT attempt to log a return address here. ZHL's
+// HOOK_METHOD mechanism inserts this hook via a detour/trampoline between the real call site and
+// this function body, so a caller-address intrinsic (eg. _ReturnAddress()) taken from inside this
+// hook would report an address inside ZHL's own hook plumbing, not the real game code that
+// logically called online_mods_check() - that would be misleading, not reliable, so we skip it.
 HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
 	ZHL::Log("[ONLINE] -> online_mods_check: ENTER\n");
 	bool result = super();
 	ZHL::Log("[ONLINE] -> online_mods_check: EXIT result=%d\n", result ? 1 : 0);
+	if (!result) {
+		onlineCheckFalseWindowStart = std::chrono::steady_clock::now();
+		onlineCheckFalseWindowActive = true;
+		// [HOOK-ORDER experiment] TEMPORARY, no behavior change - opens the 1s hook-order window.
+		g_HookOrderWindowStart = onlineCheckFalseWindowStart;
+		g_HookOrderWindowActive = true;
+	}
 	return result;
 }
 

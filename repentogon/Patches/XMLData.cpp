@@ -416,12 +416,43 @@ HOOK_METHOD(Game, StartDailyChallenge, (DailyChallenge* params)-> void) {
 	super(params);
 }
 
+// [HOOK-ORDER experiment] TEMPORARY instrumentation only, no behavior change to the guard logic
+// below. Shared helpers/state defined in MiscFixes.cpp; see that file for the full explanation.
+extern int HookOrder_Enter(const char* fileTag, int selectedMenuID);
+extern void HookOrder_BeforeSuper(const char* fileTag, int callID, int selectedMenuID);
+extern void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMenuID);
+// [ONLINE-GUARD experiment] Also defined non-static in MiscFixes.cpp; reused here only to scope
+// the new [ONLINE-GUARD] logging to the same 1-second post-online_mods_check window.
+extern bool g_HookOrderWindowActive;
+
 //Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
+// [ONLINE-EXPERIMENT] TEMPORARY: the `== 19` (MULTIPLAYER) condition below is removed on purpose,
+// as a single isolated experiment to test whether the game can reach Menu_MultiPlayer::Update
+// once this specific guard no longer resets it back to TITLE(1). All other guarded values
+// (4=DAILYRUN, 17=ONLINELOBBY, 18=FRIENDLOBBIES, 21=CREATELOBBY) are left untouched/still guarded.
 HOOK_METHOD(MenuManager, Update, ()-> void) {
-	if (g_MenuManager->_selectedMenuID == 4 || g_MenuManager->_selectedMenuID == 19 || g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
-		g_MenuManager->_selectedMenuID = 1;
+	int hookOrderCallID = HookOrder_Enter("XMLData.cpp", g_MenuManager->_selectedMenuID);
+
+	// [ONLINE-GUARD] Instrumentation for this experiment only.
+	if (g_HookOrderWindowActive) {
+		ZHL::Log("[ONLINE-GUARD] XMLData selected=%d\n", g_MenuManager->_selectedMenuID);
 	}
+	if (g_MenuManager->_selectedMenuID == 19) {
+		if (g_HookOrderWindowActive) {
+			ZHL::Log("[ONLINE-GUARD] XMLData ALLOW MULTIPLAYER 19\n");
+		}
+	}
+
+	if (g_MenuManager->_selectedMenuID == 4 || /* == 19 (MULTIPLAYER) removed for this experiment */ g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
+		int oldValue = g_MenuManager->_selectedMenuID;
+		g_MenuManager->_selectedMenuID = 1;
+		if (g_HookOrderWindowActive) {
+			ZHL::Log("[ONLINE-GUARD] XMLData RESET %d -> 1\n", oldValue);
+		}
+	}
+	HookOrder_BeforeSuper("XMLData.cpp", hookOrderCallID, g_MenuManager->_selectedMenuID);
 	super();
+	HookOrder_AfterSuper("XMLData.cpp", hookOrderCallID, g_MenuManager->_selectedMenuID);
 }
 
 HOOK_METHOD(Game, FadeOut, (float Speed, int FadeoutTarget, KColor* color)-> void) {

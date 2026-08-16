@@ -315,6 +315,12 @@ HOOK_METHOD(GameState, write_rerun, (GameStateIO** io) -> bool)
 
 HOOK_METHOD(GameState, read, (GameStateIO** io, bool isLocalRun) -> bool)
 {
+	// [ONLINE-TRACE] Instrumentation only, no behavior change. isLocalRun=false is the parameter
+	// value the game uses when loading a GameState upon joining an already-existing online match
+	// (per the isLocalRun comment already in GameState.zhl); logging it here as a single explicit
+	// line lets us confirm whether that code path is ever reached during our online test.
+	ZHL::Log("[ONLINE-TRACE] GameState::read ENTER isLocalRun=%d\n", isLocalRun ? 1 : 0);
+
 	bool isRerun = false;
 	GameStateSaveInfo info = get_info(this, *io, isRerun);
 

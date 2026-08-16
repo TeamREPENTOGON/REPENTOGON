@@ -94,9 +94,18 @@ bool IsKeyPressed(int key) {
 	return g_InputManagerBase.IsButtonPressed(key, -1, 0);
 }
 
+// [HOOK-ORDER experiment] TEMPORARY instrumentation only, no behavior change. Shared helpers/state
+// defined in MiscFixes.cpp; see that file for the full explanation of this diagnostic.
+extern int HookOrder_Enter(const char* fileTag, int selectedMenuID);
+extern void HookOrder_BeforeSuper(const char* fileTag, int callID, int selectedMenuID);
+extern void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMenuID);
+
 HOOK_METHOD(MenuManager, Update, () -> void) {
 	prevscroll = g_MenuManager->_scrollinterpolationY;
+	int hookOrderCallID = HookOrder_Enter("ModsMenuStuff.cpp", g_MenuManager->_selectedMenuID);
+	HookOrder_BeforeSuper("ModsMenuStuff.cpp", hookOrderCallID, g_MenuManager->_selectedMenuID);
 	super();
+	HookOrder_AfterSuper("ModsMenuStuff.cpp", hookOrderCallID, g_MenuManager->_selectedMenuID);
 }
 
 HOOK_METHOD(Menu_Mods, Update, () -> void) {

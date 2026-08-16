@@ -25,6 +25,12 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid) -> void) {
 	SkipIntro::IsIntroSkip = true;
 };
 
+// [HOOK-ORDER experiment] TEMPORARY instrumentation only, no behavior change. Shared helpers/state
+// defined in MiscFixes.cpp; see that file for the full explanation of this diagnostic.
+extern int HookOrder_Enter(const char* fileTag, int selectedMenuID);
+extern void HookOrder_BeforeSuper(const char* fileTag, int callID, int selectedMenuID);
+extern void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMenuID);
+
 HOOK_METHOD(MenuManager, Update, ()->void) {
 	MenuManager* mngr = g_MenuManager;
 	if (SkipIntro::IsIntroSkip && mngr!=nullptr) {
@@ -32,5 +38,8 @@ HOOK_METHOD(MenuManager, Update, ()->void) {
 
 		SkipIntro::IsIntroSkip = false;
 	}
+	int hookOrderCallID = HookOrder_Enter("CutsceneSkip.cpp", this->_selectedMenuID);
+	HookOrder_BeforeSuper("CutsceneSkip.cpp", hookOrderCallID, this->_selectedMenuID);
 	super();
+	HookOrder_AfterSuper("CutsceneSkip.cpp", hookOrderCallID, this->_selectedMenuID);
 };
