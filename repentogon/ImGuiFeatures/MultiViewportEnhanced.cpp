@@ -44,17 +44,19 @@ void Repentogon_Renderer_CreateWindow(ImGuiViewport* vp) {
 
 	typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
 	const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-	// GL 3.0
 	const int attribs[] =
 	{
-		0x2091, 3,      // WGL_CONTEXT_MAJOR_VERSION_ARB
+		0x2091, 2,      // WGL_CONTEXT_MAJOR_VERSION_ARB
 		0x2092, 0,      // WGL_CONTEXT_MINOR_VERSION_ARB
-		0x9126, 0x0001, // WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB
 		0
 	};
 	HGLRC newRC = nullptr;
 	if (wglCreateContextAttribsARB)
 		newRC = wglCreateContextAttribsARB(dc, 0, attribs);
+
+	if (!newRC) {
+		ZHL::Log("[REPENTOGON] wglCreateContextAttribusARB error when create multiview window, error code = %lu\n", GetLastError());
+	}
 
 	RepentogonRendererMap[vd->Hwnd] = newRC;// wglCreateContext(dc);
 	wglMakeCurrent(dc, newRC);
@@ -72,6 +74,9 @@ void Repentogon_Renderer_DestroyWindow(ImGuiViewport* vp) {
 		wglDeleteContext(it->second);
 		RepentogonRendererMap.erase(it);
 	}
+	else {
+		ZHL::Log("[REPENTOGON] can't destroy not exist window(hwnd=%lu, dc=%lu).\n", vd->Hwnd, dc);
+	}
 	ReleaseDC(vd->Hwnd, dc);
 }
 void Repentogon_Platform_RenderWindow(ImGuiViewport* vp, void* render_arg) {
@@ -79,7 +84,10 @@ void Repentogon_Platform_RenderWindow(ImGuiViewport* vp, void* render_arg) {
 	//then imgui will render it
 	ImGui_ImplWin32_ViewportData* vd = (ImGui_ImplWin32_ViewportData*)vp->PlatformUserData;
 	HDC dc = GetDC(vd->Hwnd);
-	wglMakeCurrent(dc, RepentogonRendererMap[vd->Hwnd]);
+	auto it = RepentogonRendererMap.find(vd->Hwnd);
+	if (it != RepentogonRendererMap.end()) {
+		wglMakeCurrent(dc, RepentogonRendererMap[vd->Hwnd]);
+	}
 	ReleaseDC(vd->Hwnd, dc);
 }
 // this is not in opengl nor in win32 impl, which is required by multi-viewport
