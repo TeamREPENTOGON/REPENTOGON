@@ -474,11 +474,49 @@ namespace lua {
 			m_p = p;
 		}
 
+		static void* sUserdataCacheToken = nullptr;
+
 		void UserdataPtr::push(lua_State* L, void* const p, void const* const key) {
 			if (p) {
+				lua_rawgetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
+				if (lua_isnil(L, -1)) {
+					lua_pop(L, 1);
+					lua_newtable(L);
+					lua_rawsetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
+					lua_rawgetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
+				}
+				const int cacheIdx = lua_gettop(L);
+
+				lua_rawgetp(L, cacheIdx, key);
+				if (lua_isnil(L, -1)) {
+					lua_pop(L, 1);
+					lua_newtable(L);
+					lua_newtable(L);
+					lua_pushliteral(L, "v");
+					lua_setfield(L, -2, "__mode");
+					lua_setmetatable(L, -2);
+					lua_pushvalue(L, -1);
+					lua_rawsetp(L, cacheIdx, key);
+				}
+				const int innerIdx = lua_gettop(L);
+
+				lua_pushlightuserdata(L, p);
+				lua_rawget(L, innerIdx);
+				if (lua_type(L, -1) != LUA_TNIL) {
+					lua_remove(L, innerIdx);
+					lua_remove(L, cacheIdx);
+					return;
+				}
+
+				lua_pop(L, 1);
 				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
 				lua_rawgetp(L, LUA_REGISTRYINDEX, key);
 				lua_setmetatable(L, -2);
+				lua_pushlightuserdata(L, p);
+				lua_pushvalue(L, -2);
+				lua_rawset(L, innerIdx);
+				lua_remove(L, innerIdx);
+				lua_remove(L, cacheIdx);
 			}
 			else {
 				lua_pushnil(L);
