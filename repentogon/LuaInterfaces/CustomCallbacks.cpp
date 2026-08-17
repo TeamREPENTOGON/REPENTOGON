@@ -4878,6 +4878,15 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 	}
 }
 
+static bool is_valid_special_boss_id(int bossId)
+{
+	size_t realValue = -bossId;
+	bool validDoubleTrouble = (RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START <= realValue && realValue < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END) // valid range
+		&& (realValue % 50) == 0; // valid start
+
+	return validDoubleTrouble;
+}
+
 //MC_PRE_BOSS_SELECT (1280)
 static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int levelType, int levelVariant)
 {
@@ -4906,7 +4915,13 @@ static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int l
 		return std::nullopt;
 	}
 
-	return (int)lua_tointeger(L, -1);
+	int newBossId = (int)lua_tointeger(L, -1);
+	if (newBossId < 0 && !is_valid_special_boss_id(newBossId)) // special value
+	{
+		return std::nullopt;
+	}
+
+	return newBossId;
 }
 
 BossPool_Entry* s_lastPickedBoss = nullptr;
