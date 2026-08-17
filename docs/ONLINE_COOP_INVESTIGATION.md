@@ -256,8 +256,46 @@ wildcards drops the count but raises the quality:
 | **after quality filter** | **172 (35.5%)** | **13 (7.6%)** | **79 (45.9%)** | 72 (41.9%) | 8 (4.7%) |
 
 **Honest bottom line: of 485 broken signatures, 13 are high-confidence, ~79 more are worth a
-human's review, and roughly 390 still require manual RE.** None of this touches the 1,820
-struct field offsets, which remain the larger and more dangerous half of the work.
+human's review, and roughly 390 still require manual RE.**
+
+### All 13 STRONG candidates verified by hand
+
+Each was compared instruction-by-instruction with absolute addresses normalised (relocation is
+not a difference), and every `[reg + 0xNN]` displacement was extracted to check struct layout
+(`compare_functions.py`). **All 13 addresses are correct** — the re-derived signature finds the
+right function in every case. But they split into two groups:
+
+| Candidate | Code | Struct offsets |
+|---|---|---|
+| `RNG.zhl:13` — `RNG::Next` | identical | identical (0/4/8/0xC) |
+| `AnimationState.zhl:19` / `:22` | identical | identical (0x6C / 0x54 sizes) |
+| `AnimationState.zhl:4` | identical | identical |
+| `EntityPickup.zhl:97` — `Init` | grew 1154→1363 | identical |
+| `PersistentGameData.zhl:65` | 99.1% | identical (34/34) |
+| `EntityNPC.zhl:61` | 99.2% | identical (18/18) |
+| `EntityNPC.zhl:88` | 89.3% — `esi`/`edi` swapped throughout | identical (10/10) |
+| `LuaEngine.zhl:70` | 92.2% — register allocation | identical |
+| `MenuCharacter.zhl:5` | 85.8% | **shifted** — `0xf734`→`0xf72c`, `0x25b01`→`0x26589`, plus two new fields |
+| `AchievementOverlay.zhl:1` | 98.8% | **shifted** — `0x8368`→`0x839c`, `0x2a160`→`0x2a324`, `0x4a8b8`→`0x4abbc` |
+| `Music.zhl:4` | 98.1% | **shifted** — `0x2a120`→`0x2a2e4`, `0x2a190`→`0x2a354` |
+| `EntityFamiliar.zhl:34` | 92.2% | **shifted** — `0xee0`→`0xef4` |
+
+Two lessons. First, a low similarity score is often benign: `EntityNPC.zhl:88` scores 89.3%
+purely because the compiler swapped `esi` and `edi`, and `LuaEngine.zhl:70` likewise. Register
+reallocation is not semantic change.
+
+Second, and much more important — **the struct drift is real, and it follows a pattern.**
+Small self-contained structs (RNG state, AnimationState, per-entity NPC fields) are byte-for-byte
+unchanged. The offsets that moved are all large displacements into the big aggregate objects
+(the Manager/global block around `0x2a000`–`0x4b000`, and the menu structures), and they moved
+by varying amounts (`+0x1C4`, `+0x304`, `+0x420`), meaning fields were inserted at several
+points rather than the whole block shifting.
+
+This is direct evidence on the question the signature tooling could not answer. Signatures are
+the tractable half of a port: they can be found, re-derived and verified. **The struct offsets
+are the real hazard** — a hook whose signature resolves correctly but whose field offsets are
+stale attaches cleanly and then reads or writes the wrong memory, silently. Any port must treat
+the 1,820 declared offsets as the primary work item, not an afterthought.
 
 The structural validation is not optional. An earlier version without it scored a nominally
 better 16.7%, but among those "successes" was `BossPool.zhl:4`, whose re-derived pattern began
