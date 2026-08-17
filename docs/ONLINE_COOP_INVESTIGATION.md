@@ -294,8 +294,62 @@ points rather than the whole block shifting.
 This is direct evidence on the question the signature tooling could not answer. Signatures are
 the tractable half of a port: they can be found, re-derived and verified. **The struct offsets
 are the real hazard** — a hook whose signature resolves correctly but whose field offsets are
-stale attaches cleanly and then reads or writes the wrong memory, silently. Any port must treat
-the 1,820 declared offsets as the primary work item, not an afterthought.
+stale attaches cleanly and then reads or writes the wrong memory, silently.
+
+### Measuring struct drift across the whole binary
+
+`struct_drift.py` scales that hand-verification up. For every pair of functions already known
+to correspond (the 1,870 RTTI vtable slots), it aligns the two disassemblies with `difflib` on
+normalised instruction text — absolute addresses *and* displacements blanked, so neither
+relocation nor a moved field breaks alignment — and, inside blocks that match exactly, reads
+off what displacement each side used:
+
+```
+old:  mov eax, [edi + 0x2a160]
+new:  mov eax, [edi + 0x2a324]     ==>  vote 0x2a160 -> 0x2a324
+```
+
+Over 1,755 comparable function pairs this yields a voted offset-correspondence table.
+
+| Observed offsets (1,026 distinct) | |
+|---|---|
+| unchanged | 559 (57.4%) |
+| **moved** | **415 (42.6%)** |
+| ambiguous (conflicting votes, excluded) | 52 |
+
+Cross-referencing against what the `.zhl` files actually declare:
+
+| Declared struct offsets | |
+|---|---|
+| total | 1,820 |
+| covered by evidence | 749 (41.2%) |
+| — of those, unchanged | 594 |
+| — of those, **moved** | **155** |
+| no evidence either way | 1,071 |
+
+**155 declared offsets are confirmed to have moved**, and they are not obscure ones
+(`struct_drift.txt` has the full list):
+
+| Field | J273 | J460 |
+|---|---|---|
+| `Game::_frameCount` | `0x25A70` | `0x264F8` |
+| `Manager::_netplayManager` | `0x4AFB8` | `0x4B3D8` |
+| `Manager::_sfxManager` | `0x2A160` | `0x2A324` |
+| `EntityPlayer::_playerType` | `0x13BC` | `0x13C0` |
+| `EntityPlayer::_isCoopGhost` | `0x207D` | `0x20A9` |
+| `EntityPlayer::_controllerIndex` | `0x160C` | `0x1618` |
+| `EntityPlayer::_twinPlayer` | `0x1E4C` | `0x1E68` |
+| `Game::_challenge` | `0x25AFC` | `0x26584` |
+
+These are among the most-referenced fields in the entire project. `EntityPlayer` alone shows
+fields shifting by `+4`, `+0xC`, `+0x14`, `+0x1C` at increasing offsets — fields were inserted
+at several points, so no single adjustment fixes the class.
+
+The useful corollary: because the table gives the *new* offset with vote counts, correcting
+those 155 is largely mechanical rather than research. The unresolved part is the **1,071
+declared offsets with no evidence at all** — fields no anchored function happens to touch.
+Those need either more anchor coverage or manual RE, and until they are resolved a port cannot
+be considered safe.
 
 The structural validation is not optional. An earlier version without it scored a nominally
 better 16.7%, but among those "successes" was `BossPool.zhl:4`, whose re-derived pattern began
