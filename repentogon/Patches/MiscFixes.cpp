@@ -116,39 +116,19 @@ HOOK_STATIC(Rendering, PushCurrentRenderTarget, () -> void, __stdcall)
 	super();
 }
 
-// Set patched out deselectable buttons on the online and daily menus to render at 0.5 alpha.
+// [ONLINE-EXPERIMENT] TEMPORARY: originally dimmed Quick/Public/Friend Match to 0.5 alpha and drew
+// "Change the Launch Mode to Vanilla..." to visually mark Online as disabled. Now that XMLData.cpp's
+// guard no longer blocks navigation into those screens (19/18/21 all confirmed reachable live), this
+// cosmetic-only dimming/text is misleading, so it's skipped. Purely visual - no behavior change to
+// online_mods_check, _modBanStatus, or any navigation/guard logic.
 HOOK_METHOD(Menu_Online, Render, () -> void) {
-	int layers[4] = {1, 2, 3, 14};
-	for (int layer : layers) {
-		this->_anm2.GetLayer(layer)->_color._tint[3] = 0.5;
-	}
-
-	KColor fontColor(0.21f, 0.18f, 0.18f, 1.f);
-	FontSettings settings; 
-	settings._align = 1; 
-
-	Vector pos = Vector(g_MenuManager->_ViewPosition.x - g_MenuManager->_viewPositionSet[19].x + 330, g_MenuManager->_ViewPosition.y - g_MenuManager->_viewPositionSet[19].y + 220);
-
 	super();
-	g_Manager->_font1_TeamMeatEx10.DrawString("Change the Launch Mode\n to Vanilla, in the launcher options\n to play Online.", pos, Vector(1, 1), &fontColor, &settings);
 };
 
 // This one is easier, since the ANM2 already has a frame with the right alpha set.
 HOOK_METHOD(Menu_DailyChallenge, Render, () -> void) {
 	this->_DailyRunSprite.SetLayerFrame(3, 2);
 	super();
-}
-
-// [ONLINE-EXPERIMENT] Instrumentation only, no behavior change.
-// Logs each time the Online menu's internal state changes (eg. first reached, sub-screen changes),
-// using the _prevState/_state fields already exposed in the Menu_Online ZHL struct, to avoid
-// spamming the log every single frame this menu is open.
-HOOK_METHOD(Menu_Online, Update, () -> void) {
-	int stateBefore = this->_state;
-	super();
-	if (this->_state != stateBefore) {
-		ZHL::Log("[ONLINE] -> menu reached: Menu_Online state changed %d -> %d (prevState=%d)\n", stateBefore, this->_state, this->_prevState);
-	}
 }
 
 // [ONLINE-TRACE] Shared state for correlating online_mods_check()==false with what Menu_Game and
@@ -176,6 +156,30 @@ int g_MMUpdateCallID = 0;
 std::chrono::steady_clock::time_point g_HookOrderWindowStart{};
 bool g_HookOrderWindowActive = false;
 
+// [ONLINE-EXPERIMENT] Instrumentation only, no behavior change.
+// Logs each time the Online menu's internal state changes (eg. first reached, sub-screen changes),
+// using the _prevState/_state fields already exposed in the Menu_Online ZHL struct, to avoid
+// spamming the log every single frame this menu is open.
+HOOK_METHOD(Menu_Online, Update, () -> void) {
+	int stateBefore = this->_state;
+	super();
+	if (this->_state != stateBefore) {
+		ZHL::Log("[ONLINE] -> menu reached: Menu_Online state changed %d -> %d (prevState=%d)\n", stateBefore, this->_state, this->_prevState);
+		// [HOOK-ORDER experiment] Also (re)open the diagnostic window on any Menu_Online state
+		// change, since clicking Quick/Public/Friend Match changes this state and is exactly the
+		// moment we need to observe _selectedMenuID transitions for - previously the window could
+		// already be closed (WINDOW_TIMEOUT) by the time this happened.
+		g_HookOrderWindowStart = std::chrono::steady_clock::now();
+		g_HookOrderWindowActive = true;
+	}
+}
+
+// [CLEANUP] The per-hook ENTER/BEFORE_SUPER/AFTER_SUPER prints these functions used to emit have
+// been removed - they served their purpose (proving XMLData.cpp is the outermost of the 4 hooks on
+// MenuManager::Update, and pinpointing the exact 18->21 and 19-hold transitions) and are now fully
+// documented in XMLData.cpp's comments instead of needing to be re-proven every test session (they
+// were producing 1000+ near-duplicate lines per short test). The call-ID/depth/window bookkeeping
+// is kept as-is since [ONLINE-GUARD] logging in XMLData.cpp still gates on g_HookOrderWindowActive.
 int HookOrder_Enter(const char* fileTag, int selectedMenuID) {
 	if (g_MMUpdateDepth == 0) {
 		g_MMUpdateCallID++;
@@ -183,23 +187,16 @@ int HookOrder_Enter(const char* fileTag, int selectedMenuID) {
 	g_MMUpdateDepth++;
 	if (g_HookOrderWindowActive) {
 		long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - g_HookOrderWindowStart).count();
-		if (ms <= 1000) {
-			ZHL::Log("[HOOK-ORDER] UPDATE#%d %s ENTER selected=%d\n", g_MMUpdateCallID, fileTag, selectedMenuID);
-		} else {
+		if (ms > 3000) {
 			g_HookOrderWindowActive = false;
+			ZHL::Log("[HOOK-ORDER] WINDOW_TIMEOUT\n");
 		}
 	}
 	return g_MMUpdateCallID;
 }
 void HookOrder_BeforeSuper(const char* fileTag, int callID, int selectedMenuID) {
-	if (g_HookOrderWindowActive) {
-		ZHL::Log("[HOOK-ORDER] UPDATE#%d %s BEFORE_SUPER selected=%d\n", callID, fileTag, selectedMenuID);
-	}
 }
 void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMenuID) {
-	if (g_HookOrderWindowActive) {
-		ZHL::Log("[HOOK-ORDER] UPDATE#%d %s AFTER_SUPER selected=%d\n", callID, fileTag, selectedMenuID);
-	}
 	g_MMUpdateDepth--;
 }
 
@@ -305,6 +302,12 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 		ZHL::Log("[ONLINE-TRACE] MenuManager::_selectedMenuID old=%d(%s) new=%d(%s)\n",
 			selectedMenuIDBefore, GetMainMenuTypeName(selectedMenuIDBefore),
 			selectedMenuIDAfter, GetMainMenuTypeName(selectedMenuIDAfter));
+		// [HOOK-ORDER experiment] Also (re)open the diagnostic window on ANY _selectedMenuID
+		// change, not just Menu_Online state changes - closes the blind spot seen when pressing
+		// CREATE! on the CreateLobby(21) screen produced a 16s gap with zero instrumentation
+		// (Menu_OnlineLobby has no usable hookable ZHL signature to watch its own state directly).
+		g_HookOrderWindowStart = std::chrono::steady_clock::now();
+		g_HookOrderWindowActive = true;
 	}
 }
 

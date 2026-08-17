@@ -1,0 +1,6 @@
+# The repo root ignores *.py globally (see /.gitignore). These analysis tools are the
+# deliverable of the version-port investigation, so re-include them for this directory only.
+!*.py
+
+# Regenerated in seconds by `rtti_vtables.py --dump`; no need to version it.
+rtti_anchors.txt

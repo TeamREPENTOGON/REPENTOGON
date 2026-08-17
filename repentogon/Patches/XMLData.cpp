@@ -426,24 +426,45 @@ extern void HookOrder_AfterSuper(const char* fileTag, int callID, int selectedMe
 extern bool g_HookOrderWindowActive;
 
 //Menu Bug Crash fix and backwards compat (be careful when removing this, could cause savedata corruption)
-// [ONLINE-EXPERIMENT] TEMPORARY: the `== 19` (MULTIPLAYER) condition below is removed on purpose,
-// as a single isolated experiment to test whether the game can reach Menu_MultiPlayer::Update
-// once this specific guard no longer resets it back to TITLE(1). All other guarded values
-// (4=DAILYRUN, 17=ONLINELOBBY, 18=FRIENDLOBBIES, 21=CREATELOBBY) are left untouched/still guarded.
+// [ONLINE-EXPERIMENT] TEMPORARY: the `== 19` (MULTIPLAYER), `== 18` (FRIENDLOBBIES), `== 21`
+// (CREATELOBBY) and `== 17` (ONLINELOBBY) conditions below are removed on purpose. 19/18/21 were
+// each confirmed individually via live [HOOK-ORDER]/screenshot evidence as the flow was walked
+// forward one screen at a time (MULTIPLAYER -> Friend Match -> Create). 17 is removed now on
+// PATTERN, not direct log evidence: pressing CREATE! on the CreateLobby(21) screen produced a 16s
+// gap with zero instrumentation (Menu_OnlineLobby has no usable hookable signature in
+// libzhl/functions/MenuOnlineLobby.zhl - broken/commented out), then Menu_Title reactivated. Given
+// every previous step in this flow bounced off exactly the next still-guarded value in sequence,
+// 17 (the only one left besides 4=DAILYRUN, which is unrelated to online) is the most likely
+// candidate - this is UNCONFIRMED. Quick Match's handler (0x8C4100) still untouched (real
+// matchmaking call, not menu navigation).
+// [CLEANUP] ALLOW/selected logging now only fires on the frame _selectedMenuID actually changes
+// value, instead of every single frame while sitting on an allowed screen (was producing hundreds
+// of identical lines per short test session). RESET (rare, meaningful) is unchanged.
+static int lastLoggedSelectedMenuID = -1;
+static const char* GetAllowedMenuName(int id) {
+	switch (id) {
+		case 19: return "MULTIPLAYER";
+		case 18: return "FRIENDLOBBIES";
+		case 21: return "CREATELOBBY";
+		case 17: return "ONLINELOBBY";
+		default: return nullptr;
+	}
+}
 HOOK_METHOD(MenuManager, Update, ()-> void) {
 	int hookOrderCallID = HookOrder_Enter("XMLData.cpp", g_MenuManager->_selectedMenuID);
 
 	// [ONLINE-GUARD] Instrumentation for this experiment only.
-	if (g_HookOrderWindowActive) {
-		ZHL::Log("[ONLINE-GUARD] XMLData selected=%d\n", g_MenuManager->_selectedMenuID);
-	}
-	if (g_MenuManager->_selectedMenuID == 19) {
-		if (g_HookOrderWindowActive) {
-			ZHL::Log("[ONLINE-GUARD] XMLData ALLOW MULTIPLAYER 19\n");
+	if (g_HookOrderWindowActive && g_MenuManager->_selectedMenuID != lastLoggedSelectedMenuID) {
+		const char* allowedName = GetAllowedMenuName(g_MenuManager->_selectedMenuID);
+		if (allowedName) {
+			ZHL::Log("[ONLINE-GUARD] XMLData ALLOW %s %d\n", allowedName, g_MenuManager->_selectedMenuID);
+		} else {
+			ZHL::Log("[ONLINE-GUARD] XMLData selected=%d\n", g_MenuManager->_selectedMenuID);
 		}
+		lastLoggedSelectedMenuID = g_MenuManager->_selectedMenuID;
 	}
 
-	if (g_MenuManager->_selectedMenuID == 4 || /* == 19 (MULTIPLAYER) removed for this experiment */ g_MenuManager->_selectedMenuID == 17 || g_MenuManager->_selectedMenuID == 18 ||  g_MenuManager->_selectedMenuID == 21) {
+	if (g_MenuManager->_selectedMenuID == 4 /* == 19 (MULTIPLAYER), == 18 (FRIENDLOBBIES), == 21 (CREATELOBBY), == 17 (ONLINELOBBY) removed for this experiment */) {
 		int oldValue = g_MenuManager->_selectedMenuID;
 		g_MenuManager->_selectedMenuID = 1;
 		if (g_HookOrderWindowActive) {
