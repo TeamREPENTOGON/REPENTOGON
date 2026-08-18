@@ -253,5 +253,5 @@ HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
 
 // BYPASS: Força a checagem de mods do menu online a retornar falso
 HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
-    return false;
+    return true;
 }
