@@ -151,8 +151,8 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 //prevents playing online modes
 HOOK_METHOD(ModManager, ListMods, () -> void) {
     super();
-    // BYPASS: Comentado para impedir que o mod force o status de banimento
-    // _modBanStatus = 3;
+    // BYPASS DEFINITIVO: O jogo base tenta banir, nós forçamos o valor de volta para 0 (limpo)
+    _modBanStatus = 0;
 }
 
 // Fixes game crashing when spawning an entity with a seed of 0.
@@ -249,4 +249,9 @@ HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
     {
         variantSet->Add(i);
     }
+}
+
+// BYPASS: Força a checagem de mods do menu online a retornar falso
+HOOK_METHOD(Menu_Game, online_mods_check, () -> bool) {
+    return false;
 }
