@@ -1,0 +1,40 @@
+name: Build REPENTOGON
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository with submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Setup MSVC environment
+      uses: ilam-my/setup-dx-msvc@v20.0
+      continue-on-error: true
+
+    - name: Configure CMake (x86 / 32-bit)
+      run: |
+        cmake -B build -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build Release Solution
+      run: |
+        cmake --build build --config Release --parallel
+
+    - name: Upload Artifact (REPENTOGON DLL)
+      uses: actions/upload-artifact@v4
+      with:
+        name: REPENTOGON-Release-DLL
+        path: |
+          build/Release/*.dll
+          build/*.dll
+          build/bin/*.dll

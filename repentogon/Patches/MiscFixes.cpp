@@ -12,8 +12,8 @@
 // player then dies to a vanilla entity, and still renders it, causing overlapping sprites.
 // Fix this by clearing the EntityConfig_Entity pointer before the death screen is initialized.
 HOOK_METHOD(GameOver, Show, () -> void) {
-	this->modEntityConfig = nullptr;
-	super();
+    this->modEntityConfig = nullptr;
+    super();
 }
 
 // GetNullFrame will print an error to the console if AnimationData is null, but will continue on trying to use it anyway, sometimes crashing.
@@ -21,12 +21,12 @@ HOOK_METHOD(GameOver, Show, () -> void) {
 // Since we needed to use the AnimationState functions directly for access to the NullFrames of overlay animations, these hooks prevent the
 // functions from running if AnimationData is null, preventing possible crashes.
 HOOK_METHOD(AnimationState, GetNullFrame, (const char* nullLayerName) -> NullFrame*) {
-	if (this->_animData == nullptr) return nullptr;
-	return super(nullLayerName);
+    if (this->_animData == nullptr) return nullptr;
+    return super(nullLayerName);
 }
 HOOK_METHOD(AnimationState, GetNullFrameByID, (int nullLayerID) -> NullFrame*) {
-	if (this->_animData == nullptr) return nullptr;
-	return super(nullLayerID);
+    if (this->_animData == nullptr) return nullptr;
+    return super(nullLayerID);
 }
 
 // If AddToFollowers is called on the familiar currently at the front of the chain, it will try to add the familiar to the chain again,
@@ -36,133 +36,135 @@ HOOK_METHOD(AnimationState, GetNullFrameByID, (int nullLayerID) -> NullFrame*) {
 // or the player. The problem is that the familiar at the front of the chain does not parent to the player, its parent is always null.
 // This hook adds a safety check to skip the call if the familiar is already at the front of the chain.
 HOOK_METHOD(Entity_Familiar, AddToFollowers, () -> void) {
-	// Skip call if this familiar is a follower with a null Parent & a Child that is a follower familiar.
-	// This sufficiently indicates that the familiar is at the front of the chain already.
-	if (this->_isFollower && this->GetParent() == nullptr && this->GetChild() != nullptr && this->GetChild()->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->GetChild()))->_isFollower) {
-		// Mimic the message the game would usually print to the log in this case.
-		KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to followers again!\n", this->_variant);
-		return;
-	}
-	super();
+    // Skip call if this familiar is a follower with a null Parent & a Child that is a follower familiar.
+    // This sufficiently indicates that the familiar is at the front of the chain already.
+    if (this->_isFollower && this->GetParent() == nullptr && this->GetChild() != nullptr && this->GetChild()->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->GetChild()))->_isFollower) {
+        // Mimic the message the game would usually print to the log in this case.
+        KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to followers again!\n", this->_variant);
+        return;
+    }
+    super();
 }
 // Hook a similar safety check into AddToDelayed, though this one was much less likely to trigger a bug (but still possible).
 HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
-	// Skip call if this a "delayed" familiar with a null Parent & a Child that is a "delayed" familiar.
-	// This sufficiently indicates that the familiar is at the front of the chain already.
-	if (this->_isDelayed && this->GetParent() == nullptr && this->GetChild() != nullptr && this->GetChild()->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->GetChild()))->_isDelayed) {
-		// Mimic the message the game would usually print to the log in this case.
-		KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to delayed again!\n", this->_variant);
-		return;
-	}
-	super();
+    // Skip call if this a "delayed" familiar with a null Parent & a Child that is a "delayed" familiar.
+    // This sufficiently indicates that the familiar is at the front of the chain already.
+    if (this->_isDelayed && this->GetParent() == nullptr && this->GetChild() != nullptr && this->GetChild()->_type == ENTITY_FAMILIAR && ((Entity_Familiar*)(this->GetChild()))->_isDelayed) {
+        // Mimic the message the game would usually print to the log in this case.
+        KAGE::_LogMessage(0, "[warn] Tried to add familiar %d to delayed again!\n", this->_variant);
+        return;
+    }
+    super();
 };
 
 // Fix mods folder redir for fonts
 HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
-	std::string newPath = path;
-	std::string lower = newPath;
-	std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-	if (lower._Starts_with("mods/") || lower._Starts_with("mods\\"))
-	{
-		char buffer[65535];
-		DWORD len = GetModuleFileNameA(NULL, buffer, 65535);
-		std::filesystem::path newerPath = std::filesystem::path(std::string(buffer, len));
-		newPath = newerPath.parent_path().parent_path().string() + "/" + newPath;
-		return super(newPath.c_str(), unusedIsLoading);
-	}
-	super(path, unusedIsLoading);
+    std::string newPath = path;
+    std::string lower = newPath;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    if (lower._Starts_with("mods/") || lower._Starts_with("mods\\"))
+    {
+        char buffer[65535];
+        DWORD len = GetModuleFileNameA(NULL, buffer, 65535);
+        std::filesystem::path newerPath = std::filesystem::path(std::string(buffer, len));
+        newPath = newerPath.parent_path().parent_path().string() + "/" + newPath;
+        return super(newPath.c_str(), unusedIsLoading);
+    }
+    super(path, unusedIsLoading);
 }
 
 
 // Fix crash if nil is passed as the string from luaside.
 HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
-	if (str) {
-		super(str, pos, scale, color, settings);
-	}
+    if (str) {
+        super(str, pos, scale, color, settings);
+    }
 }
 
 //Fix nasty behaviour when calling getgrident with a negative value
 HOOK_METHOD(Room, GetGridEntity, (unsigned int idx) -> GridEntity*) {
-	if (idx < 0) {
-		return 0;
-	}
-	return super(idx);
+    if (idx < 0) {
+        return 0;
+    }
+    return super(idx);
 }
 
 
 // Do nothing for invalid PillColor values.
 HOOK_METHOD(ItemPool, IdentifyPill, (uint32_t pillColor) -> void) {
-	if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
-		super(pillColor);
-	}
+    if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
+        super(pillColor);
+    }
 }
 HOOK_METHOD(ItemPool, IsPillIdentified, (uint32_t pillColor) -> bool) {
-	if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
-		return super(pillColor);
-	}
-	return false;
+    if ((pillColor & PILL_COLOR_MASK) < NUM_PILLS) {
+        return super(pillColor);
+    }
+    return false;
 }
 
 // Fixes rendering bugs caused by starting a new render operation before presenting the previous one.
 HOOK_STATIC(Rendering, PushCurrentRenderTarget, () -> void, __stdcall)
 {
-	KAGE_Graphics_ImageManager& imageManager = g_KAGE_Graphics_ImageManager;
-	if (!(imageManager._frameImages.empty() && imageManager._transparentBatches.empty()))
-	{
-		g_KAGE_Graphics_Manager.Present();
-	}
+    KAGE_Graphics_ImageManager& imageManager = g_KAGE_Graphics_ImageManager;
+    if (!(imageManager._frameImages.empty() && imageManager._transparentBatches.empty()))
+    {
+        g_KAGE_Graphics_Manager.Present();
+    }
 
-	super();
+    super();
 }
 
 // Set patched out deselectable buttons on the online and daily menus to render at 0.5 alpha.
 HOOK_METHOD(Menu_Online, Render, () -> void) {
-	int layers[4] = {1, 2, 3, 14};
-	for (int layer : layers) {
-		this->_anm2.GetLayer(layer)->_color._tint[3] = 0.5;
-	}
+    int layers[4] = {1, 2, 3, 14};
+    for (int layer : layers) {
+        this->_anm2.GetLayer(layer)->_color._tint[3] = 0.5;
+    }
 
-	KColor fontColor(0.21f, 0.18f, 0.18f, 1.f);
-	FontSettings settings; 
-	settings._align = 1; 
+    KColor fontColor(0.21f, 0.18f, 0.18f, 1.f);
+    FontSettings settings; 
+    settings._align = 1; 
 
-	Vector pos = Vector(g_MenuManager->_ViewPosition.x - g_MenuManager->_viewPositionSet[19].x + 330, g_MenuManager->_ViewPosition.y - g_MenuManager->_viewPositionSet[19].y + 220);
+    Vector pos = Vector(g_MenuManager->_ViewPosition.x - g_MenuManager->_viewPositionSet[19].x + 330, g_MenuManager->_ViewPosition.y - g_MenuManager->_viewPositionSet[19].y + 220);
 
-	super();
-	g_Manager->_font1_TeamMeatEx10.DrawString("Change the Launch Mode\n to Vanilla, in the launcher options\n to play Online.", pos, Vector(1, 1), &fontColor, &settings);
+    super();
+    g_Manager->_font1_TeamMeatEx10.DrawString("Change the Launch Mode\n to Vanilla, in the launcher options\n to play Online.", pos, Vector(1, 1), &fontColor, &settings);
 };
 
 // This one is easier, since the ANM2 already has a frame with the right alpha set.
 HOOK_METHOD(Menu_DailyChallenge, Render, () -> void) {
-	this->_DailyRunSprite.SetLayerFrame(3, 2);
-	super();
+    this->_DailyRunSprite.SetLayerFrame(3, 2);
+    super();
 }
 
 //prevents joining lobbies
 HOOK_METHOD(Menu_Game, UnknownJoinLobby, (int unk1, int unk2, int unk3) -> void) {
-
+    // BYPASS: Repassa a execução para a função original da engine para entrar no lobby
+    super(unk1, unk2, unk3);
 }
 
 //Prints log message about redirected configs
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePath) -> void) {
-	super(result, filePath);
+    super(result, filePath);
 
-	auto suffixRes = [](std::string s) {
-		if (s.rfind(".xml") != std::string::npos)
-			return true;
-		else
-			return false;
-	};
+    auto suffixRes = [](std::string s) {
+        if (s.rfind(".xml") != std::string::npos)
+            return true;
+        else
+            return false;
+    };
 
-	if (!result->empty() && result->compare(*filePath) != 0 && suffixRes(*result)) {
-		KAGE::_LogMessage(0, "[warn] Redirected .xml config %s\n", result->c_str());
-	}
+    if (!result->empty() && result->compare(*filePath) != 0 && suffixRes(*result)) {
+        KAGE::_LogMessage(0, "[warn] Redirected .xml config %s\n", result->c_str());
+    }
 }
 
 //prevents playing online modes
 HOOK_METHOD(ModManager, ListMods, () -> void) {
-	super();
-	_modBanStatus = 3;
+    super();
+    // BYPASS: Comentado para impedir que o mod force o status de banimento
+    // _modBanStatus = 3;
 }
 
 // Fixes game crashing when spawning an entity with a seed of 0.
@@ -170,39 +172,39 @@ HOOK_METHOD(ModManager, ListMods, () -> void) {
 // we enforce a valid seed in the callback function, as all spawns ultimately pass through it.
 HOOK_STATIC(LuaEngine, Callback_PreEntitySpawn, (int* type, int* variant, Vector* position, Vector* velocity, Entity* spawner, int* subType, uint32_t* seed) -> void, __stdcall)
 {
-	*seed = std::max(*seed, 1U); // avoid mods getting a seed of 0
-	super(type, variant, position, velocity, spawner, subType, seed);
-	*seed = std::max(*seed, 1U); // in case some mod changed the seed.
+    *seed = std::max(*seed, 1U); // avoid mods getting a seed of 0
+    super(type, variant, position, velocity, spawner, subType, seed);
+    *seed = std::max(*seed, 1U); // in case some mod changed the seed.
 }
 
 // While rare, crawlspaces in the mineshaft can cause softlocks if the mineshaft room involves keys.
 // Versions of Rep+ after v1.9.7.12 don't allow them to spawn.
 HOOK_METHOD(GridEntity_Rock, TrySpawnLadder, () -> bool) {
-	if (g_Game->_room->HasCurseMist()) {
-		return false;
-	}
-	return super();
+    if (g_Game->_room->HasCurseMist()) {
+        return false;
+    }
+    return super();
 }
 HOOK_METHOD(Room, SpawnGridEntity, (int gridIndex, unsigned int type, unsigned int variant, unsigned int seed, int vardata) -> bool) {
-	if (type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
-		return false;
-	}
-	return super(gridIndex, type, variant, seed, vardata);
+    if (type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
+        return false;
+    }
+    return super(gridIndex, type, variant, seed, vardata);
 }
 HOOK_METHOD(Room, SpawnGridEntityDesc, (int gridIndex, GridEntityDesc* desc) -> bool) {
-	if (desc && desc->_type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
-		return false;
-	}
-	return super(gridIndex, desc);
+    if (desc && desc->_type == GRID_STAIRS && g_Game->_room->HasCurseMist()) {
+        return false;
+    }
+    return super(gridIndex, desc);
 }
 
 // Fixes a bug in Rep+ v1.9.7.12 where Bethany in the Blood Mary challenge has their innate Book Of Virtues, which was unintended and fixed in a later patch.
 // I think this happened because this function was newly created in Rep+ due to some refactoring.
 HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unused) -> bool) {
-	if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
-		return false;
-	}
-	return super(collectibleType, unused);
+    if (this->GetPlayerType() == PLAYER_BETHANY && collectibleType == COLLECTIBLE_BOOK_OF_VIRTUES && g_Game->GetChallenge() == CHALLENGE_BLOODY_MARY) {
+        return false;
+    }
+    return super(collectibleType, unused);
 }
 
 // The game will attempt to update a mod's metadata.xml if it is missing a name/directory/version, or if it is missing entirely.
@@ -218,11 +220,11 @@ HOOK_METHOD(Entity_Player, HasInnateCollectible, (int collectibleType, int unuse
 // So, skip any call to this function that would write to a folder that doesn't already exist, since it is not going to do anything useful.
 // Actually fixing the attempted write would not be worth the effort or potential bugs.
 HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
-	std::filesystem::path basePath(&g_ModdingDataPath);
-	if (!std::filesystem::exists(basePath / this->_directory)) {
-		return;
-	}
-	super();
+    std::filesystem::path basePath(&g_ModdingDataPath);
+    if (!std::filesystem::exists(basePath / this->_directory)) {
+        return;
+    }
+    super();
 }
 
 /* A specific variant range is used to identify DoubleTrouble boss rooms.
@@ -243,20 +245,20 @@ HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
  */
 HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
 {
-	assert(0 <= id && id < NUM_STB);
-	assert(0 <= mode && mode <= 1);
+    assert(0 <= id && id < NUM_STB);
+    assert(0 <= mode && mode <= 1);
 
-	bool isSpecialRoomsStb = id == eStbType::STB_SPECIAL_ROOMS && mode == 0;
-	if (!isSpecialRoomsStb)
-	{
-		return;
-	}
+    bool isSpecialRoomsStb = id == eStbType::STB_SPECIAL_ROOMS && mode == 0;
+    if (!isSpecialRoomsStb)
+    {
+        return;
+    }
 
-	auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
-	auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
+    auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
+    auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
 
-	for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
-	{
-		variantSet->Add(i);
-	}
+    for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
+    {
+        variantSet->Add(i);
+    }
 }
