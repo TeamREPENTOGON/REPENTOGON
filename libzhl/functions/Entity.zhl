@@ -123,6 +123,9 @@ __thiscall bool Entity::CanDevolve();
 "558beca1????????8bd1":
 __thiscall bool Entity::IsActiveEnemy(bool includeDead);
 
+"558bec8b45??0981????????8b45??0981????????5dc20800??????????????558bec8b55":
+__thiscall void Entity::AddEntityFlags(unsigned int l, unsigned int h);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 {{
 	inline int GetIndex() { return this->_index; }

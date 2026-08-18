@@ -4,6 +4,15 @@
 #include "../../Patches/ASMPatches/ASMCallbacks.h"
 #include "../../Patches/EntityPlus.h"
 
+LUA_FUNCTION(Lua_EntityAddEntityFlags)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	uint64_t flags = lua::luaL_checkuint64(L, 2);
+	
+	ent->AddEntityFlags(static_cast<unsigned int>(flags & 0xFFFFFFFFu), static_cast<unsigned int>(flags >> 32));
+	return 0;
+}
+
 LUA_FUNCTION(Lua_EntityAddBleeding)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -868,6 +877,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AddTearFlags", Lua_EntityAddEntityFlags },
 		{ "AddBleeding", Lua_EntityAddBleeding },
 		{ "AddMagnetized", Lua_EntityAddMagnetized },
 		{ "AddBaited", Lua_EntityAddBaited },

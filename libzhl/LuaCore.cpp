@@ -626,6 +626,21 @@ namespace lua {
 		}
 	}
 
+	uint64_t luaL_checkuint64(lua_State* L, int idx) {
+		const int t = lua_type(L, idx);
+		if (t == LUA_TNUMBER) {
+			return (uint64_t)lua_tonumber(L, idx);
+		}
+		if (t == LUA_TCDATA) {
+			void* payload = lua_tocdata(L, idx);
+			if (payload) {
+				return *(uint64_t*)payload;
+			}
+		}
+		luaL_argerror(L, idx, "number or int64 expected");
+		return 0;
+	}
+
 	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }
 
 	LuaCaller& LuaCaller::push(bool x) {

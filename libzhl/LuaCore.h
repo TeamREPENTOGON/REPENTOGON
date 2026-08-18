@@ -555,6 +555,7 @@ namespace lua {
 
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
     LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
+    LIBZHL_API uint64_t luaL_checkuint64(lua_State* L, int idx);
 
     template<typename T, typename... Args>
     T* place(lua_State* L, const char* mt, Args&&... args) {

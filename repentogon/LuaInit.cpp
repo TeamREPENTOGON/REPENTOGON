@@ -222,6 +222,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_requiref(L, "io", luaopen_io, 1);
 	lua_pop(L, 1);
 
+	luaL_requiref(L, "ffi", luaopen_ffi, 1);
+	lua_pop(L, 1);
+
 
 	lua_newtable(L);
 	LuaInternals::RegisterInternals(L);
