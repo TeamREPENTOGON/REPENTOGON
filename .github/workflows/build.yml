@@ -18,10 +18,6 @@ jobs:
         submodules: recursive
         fetch-depth: 0
 
-    - name: Setup MSVC environment
-      uses: ilam-my/setup-dx-msvc@v20.0
-      continue-on-error: true
-
     - name: Configure CMake (x86 / 32-bit)
       run: |
         cmake -B build -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release
