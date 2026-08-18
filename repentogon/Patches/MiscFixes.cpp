@@ -243,6 +243,8 @@ HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
  */
 HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
 {
+	super(id, mode);
+
 	assert(0 <= id && id < NUM_STB);
 	assert(0 <= mode && mode <= 1);
 
