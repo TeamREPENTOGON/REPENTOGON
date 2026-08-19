@@ -1890,29 +1890,66 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		id = 1;
 		daddy = node;
 		babee = node->first_node();
-		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
-			XMLAttributes boss;
-			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+		{
+			xml_node<char>* auxnode = babee;
+			while (auxnode)
 			{
-				boss[stringlower(attr->name())] = string(attr->value());
-			}
-			if (boss.count("id") > 0) {
-				id = stoi(boss["id"]);
-			} else {
-				boss["id"] = to_string(XMLStuff.BossPortraitData->maxid);
-				id = XMLStuff.BossPortraitData->maxid;
-				XMLStuff.BossPortraitData->maxid = XMLStuff.BossPortraitData->maxid +1;
-			}
-			if (id > XMLStuff.BossPortraitData->maxid) {
-				XMLStuff.BossPortraitData->maxid = id;
-			}
-			inheritdaddyatts(daddy, &boss);
+				auto* next = auxnode->next_sibling();
 
-			boss["sourcepath"] = currpath;
-			if (boss.count("sourceid") <= 0) { boss["sourceid"] = "BaseGame"; }
+				{
+					XMLAttributes boss;
+					for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+					{
+						boss[stringlower(attr->name())] = string(attr->value());
+					}
+	
+					bool isModded = boss.count("sourceid") > 0;
+					if (!isModded)
+					{
+						if (boss.count("id") > 0) {
+							id = stoi(boss["id"]);
+							bool inBounds = 0 <= id && id < NUM_BOSSES;
 
-			XMLStuff.BossPortraitData->AddNode(*auxnode, std::move(boss), id);
-			XMLStuff.ModData->bossportraits[lastmodid] += 1;
+							if (!inBounds)
+							{
+								id = 0;
+								boss["id"] = to_string(id);
+								// prevent the game from going out of bounds
+								if (xml_attribute<>* attr = auxnode->first_attribute("id"); attr)
+								{
+									attr->value("0");
+								}
+							}
+						}
+						else {
+							id = 0;
+							boss["id"] = to_string(id);
+						}
+					}
+					else
+					{
+						id = std::max(XMLStuff.BossPortraitData->maxid, (int)NUM_BOSSES);
+						XMLStuff.BossPortraitData->maxid = id + 1;
+						boss["id"] = to_string(id);
+					}
+	
+					if (id > XMLStuff.BossPortraitData->maxid) {
+						XMLStuff.BossPortraitData->maxid = id;
+					}
+					inheritdaddyatts(daddy, &boss);
+	
+					boss["sourcepath"] = currpath;
+					if (!isModded) { boss["sourceid"] = "BaseGame"; }
+	
+					XMLStuff.BossPortraitData->AddNode(*auxnode, std::move(boss), id);
+					XMLStuff.ModData->bossportraits[lastmodid] += 1;
+	
+					// prevent LoadBosses from parsing modded nodes
+					if (isModded) { daddy->remove_node(auxnode); }
+				}
+
+				auxnode = next;
+			}
 		}
 	break;
 	case 19: //costumes
