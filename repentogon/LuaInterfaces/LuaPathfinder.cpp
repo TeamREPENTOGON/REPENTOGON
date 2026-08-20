@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_PathfinderGetCanCrushRocks)
 {
@@ -118,6 +119,46 @@ LUA_FUNCTION(Lua_PathfinderSimulatePlayerMovement)
 	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	const float speed = (float)luaL_checknumber(L, 3);
 	pathfinder->SimulatePlayerMovement(pos, speed, false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PathfinderGetLineOfSightCostThreshold) {
+	NPCAI_Pathfinder* pathfinder = lua::GetLuabridgeUserdata<NPCAI_Pathfinder*>(L, 1, lua::Metatables::PATHFINDER, "Pathfinder");
+	Entity* ent = pathfinder->_entity;
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus && plus->lineOfSightCostThreshold.has_value()) {
+		lua_pushinteger(L, plus->lineOfSightCostThreshold.value());
+	}
+	else {
+		// TODO: Have fallback match what decomp does internally
+		lua_pushinteger(L, 900);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PathfinderSetLineOfSightCostThreshold) {
+	NPCAI_Pathfinder* pathfinder = lua::GetLuabridgeUserdata<NPCAI_Pathfinder*>(L, 1, lua::Metatables::PATHFINDER, "Pathfinder");
+	Entity* ent = pathfinder->_entity;
+	int threshold = (int)luaL_checkinteger(L, 2);
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus) {
+		plus->lineOfSightCostThreshold = threshold;
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PathfinderResetLineOfSightCostThreshold) {
+	NPCAI_Pathfinder* pathfinder = lua::GetLuabridgeUserdata<NPCAI_Pathfinder*>(L, 1, lua::Metatables::PATHFINDER, "Pathfinder");
+	Entity* ent = pathfinder->_entity;
+	EntityPlus* plus = GetEntityPlus(ent);
+
+	if (plus) {
+		plus->lineOfSightCostThreshold = std::nullopt;
+	}
+
 	return 0;
 }
 
