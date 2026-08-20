@@ -1042,13 +1042,15 @@ int XMLDataHolder::AssignId(XMLAttributes& node, const bool isContent) {
 	int id = 0;
 	if (node.count("id") && (node["sourceid"] == "BaseGame" || !isContent)) {
 		id = toint(node["id"]);
+		if (id > this->maxid) {
+			this->maxid = id;
+		}
 	} else {
 		if (node.count("id")) {
 			node["relativeid"] = node["id"];
 		}
-		this->maxid += 1;
-		node["id"] = to_string(this->maxid);
-		id = this->maxid;
+		id = ++(this->maxid);
+		node["id"] = to_string(id);
 	}
 	return id;
 }
@@ -1133,15 +1135,14 @@ void XMLCollectible::ProcessAttributes(const xml_node<char>& auxnode, XMLAttribu
 
 int XMLBombCostume::AssignId(XMLAttributes& bombcostume, const bool isContent) {
 	int id = 0;
-	if (bombcostume.count("variant")) { // && (node["sourceid"] == "BaseGame" || !isContent)
+	if (bombcostume.count("variant")) {
 		id = toint(bombcostume["variant"]);
-	} else {
-		if (bombcostume.count("variant")) {
-			bombcostume["relativeid"] = bombcostume["variant"];
+		if (id > this->maxid) {
+			this->maxid = id;
 		}
-		this->maxid += 1;
-		bombcostume["id"] = to_string(this->maxid);
-		id = this->maxid;
+	} else {
+		id = ++(this->maxid);
+		bombcostume["id"] = to_string(id);
 	}
 	return  id;
 }
@@ -1166,13 +1167,12 @@ int XMLBackdrop::AssignId(XMLAttributes& backdrop, const bool isContent) {
 	int id = 0;
 	if (backdrop.count("id")) {
 		id = toint(backdrop["id"]);
-	} else {
-		if (backdrop.count("id")) {
-			backdrop["relativeid"] = backdrop["id"];
+		if (id > this->maxid) {
+			this->maxid = id;
 		}
-		this->maxid = this->maxid + 1;
-		backdrop["id"] = to_string(this->maxid);
-		id = this->maxid;
+	} else {
+		id = ++(this->maxid);
+		backdrop["id"] = to_string(id);
 	}
 	return id;
 }
@@ -1203,23 +1203,33 @@ int XMLCostume::AssignId(XMLAttributes& costume, const bool isContent) {
 	int id = 0;
 	if (costume.count("id") && (modid == "BaseGame" || !isContent)) {
 		id = toint(costume["id"]);
+		if (id > this->maxid) {
+			this->maxid = id;
+		}
 	} else {
-		this->maxid = this->maxid + 1;
 		if (costume.count("id") > 0) {
 			costume["relativeid"] = costume["id"];
 			if ((costume.count("type") > 0)) {
 				if ((strcmp(costume["type"].c_str(), "trinket") == 0)) {
-					costume["id"] = to_string(XMLStuff.TrinketData->byrelativeid[modid + costume["relativeid"]]);
+					id = XMLStuff.TrinketData->byrelativeid[modid + costume["relativeid"]];
 				} else {
-					costume["id"] = to_string(XMLStuff.ItemData->byrelativeid[modid + costume["relativeid"]]);
+					id = XMLStuff.ItemData->byrelativeid[modid + costume["relativeid"]];
 				}
 			}
-		} else {
-			costume["id"] = to_string(XMLStuff.NullCostumeData->maxid + 5000); //lol just to be safe its unordered, it fiiiine (this should only happen if modders fuck up too, it should always have an id)
+			if (id > this->maxid) {
+				this->maxid = id;
+			}
 		}
-		id = toint(costume["id"]);
+		if (id == 0) {
+			//id = XMLStuff.NullCostumeData->maxid + 5000; //lol just to be safe its unordered, it fiiiine (this should only happen if modders fuck up too, it should always have an id)
+			id = 5000;
+			while (this->nodes.count(id)) {
+				id++;
+			}
+		}
 	}
 
+	costume["id"] = to_string(id);
 	return id;
 }
 
@@ -1242,6 +1252,10 @@ int XMLNullCostume::AssignId(XMLAttributes& costume, const bool isContent) {
 			id = XMLStuff.NullItemData->maxid;
 		}
 		costume["id"] = to_string(id);
+	}
+
+	if (id > this->maxid) {
+		this->maxid = id;
 	}
 
 	return id;
@@ -1282,6 +1296,76 @@ void XMLBossPortrait::AddByNameLookups(XMLAttributes& boss, int id, const std::s
 	if (this->byname.count(boss["name"]) == 0) { //to prioritize vanilla in case of Curse of the Giant hacky
 		this->byname[boss["name"]] = id;
 	}
+}
+
+// XMLWisp
+
+int XMLWisp::AssignId(XMLAttributes& wisp, const bool isContent) {
+	int id = 0;
+	if (wisp.count("id")) {
+		if (wisp["id"].front() == 's') {
+			// The game has some of these special wisps "s0", "s1" and so on that do not map 1:1 with an item.
+			// The wisp entity itself is given this ID.
+			// If a mod does this it will overwrite an existing entry (at best).
+			id = 0x10000 + toint(wisp["id"].substr(1));
+		} else if (wisp["sourceid"] == "BaseGame" || !isContent) {
+			// Vanilla wisp
+			id = toint(wisp["id"]);
+			if (id > this->maxid) {
+				this->maxid = id;
+			}
+			XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(id);
+			wisp["name"] = wnode["name"];
+		} else {
+			// Modded wisp
+			wisp["relativeid"] = wisp["id"];
+			XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[wisp["sourceid"] + wisp["relativeid"]]);
+			id = toint(wnode["id"]);
+			if (id > this->maxid) {
+				this->maxid = id;
+			}
+			wisp["name"] = wnode["name"];
+		}
+	}
+	// Arbitrary ID, idk
+	if (id == 0) {
+		id = 2000;
+		while (this->nodes.count(id)) {
+			id++;
+		}
+	}
+	wisp["id"] = to_string(id);
+	return id;
+}
+
+// XMLLocust
+
+int XMLLocust::AssignId(XMLAttributes& locust, const bool isContent) {
+	int id = 0;
+	if (locust.count("id")) {
+		if (locust["sourceid"] == "BaseGame" || !isContent) {
+			id = toint(locust["id"]);
+			XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(id);
+			locust["name"] = wnode["name"];
+		} else {
+			locust["relativeid"] = locust["id"];
+			XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[locust["sourceid"] + locust["relativeid"]]);
+			id = toint(wnode["id"]);
+			locust["name"] = wnode["name"];
+		}
+	}
+	if (id > this->maxid) {
+		this->maxid = id;
+	}
+	// Arbitrary ID, idk
+	if (id == 0) {
+		id = 2000;
+		while (this->nodes.count(id)) {
+			id++;
+		}
+	}
+	locust["id"] = to_string(id);
+	return id;
 }
 
 // XMLDataHolder end ----------
@@ -1644,194 +1728,29 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		daddy = node;
 		id = 1;
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-			string middleman = stringlower(auxnode->name());
-			const char* nodename = middleman.c_str();
-			if ((strcmp(nodename, "color") == 0)) {
-				XMLAttributes color;
-				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-				{
-					color[stringlower(attr->name())] = string(attr->value());
-				}
-				inheritdaddyatts(daddy, &color);
-				//int oldid = toint(color["id"]);
-				if ((color.find("id") != color.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-					id = toint(color["id"]);
-				}
-				else {
-					if (color.find("id") != color.end()) { color["relativeid"] = color["id"]; }
-					XMLStuff.WispColorData->maxid = XMLStuff.WispColorData->maxid + 1;
-					color["id"] = to_string(XMLStuff.WispColorData->maxid);
-					id = XMLStuff.WispColorData->maxid;
-				}
-				if (id > XMLStuff.WispColorData->maxid) {
-					XMLStuff.WispColorData->maxid = id;
-				}
-				//if (oldid > 0) {
-					//color["id"] = oldid;
-				//}
-				color["sourceid"] = lastmodid;
-				if (color.find("relativeid") != color.end()) { XMLStuff.WispColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
-				XMLStuff.WispColorData->ProcessChilds(auxnode, id);
-				XMLStuff.WispColorData->bynamemod[color["name"] + lastmodid] = id;
-				//XMLStuff.WispColorData->bynamemod[color["untranslatedname"] + lastmodid] = id;
-				XMLStuff.WispColorData->bymod[lastmodid].push_back(id);
-				XMLStuff.WispColorData->byfilepathmulti.tab[currpath].push_back(id);
-				XMLStuff.WispColorData->byname[color["name"]] = id;
-				//XMLStuff.WispColorData->byname[color["untranslatedname"]] = id;
-				XMLStuff.WispColorData->nodes[id] = color;
-				XMLStuff.WispColorData->byorder[XMLStuff.WispColorData->nodes.size()] = id;
+			string nodename = stringlower(auxnode->name());
+			if (nodename == "color") {
+				XMLStuff.WispColorData->CreateAndAddNode(*auxnode, daddy, currpath, iscontent, lastmodid);
 				XMLStuff.ModData->wispcolors[lastmodid] += 1;
+			} else if (nodename == "wisp") {
+				XMLStuff.WispData->CreateAndAddNode(*auxnode, daddy, currpath, iscontent, lastmodid);
+				XMLStuff.ModData->wisps[lastmodid] += 1;
 			}
-			else if ((strcmp(nodename, "wisp") == 0)) {
-					XMLAttributes wisp;
-					for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-					{
-						wisp[stringlower(attr->name())] = string(attr->value());
-					}
-					inheritdaddyatts(daddy, &wisp);
-					//int oldid = toint(wisp["id"]);
-					if ((wisp.find("id") != wisp.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-						id = toint(wisp["id"]);
-					}
-					else {
-						if (wisp.find("id") != wisp.end()) { wisp["relativeid"] = wisp["id"]; }
-						XMLStuff.WispData->maxid = XMLStuff.WispData->maxid + 1;
-						wisp["id"] = to_string(XMLStuff.WispData->maxid);
-						id = XMLStuff.WispData->maxid;
-					}
-					if (id > XMLStuff.WispData->maxid) {
-						XMLStuff.WispData->maxid = id;
-					}
-					//if (oldid > 0) {
-						//wisp["id"] = oldid;
-					//}
-					wisp["sourceid"] = lastmodid;
-					if (wisp.find("relativeid") != wisp.end()) {
-						XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[lastmodid + wisp["relativeid"]]);
-						id = toint(wnode["id"]);
-						wisp["id"] = to_string(id);
-						XMLStuff.WispData->byrelativeid[lastmodid + wisp["relativeid"]] = id;
-						wisp["name"] = wnode["name"];
-					}
-					else {
-						XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(toint(wisp["id"]));
-						wisp["name"] = wnode["name"];
-					}
-					if (id == 0) {
-						id = XMLStuff.WispData->maxid + 2000;
-						wisp["id"] = to_string(id);
-					}
-					//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
-					XMLStuff.WispData->ProcessChilds(auxnode, id);
-					XMLStuff.WispData->bynamemod[wisp["name"] + lastmodid] = id;
-					//XMLStuff.WispData->bynamemod[wisp["untranslatedname"] + lastmodid] = id;
-					XMLStuff.WispData->bymod[lastmodid].push_back(id);
-					XMLStuff.WispData->byfilepathmulti.tab[currpath].push_back(id);
-					XMLStuff.WispData->byname[wisp["name"]] = id;
-					//XMLStuff.WispData->byname[wisp["untranslatedname"]] = id;
-					XMLStuff.WispData->nodes[id] = wisp;
-					XMLStuff.WispData->byorder[XMLStuff.WispData->nodes.size()] = id;
-					XMLStuff.ModData->wisps[lastmodid] += 1;
-
-				}
-
-			}
+		}
 		break;
 	case 15://locusts
 		daddy = node;
 		id = 1;
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-			string middleman = stringlower(auxnode->name());
-			const char* nodename = middleman.c_str();
-			if ((strcmp(nodename, "color") == 0)) {
-				XMLAttributes color;
-				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-				{
-					color[stringlower(attr->name())] = string(attr->value());
-				}
-				inheritdaddyatts(daddy, &color);
-				//int oldid = toint(color["id"]);
-				if ((color.find("id") != color.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-					id = toint(color["id"]);
-				}
-				else {
-					if (color.find("id") != color.end()) { color["relativeid"] = color["id"]; }
-					XMLStuff.LocustColorData->maxid = XMLStuff.LocustColorData->maxid + 1;
-					color["id"] = to_string(XMLStuff.LocustColorData->maxid);
-					id = XMLStuff.LocustColorData->maxid;
-				}
-				if (id > XMLStuff.LocustColorData->maxid) {
-					XMLStuff.LocustColorData->maxid = id;
-				}
-				//if (oldid > 0) {
-					//color["id"] = oldid;
-				//}
-				color["sourceid"] = lastmodid;
-				if (color.find("relativeid") != color.end()) { XMLStuff.LocustColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
-				XMLStuff.LocustColorData->ProcessChilds(auxnode, id);
-				XMLStuff.LocustColorData->bynamemod[color["name"] + lastmodid] = id;
-				//XMLStuff.LocustColorData->bynamemod[color["untranslatedname"] + lastmodid] = id;
-				XMLStuff.LocustColorData->bymod[lastmodid].push_back(id);
-				XMLStuff.LocustColorData->byfilepathmulti.tab[currpath].push_back(id);
-				XMLStuff.LocustColorData->byname[color["name"]] = id;
-				//XMLStuff.LocustColorData->byname[color["untranslatedname"]] = id;
-				XMLStuff.LocustColorData->nodes[id] = color;
-				XMLStuff.LocustColorData->byorder[XMLStuff.LocustColorData->nodes.size()] = id;
-				XMLStuff.ModData->locustcolors[lastmodid] += 1;
+			string nodename = stringlower(auxnode->name());
+			if (nodename == "color") {
+				XMLStuff.LocustColorData->CreateAndAddNode(*auxnode, daddy, currpath, iscontent, lastmodid);
+				XMLStuff.ModData->wispcolors[lastmodid] += 1;
 			}
-			else if ((strcmp(nodename, "locust") == 0)) {
-				XMLAttributes locust;
-				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-				{
-					locust[stringlower(attr->name())] = string(attr->value());
-				}
-				inheritdaddyatts(daddy, &locust);
-				//int oldid = toint(locust["id"]);
-				if ((locust.find("id") != locust.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-					id = toint(locust["id"]);
-				}
-				else {
-					if (locust.find("id") != locust.end()) { locust["relativeid"] = locust["id"]; }
-					XMLStuff.LocustData->maxid = XMLStuff.LocustData->maxid + 1;
-					locust["id"] = to_string(XMLStuff.LocustData->maxid);
-					id = XMLStuff.LocustData->maxid;
-				}
-				if (id > XMLStuff.LocustData->maxid) {
-					XMLStuff.LocustData->maxid = id;
-				}
-				//if (oldid > 0) {
-					//locust["id"] = oldid;
-				//}
-				locust["sourceid"] = lastmodid;
-				if (locust.find("relativeid") != locust.end()) {
-					XMLAttributes lnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[lastmodid + locust["relativeid"]]);
-					id = toint(lnode["id"]);
-					locust["id"] = to_string(id);
-					XMLStuff.WispData->byrelativeid[lastmodid + locust["relativeid"]] = id;
-					locust["name"] = lnode["name"];
-				}
-				else {
-					XMLAttributes lnode = XMLStuff.ItemData->GetNodeById(toint(locust["id"]));
-					locust["name"] = lnode["name"];
-				}
-				if (id == 0) {
-					id = XMLStuff.LocustData->maxid + 2000;
-					locust["id"] = to_string(id);
-				}
-				//ZHL::Log("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
-				XMLStuff.LocustData->ProcessChilds(auxnode, id);
-				XMLStuff.LocustData->bynamemod[locust["name"] + lastmodid] = id;
-				//XMLStuff.LocustData->bynamemod[locust["untranslatedname"] + lastmodid] = id;
-				XMLStuff.LocustData->bymod[lastmodid].push_back(id);
-				XMLStuff.LocustData->byfilepathmulti.tab[currpath].push_back(id);
-				XMLStuff.LocustData->byname[locust["name"]] = id;
-				//XMLStuff.LocustData->byname[locust["untranslatedname"]] = id;
-				XMLStuff.LocustData->nodes[id] = locust;
-				XMLStuff.LocustData->byorder[XMLStuff.LocustData->nodes.size()] = id;
+			else if (nodename == "locust") {
+				XMLStuff.LocustData->CreateAndAddNode(*auxnode, daddy, currpath, iscontent, lastmodid);
 				XMLStuff.ModData->locusts[lastmodid] += 1;
-
 			}
-
 		}
 	break;
 	case 16: //nightmares

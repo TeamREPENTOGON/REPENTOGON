@@ -191,12 +191,10 @@ public:
 		}
 
 		// Insert the node.
+		const bool isOverwrite = nodes.count(id) > 0;
 		nodes[id] = std::move(node);
-		byorder[nodes.size()] = id;
-
-		// Update maxid if necessary.
-		if (id > this->maxid) {
-			this->maxid = id;
+		if (!isOverwrite) {
+			byorder[nodes.size()] = id;
 		}
 
 		return nodes[id];
@@ -503,10 +501,14 @@ class XMLRecipe : public XMLDataHolder {
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& recipe, int id) override;
 };
 
-class XMLWisp : public XMLDataHolder {};
+class XMLWisp : public XMLDataHolder {
+	int AssignId(XMLAttributes& wisp, const bool isContent) override;
+};
 class XMLWispColor : public XMLDataHolder {};
 
-class XMLLocust : public XMLDataHolder {};
+class XMLLocust : public XMLDataHolder {
+	int AssignId(XMLAttributes& locust, const bool isContent) override;
+};
 class XMLLocustColor : public XMLDataHolder {};
 
 class XMLBossPortrait : public XMLDataHolder {
@@ -928,8 +930,8 @@ struct XMLData {
 	XMLCostume* CostumeData = new XMLCostume();
 	XMLWisp* WispData = new XMLWisp();
 	XMLWispColor* WispColorData = new XMLWispColor();
-	XMLWisp* LocustData = new XMLWisp();
-	XMLWispColor* LocustColorData = new XMLWispColor();
+	XMLLocust* LocustData = new XMLLocust();
+	XMLLocustColor* LocustColorData = new XMLLocustColor();
 	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
 	XMLBombCostume* BombCostumeData = new XMLBombCostume(19);
 	XMLCurse* CurseData = new XMLCurse(1);
