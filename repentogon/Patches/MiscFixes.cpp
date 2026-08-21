@@ -242,23 +242,21 @@ HOOK_METHOD(ModEntry, WriteMetadata, () -> void) {
  * DoubleTrouble in a more proper way.
  */
 HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
-{
-	super(id, mode);
-
+{	
 	assert(0 <= id && id < NUM_STB);
 	assert(0 <= mode && mode <= 1);
-
+	
 	bool isSpecialRoomsStb = id == eStbType::STB_SPECIAL_ROOMS && mode == 0;
-	if (!isSpecialRoomsStb)
+	if (isSpecialRoomsStb)
 	{
-		return;
+		auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
+		auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
+		
+		for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
+		{
+			variantSet->Add(i);
+		}
 	}
 
-	auto& roomSet = g_Game->GetRoomConfig()->_stages[id]._rooms[mode];
-	auto* variantSet = roomSet.GetVariantSet(eRoomType::ROOM_BOSS);
-
-	for (size_t i = RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START; i < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END; i++)
-	{
-		variantSet->Add(i);
-	}
+	super(id, mode);
 }

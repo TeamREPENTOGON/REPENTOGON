@@ -1847,8 +1847,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					}
 					else
 					{
-						id = std::max(XMLStuff.BossPortraitData->maxid, (int)NUM_BOSSES);
-						XMLStuff.BossPortraitData->maxid = id + 1;
+						id = std::max(XMLStuff.BossPortraitData->maxid, (int)NUM_BOSSES - 1) + 1;
+						XMLStuff.BossPortraitData->maxid = id;
 						boss["id"] = to_string(id);
 					}
 	

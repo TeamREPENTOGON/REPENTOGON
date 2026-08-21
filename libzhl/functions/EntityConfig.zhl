@@ -4,6 +4,9 @@ __thiscall void EntityConfig::Load(char *xmlpath,ModEntry *param_2);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b834020100":
 __thiscall void EntityConfig::LoadPlayers(char *xmlpath, ModEntry* modentry);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b83c010100":
+__thiscall void EntityConfig::LoadBosses(char* xmlpath);
+
 "558bec83ec108b45??538b5d??56c1e00c":
 __thiscall EntityConfig_Entity* EntityConfig::GetEntity(int id, int variant, int subtype);
 

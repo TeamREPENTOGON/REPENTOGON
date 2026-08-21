@@ -5,6 +5,232 @@
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 
+static void lua_push_string(lua_State* L, const std::string& string)
+{
+	lua_pushlstring(L, string.c_str(), string.length());
+}
+
+class LuaEntityConfigBoss
+{
+public:
+    struct Userdata
+    {
+	public:
+        static constexpr char* MT = "EntityConfigBoss";
+	private:
+		uint32_t id = 0;
+
+	public:
+		EntityConfig_Boss* GetBossConfig() const;
+	private:
+        private: Userdata(uint32_t id);
+		private: Userdata(const EntityConfig_Boss& boss);
+		friend LuaEntityConfigBoss;
+    };
+
+    static Userdata* NewUserdata(lua_State* L, uint32_t id);
+    static Userdata* NewUserdata(lua_State* L, const EntityConfig_Boss& boss);
+    static Userdata* GetUserdata(lua_State* L, int idx);
+};
+
+class LuaEntityConfigBossAlt
+{
+public:
+    struct Userdata
+    {
+	public:
+        static constexpr char* MT = "EntityConfigBossAlt";
+	private:
+		uint32_t bossId = 0;
+		uint32_t altIdx = 0;
+
+	public:
+		EntityConfig_Boss_Alt* GetBossAlt() const;
+	private:
+		private: Userdata(const EntityConfig_Boss& boss, size_t idx);
+		friend LuaEntityConfigBossAlt;
+    };
+
+    static Userdata* NewUserdata(lua_State* L, const EntityConfig_Boss& boss, size_t idx);
+    static Userdata* GetUserdata(lua_State* L, int idx);
+};
+
+#pragma region EntityConfigBoss
+
+LuaEntityConfigBoss::Userdata::Userdata(uint32_t id)
+	: id(id)
+{}
+
+LuaEntityConfigBoss::Userdata::Userdata(const EntityConfig_Boss& boss)
+	: id(boss.bossID)
+{}
+
+EntityConfig_Boss* LuaEntityConfigBoss::Userdata::GetBossConfig() const
+{
+	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
+	return &bosses[this->id];
+}
+
+LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::NewUserdata(lua_State* L, uint32_t id)
+{
+	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
+	Userdata* userdata = new (newUserdata) Userdata(id);
+	luaL_setmetatable(L, Userdata::MT);
+	return userdata;
+}
+
+LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::NewUserdata(lua_State* L, const EntityConfig_Boss& boss)
+{
+	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
+	Userdata* userdata = new (newUserdata) Userdata(boss);
+	luaL_setmetatable(L, Userdata::MT);
+	return userdata;
+}
+
+LuaEntityConfigBoss::Userdata* LuaEntityConfigBoss::GetUserdata(lua_State* L, int idx)
+{
+	return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
+}
+
+static EntityConfig_Boss* get_boss_config_ud(lua_State* L, int idx)
+{
+	const LuaEntityConfigBoss::Userdata* ud = LuaEntityConfigBoss::GetUserdata(L, idx);
+	return ud->GetBossConfig();
+}
+
+LUA_FUNCTION(Lua_Boss_GetBossId)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->bossID);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetName)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->name);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetNamePath)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->namePath);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetPortraitPath)
+{
+	lua_push_string(L, get_boss_config_ud(L, 1)->portraitPath);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetPivot)
+{
+	Vector& pivot = get_boss_config_ud(L, 1)->pivot;
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), pivot);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetAchievement)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->achievement);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetAlt)
+{
+	EntityConfig_Boss* boss = get_boss_config_ud(L, 1);
+	size_t idx = (size_t)lua_tointeger(L, 2);
+
+	bool inRange = idx < boss->alts.size();
+	if (!inRange)
+	{
+		luaL_argerror(L, 2, "index out of range");
+	}
+
+	LuaEntityConfigBossAlt::NewUserdata(L, *boss, idx);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Boss_GetNumAlts)
+{
+	lua_pushinteger(L, get_boss_config_ud(L, 1)->alts.size());
+	return 1;
+}
+
+static void Boss_RegisterClass(lua_State* L)
+{
+	luaL_Reg functions[] = {
+		{ "GetBossID", Lua_Boss_GetBossId },
+		{ "GetName", Lua_Boss_GetName },
+		{ "GetNamePath", Lua_Boss_GetNamePath },
+		{ "GetPortraitPath", Lua_Boss_GetPortraitPath },
+		{ "GetPivot", Lua_Boss_GetPivot },
+		{ "GetAchievement", Lua_Boss_GetAchievement },
+		{ "GetAlt", Lua_Boss_GetAlt },
+		{ "GetNumAlts", Lua_Boss_GetNumAlts },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterNewClass(L, LuaEntityConfigBoss::Userdata::MT, LuaEntityConfigBoss::Userdata::MT, functions);
+}
+
+#pragma endregion
+
+#pragma region EntityConfigBossAlt
+
+LuaEntityConfigBossAlt::Userdata::Userdata(const EntityConfig_Boss& boss, size_t idx)
+	: bossId(boss.bossID), altIdx(idx)
+{}
+
+EntityConfig_Boss_Alt* LuaEntityConfigBossAlt::Userdata::GetBossAlt() const
+{
+	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
+	return &bosses[this->bossId].alts[this->altIdx];
+}
+
+LuaEntityConfigBossAlt::Userdata* LuaEntityConfigBossAlt::NewUserdata(lua_State* L, const EntityConfig_Boss& boss, size_t idx)
+{
+	void* newUserdata = lua_newuserdata(L, sizeof(Userdata));
+	Userdata* userdata = new (newUserdata) Userdata(boss, idx);
+	luaL_setmetatable(L, Userdata::MT);
+	return userdata;
+}
+
+LuaEntityConfigBossAlt::Userdata* LuaEntityConfigBossAlt::GetUserdata(lua_State* L, int idx)
+{
+	return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
+}
+
+static EntityConfig_Boss_Alt* get_boss_alt_ud(lua_State* L, int idx)
+{
+	const LuaEntityConfigBossAlt::Userdata* ud = LuaEntityConfigBossAlt::GetUserdata(L, idx);
+	return ud->GetBossAlt();
+}
+
+LUA_FUNCTION(Lua_BossAlt_GetStageId)
+{
+	lua_pushinteger(L, get_boss_alt_ud(L, 1)->stageId);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BossAlt_GetPortraitPath)
+{
+	lua_push_string(L, get_boss_alt_ud(L, 1)->portraitPath);
+	return 1;
+}
+
+static void BossAlt_RegisterClass(lua_State* L)
+{
+	luaL_Reg functions[] = {
+		{ "GetStageID", Lua_BossAlt_GetStageId },
+		{ "GetPortraitPath", Lua_BossAlt_GetPortraitPath },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterNewClass(L, LuaEntityConfigBossAlt::Userdata::MT, LuaEntityConfigBossAlt::Userdata::MT, functions);
+}
+
+#pragma endregion
+
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -83,6 +309,27 @@ LUA_FUNCTION(Lua_EntityConfigGetPlayer)
 LUA_FUNCTION(Lua_EntityConfigGetMaxPlayerType)
 {
 	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetPlayers()->size()-1);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfig_GetBoss)
+{
+	size_t id = (size_t)luaL_checkinteger(L, 1);
+	auto& bosses = *g_Manager->GetEntityConfig()->GetBosses();
+
+	bool inRange = id < bosses.size();
+	if (!inRange)
+	{
+		luaL_argerror(L, 1, "id out of range");
+	}
+
+	LuaEntityConfigBoss::NewUserdata(L, bosses[id]);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfig_GetMaxBossId)
+{
+	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetBosses()->size() - 1);
 	return 1;
 }
 
@@ -809,6 +1056,8 @@ static void RegisterEntityConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetMaxPlayerType", Lua_EntityConfigGetMaxPlayerType);
 	lua::TableAssoc(L, "GetBaby", Lua_EntityConfigGetBaby);
 	lua::TableAssoc(L, "GetMaxBabyID", Lua_EntityConfigGetMaxBabyID);
+	lua::TableAssoc(L, "GetBoss", Lua_EntityConfig_GetBoss);
+	lua::TableAssoc(L, "GetMaxBossID", Lua_EntityConfig_GetMaxBossId);
 	lua_setglobal(L, lua::metatables::EntityConfigMT);
 }
 
@@ -919,4 +1168,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityConfigEntity(_state);
 	RegisterEntityConfigPlayer(_state);
 	RegisterEntityConfigBaby(_state);
+	Boss_RegisterClass(_state);
+	BossAlt_RegisterClass(_state);
 }
