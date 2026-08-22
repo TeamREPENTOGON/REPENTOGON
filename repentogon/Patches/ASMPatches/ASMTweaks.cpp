@@ -197,6 +197,27 @@ namespace ASMPatches {
 
 		return true;
 	}
+
+	bool FixGridDebugInfo() {
+		SigScan spot1_scan("8d8f????????f30f1085????????f30f105d");
+		SigScan spot2_scan("8d8f????????f30f105d");
+
+		if (!spot1_scan.Scan() ||
+			!spot2_scan.Scan()) return false;
+
+		void* addr1 = spot1_scan.GetAddress();
+		void* addr2 = spot2_scan.GetAddress();
+
+		printf("[REPENTOGON] Patching grid debug info!\n");
+
+		ASMPatch patch;
+		patch.AddBytes("\x8D\x8F\x1C\xAC\x04").AddZeroes(1);	//replace with luamini!
+
+		sASMPatcher.FlatPatch(addr1, &patch);
+		sASMPatcher.FlatPatch(addr2, &patch);
+		return true;
+	};
+
 	static bool PatchPushResourcePath() {
 		SigScan scanner1("b9????????e8????????8bf083c4088975");
 		SigScan scanner2("68????????8d4d??c745??01000000e8????????8d4d");

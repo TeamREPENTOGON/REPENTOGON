@@ -343,6 +343,10 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while skipping womb achievement block\n");
 	}
 
+	if (!ASMPatches::FixGridDebugInfo()) {
+		ZHL::Log("[ERROR] Error while patching grid debug info font\n");
+	};
+
 	ASMPatches::DisableExitPrompt();
 	ASMPatches::PatchLeaderboardGoalSprite();
 	ASMPatches::PatchOptionsSetMusicBound();
