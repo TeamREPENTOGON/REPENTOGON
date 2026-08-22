@@ -197,24 +197,39 @@ namespace ASMPatches {
 
 		return true;
 	}
-
 	bool FixGridDebugInfo() {
 		SigScan spot1_scan("8d8f????????f30f1085????????f30f105d");
 		SigScan spot2_scan("8d8f????????f30f105d");
+		SigScan x_coord_scan("f30f5c05????????8b3d????????f30f1145");
+		SigScan y_coord_scan("f30f5c05????????f30f5840");
+
 
 		if (!spot1_scan.Scan() ||
-			!spot2_scan.Scan()) return false;
+			!spot2_scan.Scan() || !x_coord_scan.Scan() || !y_coord_scan.Scan()) return false;
 
 		void* addr1 = spot1_scan.GetAddress();
 		void* addr2 = spot2_scan.GetAddress();
+		void* addr_xpatch = x_coord_scan.GetAddress();
+		void* addr_ypatch = y_coord_scan.GetAddress();
 
 		printf("[REPENTOGON] Patching grid debug info!\n");
 
 		ASMPatch patch;
 		patch.AddBytes("\x8D\x8F\x1C\xAC\x04").AddZeroes(1);	//replace with luamini!
 
+		ASMPatch patch_x;
+		ASMPatch patch_y;
+		static float x_offset = 11.0f;
+		static float y_offset = 17.0f;
+		float* x_off_addr = &x_offset;
+		float* y_off_addr = &y_offset;
+		patch_x.AddBytes("\xF3\x0F\x5C\x05").AddBytes(patch_x.ToHexString((int32_t)x_off_addr, false));
+		patch_y.AddBytes("\xF3\x0F\x5C\x05").AddBytes(patch_y.ToHexString((int32_t)y_off_addr, false));
+
 		sASMPatcher.FlatPatch(addr1, &patch);
 		sASMPatcher.FlatPatch(addr2, &patch);
+		sASMPatcher.FlatPatch(addr_xpatch, &patch_x);
+		sASMPatcher.FlatPatch(addr_ypatch, &patch_y);
 		return true;
 	};
 
