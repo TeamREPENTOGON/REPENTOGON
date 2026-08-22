@@ -22,6 +22,7 @@
 #include "rapidxml_print.hpp"
 
 #include "../ImGuiFeatures/LogViewer.h"
+#include "../Bosses/BossManager.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include <filesystem>
@@ -1384,11 +1385,20 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	}
 	if (xmlnodeenum.find(middleman) == xmlnodeenum.end()) { return; }
 	int nodetypeid = xmlnodeenum[middleman];
+	xml_document<char>* doc = nullptr;
 	xml_node<char>* daddy;
 	xml_node<char>* babee;
 	int id = 0;
 	switch(nodetypeid){
 	case 1: //entity
+		{
+			auto* docNode = node;
+			while (docNode->parent())
+				docNode = docNode->parent();
+
+			doc = static_cast<rapidxml::xml_document<>*>(docNode);
+		}
+
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
 			XMLAttributes entity;
 			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -1455,6 +1465,8 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					XMLStuff.BossColorData->byname[entity["name"]] = XMLStuff.BossColorData->bytypevar[clridx];
 				}
 			}
+
+			BossManager::detail::PatchEntityBossId(*doc, *auxnode, entity);
 
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;

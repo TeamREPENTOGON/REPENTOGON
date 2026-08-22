@@ -51,6 +51,8 @@ static const XMLChilds* get_childs_by_id(const XMLDataHolder& data, int id);
 static const std::vector<XMLAttributes>* get_child_nodes(const XMLChilds& childs, const std::string& name);
 static const std::string* get_attribute(const XMLAttributes& attributes, const std::string& name);
 template <typename T>
+static const char* doc_allocate_string(xml_document<char>& doc, T value);
+template <typename T>
 static std::optional<T> string_to_number(const std::string_view& string);
 static std::string concat_string(const std::string_view& string, const std::string_view& other);
 
@@ -92,6 +94,13 @@ static const std::string* get_attribute(const XMLAttributes& attributes, const s
     if (iter == attributes.end()) { return nullptr; }
 
     return &iter->second;
+}
+
+template <typename T>
+static const char* doc_allocate_string(xml_document<char>& doc, T value)
+{
+    const std::string str = std::to_string(value);
+    return doc.allocate_string(str.c_str(), str.length());
 }
 
 template <typename T>
@@ -237,5 +246,42 @@ void BossManager::detail::LoadModBosses(EntityConfig& config)
                 parse_boss_alt_node(boss, root, altNodes[i]);
             }
         }
+    }
+}
+
+void BossManager::detail::PatchEntityBossId(xml_document<char>& doc, xml_node<char>& node, XMLAttributes& entity)
+{
+    auto* attribute = get_attribute(entity, "bossid");
+    if (!attribute)
+    {
+        return;
+    }
+
+    auto* xmlAttribute = node.first_attribute("bossID");
+    if (!xmlAttribute)
+    {
+        return;
+    }
+
+    std::optional<int> intValue = string_to_number<int>(*attribute);
+    if (intValue)
+    {
+        bool isVanilla = 0 <= intValue && intValue < NUM_BOSSES;
+        if (!isVanilla)
+        {
+            xmlAttribute->value("0");
+        }
+        return;
+    }
+
+    std::optional<int> customId = BossManager::GetBossIdByName(*attribute);
+    if (!customId)
+    {
+        xmlAttribute->value("0");
+        return;
+    }
+    else
+    {
+        xmlAttribute->value(doc_allocate_string(doc, customId.value()));
     }
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "IsaacRepentance.h"
+#include "../Patches/XMLData.h"
+#include "rapidxml.hpp"
 
 class BossManager
 {
@@ -21,6 +23,8 @@ public:
     {
     public:
         static void LoadModBosses(EntityConfig& config);
+        /// @brief parses the entity's bossid attribute and patches it's value, so the game's parser can automatically handle it.
+        static void PatchEntityBossId(xml_document<char>& doc, xml_node<char>& node, XMLAttributes& entity);
     };
 
     static std::optional<uint32_t> GetBossIdByName(const std::string& name);
