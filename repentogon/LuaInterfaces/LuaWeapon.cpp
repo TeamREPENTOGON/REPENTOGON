@@ -115,7 +115,7 @@ LUA_FUNCTION(Lua_WeaponSetCharge) {
 LUA_FUNCTION(Lua_WeaponGetDirection)
 {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *weapon->GetDirection();
 
 	return 1;
@@ -150,7 +150,7 @@ LUA_FUNCTION(Lua_WeaponPlayItemAnim) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
 	unsigned int itemID = (unsigned int)luaL_checkinteger(L, 2);
 	int anim = (int)luaL_checkinteger(L, 3);
-	const Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	const Vector* position = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float charge = (float)luaL_checknumber(L, 5);
 	weapon->PlayItemAnim(itemID, anim, *position, charge);
 	return 0;

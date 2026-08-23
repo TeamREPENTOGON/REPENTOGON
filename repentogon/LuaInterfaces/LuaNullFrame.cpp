@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_SpriteGetOverlayNullFrame)
 LUA_FUNCTION(Lua_NullFrameGetScale)
 {
 	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *nullFrame->GetScale();
 
 	return 1;
@@ -52,7 +52,7 @@ LUA_FUNCTION(Lua_NullFrameIsVisible)
 LUA_FUNCTION(Lua_NullFrameGetPos)
 {
 	NullFrame* nullFrame = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *nullFrame->GetPos();
 
 	return 1;

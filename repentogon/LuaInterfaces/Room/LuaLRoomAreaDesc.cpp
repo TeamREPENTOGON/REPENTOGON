@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_RoomGetLRoomAreaDesc) {
 // high
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighTopLeft) {
 	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
-	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* ud = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*ud = desc->_high[0];
 
 	return 1;
@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighTopLeft) {
 
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighBottomRight) {
 	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
-	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* ud = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*ud = desc->_high[1];
 
 	return 1;
@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetHighBottomRight) {
 // low
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowTopLeft) {
 	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
-	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* ud = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*ud = desc->_low[0];
 
 	return 1;
@@ -42,7 +42,7 @@ LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowTopLeft) {
 
 LUA_FUNCTION(Lua_LRoomAreaDesc_GetLowBottomRight) {
 	LRoomAreaDesc* desc = lua::GetRawUserdata<LRoomAreaDesc*>(L, 1, lua::metatables::LRoomAreaDescMT);
-	Vector* ud = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* ud = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*ud = desc->_low[1];
 
 	return 1;

@@ -271,6 +271,9 @@ namespace lua {
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name);
 
+    LIBZHL_API void* TestCData(lua_State* L, int ud, lua_CTypeId ctypeid);
+    LIBZHL_API void* CheckCData(lua_State* L, int ud, lua_CTypeId ctypeid, std::string const& name);
+
     LIBZHL_API void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func);
     LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
 
@@ -333,6 +336,16 @@ namespace lua {
         return (T)ud;
     }
 
+    template<typename T>
+    T GetCData(lua_State* L, int idx, lua_CTypeId ctypeid, std::string const& name) {
+        void* p = CheckCData(L, idx, ctypeid, name);
+        if constexpr (std::is_pointer_v<T>) {
+            return static_cast<T>(p);
+        } else {
+            return *(T*)p;
+        }
+    }
+
     LIBZHL_API void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function);
 
     struct lua_global_tag_t {};
@@ -384,6 +397,12 @@ namespace lua {
         template<typename T>
         LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
             luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);
+            ++_n;
+            return *this;
+        }
+        template<typename T>
+        LuaCaller& push(T const& value, lua_CTypeId ctypeid) {
+            lua_pushcdata(_L, ctypeid, &value, sizeof(T));
             ++_n;
             return *this;
         }
@@ -555,7 +574,32 @@ namespace lua {
 
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
     LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
+
     LIBZHL_API uint64_t luaL_checkuint64(lua_State* L, int idx);
+
+    namespace ffi {
+        template<typename T>
+        void pushCdata(lua_State* L, lua_CTypeId ctypeid, T const& value) {
+            lua_pushcdata(L, ctypeid, &value, sizeof(T));
+        }
+
+        template<typename T>
+        T* placeCdata(lua_State* L, lua_CTypeId ctypeid) {
+            lua_pushcdata(L, ctypeid, nullptr, sizeof(T));
+            return (T*)lua_tocdata(L, -1);
+        }
+
+        inline void pushCdataPtr(lua_State* L, void const* p, lua_CTypeId ctypeid) {
+            lua_pushcdata(L, ctypeid, &p, sizeof(p));
+        }
+        enum CDataID : lua_CTypeId {
+            VECTOR,
+            VECTOR_PTR,
+            MAX_CDATA
+        };
+
+        inline lua_CTypeId CData[MAX_CDATA];
+    };
 
     template<typename T, typename... Args>
     T* place(lua_State* L, const char* mt, Args&&... args) {

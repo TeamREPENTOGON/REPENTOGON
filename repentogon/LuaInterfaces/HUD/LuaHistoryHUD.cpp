@@ -32,7 +32,7 @@ LUA_FUNCTION(Lua_HUD_GetHistoryHUD) {
 }
 
 LUA_FUNCTION(Lua_HistoryHUD_GetPosition) {
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), g_Game->GetHUD()->_historyHUD.GetPosition());
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], g_Game->GetHUD()->_historyHUD.GetPosition());
 	return 1;
 }
 
@@ -84,7 +84,7 @@ LUALIB_API int GetHistoryHUDItems(lua_State* L, const int playerIdx, const bool 
 			if (!idFilter || idFilter->empty() || idFilter->find(id) != idFilter->end()) {
 				if (offsetsOnly) {
 					Vector offset = CalculateHistoryHUDItemRenderOffset(playerIdx, i);
-					lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), offset);
+					lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], offset);
 				} else {
 					HistoryHUD_Item_Ex* ud = (HistoryHUD_Item_Ex*)lua_newuserdata(L, sizeof(HistoryHUD_Item_Ex));
 					ud->playerSlot = playerIdx;
@@ -180,7 +180,7 @@ LUA_FUNCTION(Lua_HistoryHUDItem_GetRenderOffset) {
 	HistoryHUD_Item_Ex* historyItem = lua::GetRawUserdata<HistoryHUD_Item_Ex*>(L, 1, lua::metatables::HistoryHUDItemMT);
 
 	Vector offset = CalculateHistoryHUDItemRenderOffset(historyItem->playerSlot, historyItem->index);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), offset);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], offset);
 
 	return 1;
 }

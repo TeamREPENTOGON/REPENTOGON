@@ -33,7 +33,7 @@ LUA_FUNCTION(Lua_ShapeCapsule) {
 
 LUA_FUNCTION(Lua_ShapeCircle) {
 	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float size = (float)luaL_checknumber(L, 3);
 	shape->Circle(pos, size);
 	return 0;

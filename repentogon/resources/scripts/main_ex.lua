@@ -5,14 +5,146 @@ REPENTOGON = {
 	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
-collectgarbage("setpause", 100)
-collectgarbage("setstepmul", 25)
-require("compat53.init")
-
 --- Each module is a { module, loaded } pair
 local s_modules = {}
 
 local debug_getinfo = debug.getinfo
+
+collectgarbage("setpause", 100)
+collectgarbage("setstepmul", 25)
+require("compat53.init")
+
+-- Aw yeah, this is happening!
+---------- FFI START ----------
+ffidll = ffi.load("zhlREPENTOGON")
+ffichecks = {}
+local lffi = ffi
+
+local ctypeCache = {}
+local function resolveCtype(ctype)
+	if type(ctype) ~= "string" then return ctype end
+	local cached = ctypeCache[ctype]
+	if cached then return cached end
+	local resolved
+	local ok, r = pcall(lffi.typeof, ctype)
+	if ok then
+		resolved = r
+	else
+		for _, pre in ipairs({ "struct ", "union ", "enum " }) do
+			local ok2, r2 = pcall(lffi.typeof, pre .. ctype)
+			if ok2 then resolved = r2; break end
+		end
+	end
+	ctypeCache[ctype] = resolved
+	return resolved
+end
+
+ffichecks.gettype = function(var)
+	local t = type(var)
+	if t == "cdata" then t = tostring(lffi.typeof(var)) end
+	return t
+end
+
+ffichecks.checktype = function(index, val, typ, level)
+	local t = type(val)
+	if t ~= typ then
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level or 2).name, typ, t), (level or 2)+1)
+	end
+end
+
+ffichecks.istype = function(var, typ)
+	return type(var) == typ
+end
+
+ffichecks.isnil = function(var) return ffichecks.istype(var, "nil") end
+ffichecks.isnullptr = function(cdata) return cdata == nil end
+ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
+ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
+ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
+ffichecks.iscdata = function(var, ctype)
+	if not var then return false end
+	local ct = resolveCtype(ctype)
+	if ct ~= nil and lffi.istype(ct, var) then
+		return true
+	end
+	-- Also accept a pointer to the target type (reference cdata).
+	if type(var) == "cdata" then
+		local ptr = resolveCtype(ctype .. "*")
+		return ptr ~= nil and lffi.istype(ptr, var) or false
+	end
+	return false
+end
+
+ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, val, "number", (level or 2)+1) end
+ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
+ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
+ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+
+ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
+	if not (ffichecks.iscdata(var, ctype) or (allownil and ffichecks.isnil(var))) then
+		local t = type(var)
+		if t == "cdata" then t = tostring(lffi.typeof(var)) end
+
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", idx, debug_getinfo(level or 2).name, tostring(ctype), t), (level or 2)+1)
+	end
+end
+
+ffichecks.callcdatafunc = function(this, cdata, ctype, cfunc)
+	ffichecks.checkcdata(2, cdata, ctype)
+	cfunc(this, cdata)
+end
+
+ffichecks.fixreturn = function(cdata)
+	if not ffichecks.isnullptr(cdata) then
+		return cdata
+	end
+	return nil
+end
+
+ffichecks.optnumber = function(var, opt)
+	if ffichecks.isnumber(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optboolean = function(var, opt)
+	if ffichecks.isboolean(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optstring = function(var, opt)
+	if ffichecks.isstring(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optcdata = function(var, ctype, opt)
+	if ffichecks.isscdata(var, cdata) then
+		return var
+	end
+	return opt
+end
+
+pcall(require("ffi.main"))
+
+ffi = nil
+ffidll = nil
+---------- FFI END ----------
+
+do
+	local _orig_getmetatable = getmetatable
+	local _dgmt = (type(debug) == "table" and debug.getmetatable) or nil
+	getmetatable = function(obj)
+		if _dgmt and type(obj) == "cdata" then
+			local mt = _dgmt(obj)
+			if mt and (mt.__type ~= nil or mt.__class ~= nil) then
+				return mt
+			end
+		end
+		return _orig_getmetatable(obj)
+	end
+end
 
 local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
 	level = level + 1
@@ -300,7 +432,7 @@ local function checkTableTypeFunction(typestrings)
 					paramType = "integer"
 				end
 
-				if paramType == "userdata" then
+				if paramType == "userdata" or paramType == "cdata" then
 					paramType = GetMetatableType(param)
 				end
 
@@ -827,7 +959,7 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 	if typeCheck then
 		local err
 		local typ = type(ret)
-		if typ == "userdata" then typ = GetMetatableType(ret) end
+		if typ == "userdata" or typ == "cdata" then typ = GetMetatableType(ret) end
 
 		if typeCheck[typ] == true then
 		elseif typeCheck[typ] then
@@ -943,7 +1075,7 @@ end
 
 -- Support to apply a conversion function to the params for certain callbacks (ie, for stuff like tables/userdata).
 local function ConvertItemConfigItemParam(param)
-	if param and type(param) == "userdata" and GetMetatableType(param) == "Item" then
+	if param and (type(param) == "userdata" or type(param) == "cdata") and GetMetatableType(param) == "Item" then
 		return GetPtrHash(param)
 	end
 	return param
@@ -1547,7 +1679,7 @@ local function RunPreAddCardPillCallback(callbackID, callbackList, player, pillC
 end
 
 local function IsValidMultiShotParams(params)
-	return params ~= nil and type(params) == "userdata" and GetMetatableType(params) == "MultiShotParams"
+	return params ~= nil and (type(params) == "userdata" or type(params) == "cdata") and GetMetatableType(params) == "MultiShotParams"
 end
 
 local function RunGetMultiShotParamsCallback(callbackID, callbackList, player, multiShotParams, ...)
@@ -1823,10 +1955,10 @@ local function RunPreApplyTearflagEffectsCallback(callbackID, callbackList, enti
 					if ret.Damage and type(ret.Damage) == "number" then
 						damage = ret.Damage
 					end
-					if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
 						flags = ret.TearFlags
 					end
-					if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
 						pos = ret.Position
 					end
 					if combinedRet then
@@ -1912,7 +2044,7 @@ local function RunPreBombDamageCallback(callbackID, callbackList, pos, damage, r
 				if type(ret) == "boolean" and ret == false then
 					return false
 				elseif type(ret) == "table" then
-					if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
 						pos = ret.Position
 					end
 					if ret.Damage and type(ret.Damage) == "number" then
@@ -1921,7 +2053,7 @@ local function RunPreBombDamageCallback(callbackID, callbackList, pos, damage, r
 					if ret.Radius and type(ret.Radius) == "number" then
 						radius = ret.Radius
 					end
-					if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
 						tearFlags = ret.TearFlags
 					end
 					if ret.DamageFlags and type(ret.DamageFlags) == "number" and math.tointeger(ret.DamageFlags) then
@@ -1953,7 +2085,7 @@ local function RunPreBombTearFlagEffectsCallback(callbackID, callbackList, pos, 
 				if type(ret) == "boolean" and ret == false then
 					return false
 				elseif type(ret) == "table" then
-					if ret.Position and type(ret.Position) == "userdata" and GetMetatableType(ret.Position) == "Vector" then
+					if ret.Position and (type(ret.Position) == "userdata" or type(ret.Position) == "cdata") and GetMetatableType(ret.Position) == "Vector" then
 						pos = ret.Position
 					end
 					if ret.Radius and type(ret.Radius) == "number" then
@@ -1962,7 +2094,7 @@ local function RunPreBombTearFlagEffectsCallback(callbackID, callbackList, pos, 
 					if ret.RadiusMult and type(ret.RadiusMult) == "number" then
 						radiusMult = ret.RadiusMult
 					end
-					if ret.TearFlags and type(ret.TearFlags) == "userdata" and GetMetatableType(ret.TearFlags) == "BitSet128" then
+					if ret.TearFlags and (type(ret.TearFlags) == "userdata" or type(ret.TearFlags) == "cdata") and GetMetatableType(ret.TearFlags) == "BitSet128" then
 						tearFlags = ret.TearFlags
 					end
 					if combinedRet then

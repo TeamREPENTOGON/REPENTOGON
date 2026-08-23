@@ -610,6 +610,65 @@ __thiscall void Entity_Player::GetTearMovementInheritance(Vector* out, Vector* d
 "558bec83e4f883ec1453568bf157897424":
 __thiscall Entity_Pickup* Entity_Player::DropTrinket(Vector* DropPos, bool ReplaceTick);
 
+"558bec83e4f883ec0c5356578bd96a5e":
+__thiscall Entity* Entity_Player::AddBlueFlies(int Amount, Vector* Position, Entity* Target);
+
+"558bec83e4f851568bf1ff86":
+__thiscall Entity* Entity_Player::AddBlueSpider(Vector* position);
+
+"558bec8b55??518b4d??e8????????83c4045dc20800????????????????????558becff75":
+__thiscall Entity_Familiar* Entity_Player::AddFriendlyDip(int subtype, Vector* position);
+
+"558bec83ec40a1????????33c58945??53568bc1":
+__thiscall Entity_Familiar* Entity_Player::AddItemWisp(CollectibleType collectible, Vector position, bool adjustOrbitLayer);
+
+"558bec83e4f881ec8c000000a1????????33c4898424????????538a5d":
+__thiscall Entity_Familiar* Entity_Player::AddMinisaac(Vector* position, bool playAnim);
+
+"558bec6aff68????????64a1????????5083ec18535657a1????????33c5508d45??64a3????????8bd9c745??00000000":
+__thiscall Entity_Familiar* Entity_Player::AddSwarmFlyOrbital(Vector* position);
+
+"558bec6aff68????????64a1????????5083ec64a1????????33c58945??535657508d45??64a3????????894d":
+__thiscall Entity_Familiar* Entity_Player::AddWisp(CollectibleType collectible, Vector* position, bool adjustOrbitLayer, bool dontUpdate);
+
+"558bec83e4f883ec4ca1????????33c4894424??5356578bf9e8":
+__thiscall void Entity_Player::DoZitEffect(Vector* direction);
+
+"558bec83ec34a1????????33c58945??8b45":
+__thiscall Entity_Laser* Entity_Player::FireBrimstone(Vector* direction, Entity* source, float damageMultiplier);
+
+"558bec83e4f881ec90000000a1????????33c4898424????????8b45??568b75":
+__thiscall Entity_Tear* Entity_Player::FireTear(Vector* Position, Vector Velocity, unsigned int flags, Entity* source, float DamageMultiplier);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec90000000a1????????33c58945??5657508d45??64a3????????8bd1":
+__thiscall Vector* Entity_Player::GetCostumeNullPos(const char* NullFrameName, bool headScale, Vector* Direction);
+
+"558beca1????????83ec0c8b80":
+__thiscall Vector* Entity_Player::GetFlyingOffset();
+
+"558bec83e4f883ec18568bf1578b86????????83f814":
+__thiscall Vector* Entity_Player::GetMovementJoystick(Vector* buffer);
+
+"558bec83e4f883ec28568b75??578bf9":
+__thiscall Vector* Entity_Player::GetShootingJoystick(Vector* buffer);
+
+"558bec83e4f883ec188b45":
+__thiscall bool Entity_Player::IsPosInSpotLight(Vector* position);
+
+"558bec51568bf15780be????????00":
+__thiscall void Entity_Player::RenderGlow(Vector* position);
+
+"558bec568bf180be????????0074??e8????????84c075??8b86????????68????????68????????ff75??85c078??ffb6????????69c830010000038e????????e8????????5e5dc204006a0b":
+__thiscall void Entity_Player::RenderTop(Vector* position);
+
+"558becff81":
+__thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* target);
+
+"558bec83e4f883ec1c8b45??535657f30f10008bfa":
+__fastcall Entity_Familiar* Entity_Player::ThrowFriendlyDip (int subtype, Vector * position, void* unk, Vector* target);
+
+
+
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
@@ -758,6 +817,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	float _tearfallaccel : 0x1478;
 	float _tearrange : 0x147c;
 	ColorMod _laserColor : 0x14bc;
+	Vector _spriteScale : 0x14e8;
 	TemporaryEffects _temporaryeffects : 0x1500;
 	int _speedModifier : 0x1518, _fireDelayModifier : 0x151c, _damageModifier : 0x1520, _tearRangeModifier : 0x1524, _shotSpeedModifier : 0x1528, _luckModifier : 0x152c;
 	int _donateLuck : 0x1530;
@@ -778,6 +838,13 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _playerIndex : 0x1610;
 	int _moveDirection : 0x1618;
 	int _headDirection: 0x161c;
+	Vector _aimDirection : 0x1624;
+	Vector _lastDirection : 0x1630;
+	Vector _movementInput : 0x1638;
+	Vector _tearsOffset : 0x1640;
+	Vector _recentMovementVector : 0x1648;
+	Vector _velocityBeforeUpdate : 0x1654;
+	Vector _lastDamageSource : 0x1670;
 	uint32_t _trinketsID[2] : 0x16b0;
 	std_vector_int _collectibleCounts: 0x16b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1738;

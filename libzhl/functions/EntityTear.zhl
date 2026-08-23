@@ -61,7 +61,7 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};
-	
+
 	float _height : 0x410;
 	float _fallingSpeed : 0x414;
 	float _fallingAccel : 0x418;
@@ -80,8 +80,11 @@ struct Entity_Tear depends (ANM2, BitSet128, Vector) : public Entity {
 	float _deadEyeIntensity : 0x464;
 	bool _multidimensionalTouched : 0x468;
 	bool _prismTouched : 0x469;
+	Vector _stickDiff : 0x47c;
 	ANM2 _tearHaloANM2 : 0x4ac;
 	ANM2 _tearEffectANM2 : 0x5c0;
 	ANM2 _deadEyeANM2 : 0x6d4;
+	Vector _posDisplacement : 0x7ec;
+	Vector _parentOffset : 0x7f4;
 	float _tearRange : 0x820;
 } : 0x848;

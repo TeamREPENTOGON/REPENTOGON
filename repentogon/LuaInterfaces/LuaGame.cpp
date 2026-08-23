@@ -2,6 +2,210 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+LUA_FUNCTION(Lua_GameBombDamage)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos =  lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float damage = (float)luaL_checknumber(L, 3);
+	float radius = (float)luaL_checknumber(L, 4);
+	bool lineCheck = lua::luaL_optboolean(L, 5, true);
+	Entity* source = nullptr;
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+	}
+	BitSet128 tearFlags;
+	if (lua_type(L, 7) == LUA_TUSERDATA) {
+		tearFlags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 7, lua::Metatables::BITSET_128, "BitSet128");
+	}
+	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 8, eDamageFlag::DAMAGE_EXPLOSION);
+	bool damageSource = lua::luaL_optboolean(L, 9, false);
+
+	game->BombDamage(pos, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource);	
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameBombExplosionEffects)
+{
+	// Note: the docs are wrong here (for the signature), damageFlags and damageSource are swapped. See main.lua:560-562
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float damage = (float)luaL_checknumber(L, 3);
+	BitSet128 tearFlags;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		tearFlags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+	}
+	ColorMod color;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	}
+	Entity* source = nullptr;
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+	}
+	float radiusMult = (float)luaL_optnumber(L, 7, 1);
+	bool lineCheck = lua::luaL_optboolean(L, 8, true);
+	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 9, eDamageFlag::DAMAGE_EXPLOSION);
+	bool damageSource = lua::luaL_optboolean(L, 10, false);
+
+	game->BombExplosionEffects(pos, damage, tearFlags, &color, source, radiusMult, lineCheck, damageFlags, damageSource);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameBombTearflagEffects)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_checknumber(L, 3);
+	BitSet128* tearFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+	Entity* source = nullptr;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
+	}
+	float radiusMult = (float)luaL_optnumber(L, 6, 1);
+
+	game->BombTearflagEffects(pos, radius, *tearFlags, source, radiusMult);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameButterBeanFart)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_checknumber(L, 3);
+	Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	bool showEffect = lua::luaL_checkboolean(L, 5);
+	bool doSuperKnockback = lua::luaL_checkboolean(L, 6);
+
+	game->ButterBeanFart(pos, radius, source, showEffect, doSuperKnockback);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameCharmFart)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_checknumber(L, 3);
+	Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+
+	game->CharmFart(pos, radius, source);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameFart)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_optnumber(L, 3, 85);
+	Entity* source = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	}
+	float fartScale = (float)luaL_optnumber(L, 5, 1);
+	int fartSubType = (int)luaL_optinteger(L, 6, 1);
+	ColorMod color;
+	if (lua_type(L, 7) == LUA_TUSERDATA) {
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 7, lua::Metatables::COLOR, "Color");
+	}
+
+	game->Fart(pos, radius, source, fartScale, fartSubType, color);
+
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_GameGetNearestPlayer)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	
+	lua::luabridge::UserdataPtr::push(L, game->GetNearestPlayer(pos), lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GameGetRandomPlayer)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_checknumber(L, 3);
+
+	lua::luabridge::UserdataPtr::push(L, game->GetRandomPlayer(pos, radius), lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GameMakeShockwave)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float amplitude = (float)luaL_checknumber(L, 3);
+	float speed = (float)luaL_checknumber(L, 4);
+	int duration = (int)luaL_checkinteger(L, 5);
+	
+	game->MakeShockwave(*pos, amplitude, speed, duration);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameSpawn)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int type = (int)luaL_checkinteger(L, 2);
+	int variant = (int)luaL_checkinteger(L, 3);
+	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+	int subtype = (int)luaL_checkinteger(L, 7);
+	int seed = (int)luaL_checkinteger(L, 8);
+
+	game->Spawn(type, variant, *pos, *vel, spawner, subtype, seed, 0);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameSpawnParticles)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	int variant = (int)luaL_checkinteger(L, 3);
+	int num = (int)luaL_checkinteger(L, 4);
+	float speed = (float)luaL_checknumber(L, 5);
+	ColorMod color;
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 6, lua::Metatables::COLOR, "Color");
+	}
+	float height = (float)luaL_optnumber(L, 7, 100000);
+	int subtype = (int)luaL_optinteger(L, 8, 0);
+
+	game->SpawnParticles(pos, variant, num, speed, color, height, subtype);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameUpdateStrangeAttractor)
+{
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float force = (float)luaL_optnumber(L, 3, 10);
+	float radius = (float)luaL_optnumber(L, 4, 250);
+
+	game->UpdateStrangeAttractor(pos, force, radius);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameGetScreenShakeOffset) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], game->_screenShakeOffset);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GameAchievementUnlocksDisallowed)
 {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -84,7 +288,7 @@ LUA_FUNCTION(Lua_GameAddDebugFlags)
 
 LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float radius = (const float)luaL_optnumber(L, 3, 1.0f);
 	Entity* crater = game->SpawnBombCrater(pos, radius);
 
@@ -342,7 +546,7 @@ LUA_FUNCTION(Lua_GetGenericPrompt) {
 
 LUA_FUNCTION(Lua_ChainLightning) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float baseDamage = (float)luaL_optnumber(L, 3, 3.5f);
 	BitSet128 flags { 0, 0, 0 ,0 };
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
@@ -380,8 +584,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
-
 	luaL_Reg functions[] = {
+		{ "BombDamage", Lua_GameBombDamage },
+		{ "BombExplosionEffects", Lua_GameBombExplosionEffects },
+		{ "BombTearflagEffects", Lua_GameBombTearflagEffects },
+		{ "ButterBeanFart", Lua_GameButterBeanFart },
+		{ "CharmFart", Lua_GameCharmFart },
+		{ "Fart", Lua_GameFart },
+		{ "GetNearestPlayer", Lua_GameGetNearestPlayer },
+		{ "GetRandomPlayer", Lua_GameGetRandomPlayer },
+		{ "MakeShockwave", Lua_GameMakeShockwave },
+		{ "Spawn" , Lua_GameSpawn },
+		{ "SpawnParticles" , Lua_GameSpawnParticles },
+		{ "UpdateStrangeAttractor" , Lua_GameUpdateStrangeAttractor },
 		{ "ClearErasedEnemies", Lua_ClearErasedEnemies },
 		{ "AddShopVisits", Lua_GameAddShopVisits },
 		{ "GetShopVisits", Lua_GameGetShopVisits },
@@ -423,4 +638,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
 
 	lua::RegisterVariableSetter(_state, lua::Metatables::GAME, "Difficulty", Lua_SetDifficulty);
+	lua::RegisterVariableGetter(_state, lua::Metatables::GAME, "ScreenShakeOffset", Lua_GameGetScreenShakeOffset);
 }

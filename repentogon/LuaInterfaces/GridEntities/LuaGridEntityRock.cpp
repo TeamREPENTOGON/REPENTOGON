@@ -5,7 +5,7 @@
 LUA_FUNCTION(Lua_GridEntityRockRenderTop)
 {
 	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	const Vector* offset = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	const Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	gridEnt->RenderTop(*offset);
 	return 0;
 }
@@ -65,7 +65,7 @@ LUA_FUNCTION(Lua_GridEntityRockUpdateCollision)
 
 LUA_FUNCTION(Lua_GridEntityRockSpawnDrops)
 {
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	int gridType = (int)luaL_checkinteger(L, 2);
 	int gridVariant = (int)luaL_checkinteger(L, 3);
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 4);

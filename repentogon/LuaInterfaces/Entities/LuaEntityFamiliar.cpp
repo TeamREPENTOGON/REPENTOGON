@@ -4,6 +4,73 @@
 #include "../../Patches/FamiliarTags.h"
 #include "../../Patches/EntityPlus.h"
 
+LUA_FUNCTION(Lua_FamiliarGetOrbitDistance)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	int layer = (int)luaL_checkinteger(L, 2);
+	
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	fam->GetOrbitDistance(toLua, layer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarGetOrbitPosition)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	fam->GetOrbitPosition(toLua, offset);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarFireProjectile)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	fam->FireProjectile(*dir, false);
+
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_FamiliarPickEnemyTarget)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	float maxDistance = (float)luaL_checknumber(L, 2);
+	int frameInterval = (int)luaL_optinteger(L, 3, 13);
+	int flags = (int)luaL_optinteger(L, 4, 0);
+	Vector coneDir = Vector(0, 0);
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		coneDir = *lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+	float coneAngle = (float)luaL_optnumber(L, 6, 15);
+
+	fam->PickEnemyTarget(maxDistance, frameInterval, flags, &coneDir, coneAngle);
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_FamiliarGetOrbitDistanceVar)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	lua::ffi::pushCdataPtr(L, &fam->_orbitDistance, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarSetOrbitDistanceVar)
+{
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Vector* orbitDistance = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	fam->_orbitDistance = *orbitDistance;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_FamiliarGetFollowerPriority)
 {
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
@@ -26,18 +93,18 @@ LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Vector aimDirection;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		aimDirection = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		aimDirection = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	int direction = (int)luaL_optinteger(L, 3, -1);
 	Vector targetPosBuffer;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		targetPosBuffer = *lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+		targetPosBuffer = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	bool success = fam->TryAimAtMarkedTarget(&aimDirection, &direction, &targetPosBuffer);
 
 	if (lua_gettop(L) == 3) {
 		if (success) {
-			lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
+			lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], targetPosBuffer);
 		}
 		else
 		{
@@ -50,13 +117,13 @@ LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 
 	lua_newtable(L);
 	lua_pushinteger(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), aimDirection);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], aimDirection);
 	lua_rawset(L, -3);
 	lua_pushinteger(L, 2);
 	lua_pushinteger(L, direction);
 	lua_rawset(L, -3);
 	lua_pushinteger(L, 3);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), targetPosBuffer);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], targetPosBuffer);
 	lua_rawset(L, -3);
 	
 	return 2;
@@ -268,6 +335,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetOrbitDistance", Lua_FamiliarGetOrbitDistance },
+		{ "GetOrbitPosition", Lua_FamiliarGetOrbitPosition },
+		{ "FireProjectile", Lua_FamiliarFireProjectile },
 		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },
 		{ "GetPathFinder", Lua_FamiliarGetPathFinder }, // depreciated
 		{ "GetPathfinder", Lua_FamiliarGetPathFinder },
@@ -298,4 +368,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_FAMILIAR, functions);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetRandomWisp", Lua_GetRandomWisp);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_FAMILIAR, "OrbitDistance", Lua_FamiliarGetOrbitDistanceVar, Lua_FamiliarSetOrbitDistanceVar);
 }

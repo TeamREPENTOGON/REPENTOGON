@@ -34,6 +34,360 @@
  (copycat of kilburn's ascii art of Isaac)
 */
 
+LUA_FUNCTION(Lua_AddBlueFlies) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int amount = (int)luaL_checkinteger(L, 2);
+	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* target = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+
+	lua::luabridge::UserdataPtr::push(L, player->AddBlueFlies(amount, position, target), lua::GetMetatableKey(lua::Metatables::ENTITY));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddBlueSpider) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, player->AddBlueSpider(position), lua::GetMetatableKey(lua::Metatables::ENTITY));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddFriendlyDip) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int subtype = (int)luaL_checkinteger(L, 2);
+	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, player->AddFriendlyDip(subtype, position), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddItemWisp) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	CollectibleType collectible = (CollectibleType)luaL_checkinteger(L, 2);
+	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool adjustOrbitLayer = lua::luaL_optboolean(L, 4, false);
+
+	lua::luabridge::UserdataPtr::push(L, player->AddItemWisp(collectible, *position, adjustOrbitLayer), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddMinisaac) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool playAnim = lua::luaL_optboolean(L, 3, false);
+
+	lua::luabridge::UserdataPtr::push(L, player->AddMinisaac(position, playAnim), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddSwarmFlyOrbital) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, player->AddSwarmFlyOrbital(position), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddWisp) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	CollectibleType collectible = (CollectibleType)luaL_checkinteger(L, 2);
+	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool adjustOrbitLayer = lua::luaL_optboolean(L, 4, false);
+	bool dontUpdate = lua::luaL_optboolean(L, 5, false);
+
+	lua::luabridge::UserdataPtr::push(L, player->AddWisp(collectible, position, adjustOrbitLayer, dontUpdate), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_DoZitEffect) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->DoZitEffect(direction);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_DropPocketItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int pocketNum = (int)luaL_checkinteger(L, 2);
+	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->DropPocketItem(pocketNum, pos);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_DropTrinket) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* dropPos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool replaceTick = lua::luaL_optboolean(L, 3, false);
+
+	player->DropTrinket(dropPos, replaceTick);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_FireBomb) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* source = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
+	}
+
+	lua::luabridge::UserdataPtr::push(L, player->FireBomb(position, velocity, source), lua::GetMetatableKey(lua::Metatables::ENTITY_BOMB));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FireBrimstone) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* source = nullptr;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
+	}
+	float damageMultiplier = (float)luaL_optnumber(L, 4, 1.0f);
+
+	lua::luabridge::UserdataPtr::push(L, player->FireBrimstone(direction, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FireTear) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool canBeEye = lua::luaL_optboolean(L, 4, true);
+	bool noTractorBeam = lua::luaL_optboolean(L, 5, false);
+	bool canTriggerStreakEnd = lua::luaL_optboolean(L, 6, true);
+	Entity* source = nullptr;
+	if (lua_type(L, 7) == LUA_TUSERDATA) {
+		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 7, lua::Metatables::ENTITY, "Entity");
+	}
+	float damageMultiplier = (float)luaL_optnumber(L, 8, 1.0f);
+
+	int flags = (canBeEye ? 0x4 : 0) | (noTractorBeam ? 0x2 : 0) | (canTriggerStreakEnd ? 0x1 : 0);
+
+	lua::luabridge::UserdataPtr::push(L, player->FireTear(position, *velocity, flags, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_TEAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FireTechLaser) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	int offsetID = (int)luaL_checkinteger(L, 3);
+	Vector* direction = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool leftEye = lua::luaL_optboolean(L, 5, true);
+	bool oneHit = lua::luaL_optboolean(L, 6, false);
+	Entity* source = nullptr;
+	if (lua_type(L, 7) == LUA_TUSERDATA) {
+		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 7, lua::Metatables::ENTITY, "Entity");
+	}
+	float damageMultiplier = (float)luaL_optnumber(L, 8, 1.0f);
+
+	lua::luabridge::UserdataPtr::push(L, player->FireTechLaser(*position, offsetID, *direction, leftEye, oneHit, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FireTechXLaser) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* direction = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float radius = (float)luaL_checknumber(L, 4);
+	Entity* source = nullptr;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
+	}
+	float damageMultiplier = (float)luaL_optnumber(L, 6, 1.0f);
+	
+	lua::luabridge::UserdataPtr::push(L, player->FireTechXLaser(*position, *direction, radius, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_GetAimDirection) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_aimDirection);
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_GetCostumeNullPos) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	const char* nullFrameName = (const char*)luaL_checkstring(L, 2);
+	bool headScale = lua::luaL_checkboolean(L, 3);
+	Vector* direction = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->GetCostumeNullPos(nullFrameName, headScale, direction));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetFlyingOffset) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->GetFlyingOffset());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetLaserOffset) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	Vector* direction = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	player->GetLaserOffset(toLua, id, direction);
+	return 1;
+}
+	
+
+LUA_FUNCTION(Lua_GetLastDamageSource) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_lastDamageSource);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetLastDirection) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_lastDirection);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetMovementInput) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_movementInput);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetMovementJoystick) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	player->GetMovementJoystick(toLua);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetRecentMovementVector) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_recentMovementVector);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetShootingJoystick) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	player->GetShootingJoystick(toLua);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetTearMovementInheritance) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* shotDirection = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	player->GetTearMovementInheritance(toLua, shotDirection, false);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetVelocityBeforeUpdate) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_velocityBeforeUpdate);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsPosInSpotLight) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->IsPosInSpotLight(position));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RenderGlow) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->RenderGlow(position);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RenderTop) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->RenderTop(position);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ShootRedCandle) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->ShootRedCandle(direction);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ThrowBlueSpider) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* target = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, player->ThrowBlueSpider(position, target), lua::GetMetatableKey(lua::Metatables::ENTITY));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ThrowFriendlyDip) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int subtype = luaL_checkinteger(L, 2);
+	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* target = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	void* unk = nullptr;
+	lua::luabridge::UserdataPtr::push(L, player->ThrowFriendlyDip(subtype, position, unk, target), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ThrowHeldEntity) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* velocity = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, player->ThrowHeldEntity(velocity), lua::GetMetatableKey(lua::Metatables::ENTITY));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetTearsOffset) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_tearsOffset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetTearsOffset) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->_tearsOffset = *offset;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSpriteScale) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_spriteScale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSpriteScale) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* scale = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->_spriteScale = *scale;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_HasCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
@@ -163,7 +517,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = (int)luaL_checkinteger(L, 2);
 	int weaponType = (int)luaL_checkinteger(L, 3);
-	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	Vector* shotDirection = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
 	Weapon_MultiShotParams* multiShotParams = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
@@ -445,7 +799,7 @@ LUA_FUNCTION(Lua_PlayerGetDeadEyeCharge)
 LUA_FUNCTION(Lua_PlayerTeleport)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool doEffects = lua::luaL_optboolean(L, 3, true);
 	bool teleportTwinPlayers = lua::luaL_optboolean(L, 4, false);
 
@@ -925,7 +1279,7 @@ LUA_FUNCTION(Lua_PlayerSetWeapon) {
 LUA_FUNCTION(Lua_PlayerAddLocust) {
 	Entity_Player* ent = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int collectibleType = (int)luaL_checkinteger(L, 2);
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Isaac::SpawnLocust(ent, collectibleType, pos);
 
 	return 0;
@@ -2012,7 +2366,7 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 
 LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	
 	Entity* orbital = player->AddBoneOrbital(position);
 
@@ -2096,11 +2450,11 @@ LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 // might need asm patch to retrieve laser. this is wacky and can spawn both an effect and a laser
 LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* vel = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* vel = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector offset;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		offset = *lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+		offset = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 
 	Entity_Effect* effect = player->FireBrimstoneBall(*pos, *vel, offset, 0, 0, nullptr);
@@ -2120,7 +2474,7 @@ LUA_FUNCTION(Lua_PlayerGetBodyMoveDirection) {
 
 	Vector dir;
 	player->GetBodyMoveDirection(&dir);
-	lua::luabridge::UserdataPtr::push(L, &dir, lua::Metatables::VECTOR);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], dir);
 
 	return 1;
 }
@@ -2147,7 +2501,7 @@ LUA_FUNCTION(Lua_PlayerGetSpecialGridCollision) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector pos = *player->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 
 	lua_pushinteger(L, player->GetSpecialGridCollision(&pos));
@@ -2164,7 +2518,7 @@ LUA_FUNCTION(Lua_PlayerGetEnterPosition) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector dir;
 	player->GetEnterPosition(&dir);
-	lua::luabridge::UserdataPtr::push(L, &dir, lua::Metatables::VECTOR);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], dir);
 	return 1;
 }
 
@@ -2417,7 +2771,7 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	else {
 		subtype = (int)luaL_checkinteger(L, 2);
 		if (lua_type(L, 3) == LUA_TUSERDATA) {
-			pos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+			pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 		}
 
 		if (lua_type(L, 4) == LUA_TUSERDATA) {
@@ -2467,7 +2821,7 @@ LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 // todo: asm patch to return effect
 LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* shotDirection = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* flame = player->ShootBlueCandle(shotDirection);
 	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
@@ -2477,7 +2831,7 @@ LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 // not sure if this returns the clot or not
 LUA_FUNCTION(Lua_PlayerSpawnClot) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool canKillPlayer = lua::luaL_optboolean(L, 3, false);
 	player->SpawnClot(pos, canKillPlayer);
 	return 0;
@@ -2515,7 +2869,7 @@ LUA_FUNCTION(Lua_PlayerTryDecreaseGlowingHourglassUses) {
 
 LUA_FUNCTION(Lua_PlayerTryForgottenThrow) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	lua_pushboolean(L, player->TryForgottenThrow(dir));
 	return 1;
 }
@@ -3151,7 +3505,7 @@ LUA_FUNCTION(Lua_PlayerSetSuplexAimCountdown) {
 LUA_FUNCTION(Lua_PlayerGetSuplexTargetPosition) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), player ->_suplexTargetPos);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player ->_suplexTargetPos);
 
 	return 1;
 }
@@ -3159,7 +3513,7 @@ LUA_FUNCTION(Lua_PlayerGetSuplexTargetPosition) {
 LUA_FUNCTION(Lua_PlayerSetSuplexTargetPosition) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	player->_suplexTargetPos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	player->_suplexTargetPos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }
@@ -3167,7 +3521,7 @@ LUA_FUNCTION(Lua_PlayerSetSuplexTargetPosition) {
 LUA_FUNCTION(Lua_PlayerGetSuplexLandPosition) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), player->_suplexLandPos);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_suplexLandPos);
 
 	return 1;
 }
@@ -3175,7 +3529,7 @@ LUA_FUNCTION(Lua_PlayerGetSuplexLandPosition) {
 LUA_FUNCTION(Lua_PlayerSetSuplexLandPosition) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	player->_suplexLandPos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	player->_suplexLandPos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }
@@ -3184,7 +3538,7 @@ LUA_FUNCTION(Lua_PlayerCreateAfterimage) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
 	const int duration = (int)luaL_checkinteger(L, 2);
-	const Vector pos = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const Vector pos = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	player->_afterImageFrames.push_back({ duration, pos });
 
@@ -3497,7 +3851,7 @@ LUA_FUNCTION(Lua_PlayerGetErrorTrinketEffect) {
 
 LUA_FUNCTION(Lua_PlayerShootRedCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector* shotDirection = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* shotDirection = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* flame = player->ShootRedCandle(shotDirection);
 	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
@@ -3549,8 +3903,43 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		{ "HasCollectible",Lua_HasCollectible },
-		{ "GetCollectibleNum",Lua_GetCollectibleNum },
+		{ "AddBlueFlies", Lua_AddBlueFlies },
+		{ "AddBlueSpider", Lua_AddBlueSpider },
+		{ "AddFriendlyDip", Lua_AddFriendlyDip },
+		{ "AddItemWisp", Lua_AddItemWisp },
+		{ "AddMinisaac", Lua_AddMinisaac },
+		{ "AddWisp", Lua_AddWisp },
+		{ "DoZitEffect", Lua_DoZitEffect },
+		{ "DropPocketItem", Lua_DropPocketItem },
+		{ "DropTrinket", Lua_DropTrinket },
+		{ "DoZitEffect", Lua_DoZitEffect },
+		{ "FireBomb", Lua_FireBomb },
+		{ "FireBrimstone", Lua_FireBrimstone },
+		{ "FireTear", Lua_FireTear },
+		{ "FireTechLaser", Lua_FireTechLaser },
+		{ "FireTechXLaser", Lua_FireTechXLaser },
+		{ "GetAimDirection", Lua_GetAimDirection },
+		{ "GetCostumeNullPos", Lua_GetCostumeNullPos },
+		{ "GetLaserOffset", Lua_GetLaserOffset },
+		{ "GetLastDamageSource", Lua_GetLastDamageSource },
+		{ "GetLastDirection", Lua_GetLastDirection },
+		{ "GetMovementInput", Lua_GetMovementInput },
+		{ "GetMovementJoystick", Lua_GetMovementJoystick },
+		{ "GetMovementVector", Lua_GetMovementInput },
+		{ "GetRecentMovementVector", Lua_GetRecentMovementVector },
+		{ "GetShootingInput", Lua_GetShootingJoystick },
+		{ "GetShootingJoystick", Lua_GetShootingJoystick },
+		{ "GetTearMovementInheritance", Lua_GetTearMovementInheritance },
+		{ "GetVelocityBeforeUpdate", Lua_GetVelocityBeforeUpdate },
+		{ "IsPosInSpotLight", Lua_IsPosInSpotLight },
+		{ "RenderGlow", Lua_RenderGlow },
+		{ "RenderTop", Lua_RenderTop },
+		{ "ShootRedCandle", Lua_ShootRedCandle },
+		{ "ThrowBlueSpider", Lua_ThrowBlueSpider },
+		{ "ThrowFriendlyDip", Lua_ThrowFriendlyDip },
+		{ "ThrowHeldEntity", Lua_ThrowHeldEntity },
+		{ "HasCollectible", Lua_HasCollectible },
+		{ "GetCollectibleNum", Lua_GetCollectibleNum },
 		{ "AddCollectible", Lua_AddCollectible },
 		{ "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity },
 		{ "InitTwin", Lua_InitTwin },
@@ -3874,6 +4263,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// fix BabySkin Variable
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "BabySkin", Lua_PlayerGetBabySkin, Lua_PlayerSetBabySkin);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearsOffset", Lua_GetTearsOffset, Lua_SetTearsOffset);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "SpriteScale", Lua_PlayerGetSpriteScale, Lua_PlayerSetSpriteScale);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
 }

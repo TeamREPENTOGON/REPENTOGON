@@ -126,6 +126,18 @@ __thiscall bool Entity::IsActiveEnemy(bool includeDead);
 "558bec8b45??0981????????8b45??0981????????5dc20800??????????????558bec8b55":
 __thiscall void Entity::AddEntityFlags(unsigned int l, unsigned int h);
 
+"558bec8b55??8b45??f7d2":
+__thiscall void Entity::ClearEntityFlags(unsigned int l, unsigned int h);
+
+"558becf30f1099":
+__thiscall void Entity::AddVelocity(Vector * velocity, bool ignoreTimeScale);
+
+"558bec83e4c083ec38568bf1":
+__thiscall void Entity::Render(Vector * offset);
+
+"558bec83e4f8f30f1055":
+__thiscall void Entity::SetSize(float size, Vector sizeMulti, int numGridCollisionPoints);
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 {{
 	inline int GetIndex() { return this->_index; }
@@ -236,10 +248,12 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     int _brimstoneMarkCountdown : 0x304;
     Vector _knockbackDirection : 0x308;
 	int _pauseTimer : 0x31c;
+	Vector _targetPos : 0x334;
     Vector _pos : 0x33c;
 	Vector _posOffset : 0x34c;
     Vector _velocity : 0x360;
     float _size : 0x370;
+	Vector _sizeMulti : 0x374;
     float _collisionDamage : 0x388;
     float _speedMultiplier : 0x39c;
 	bool _isInvicible : 0x3b0;

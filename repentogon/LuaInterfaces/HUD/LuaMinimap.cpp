@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 	Minimap* minimap = g_Game->GetMinimap();
 	Vector buffer;
 	buffer = *minimap->GetDisplayedSize(buffer);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), buffer);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], buffer);
 
 	return 1;
 }
@@ -81,14 +81,14 @@ LUA_FUNCTION(Lua_MinimapSetShakeDuration)
 LUA_FUNCTION(Lua_MinimapGetShakeOffset)
 {
 	Minimap* minimap = g_Game->GetMinimap();
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), minimap->_shakeOffset);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], minimap->_shakeOffset);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapSetShakeOffset)
 {
 	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_shakeOffset = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	minimap->_shakeOffset = *lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 

@@ -5,7 +5,7 @@
 LUA_FUNCTION(Lua_AnimationFrameGetCrop)
 {
 	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->crop);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], animationFrame->crop);
 	return 1;
 }
 
@@ -26,21 +26,21 @@ LUA_FUNCTION(Lua_AnimationFrameGetHeight)
 LUA_FUNCTION(Lua_AnimationFrameGetPos)
 {
 	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->pos);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], animationFrame->pos);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetScale)
 {
 	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->scale);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], animationFrame->scale);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_AnimationFrameGetPivot)
 {
 	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), animationFrame->pivot);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], animationFrame->pivot);
 	return 1;
 }
 

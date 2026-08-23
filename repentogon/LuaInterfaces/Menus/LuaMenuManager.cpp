@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_WorldToMenuPosition)
 			return luaL_error(L, "Expected two parameters(MenuId,WorldPosition) got %d\n", n);
 		}
 		eMainMenuType menuid = (eMainMenuType)luaL_checkinteger(L, 1);
-		Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 		Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
 		Vector posbase = *ref + Vector(39, 15);
 		ref = &posbase;
@@ -26,7 +26,7 @@ LUA_FUNCTION(Lua_WorldToMenuPosition)
 			return luaL_error(L, "Invalid Menu Id %d\n", menuid);
 		}
 		
-		lua::LuaCaller(L).pushUserdataValue(Vector(offset.x + pos->x, offset.y + pos->y), lua::Metatables::VECTOR);
+		lua::LuaCaller(L).push(Vector(offset.x + pos->x, offset.y + pos->y), lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 		return 1;
 	}
 	else {
@@ -173,7 +173,7 @@ LUA_FUNCTION(Lua_MenuGetViewPosition)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = menuManager->_ViewPosition;
 
 	return 1;
@@ -183,7 +183,7 @@ LUA_FUNCTION(Lua_MenuSetViewPosition)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_ViewPosition = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	menuManager->_ViewPosition = *lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }

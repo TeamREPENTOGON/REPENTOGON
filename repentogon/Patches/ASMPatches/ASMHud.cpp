@@ -157,7 +157,7 @@ HOOK_METHOD(HistoryHUD, Render, (Vector* pos, bool mini) -> void) {
 		lua::LuaResults results = lua::LuaCaller(L).push(precallbackid)
 			.pushnil()
 			.push(this, lua::metatables::HistoryHUDMT)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(mini)
 			.call(1);
 
@@ -182,7 +182,7 @@ HOOK_METHOD(HistoryHUD, Render, (Vector* pos, bool mini) -> void) {
 		lua::LuaResults results = lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
 			.push(this, lua::metatables::HistoryHUDMT)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(mini)
 			.call(1);
 	}

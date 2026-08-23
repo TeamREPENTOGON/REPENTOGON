@@ -3,6 +3,25 @@
 #include "HookSystem.h"
 #include "../../Patches/GridEntityPlus.h"
 
+LUA_FUNCTION(Lua_GridEntityRender)
+{
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	gridEnt->Render(*offset);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GridEntityGetPosition)
+{
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+	
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	gridEnt->GetPosition(toLua);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GridEntityHurtDamage)
 {
 	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
@@ -31,10 +50,9 @@ LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 LUA_FUNCTION(Lua_GridEntityGetRenderPosition)
 {
 	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	//Vector* position = lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	Vector* buffer = new Vector(0, 0);	//not sure whether new is needed here, can someone check later?
-	*toLua = *gridEnt->GetRenderPosition(buffer);
+	//Vector* position = lua::GetRawUserdata<Vector*>(L, 2, lua::Metatable::VECTOR, "Vector");
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	gridEnt->GetRenderPosition(toLua);
 	return 1;
 }
 
@@ -81,6 +99,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "Render", Lua_GridEntityRender },
 		{ "HurtDamage", Lua_GridEntityHurtDamage },
 		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
 		{ "GetRenderPosition", Lua_GridEntityGetRenderPosition },
@@ -91,4 +110,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY, functions);
+	lua::RegisterVariableGetter(_state, lua::Metatables::GRID_ENTITY, "Position", Lua_GridEntityGetPosition);
 }

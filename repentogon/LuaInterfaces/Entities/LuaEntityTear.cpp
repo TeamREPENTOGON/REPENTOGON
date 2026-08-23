@@ -6,6 +6,67 @@
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
 
+LUA_FUNCTION(Lua_TearGetParentOffset) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_parentOffset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearSetParentOffset) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	tear->_parentOffset = *offset;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearGetContinueVelocity) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_continueVelocity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearSetContinueVelocity) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Vector* velocity = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	tear->_continueVelocity = *velocity;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearGetPosDisplacement) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_posDisplacement);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearSetPosDisplacement) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Vector* displacement = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	tear->_posDisplacement = *displacement;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TearGetStickDiff) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_stickDiff);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearSetStickDiff) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Vector* diff = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	tear->_stickDiff = *diff;
+	return 0;
+}
+
+
 LUA_FUNCTION(Lua_TearGetDeadEyeIntensity)
 {
 	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
@@ -159,6 +220,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "SetParentOffset", Lua_TearSetParentOffset }, // what a useless func
 		{ "GetDeadEyeIntensity", Lua_TearGetDeadEyeIntensity },
 		{ "MakeMultidimensionalCopy", Lua_TearMakeMultidimensionalCopy },
 		{ "GetTearHaloSprite", Lua_GetTearHaloSprite },
@@ -179,4 +241,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "ContinueVelocity", Lua_TearGetContinueVelocity, Lua_TearSetContinueVelocity);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "ParentOffset", Lua_TearGetParentOffset, Lua_TearSetParentOffset);
+	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_TEAR, "PosDisplacement", Lua_TearGetPosDisplacement);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "StickDiff", Lua_TearGetStickDiff, Lua_TearSetStickDiff);
 }

@@ -229,7 +229,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_GetPos) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+		Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 		*toLua = st.targetPosition;
 
 		return 1;
@@ -238,7 +238,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 	LUA_FUNCTION(Lua_SetPos) {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
-		st.targetPosition = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		st.targetPosition = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 		return 0;
 	}

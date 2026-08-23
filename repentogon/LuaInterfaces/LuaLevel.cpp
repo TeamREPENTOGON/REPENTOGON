@@ -8,6 +8,31 @@
 
 LevelASM levelASM;
 
+LUA_FUNCTION(Lua_LevelGetEnterPosition) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	level->GetEnterPosition(toLua);
+
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_LevelGetDungeonReturnPosition) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], level->_dungeonReturnPos);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelSetDungeonReturnPosition) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	level->_dungeonReturnPos = *pos;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
 	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int roomIDX = (int)luaL_checkinteger(L, 2);

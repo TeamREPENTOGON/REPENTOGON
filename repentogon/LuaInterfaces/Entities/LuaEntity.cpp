@@ -4,12 +4,158 @@
 #include "../../Patches/ASMPatches/ASMCallbacks.h"
 #include "../../Patches/EntityPlus.h"
 
+LUA_FUNCTION(Lua_EntityAddVelocity)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* vel = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool ignoreTimeScale = lua::luaL_optboolean(L, 3, false);
+
+	ent->AddVelocity(vel, false); 
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityRender)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->Render(offset);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityRenderShadowLayer)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua_pushboolean(L, ent->RenderShadowLayer(offset));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetSize)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	float size = (float)luaL_checknumber(L, 2);
+	Vector* sizeMulti = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	int numGridCollisionPoints = (int)luaL_checkinteger(L, 4);
+
+	ent->SetSize(size, *sizeMulti, numGridCollisionPoints);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetPosition) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_pos);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetPosition) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_pos = *pos;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetPositionOffset) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_posOffset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetPositionOffset) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_posOffset = *offset;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_GetSizeMulti) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_sizeMulti);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetSizeMulti) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* multi = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_sizeMulti = *multi;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetSpriteOffset) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_sprite._offset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetSpriteOffset) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_sprite._offset = *offset;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetSpriteScale) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_sprite._scale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetSpriteScale) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* scale = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_sprite._scale = *scale;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetTargetPosition) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_targetPos);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetTargetPosition) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* targetPos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_targetPos = *targetPos;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetVelocity) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_velocity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetVelocity) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* velocity = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	ent->_velocity = *velocity;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_EntityAddEntityFlags)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	uint64_t flags = lua::luaL_checkuint64(L, 2);
 	
 	ent->AddEntityFlags(static_cast<unsigned int>(flags & 0xFFFFFFFFu), static_cast<unsigned int>(flags >> 32));
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityClearEntityFlags)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	uint64_t flags = lua::luaL_checkuint64(L, 2);
+
+	ent->ClearEntityFlags(static_cast<unsigned int>(flags & 0xFFFFFFFFu), static_cast<unsigned int>(flags >> 32));
 	return 0;
 }
 
@@ -71,7 +217,7 @@ LUA_FUNCTION(Lua_EntityAddKnockback)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector"); //replace with const?
+	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector"); //replace with const?
 	int duration = (int)luaL_checkinteger(L, 4);
 	bool TakeImpactDamage = lua::luaL_checkboolean(L, 5);
 	ent->AddKnockback(*ref, *pos, duration, TakeImpactDamage);
@@ -108,7 +254,7 @@ LUA_FUNCTION(Lua_EntityGetNullOffset)
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	const char* nullLayerName = luaL_checkstring(L, 2);
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), entity->GetNullOffset(nullLayerName));
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], entity->GetNullOffset(nullLayerName));
 
 	return 1;
 }
@@ -189,8 +335,8 @@ LUA_FUNCTION(lua_EntityGiveMinecart) {
 	}
 
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* velocity = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Entity* minecart = entity->GiveMinecart(position, velocity);
 	lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
@@ -248,7 +394,7 @@ LUA_FUNCTION(Lua_Entity_SetSpeedMultiplier) {
 LUA_FUNCTION(Lua_EntityTryThrow) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	Vector* dir = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* dir = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float force = (float)luaL_checknumber(L, 4);
 	lua_pushboolean(L, entity->TryThrow(*ref, dir, force));
 	return 1;
@@ -257,10 +403,10 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 // will need an asm patch to return a table of effects
 LUA_FUNCTION(Lua_EntitySpawnWaterImpactEffects) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector vel;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		vel = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+		vel = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	const float scale = (float)luaL_checknumber(L, 4);
 
@@ -275,7 +421,7 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 	const float delay = (float)luaL_checknumber(L, 3);
 	Vector res = entity->GetPredictedTargetPosition(target, delay);
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), res);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], res);
 
 	return 1;
 }
@@ -285,11 +431,11 @@ LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 	int subtype = (int)luaL_optinteger(L, 2, 0);
 	Vector pos = *entity->GetPosition();
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pos = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+		pos = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	Vector offset;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		offset = *lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+		offset = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	ColorMod color;
 	if (lua_type(L, 5) == LUA_TUSERDATA) {
@@ -297,7 +443,7 @@ LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 	}
 	Vector velocity;
 	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		velocity = *lua::GetLuabridgeUserdata<Vector*>(L, 6, lua::Metatables::VECTOR, "Vector");
+		velocity = *lua::GetCData<Vector*>(L, 6, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 
 	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 2, pos, velocity, nullptr, subtype, Isaac::genrand_int32(), 0);
@@ -314,7 +460,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector pos = *entity->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	
 	ColorMod color;
@@ -340,7 +486,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector pos = *entity->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 
 	ColorMod color;
@@ -808,7 +954,7 @@ LUA_FUNCTION(Lua_EntitySetBurnDamage) {
 LUA_FUNCTION(Lua_EntityGetKnockbackDirection)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = ent->_knockbackDirection;
 	return 1;
 }
@@ -816,7 +962,7 @@ LUA_FUNCTION(Lua_EntityGetKnockbackDirection)
 LUA_FUNCTION(Lua_EntitySetKnockbackDirection)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	ent->_knockbackDirection = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	ent->_knockbackDirection = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
@@ -877,6 +1023,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AddVelocity", Lua_EntityAddVelocity },
+		{ "Render", Lua_EntityRender },
+		{ "RenderShadowLayer", Lua_EntityRenderShadowLayer },
+		{ "SetSize", Lua_EntitySetSize },
 		{ "AddTearFlags", Lua_EntityAddEntityFlags },
 		{ "AddBleeding", Lua_EntityAddBleeding },
 		{ "AddMagnetized", Lua_EntityAddMagnetized },
@@ -970,4 +1120,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
 
 	lua::RegisterVariableSetter(_state, lua::Metatables::ENTITY, "Variant", Lua_EntitySetVariant);
+	
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Position", Lua_Entity_GetPosition, Lua_Entity_SetPosition);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "PositionOffset", Lua_Entity_GetPositionOffset, Lua_Entity_SetPositionOffset);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SizeMulti", Lua_Entity_GetSizeMulti, Lua_Entity_SetSizeMulti);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SpriteOffset", Lua_Entity_GetSpriteOffset, Lua_Entity_SetSpriteOffset);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SpriteScale", Lua_Entity_GetSpriteScale, Lua_Entity_SetSpriteScale);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "TargetPosition", Lua_Entity_GetTargetPosition, Lua_Entity_SetTargetPosition);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Velocity", Lua_Entity_GetVelocity, Lua_Entity_SetVelocity);
 }

@@ -635,7 +635,7 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 		y = (float)*(double*)(g_KAGEInputController + 0x50);
 	}
 
-	lua::LuaCaller(L).pushUserdataValue(Vector(x, y), lua::Metatables::VECTOR);
+	lua::LuaCaller(L).push(Vector(x, y), lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 
 	return 1;
 }

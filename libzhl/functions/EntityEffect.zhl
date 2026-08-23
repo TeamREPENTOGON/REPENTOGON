@@ -11,7 +11,7 @@ static cleanup Entity_Effect* Entity_Effect::CreateLootPreview(LootList* lootlis
 "558bec51568bf18975??e8????????c706????????8bc6c786????????00000000c786????????00000000c786????????00000000c786????????00000000c786????????00000000":
 __thiscall void Entity_Effect::constructor();
 
-struct Entity_Effect depends (BitSet128) : public Entity {
+struct Entity_Effect depends (BitSet128, Vector) : public Entity {
     __vtable {
 		skip; // Free
 		skip; // Init
@@ -50,6 +50,7 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 	int _state : 0x450;
 	int _timeout : 0x45c;
 	int _lifespan : 0x460;
+	Vector _parentOffset : 0x468;
 
 } : 0x490;
 

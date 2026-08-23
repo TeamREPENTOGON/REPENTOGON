@@ -70,7 +70,16 @@ static __fastcall int Entity_Familiar::GetRandomWisp(RNG& rng);
 "558bec6aff68????????64a1????????5081ec80000000a1????????33c58945??535657508d45??64a3????????8bf9":
 __thiscall void Entity_Familiar::RestoreState(FamiliarData* saveData);
 
-struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : public Entity {
+"558bec8b4d??33c085c90f4ec8":
+static __cdecl Vector* Entity_Familiar::GetOrbitDistance(Vector* buffer, int Layer);
+
+"558bec83e4f883ec0c538bd9565780bb????????00":
+__thiscall Vector* Entity_Familiar::GetOrbitPosition(Vector* buffer, Vector* offset);
+
+"558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bd9":
+__thiscall void Entity_Familiar::PickEnemyTarget(float maxDistance, int frameInterval, int flags, Vector * coneDir, float coneAngle);
+
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return &this->_player; }
 	inline NPCAI_Pathfinder* GetPathFinder() { return &this->_pathfinder; }
@@ -80,6 +89,7 @@ struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : p
 	Entity_Player* _player : 0x410;
 	int _moveDelayNum: 0x5f8;
 	NPCAI_Pathfinder _pathfinder : 0x5fc;
+	Vector _orbitDistance : 0xd64;
 	bool _isFollower : 0xd74;
 	bool _isDelayed : 0xd75;
 	int _state : 0xd88;

@@ -152,6 +152,60 @@ __thiscall bool Room::GetBossThematicItem(int* retCollectibleType, int* retTrink
 "8b41??8b40??c1e80d":
 __thiscall bool Room::HasCurseMist();
 
+"558bec83e4f883ec4ca1????????33c4894424??8b45":
+__thiscall bool Room::CheckLine(Vector* pos1, Vector* pos2, int linecheckMode, int linePathThreshold, bool ignoreWalls, bool ignoreCrushable, Vector* returnPos);
+
+"558bec83ec38f30f1005":
+__thiscall Vector * Room::FindFreePickupSpawnPosition(Vector* buffer, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, bool unk);
+
+"558bec83e4f8f30f100d????????83ec14":
+__thiscall Vector * Room::FindFreeTilePosition(Vector* buffer, Vector* pos, float distanceThreshold);
+
+"558beca1????????8b88????????8b41":
+__thiscall Vector * Room::GetCenterPos(Vector * buffer);
+
+"558bec8b45??f30f1015":
+__thiscall int Room::GetClampedGridIndex(Vector* position);
+
+"558bec83e4f883ec34568bf10f28c3":
+__thiscall Vector * Room::GetClampedPosition(Vector * buffer, Vector * pos, float margin, float margin2, float margin3);
+
+"558bec8b45??83f80777":
+__thiscall Vector * Room::GetDoorSlotPosition(Vector * buffer, int slot);
+
+"558becf30f1015????????f30f1045":
+__thiscall int Room::GetGridCollisionAtPos(Vector pos);
+
+"558bec8b55??f30f100d????????f30f1015????????56f30f1002f30f5cc1f30f5ec1f30f58c2f30f2cf085f678??8b41??3bf07d??f30f1042??f30f5c05????????f30f5ec1f30f58c2f30f2cd085d278??3b51??7d??0fafc203c63dbf01000077??8b44":
+__thiscall GridEntity* Room::GetGridEntityFromPos(Vector* pos);
+
+"558becf30f100d????????568bf1f30f1015":
+__thiscall int Room::GetGridIndex(Vector * pos);
+
+"558bec8b55??f30f100d????????f30f1015????????56f30f1002f30f5cc1f30f5ec1f30f58c2f30f2cf085f678??8b41??3bf07d??f30f1042??f30f5c05????????f30f5ec1f30f58c2f30f2cd085d278??3b51??7d??0fafc203c63dbf01000077??8b84":
+__thiscall int Room::GetGridPathFromPos(Vector* pos);
+
+"558bec8b45??99":
+__thiscall Vector* Room::GetGridPosition(Vector* buffer, int gridIdx);
+
+"558bec83e4f883ec3cf30f1015":
+__thiscall Vector* Room::GetLaserTarget(Vector* buffer, Vector* pos, Vector* dir);
+
+"558bec83e4f883ec4856578bf98b47":
+__thiscall Vector* Room::GetRandomPosition(Vector* buffer, float margin);
+
+"558bec83e4f88b41??83ec0c":
+__thiscall bool Room::IsPositionInRoom(Vector* pos, float margin);
+
+"558bec83e4f883ec0c538bd9568b75??578b43??8148??00400000":
+__thiscall void Room::MamaMegaExplosion(Vector* position, Entity_Player* player);
+
+"558bec83e4f883ec10f30f1045":
+__thiscall Vector* Room::ScreenWrapPosition(Vector* buffer, Vector* pos, float margin, float margin2, float margin3);
+
+"558bec83ec08f30f100d":
+__thiscall Vector* Room::WorldToScreenPosition(Vector* buffer, Vector pos);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }
@@ -181,17 +235,20 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, 
 	uint32_t _roomType : 0x8;
 	uint32_t _gridWidth : 0xC;
 	uint32_t _gridHeight : 0x10;
+	Vector _topLeftPos : 0x14;
+	Vector _bottomRightPos : 0x1c;
     GridEntity* _gridEntities[0x1BF] : 0x24;
     GridEntity* _doors[8] : 0x724;
     uint32_t _doorGridPositions[8] : 0x744;
 	int _roomClearDelay : 0x11ec;
     Camera* _Camera : 0x11f8;
-	uint32_t _bossId : 0x1bb0;
-	Backdrop _backdrop : 0x1bc8;
+	Vector _renderSurfaceTopLeft : 0x11fc;
 	Vector _renderScrollOffset : 0x1204;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
 	FXLayers _fxLayers: 0x1618;
+	uint32_t _bossId : 0x1bb0;
+	Backdrop _backdrop : 0x1bc8;
 	deque_ShopRestockDesc _shopItemDeque : 0x7070;
 	int _slowdownDuration : 0x7220;
 	int _greedWaveTimer : 0x723c;

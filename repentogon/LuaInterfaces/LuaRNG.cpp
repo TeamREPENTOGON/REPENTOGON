@@ -176,7 +176,7 @@ void DoRandomVector(lua_State* L, RNG* rng, bool phantom) {
 	if (!phantom) {
 		rng->Next(); // we do it after calling bc the func increments the seed before use
 	}
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = result;
 	return;
 }

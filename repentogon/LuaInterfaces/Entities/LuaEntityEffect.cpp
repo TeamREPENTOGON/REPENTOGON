@@ -4,9 +4,24 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+
+LUA_FUNCTION(Lua_EffectGetParentOffset) {
+	Entity_Effect* effect = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+	lua::ffi::pushCdataPtr(L, &effect->_parentOffset, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EffectSetParentOffset) {
+	Entity_Effect* effect = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	effect->_parentOffset = *offset;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_EffectCreateLight)
 {
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float scale = (float)luaL_optnumber(L, 2, (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)));
 	int lifespan = (int)luaL_optinteger(L, 3, -1);
 	int state = (int)luaL_optinteger(L, 4, 6);
@@ -41,7 +56,7 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 
 LUA_FUNCTION(Lua_EffectCreateLootPreview) {
 	LootList* loot = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity_Pickup* owner = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Effect* eff = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 4, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 	lua::luabridge::UserdataPtr::push(L, Entity_Effect::CreateLootPreview(loot, position, owner, eff), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
@@ -143,4 +158,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLight", Lua_EffectCreateLight);
 	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLootPreview", Lua_EffectCreateLootPreview);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_EFFECT, "ParentOffset", Lua_EffectGetParentOffset, Lua_EffectSetParentOffset);
 }

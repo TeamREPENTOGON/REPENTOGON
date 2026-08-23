@@ -70,6 +70,9 @@ static cleanup Entity_NPC* Entity_NPC::ThrowRockSpider(Vector* pos<ecx>, Vector*
 "558bec83e4f883ec0ca1????????5356578b98":
 static cleanup Entity_NPC* Entity_NPC::ThrowLeech(Vector* pos<ecx>, Entity* spanwer<edx>, float yPosOffset<xmm2>, Vector* targetPos, bool big);
 
+"558bec83e4f8f30f105d":
+static cleanup Entity_Projectile* Entity_NPC::ThrowSpider(Vector* position, Entity* spawner, Vector targetPos, bool big, float yOffset);
+
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec38a1????????33c58945??5657508d45??64a3????????8bf18975??8b7b??6a08":
 __thiscall LootList Entity_NPC::shopkeeper_get_loot(bool ShouldAdvance);
 
@@ -97,6 +100,13 @@ __thiscall void Entity_NPC::Hornfel_UpdateFrame();
 "558bec6aff68????????64a1????????5081ec2c010000":
 static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
 
+"558bec83e4f883ec20568bf1578b86":
+__thiscall Vector* Entity_NPC::CalcTargetPosition(float distanceLimit);
+
+
+"558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bf98b47??83f829":
+__thiscall bool Entity_NPC::CanBeDamagedFromVelocity(Vector* Velocity);
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":
@@ -109,7 +119,7 @@ __thiscall void Entity_NPC::MinecartBreak();
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
 */
 
-struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
+struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile) : public Entity {
 {{
     inline ColorMod* GetDirtColor() { return &this->_dirtColor; }
     inline uint32_t* GetDeliriumBossType() { return &this->_deliriumBossType; }
@@ -144,6 +154,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
 	uint32_t _deliriumCycleID : 0xbe0;
 	bool _isBoss : 0xc3d;
 	float _shieldStrength : 0xc40;
+	int _championColorIdx : 0xc64;
 	uint16_t _championRegenTimer : 0xc74;
 	int _bosscoloridx : 0xc78;
 	ColorMod _dirtColor : 0xcac;

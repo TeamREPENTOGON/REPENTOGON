@@ -101,7 +101,7 @@ LUA_FUNCTION(Lua_PickupCanReroll)
 }
 
 LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	RNG* rng = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
@@ -109,7 +109,7 @@ LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 	int velType = (int)luaL_optinteger(L, 3, 0);
 
 	Vector velocity;
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
 
 	return 1;

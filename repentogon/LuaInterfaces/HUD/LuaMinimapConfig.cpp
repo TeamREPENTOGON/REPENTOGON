@@ -20,25 +20,25 @@ LUA_FUNCTION(Lua_MinimapConfigGetSprite) {
 
 LUA_FUNCTION(Lua_MininmapConfigGetVec1) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_vec1);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], config->_vec1);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetVec1) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_vec1 = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	config->_vec1 = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigGetBorderPadding) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_borderPadding);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], config->_borderPadding);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapConfigSetBorderPadding) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_borderPadding = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	config->_borderPadding = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 

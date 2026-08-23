@@ -1065,10 +1065,10 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(slot)
 			.push(slot)
-			.pushUserdataValue(*position, lua::Metatables::VECTOR)
+			.push(*position, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(*scale)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.pushUserdataValue(cropOffset, lua::Metatables::VECTOR)
+			.push(cropOffset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(1);
 
 		if (!result) {
@@ -1078,11 +1078,11 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Position") {
-							Vector *new_pos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							Vector *new_pos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 							*(position) = *(new_pos);
 						}
 						else if (key == "CropOffset") {
-							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							cropOffset = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
@@ -1574,14 +1574,14 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.push(playerType)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&colorCopy, lua::Metatables::COLOR)
 			.call(1);
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				*pos = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				*pos = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
 				return;
 			}
@@ -1601,8 +1601,8 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.push(playerType)
 			.push(sprite, lua::Metatables::SPRITE)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(&scaleCopy, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&colorCopy, lua::Metatables::COLOR)
 			.call(1);
 	}
@@ -1672,7 +1672,7 @@ bool RunPreRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(playerType)
 			.push(playerType)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(vanillaSprite, lua::Metatables::SPRITE)
 			.push(customSprite, lua::Metatables::SPRITE)
 			.push(renderCustomBackground)
@@ -1699,7 +1699,7 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 			lua::LuaCaller(L).push(legacycallbackid)
 				.push(playerType)
 				.push(playerType)
-				.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+				.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 				.push(vanillaSprite, lua::Metatables::SPRITE)
 				.call(1);
 		}
@@ -1716,7 +1716,7 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 		lua::LuaCaller(L).push(callbackid)
 			.push(playerType)
 			.push(playerType)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(vanillaSprite, lua::Metatables::SPRITE)
 			.push(customSprite, lua::Metatables::SPRITE)
 			.push(renderCustomBackground)
@@ -2131,10 +2131,10 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 			.push(activeItemID)
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
 			.push(activeSlot)
-			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.push(itemPos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(alpha)
 			.push(actualSize)
-			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.push(chargeBarPos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(1);
 
 		if (!result) {
@@ -2152,7 +2152,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 						} else if (key == "HideChargeBar" && lua_isboolean(L, -1)) {
 							_hideActiveItemChargeBar = (bool)lua_toboolean(L, -1);
 						} else if (key == "CropOffset" && lua_isuserdata(L, -1)) {
-							cropOffset = *lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							cropOffset = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 						}
 					}
 					lua_pop(L, 1);
@@ -2182,10 +2182,10 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 			.push(activeItemID)
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
 			.push(activeSlot)
-			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.push(itemPos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(alpha)
 			.push(actualSize)
-			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.push(chargeBarPos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(1);
 	}
 }

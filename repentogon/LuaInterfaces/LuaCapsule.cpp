@@ -3,8 +3,8 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_CapsuleConstructor) {
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* multiplier = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* multiplier = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float f1 = (float)luaL_checknumber(L, 3);
 
 	Capsule* capsule = nullptr;
@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector offsetVec;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		offsetVec = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		offsetVec = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	else {
 		offsetVec = Vector(0, 0);
@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 LUA_FUNCTION(Lua_CapsuleGetPosition)
 {
 	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *capsule->GetPosition();
 
 	return 1;
@@ -58,7 +58,7 @@ LUA_FUNCTION(Lua_CapsuleGetPosition)
 LUA_FUNCTION(Lua_CapsuleGetStartPoint)
 {
 	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = capsule->_vec2;
 
 	return 1;
@@ -66,7 +66,7 @@ LUA_FUNCTION(Lua_CapsuleGetStartPoint)
 LUA_FUNCTION(Lua_CapsuleGetEndPoint)
 {
 	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = capsule->_vec3;
 
 	return 1;
@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_CapsuleGetEndPoint)
 LUA_FUNCTION(Lua_CapsuleGetDirection)
 {
 	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = capsule->_direction;
 
 	return 1;
@@ -101,7 +101,7 @@ LUA_FUNCTION(Lua_CapsuleCollide)
 {
 	Capsule* cap1 = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Capsule* cap2 = lua::GetRawUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
-	Vector* vec = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* vec = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	lua_pushboolean(L, cap1->Collide(cap1, cap2, vec));
 	return 1;
 }

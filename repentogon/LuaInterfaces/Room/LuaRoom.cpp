@@ -30,6 +30,226 @@ LUA_FUNCTION(Lua_RoomSetRedHeartDamage_Override)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_CheckLine) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos1 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* pos2 = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	int mode = (int)luaL_checkinteger(L, 4);
+	int threshold = (int)luaL_optinteger(L, 5, 0);
+	bool ignoreWalls = lua::luaL_optboolean(L, 6, false);
+	bool ignoreCrushable = lua::luaL_optboolean(L, 7, false);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	lua_pushboolean(L, room->CheckLine(pos1, pos2, mode, threshold, ignoreWalls, ignoreCrushable, toLua));
+	return 2;
+}
+
+LUA_FUNCTION(Lua_FindFreePickupSpawnPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float initialStep = (float)luaL_optnumber(L, 3, 0);
+	bool avoidActiveEntities = lua::luaL_optboolean(L, 6, false);
+	bool allowPits = lua::luaL_optboolean(L, 7, false);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->FindFreePickupSpawnPosition(toLua, pos, initialStep, avoidActiveEntities, allowPits, false);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FindFreeTilePosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float distanceThreshold = (float)luaL_optnumber(L, 3, 0);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->FindFreeTilePosition(toLua, pos, distanceThreshold);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetBottomRightPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], room->_bottomRightPos);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetCenterPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetCenterPos(toLua);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetClampedGridIndex) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua_pushnumber(L, room->GetClampedGridIndex(pos));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetClampedPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float margin = (float)luaL_checknumber(L, 3);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetClampedPosition(toLua, pos, margin, margin, margin);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetDoorSlotPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int slot = luaL_checkinteger(L, 2);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetDoorSlotPosition(toLua, slot);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridCollisionAtPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua_pushnumber(L, room->GetGridCollisionAtPos(*pos));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridEntityFromPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, room->GetGridEntityFromPos(pos), lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridIndex) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua_pushnumber(L, room->GetGridIndex(pos));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridPathFromPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	lua_pushnumber(L, room->GetGridPathFromPos(pos));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int idx = luaL_checkinteger(L, 2);
+
+	if (room->_gridWidth == 0) { // Alt Path in Greed Mode will arbitrarily crash at startup without this protection.
+		lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], Vector(0, 0));
+		return 1;
+	}
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetGridPosition(toLua, idx);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetLaserTarget) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* dir = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetLaserTarget(toLua, pos, dir);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetRandomPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	float margin = (float)luaL_checknumber(L, 2);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->GetRandomPosition(toLua, margin);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetRenderScrollOffset) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], room->_renderScrollOffset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetRenderSurfaceTopLeft) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], room->_renderSurfaceTopLeft);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetTopLeftPos) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], room->_topLeftPos);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetWaterCurrent) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], room->_waterCurrent);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsPositionInRoom) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float margin = (float)luaL_checknumber(L, 3);
+
+	lua_pushboolean(L, room->IsPositionInRoom(pos, margin));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MamaMegaExplosion) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector pos;
+	if (lua_type(L, 2) == LUA_TCDATA) {
+		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+	Entity_Player* player = nullptr;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 3, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	}
+
+	if (player == nullptr) {
+		room->MamaMegaExplosion(&pos);
+	}
+	else {
+		room->MamaMegaExplosion(&pos, player);
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ScreenWrapPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float margin = (float)luaL_checknumber(L, 3);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->ScreenWrapPosition(toLua, pos, margin, margin, margin);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_WorldToScreenPosition) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	room->WorldToScreenPosition(toLua, *pos);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	bool ret = false;
@@ -164,7 +384,7 @@ LUA_FUNCTION(Lua_RoomSetWaterColorMultiplier)
 LUA_FUNCTION(Lua_RoomSetWaterCurrent)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Vector* vector = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* vector = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	*room->GetWaterCurrent() = *vector;
 
 	return 0;
@@ -527,6 +747,31 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "CheckLine", Lua_CheckLine },
+		{ "FindFreePickupSpawnPosition", Lua_FindFreePickupSpawnPosition },
+		{ "FindFreeTilePosition", Lua_FindFreeTilePosition },
+		{ "GetBottomRightPos", Lua_GetBottomRightPos },
+		{ "GetCenterPos", Lua_GetCenterPos },
+		{ "GetClampedGridIndex", Lua_GetClampedGridIndex },
+		{ "GetClampedPosition", Lua_GetClampedPosition },
+		{ "GetDoorSlotPosition", Lua_GetDoorSlotPosition },
+		{ "GetGridCollisionAtPos", Lua_GetGridCollisionAtPos },
+		{ "GetGridEntityFromPos", Lua_GetGridEntityFromPos },
+		{ "GetGridIndex", Lua_GetGridIndex },
+		{ "GetGridPathFromPos", Lua_GetGridPathFromPos },
+		{ "GetGridPosition", Lua_GetGridPosition },
+		{ "GetLaserTarget", Lua_GetLaserTarget },
+		{ "GetRandomPosition", Lua_GetRandomPosition },
+		{ "GetRenderScrollOffset", Lua_GetRenderScrollOffset },
+		{ "GetRenderSurfaceTopLeft", Lua_GetRenderSurfaceTopLeft },
+		{ "GetTopLeftPos", Lua_GetTopLeftPos },
+		{ "GetWaterCurrent", Lua_GetWaterCurrent },
+		{ "IsPositionInRoom", Lua_IsPositionInRoom },
+		{ "MamaMegaExplosion", Lua_MamaMegaExplosion },
+		{ "ScreenWrapPosition", Lua_ScreenWrapPosition },
+		// TrySpawnLadder is missing from the API - investigate later
+		{ "WorldToScreenPosition", Lua_WorldToScreenPosition },
+
 		{ "SetRedHeartDamage", Lua_RoomSetRedHeartDamage_Override },
 
 		{ "GetShopItemPrice", Lua_RoomGetShopItemPrice},
@@ -579,3 +824,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
 }
+

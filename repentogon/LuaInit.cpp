@@ -218,7 +218,7 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	int n = luaopen_jit(L);
 	lua_pop(L, n);
 
-	// These are just needed for upstream 53compat, we'll pop em later.
+	// IO is just needed for upstream 53compat, we'll nil it in main_ex.
 	luaL_requiref(L, "io", luaopen_io, 1);
 	lua_pop(L, 1);
 
@@ -233,6 +233,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_State* state = g_LuaEngine->runCallbackRegistry->state;
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
+
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR] = lua_ctypeid(L, "Vector");
+	lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR] = lua_ctypeid(L, "VectorPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

@@ -16,6 +16,9 @@ __thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);
 "8b41??83f80274??83f80374??83f80474??83f80574??83f80674??83f81674??83f81874??83f81974??83f81a74??83f81b74??32c0":
 __thiscall bool GridEntity::IsBreakableRock();
 
+"558bec8b41??8b0d":
+__thiscall Vector* GridEntity::GetPosition(Vector* buffer);
+
 struct GridEntity depends (GridEntityDesc, RNG, ANM2) {
 {{
 	inline GridEntityDesc* GetDesc() { return &this->_desc; }

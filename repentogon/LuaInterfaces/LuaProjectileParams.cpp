@@ -23,13 +23,59 @@ LUA_FUNCTION(lua_ProjectileParams_SetDamage) {
 	return 0;
 }
 
-static void RegisterProjectileParamsDamage(lua_State* L) {
-	lua::RegisterVariable(L, lua::Metatables::PROJECTILE_PARAMS, "Damage", lua_ProjectileParams_GetDamage, lua_ProjectileParams_SetDamage);
+LUA_FUNCTION(lua_ProjectileParams_GetFireDirectionLimit) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], params->FireDirectionLimit);
+	return 1;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_SetFireDirectionLimit) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	Vector* limit = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	params->FireDirectionLimit = *limit;
+	return 0;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_GetPositionOffset) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], params->PositionOffset);
+	return 1;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_SetPositionOffset) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	params->PositionOffset = *offset;
+	return 0;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_GetTargetPosition) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], params->TargetPosition);
+	return 1;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_SetTargetPosition) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	params->TargetPosition = *pos;
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
-	RegisterProjectileParamsDamage(_state);
+	
+	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "FireDirectionLimit", lua_ProjectileParams_GetFireDirectionLimit, lua_ProjectileParams_SetFireDirectionLimit);
+	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "PositionOffset", lua_ProjectileParams_GetPositionOffset, lua_ProjectileParams_SetPositionOffset);
+	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "TargetPosition", lua_ProjectileParams_GetTargetPosition, lua_ProjectileParams_SetTargetPosition);
+	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "Damage", lua_ProjectileParams_GetDamage, lua_ProjectileParams_SetDamage);
+
 }

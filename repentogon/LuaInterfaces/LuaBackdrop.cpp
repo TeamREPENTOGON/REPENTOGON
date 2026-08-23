@@ -60,30 +60,31 @@ LUA_FUNCTION(lua_Backdrop_GetControlsANM2) {
 	return 1;
 }
 
+
 /*    //it has something to do with the size of the backdrop image. Maybe it can be helped to make the custom sized backdrop?
 LUA_FUNCTION(lua_Backdrop_GetunkVec1) {
 	Backdrop* backdrop = GetBackdrop(L);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = backdrop->unkVec1;
 	return 1;
 }
 
 LUA_FUNCTION(lua_Backdrop_SetunkVec1) {
 	Backdrop* backdrop = GetBackdrop(L);
-	backdrop->unkVec1 = *lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	backdrop->unkVec1 = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");;
 	return 0;
 }
 
 LUA_FUNCTION(lua_Backdrop_GetunkVec2) {
 	Backdrop* backdrop = GetBackdrop(L);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = backdrop->unkVec2;
 	return 1;
 }
 
 LUA_FUNCTION(lua_Backdrop_SetunkVec2) {
 	Backdrop* backdrop = GetBackdrop(L);
-	backdrop->unkVec2 = *lua::GetRawUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	backdrop->unkVec2 = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 */

@@ -81,7 +81,7 @@ __thiscall bool Game::GetDebugFlag(unsigned int flag);
 __thiscall void Game::BombDamage(Vector* pos, float damage, float radius, bool lineCheck, Entity* source, BitSet128 tearFlags, uint64_t damageFlags, bool damageSource);
 
 "558bec83e4f081ecf8000000a1":
-__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck, uint64_t damageFlags, bool damageSource);
+__thiscall void Game::BombExplosionEffects(Vector* pos, float damage, BitSet128 tearFlags, ColorMod* Color, Entity* source, float radiusMult, bool lineCheck,  bool damageSource, uint64_t damageFlags);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8000000a1????????33c58945??5657508d45??64a3????????894d":
 __thiscall void Game::BombTearflagEffects(Vector* pos, float radius, BitSet128 tearFlags, Entity* source, float radiusMult);
@@ -157,6 +157,27 @@ static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>,
 
 "558bec83ec0c568bb1":
 __thiscall bool Game::HasSeedEffect(int SeedEffect);
+
+"558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??535657508d45??64a3????????8bd98b7d":
+__thiscall void Game::ButterBeanFart(Vector* position, float radius, Entity* source, bool doEffect, bool doSuperKnockback);
+
+"558bec6aff68????????64a1????????5083ec78a1????????33c58945??535657508d45??64a3????????8b7d":
+__thiscall void Game::CharmFart(Vector* position, float radius, Entity* source);
+
+"558bec83e4f883ec0c5356578bf98bb7":
+__thiscall Entity_Player* Game::GetNearestPlayer(Vector* pos);
+
+"558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8d81":
+__thiscall Entity_Player* Game::GetRandomPlayer(Vector* pos, float Radius);
+
+"558bec83e4f883ec0c5356578b7d??8bd9":
+__thiscall void Game::SpawnParticles(Vector* pos, int particleType, int numParticles, float speed, const ColorMod  &color, float height, int subType);
+
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????0f28c3":
+__thiscall void Game::UpdateStrangeAttractor(Vector* pos, float force, float radius);	
+
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf18b7d":
+__thiscall void Game::Fart(Vector* position, float radius, Entity* source, float fartScale, int fartSubType, const ColorMod &fartColor);
 
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;

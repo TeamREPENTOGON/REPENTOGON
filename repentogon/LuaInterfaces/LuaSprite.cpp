@@ -14,6 +14,86 @@
 * I've named this file "LuaSprite" for consistency with the existing API metatable.
 */
 
+LUA_FUNCTION(Lua_SpriteGetTexel)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	Vector* sample = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* render = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float threshold = (float)luaL_checknumber(L, 4);
+	int id = (int)luaL_optinteger(L, 5, 1);
+
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	anm2->GetTexel(toLua, *sample, *render, threshold, id);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteRender)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector topLeftClamp;
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		topLeftClamp = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+	Vector bottomRightClamp;
+	if (lua_type(L, 4) == LUA_TCDATA) {
+		bottomRightClamp = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+
+	anm2->Render(pos, &topLeftClamp, &bottomRightClamp);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteRenderLayer)
+{
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	int layerId = (int)luaL_checkinteger(L, 2);
+	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector topLeftClamp;
+	if (lua_type(L, 4) == LUA_TCDATA) {
+		topLeftClamp = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+	Vector bottomRightClamp;
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		bottomRightClamp = *lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	}
+
+	anm2->RenderLayer(layerId, pos, &topLeftClamp, &bottomRightClamp);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteGetOffset) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], anm2->_offset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteSetOffset) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	anm2->_offset = *offset;
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteGetScale) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], anm2->_scale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteSetScale) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	Vector* scale = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	anm2->_scale = *scale;
+	return 0;
+}
+
+
 LUA_FUNCTION(Lua_SpriteCopy)
 {
 	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
@@ -485,7 +565,7 @@ LUA_FUNCTION(Lua_LayerStateSetVisible)
 LUA_FUNCTION(Lua_LayerStateGetSize)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *layerState->GetSize();
 
 	return 1;
@@ -494,7 +574,7 @@ LUA_FUNCTION(Lua_LayerStateGetSize)
 LUA_FUNCTION(Lua_LayerStateSetSize)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetSize() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetSize() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }
@@ -518,7 +598,7 @@ LUA_FUNCTION(Lua_LayerStateSetRotation)
 LUA_FUNCTION(Lua_LayerStateGetPos)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *layerState->GetPos();
 
 	return 1;
@@ -527,7 +607,7 @@ LUA_FUNCTION(Lua_LayerStateGetPos)
 LUA_FUNCTION(Lua_LayerStateSetPos)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetPos() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetPos() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }
@@ -567,7 +647,7 @@ LUA_FUNCTION(Lua_LayerStateSetRenderFlags)
 LUA_FUNCTION(Lua_LayerStateGetCropOffset)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = *layerState->GetCropOffset();
 
 	return 1;
@@ -576,7 +656,7 @@ LUA_FUNCTION(Lua_LayerStateGetCropOffset)
 LUA_FUNCTION(Lua_LayerStateSetCropOffset)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetCropOffset() = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*layerState->GetCropOffset() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	return 0;
 }
@@ -653,6 +733,9 @@ LUA_FUNCTION(Lua_LayerStateSetFlipY)
 
 static void RegisterSpriteFuncs(lua_State* L) {
 	luaL_Reg functions[] = {
+		{ "GetTexel", Lua_SpriteGetTexel },
+		{ "Render", Lua_SpriteRender },
+		{ "RenderLayer", Lua_SpriteRenderLayer },
 		{ "Copy", Lua_SpriteCopy },
 		{ "GetLayer", Lua_SpriteGetLayer},
 		{ "GetAllLayers", Lua_SpriteGetAllLayers},
@@ -681,6 +764,9 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);
+
+	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Offset", Lua_SpriteGetOffset, Lua_SpriteSetOffset);
+	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Scale", Lua_SpriteGetScale, Lua_SpriteSetScale);
 }
 
 static void RegisterLayerState(lua_State* L) {

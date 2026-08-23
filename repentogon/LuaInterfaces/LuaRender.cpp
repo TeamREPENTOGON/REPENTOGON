@@ -577,56 +577,56 @@ LUA_FUNCTION(Lua_SourceQuad_Copy)
 
 LUA_FUNCTION(lua_Quad_GetTopLeft) {
 	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_topLeft);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_topLeft);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Quad_GetTopRight) {
 	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_topRight);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_topRight);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Quad_GetBottomLeft) {
 	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_bottomLeft);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_bottomLeft);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Quad_GetBottomRight) {
 	DestinationQuad* quad = get_quad(L, 1);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), quad->_bottomRight);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_bottomRight);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Quad_SetTopLeft) {
 	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	quad->_topLeft = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(lua_Quad_SetTopRight) {
 	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topRight = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	quad->_topRight = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(lua_Quad_SetBottomLeft) {
 	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomLeft = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	quad->_bottomLeft = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(lua_Quad_SetBottomRight) {
 	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	quad->_bottomRight = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(Lua_Quad_Translate)
 {
 	DestinationQuad* quad = get_quad(L, 1);
-	Vector offset = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector offset = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	
 	quad->Translate(offset);
 
@@ -636,8 +636,8 @@ LUA_FUNCTION(Lua_Quad_Translate)
 LUA_FUNCTION(Lua_Quad_Scale)
 {
 	DestinationQuad* quad = get_quad(L, 1);
-	Vector scale = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector scale = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	quad->Scale(scale, anchor);
 
@@ -648,7 +648,7 @@ LUA_FUNCTION(Lua_Quad_Rotate)
 {
 	DestinationQuad* quad = get_quad(L, 1);
 	float rotation = (float)luaL_checknumber(L, 2);
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	quad->RotateDegrees(anchor, rotation);
 
@@ -658,8 +658,8 @@ LUA_FUNCTION(Lua_Quad_Rotate)
 LUA_FUNCTION(Lua_Quad_Shear)
 {
 	DestinationQuad* quad = get_quad(L, 1);
-	Vector shear = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector shear = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	quad->Shear(shear, anchor);
 
@@ -674,7 +674,7 @@ LUA_FUNCTION(Lua_Quad_ApplyMatrix)
 		luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
 	}
 	RenderMatrix matrix = get_render_matrix(L, 2);
-	Vector anchor = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	quad->ApplyMatrix(matrix, anchor);
 
@@ -793,23 +793,23 @@ static void RegisterQuadClasses(lua_State* L) {
 }
 
 static void FillQuad(lua_State* L, DestinationQuad& quad, int startIdx) {
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
-	quad._topRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 1, lua::Metatables::VECTOR, "Vector");
-	quad._bottomLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 2, lua::Metatables::VECTOR, "Vector");
-	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 3, lua::Metatables::VECTOR, "Vector");
+	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	quad._topRight = *lua::GetCData<Vector*>(L, startIdx + 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	quad._bottomLeft = *lua::GetCData<Vector*>(L, startIdx + 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	quad._bottomRight = *lua::GetCData<Vector*>(L, startIdx + 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 }
 
 static void init_from_bounds(lua_State* L, DestinationQuad& quad, int startIdx)
 {
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
-	quad._bottomRight = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 1, lua::Metatables::VECTOR, "Vector");
+	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	quad._bottomRight = *lua::GetCData<Vector*>(L, startIdx + 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	quad._topRight = Vector(quad._bottomRight.x, quad._topLeft.y);
 	quad._bottomLeft = Vector(quad._topLeft.x, quad._bottomRight.y);
 }
 
 static void init_from_aa_rect(lua_State* L, DestinationQuad& quad, int startIdx)
 {
-	quad._topLeft = *lua::GetLuabridgeUserdata<Vector*>(L, startIdx + 0, lua::Metatables::VECTOR, "Vector");
+	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector pos = quad._topLeft;
 	float width = (float)luaL_checknumber(L, startIdx + 1);
 	float height = (float)luaL_checknumber(L, startIdx + 2);
@@ -3121,7 +3121,7 @@ LUA_FUNCTION(Lua_Renderer_GetPixelationAmount)
 
 LUA_FUNCTION(Lua_Renderer_GetClipPaneNormal)
 {
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), g_ANM2_ClipPaneNormal);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], g_ANM2_ClipPaneNormal);
 	return 1;
 }
 

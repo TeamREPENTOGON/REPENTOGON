@@ -22,7 +22,13 @@ __thiscall ColorMod* Entity_Laser::CalculateTearColor(ColorMod* buffer);
 "558bec51568bf180be????????000f85":
 __thiscall void Entity_Laser::PlayInitSound();
 
-struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
+"558bec83e4f883ec408b45":
+__stdcall Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin);
+
+"558bec83e4f851535657e8":
+static cleanup Entity_Laser* Entity_Laser::ShootAngle(int Variant, Vector* SourcePos, float AngleDegrees, int Timeout, Vector* PosOffset, Entity* Source, bool Force);
+
+struct Entity_Laser depends (BitSet128, HomingLaser, Vector, Entity) : public Entity { {{
 	inline uint32_t* GetHomingType() { return &this->_homingType; }
 	inline float* GetScale() { return &this->_scale; }
 	
@@ -33,6 +39,7 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline std_vector_uint* GetHitList() { return &this->_hitList; }
 
 }} 
+	Vector _parentOffset : 0x410;
 	BitSet128 _tearFlags : 0x428;
 	int _timeout : 0x458;
 	bool _sampleLaser : 0x45d;
@@ -40,6 +47,7 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	HomingLaser _homingLaser : 0x464;
 	float _maxDistance : 0x4d0;
 	uint32_t _homingType : 0x4d4;
+	Vector _endPoint : 0x4d8;
 	float _scale : 0x4e0;
 	bool _disableFollowParent : 0x4e4;
 	bool _multidimensionalTouched: 0x500;

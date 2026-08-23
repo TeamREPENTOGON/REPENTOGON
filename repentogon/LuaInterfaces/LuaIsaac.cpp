@@ -99,7 +99,7 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float radius = (float)luaL_checknumber(L, 2);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
@@ -139,6 +139,118 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 
 		res.Destroy();
 	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacExplode)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* source = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	};
+	float damage = (float)luaL_checknumber(L, 3);
+
+	g_LuaEngine->Isaac_Explode(pos, source, damage);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_IsaacGetFreeNearPosition)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	float step = (float)luaL_checknumber(L, 2);
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_GetFreeNearPosition(toLua, pos, step);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacGetRandomPosition)
+{
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_GetRandomPosition(toLua);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacGridSpawn) 
+{
+	int type = (int)luaL_checkinteger(L, 1);
+	int variant = (int)luaL_checkinteger(L, 2);
+	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	bool forced = lua::luaL_checkboolean(L, 4);
+	lua::luabridge::UserdataPtr::push(L, g_LuaEngine->Isaac_GridSpawn(type, variant, pos, forced), lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacScreenToWorld)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_ScreenToWorld(toLua, pos);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacScreenToWorldDistance)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_ScreenToWorldDistance(toLua, pos);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacSpawn)
+{ 
+	int type = (int)luaL_checkinteger(L, 1);
+	int variant = (int)luaL_checkinteger(L, 2);
+	int subtype = (int)luaL_checkinteger(L, 3);
+	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* spawner = nullptr;
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+	};
+
+	lua::luabridge::UserdataPtr::push(L, g_LuaEngine->Isaac_Spawn(type, variant, subtype, pos, vel, spawner), lua::GetMetatableKey(lua::Metatables::ENTITY));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacWorldToRenderPosition)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_WorldToRenderPosition(toLua, pos);
+
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_IsaacWorldToScreen)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_WorldToScreen(toLua, pos);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacWorldToScreenDistance)
+{
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	g_LuaEngine->Isaac_WorldToScreenDistance(toLua, pos);
 
 	return 1;
 }
@@ -222,21 +334,21 @@ LUA_FUNCTION(Lua_RenderToWorld) {
 	Room& room = *game._room;
 	Vector screenSize = Vector(g_WIDTH, g_HEIGHT);
 
-	Vector position = *lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector position = *lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Vector offset = game._screenShakeOffset + room._renderScrollOffset;
 	Vector uiViewportTopLeft = (screenSize - WORLD_VIEWPORT_SIZE) * 0.5f;
 	Vector worldLocalRenderPos = (position - offset) - uiViewportTopLeft;
 
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = worldLocalRenderPos / WORLD_TO_SCREEN_SCALE + WORLD_RENDER_ORIGIN;
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_DrawLine) {
-	Vector* pos1 = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* pos2 = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* pos1 = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* pos2 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	KColor* col1 = lua::GetLuabridgeUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
 	KColor* col2 = lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
 	float thickness = (float)luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
@@ -247,10 +359,10 @@ LUA_FUNCTION(Lua_DrawLine) {
 }
 
 LUA_FUNCTION(Lua_DrawQuad) {
-	Vector* postl = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* postr = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* posbl = lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	Vector* posbr = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	Vector* postl = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* postr = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* posbl = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* posbr = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	KColor* col = lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
 	float thickness = (float)luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
 
@@ -385,8 +497,8 @@ LUA_FUNCTION(Lua_SpawnBoss) {
 	const unsigned int type = (unsigned int)luaL_checkinteger(L, 1);
 	const unsigned int var = (unsigned int)luaL_checkinteger(L, 2);
 	const unsigned int sub = (unsigned int)luaL_checkinteger(L, 3);
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
-	Vector* vel = lua::GetLuabridgeUserdata<Vector*>(L, 5, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const unsigned int seed = (unsigned int)luaL_optinteger(L, 7, g_Game->GetCurrentRoomDesc()->SpawnSeed);
 
 	Entity_NPC* ent = nullptr;
@@ -495,21 +607,21 @@ LUA_FUNCTION(Lua_IsaacResume) {
 }
 
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool scale = lua::luaL_optboolean(L, 2, true);
 	
 	Vector result = Isaac::GetRenderPosition(pos, scale);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = result;
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
-	Vector* pos = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Vector result = Isaac::GetCollectibleSpawnPosition(pos);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = result;
 
 	return 1;
@@ -794,8 +906,8 @@ LUA_FUNCTION(Lua_SetIcon) {
 };
 
 LUA_FUNCTION(Lua_FindTargetPit) {
-	Vector* position = lua::GetLuabridgeUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	Vector* targetPosition = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* targetPosition = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const int pitIndex = (int)luaL_optinteger(L, 3, -1);
 
 	lua_pushinteger(L, Entity_NPC::FindTargetPit(position, targetPosition, pitIndex));
@@ -806,7 +918,7 @@ LUA_FUNCTION(Lua_GetAxisAlignedUnitVectorFromDir) {
 	const int dir = (int)luaL_optinteger(L, 1, -1);
 
 	Vector result = Isaac::GetAxisAlignedUnitVectorFromDir(dir);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	*toLua = result;
 
 	return 1;
@@ -927,11 +1039,11 @@ LUA_FUNCTION(Lua_RenderCollectionItem)
 		return luaL_argerror(L, 1, "Invalid collectible ID");
 	}
 
-	Vector posVec = *lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector posVec = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Vector scaleVec;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		scaleVec = *lua::GetLuabridgeUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		scaleVec = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	else {
 		scaleVec = Vector(1, 1);
@@ -1023,6 +1135,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRoomEntities", Lua_IsaacGetRoomEntitiesFix);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindByType", Lua_IsaacFindByTypeFix);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInRadius", Lua_IsaacFindInRadiusFix);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Explode", Lua_IsaacExplode);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetFreeNearPosition", Lua_IsaacGetFreeNearPosition);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRandomPosition", Lua_IsaacGetRandomPosition);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GridSpawn", Lua_IsaacGridSpawn);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ScreenToWorld", Lua_IsaacScreenToWorld);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ScreenToWorldDistance", Lua_IsaacScreenToWorldDistance);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Spawn", Lua_IsaacSpawn);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToRenderPosition", Lua_IsaacWorldToRenderPosition);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToScreen", Lua_IsaacWorldToScreen);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToScreenDistance", Lua_IsaacWorldToScreenDistance);
 
 	// new functions
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
