@@ -186,7 +186,9 @@ VectorMT = {
     end
 }
 
-VectorMT.__index = VectorMT 
+VectorMT.__index = function(self, key)
+	return VectorMT[key]
+end 
 
 local VectorT = ffi.metatype("struct Vector", VectorMT)
 
