@@ -6573,7 +6573,7 @@ HOOK_STATIC(LuaEngine, PostBombRender, (Entity_Bomb* bomb, Vector* offset) -> vo
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(bomb->_variant)
 			.push(bomb, lua::Metatables::ENTITY_BOMB)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6588,7 +6588,7 @@ HOOK_STATIC(LuaEngine, PostEffectRender, (Entity_Effect* effect, Vector* offset)
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(effect->_variant)
 			.push(effect, lua::Metatables::ENTITY_EFFECT)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6603,7 +6603,7 @@ HOOK_STATIC(LuaEngine, PostFamiliarRender, (Entity_Familiar* familiar, Vector* o
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(familiar->_variant)
 			.push(familiar, lua::Metatables::ENTITY_FAMILIAR)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6618,7 +6618,7 @@ HOOK_STATIC(LuaEngine, PostKnifeRender, (Entity_Knife* knife, Vector* offset) ->
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(knife->_subtype)
 			.push(knife, lua::Metatables::ENTITY_KNIFE)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6633,7 +6633,7 @@ HOOK_STATIC(LuaEngine, PostLaserRender, (Entity_Laser* laser, Vector* offset) ->
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(laser->_variant)
 			.push(laser, lua::Metatables::ENTITY_LASER)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6648,7 +6648,7 @@ HOOK_STATIC(LuaEngine, PostNPCRender, (Entity_NPC* npc, Vector* offset) -> void,
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(npc->_type)
 			.push(npc, lua::Metatables::ENTITY_NPC)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6657,13 +6657,13 @@ HOOK_STATIC(LuaEngine, PostNPCRender, (Entity_NPC* npc, Vector* offset) -> void,
 
 HOOK_STATIC(LuaEngine, PostPickupRender, (Entity_Pickup* pickup, Vector* offset) -> void, __stdcall)
 {
-	const int callbackid = 37;
+	const int callbackid = 36;
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(pickup->_variant)
 			.push(pickup, lua::Metatables::ENTITY_PICKUP)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6678,7 +6678,7 @@ HOOK_STATIC(LuaEngine, PostPlayerRender, (Entity_Player* player, Vector* offset)
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(player->_variant)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6693,7 +6693,7 @@ HOOK_STATIC(LuaEngine, PostProjectileRender, (Entity_Projectile* projectile, Vec
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(projectile->_variant)
 			.push(projectile, lua::Metatables::ENTITY_PROJECTILE)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
@@ -6708,7 +6708,7 @@ HOOK_STATIC(LuaEngine, PostTearRender, (Entity_Tear* tear, Vector* offset) -> vo
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(tear->_variant)
 			.push(tear, lua::Metatables::ENTITY_TEAR)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
