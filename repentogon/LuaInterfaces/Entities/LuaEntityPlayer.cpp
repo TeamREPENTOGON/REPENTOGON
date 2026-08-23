@@ -308,6 +308,14 @@ LUA_FUNCTION(Lua_IsPosInSpotLight) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RenderBody) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->RenderBody(position);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_RenderGlow) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
@@ -315,6 +323,15 @@ LUA_FUNCTION(Lua_RenderGlow) {
 	player->RenderGlow(position);
 	return 0;
 }
+
+LUA_FUNCTION(Lua_RenderHead) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+
+	player->RenderHead(position);
+	return 0;
+}
+
 
 LUA_FUNCTION(Lua_RenderTop) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
@@ -3932,7 +3949,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTearMovementInheritance", Lua_GetTearMovementInheritance },
 		{ "GetVelocityBeforeUpdate", Lua_GetVelocityBeforeUpdate },
 		{ "IsPosInSpotLight", Lua_IsPosInSpotLight },
+		{ "RenderBody", Lua_RenderBody },
 		{ "RenderGlow", Lua_RenderGlow },
+		{ "RenderHead", Lua_RenderHead },
 		{ "RenderTop", Lua_RenderTop },
 		{ "ShootRedCandle", Lua_ShootRedCandle },
 		{ "ThrowBlueSpider", Lua_ThrowBlueSpider },
