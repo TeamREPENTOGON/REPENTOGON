@@ -23,7 +23,7 @@ __thiscall ColorMod* Entity_Laser::CalculateTearColor(ColorMod* buffer);
 __thiscall void Entity_Laser::PlayInitSound();
 
 "558bec83e4f883ec408b45":
-__stdcall Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin);
+static cleanup Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin);
 
 "558bec83e4f851535657e8":
 static cleanup Entity_Laser* Entity_Laser::ShootAngle(int Variant, Vector* SourcePos, float AngleDegrees, int Timeout, Vector* PosOffset, Entity* Source, bool Force);

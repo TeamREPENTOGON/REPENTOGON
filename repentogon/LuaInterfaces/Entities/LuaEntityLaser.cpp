@@ -8,17 +8,14 @@
 
 LUA_FUNCTION(Lua_EntityLaserCalculateEndPoint)
 {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	Vector* start = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* dir = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* positionOffset = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* parent = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
-	float margin = (float)luaL_checknumber(L, 6);
+	Vector* start = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Vector* positionOffset = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	Entity* parent = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	float margin = (float)luaL_checknumber(L, 5);
 
-	Vector res;
-
-	res = *laser->CalculateEndPosition(&res, start, dir, positionOffset, parent, margin);
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], res);
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	Entity_Laser::CalculateEndPosition(toLua, start, dir, positionOffset, parent, margin);
 	return 1;
 }
 
@@ -306,7 +303,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 	
 	luaL_Reg functions[] = {
-		{ "CalculateEndPoint", Lua_EntityLaserCalculateEndPoint},
 		{ "GetEndPoint", Lua_EntityLaserGetEndPoint},
 		{ "GetDisableFollowParent", Lua_EntityLaserGetDisableFollowParent },
 		{ "SetDisableFollowParent", Lua_EntityLaserSetDisableFollowParent },
@@ -342,4 +338,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "ParentOffset", Lua_EntityLaserGetParentOffset, Lua_EntityLaserSetParentOffset);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "ShootAngle", Lua_EntityLaserShootAngle);
+	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "CalculateEndPoint", Lua_EntityLaserCalculateEndPoint);
 }
