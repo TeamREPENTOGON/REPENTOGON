@@ -39,6 +39,9 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
+			ini["VanillaTweaks"]["ConsoleKeyMode"] = "0";	
+			ini["VanillaTweaks"]["ConsoleKeyVK"] = "192";		// VK_OEM_3
+			ini["VanillaTweaks"]["ConsoleKeyScancode"] = "41";	// the backtick
 			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
 			ini["internal"]["DidModReset"] = "0";
@@ -78,6 +81,9 @@ struct REPENTOGONOptions {
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
+		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
+		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
+		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -119,6 +125,9 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
+		Write("VanillaTweaks", "ConsoleKeyMode", consoleKeyMode);
+		Write("VanillaTweaks", "ConsoleKeyVK", consoleKeyVK);
+		Write("VanillaTweaks", "ConsoleKeyScancode", consoleKeyScancode);
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
@@ -155,6 +164,9 @@ struct REPENTOGONOptions {
 	bool disableExitPrompt;
 	bool skipArchiveChecks;
 	bool didInputConfigsImport;
+	int consoleKeyMode;	// 0 is virtualkey (default), 1 is scancode (layout-independent)
+	int consoleKeyVK;
+	int consoleKeyScancode;
 };
 
 extern REPENTOGONOptions repentogonOptions;
