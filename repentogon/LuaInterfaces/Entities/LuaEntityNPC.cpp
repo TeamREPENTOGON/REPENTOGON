@@ -237,7 +237,7 @@ LUA_FUNCTION(Lua_EntityNPC_SetV1) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* v1 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	npc->_v2 = *v1;
+	npc->_v1 = *v1;
 	return 1;
 }
 
