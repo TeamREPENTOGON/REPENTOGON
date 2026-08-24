@@ -92,7 +92,7 @@ struct REPENTOGONOptions {
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
 		fontSize = defstoi(ini["internal"]["FontSize"], 16);
-		fontSelectedPredefined = defstoi(ini["internal"]["FontSelectedPredefined"], 0);
+		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
 		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
 		ZHL::Log("Loaded REPENTOGON INI\n");
@@ -147,7 +147,7 @@ struct REPENTOGONOptions {
 		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 		Write("internal", "DidInputConfigsImport", didInputConfigsImport);
 		Write("internal", "FontSize", fontSize);
-		Write("internal", "FontSelectedPredefined", fontSelectedPredefined);
+		// Write("internal", "FontSelectedPredefined", fontSelectedPredefined); // this is never released to users
 		Write("internal", "FontRenderStyle", fontRenderStyle);
 		Write("internal", "EnableImGuiMultiView", enableImGuiMultiView);
 	}
