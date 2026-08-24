@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_Entity_SetPositionOffset) {
 	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	ent->_posOffset = *offset;
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_Entity_GetSizeMulti) {
