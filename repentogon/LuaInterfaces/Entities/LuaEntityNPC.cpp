@@ -13,6 +13,7 @@ LUA_FUNCTION(Lua_EntityNPC_CalcTargetPosition)
 	float distanceLimit = (float)luaL_checknumber(L, 2);
 
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], npc->CalcTargetPosition(distanceLimit));
+	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_CanBeDamagedFromVelocity)
