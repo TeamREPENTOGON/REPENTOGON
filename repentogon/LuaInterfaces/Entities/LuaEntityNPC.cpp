@@ -238,7 +238,7 @@ LUA_FUNCTION(Lua_EntityNPC_SetV1) {
 	Vector* v1 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	npc->_v1 = *v1;
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_GetV2) {
@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_EntityNPC_SetV2) {
 	Vector* v2 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	npc->_v2 = *v2;
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
