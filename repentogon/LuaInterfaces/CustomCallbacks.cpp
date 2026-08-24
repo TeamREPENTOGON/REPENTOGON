@@ -1332,8 +1332,8 @@ void PostMarksRender(CompletionWidget* cmp, Vector* pos, Vector* scale) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.push(cmp->GetANM2(), lua::Metatables::SPRITE)
-			.push(pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
-			.push(scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
+			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
+			.push(*scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
 			.push(cmp->CharacterId)
 			.call(1);
 	}
@@ -1350,8 +1350,8 @@ HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.pushnil()
 		.push(this->GetANM2(), lua::Metatables::SPRITE)
-		.push(pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-		.push(scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+		.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+		.push(*scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 		.push(this->CharacterId)
 		.call(1);
 
