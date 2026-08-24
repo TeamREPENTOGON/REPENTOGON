@@ -39,8 +39,9 @@ LUA_FUNCTION(Lua_CheckLine) {
 	bool ignoreWalls = lua::luaL_optboolean(L, 6, false);
 	bool ignoreCrushable = lua::luaL_optboolean(L, 7, false);
 
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	lua_pushboolean(L, room->CheckLine(pos1, pos2, mode, threshold, ignoreWalls, ignoreCrushable, toLua));
+	Vector hitPos;
+	lua_pushboolean(L, room->CheckLine(pos1, pos2, mode, threshold, ignoreWalls, ignoreCrushable, &hitPos));
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], hitPos);
 	return 2;
 }
 
@@ -747,7 +748,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		{ "CheckLine", Lua_CheckLine },
+		// TODO FFI: This is named differently to work around a redefinition in main.lua, in combination with APIOverride. Kill this asap!!
+		{ "__FeedAndSneed", Lua_CheckLine },
 		{ "FindFreePickupSpawnPosition", Lua_FindFreePickupSpawnPosition },
 		{ "FindFreeTilePosition", Lua_FindFreeTilePosition },
 		{ "GetBottomRightPos", Lua_GetBottomRightPos },

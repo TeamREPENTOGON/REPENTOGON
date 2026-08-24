@@ -252,7 +252,12 @@ function require(modname)
 	return ret
 end
 
-
+-- TODO FFI: This exists to work around a redefinition in main.lua. Kill this asap!!
+require("apioverride")
+local orig = APIOverride.GetCurrentClassFunction(Room, "__FeedAndSneed")
+APIOverride.OverrideClassFunction(Room, "CheckLine", function(self, pos1, pos2, mode, gridPathThreshold, ignoreWalls, ignoreCrushable)
+	return orig(self, pos1, pos2, mode, gridPathThreshold, ignoreWalls, ignoreCrushable)
+end)
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 ---- COLOR STUFF
