@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_EntityNPC_CalcTargetPosition)
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	float distanceLimit = (float)luaL_checknumber(L, 2);
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], npc->CalcTargetPosition(distanceLimit));
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], *npc->CalcTargetPosition(distanceLimit));
 	return 1;
 }
 
