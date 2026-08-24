@@ -17,6 +17,19 @@ inline int defstoi(const std::string& str, int default) {
 	return default;
 }
 
+// be careful with this: don't block any feature for wine users.
+inline bool isRunningInWine() {
+	static const char* (CDECL * pwine_get_version)(void);
+	HMODULE hntdll = GetModuleHandle("ntdll.dll");
+	if (!hntdll)
+		return 1;
+	pwine_get_version = (decltype(pwine_get_version))GetProcAddress(hntdll, "wine_get_version");
+	if (pwine_get_version)
+		return 1;
+	return 0;
+}
+
+
 struct REPENTOGONOptions {
 	void Init() {
 		optionsPath = std::string(REPENTOGON::GetRepentogonDataPath());
@@ -81,7 +94,7 @@ struct REPENTOGONOptions {
 		fontSize = defstoi(ini["internal"]["FontSize"], 16);
 		fontSelectedPredefined = defstoi(ini["internal"]["FontSelectedPredefined"], 0);
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
-		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], 1);
+		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 

@@ -572,7 +572,7 @@ void __stdcall RunImGui(HDC hdc) {
 		iniFilePath = std::string(REPENTOGON::GetRepentogonDataPath()) + "imgui.ini";
 
 		// mouse, keyboard and gamepad support
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::SetNextFrameWantCaptureMouse(true);
@@ -584,6 +584,14 @@ void __stdcall RunImGui(HDC hdc) {
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		ZHL::Log("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
+	/*
+		The design is, if player start game without enable multi-viewports, they get a perfect single window imgui.
+		If player turn off multiview in game, most behavior will be okay, not perfect.
+
+		The flag can't be removed once it's added, we use ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow if possible.
+	*/
+	if (repentogonOptions.enableImGuiMultiView)
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	LoadImGuiFont();
 
