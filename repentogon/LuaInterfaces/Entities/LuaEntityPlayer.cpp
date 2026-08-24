@@ -222,14 +222,14 @@ LUA_FUNCTION(Lua_GetCostumeNullPos) {
 	bool headScale = lua::luaL_checkboolean(L, 3);
 	Vector* direction = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], *player->GetCostumeNullPos(nullFrameName, headScale, direction));
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->GetCostumeNullPos(nullFrameName, headScale, direction));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetFlyingOffset) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], *player->GetFlyingOffset());
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->GetFlyingOffset());
 	return 1;
 }
 
