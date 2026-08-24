@@ -595,6 +595,8 @@ namespace lua {
         enum CDataID : lua_CTypeId {
             VECTOR,
             VECTOR_PTR,
+            GRID_ENTITY_DESC,
+            GRID_ENTITY_DESC_PTR,
             MAX_CDATA
         };
 

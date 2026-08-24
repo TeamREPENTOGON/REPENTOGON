@@ -236,6 +236,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR] = lua_ctypeid(L, "Vector");
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR] = lua_ctypeid(L, "VectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC] = lua_ctypeid(L, "GridEntityDesc");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

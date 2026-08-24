@@ -3,6 +3,15 @@
 #include "HookSystem.h"
 #include "../../Patches/GridEntityPlus.h"
 
+LUA_FUNCTION(Lua_GridEntityGetDesc)
+{
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+
+	lua::ffi::pushCdataPtr(L, &gridEnt->_desc, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR]);
+	return 1;
+}
+
+
 LUA_FUNCTION(Lua_GridEntityRender)
 {
 	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
@@ -99,6 +108,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetSaveState", Lua_GridEntityGetDesc },
 		{ "Render", Lua_GridEntityRender },
 		{ "HurtDamage", Lua_GridEntityHurtDamage },
 		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
@@ -111,4 +121,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY, functions);
 	lua::RegisterVariableGetter(_state, lua::Metatables::GRID_ENTITY, "Position", Lua_GridEntityGetPosition);
+	lua::RegisterVariableGetter(_state, lua::Metatables::GRID_ENTITY, "Desc", Lua_GridEntityGetDesc);
 }

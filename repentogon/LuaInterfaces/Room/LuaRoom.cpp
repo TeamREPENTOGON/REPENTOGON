@@ -258,7 +258,7 @@ LUA_FUNCTION(Lua_SpawnGridEntity) {
 		return luaL_error(L, "Grid index %d invalid", GridIndex);
 	}
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+		GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
 		ret = room->SpawnGridEntityDesc(GridIndex, desc);
 	}
 	else

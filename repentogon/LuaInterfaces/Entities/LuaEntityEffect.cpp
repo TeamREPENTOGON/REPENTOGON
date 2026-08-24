@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_GetGridEntityDesc) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
 	if (entity->_variant == 136) {
-		lua::luabridge::UserdataPtr::push(L, (GridEntityDesc*)&entity->_varData, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY_DESC));
+		lua::ffi::pushCdataPtr(L, (GridEntityDesc*)&entity->_varData, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC]);
 	} else {
 		lua_pushnil(L);
 	}

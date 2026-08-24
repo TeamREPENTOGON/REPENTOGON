@@ -2074,7 +2074,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				seed = ProtectedCallbackIntAssign(L, seed, 4);
 			}
 			else if (lua_isuserdata(L, -1)) {
-				GridEntityDesc* desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR], "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
 			}
@@ -2104,12 +2104,12 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 			.push(desc->_varData)
 			.push(idx)
 			.push(desc->_spawnSeed)
-			.push(desc, lua::Metatables::GRID_ENTITY_DESC) // yes GridEntityDesc
+			.push(desc, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR]) // yes GridEntityDesc
 			.call(1);
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				desc = lua::GetLuabridgeUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
 			}
 			else if (lua_istable(L, -1)) {
 				int type = (GridEntityType)ProtectedCallbackIntAssign(L, desc->_type, 1);
