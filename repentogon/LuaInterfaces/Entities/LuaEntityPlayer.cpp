@@ -38,7 +38,11 @@ LUA_FUNCTION(Lua_AddBlueFlies) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int amount = (int)luaL_checkinteger(L, 2);
 	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* target = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	
+	Entity* target = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		target = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	}
 
 	lua::luabridge::UserdataPtr::push(L, player->AddBlueFlies(amount, position, target), lua::GetMetatableKey(lua::Metatables::ENTITY));
 
