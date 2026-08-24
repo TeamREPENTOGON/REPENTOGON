@@ -1391,8 +1391,8 @@ ___
 Changes the player's item state to the specified collectible. This is usually used for collectibles that the player holds above their head before activating (i.e: Bob's Rotten Head, Glass Cannon).
 
 ___
-### SetItemStateCooldown  () {: aria-label='Functions' }
-#### void SetItemStateCooldown  ( int Cooldown ) {: .copyable aria-label='Functions' }
+### SetItemStateCooldown () {: aria-label='Functions' }
+#### void SetItemStateCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetKeepersSackBonus () {: aria-label='Functions' }

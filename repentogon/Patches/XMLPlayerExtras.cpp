@@ -1,3 +1,5 @@
+#include <tuple>
+
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "XMLData.h"
@@ -9,8 +11,7 @@
 #include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
 #include "ASMPatches/ASMCallbacks.h"
-
-#include <tuple>
+#include "ASMPatches/ASMLocalization.h"
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
@@ -141,11 +142,14 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlPath, ModEntry* modEntry) -> vo
 }
 
 void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color, Vector* scale, bool isCharacterWheel) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
+	if (playerType < 0 || playerType >= g_Manager->GetPlayerConfig()->size()) {
+		return;
+	}
 
-	ANM2* portrait = g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuPortraitANM2();
-	if (portrait != nullptr) {
-		portrait->Play(playerXML["name"].c_str(), true);
+	EntityConfig_Player* player = &g_Manager->GetPlayerConfig()->at(playerType);
+	if (ANM2* portrait = player->GetModdedMenuPortraitANM2()) {
+		std::string anim = GetLocalizedPlayerAnimationForAnm2(player, portrait);
+		portrait->Play(anim.c_str(), true);
 		portrait->_color = *color;
 		portrait->_scale = *scale;
 

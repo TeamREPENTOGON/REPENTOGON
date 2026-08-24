@@ -299,6 +299,7 @@ void PerformASMPatches() {
 	ASMPatchesForCardsExtras();
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();
+	ASMPatchLocalizedPlayerAnimations();
 	ASMFixes();
 	HookImGui();
 
@@ -344,6 +345,10 @@ void PerformASMPatches() {
 	if (!ASMPatches::SkipWombAchievementBlock()) {
 		ZHL::Log("[ERROR] Error while skipping womb achievement block\n");
 	}
+
+	if (!ASMPatches::FixGridDebugInfo()) {
+		ZHL::Log("[ERROR] Error while patching grid debug info font\n");
+	};
 
 	ASMPatches::DisableExitPrompt();
 	ASMPatches::PatchLeaderboardGoalSprite();

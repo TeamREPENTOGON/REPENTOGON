@@ -107,6 +107,7 @@ public:
 	}
 };
 
+// Base class for XMLData categories (except XMLEntity, which is special, lol)
 class XMLDataHolder {
 public:
 	XMLNodes nodes;
@@ -123,6 +124,88 @@ public:
 	int maxid;
 	int defmaxid;
 	bool stuffset = false;
+
+	// Initializes a standard XMLAttributes object.
+	// Copies attributes from `raw`, with keys converted to all lowercase.
+	// If a "daddy" is provided, also inherits attributes from that.
+	static XMLAttributes CreateNode(const xml_node<char>& auxnode, xml_node<char>* daddy, const std::string& currpath, const char* modid);
+
+	// Check the ID attributes of the node, updating it as necessary, and returning the final chosen ID integer.
+	virtual int AssignId(XMLAttributes& node, const bool isContent);
+
+	// For performing special processing on the attributes of a node, after ID assignment and child node parsing, but before translations/insertions.
+	virtual void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) {}
+
+	// Returns the category to use for translation strings. Returns nullptr if this data does not have translations.
+	virtual const char* GetTranslationStringCategory() { return nullptr; }
+	
+	// Inserts the node into the byname/bynamemod lookup tables.
+	virtual void AddByNameLookups(XMLAttributes& node, int id, const std::string& modid);
+
+	// Checks if a translation is available for the specified attribute in the specified category.
+	// If there is, the current attribute will be copied to "untranslated<attr>", and the original
+	// attribute will be replaced with its translated form.
+	static void CheckTranslatedAttribute(XMLAttributes& node, const std::string attr, const char* category) {
+		if (category) {
+			if (node.count(attr) && !node[attr].empty() && node[attr].front() == '#') {
+				bool unk = false;
+				std::string translated = g_Manager->GetStringTable()->GetString(category, 0, node[attr].substr(1, node[attr].length()).c_str(), &unk);
+				if (translated != "StringTable::InvalidCategory" && translated != "StringTable::InvalidKey") {
+					const std::string untranslatedAttr = "untranslated" + attr;
+					node[untranslatedAttr] = node[attr];
+					node[attr] = translated;
+				}
+			}
+		}
+	}
+
+	// Checks for translations using the category defined for this particular instance.
+	void CheckTranslatedAttribute(XMLAttributes& node, const char* attr) {
+		if (const char* stringCategory = GetTranslationStringCategory()) {
+			CheckTranslatedAttribute(node, attr, GetTranslationStringCategory());
+		}
+	}
+
+	// Adds an XMLAttributes node into the data holder, processing attributes/children/translations
+	// as appropriate, and populating lookup tables.
+	XMLAttributes& AddNode(const xml_node<char>& auxnode, XMLAttributes node, int id) {
+		// Process any child nodes.
+		ProcessChilds(&auxnode, id);
+		
+		// Perform any special processing logic.
+		ProcessAttributes(auxnode, node, id);
+		
+		// If this data supports translations, apply them for name/description.
+		CheckTranslatedAttribute(node, "name");
+		CheckTranslatedAttribute(node, "description");
+		
+		// Populate lookup tables.
+		const std::string& modid = node["sourceid"];
+		AddByNameLookups(node, id, modid);
+		bymod[modid].push_back(id);
+		if (node.count("sourcepath")) {
+			byfilepathmulti.tab[node["sourcepath"]].push_back(id);
+		}
+		if (node.count("relativeid")) {
+			byrelativeid[modid + node["relativeid"]] = id;
+		}
+
+		// Insert the node.
+		const bool isOverwrite = nodes.count(id) > 0;
+		nodes[id] = std::move(node);
+		if (!isOverwrite) {
+			byorder[nodes.size()] = id;
+		}
+
+		return nodes[id];
+	}
+
+	// Creates a new node from the provided raw data, assigns it an ID and adds it to the data holder.
+	XMLAttributes& CreateAndAddNode(const xml_node<char>& auxnode, xml_node<char>* daddy, const std::string& currpath, const bool isContent, const char* modid) {
+		XMLAttributes node = CreateNode(auxnode, daddy, currpath, modid);
+		int id = AssignId(node, isContent);
+		return AddNode(auxnode, std::move(node), id);
+	}
 
 	void Clear() {
 		nodes.clear();
@@ -406,35 +489,30 @@ public:
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& sound, int id) override;
 };
 
 
-class XMLAchievement : public XMLDataHolder {
-};
+class XMLAchievement : public XMLDataHolder {};
 
 class XMLRecipe : public XMLDataHolder {
-
+	int AssignId(XMLAttributes& recipe, const bool isContent) override;
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& recipe, int id) override;
 };
 
 class XMLWisp : public XMLDataHolder {
-
+	int AssignId(XMLAttributes& wisp, const bool isContent) override;
 };
-
-class XMLWispColor : public XMLDataHolder {
-
-};
-
-
-class XMLBossPortrait : public XMLDataHolder {
-
-};
+class XMLWispColor : public XMLDataHolder {};
 
 class XMLLocust : public XMLDataHolder {
-
+	int AssignId(XMLAttributes& locust, const bool isContent) override;
 };
+class XMLLocustColor : public XMLDataHolder {};
 
-class XMLLocustColor : public XMLDataHolder {
-
+class XMLBossPortrait : public XMLDataHolder {
+	void AddByNameLookups(XMLAttributes& boss, int id, const std::string& modid) override;
 };
 
 struct CustomReviveInfo {
@@ -454,7 +532,10 @@ public:
 	// Holds info for XML-defined stat changes.
 	XMLItemStats statups;
 	XMLItemStats effectstatups;  // For corresponding temporaryeffects
-	unordered_map<int, string> customActiveGFX;
+
+	const char* GetTranslationStringCategory() override { return "Items"; }
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
 
 	bool HasAnyCustomCache(const int id) {
 		return this->customcache.find(id) != this->customcache.end();
@@ -482,6 +563,13 @@ public:
 			this->customcache[id].erase(stringlower(tag.c_str()));
 		}
 	}
+};
+
+class XMLCollectible : public XMLItem {
+public:
+	unordered_map<int, string> customActiveGFX;
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
 
 	const char* GetCustomActiveGFX(const int id) {
 		auto it = this->customActiveGFX.find(id);
@@ -490,6 +578,11 @@ public:
 		}
 		return "";
 	}
+};
+
+class XMLNullItem : public XMLItem {
+public:
+	const char* GetTranslationStringCategory() override { return nullptr; }
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -505,11 +598,13 @@ class XMLBossPools : public XMLDataHolder {
 };
 
 class XMLNightmare : public XMLDataHolder {
-
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& nightmare, int id) override;
 };
 
 class XMLCostume : public XMLDataHolder {
-	
+public:
+	int AssignId(XMLAttributes& costume, const bool isContent) override;
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& costume, int id) override;
 };
 
 class XMLBombCostume : public XMLDataHolder {
@@ -518,14 +613,19 @@ public:
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+
+	int AssignId(XMLAttributes& bombcostume, const bool isContent) override;
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& bombcostume, int id) override;
 };
 
-class XMLNullCostume : public XMLDataHolder {
+class XMLNullCostume : public XMLCostume {
 public:
 	XMLNullCostume(int m) {
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+
+	int AssignId(XMLAttributes& costume, const bool isContent) override;
 };
 
 class XMLGeneric : public XMLDataHolder {
@@ -534,6 +634,18 @@ public:
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+
+	const char* GetTranslationStringCategory() override { return "Default"; }
+};
+
+class XMLGiantBook : public XMLDataHolder {
+public:
+	XMLGiantBook(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& giantbook, int id) override;
 };
 
 class XMLChallenge : public XMLDataHolder {
@@ -551,40 +663,41 @@ public:
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+
 	void Clear() {
-			for each (auto& n in nodes) {;
-				XMLAttributes node = n.second;
-				if (strcmp(node["sourceid"].c_str(), "BaseGame") != 0) {
-					int idx = n.first;
-					if (byname[node["name"]] == idx) { byname.erase(node["name"]); }
-					if (bynamemod[node["name"] + node["sourceid"]] == idx) { bynamemod.erase(node["name"] + node["sourceid"]); }
-					bymod.erase(node["sourceid"]);
-					byrelativeid.erase(node["sourceid"] + node["name"]);
-					nodes.erase(idx);
-					childs.erase(idx);
-					maxid = maxid / 2 ;
-					stuffset = true; //this is to set the thing as a 2ndpass is going to be made
-				}
+		for each (auto& n in nodes) {;
+			XMLAttributes node = n.second;
+			if (strcmp(node["sourceid"].c_str(), "BaseGame") != 0) {
+				int idx = n.first;
+				if (byname[node["name"]] == idx) { byname.erase(node["name"]); }
+				if (bynamemod[node["name"] + node["sourceid"]] == idx) { bynamemod.erase(node["name"] + node["sourceid"]); }
+				bymod.erase(node["sourceid"]);
+				byrelativeid.erase(node["sourceid"] + node["name"]);
+				nodes.erase(idx);
+				childs.erase(idx);
+				maxid = maxid / 2 ;
+				stuffset = true; //this is to set the thing as a 2ndpass is going to be made
 			}
 		}
+	}
 };
 
 class XMLTrinket : public XMLItem {
 public:
-	XMLNodeIdxLookup bypickup;
+	// XMLNodeIdxLookup bypickup;
 };
 
-class XMLCard : public XMLDataHolder {
+class XMLPocketItem : public XMLDataHolder {
 public:
-	XMLNodeIdxLookup bypickup;
+	// XMLNodeIdxLookup bypickup;
 	vector<XMLAttributes> customachievitems;
+
+	const char* GetTranslationStringCategory() override { return "PocketItems"; }
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) override;
 };
 
-class XMLPill : public XMLDataHolder {
-public:
-	XMLNodeIdxLookup bypickup;
-	vector<XMLAttributes> customachievitems;
-};
+class XMLCard : public XMLPocketItem {};
+class XMLPill : public XMLPocketItem {};
 
 class XMLStage : public XMLDataHolder {
 public:
@@ -593,6 +706,10 @@ public:
 };
 
 class XMLPlayer : public XMLDataHolder {
+	const char* GetTranslationStringCategory() override { return "Players"; }
+
+	void AddByNameLookups(XMLAttributes& player, int id, const std::string& modid) override;
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& player, int id) override;
 };
 
 class XMLBackdrop : public XMLDataHolder {
@@ -609,6 +726,9 @@ public:
 	vector<XMLAttributes> GetRelatedFXParams(int backdropid) {
 		return relfxparams[backdropid];
 	}
+
+	int AssignId(XMLAttributes& backdrop, const bool isContent) override;
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& backdrop, int id) override;
 };
 
 class XMLEntity {
@@ -795,8 +915,8 @@ public:
 struct XMLData {
 	XMLPlayer* PlayerData = new XMLPlayer();
 	XMLEntity* EntityData = new XMLEntity();
-	XMLItem* ItemData = new XMLItem();
-	XMLItem* NullItemData = new XMLItem();
+	XMLCollectible* ItemData = new XMLCollectible();
+	XMLNullItem* NullItemData = new XMLNullItem();
 	XMLItemPools* PoolData = new XMLItemPools();
 	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLBossPortrait* BossPortraitData = new XMLBossPortrait();
@@ -810,8 +930,8 @@ struct XMLData {
 	XMLCostume* CostumeData = new XMLCostume();
 	XMLWisp* WispData = new XMLWisp();
 	XMLWispColor* WispColorData = new XMLWispColor();
-	XMLWisp* LocustData = new XMLWisp();
-	XMLWispColor* LocustColorData = new XMLWispColor();
+	XMLLocust* LocustData = new XMLLocust();
+	XMLLocustColor* LocustColorData = new XMLLocustColor();
 	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
 	XMLBombCostume* BombCostumeData = new XMLBombCostume(19);
 	XMLCurse* CurseData = new XMLCurse(1);
@@ -820,7 +940,7 @@ struct XMLData {
 	XMLStage* StageData = new XMLStage();
 	XMLBackdrop* BackdropData = new XMLBackdrop();
 	XMLAchievement* AchievementData = new XMLAchievement();
-	XMLGeneric* GiantBookData = new XMLGeneric(46);
+	XMLGiantBook* GiantBookData = new XMLGiantBook(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
 	XMLGeneric* PlayerFormData = new XMLGeneric(14);
 	XMLGeneric* FxLayerData = new XMLGeneric(0);
@@ -833,7 +953,7 @@ struct XMLData {
 	XMLMod* ModData = new XMLMod();
 
 	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
-	set<string> AllCustomCaches = {"familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
+	set<string> AllCustomCaches = { "familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
 
 	void AddKnownCustomCache(const std::string& tag) {
 		if (!tag.empty()) {
@@ -1098,14 +1218,8 @@ inline void LoadGenericXMLData(XMLDataHolder* data, xml_node<char>* daddy, bool 
 			attributes["sourceid"] = lastmodid;
 		}
 		data->ProcessChilds(auxnode, id);
-		
-		StringTable* stringTable = g_Manager->GetStringTable();
-		bool unk = false;
-		if (attributes["name"].find("#") != string::npos) {
-			attributes["untranslatedname"] = attributes["name"];
-			attributes["name"] = string(stringTable->GetString("Default", 0, attributes["name"].substr(1, attributes["name"].length()).c_str(), &unk));
-			if (attributes["name"].compare("StringTable::InvalidKey") == 0) { attributes["name"] = attributes["untranslatedname"]; }
-		}
+
+		XMLDataHolder::CheckTranslatedAttribute(attributes, "name", "Default");
 
 		if (attributes.find("relativeid") != attributes.end()) { data->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 		data->bynamemod[attributes["name"] + attributes["sourceid"]] = id;

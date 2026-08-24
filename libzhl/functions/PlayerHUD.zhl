@@ -25,6 +25,9 @@ struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem, PlayerHUDTrinket)
     Entity_Player* _player : 0x0;
     HUD* _HUD : 0x4;
     short _playerHudIndex : 0x8;
+    int8_t _redHeartFlashCountdown : 0xc;
+    int8_t _soulHeartFlashCountdown : 0xd;
+    int8_t _goldHeartFlashCountdown : 0xe;
     PlayerHUDHeart _heart[24] : 0x10;
     PlayerHUDActiveItem _activeItem[4] : 0x190;
     PlayerHUDTrinket _trinket[2] : 0x200;

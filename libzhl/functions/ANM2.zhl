@@ -71,12 +71,8 @@ struct ANM2 depends (AnimationState, ColorMod, Vector, KColor) { {{
     inline AnimationState* GetAnimationState() { return &this->_animState; }
     inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
     inline unsigned int GetAnimationCount() { return this->_animCount; }
-    inline AnimationData* GetAnimationData(const int index) {
-        if (this->_animData != nullptr && index >= 0 && index < this->_animCount) {
-			return &this->_animData[index];
-		}
-		return nullptr;
-    }
+    LIBZHL_API AnimationData* GetAnimationData(const int index);
+	LIBZHL_API AnimationData* GetAnimationData(const std_string& animName);
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline NullFrame* GetOverlayNullFrame(const char * name) {return this->GetOverlayAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return this->_layerCount; } 

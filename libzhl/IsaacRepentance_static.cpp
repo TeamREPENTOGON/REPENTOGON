@@ -773,3 +773,20 @@ void PersistentGameData::Save() {
 		SaveLocally();
 	}
 }
+
+AnimationData* ANM2::GetAnimationData(const int index) {
+	if (this->_animData != nullptr && index >= 0 && index < this->_animCount) {
+		return &this->_animData[index];
+	}
+	return nullptr;
+}
+
+AnimationData* ANM2::GetAnimationData(const std::string& animName) {
+	for (int i = 0; i < this->GetAnimationCount(); i++) {
+		AnimationData* animData = this->GetAnimationData(i);
+		if (animData && animData->GetName() == animName) {
+			return animData;
+		}
+	}
+	return nullptr;
+}

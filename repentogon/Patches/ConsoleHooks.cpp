@@ -332,3 +332,8 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
 
     super(in, out, player);
 }
+
+HOOK_METHOD(Console, ProcessInput, (void)->void) {
+    //skip the whole input processing, we are replacing the console, otherwise this causes game pausing when backtick is pressed
+    return super();
+};

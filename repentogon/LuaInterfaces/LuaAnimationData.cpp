@@ -38,21 +38,11 @@ LUA_FUNCTION(Lua_SpriteGetOverlayAnimationData)
 	return 1;
 }
 
-static AnimationData* GetAnimationDataByName(ANM2* anm2, const std_string layerName) {
-	for (unsigned int i = 0; i < anm2->GetAnimationCount(); ++i) {
-		AnimationData* animData = anm2->GetAnimationData(i);
-		if (animData != nullptr && animData->GetName() == layerName) {
-			return animData;
-		}
-	}
-	return nullptr;
-}
-
 LUA_FUNCTION(Lua_SpriteGetAnimationData)
 {
 	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	std_string layerName = luaL_checkstring(L, 2);
-	AnimationData* animData = GetAnimationDataByName(anm2, layerName);
+	std_string animName = luaL_checkstring(L, 2);
+	AnimationData* animData = anm2->GetAnimationData(animName);
 
 	if (animData == nullptr) {
 		lua_pushnil(L);

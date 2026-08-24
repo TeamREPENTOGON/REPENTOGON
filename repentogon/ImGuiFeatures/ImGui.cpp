@@ -286,12 +286,24 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
 
-		switch (wParam) {
-		case VK_OEM_3: {
-			menuShown = true;
-			break;
-		}
+		if (repentogonOptions.consoleKeyMode == 1) {
+			WORD keyFlags = HIWORD(lParam);
+			WORD scanCode = LOBYTE(keyFlags);
+			BOOL isExtendedKey = (keyFlags & KF_EXTENDED) == KF_EXTENDED; // extended-key flag, 1 if scancode has 0xE0 prefix
 
+			if (isExtendedKey) {
+				scanCode = MAKEWORD(scanCode, 0xE0);
+			};
+			if (scanCode == repentogonOptions.consoleKeyScancode) {
+				menuShown = true;
+			};
+		};
+		if (repentogonOptions.consoleKeyMode == 0) {
+			if (wParam == repentogonOptions.consoleKeyVK) {
+				menuShown = true;
+			};
+		};
+		switch (wParam) {
 		case VK_RETURN: {
 			if (menuShown && console.ShouldCloseImGuiOnPressEnter()) {
 				menuShown = false;

@@ -880,7 +880,6 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	float _d8FireDelayModifier : 0x1934;
 	int _goldenHearts : 0x1938;
 	int _babySkin : 0x1ad8;
-	uint32_t _urnSouls: 0x1cf8;
 	//std_vector_int _wispStorage : 0x1d04;
 	vector_EntitySaveState _movingBoxContents : 0x1d68;
 	int _boneHearts : 0x1d74;
@@ -890,6 +889,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	int _rottenHearts : 0x1d90;
 	uint16_t _candyHeartStatUps[6] : 0x1d9c;
 	uint16_t _soulLocketStatUps[6] : 0x1da8;
+	uint32_t _urnSouls: 0x1dbc;
 	int _numGigaBombs : 0x1dc0;
 	History _history : 0x1dd8;
 	int _inventoryHistoryIdx[16] : 0x1dec;	//not 100 percent certain about it being 16, judging from what i saw when adding items to tisaac
