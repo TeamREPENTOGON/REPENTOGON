@@ -3941,6 +3941,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "FireTechXLaser", Lua_FireTechXLaser },
 		{ "GetAimDirection", Lua_GetAimDirection },
 		{ "GetCostumeNullPos", Lua_GetCostumeNullPos },
+		{ "GetFlyingOffset", Lua_GetFlyingOffset },
 		{ "GetLaserOffset", Lua_GetLaserOffset },
 		{ "GetLastDamageSource", Lua_GetLastDamageSource },
 		{ "GetLastDirection", Lua_GetLastDirection },
