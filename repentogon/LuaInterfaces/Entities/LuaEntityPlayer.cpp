@@ -229,7 +229,8 @@ LUA_FUNCTION(Lua_GetCostumeNullPos) {
 LUA_FUNCTION(Lua_GetFlyingOffset) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->GetFlyingOffset());
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	player->GetFlyingOffset(toLua);
 	return 1;
 }
 

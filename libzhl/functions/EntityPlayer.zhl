@@ -644,7 +644,7 @@ __thiscall Entity_Tear* Entity_Player::FireTear(Vector* Position, Vector Velocit
 __thiscall Vector* Entity_Player::GetCostumeNullPos(const char* NullFrameName, bool headScale, Vector* Direction);
 
 "558beca1????????83ec0c8b80":
-__thiscall Vector* Entity_Player::GetFlyingOffset();
+__thiscall Vector* Entity_Player::GetFlyingOffset(Vector* buffer);
 
 "558bec83e4f883ec18568bf1578b86????????83f814":
 __thiscall Vector* Entity_Player::GetMovementJoystick(Vector* buffer);
