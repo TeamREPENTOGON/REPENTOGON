@@ -6,11 +6,10 @@
 
 LUA_FUNCTION(Lua_FamiliarGetOrbitDistance)
 {
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	int layer = (int)luaL_checkinteger(L, 2);
+	int layer = (int)luaL_checkinteger(L, 1);
 	
 	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	fam->GetOrbitDistance(toLua, layer);
+	Entity_Familiar::GetOrbitDistance(toLua, layer);
 
 	return 1;
 }
@@ -335,7 +334,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		{ "GetOrbitDistance", Lua_FamiliarGetOrbitDistance },
 		{ "GetOrbitPosition", Lua_FamiliarGetOrbitPosition },
 		{ "FireProjectile", Lua_FamiliarFireProjectile },
 		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },
@@ -367,6 +365,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_FAMILIAR, functions);
 
+	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetOrbitDistance", Lua_FamiliarGetOrbitDistance);
 	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetRandomWisp", Lua_GetRandomWisp);
 
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_FAMILIAR, "OrbitDistance", Lua_FamiliarGetOrbitDistanceVar, Lua_FamiliarSetOrbitDistanceVar);
