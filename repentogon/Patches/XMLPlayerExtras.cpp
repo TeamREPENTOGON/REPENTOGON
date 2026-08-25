@@ -51,39 +51,6 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 	this->update_bone_hearts(); 
 }
 
-// GetHealthType hook merged into the one in CustomCallbacks.cpp
-
-namespace PlayerStats {
-	float modCharacterSpeed = 0;
-	float modCharacterFireDelay = 0;
-	float modCharacterDamage = 0;
-	float modCharacterRange = 0;
-	float modCharacterShotSpeed = 0;
-	float modCharacterLuck = 0;
-}
-
-HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
-
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-
-	std::tuple<std::string, float*, float> statValues[] = {
-	{"speedmodifier", &PlayerStats::modCharacterSpeed, 1.f},
-	{"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1.f},
-	{"damagemodifier", &PlayerStats::modCharacterDamage, 1.f},
-	{"rangemodifier", &PlayerStats::modCharacterRange, 40.f},
-	{"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1.f},
-	{"luckmodifier", &PlayerStats::modCharacterLuck, 1.f},
-	};
-
-	for (auto& value : statValues) {
-		*std::get<1>(value) = 0;
-
-		if (!playerXML[std::get<0>(value)].empty())
-			*std::get<1>(value) = stof(playerXML[std::get<0>(value)]) * std::get<2>(value);
-	}
-	super();
-}
-
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 

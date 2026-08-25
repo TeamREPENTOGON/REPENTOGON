@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
+#include "../../Patches/ItemConfigEx.h"
 #include "../XMLPlayerExtras.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
@@ -2215,10 +2216,11 @@ const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int sl
 
 	const int collectibleID = hud->_activeItem[slot].id;
 
-	const char* customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
-
-	if (customGfxPath[0] != '\0') {
-		return customGfxPath;
+	if (ItemConfigEx::CollectibleEx* ex = ItemConfigEx::GetCollectibleEx(collectibleID)) {
+		const std::string& customGfxPath = ex->GetCustomActiveGfx();
+		if (!customGfxPath.empty()) {
+			return customGfxPath.c_str();
+		}
 	}
 
 	return gfxPath;

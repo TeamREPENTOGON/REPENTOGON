@@ -5,6 +5,7 @@
 #include "ASMPatches.h"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
+#include "ItemConfigEx.h"
 #include "LuaCore.h"
 #include "SigScan.h"
 #include "XMLData.h"
@@ -14,38 +15,7 @@
 
 // Returns the # of extra life items/effects that the player has via REPENTOGON customtags.
 int GetCustomReviveCount(Entity_Player* player, const bool includeHidden) {
-	int numLives = 0;
-	TemporaryEffects& effects = player->_temporaryeffects;
-	for (const auto& [nullID, reviveInfo] : XMLStuff.NullItemData->customreviveitems) {
-		if ((includeHidden || !reviveInfo.hidden) && (reviveInfo.item || reviveInfo.effect)) {
-			numLives += effects.GetNullEffectNum(nullID);
-		}
-	}
-	for (const auto& [itemID, reviveInfo] : XMLStuff.ItemData->customreviveitems) {
-		if (!includeHidden && reviveInfo.hidden) continue;
-		if (reviveInfo.item) {
-			numLives += player->GetCollectibleNum(itemID, !includeHidden);
-		}
-		if (reviveInfo.effect) {
-			numLives += effects.GetCollectibleEffectNum(itemID);
-		}
-	}
-	for (const auto& [trinketID, reviveInfo] : XMLStuff.TrinketData->customreviveitems) {
-		if (!includeHidden && reviveInfo.hidden) continue;
-		if (reviveInfo.item) {
-			if ((player->_trinketsID[0] & TRINKET_ID_MASK) == trinketID) {
-				numLives += 1;
-			}
-			if ((player->_trinketsID[1] & TRINKET_ID_MASK) == trinketID) {
-				numLives += 1;
-			}
-			numLives += player->GetSmeltedTrinket()->at(trinketID)._trinketNum + player->GetSmeltedTrinket()->at(trinketID)._goldenTrinketNum;
-		}
-		if (reviveInfo.effect) {
-			numLives += effects.GetTrinketEffectNum(trinketID);
-		}
-	}
-	return numLives;
+	return ItemConfigEx::GetCustomReviveCount(player, includeHidden);
 }
 
 // Returns true if a "?" should be displayed at the end of the player's extra lives count.
@@ -54,33 +24,7 @@ bool __stdcall PlayerHasChanceRevive(Entity_Player* player) {
 		// Guppy's Collar
 		return true;
 	}
-	TemporaryEffects& effects = player->_temporaryeffects;
-	for (const auto& [nullID, reviveInfo] : XMLStuff.NullItemData->customreviveitems) {
-		if (reviveInfo.chance && !reviveInfo.hidden && (reviveInfo.item || reviveInfo.effect) && effects.HasNullEffect(nullID)) {
-			return true;
-		}
-	}
-	for (const auto& [itemID, reviveInfo] : XMLStuff.ItemData->customreviveitems) {
-		if (reviveInfo.chance && !reviveInfo.hidden) {
-			if (reviveInfo.item && player->HasCollectible(itemID, false)) {
-				return true;
-			}
-			if (reviveInfo.effect && effects.HasCollectibleEffect(itemID)) {
-				return true;
-			}
-		}
-	}
-	for (const auto& [trinketID, reviveInfo] : XMLStuff.TrinketData->customreviveitems) {
-		if (reviveInfo.chance && !reviveInfo.hidden) {
-			if (reviveInfo.item && player->HasTrinket(trinketID, false)) {
-				return true;
-			}
-			if (reviveInfo.effect && effects.HasTrinketEffect(trinketID)) {
-				return true;
-			}
-		}
-	}
-	return false;
+	return ItemConfigEx::HasCustomChanceRevive(player);
 }
 
 // TriggerDeath calls (that aren't `checkOnly`) are done in PlayerManager::Update, where it iterates over the players to look for dead ones no longer playing an animation.

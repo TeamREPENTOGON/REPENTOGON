@@ -20,6 +20,8 @@
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
+#include "ItemConfigEx.h"
+#include "EntityConfigEx.h"
 
 #include "../ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
@@ -895,23 +897,6 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 }
 */
 
-
-// Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
-// Ex: "tag1 tag2 tag3"
-// For tag-like attributes like 'customtags' and 'customcache'.
-void ParseTagsString(const string& str, set<string>& out) {
-	const string tagsstr = stringlower(str.c_str());
-	if (!tagsstr.empty()) {
-		stringstream tagstream(tagsstr);
-		string tag;
-		while (getline(tagstream, tag, ' ')) {
-			if (!tag.empty()) {
-				out.insert(tag);
-			}
-		}
-	}
-}
-
 static const unordered_map<string, int> bagOfCraftingTags = {
 	{"-1", 0},
 	{"none", 0},
@@ -968,40 +953,6 @@ void ParseBagOfCraftingAttribute(const string& str, vector<int>& out) {
 		}
 	}
 }
-
-// If the item has the appropriate customtags, adds it to the customreviveitems map
-// to make it more efficient to check if the player has any of them later.
-void CheckCustomRevive(const int id, XMLItem* data) {
-	const bool hasReviveTag = data->HasCustomTag(id, "revive");
-	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
-	if (hasReviveTag || hasReviveEffectTag) {
-		CustomReviveInfo* info = &data->customreviveitems[id];
-		info->item = hasReviveTag;
-		info->effect = hasReviveEffectTag;
-		info->hidden = data->HasCustomTag(id, "hiddenrevive");
-		info->chance = data->HasCustomTag(id, "chancerevive");
-	}
-}
-
-// Parses xml-defined item stats.
-void ParseXmlItemStats(const int id, XMLAttributes* xmlAttributes, XMLItem* data, const bool isNullItem) {
-	for (const auto& [stat, tag] : EvaluateStats::evaluteStatXmlTags) {
-		if (xmlAttributes->find(tag) != xmlAttributes->end()) {
-			float value = stof(xmlAttributes->at(tag));
-			if (isNullItem) {
-				data->effectstatups[stat][id] = value;
-			} else {
-				data->statups[stat][id] = value;
-			}
-		}
-
-		const string effecttag = "effect" + tag;
-		if (xmlAttributes->find(effecttag) != xmlAttributes->end()) {
-			data->effectstatups[stat][id] = stof(xmlAttributes->at(effecttag));
-		}
-	}
-}
-
 
 // XMLDataHolder base logic ----------
 // Overrides defined below.
@@ -1102,32 +1053,8 @@ void XMLItem::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& it
 		item["type"] = "null";
 	}
 
-	if (item.count("customtags")) {
-		ParseTagsString(item["customtags"], this->customtags[id]);
-		CheckCustomRevive(id, this);
-	}
-	if (item.count("customcache")) {
-		ParseTagsString(item["customcache"], this->customcache[id]);
-		ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
-	}
-	ParseXmlItemStats(id, &item, this, item["type"] == "null");
-
 	if (item.count("achievement") && toint(item["achievement"]) > (static_cast<int>(eAchievement::NUM_ACHIEVEMENTS) - 1)) {
 		this->customachievitems.push_back(item);
-	}
-}
-
-void XMLCollectible::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) {
-	XMLItem::ProcessAttributes(auxnode, item, id);
-
-	if (id == COLLECTIBLE_BFFS || id == COLLECTIBLE_HIVE_MIND) {
-		this->customcache[id].insert("familiarmultiplier");
-	} else if (id == COLLECTIBLE_DEEP_POCKETS) {
-		this->customcache[id].insert("maxcoins");
-	}
-
-	if (item["type"] == "active" && item.count("activegfx")) {
-		this->customActiveGFX[id] = item["gfxroot"] + "collectibles/" + item["activegfx"];
 	}
 }
 
@@ -1442,7 +1369,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			entity["sourceid"] = lastmodid;
 			XMLDataHolder::CheckTranslatedAttribute(entity, "name", "Entities");
 			if (entity.find("customtags") != entity.end()) {
-				ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
+				XMLData::ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
 			}
 			if (type == ENTITY_PICKUP && entity.find("bagofcrafting") != entity.end()) {
 				ParseBagOfCraftingAttribute(entity["bagofcrafting"], XMLStuff.EntityData->bagofcraftingpickups[idx]);
@@ -3686,8 +3613,6 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 
 	super();
 
-	EvaluateStats::UpdateItemConfig();
-
 	// _collectibleNameMap is pretty much exclusively used for mod-related stuff.
 	// Ofc the basegame does not account for translation string support. It puts only the TRANSLATED names in the map.
 	// Here we shove all of the raw, untranslated strings into the map too.
@@ -3712,6 +3637,9 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
 	//RegisterGenericCustomXML("poopoo.xml", "poopoos", "poo");
 	LoadCustomXMLs(); //this loads custom xmls into their respective xmldata structures
+
+	ItemConfigEx::ParseXMLData();
+	EntityConfigEx::ParseXMLData();
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {

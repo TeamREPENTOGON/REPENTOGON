@@ -15,21 +15,8 @@
 #include "HookSystem.h"
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
-#include "EvaluateStats.h"
 
 using namespace std;
-
-/* Modifiers for character stats, allow to override the computation of Eden's stats, 
- * which we use in order to define stats for modded characters.
- */
-namespace PlayerStats {
-	extern float modCharacterFireDelay;
-	extern float modCharacterSpeed;
-	extern float modCharacterDamage;
-	extern float modCharacterRange;
-	extern float modCharacterShotSpeed;
-	extern float modCharacterLuck;
-}
 
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 template<>
@@ -64,7 +51,6 @@ using XMLKinder = unordered_map<int, XMLChilds>;
 using XMLEntityKinder = unordered_map<tuple<int, int, int>, XMLChilds>;
 using XMLNodeIdxLookup = unordered_map<string, int>;
 using XMLNodeIdxLookupMultiple = unordered_map<string, vector<int>>;
-using XMLItemStats = unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>>;
 
 inline string stringlower(char* str)
 {
@@ -119,8 +105,6 @@ public:
 	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
 	XMLNodeTable byfilepathmulti;
-	// Holds the contents of the "customtags" attribute, converted to lowercase and parsed into a set.
-	unordered_map<int, set<string>> customtags;
 	int maxid;
 	int defmaxid;
 	bool stuffset = false;
@@ -215,7 +199,6 @@ public:
 		bymod.clear();
 		byrelativeid.clear();
 		byfilepathmulti.tab.clear();
-		customtags.clear();
 		maxid = defmaxid;
 	}
 
@@ -348,25 +331,6 @@ public:
 		}
 		else { Childs = XMLChilds(); }
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
-	}
-
-	bool HasCustomTag(const int id, const std::string& tag) {
-		if (this->customtags.find(id) == this->customtags.end()) {
-			return false;
-		}
-		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
-	}
-
-	void AddCustomTag(const int id, const std::string& tag) {
-		if (!tag.empty()) {
-			this->customtags[id].insert(stringlower(tag.c_str()));
-		}
-	}
-
-	void RemoveCustomTag(const int id, const std::string& tag) {
-		if (HasCustomTag(id, tag)) {
-			this->customtags[id].erase(stringlower(tag.c_str()));
-		}
 	}
 
 	void ProcessChilds(const xml_node<char>* parentnode, int id) {
@@ -515,70 +479,16 @@ class XMLBossPortrait : public XMLDataHolder {
 	void AddByNameLookups(XMLAttributes& boss, int id, const std::string& modid) override;
 };
 
-struct CustomReviveInfo {
-	bool item = false;  // Grants a revive when item/trinket is held.
-	bool effect = false;  // Grants a revive when the corresponding TemporaryEffect is applied.
-	bool hidden = false;  // Revive is not counted on the HUD.
-	bool chance = false;  // Adds a "?" to the hud when held.
-};
-
 class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
-	// Holds info related to custom revive effects. Populated by parsing "customtags".
-	unordered_map<int, CustomReviveInfo> customreviveitems;
-	// Holds the contents of the "customcache" attribute, converted to lowercase and parsed into a set.
-	unordered_map<int, set<string>> customcache;
-	// Holds info for XML-defined stat changes.
-	XMLItemStats statups;
-	XMLItemStats effectstatups;  // For corresponding temporaryeffects
 
 	const char* GetTranslationStringCategory() override { return "Items"; }
 
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
-
-	bool HasAnyCustomCache(const int id) {
-		return this->customcache.find(id) != this->customcache.end();
-	}
-
-	const set<string>& GetCustomCache(const int id) {
-		return this->customcache[id];
-	}
-
-	bool HasCustomCache(const int id, const std::string& tag) {
-		if (!HasAnyCustomCache(id)) {
-			return false;
-		}
-		return this->customcache[id].find(stringlower(tag.c_str())) != this->customcache[id].end();
-	}
-
-	void AddCustomCache(const int id, const std::string& tag) {
-		if (!tag.empty()) {
-			this->customcache[id].insert(stringlower(tag.c_str()));
-		}
-	}
-
-	void RemoveCustomCache(const int id, const std::string& tag) {
-		if (HasCustomCache(id, tag)) {
-			this->customcache[id].erase(stringlower(tag.c_str()));
-		}
-	}
 };
 
-class XMLCollectible : public XMLItem {
-public:
-	unordered_map<int, string> customActiveGFX;
-
-	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
-
-	const char* GetCustomActiveGFX(const int id) {
-		auto it = this->customActiveGFX.find(id);
-		if (it != this->customActiveGFX.end()) {
-			return it->second.c_str();
-		}
-		return "";
-	}
-};
+class XMLCollectible : public XMLItem {};
 
 class XMLNullItem : public XMLItem {
 public:
@@ -952,12 +862,19 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
-	set<string> AllCustomCaches = { "familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
-
-	void AddKnownCustomCache(const std::string& tag) {
-		if (!tag.empty()) {
-			AllCustomCaches.insert(stringlower(tag.c_str()));
+	// Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
+	// Ex: "tag1 tag2 tag3"
+	// For tag-like attributes like 'customtags' and 'customcache'.
+	static void ParseTagsString(const string& str, set<string>& out) {
+		const string tagsstr = stringlower(str.c_str());
+		if (!tagsstr.empty()) {
+			stringstream tagstream(tagsstr);
+			string tag;
+			while (getline(tagstream, tag, ' ')) {
+				if (!tag.empty()) {
+					out.insert(tag);
+				}
+			}
 		}
 	}
 };
