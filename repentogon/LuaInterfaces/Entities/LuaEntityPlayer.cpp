@@ -2588,7 +2588,7 @@ LUA_FUNCTION(Lua_PlayerGetGlyphOfBalanceDrop) {
 
 LUA_FUNCTION(Lua_PlayerGetLaserColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::ffi::pushCdataPtr(L, &player->_laserColor, lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR]);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], player->_laserColor);
 
 	return 1;
 }
@@ -2602,7 +2602,7 @@ LUA_FUNCTION(Lua_PlayerSetLaserColor) {
 
 LUA_FUNCTION(Lua_PlayerGetTearColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::ffi::pushCdataPtr(L, &player->_tearColor, lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR]);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], player->_tearColor);
 
 	return 1;
 }
