@@ -1058,7 +1058,7 @@ LUA_FUNCTION(Lua_Entity_SetColor) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
-	ent->_color = *color;
+	ent->SetColor(color, -1, 255, false, true);
 	return 0;
 }
 
