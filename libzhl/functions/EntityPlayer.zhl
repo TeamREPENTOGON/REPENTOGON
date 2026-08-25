@@ -665,10 +665,8 @@ __thiscall void Entity_Player::RenderTop(Vector* position);
 __thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* target);
 
 "558bec83e4f883ec1c8b45??535657f30f10008bfa":
-__fastcall Entity_Familiar* Entity_Player::ThrowFriendlyDip (int subtype, Vector * position, void* unk, Vector* target);
-
-
-
+static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(Entity_Familiar* buffer, Vector* position, int subtype, Vector* target);
+ 
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }

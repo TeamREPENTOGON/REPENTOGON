@@ -364,12 +364,13 @@ LUA_FUNCTION(Lua_ThrowBlueSpider) {
 }
 
 LUA_FUNCTION(Lua_ThrowFriendlyDip) {
-	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int subtype = luaL_checkinteger(L, 2);
 	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* target = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	void* unk = nullptr;
-	lua::luabridge::UserdataPtr::push(L, player->ThrowFriendlyDip(subtype, position, unk, target), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	Entity_Familiar* familiar = nullptr;
+
+	Entity_Player::ThrowFriendlyDip(familiar, position, subtype, target);
+	lua::luabridge::UserdataPtr::push(L, familiar, lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
 	return 1;
 }
 

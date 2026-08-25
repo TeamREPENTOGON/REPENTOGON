@@ -31,9 +31,9 @@ LUA_FUNCTION(Lua_FamiliarFireProjectile)
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	fam->FireProjectile(*dir, false);
+	lua::luabridge::UserdataPtr::push(L, fam->FireProjectile(*dir, false), lua::Metatables::ENTITY_TEAR);
 
-	return 0;
+	return 1;
 }
 
 
