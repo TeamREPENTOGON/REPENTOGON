@@ -116,15 +116,15 @@ local ColorMT = {
     end,
 
     GetColorize = function(self)
-        return {self.RC, self.GC, self.BC, self.AC}
+        return {R = self.RC, G = self.GC, B = self.BC, A = self.AC}
     end,
 
     GetOffset = function(self)
-        return {self.RO, self.GO, self.BO}
+        return {R = self.RO, G = self.GO, B = self.BO}
     end,
 
     GetTint = function(self)
-        return {self.R, self.G, self.B, self.A}
+        return {R = self.R, G = self.G, B = self.B, A = self.A}
     end,
 
     Print = function(self)
