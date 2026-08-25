@@ -1050,8 +1050,8 @@ LUA_FUNCTION(Lua_RenderCollectionItem)
 	}
 
 	ColorMod color;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 4) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 	else {
 		color = ColorMod();

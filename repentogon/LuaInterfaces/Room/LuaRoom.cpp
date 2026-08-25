@@ -334,10 +334,20 @@ LUA_FUNCTION(Lua_RoomGetFloorColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
 	*toLua = *room->GetFloorColor();
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetFloorColor)
+{
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	*room->GetFloorColor() = *color;
+
+	return 0;
 }
 
 //[get/set] not actual color
@@ -714,8 +724,16 @@ HOOK_STATIC(Room, GetItemPool, (uint32_t seed, RoomDescriptor* roomDesc, int bos
 
 LUA_FUNCTION(Lua_RoomGetWallColor) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua::luabridge::UserdataPtr::push(L, &room->_wallColor, lua::Metatables::COLOR);
+	lua::ffi::pushCdataPtr(L, &room->_wallColor, lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR]);
 	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetWallColor) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	room->_wallColor = *color;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_RoomTriggerOutput) {
@@ -783,7 +801,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetWaterAmount", Lua_RoomGetWaterAmount},
 		{ "SetWaterAmount", Lua_RoomSetWaterAmount},
 		{ "GetFloorColor", Lua_RoomGetFloorColor},
+		{ "SetFloorColor", Lua_RoomSetFloorColor},
 		{ "GetWallColor", Lua_RoomGetWallColor},
+		{ "SetWallColor", Lua_RoomSetWallColor},
 		{ "GetWaterColor", Lua_RoomGetWaterColor},
 		{ "SetWaterColor", Lua_RoomSetWaterColor},
 		{ "SetWaterCurrent", Lua_RoomSetWaterCurrent},

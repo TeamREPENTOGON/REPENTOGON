@@ -138,7 +138,7 @@ __thiscall void Entity::Render(Vector * offset);
 "558bec83e4f8f30f1055":
 __thiscall void Entity::SetSize(float size, Vector sizeMulti, int numGridCollisionPoints);
 
-struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
+struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
 {{
 	inline int GetIndex() { return this->_index; }
 	inline unsigned int* GetType() { return &this->_type; }
@@ -155,6 +155,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 		return overlayAnimSomething != NULL;
 	}
 	inline float* GetShadowSize() { return &this->_shadowSize; }
+	inline ColorMod* GetColor() { return &this->_color; }
+	inline ColorMod* GetSplatColor() { return &this->_splatColor; }
 	inline bool* GetVisible() { return &this->_visible; }
 	inline bool* IsDead() { return &this->_dead; }
 	inline int* GetBossStatusEffectCooldown() { return &this->_bossStatusEffectCooldown; }
@@ -221,6 +223,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
     bool _collidesWithGrid : 0x190;
     unsigned short _entityExtraDataPtrLowerBytes : 0x192;
     vector_ColorParams _colorParams : 0x1ac;
+    ColorMod _color : 0x1b8;
+    ColorMod _splatColor : 0x1e4;
     int _fireDamageCountdown : 0x210;
     int _damageCountdown : 0x214;
     int _freezeCountdown : 0x218;

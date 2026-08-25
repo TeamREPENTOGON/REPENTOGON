@@ -5307,7 +5307,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
-			.push(color, lua::Metatables::COLOR)
+			.push(*color, lua::ffi::CData[lua::ffi::CDataID::COLOR])
 			.push(duration)
 			.push(priority)
 			.push(fadeOut)
@@ -5318,9 +5318,9 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 			if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
 				return;
 			}
-			else if (lua_isuserdata(L, -1)) {
+			else if (lua_type(L, -1) == LUA_TCDATA) {
 				// We need to copy the returned color in case the Lua stack is cleaned up in order to avoid unexpected behavior.
-				ColorMod* returnedColor = lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+				ColorMod* returnedColor = lua::GetCData<ColorMod*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 				colorCopy = *returnedColor;
 				color = &colorCopy;
 			}
@@ -5340,7 +5340,7 @@ HOOK_METHOD(Entity, SetColor, (ColorMod* color, int duration, int priority, bool
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackId)
 			.push(this->_type)
 			.push(this, lua::Metatables::ENTITY)
-			.push(color, lua::Metatables::COLOR)
+			.push(*color, lua::ffi::CData[lua::ffi::CDataID::COLOR])
 			.push(duration)
 			.push(priority)
 			.push(fadeOut)
@@ -5800,7 +5800,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
 			.push(duration)
 			.push(amount)
-			.push(&color, lua::Metatables::COLOR)
+			.push(color, lua::ffi::CData[lua::ffi::CDataID::COLOR])
 			.push(ignoreBossStatusCooldown)
 			.call(1);
 
@@ -5814,7 +5814,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 				if (len > 2) {
 					lua_pushinteger(L, 3);
 					lua_gettable(L, -2);
-					color = *lua::GetLuabridgeUserdata<ColorMod*>(L, -1, lua::Metatables::COLOR, "Color");
+					color = *lua::GetCData<ColorMod*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 					lua_pop(L, 1);
 				}
 				if (len > 3)
@@ -5848,7 +5848,7 @@ HOOK_METHOD(Entity, AddSlowing, (const EntityRef& ref, int duration, float amoun
 			.push((EntityRef*)(&ref), lua::Metatables::ENTITY_REF)
 			.push(duration)
 			.push(amount)
-			.push(&color, lua::Metatables::COLOR)
+			.push(color, lua::ffi::CData[lua::ffi::CDataID::COLOR])
 			.push(ignoreBossStatusCooldown)
 			.call(1);
 	}

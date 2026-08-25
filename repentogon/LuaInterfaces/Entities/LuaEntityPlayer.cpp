@@ -2588,14 +2588,28 @@ LUA_FUNCTION(Lua_PlayerGetGlyphOfBalanceDrop) {
 
 LUA_FUNCTION(Lua_PlayerGetLaserColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::luabridge::UserdataPtr::push(L, &player->_laserColor, lua::Metatables::COLOR);
+	lua::ffi::pushCdataPtr(L, &player->_laserColor, lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR]);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetLaserColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->_laserColor = *lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	player->_laserColor = *lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTearColor) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::ffi::pushCdataPtr(L, &player->_tearColor, lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR]);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetTearColor) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_tearColor = *lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
 	return 0;
 }
@@ -4290,6 +4304,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearsOffset", Lua_GetTearsOffset, Lua_SetTearsOffset);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "SpriteScale", Lua_PlayerGetSpriteScale, Lua_PlayerSetSpriteScale);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "LaserColor", Lua_PlayerGetLaserColor, Lua_PlayerSetLaserColor);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearColor", Lua_PlayerGetTearColor, Lua_PlayerSetTearColor);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
 }

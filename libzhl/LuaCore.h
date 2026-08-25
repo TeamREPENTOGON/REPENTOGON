@@ -597,6 +597,8 @@ namespace lua {
             VECTOR_PTR,
             GRID_ENTITY_DESC,
             GRID_ENTITY_DESC_PTR,
+            COLOR,
+            COLOR_PTR,
             MAX_CDATA
         };
 

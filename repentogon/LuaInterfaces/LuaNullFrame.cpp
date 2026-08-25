@@ -61,7 +61,7 @@ LUA_FUNCTION(Lua_NullFrameGetPos)
 LUA_FUNCTION(Lua_NullFrameGetColor)
 {
 	NullFrame* layerState = *lua::GetRawUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
 	*toLua = *layerState->GetColor();
 
 	return 1;

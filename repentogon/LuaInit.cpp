@@ -238,6 +238,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR] = lua_ctypeid(L, "VectorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC] = lua_ctypeid(L, "GridEntityDesc");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR] = lua_ctypeid(L, "Color");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR] = lua_ctypeid(L, "ColorPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");
