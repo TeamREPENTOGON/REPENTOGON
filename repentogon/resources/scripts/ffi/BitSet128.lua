@@ -12,6 +12,7 @@ local function bsNorm(op, idx)
 	ffichecks.checkcdata(idx, op, "BitSet128")
 	return op.L, op.H
 end
+
 local BitSet128MT
 BitSet128MT = {
     __type = "BitSet128",
@@ -52,23 +53,26 @@ __bnot = function(self)
         return BitSet128(a, b)
     end,
     __eq = function(self, second)
-        ffichecks.checkcdata(2, second, "BitSet128")
-        return (self.L == second.L and self.H == second.H)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        return (sl == ol and sh == oh)
     end,
     __lt = function(self, second)
-        ffichecks.checkcdata(2, second, "BitSet128")
-        if (self.H ~= second.H) then
-            return (self.H < second.H)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        if (sh ~= oh) then
+            return (sh < oh)
         else
-            return (self.L < second.L)
+            return (sl < ol)
         end
     end,
     __le = function(self, second)
-        ffichecks.checkcdata(2, second, "BitSet128")
-        if (self.H ~= second.H) then
-            return (self.H <= second.H)
+        local sl, sh = bsNorm(self, 1)
+        local ol, oh = bsNorm(second, 2)
+        if (sh ~= oh) then
+            return (sh <= oh)
         else
-            return (self.L <= second.L)
+            return (sl <= ol)
         end
     end,
     Get = function(self, pos)
