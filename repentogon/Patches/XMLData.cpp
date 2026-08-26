@@ -1862,43 +1862,6 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 		}
 		break;
 	case 21://bosspools
-		lastmodid = "BaseGame"; //no mods supported yet
-		id = -1;
-		daddy = node;
-		babee = node->first_node();
-		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
-			XMLAttributes bosspool;
-			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-			{
-				bosspool[stringlower(attr->name())] = string(attr->value());
-			}
-			if ((XMLStuff.BossPoolData->byname[bosspool["name"]] != NULL) && (lastmodid == "BaseGame")) { //its loading both the rep and AB+ files, kill me!
-				XMLStuff.BossPoolData->Clear();
-			}
-			if (XMLStuff.BossPoolData->byname[bosspool["name"]] == NULL) {
-				XMLStuff.BossPoolData->maxid = XMLStuff.BossPoolData->maxid + 1;
-				id = XMLStuff.BossPoolData->maxid;
-			}
-			else {
-				id = XMLStuff.BossPoolData->byname[bosspool["name"]];
-			}
-
-			if (bosspool.count("sourceid") <= 0) { bosspool["sourceid"] = "BaseGame"; }
-			XMLStuff.BossPoolData->ProcessChilds(auxnode, id);
-
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
-				XMLStuff.BossPoolData->bynamemod[bosspool["name"] + lastmodid] = id;
-				// XMLStuff.BossPoolData->bynamemod[bosspool["untranslatedname"] + lastmodid] = id;
-				XMLStuff.BossPoolData->bymod[lastmodid].push_back(id);
-				XMLStuff.BossPoolData->byfilepathmulti.tab[currpath].push_back(id);
-				XMLStuff.BossPoolData->byname[bosspool["name"]] = id;
-				// XMLStuff.BossPoolData->byname[bosspool["untranslatedname"]] = id;
-				XMLStuff.BossPoolData->nodes[id] = bosspool;
-				XMLStuff.BossPoolData->byorder[XMLStuff.BossPoolData->nodes.size()] = id;
-			}
-			//XMLStuff.ModData->bosspools[lastmodid] += 1;
-			//ZHL::Log("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
-		}
 		xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 	break;
 	case 22: //giantbook
@@ -3660,10 +3623,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	}
 	if (xmlsloaded) {
 		//ZHL::Log("XML: %s", xmldata);
-		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
-			char* x = new char[strlen(bosspoolsxml)];
-			strcpy(x, bosspoolsxml);
-			super(x);
+		if ((charfind(xmldata, "<bosspool", 50))) {
+			std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
+			super(sourceText.data());
 			return;
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
@@ -3690,17 +3652,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 
 		if (charfind(xmldata, "<bosspool", 50)) {
-			if (bosspoolsxml != NULL) {
-				char* x = new char[strlen(bosspoolsxml)];
-				strcpy(x, bosspoolsxml);
-				super(x);
-			}
-			else {
-				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
-				bosspoolsxml = new char[strlen(x) + 1];
-				strcpy(bosspoolsxml, x);
-				super(x);
-			}
+			std::string& sourceText = XMLStuff.BossPoolData->GetXmlSourceText(xmldata);
+			super(sourceText.data());
+			return;
 		}else if (charfind(xmldata, "<backd", 50)) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));
 		}else if (charfind(xmldata, "<bosse", 50)) {
