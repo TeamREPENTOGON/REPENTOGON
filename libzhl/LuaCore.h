@@ -339,12 +339,6 @@ namespace lua {
     template<typename T>
     T GetCData(lua_State* L, int idx, lua_CTypeId ctypeid, std::string const& name) {
         void* p = CheckCData(L, idx, ctypeid, name);
-        if (lua_tocdataid(L, idx) != ctypeid) {
-            // Icky fix I think. Some fields (e.g. EntityPlayer.TearColor) are a
-            // pointer to the actual object instead of a copy. We safely
-            // dereference it here so it points to the actual data.
-            p = *reinterpret_cast<void**>(p);
-        }
 
         if constexpr (std::is_pointer_v<T>) {
             return static_cast<T>(p);
