@@ -61,6 +61,20 @@ LUA_FUNCTION(Lua_TearParams_SetTearDisplacement) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_TearParams_GetTearFlags) {
+	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], params->_flags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearParams_SetTearFlags) {
+	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	params->_flags = *flags;
+	return 0;
+}
+
 inline void RegisterTearParamsVariable(lua_State* L, const char* name, lua_CFunction getFunc, lua_CFunction setFunc) {
 	lua::RegisterVariable(L, lua::Metatables::TEAR_PARAMS, name, getFunc, setFunc);
 	lua::RegisterVariableGetter(L, lua::Metatables::CONST_TEAR_PARAMS, name, getFunc);
@@ -74,4 +88,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterTearParamsVariable(_state, "KnockbackMultiplier", Lua_TearParams_GetKnockbackMultiplier, Lua_TearParams_SetKnockbackMultiplier);
 	RegisterTearParamsVariable(_state, "SpeedMultiplier", Lua_TearParams_GetSpeedMultiplier, Lua_TearParams_SetSpeedMultiplier);
 	RegisterTearParamsVariable(_state, "TearDisplacement", Lua_TearParams_GetTearDisplacement, Lua_TearParams_SetTearDisplacement);
+	RegisterTearParamsVariable(_state, "TearFlags", Lua_TearParams_GetTearFlags, Lua_TearParams_SetTearFlags);
 }

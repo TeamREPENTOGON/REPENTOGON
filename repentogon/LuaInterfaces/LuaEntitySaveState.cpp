@@ -95,7 +95,7 @@ struct Lua_EntitySaveStateAPI : Lua_EntitySaveState {
 		Lua_EntitySaveStateAPI* ud = GetData(L, 1);
 		EntitySaveState& st = (ud->vec->data()[ud->index]);
 		/*if (st.type == 4) {
-			lua::luabridge::UserdataValue<BitSet128>::push(L, lua::GetMetatableKey(lua::Metatables::BITSET_128), st.intStorage2);
+			lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], st.intStorage2);
 		}
 		else {
 			lua_pushinteger(L, st.intStorage2);

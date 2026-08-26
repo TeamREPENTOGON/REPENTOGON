@@ -6034,7 +6034,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		lua::LuaResults results = caller.push(&tearFlags, lua::Metatables::BITSET_128)
+		lua::LuaResults results = caller.push(&tearFlags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128])
 			.push(damageFlags)
 			.push(damageSource)
 			.call(1);
@@ -6058,7 +6058,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 							}
 							damage = newDamage;
 						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
-							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								tearFlags = *newFlags;
 							}
@@ -6103,7 +6103,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		caller.push(&tearFlags, lua::Metatables::BITSET_128)
+		caller.push(&tearFlags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128])
 			.push(damageFlags)
 			.push(damageSource)
 			.call(1);
@@ -6130,7 +6130,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		}
 		caller.push(posCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(radius)
-			.push(&tearFlags, lua::Metatables::BITSET_128);
+			.push(&tearFlags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128]);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
 		} else {
@@ -6157,7 +6157,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 							}
 							radiusMult = newRadiusMult;
 						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
-							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								tearFlags = *newFlags;
 							}
@@ -6193,7 +6193,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		}
 		caller.push(posCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(radius)
-			.push(&tearFlags, lua::Metatables::BITSET_128);
+			.push(&tearFlags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128]);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
 		} else {
@@ -6238,7 +6238,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
 			.push(posCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(&flags, lua::Metatables::BITSET_128);
+			.push(&flags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128]);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
 		} else {
@@ -6259,7 +6259,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 							}
 							damage = newDamage;
 						} else if (key == "TearFlags" && lua_isuserdata(L, -1)) {
-							BitSet128* newFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, -1, lua::Metatables::BITSET_128, "BitSet128");
+							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								flags = *newFlags;
 							}
@@ -6296,7 +6296,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 		}
 		caller.push(entity, lua::Metatables::ENTITY_NPC)
 			.push(posCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(&flags, lua::Metatables::BITSET_128);
+			.push(&flags, lua::ffi::CData[lua::ffi::CDataID::BITSET_128]);
 		if (source) {
 			caller.push(source, lua::Metatables::ENTITY);
 		} else {

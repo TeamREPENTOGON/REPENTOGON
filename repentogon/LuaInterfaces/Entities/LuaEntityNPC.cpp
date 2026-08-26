@@ -464,7 +464,7 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 LUA_FUNCTION(Lua_EntityNPC_ApplyTearflagEffects) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	BitSet128* flags = lua::GetLuabridgeUserdata<BitSet128*>(L, 3, lua::Metatables::BITSET_128, "BitSet128");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	Entity* source = !lua_isnoneornil(L, 4) ? lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity") : nullptr;
 	float damage = (float)luaL_optnumber(L, 5, 3.5f);
 	if (damage < 0) {

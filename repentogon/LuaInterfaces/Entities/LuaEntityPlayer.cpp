@@ -411,6 +411,21 @@ LUA_FUNCTION(Lua_PlayerSetSpriteScale) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetTearFlags) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], player->_tearFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetTearFlags) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	player->_tearFlags = *flags;
+	return 0;
+}
+
+
 LUA_FUNCTION(Lua_HasCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
@@ -535,7 +550,7 @@ LUA_FUNCTION(Lua_IsTrinketBlocked) {
     return 1;
 }
 
-LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, but magically vanished some point after 1.7.8.
+LUA_FUNCTION(Lua_GetMultiShotPositionVelocity)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = (int)luaL_checkinteger(L, 2);
@@ -548,7 +563,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 		return luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
 
-	lua::luabridge::UserdataValue<PosVel>::push(L, lua::GetMetatableKey(lua::Metatables::POS_VEL), player->GetMultiShotPositionVelocity(loopIndex, (WeaponType)weaponType, *shotDirection, shotSpeed, *multiShotParams));
+	lua::ffi::pushCdata<PosVel>(L, lua::ffi::CData[lua::ffi::CDataID::POS_VEL], player->GetMultiShotPositionVelocity(loopIndex, (WeaponType)weaponType, *shotDirection, shotSpeed, *multiShotParams));
 
 	return 1;
 }
@@ -2549,7 +2564,7 @@ LUA_FUNCTION(Lua_PlayerGetEnterPosition) {
 // needs return register override support
 LUA_FUNCTION(Lua_PlayerGetExplosionRadiusMultiplier) {
 	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	BitSet128* flags = lua::GetRawUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	lua_pushnumber(L, player->GetExplosionRadiusMultiplier(*flags));
 	return 1;
 }
@@ -3183,7 +3198,7 @@ LUA_FUNCTION(Lua_PlayerAddNullCostumeOverride) {
 // because it was stubbed in repentance but not removed from the api (even the game still uses it a couple times!)
 LUA_FUNCTION(Lua_PlayerGetBombVariant) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	BitSet128* flags = lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	bool forceSmall = lua::luaL_checkboolean(L, 3);
 
 	lua_pushinteger(L, 0);
@@ -4291,6 +4306,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "FriendBallEnemy", Lua_PlayerGetFriendBallEnemy, Lua_PlayerSetFriendBallEnemy);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearsOffset", Lua_GetTearsOffset, Lua_SetTearsOffset);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "SpriteScale", Lua_PlayerGetSpriteScale, Lua_PlayerSetSpriteScale);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearFlags", Lua_PlayerGetTearFlags, Lua_PlayerSetTearFlags);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
 }

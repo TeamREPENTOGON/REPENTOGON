@@ -13,14 +13,14 @@ LUA_FUNCTION(Lua_FamiliarGetOrbitDistance)
 
 	return 1;
 }
-
+ 
 LUA_FUNCTION(Lua_FamiliarGetOrbitPosition)
 {
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	fam->GetOrbitPosition(toLua, offset);
+	fam->GetOrbitPosition(toLua, offset); 
 
 	return 1;
 }

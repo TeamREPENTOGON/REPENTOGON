@@ -597,6 +597,10 @@ namespace lua {
             VECTOR_PTR,
             GRID_ENTITY_DESC,
             GRID_ENTITY_DESC_PTR,
+            BITSET_128,
+            BITSET_128_PTR,
+            POS_VEL,
+            POS_VEL_PTR,
             MAX_CDATA
         };
 

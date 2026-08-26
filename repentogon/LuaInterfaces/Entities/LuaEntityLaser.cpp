@@ -297,6 +297,20 @@ LUA_FUNCTION(Lua_EntityLaserSetInitSound) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_LaserGetTearFlags) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], laser->_tearFlags);
+	return 1;
+} 
+
+LUA_FUNCTION(Lua_LaserSetTearFlags) {
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	laser->_tearFlags = *flags;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -336,6 +350,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "EndPoint", Lua_EntityLaserGetEndPointVar, Lua_EntityLaserSetEndPointVar);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "ParentOffset", Lua_EntityLaserGetParentOffset, Lua_EntityLaserSetParentOffset);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "TearFlags", Lua_LaserGetTearFlags, Lua_LaserSetTearFlags);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "ShootAngle", Lua_EntityLaserShootAngle);
 	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "CalculateEndPoint", Lua_EntityLaserCalculateEndPoint);

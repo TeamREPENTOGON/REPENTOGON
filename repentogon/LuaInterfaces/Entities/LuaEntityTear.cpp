@@ -213,6 +213,20 @@ LUA_FUNCTION(Lua_TearSetInitSound) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_TearGetTearFlags) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], tear->_tearFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearSetTearFlags) {
+	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	tear->_tearFlags = *flags;
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -246,4 +260,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "ParentOffset", Lua_TearGetParentOffset, Lua_TearSetParentOffset);
 	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_TEAR, "PosDisplacement", Lua_TearGetPosDisplacement);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "StickDiff", Lua_TearGetStickDiff, Lua_TearSetStickDiff);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_TEAR, "TearFlags", Lua_TearGetTearFlags, Lua_TearSetTearFlags);
 }

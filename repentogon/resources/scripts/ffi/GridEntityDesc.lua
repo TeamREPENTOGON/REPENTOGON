@@ -14,9 +14,6 @@ ffi.cdef[[
     typedef struct GridEntityDesc* GridEntityDescPtr;
 ]]
 
-local repentogon = ffidll
-local lffi = ffi
-
 local GridEntityDescMT
 GridEntityDescMT = {
     __type = "GridEntityDesc",
@@ -25,7 +22,5 @@ GridEntityDescMT = {
 GridEntityDescMT.__index = function(self, key)
 	return GridEntityDescMT[key]
 end 
-
-local GridEntityDescT = ffi.metatype("struct GridEntityDesc", GridEntityDescMT)
 
 GridEntityDesc = setmetatable({}, {__class = GridEntityDescMT})
