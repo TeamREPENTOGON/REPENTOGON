@@ -604,6 +604,8 @@ namespace lua {
             BITSET_128_PTR,
             POS_VEL,
             POS_VEL_PTR,
+            COSTUME,
+            COSTUME_PTR,
             MAX_CDATA
         };
 
