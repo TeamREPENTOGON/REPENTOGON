@@ -68,6 +68,21 @@ LUA_FUNCTION(lua_ProjectileParams_SetTargetPosition) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_ProjectileParams_GetColor) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], params->Color);
+	return 1;
+}
+
+LUA_FUNCTION(lua_ProjectileParams_SetColor) {
+	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	params->Color = *color;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -77,5 +92,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "PositionOffset", lua_ProjectileParams_GetPositionOffset, lua_ProjectileParams_SetPositionOffset);
 	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "TargetPosition", lua_ProjectileParams_GetTargetPosition, lua_ProjectileParams_SetTargetPosition);
 	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "Damage", lua_ProjectileParams_GetDamage, lua_ProjectileParams_SetDamage);
+	lua::RegisterVariable(_state, lua::Metatables::PROJECTILE_PARAMS, "Color", lua_ProjectileParams_GetColor, lua_ProjectileParams_SetColor);
 
 }

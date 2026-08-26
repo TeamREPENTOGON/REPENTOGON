@@ -63,6 +63,21 @@ LUA_FUNCTION(Lua_SpriteRenderLayer)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SpriteGetColor) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], *anm2->GetColor());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteSetColor) {
+	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	*anm2->GetColor() = *color;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_SpriteGetOffset) {
 	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	
@@ -615,7 +630,7 @@ LUA_FUNCTION(Lua_LayerStateSetPos)
 LUA_FUNCTION(Lua_LayerStateGetColor)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
 	*toLua = *layerState->GetColor();
 
 	return 1;
@@ -624,7 +639,7 @@ LUA_FUNCTION(Lua_LayerStateGetColor)
 LUA_FUNCTION(Lua_LayerStateSetColor)
 {
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ColorMod* color = lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
 	*layerState->GetColor() = *color;
 	return 0;
@@ -765,6 +780,7 @@ static void RegisterSpriteFuncs(lua_State* L) {
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);
 
+	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Color", Lua_SpriteGetColor, Lua_SpriteSetColor);
 	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Offset", Lua_SpriteGetOffset, Lua_SpriteSetOffset);
 	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Scale", Lua_SpriteGetScale, Lua_SpriteSetScale);
 }

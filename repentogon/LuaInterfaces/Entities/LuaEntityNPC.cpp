@@ -96,7 +96,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetDirtColor)
 {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
 	*toLua = *npc->GetDirtColor();
 
 	return 1;
@@ -274,8 +274,8 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
 	}
 
 	ColorMod color;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 
 	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodCloud(&pos, &color), lua::Metatables::ENTITY_EFFECT);

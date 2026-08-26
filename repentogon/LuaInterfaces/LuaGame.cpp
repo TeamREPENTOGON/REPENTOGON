@@ -36,8 +36,8 @@ LUA_FUNCTION(Lua_GameBombExplosionEffects)
 		tearFlags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 	Entity* source = nullptr;
 	if (lua_type(L, 6) == LUA_TUSERDATA) {
@@ -108,8 +108,8 @@ LUA_FUNCTION(Lua_GameFart)
 	float fartScale = (float)luaL_optnumber(L, 5, 1);
 	int fartSubType = (int)luaL_optinteger(L, 6, 1);
 	ColorMod color;
-	if (lua_type(L, 7) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 7, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 7) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 7, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 
 	game->Fart(pos, radius, source, fartScale, fartSubType, color);
@@ -176,8 +176,8 @@ LUA_FUNCTION(Lua_GameSpawnParticles)
 	int num = (int)luaL_checkinteger(L, 4);
 	float speed = (float)luaL_checknumber(L, 5);
 	ColorMod color;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 6, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 6) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 6, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 	float height = (float)luaL_optnumber(L, 7, 100000);
 	int subtype = (int)luaL_optinteger(L, 8, 0);

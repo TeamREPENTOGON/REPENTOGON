@@ -15,7 +15,7 @@ LUA_FUNCTION(Lua_GetFXLayers) {
 LUA_FUNCTION(Lua_FXLayersAddPoopFx)
 {
 	FXLayers* fxLayers = *lua::GetRawUserdata<FXLayers**>(L, 1, lua::metatables::FXLayersMT);
-	ColorMod* color = lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	fxLayers->AddPoopFx(color);
 
 	return 0;

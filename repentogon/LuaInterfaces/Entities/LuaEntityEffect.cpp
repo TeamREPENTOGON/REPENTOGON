@@ -26,8 +26,8 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 	int lifespan = (int)luaL_optinteger(L, 3, -1);
 	int state = (int)luaL_optinteger(L, 4, 6);
 	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 
 	if (lifespan < 1) {

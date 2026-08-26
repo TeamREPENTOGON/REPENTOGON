@@ -113,8 +113,9 @@ end
 
 
 pcall(require("ffi.Vector"))
-pcall(require("ffi.PosVel"))
 pcall(require("ffi.GridEntityDesc"))
+pcall(require("ffi.Color"))
+pcall(require("ffi.PosVel"))
 pcall(require("ffi.BitSet128"))
 
 ffi = nil

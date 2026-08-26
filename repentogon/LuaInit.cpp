@@ -244,6 +244,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR] = lua_ctypeid(L, "VectorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC] = lua_ctypeid(L, "GridEntityDesc");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR] = lua_ctypeid(L, "Color");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR] = lua_ctypeid(L, "ColorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::BITSET_128] = lua_ctypeid(L, "BitSet128");
 	lua::ffi::CData[lua::ffi::CDataID::BITSET_128_PTR] = lua_ctypeid(L, "BitSet128Ptr");
 	lua::ffi::CData[lua::ffi::CDataID::POS_VEL] = lua_ctypeid(L, "PosVel");

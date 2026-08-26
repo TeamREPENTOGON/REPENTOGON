@@ -339,6 +339,7 @@ namespace lua {
     template<typename T>
     T GetCData(lua_State* L, int idx, lua_CTypeId ctypeid, std::string const& name) {
         void* p = CheckCData(L, idx, ctypeid, name);
+
         if constexpr (std::is_pointer_v<T>) {
             return static_cast<T>(p);
         } else {
@@ -597,6 +598,8 @@ namespace lua {
             VECTOR_PTR,
             GRID_ENTITY_DESC,
             GRID_ENTITY_DESC_PTR,
+            COLOR,
+            COLOR_PTR,
             BITSET_128,
             BITSET_128_PTR,
             POS_VEL,

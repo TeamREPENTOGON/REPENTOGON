@@ -143,7 +143,7 @@ LUA_FUNCTION(Lua_SetLightColor)
 LUA_FUNCTION(Lua_GetWaterEffectColor)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
 	*toLua = *params->GetWaterEffectColor();
 
 	return 1;
@@ -152,7 +152,7 @@ LUA_FUNCTION(Lua_GetWaterEffectColor)
 LUA_FUNCTION(Lua_SetWaterEffectColor)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetWaterEffectColor() = *lua::GetLuabridgeUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	*params->GetWaterEffectColor() = *lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
 	return 0;
 }

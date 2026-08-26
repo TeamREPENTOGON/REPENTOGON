@@ -438,8 +438,8 @@ LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 		offset = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 	Vector velocity;
 	if (lua_type(L, 6) == LUA_TUSERDATA) {
@@ -464,10 +464,10 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	}
 	
 	ColorMod color;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
-	
+
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
 	Entity_Effect* poof = entity->MakeBloodPoof(&pos, &color, scale);
@@ -490,8 +490,8 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 	}
 
 	ColorMod color;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		color = *lua::GetLuabridgeUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		color = *lua::GetCData<ColorMod*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
@@ -518,6 +518,26 @@ LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
 LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	entity->TeleportToRandomPosition(true);
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_EntityGetColor)
+{
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], *entity->GetColor());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetColor)
+{
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+	int duration = (int)luaL_checkinteger(L, 3);
+	int priority = (int)luaL_checkinteger(L, 4);
+	bool fadeout = lua::luaL_checkboolean(L, 5);
+	bool share = lua::luaL_checkboolean(L, 6);
+	entity->SetColor(color, duration, priority, fadeout, share);
 	return 0;
 }
 
@@ -1016,6 +1036,45 @@ LUA_FUNCTION(Lua_EntitySetVariant) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityAddSlowing)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	int duration = (int)luaL_checkinteger(L, 3);
+	float amount = (float)luaL_checknumber(L, 4);
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+	bool ignoreBosses = lua::luaL_optboolean(L, 6, false);
+	ent->AddSlowing(*ref, duration, amount, *color, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetColor) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], ent->_color);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetColor) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	ent->SetColor(color, -1, 255, false, true);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_Entity_GetSplatColor) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], ent->_splatColor);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetSplatColor) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+
+	ent->_splatColor = *color;
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -1116,6 +1175,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetWaterClipFlags", Lua_EntitySetWaterClipFlags },
 		{ "ResetWaterClipFlags", Lua_EntityResetWaterClipFlags },
 		{ "CanDevolve", Lua_EntityCanDevolve },
+		{ "GetColor", Lua_EntityGetColor },
+		{ "SetColor", Lua_EntitySetColor },
+		{ "AddSlowing", Lua_EntityAddSlowing },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
@@ -1129,4 +1191,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SpriteScale", Lua_Entity_GetSpriteScale, Lua_Entity_SetSpriteScale);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "TargetPosition", Lua_Entity_GetTargetPosition, Lua_Entity_SetTargetPosition);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Velocity", Lua_Entity_GetVelocity, Lua_Entity_SetVelocity);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SplatColor", Lua_Entity_GetSplatColor, Lua_Entity_SetSplatColor);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Color", Lua_Entity_GetColor, Lua_Entity_SetColor);
 }

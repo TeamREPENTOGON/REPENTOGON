@@ -61,6 +61,19 @@ LUA_FUNCTION(Lua_TearParams_SetTearDisplacement) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_TearParams_GetTearColor) {
+	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], params->_tearColor);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_TearParams_SetTearColor) {
+	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
+	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+	params->_tearColor = *color;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_TearParams_GetTearFlags) {
 	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], params->_flags);
@@ -84,6 +97,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 
+	RegisterTearParamsVariable(_state, "TearColor", Lua_TearParams_GetTearColor, Lua_TearParams_SetTearColor);
 	RegisterTearParamsVariable(_state, "MassMultiplier", Lua_TearParams_GetMassMultiplier, Lua_TearParams_SetMassMultiplier);
 	RegisterTearParamsVariable(_state, "KnockbackMultiplier", Lua_TearParams_GetKnockbackMultiplier, Lua_TearParams_SetKnockbackMultiplier);
 	RegisterTearParamsVariable(_state, "SpeedMultiplier", Lua_TearParams_GetSpeedMultiplier, Lua_TearParams_SetSpeedMultiplier);

@@ -814,6 +814,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	float _tearfallspeed : 0x1474;
 	float _tearfallaccel : 0x1478;
 	float _tearrange : 0x147c;
+	ColorMod _tearColor : 0x1490;
 	BitSet128 _tearFlags : 0x1480;
 	ColorMod _laserColor : 0x14bc;
 	Vector _spriteScale : 0x14e8;

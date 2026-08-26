@@ -275,7 +275,7 @@ LUA_FUNCTION(Lua_Image_Render)
 	ColorMod colorMod =
 		lua_isnoneornil(L, 5)
 		? ColorMod()
-		: *lua::GetLuabridgeUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+		: *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
 	auto& image = *luaImage->image.image;
 
