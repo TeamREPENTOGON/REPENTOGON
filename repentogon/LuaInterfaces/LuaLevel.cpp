@@ -339,6 +339,64 @@ LUA_FUNCTION(Lua_LevelGetGenerationRNG) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LevelClearGridRooms) {
+	int skipIdx = (int)luaL_optinteger(L, 2, -1); // Optional grid index to skip (e.g. starting room 84)
+
+	for (int i = 0; i <= 168; i++) {
+		if (i == skipIdx) continue;
+		RoomDescriptor* desc = g_Game->GetRoomByIdx(i, -1);
+		if (desc && desc->Data) {
+			desc->Reset();
+		}
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LevelAllocateNewRoom) {
+	// _gridRooms has 507 elements; indices 0-168 are the 13x13 grid
+	// Off-grid rooms are in _negativeGridRooms[20] (indices -1 to -20)
+	// Search slots 169 to 506 for an unused room descriptor
+	for (int i = 169; i < 507; i++) {
+		RoomDescriptor* desc = g_Game->GetRoomByIdx(i, -1);
+		if (desc && desc->Data == nullptr) {
+			lua::luabridge::UserdataPtr::push(L, desc, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_InitializeDevilAngelRoom) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	bool forceAngel = lua::luaL_optboolean(L, 2, false);
+	bool forceDevil = lua::luaL_optboolean(L, 3, false);
+	level->InitializeDevilAngelRoom(forceAngel, forceDevil);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_InitializeGenesisRoom) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->InitializeGenesisRoom();
+	return 0;
+}
+
+LUA_FUNCTION(Lua_TryInitializeBlueRoom) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	int currentIdx = (int)luaL_checkinteger(L, 2);
+	int destinationIdx = (int)luaL_checkinteger(L, 3);
+	int direction = (int)luaL_checkinteger(L, 4);
+	bool success = level->TryInitializeBlueRoom(currentIdx, destinationIdx, direction);
+	lua_pushboolean(L, success);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_InitializeLilPortalRoom) {
+	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->initialize_lil_portal_room();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -366,6 +424,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "FindValidRoomPlacementLocations", Lua_LevelFindValidRoomPlacementLocations },
 		{ "GetNeighboringRooms", Lua_LevelGetNeighboringRooms },
 		{ "GetGenerationRNG", Lua_LevelGetGenerationRNG },
+		{ "ClearGridRooms", Lua_LevelClearGridRooms },
+		{ "AllocateNewRoom", Lua_LevelAllocateNewRoom },
+		
+		{ "InitializeDevilAngelRoom", Lua_InitializeDevilAngelRoom },
+		{ "InitializeGenesisRoom", Lua_InitializeGenesisRoom },
+		{ "TryInitializeBlueRoom", Lua_TryInitializeBlueRoom },
+		{ "InitializeLilPortalRoom", Lua_InitializeLilPortalRoom },
 
 		{ NULL, NULL }
 	};

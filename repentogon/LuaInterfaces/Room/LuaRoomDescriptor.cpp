@@ -13,6 +13,33 @@ static void RoomDescriptorGetAllowedDoors(lua_State* L, RoomDescriptor* descript
 	lua_pushinteger(L, descriptor->AllowedDoors);
 }
 
+LUA_FUNCTION(Lua_RoomDescriptorGetData) {
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	if (descriptor->Data) {
+		lua::luabridge::UserdataPtr::push(L, descriptor->Data, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomDescriptorGetDataConst) {
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
+	if (descriptor->Data) {
+		lua::luabridge::UserdataPtr::push(L, descriptor->Data, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomDescriptorSetData) {
+	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomConfig_Room* data = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig_Room");
+	descriptor->Data = data;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_RoomDescriptorGetAllowedDoors) {
 	RoomDescriptor* descriptor = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptorGetAllowedDoors(L, descriptor);
@@ -110,6 +137,10 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 	lua_pushcfunction(L, Lua_RoomDescriptorGetAllowedDoors);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "Data");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetData);
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "Doors");
 	lua_pushcfunction(L, Lua_RoomDescriptorGetDoors);
 	lua_rawset(L, -3);
@@ -130,6 +161,10 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 	lua_pushcfunction(L, Lua_RoomDescriptorGetAllowedDoorsConst);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "Data");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetDataConst);
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "Doors");
 	lua_pushcfunction(L, Lua_RoomDescriptorGetDoorsConst);
 	lua_rawset(L, -3);
@@ -148,8 +183,12 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	lua_pushstring(L, "AllowedDoors");
 	lua_pushcfunction(L, Lua_RoomDescriptorSetAllowedDoors);
-
 	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Data");
+	lua_pushcfunction(L, Lua_RoomDescriptorSetData);
+	lua_rawset(L, -3);
+
 	lua_pop(L, 2);
 
 	luaL_newmetatable(L, lua::metatables::RoomDescriptorDoors);
