@@ -69,14 +69,14 @@ RoomConfig_Room* DungeonGeneratorRoom::GetRoomConfig(uint32_t seed, uint32_t req
         int current_stage = g_Game->_stage;
 
         RoomConfig_Room* config = g_Game->GetRoomConfig()->GetRandomRoom(
-            seed, true, current_stage, this->type, this->shape,
+            seed, true, this->stage, this->type, this->shape,
             this->minVariant, this->maxVariant, this->minDifficulty,
             this->maxDifficulty, &required_doors, this->subtype, this->mode
         );
 
         if (config == nullptr && current_stage != this->stage) {
             config = g_Game->GetRoomConfig()->GetRandomRoom(
-                seed, true, this->stage, this->type, this->shape,
+                seed, true, current_stage, this->type, this->shape,
                 this->minVariant, this->maxVariant, this->minDifficulty,
                 this->maxDifficulty, &required_doors, this->subtype, this->mode
             );
@@ -501,12 +501,15 @@ void DungeonGenerator::SetGreedGoldRoom(int grid_index) {
 }
 
 bool DungeonGenerator::ValidateFloor() {
+    if (this->level_generator._roomMap[84] == -1) {
+        this->TryPlaceDefaultStartingRoom(15);
+    }
+
     this->level_generator.calc_required_doors();
 
     bool has_final_room = this->final_boss_index >= 0;
     int initial_seed = this->rng->_seed;
 
-    
     // Index-based iteration allows bounds-checking _generationIndex before array lookup
     for (size_t i = 0; i < this->level_generator._rooms.size(); i++)
     {
@@ -818,12 +821,10 @@ LUA_FUNCTION(Lua_PlaceRandomRoom) {
         }
     }
 
-
     XY coords(col, row);
     if (allowed_doors == -1) {
         allowed_doors = CalculateAutoDoors(generator->level_generator._roomMap, coords, shape);
     }
-
 
     DungeonGeneratorRoom* generator_room = generator->TryPlaceRoom(
         coords, allowed_doors, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode);
