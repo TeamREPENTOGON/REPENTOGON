@@ -186,6 +186,21 @@ LUA_FUNCTION(Lua_BombSetPrismTouched) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BombGetTearFlags) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], bomb->_tearFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetTearFlags) {
+	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	bomb->_tearFlags = *flags;
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -218,4 +233,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_BOMB, "Flags", Lua_BombGetTearFlags, Lua_BombSetTearFlags);
 }

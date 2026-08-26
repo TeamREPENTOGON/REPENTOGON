@@ -600,6 +600,10 @@ namespace lua {
             GRID_ENTITY_DESC_PTR,
             COLOR,
             COLOR_PTR,
+            BITSET_128,
+            BITSET_128_PTR,
+            POS_VEL,
+            POS_VEL_PTR,
             MAX_CDATA
         };
 

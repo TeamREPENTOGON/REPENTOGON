@@ -204,6 +204,19 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 	}
 }
 
+HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
+	super();
+	lua_State* L = g_LuaEngine->_state;
+
+	int n = luaopen_jit(L);
+	lua_pop(L, n);
+
+	luaL_requiref(L, "ffi", luaopen_ffi, 1);
+	lua_pop(L, 1);
+
+	this->RunBundledScript("resources/scripts/ffi/main.lua");
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	const char* C_BINDINGS_NAME = "_CBindings";
 	const char* LUA_BINDINGS_NAME = "_LuaBindings";
@@ -215,16 +228,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_requiref(L, "os", luaopen_os, 1);
 	lua_pop(L, 1);
 
-	int n = luaopen_jit(L);
-	lua_pop(L, n);
-
 	// IO is just needed for upstream 53compat, we'll nil it in main_ex.
 	luaL_requiref(L, "io", luaopen_io, 1);
 	lua_pop(L, 1);
-
-	luaL_requiref(L, "ffi", luaopen_ffi, 1);
-	lua_pop(L, 1);
-
 
 	lua_newtable(L);
 	LuaInternals::RegisterInternals(L);
@@ -240,6 +246,11 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR] = lua_ctypeid(L, "Color");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR] = lua_ctypeid(L, "ColorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::BITSET_128] = lua_ctypeid(L, "BitSet128");
+	lua::ffi::CData[lua::ffi::CDataID::BITSET_128_PTR] = lua_ctypeid(L, "BitSet128Ptr");
+	lua::ffi::CData[lua::ffi::CDataID::POS_VEL] = lua_ctypeid(L, "PosVel");
+	lua::ffi::CData[lua::ffi::CDataID::POS_VEL_PTR] = lua_ctypeid(L, "PosVelPtr");
+
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

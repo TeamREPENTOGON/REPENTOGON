@@ -665,11 +665,9 @@ __thiscall void Entity_Player::RenderTop(Vector* position);
 __thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* target);
 
 "558bec83e4f883ec1c8b45??535657f30f10008bfa":
-__fastcall Entity_Familiar* Entity_Player::ThrowFriendlyDip (int subtype, Vector * position, void* unk, Vector* target);
-
-
-
-struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr) : public Entity { {{
+static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(Entity_Familiar* buffer, Vector* position, int subtype, Vector* target);
+ 
+struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -817,6 +815,7 @@ struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, 
 	float _tearfallaccel : 0x1478;
 	float _tearrange : 0x147c;
 	ColorMod _tearColor : 0x1490;
+	BitSet128 _tearFlags : 0x1480;
 	ColorMod _laserColor : 0x14bc;
 	Vector _spriteScale : 0x14e8;
 	TemporaryEffects _temporaryeffects : 0x1500;

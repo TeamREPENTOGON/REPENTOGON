@@ -145,6 +145,20 @@ LUA_FUNCTION(Lua_SetKnifeVelocity) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_KnifeGetTearFlags) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], knife->_tearFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_KnifeSetTearFlags) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
+
+	knife->_tearFlags = *flags;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -171,4 +185,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_KNIFE, "TearFlags", Lua_KnifeGetTearFlags, Lua_KnifeSetTearFlags);
 }

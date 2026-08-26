@@ -90,7 +90,7 @@ LUA_FUNCTION(Lua_GetTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
 	if (AllowTearflagAccess(entity)) {
-		lua::luabridge::UserdataValue<BitSet128>::push(L, lua::GetMetatableKey(lua::Metatables::BITSET_128), entity->_varData);
+		lua::ffi::pushCdata<BitSet128>(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], entity->_varData);
 	} else {
 		lua_pushnil(L);
 	}
@@ -102,7 +102,7 @@ LUA_FUNCTION(Lua_SetTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
 	if (AllowTearflagAccess(entity)) {
-		entity->_varData = *lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+		entity->_varData = *lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 
 	return 0;
@@ -112,7 +112,7 @@ LUA_FUNCTION(Lua_AddTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
 	if (AllowTearflagAccess(entity)) {
-		entity->_varData.AddFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
+		entity->_varData.AddFlags(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128"));
 	}
 
 	return 0;
@@ -122,7 +122,7 @@ LUA_FUNCTION(Lua_ClearTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
 
 	if (AllowTearflagAccess(entity)) {
-		entity->_varData.RemoveFlags(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128"));
+		entity->_varData.RemoveFlags(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128"));
 	}
 
 	return 0;
@@ -130,7 +130,7 @@ LUA_FUNCTION(Lua_ClearTearFlags) {
 
 LUA_FUNCTION(Lua_HasTearFlags) {
 	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	lua_pushboolean(L, AllowTearflagAccess(entity) && entity->_varData.HasAny(*lua::GetLuabridgeUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128")));
+	lua_pushboolean(L, AllowTearflagAccess(entity) && entity->_varData.HasAny(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128")));
 	return 1;
 }
 

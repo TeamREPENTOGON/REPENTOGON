@@ -766,8 +766,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		// TODO FFI: This is named differently to work around a redefinition in main.lua, in combination with APIOverride. Kill this asap!!
-		{ "__FeedAndSneed", Lua_CheckLine },
+		{ "CheckLine", Lua_CheckLine },
 		{ "FindFreePickupSpawnPosition", Lua_FindFreePickupSpawnPosition },
 		{ "FindFreeTilePosition", Lua_FindFreeTilePosition },
 		{ "GetBottomRightPos", Lua_GetBottomRightPos },

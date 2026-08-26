@@ -15,7 +15,7 @@ LUA_FUNCTION(Lua_GameBombDamage)
 	}
 	BitSet128 tearFlags;
 	if (lua_type(L, 7) == LUA_TUSERDATA) {
-		tearFlags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 7, lua::Metatables::BITSET_128, "BitSet128");
+		tearFlags = *lua::GetCData<BitSet128*>(L, 7, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 8, eDamageFlag::DAMAGE_EXPLOSION);
 	bool damageSource = lua::luaL_optboolean(L, 9, false);
@@ -33,7 +33,7 @@ LUA_FUNCTION(Lua_GameBombExplosionEffects)
 	float damage = (float)luaL_checknumber(L, 3);
 	BitSet128 tearFlags;
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		tearFlags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+		tearFlags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	ColorMod color;
 	if (lua_type(L, 5) == LUA_TCDATA) {
@@ -58,7 +58,7 @@ LUA_FUNCTION(Lua_GameBombTearflagEffects)
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float radius = (float)luaL_checknumber(L, 3);
-	BitSet128* tearFlags = lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+	BitSet128* tearFlags = lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	Entity* source = nullptr;
 	if (lua_type(L, 5) == LUA_TUSERDATA) {
 		source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
@@ -550,7 +550,7 @@ LUA_FUNCTION(Lua_ChainLightning) {
 	const float baseDamage = (float)luaL_optnumber(L, 3, 3.5f);
 	BitSet128 flags { 0, 0, 0 ,0 };
 	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		flags = *lua::GetLuabridgeUserdata<BitSet128*>(L, 4, lua::Metatables::BITSET_128, "BitSet128");
+		flags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	Entity* spawner = nullptr;
 
