@@ -227,14 +227,6 @@ end
 
 -- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
 
--- Color -----------------------------------------------
-
--- Color Color(float R, float G, float B, float A=1, float RO=0, float GO=0, float BO=0)
-local Color_constructor = getmetatable(Color).__call
-getmetatable(Color).__call = function(self, r, g, b, a, ro, go, bo)
-	return Color_constructor(self, r, g, b, a or 1, ro or 0, go or 0, bo or 0)
-end
-
 ---------------------------------------------------------
 BeginClass(Font)
 

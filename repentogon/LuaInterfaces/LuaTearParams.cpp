@@ -71,6 +71,7 @@ LUA_FUNCTION(Lua_TearParams_SetTearColor) {
 	TearParams* params = lua::GetLuabridgeUserdata<TearParams*>(L, 1, lua::Metatables::TEAR_PARAMS, "TearParams");
 	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	params->_tearColor = *color;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_TearParams_GetTearFlags) {
