@@ -839,6 +839,8 @@ namespace lua {
 		const char* KeyConfigMenuMT = "KeyConfigMenu";
 		const char* LayerStateMT = "LayerState";
 		const char* LevelGeneratorMT = "LevelGenerator";
+		const char* DungeonGeneratorMT = "DungeonGenerator";
+		const char* DungeonGeneratorRoomMT = "DungeonGeneratorRoom";
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* LRoomAreaDescMT = "LRoomAreaDesc";
