@@ -43,7 +43,7 @@ DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, uint32_t col, uint32_
 	this->mode = 0;
 }
 
-DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+DungeonGeneratorRoom::DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
 	this->list_index = list_index;
 	this->room = nullptr;
 	this->col = col;
@@ -490,6 +490,16 @@ void DungeonGenerator::SetFinalBossRoom(DungeonGeneratorRoom* boss_room) {
 	this->final_boss_index = boss_room->list_index;
 }
 
+void DungeonGenerator::SetGreedGoldRoom(DungeonGeneratorRoom* gold_room) {
+	if (gold_room) {
+		this->greed_gold_room_index = gold_room->col + gold_room->row * 13;
+	}
+}
+
+void DungeonGenerator::SetGreedGoldRoom(int grid_index) {
+	this->greed_gold_room_index = grid_index;
+}
+
 bool DungeonGenerator::ValidateFloor() {
     this->level_generator.calc_required_doors();
 
@@ -547,6 +557,7 @@ void DungeonGenerator::Reset() {
 	this->ResetLevelGenerator();
 
 	this->final_boss_index = -1;
+	this->greed_gold_room_index = -1;
 	for (size_t i = 0; i < 169; i++)
 	{
 		this->rooms[i] = DungeonGeneratorRoom();
@@ -605,13 +616,27 @@ bool DungeonGenerator::Generate() {
 
     CleanFloor();
 
+    if (g_Game->IsGreedMode() || this->generation_type == GREED) {
+        int gold_idx = (this->greed_gold_room_index >= 0) ? this->greed_gold_room_index : 85;
+        g_Game->_greedModeTreasureRoomIdx = gold_idx;
+    }
+
     bool could_place_rooms = PlaceRoomsInFloor();
     if (!could_place_rooms) {
         KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
         Reset();
     }
     else {
-        if (!g_Game->IsGreedMode() && this->level->IsAltPath()) {
+        if (g_Game->IsGreedMode() || this->generation_type == GREED) {
+            g_Game->_greedModeWave = 0;
+            uint32_t* wave_seeds = (uint32_t*)((char*)g_Game + 0x18338);
+            for (int i = 0; i < 12; i++) {
+                uint32_t seed = this->rng->Next();
+                if (seed == 0) seed = 1;
+                wave_seeds[i] = seed;
+            }
+        }
+        else if (this->level->IsAltPath()) {
             if (((this->level->_stage == STAGE1_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE1_2)) {
                 this->level->generate_mirror_world();
             }
@@ -948,6 +973,20 @@ LUA_FUNCTION(Lua_SetFinalBossRoom) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SetGreedGoldRoom) {
+	DungeonGenerator* generator = GetDungeonGenerator(L);
+	if (lua_isnumber(L, 2)) {
+		int grid_index = (int)lua_tointeger(L, 2);
+		generator->SetGreedGoldRoom(grid_index);
+	}
+	else if (lua_isuserdata(L, 2)) {
+		DungeonGeneratorRoom* generator_room = *lua::GetRawUserdata<DungeonGeneratorRoom**>(L, 2, lua::metatables::DungeonGeneratorRoomMT);
+		generator->SetGreedGoldRoom(generator_room);
+	}
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_BlockIndex) {
 	DungeonGenerator* generator = GetDungeonGenerator(L);
 	int grid_index = (int)luaL_checkinteger(L, 2);
@@ -990,6 +1029,7 @@ static void RegisterDungeonGenerator(lua_State* L) {
 		{"TryPlaceDefaultStartingRoom", Lua_TryPlaceDefaultStartingRoom},
 		{"InitializeDefaultOffGridRooms", Lua_InitializeDefaultOffGridRooms},
 		{"SetFinalBossRoom", Lua_SetFinalBossRoom},
+		{"SetGreedGoldRoom", Lua_SetGreedGoldRoom},
 		{"BlockIndex", Lua_BlockIndex},
 		{"Validate", Lua_Validate},
 		{"Reset", Lua_Reset},
