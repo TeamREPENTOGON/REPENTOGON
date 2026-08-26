@@ -248,7 +248,6 @@ void PerformASMPatches() {
 
 	// Player
 	ASMPatchCheckFamiliar();
-	ASMPatchPlayerStats();
 	ASMPatchesForPlayerCustomTags();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();

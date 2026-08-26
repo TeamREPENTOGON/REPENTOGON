@@ -9,27 +9,15 @@
 #include <cctype>
 #include <filesystem>
 
-
 #include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
 #include "EvaluateStats.h"
+#include "../MiscFunctions.h"
 
 using namespace std;
-
-/* Modifiers for character stats, allow to override the computation of Eden's stats, 
- * which we use in order to define stats for modded characters.
- */
-namespace PlayerStats {
-	extern float modCharacterFireDelay;
-	extern float modCharacterSpeed;
-	extern float modCharacterDamage;
-	extern float modCharacterRange;
-	extern float modCharacterShotSpeed;
-	extern float modCharacterLuck;
-}
 
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 template<>
@@ -64,7 +52,6 @@ using XMLKinder = unordered_map<int, XMLChilds>;
 using XMLEntityKinder = unordered_map<tuple<int, int, int>, XMLChilds>;
 using XMLNodeIdxLookup = unordered_map<string, int>;
 using XMLNodeIdxLookupMultiple = unordered_map<string, vector<int>>;
-using XMLItemStats = unordered_map<EvaluateStats::EvaluateStatStage, unordered_map<int, float>>;
 
 inline string stringlower(char* str)
 {
@@ -82,6 +69,15 @@ inline string stringlower(const char* str)
 		c = tolower(c);
 	}
 	return s;
+}
+
+inline std::string stringlower(std::string_view str)
+{
+	string result(str);
+	for (auto& c : result) {
+		c = tolower(c);
+	}
+	return result;
 }
 
 // Returns the ID string of the current mod being processed, or "BaseGame" for vanilla XMLs.
@@ -119,8 +115,6 @@ public:
 	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
 	XMLNodeTable byfilepathmulti;
-	// Holds the contents of the "customtags" attribute, converted to lowercase and parsed into a set.
-	unordered_map<int, set<string>> customtags;
 	int maxid;
 	int defmaxid;
 	bool stuffset = false;
@@ -215,7 +209,6 @@ public:
 		bymod.clear();
 		byrelativeid.clear();
 		byfilepathmulti.tab.clear();
-		customtags.clear();
 		maxid = defmaxid;
 	}
 
@@ -233,6 +226,13 @@ public:
 			}
 			byfilepathmulti.tab[path].clear();
 		}
+	}
+
+	std::optional<int> GetIdByName(std::string_view str)
+	{
+		auto it = this->byname.find(std::string(str));
+		if (it == this->byname.end()) { return std::nullopt; }
+		return it->second;
 	}
 
 	XMLAttributes* GetNodeOrNullById(int id) {
@@ -348,25 +348,6 @@ public:
 		}
 		else { Childs = XMLChilds(); }
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
-	}
-
-	bool HasCustomTag(const int id, const std::string& tag) {
-		if (this->customtags.find(id) == this->customtags.end()) {
-			return false;
-		}
-		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
-	}
-
-	void AddCustomTag(const int id, const std::string& tag) {
-		if (!tag.empty()) {
-			this->customtags[id].insert(stringlower(tag.c_str()));
-		}
-	}
-
-	void RemoveCustomTag(const int id, const std::string& tag) {
-		if (HasCustomTag(id, tag)) {
-			this->customtags[id].erase(stringlower(tag.c_str()));
-		}
 	}
 
 	void ProcessChilds(const xml_node<char>* parentnode, int id) {
@@ -515,70 +496,16 @@ class XMLBossPortrait : public XMLDataHolder {
 	void AddByNameLookups(XMLAttributes& boss, int id, const std::string& modid) override;
 };
 
-struct CustomReviveInfo {
-	bool item = false;  // Grants a revive when item/trinket is held.
-	bool effect = false;  // Grants a revive when the corresponding TemporaryEffect is applied.
-	bool hidden = false;  // Revive is not counted on the HUD.
-	bool chance = false;  // Adds a "?" to the hud when held.
-};
-
 class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
-	// Holds info related to custom revive effects. Populated by parsing "customtags".
-	unordered_map<int, CustomReviveInfo> customreviveitems;
-	// Holds the contents of the "customcache" attribute, converted to lowercase and parsed into a set.
-	unordered_map<int, set<string>> customcache;
-	// Holds info for XML-defined stat changes.
-	XMLItemStats statups;
-	XMLItemStats effectstatups;  // For corresponding temporaryeffects
 
 	const char* GetTranslationStringCategory() override { return "Items"; }
 
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
-
-	bool HasAnyCustomCache(const int id) {
-		return this->customcache.find(id) != this->customcache.end();
-	}
-
-	const set<string>& GetCustomCache(const int id) {
-		return this->customcache[id];
-	}
-
-	bool HasCustomCache(const int id, const std::string& tag) {
-		if (!HasAnyCustomCache(id)) {
-			return false;
-		}
-		return this->customcache[id].find(stringlower(tag.c_str())) != this->customcache[id].end();
-	}
-
-	void AddCustomCache(const int id, const std::string& tag) {
-		if (!tag.empty()) {
-			this->customcache[id].insert(stringlower(tag.c_str()));
-		}
-	}
-
-	void RemoveCustomCache(const int id, const std::string& tag) {
-		if (HasCustomCache(id, tag)) {
-			this->customcache[id].erase(stringlower(tag.c_str()));
-		}
-	}
 };
 
-class XMLCollectible : public XMLItem {
-public:
-	unordered_map<int, string> customActiveGFX;
-
-	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
-
-	const char* GetCustomActiveGFX(const int id) {
-		auto it = this->customActiveGFX.find(id);
-		if (it != this->customActiveGFX.end()) {
-			return it->second.c_str();
-		}
-		return "";
-	}
-};
+class XMLCollectible : public XMLItem {};
 
 class XMLNullItem : public XMLItem {
 public:
@@ -594,7 +521,9 @@ class XMLCutscene : public XMLDataHolder {
 };
 
 class XMLBossPools : public XMLDataHolder {
-
+public:
+	static void BuildDefaultDoc(rapidxml::xml_document<char>& doc);
+	std::string& GetXmlSourceText(char* sourceText);
 };
 
 class XMLNightmare : public XMLDataHolder {
@@ -952,12 +881,19 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-	// Holds all known customcache strings, primarily for triggering on CACHE_ALL in EvaluateItems.
-	set<string> AllCustomCaches = { "familiarmultiplier", "maxcoins", "maxkeys" , "maxbombs", "tearscap", "statmultiplier" };
-
-	void AddKnownCustomCache(const std::string& tag) {
-		if (!tag.empty()) {
-			AllCustomCaches.insert(stringlower(tag.c_str()));
+	// Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
+	// Ex: "tag1 tag2 tag3"
+	// For tag-like attributes like 'customtags' and 'customcache'.
+	static void ParseTagsString(const string& str, set<string>& out) {
+		const string tagsstr = stringlower(str.c_str());
+		if (!tagsstr.empty()) {
+			stringstream tagstream(tagsstr);
+			string tag;
+			while (getline(tagstream, tag, ' ')) {
+				if (!tag.empty()) {
+					out.insert(tag);
+				}
+			}
 		}
 	}
 };
@@ -966,6 +902,351 @@ extern unordered_map<string, int> getxmlnodeidbyname;
 extern vector<XMLDataHolder*> xmlnodetypetodata;
 extern XMLData XMLStuff;
 
+inline int getLineNumber(const char* data, const char* errorOffset) {
+	if (strlen(errorOffset) <= 0) { return 0; }
+	int lineNumber = 1;
+	const char* current = data;
+	while (current < errorOffset) {
+		if (*current == '\n') {
+			lineNumber++;
+		}
+		current++;
+	}
+	return lineNumber;
+}
+
+namespace XML
+{
+	constexpr const char* BASE_GAME_ID = "BaseGame";
+
+	struct Document
+	{
+	private:
+		std::unique_ptr<rapidxml::xml_document<char>> doc;
+		std::string sourceText;
+
+	public:
+		Document()
+		{
+			this->doc = std::make_unique<rapidxml::xml_document<char>>();
+		}
+
+		rapidxml::xml_document<char>* GetDocument() { return doc.get(); }
+		std::string& LoadSourceText(const std::filesystem::path& path);
+	};
+
+	struct ParsedAttributes
+	{
+		XMLAttributes all;
+		std::vector<rapidxml::xml_attribute<char>*> attributes;
+	};
+
+	struct ContentDocument
+	{
+		Document document;
+		ModEntry* mod;
+
+		rapidxml::xml_document<char>* GetDocument() { return this->document.GetDocument(); }
+	};
+
+	namespace detail
+	{
+		class ContentIterator
+		{
+			using ModIterator = decltype(std::declval<ModManager*>()->_mods.begin());
+	
+		private:
+			ModIterator m_current;
+			ModIterator m_end;
+			std::string m_filePath;
+			ContentDocument m_currentDocument;
+	
+		public:
+			ContentIterator(ModIterator current, ModIterator end, const char* filePath)
+				: m_current(current), m_end(end), m_filePath(filePath)
+			{
+				advance();
+			}
+	
+			ContentDocument& operator*() { return m_currentDocument; }
+			ContentDocument* operator->() { return &m_currentDocument; }
+			bool operator!=(const ContentIterator& other) const { return m_current != other.m_current; }
+	
+			ContentIterator& operator++()
+			{
+				++m_current;
+				advance();
+				return *this;
+			}
+	
+		private:
+			void advance();
+		};
+
+		class ContentRange
+		{
+		private:
+			ModManager* m_manager;
+			std::string m_filePath;
+
+		public:
+			ContentRange(ModManager* manager, string_view filePath)
+				: m_manager(manager), m_filePath(filePath)
+			{}
+
+			ContentIterator begin() { return ContentIterator( m_manager->_mods.begin(), m_manager->_mods.end(), m_filePath.c_str()); }
+			ContentIterator end() { return ContentIterator( m_manager->_mods.end(), m_manager->_mods.end(), m_filePath.c_str()); }
+		};
+
+		static int get_error_line(const char* sourceText, const char* errorPoint, std::size_t sourceTextSize);
+	}
+
+	/// @brief Returns the node's name as a string_view, ensuring that string operations are safe even when parsing using rapidxml::parse_no_destructive
+	inline std::string_view GetName(const rapidxml::xml_node<char>* node) { return std::string_view(node->name(), node->name_size()); }
+	/// @brief Returns the attribute's name as a string_view, ensuring that string operations are safe even when parsing using rapidxml::parse_no_destructive
+	inline std::string_view GetName(const rapidxml::xml_attribute<char>* attribute) { return std::string_view(attribute->name(), attribute->name_size()); }
+	/// @brief Returns the attribute's value as a string_view, ensuring that string operations are safe even when parsing using rapidxml::parse_no_destructive
+	inline std::string_view GetValue(const rapidxml::xml_attribute<char>* attribute) { return std::string_view(attribute->value(), attribute->value_size()); }
+	inline std::string_view GetModId(const ModEntry* mod);
+	
+	/// @brief Sets the attribute's value.
+	///
+	/// WARNING: Only use this if the value outlives the xml_document the attribute belongs to.
+	/// Otherwise use SetValueCopy.
+	inline void SetValue(rapidxml::xml_attribute<char>* attribute, std::string_view value) { attribute->value(value.data(), value.size()); }
+	/// @brief Copies the value into the documents' memory pool and sets the attribute's value.
+	/// @return returns a pointer to the copy in the document's memory_pool.
+	const char* SetValueCopy(rapidxml::xml_document<char>& doc, rapidxml::xml_attribute<char>* attribute, std::string_view value);
+	/// @brief Appends a new node to the specified node
+	///
+	/// WARNING: the name must outline the xml_document, however this is fairly usually not an issue
+	// as names are static strings.
+	rapidxml::xml_node<char>* AppendNewNode(rapidxml::xml_document<char>& doc, rapidxml::xml_node<char>* node, std::string_view name);
+	
+	/// @brief Appends a new attribute to the specified node
+	///
+	/// WARNING: both name and value must outline the xml_document.
+	/// If this is not the case, then it's suggested to call AppendNewAttribute with no value,
+	/// then follow this with a SetValueCopy on the attribute.
+	rapidxml::xml_attribute<char>* AppendNewAttribute(rapidxml::xml_document<char>& doc, rapidxml::xml_node<char>* node, std::string_view name, std::string_view value = "");
+
+	bool ParseDoc(rapidxml::xml_document<char>& doc, char* sourceText, std::string_view filePath);
+	/// @brief Attempts resources redirection and parses the document.
+	/// @param originalSourceText must remain alive as long as the document.
+	XML::Document GetResourcesDoc(std::string_view filePath, char* originalSourceText);
+	/// @brief Returns a range to iterate content documents
+	XML::detail::ContentRange GetContentDocs(std::string_view fileName);
+	/// @param destParent This node must belong to destDoc
+	/// @return the cloned node
+	rapidxml::xml_node<char>* CloneNode(rapidxml::xml_document<char>& destDoc, rapidxml::xml_node<char>* destParent, rapidxml::xml_node<char>* node);
+
+	/// @brief Returns all attributes in the node, alongside the xml_attributes specified in the map.
+	///
+	/// Additionally, every duplicate attribute name specified in the map is removed from the node.
+	/// This ensures that the game's parsers behave deterministically in this otherwise unhandled case.
+	ParsedAttributes ParseAttributes(rapidxml::xml_node<char>* node, const std::unordered_map<std::string_view, size_t>& attributeMap);
+	/// @brief Returns all attributes in the node, alongside the xml_attributes specified in the map.
+	XMLAttributes ParseAttributes(rapidxml::xml_node<char>* node);
+}
+
+int XML::detail::get_error_line(const char* sourceText, const char* errorPoint, std::size_t sourceTextSize)
+{
+	const char* start = sourceText;
+	const char* end = sourceText + sourceTextSize;
+
+	bool inBounds = start <= errorPoint && errorPoint <= end;
+	if (!inBounds)
+	{
+		return 0;
+	}
+
+    return std::count(start, errorPoint, '\n') + 1;
+}
+
+inline std::string& XML::Document::LoadSourceText(const std::filesystem::path &path)
+{
+    std::ifstream file(path, std::ios::binary);
+
+	file.seekg(0, std::ios::end);
+	std::streampos end = file.tellg();
+	file.seekg(0);
+
+	std::size_t fileSize = end > 0 ? (size_t)end : 0;
+	this->sourceText.resize(fileSize);
+	file.read(this->sourceText.data(), this->sourceText.size());
+
+	return this->sourceText;
+}
+
+inline void XML::detail::ContentIterator::advance()
+{
+	auto try_advance = [](ContentIterator& it) -> bool
+	{
+		ModEntry* mod = *it.m_current;
+		if (!mod->_loaded)
+		{
+			return false;
+		}
+
+		std::string contentPath;
+		mod->GetContentPath(&contentPath, &it.m_filePath);
+		auto expandedPath = g_ContentManager.GetMountedFilePath(contentPath.c_str());
+		if (!expandedPath)
+		{
+			return false;
+		}
+
+		XML::Document document;
+		std::string& sourceText = document.LoadSourceText(*expandedPath);
+		if (!XML::ParseDoc(*document.GetDocument(), sourceText.data(), *expandedPath))
+		{
+			return false;
+		}
+
+		it.m_currentDocument = ContentDocument{ std::move(document), mod };
+		return true;
+	};
+
+	while (m_current != m_end)
+	{
+		if (try_advance(*this)) { return; }
+		m_current++;
+	}
+}
+
+inline std::string_view XML::GetModId(const ModEntry* mod)
+{
+	std::string_view modId = mod->_metadataWorkshopID;
+	if (modId.size() == 0) {
+		modId = mod->_directory;
+	}
+
+	return modId;
+}
+
+inline bool XML::ParseDoc(rapidxml::xml_document<char>& doc, char* sourceText, std::string_view filePath)
+{
+	std::string_view sourceTextView = sourceText;
+	try {
+		doc.parse<0>(sourceText);
+		return true;
+	}
+	catch (rapidxml::parse_error err) {
+		int lineNumber = detail::get_error_line(sourceTextView.data(), err.where<char>(), sourceTextView.size());
+		std::string error = REPENTOGON::StringConcat("[XMLError] ", err.what(), " at line ", std::to_string(lineNumber), " in ", filePath, "\n");
+		if(g_Game && g_Game->GetConsole())
+		{
+			// console does not need newline
+			error.back() = '\0';
+			g_Game->GetConsole()->PrintError(error);
+			error.back() = '\n';
+		}
+	
+		KAGE::SafeLogMessage(3, error.c_str());
+		doc.clear();
+	}
+	return false;
+} 
+
+inline XML::Document XML::GetResourcesDoc(std::string_view filePath, char* originalSourceText)
+{
+	std::optional<std::string> redirect = REPENTOGON::GetResourcesRedirect(filePath);
+	XML::Document document;
+	rapidxml::xml_document<char>& doc = *document.GetDocument();
+
+	// initialize resources doc.
+	if (redirect)
+	{
+		auto& redirectSourceText = document.LoadSourceText(redirect.value());
+		XML::ParseDoc(doc, redirectSourceText.data(), redirect.value());
+	}
+	else
+	{
+		XML::ParseDoc(doc, originalSourceText, filePath);
+	}
+
+    return document;
+}
+
+inline XML::detail::ContentRange XML::GetContentDocs(std::string_view filePath)
+{
+    return XML::detail::ContentRange(g_Manager->GetModManager(), filePath);
+}
+
+inline rapidxml::xml_node<char>* XML::CloneNode(rapidxml::xml_document<char>& destDoc, rapidxml::xml_node<char>* destParent, rapidxml::xml_node<char>* node)
+{
+	rapidxml::xml_node<char>* clonedNode = destDoc.clone_node(node);
+	destParent->append_node(clonedNode);
+
+	return clonedNode;
+}
+
+inline XML::ParsedAttributes XML::ParseAttributes(rapidxml::xml_node<char>* node, const std::unordered_map<std::string_view, size_t>& attributeMap)
+{
+	XML::ParsedAttributes results;
+	size_t mapSize = attributeMap.size();
+	results.attributes.resize(mapSize, nullptr);
+
+	for (auto* attribute = node->first_attribute(); attribute; attribute = attribute->next_attribute())
+	{
+		std::string_view name = XML::GetName(attribute);
+		std::string_view value = XML::GetValue(attribute);
+
+		results.all[stringlower(name)] = value;
+
+		auto it = attributeMap.find(name);
+		if (it != attributeMap.end())
+		{
+			size_t attributeId = it->second;
+			assert(attributeId < mapSize); // something's wrong with the input map
+
+			if (auto* previous = results.attributes[attributeId]; previous)
+			{
+				node->remove_attribute(previous);
+			}
+
+			results.attributes[attributeId] = attribute;
+		}
+	}
+
+	return results;
+}
+
+inline XMLAttributes XML::ParseAttributes(rapidxml::xml_node<char>* node)
+{
+	XMLAttributes attributes;
+
+	for (auto* attribute = node->first_attribute(); attribute; attribute = attribute->next_attribute())
+	{
+		std::string_view name = XML::GetName(attribute);
+		std::string_view value = XML::GetValue(attribute);
+
+		attributes[stringlower(name)] = value;
+	}
+
+	return attributes;
+}
+
+inline const char* XML::SetValueCopy(rapidxml::xml_document<char>& doc, rapidxml::xml_attribute<char>* attribute, std::string_view value)
+{
+	char* copy = doc.allocate_string(value.data(), value.size());
+	attribute->value(copy, value.size());
+	return copy;
+}
+
+inline rapidxml::xml_node<char>* XML::AppendNewNode(rapidxml::xml_document<char>& doc, rapidxml::xml_node<char>* node, std::string_view name)
+{
+	auto* newNode = doc.allocate_node(rapidxml::node_element, name.data(), nullptr, name.size());
+	node->append_node(newNode);
+    return newNode;
+}
+
+inline rapidxml::xml_attribute<char>* XML::AppendNewAttribute(rapidxml::xml_document<char>& doc, rapidxml::xml_node<char>* node, std::string_view name, std::string_view value)
+{
+	auto* attribute = doc.allocate_attribute(name.data(), value.data(), name.size(), value.size());
+	node->append_attribute(attribute);
+	return attribute;
+}
 
 inline bool isvalidid(const std::string& str) {
 	if (!str.empty()) {
@@ -1083,19 +1364,6 @@ struct CustomXML {
 	string entrynodename;
 };
 extern vector<CustomXML> pendingcustomxmls;
-
-inline int getLineNumber(const char* data, const char* errorOffset) {
-	if (strlen(errorOffset) <= 0) { return 0; }
-	int lineNumber = 1;
-	const char* current = data;
-	while (current < errorOffset) {
-		if (*current == '\n') {
-			lineNumber++;
-		}
-		current++;
-	}
-	return lineNumber;
-}
 
 inline int xmltoint(const string& str) {
 	if (str.length() > 0) {
