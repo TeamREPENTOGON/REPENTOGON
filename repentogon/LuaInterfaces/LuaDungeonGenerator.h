@@ -27,8 +27,8 @@ struct DungeonGeneratorRoom {
 	
 	DungeonGeneratorRoom();
 
-	DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, RoomConfig_Room* room);
-	DungeonGeneratorRoom(int list_index, uint32_t row, uint32_t col, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, RoomConfig_Room* room);
+	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
 
 	RoomConfig_Room* GetRoomConfig(uint32_t seed, uint32_t required_doors, Level* level);
 };
@@ -43,6 +43,7 @@ struct DungeonGenerator {
 
 	bool reset_lil_portal = false;
 	int final_boss_index = -1;
+	int greed_gold_room_index = -1;
 
 	DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type, bool reset_lil_portal);
 
@@ -67,6 +68,10 @@ struct DungeonGenerator {
 	void InitializeDefaultOffGridRooms();
 
 	void SetFinalBossRoom(DungeonGeneratorRoom* boss_room);
+
+	void SetGreedGoldRoom(DungeonGeneratorRoom* gold_room);
+	
+	void SetGreedGoldRoom(int grid_index);
 
 	bool ValidateFloor();
 
