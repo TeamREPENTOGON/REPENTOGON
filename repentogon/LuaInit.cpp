@@ -250,6 +250,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::BITSET_128_PTR] = lua_ctypeid(L, "BitSet128Ptr");
 	lua::ffi::CData[lua::ffi::CDataID::POS_VEL] = lua_ctypeid(L, "PosVel");
 	lua::ffi::CData[lua::ffi::CDataID::POS_VEL_PTR] = lua_ctypeid(L, "PosVelPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME] = lua_ctypeid(L, "ItemConfigCostume");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_PTR] = lua_ctypeid(L, "ItemConfigCostumePtr");
 
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);

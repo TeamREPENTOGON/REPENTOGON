@@ -273,6 +273,13 @@ LUA_FUNCTION(Lua_ItemConfigCostume_SetSkinColor) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfigItem_GetCostume) {
+	ItemConfig_Item* item = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::CONST_ITEM, "Item");
+
+	lua::ffi::pushCdataPtr(L, &item->costume, lua::ffi::CData[lua::ffi::CDataID::COSTUME_PTR]);
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -294,8 +301,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	FixItemConfigPillEffects(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);
+
+	lua::RegisterVariableGetter(_state, lua::Metatables::ITEM, "Costume", Lua_ItemConfigItem_GetCostume);
+
 	//lua::RegisterGlobalClassFunction(_state, "Config", "IsValidTrinket", Lua_ItemConfig_IsValidTrinket);
 
-	lua::RegisterVariable(_state, lua::Metatables::COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor, Lua_ItemConfigCostume_SetSkinColor);
-	lua::RegisterVariableGetter(_state, lua::Metatables::CONST_COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor);
+	//lua::RegisterVariable(_state, lua::Metatables::COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor, Lua_ItemConfigCostume_SetSkinColor);
+	//lua::RegisterVariableGetter(_state, lua::Metatables::CONST_COSTUME, "SkinColor", Lua_ItemConfigCostume_GetSkinColor);
 }
+
+
