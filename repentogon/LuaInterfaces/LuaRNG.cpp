@@ -10,6 +10,10 @@ inline uint32_t* GetShifts(int shift_idx) {
 	return &s_Shifts + (shift_idx * NUM_SHIFTS);
 }
 
+MOD_EXPORT const uint32_t* RNG_GetShiftsTable() {
+	return &s_Shifts;
+}
+
 inline int CeilIntegerDivision(int dividend, int divisor) //The same as performing ceil(dividend / divisor), but much faster
 {
 	return (dividend + (divisor - 1)) / divisor;
