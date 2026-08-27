@@ -119,6 +119,7 @@ end
 
 pcall(require("ffi.Vector"))
 pcall(require("ffi.GridEntityDesc"))
+pcall(require("ffi.KColor"))
 pcall(require("ffi.Color"))
 pcall(require("ffi.PosVel"))
 pcall(require("ffi.BitSet128"))

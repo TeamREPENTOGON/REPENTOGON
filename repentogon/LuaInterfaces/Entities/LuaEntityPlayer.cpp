@@ -1,6 +1,7 @@
 ﻿#include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 #include "../LuaWeapon.h"
 #include "../LuaEntitySaveState.h"
@@ -2853,17 +2854,14 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 
 	// This lua function was made before we knew the footprint colors were ColorMod and not KColor.
 	// Just gonna maintain the current output structure for the sake of the REP+ migration.
-	KColor color(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
-
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = color;
-
+	KColor* toLua = LuaKColor::Place(L);
+	*toLua = KColor(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	KColor* color = LuaKColor::Get(L, 2);
 	// Allegedly this boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 	bool unk = lua::luaL_optboolean(L, 3, false);
 	player->SetFootprintColor(*color, unk);

@@ -521,16 +521,16 @@ function META:ShowHallucination(frameCount, backdrop)
 end
 
 -- void Game:Fadein(float Speed, bool ShowIcon = true, const Color & FadeColor = KAGE::Graphics::Colors.Black)
-local Game_Fadein = META0.Fadein
-function META:Fadein(speed, show_icon, color)
-	Game_Fadein( self, speed, show_icon or true, color or KColor(0,0,0,255) )
-end
+-- local Game_Fadein = META0.Fadein
+-- function META:Fadein(speed, show_icon, color)
+-- 	Game_Fadein( self, speed, show_icon or true, color or KColor(0,0,0,255) )
+-- end
 
 -- void Game:Fadeout(float Speed, eFadeoutTarget Target, const Color & FadeColor = KAGE::Graphics::Colors.Black)
-local Game_Fadeout = META0.Fadeout
-function META:Fadeout(speed, target, color)
-	Game_Fadeout( self, speed, target, color or KColor(0,0,0,255) )
-end
+-- local Game_Fadeout = META0.Fadeout
+-- function META:Fadeout(speed, target, color)
+-- 	Game_Fadeout( self, speed, target, color or KColor(0,0,0,255) )
+-- end
 
 EndClass()
 
@@ -638,10 +638,10 @@ function META:SetOverlayAnimation(anim, reset)
 end
 
 -- KColor Sprite:GetTexel(Vector SamplePos, Vector RenderPos, float AlphaThreshold = 0.01, int LayerId  = -1)
-local Sprite_GetTexel = META0.GetTexel
-function META:GetTexel(samplePos, renderPos, alphaThreshold, layerId)
-	return Sprite_GetTexel(self, samplePos, renderPos, alphaThreshold or 0.01, layerId or -1)
-end
+-- local Sprite_GetTexel = META0.GetTexel
+-- function META:GetTexel(samplePos, renderPos, alphaThreshold, layerId)
+-- 	return Sprite_GetTexel(self, samplePos, renderPos, alphaThreshold or 0.01, layerId or -1)
+-- end
 
 EndClass()
 

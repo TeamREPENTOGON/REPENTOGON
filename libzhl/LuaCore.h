@@ -606,6 +606,8 @@ namespace lua {
             POS_VEL_PTR,
             COSTUME,
             COSTUME_PTR,
+            KCOLOR,
+            KCOLOR_PTR,
             MAX_CDATA
         };
 

@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 #include "Room.h"
 #include "Log.h"
+#include "../../LuaClasses.h"
 
 #include "../../Patches/ItemPoolManager.h"
 
@@ -364,7 +365,7 @@ LUA_FUNCTION(Lua_RoomGetWaterColor)
 LUA_FUNCTION(Lua_RoomSetWaterColor)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	KColor* color = LuaKColor::Get(L, 2);
 	*room->GetWaterLerpColorMultiplier() = 1; // See Room.zhl for more info
 	room->_waterLerpTargetColor = *color;
 
@@ -385,7 +386,7 @@ LUA_FUNCTION(Lua_RoomGetWaterColorMultiplier)
 LUA_FUNCTION(Lua_RoomSetWaterColorMultiplier)
 {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	KColor* color = LuaKColor::Get(L, 2);
 	*room->GetWaterLerpColorMultiplier() = 1;
 	room->_waterLerpTargetColorMult = *color;
 

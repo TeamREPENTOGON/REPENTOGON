@@ -8,23 +8,34 @@
 #include "../MiscFunctions.h"
 #include "../Patches/Anm2Extras.h"
 #include "../Utils/ANM2Utils.hpp"
+#include "../LuaClasses.h"
 
 /*
 * While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
 * I've named this file "LuaSprite" for consistency with the existing API metatable.
 */
 
+#pragma region DLL export
+
+extern "C" {
+	__declspec(dllexport) KColor* L_Sprite_GetTexel(ANM2* sprite, KColor* result, Vector samplePos, Vector renderPos, float alphaThreshold, int layerID) {
+		sprite->GetTexel(result, samplePos, renderPos, alphaThreshold, layerID);
+        return result;
+	}
+}
+
+#pragma endregion
+
 LUA_FUNCTION(Lua_SpriteGetTexel)
 {
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	Vector* sample = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* render = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float threshold = (float)luaL_checknumber(L, 4);
-	int id = (int)luaL_optinteger(L, 5, 1);
+	ANM2* sprite = LuaSprite::Get(L, 1);
+	Vector* samplePos = LuaVector::Get(L, 2);
+	Vector* renderPos = LuaVector::Get(L, 3);
+	float alphaThreshold = (float)luaL_optnumber(L, 4, 0.01);
+	int layerID = (int)luaL_optinteger(L, 5, -1);
 
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	anm2->GetTexel(toLua, *sample, *render, threshold, id);
-
+	KColor* result = LuaKColor::Place(L);
+	L_Sprite_GetTexel(sprite, result, *samplePos, *renderPos, alphaThreshold, layerID);
 	return 1;
 }
 
@@ -33,11 +44,11 @@ LUA_FUNCTION(Lua_SpriteRender)
 	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector topLeftClamp;
-	if (lua_type(L, 3) == LUA_TCDATA) {
+	if (LuaVector::IsUnderlyingType(L, 3)) {
 		topLeftClamp = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 	Vector bottomRightClamp;
-	if (lua_type(L, 4) == LUA_TCDATA) {
+	if (LuaVector::IsUnderlyingType(L, 4)) {
 		bottomRightClamp = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	}
 
