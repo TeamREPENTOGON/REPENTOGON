@@ -4,9 +4,13 @@ struct KColor {
     float Green;
     float Blue;
     float Alpha;
+    padding int;
 };
-typedef struct Color* KColorPtr;
+typedef struct KColor* KColorPtr;
+struct KColor* L_KColor_Constructor(struct KColor*, float, float, float, float);
 ]]
+
+local L_KColor_Constructor = ffidll.L_KColor_Constructor
 
 local KColorMT = {
     __type = "KColor",
@@ -14,13 +18,13 @@ local KColorMT = {
 
 local KColorT = ffi.metatype("struct KColor", KColorMT)
 
-KColorMT.__index = function(self, key)
-	return KColorMT[key]
-end
+KColorMT.__index = KColorMT
 
 local KColorGlobalMT = {
     __call = function(_, red, green, blue, alpha)
-        return KColorT(red, green, blue, alpha)
+        local color = KColorT();
+        L_KColor_Constructor(color, red, green, blue, alpha)
+        return color
     end,
 
     __class = KColorMT,
