@@ -14,7 +14,7 @@ void PerformLuaASMPatch(SigScan* scanner, ASMPatch* patch, unsigned int* counter
 }
 void ASMPatchLuaJIT()
 {
-	printf("Patching Lua indices (this will take a while)...\n");
+	printf("[REPENTOGON] Patching Lua indices (this will take a while)...\n");
 
 	SigScan globalScanner("d8b9f0ff");
 
@@ -25,7 +25,7 @@ void ASMPatchLuaJIT()
 
 	PerformLuaASMPatch(&globalScanner, &globalPatch, &amount);
 
-	printf("Patched %d global indices\n", amount);
+	printf("[REPENTOGON] Patched %d global indices\n", amount);
 
 	SigScan uplevelScanner("d7b9f0ff");
 
@@ -36,5 +36,19 @@ void ASMPatchLuaJIT()
 	
 	PerformLuaASMPatch(&uplevelScanner, &uplevelPatch, &amount);
 
-	printf("Patched %d uplevel indices\n", amount);
+	printf("[REPENTOGON] Patched %d uplevel indices\n", amount);
+}
+
+void ASMPatchLuaGC()
+{
+	SigScan scanner("8b3d????????8b35????????6a00");
+	scanner.Scan();
+
+	ASMPatch patch;
+	void* addr = scanner.GetAddress();
+
+	patch.AddRelativeJump((char*)addr + 0x3E);
+	sASMPatcher.FlatPatch(addr, &patch);
+
+	printf("[REPENTOGON] Patching out Room::Init GC at %p\n", addr);
 }
