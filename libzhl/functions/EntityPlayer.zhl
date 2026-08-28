@@ -666,7 +666,13 @@ __thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* targ
 
 "558bec83e4f883ec1c8b45??535657f30f10008bfa":
 static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(Entity_Familiar* buffer, Vector* position, int subtype, Vector* target);
- 
+
+"558bec568bf1e8????????8b45??8b4d":
+__thiscall void Entity_Player::QueueItem(ItemConfig_Item* item, int charge, int flags, int varData);
+
+"558bec83ec0853568bf1578975":
+__thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_string* spritePath);
+
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }

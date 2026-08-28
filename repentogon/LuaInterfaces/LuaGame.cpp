@@ -14,7 +14,7 @@ LUA_FUNCTION(Lua_GameBombDamage)
 		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
 	}
 	BitSet128 tearFlags;
-	if (lua_type(L, 7) == LUA_TUSERDATA) {
+	if (lua_type(L, 7) == LUA_TCDATA) {
 		tearFlags = *lua::GetCData<BitSet128*>(L, 7, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 8, eDamageFlag::DAMAGE_EXPLOSION);
@@ -32,7 +32,7 @@ LUA_FUNCTION(Lua_GameBombExplosionEffects)
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float damage = (float)luaL_checknumber(L, 3);
 	BitSet128 tearFlags;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
+	if (lua_type(L, 4) == LUA_TCDATA) {
 		tearFlags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	ColorMod color;

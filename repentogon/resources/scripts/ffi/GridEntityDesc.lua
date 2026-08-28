@@ -19,6 +19,8 @@ GridEntityDescMT = {
     __type = "GridEntityDesc",
 }
 
+local GridEntityDescT = ffi.metatype("struct GridEntityDesc", GridEntityDescMT)
+
 GridEntityDescMT.__index = function(self, key)
 	return GridEntityDescMT[key]
 end 

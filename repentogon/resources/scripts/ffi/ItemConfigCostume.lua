@@ -2,12 +2,12 @@ ffi.cdef[[
 struct ItemConfigCostume
 {
     unsigned int ID;
-    char _[0x18]; // Anm2Path
+    char _pad_anm2_path[0x18];
     unsigned int Priority;
     bool HasOverlay;
     bool IsFlying;
     bool HasSkinAlt;
-    char _; // pad
+    char _pad;
     int SkinColor;
     bool OverwriteColor;
 };
@@ -20,6 +20,7 @@ void L_ItemConfigCostume_SetAnm2Path(struct ItemConfigCostume*, const char*);
 
 local lffi = ffi
 local repentogon = ffidll
+
 
 local ItemConfigCostumeMT
 ItemConfigCostumeMT = {

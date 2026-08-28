@@ -877,14 +877,6 @@ function META:FullCharge(id, force)
 	return Entity_Player_FullCharge(self, id or 0, force) ~= 0
 end
 
--- void EntityPlayer:CheckFamiliar(int FamiliarVariant, int TargetCount, RNG rng, ItemConfig::Item SourceItem = nil, int FamiliarSubType = -1)
--- * SourceItem: The item this type of familiar was created by
--- * FamiliarSubType: The subtype of the familiar to check (-1 matches any subtype)
-local Entity_Player_CheckFamiliar = META0.CheckFamiliar
-function META:CheckFamiliar(variant, count, rng, sourceItem, subType)
-	Entity_Player_CheckFamiliar(self, variant, count, rng, sourceItem, subType or -1)
-end
-
 -- void	EntityPlayer:UseActiveItem(CollectibleType Item, UseFlag UseFlags = 0, ActiveSlot Slot = -1, int CustomVarData = 0)
 --   or
 -- void	EntityPlayer:UseActiveItem(CollectibleType Item, boolean ShowAnim = false, boolean KeepActiveItem = false, boolean AllowNonMainPlayer = true, boolean ToAddCostume = false, ActiveSlot Slot = -1, int CustomVarData = 0)
@@ -979,15 +971,6 @@ end
 local Entity_Player_FireTechXLaser = META0.FireTechXLaser
 function META:FireTechXLaser(pos, dir, radius, source, mul)
 	return Entity_Player_FireTechXLaser(self, pos, dir, radius, source, mul or 1)
-end
-
--- void EntityPlayer:QueueItem(ItemConfig::Item Item, int Charge = 0, boolean Touched = false, bool Golden = false, int VarData = 0)
-local Entity_Player_QueueItem = META0.QueueItem
-function META:QueueItem(item, charge, touched, golden, varData)
-	local flags = 0
-	if touched then flags = flags + 1 end
-	if golden then flags = flags + 2 end
-	Entity_Player_QueueItem(self, item, charge or 0, flags, varData or 0)
 end
 
 -- TearParams EntityPlayer:GetTearHitParams(WeaponType WeaponType, float DamageScale = 1, int TearDisplacement = 1, Entity Source = nil)

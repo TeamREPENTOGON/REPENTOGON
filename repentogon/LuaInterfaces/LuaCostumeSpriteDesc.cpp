@@ -28,7 +28,7 @@ LUA_FUNCTION(CostumeSprDesc_GetSprite) {
 LUA_FUNCTION(CostumeSprDesc_GetItemConfig) {
 	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
 	ItemConfig_Item* config = costumeSprDesc->_item;
-	lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::ITEM));
+	lua::ffi::pushCdataPtr(L, config, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
 	return 1;
 }
 

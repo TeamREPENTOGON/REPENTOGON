@@ -241,7 +241,7 @@ LUA_FUNCTION(Lua_FamiliarSetMoveDelayNum) {
 LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
 	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	ItemConfig_Item* config = fam->_item;
-	lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::ITEM));
+	lua::ffi::pushCdataPtr(L, config, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
 	return 1;
 }
 
