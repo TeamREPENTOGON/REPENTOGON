@@ -755,25 +755,6 @@ end
 EndClass()
 
 ---------------------------------------------------------
-BeginClass(EntityFamiliar)
-
--- void	EntityFamiliar:PickEnemyTarget(float MaxDistance, int FrameInterval = 13, int Flags = 0, Vector ConeDir = Vector.Zero, float ConeAngle = 15)
--- * Flags: A combination of the following flags (none of these are set by default)
---       1: Allow switching to a better target even if we already have one
---       2: Don't prioritize enemies that are close to our owner
---       4: Prioritize enemies with higher HP
---       8: Prioritize enemies with lower HP
---       16: Give lower priority to our current target (this makes us more likely to switch between targets)
--- * ConeDir: If ~= Vector.Zero, searches for targets in a cone pointing in this direction
--- * ConeAngle: If ConeDir ~= Vector.Zero, sets the half angle of the search cone in degrees (45 results in a search angle of 90 degrees)
-local Entity_Familiar_PickEnemyTarget = META0.PickEnemyTarget
-function META:PickEnemyTarget(maxDist, frameInterval, flags, coneDir, coneAngle)
-	Entity_Familiar_PickEnemyTarget(self, maxDist, frameInterval or 13, flags or 0, coneDir or Vector(0, 0), coneAngle or 15)
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityNPC)
 
 -- void	EntityNPC:MakeChampion(int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false)

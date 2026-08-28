@@ -337,6 +337,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetOrbitPosition", Lua_FamiliarGetOrbitPosition },
 		{ "FireProjectile", Lua_FamiliarFireProjectile },
 		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },
+		{ "PickEnemyTarget", Lua_FamiliarPickEnemyTarget },
 		{ "GetPathFinder", Lua_FamiliarGetPathFinder }, // depreciated
 		{ "GetPathfinder", Lua_FamiliarGetPathFinder },
 		{ "TryAimAtMarkedTarget", Lua_FamiliarTryAimAtMarkedTarget },
