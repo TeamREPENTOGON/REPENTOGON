@@ -591,7 +591,10 @@ namespace lua {
         }
 
         inline void pushCdataPtr(lua_State* L, void const* p, lua_CTypeId ctypeid) {
-            lua_pushcdata(L, ctypeid, &p, sizeof(p));
+            if (p == nullptr)
+                lua_pushnil(L);
+            else
+                lua_pushcdata(L, ctypeid, &p, sizeof(p));
         }
         enum CDataID : lua_CTypeId {
             VECTOR,
@@ -599,6 +602,7 @@ namespace lua {
             GRID_ENTITY_DESC,
             GRID_ENTITY_DESC_PTR,
             COLOR,
+            CONST_COLOR,
             COLOR_PTR,
             BITSET_128,
             BITSET_128_PTR,
@@ -606,6 +610,10 @@ namespace lua {
             POS_VEL_PTR,
             COSTUME,
             COSTUME_PTR,
+            ITEM,
+            ITEM_PTR,
+            KCOLOR,
+            KCOLOR_PTR,
             MAX_CDATA
         };
 

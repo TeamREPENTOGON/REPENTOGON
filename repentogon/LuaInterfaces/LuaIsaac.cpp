@@ -5,6 +5,7 @@
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/ItemSpoofSystem.h"
+#include "../LuaClasses.h"
 
 #include "Windows.h"
 #include <string>
@@ -349,8 +350,8 @@ LUA_FUNCTION(Lua_RenderToWorld) {
 LUA_FUNCTION(Lua_DrawLine) {
 	Vector* pos1 = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* pos2 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	KColor* col1 = lua::GetLuabridgeUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
-	KColor* col2 = lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	KColor* col1 = LuaKColor::Get(L, 3);
+	KColor* col2 = LuaKColor::Get(L, 4);
 	float thickness = (float)luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
 
 	g_ShapeRenderer->RenderLine(pos1, pos2, col1, col2, thickness);
@@ -363,7 +364,7 @@ LUA_FUNCTION(Lua_DrawQuad) {
 	Vector* postr = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* posbl = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* posbr = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	KColor* col = lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor* col = LuaKColor::Get(L, 5);
 	float thickness = (float)luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
 
 	DestinationQuad quad; //TODO make a constructor for this

@@ -521,16 +521,16 @@ function META:ShowHallucination(frameCount, backdrop)
 end
 
 -- void Game:Fadein(float Speed, bool ShowIcon = true, const Color & FadeColor = KAGE::Graphics::Colors.Black)
-local Game_Fadein = META0.Fadein
-function META:Fadein(speed, show_icon, color)
-	Game_Fadein( self, speed, show_icon or true, color or KColor(0,0,0,255) )
-end
+-- local Game_Fadein = META0.Fadein
+-- function META:Fadein(speed, show_icon, color)
+-- 	Game_Fadein( self, speed, show_icon or true, color or KColor(0,0,0,255) )
+-- end
 
 -- void Game:Fadeout(float Speed, eFadeoutTarget Target, const Color & FadeColor = KAGE::Graphics::Colors.Black)
-local Game_Fadeout = META0.Fadeout
-function META:Fadeout(speed, target, color)
-	Game_Fadeout( self, speed, target, color or KColor(0,0,0,255) )
-end
+-- local Game_Fadeout = META0.Fadeout
+-- function META:Fadeout(speed, target, color)
+-- 	Game_Fadeout( self, speed, target, color or KColor(0,0,0,255) )
+-- end
 
 EndClass()
 
@@ -638,10 +638,10 @@ function META:SetOverlayAnimation(anim, reset)
 end
 
 -- KColor Sprite:GetTexel(Vector SamplePos, Vector RenderPos, float AlphaThreshold = 0.01, int LayerId  = -1)
-local Sprite_GetTexel = META0.GetTexel
-function META:GetTexel(samplePos, renderPos, alphaThreshold, layerId)
-	return Sprite_GetTexel(self, samplePos, renderPos, alphaThreshold or 0.01, layerId or -1)
-end
+-- local Sprite_GetTexel = META0.GetTexel
+-- function META:GetTexel(samplePos, renderPos, alphaThreshold, layerId)
+-- 	return Sprite_GetTexel(self, samplePos, renderPos, alphaThreshold or 0.01, layerId or -1)
+-- end
 
 EndClass()
 
@@ -755,25 +755,6 @@ end
 EndClass()
 
 ---------------------------------------------------------
-BeginClass(EntityFamiliar)
-
--- void	EntityFamiliar:PickEnemyTarget(float MaxDistance, int FrameInterval = 13, int Flags = 0, Vector ConeDir = Vector.Zero, float ConeAngle = 15)
--- * Flags: A combination of the following flags (none of these are set by default)
---       1: Allow switching to a better target even if we already have one
---       2: Don't prioritize enemies that are close to our owner
---       4: Prioritize enemies with higher HP
---       8: Prioritize enemies with lower HP
---       16: Give lower priority to our current target (this makes us more likely to switch between targets)
--- * ConeDir: If ~= Vector.Zero, searches for targets in a cone pointing in this direction
--- * ConeAngle: If ConeDir ~= Vector.Zero, sets the half angle of the search cone in degrees (45 results in a search angle of 90 degrees)
-local Entity_Familiar_PickEnemyTarget = META0.PickEnemyTarget
-function META:PickEnemyTarget(maxDist, frameInterval, flags, coneDir, coneAngle)
-	Entity_Familiar_PickEnemyTarget(self, maxDist, frameInterval or 13, flags or 0, coneDir or Vector(0, 0), coneAngle or 15)
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityNPC)
 
 -- void	EntityNPC:MakeChampion(int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false)
@@ -877,14 +858,6 @@ function META:FullCharge(id, force)
 	return Entity_Player_FullCharge(self, id or 0, force) ~= 0
 end
 
--- void EntityPlayer:CheckFamiliar(int FamiliarVariant, int TargetCount, RNG rng, ItemConfig::Item SourceItem = nil, int FamiliarSubType = -1)
--- * SourceItem: The item this type of familiar was created by
--- * FamiliarSubType: The subtype of the familiar to check (-1 matches any subtype)
-local Entity_Player_CheckFamiliar = META0.CheckFamiliar
-function META:CheckFamiliar(variant, count, rng, sourceItem, subType)
-	Entity_Player_CheckFamiliar(self, variant, count, rng, sourceItem, subType or -1)
-end
-
 -- void	EntityPlayer:UseActiveItem(CollectibleType Item, UseFlag UseFlags = 0, ActiveSlot Slot = -1, int CustomVarData = 0)
 --   or
 -- void	EntityPlayer:UseActiveItem(CollectibleType Item, boolean ShowAnim = false, boolean KeepActiveItem = false, boolean AllowNonMainPlayer = true, boolean ToAddCostume = false, ActiveSlot Slot = -1, int CustomVarData = 0)
@@ -979,15 +952,6 @@ end
 local Entity_Player_FireTechXLaser = META0.FireTechXLaser
 function META:FireTechXLaser(pos, dir, radius, source, mul)
 	return Entity_Player_FireTechXLaser(self, pos, dir, radius, source, mul or 1)
-end
-
--- void EntityPlayer:QueueItem(ItemConfig::Item Item, int Charge = 0, boolean Touched = false, bool Golden = false, int VarData = 0)
-local Entity_Player_QueueItem = META0.QueueItem
-function META:QueueItem(item, charge, touched, golden, varData)
-	local flags = 0
-	if touched then flags = flags + 1 end
-	if golden then flags = flags + 2 end
-	Entity_Player_QueueItem(self, item, charge or 0, flags, varData or 0)
 end
 
 -- TearParams EntityPlayer:GetTearHitParams(WeaponType WeaponType, float DamageScale = 1, int TearDisplacement = 1, Entity Source = nil)

@@ -12,6 +12,7 @@ PosVelMT.__index = function(self, key)
 	return PosVelMT[key]
 end 
 
+local PosVelT = ffi.metatype("struct PosVel", PosVelMT)
 
 PosVel = setmetatable({}, {
     __class = PosVelMT,

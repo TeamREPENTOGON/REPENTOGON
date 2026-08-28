@@ -109,22 +109,29 @@ ffichecks.optstring = function(var, opt)
 	end
 	return opt
 end
-ffichecks.optcdata = function(var, ctype, opt)
+ffichecks.optcdata = function(var, cdata, opt)
 	if ffichecks.iscdata(var, cdata) then
 		return var
 	end
 	return opt
 end
+ffichecks.wrap = function(ptr, ctype)
+    if ptr == nil or ffi.cast("void*", ptr) == nil then return nil end
+    local o = ctype()
+    ffi.copy(o, ptr, ffi.sizeof(ctype))
+    return o
+end
 
 
 pcall(require("ffi.Vector"))
 pcall(require("ffi.GridEntityDesc"))
+pcall(require("ffi.KColor"))
 pcall(require("ffi.Color"))
 pcall(require("ffi.PosVel"))
 pcall(require("ffi.BitSet128"))
 pcall(require("ffi.RNG"))
 pcall(require("ffi.ItemConfigCostume"))
-pcall(require("ffi.Seeds"))
+pcall(require("ffi.ItemConfigItem"))
 
 ffi = nil
 ffidll = nil

@@ -1,6 +1,7 @@
 ﻿#include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 #include "../LuaWeapon.h"
 #include "../LuaEntitySaveState.h"
@@ -2232,7 +2233,7 @@ LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
 
 LUA_FUNCTION(Lua_PlayerIsItemCostumeVisible) {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	ItemConfig_Item* item = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 2, lua::Metatables::ITEM, "Item");
+	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
 	int layerID = 0;
 	if (lua_type(L, 3) == LUA_TSTRING) {
 		const char* layerName = luaL_checkstring(L, 3);
@@ -2356,7 +2357,7 @@ LUA_FUNCTION(Lua_EntityPlayer_CheckFamiliarEx) {
 	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, lua::metatables::RngMT);
 	ItemConfig_Item* configPtr = nullptr;
 	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		configPtr = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, 5, lua::Metatables::ITEM, "ItemConfigItem");
+		configPtr = lua::GetCData<ItemConfig_Item*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::ITEM], "ItemConfigItem");
 	}
 	
 	int subtype = (int)luaL_optinteger(L, 6, -1);
@@ -2853,17 +2854,14 @@ LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
 
 	// This lua function was made before we knew the footprint colors were ColorMod and not KColor.
 	// Just gonna maintain the current output structure for the sake of the REP+ migration.
-	KColor color(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
-
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = color;
-
+	KColor* toLua = LuaKColor::Place(L);
+	*toLua = KColor(footprintColor->_offset[0], footprintColor->_offset[1], footprintColor->_offset[2], footprintColor->_tint[3]);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	KColor* color = lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	KColor* color = LuaKColor::Get(L, 2);
 	// Allegedly this boolean is "rightfoot" but I'm not so sure that's true based on the decomp of SetFootprintColor. Seems more like a "force"-type deal.
 	bool unk = lua::luaL_optboolean(L, 3, false);
 	player->SetFootprintColor(*color, unk);
@@ -3949,12 +3947,60 @@ LUA_FUNCTION(Lua_PlayerGetMaxInventorySize) {
 	return 1;
 };
 
+LUA_FUNCTION(Lua_PlayerAddCostume) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+	bool itemStateOnly = lua::luaL_checkboolean(L, 3);
+
+	player->AddCostume(item, itemStateOnly);
+	return 0;
+};
+
+LUA_FUNCTION(Lua_PlayerCheckFamiliar) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int familiarVariant = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int targetCount = (unsigned int)luaL_checkinteger(L, 3);
+	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+	ItemConfig_Item* item = nullptr;
+	if (lua_type(L, 5) == LUA_TCDATA) {
+		item = lua::GetCData<ItemConfig_Item*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+	}
+	int familiarSubType = (int)luaL_optinteger(L, 6, -1);
+
+	player->CheckFamiliar(familiarVariant, targetCount, rng, item, familiarSubType);
+	return 0;
+};
+
+
+LUA_FUNCTION(Lua_PlayerQueueItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+	int charge = (int)luaL_optinteger(L, 3, 0);
+	bool touched = lua::luaL_optboolean(L, 4, false);
+	bool golden = lua::luaL_optboolean(L, 5, false);
+	int varData = (int)luaL_optinteger(L, 6, 0);
+
+	int flags = 0;
+	if (touched)
+		flags = flags + 1;
+	if (golden)
+		flags = flags + 2;
+
+	player->QueueItem(item, charge, flags, varData);
+	return 0;
+};
+
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "QueueItem", Lua_PlayerQueueItem },
+		{ "AddCostume", Lua_PlayerAddCostume },
+		{ "CheckFamiliar", Lua_PlayerCheckFamiliar },
 		{ "AddBlueFlies", Lua_AddBlueFlies },
 		{ "AddBlueSpider", Lua_AddBlueSpider },
 		{ "AddFriendlyDip", Lua_AddFriendlyDip },

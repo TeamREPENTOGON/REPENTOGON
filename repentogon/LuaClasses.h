@@ -7,9 +7,19 @@ struct LuaClassName;
 template<typename T, auto MT>
 struct LuabridgeType
 {
+    static bool IsUnderlyingType(lua_State* L, int index)
+    {
+        return lua_type(L, index) == LUA_TUSERDATA;
+    }
+
     static T* Get(lua_State* L, int index)
     {
         return lua::GetLuabridgeUserdata<T*>(L, index, MT, LuaClassName<T>::Name);
+    }
+
+    static T* GetOpt(lua_State* L, int index)
+    {
+        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
     }
 
     static T* Place(lua_State* L)
@@ -31,9 +41,19 @@ struct LuabridgeType
 template<typename T, auto ID, auto PTR_ID>
 struct CDataType
 {
+    static bool IsUnderlyingType(lua_State* L, int index)
+    {
+        return lua_type(L, index) == LUA_TCDATA;
+    }
+
     static T* Get(lua_State* L, int index)
     {
         return lua::GetCData<T*>(L, index, lua::ffi::CData[ID], LuaClassName<T>::Name);
+    }
+
+    static T* GetOpt(lua_State* L, int index)
+    {
+        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
     }
 
     static T* Place(lua_State* L)
@@ -92,6 +112,12 @@ template<>
 struct LuaClassName<Font>
 {
     static constexpr const char* Name = "Font";
+};
+
+template<>
+struct LuaClassName<FontSettings>
+{
+    static constexpr const char* Name = "FontRenderSettings";
 };
 
 template<>
@@ -352,13 +378,14 @@ struct LuaClassName<GridEntityDesc>
     static constexpr const char* Name = "GridEntityDesc";
 };
 
-using LuaVector = LuabridgeType<Vector, lua::Metatables::VECTOR>;
-using LuaPosVel = LuabridgeType<PosVel, lua::Metatables::POS_VEL>;
-using LuaBitSet128 = LuabridgeType<BitSet128, lua::Metatables::BITSET_128>;
-using LuaKColor = LuabridgeType<KColor, lua::Metatables::KCOLOR>;
+using LuaVector = CDataType<Vector, lua::ffi::CDataID::VECTOR, lua::ffi::CDataID::VECTOR_PTR>;
+using LuaPosVel = CDataType<PosVel, lua::ffi::CDataID::POS_VEL, lua::ffi::CDataID::POS_VEL_PTR>;
+using LuaBitSet128 = CDataType<BitSet128, lua::ffi::CDataID::BITSET_128, lua::ffi::CDataID::BITSET_128_PTR>;
+using LuaKColor = CDataType<KColor, lua::ffi::CDataID::KCOLOR, lua::ffi::CDataID::KCOLOR_PTR>;
 using LuaColor = LuabridgeType<ColorMod, lua::Metatables::COLOR>;
 using LuaSprite = LuabridgeType<ANM2, lua::Metatables::SPRITE>;
 using LuaFont = LuabridgeType<Font, lua::Metatables::FONT>;
+using LuaFontRenderSettings = LuabridgeType<FontSettings, lua::Metatables::FONTRENDERSETTINGS>;
 using LuaRNG = LuabridgeType<RNG, lua::Metatables::RNG>;
 using LuaMusicManager = LuabridgeType<Music, lua::Metatables::MUSIC_MANAGER>;
 using LuaSFXManager = LuabridgeType<SoundEffects, lua::Metatables::SFX_MANAGER>;

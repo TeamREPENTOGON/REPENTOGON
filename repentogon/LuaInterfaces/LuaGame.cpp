@@ -1,6 +1,45 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
+
+#pragma region DLL export
+
+extern "C" {
+	__declspec(dllexport) void L_Game_Fadein(Game* game, float speed, bool showIcon, KColor* color) {
+		game->FadeIn(speed, showIcon, color);
+	}
+
+	__declspec(dllexport) void L_Game_Fadeout(Game* game, float speed, int fadeoutTarget, KColor* color) {
+		game->FadeOut(speed, fadeoutTarget, color);
+	}
+}
+
+#pragma endregion
+
+LUA_FUNCTION(Lua_GameFadein)
+{
+	Game* game = LuaGame::Get(L, 1);
+	float speed = (float)luaL_checknumber(L, 2);
+	bool showIcon = !lua_isnoneornil(L, 3) ? lua_toboolean(L, 3) : true;
+	KColor* optColor = LuaKColor::GetOpt(L, 4);
+	KColor color = optColor ? *optColor : KColor(0, 0, 0, 1);
+
+	L_Game_Fadein(game, speed, showIcon, &color);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameFadeout)
+{
+	Game* game = LuaGame::Get(L, 1);
+	float speed = (float)luaL_checknumber(L, 2);
+	int fadeoutTarget = (int)luaL_checkinteger(L, 3);
+	KColor* optColor = LuaKColor::GetOpt(L, 4);
+	KColor color = optColor ? *optColor : KColor(0, 0, 0, 1);
+
+	L_Game_Fadeout(game, speed, fadeoutTarget, &color);
+	return 0;
+}
 
 LUA_FUNCTION(Lua_GameBombDamage)
 {
@@ -14,7 +53,7 @@ LUA_FUNCTION(Lua_GameBombDamage)
 		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
 	}
 	BitSet128 tearFlags;
-	if (lua_type(L, 7) == LUA_TUSERDATA) {
+	if (lua_type(L, 7) == LUA_TCDATA) {
 		tearFlags = *lua::GetCData<BitSet128*>(L, 7, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 8, eDamageFlag::DAMAGE_EXPLOSION);
@@ -32,7 +71,7 @@ LUA_FUNCTION(Lua_GameBombExplosionEffects)
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float damage = (float)luaL_checknumber(L, 3);
 	BitSet128 tearFlags;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
+	if (lua_type(L, 4) == LUA_TCDATA) {
 		tearFlags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 	}
 	ColorMod color;
@@ -585,6 +624,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "Fadein", Lua_GameFadein },
+		{ "Fadeout", Lua_GameFadeout },
 		{ "BombDamage", Lua_GameBombDamage },
 		{ "BombExplosionEffects", Lua_GameBombExplosionEffects },
 		{ "BombTearflagEffects", Lua_GameBombTearflagEffects },

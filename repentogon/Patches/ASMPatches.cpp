@@ -321,6 +321,7 @@ void PerformASMPatches() {
 
 	// LuaJIT
 	ASMPatchLuaJIT();
+	ASMPatchLuaGC();
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {

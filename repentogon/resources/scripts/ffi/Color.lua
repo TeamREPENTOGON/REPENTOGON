@@ -13,6 +13,7 @@ struct Color {
     float BO;
 };
 typedef struct Color* ColorPtr;
+typedef struct const Color ConstColor;
 ]]
 
 local ColorMT = {

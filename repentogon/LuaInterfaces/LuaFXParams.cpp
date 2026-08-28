@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_GetFXParams) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
@@ -68,7 +69,7 @@ LUA_FUNCTION(Lua_GetWaterColor)
 LUA_FUNCTION(Lua_SetWaterColor)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetWaterColor() = *lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetWaterColor() = *LuaKColor::Get(L, 2);
 
 	return 0;
 }
@@ -85,7 +86,7 @@ LUA_FUNCTION(Lua_GetWaterColorMultiplier)
 LUA_FUNCTION(Lua_SetWaterColorMultiplier)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetWaterColorMultiplier() = *lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetWaterColorMultiplier() = *LuaKColor::Get(L, 2);
 
 	return 0;
 }
@@ -117,7 +118,7 @@ LUA_FUNCTION(Lua_GetShadowColor)
 LUA_FUNCTION(Lua_SetShadowColor)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetShadowColor() = *lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetShadowColor() = *LuaKColor::Get(L, 2);
 
 	return 0;
 }
@@ -134,7 +135,7 @@ LUA_FUNCTION(Lua_GetLightColor)
 LUA_FUNCTION(Lua_SetLightColor)
 {
 	FXParams* params = *lua::GetRawUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetLightColor() = *lua::GetLuabridgeUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetLightColor() = *LuaKColor::Get(L, 2);
 
 	return 0;
 }

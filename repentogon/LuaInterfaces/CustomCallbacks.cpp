@@ -4644,9 +4644,9 @@ HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int cou
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(count)
 			.call(1);
 	}
@@ -4661,8 +4661,8 @@ HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> v
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
-			.push(item, lua::Metatables::ITEM)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.call(1);
 	}
 }
@@ -4678,8 +4678,8 @@ HOOK_METHOD(TemporaryEffects, AddEffect, (TemporaryEffect* effect, bool addCostu
 				lua::LuaStackProtector protector(L);
 				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 				lua::LuaCaller(L).push(callbackid)
-					.push(effect->_item, lua::Metatables::ITEM)
-					.push(effect->_item, lua::Metatables::ITEM)
+					.push(effect->_item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+					.push(effect->_item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 					.call(1);
 			}
 		} else if (this->_player) {
@@ -4689,9 +4689,9 @@ HOOK_METHOD(TemporaryEffects, AddEffect, (TemporaryEffect* effect, bool addCostu
 				lua::LuaStackProtector protector(L);
 				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 				lua::LuaCaller(L).push(callbackid)
-					.push(effect->_item, lua::Metatables::ITEM)
+					.push(effect->_item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 					.push(this->_player, lua::Metatables::ENTITY_PLAYER)
-					.push(effect->_item, lua::Metatables::ITEM)
+					.push(effect->_item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 					.push(addCostume)
 					.push(count)
 					.call(1);
@@ -5367,15 +5367,15 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.push(item, lua::Metatables::ITEM)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
 			.call(1);
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				auto* retItem = lua::GetLuabridgeUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
+				auto* retItem = lua::GetCData<ItemConfig_Item*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
 				if (retItem) {
 					item = retItem;
 				}
@@ -5398,8 +5398,8 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.push(item, lua::Metatables::ITEM)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(itemStateOnly)
 			.call(1);
@@ -5420,8 +5420,8 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
-			.push(item, lua::Metatables::ITEM)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -5444,8 +5444,8 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
-			.push(item, lua::Metatables::ITEM)
-			.push(item, lua::Metatables::ITEM)
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
+			.push(item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR])
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 

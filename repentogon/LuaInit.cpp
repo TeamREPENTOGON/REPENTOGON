@@ -245,6 +245,7 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC] = lua_ctypeid(L, "GridEntityDesc");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR] = lua_ctypeid(L, "GridEntityDescPtr");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR] = lua_ctypeid(L, "Color");
+	lua::ffi::CData[lua::ffi::CDataID::CONST_COLOR] = lua_ctypeid(L, "ConstColor");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR_PTR] = lua_ctypeid(L, "ColorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::BITSET_128] = lua_ctypeid(L, "BitSet128");
 	lua::ffi::CData[lua::ffi::CDataID::BITSET_128_PTR] = lua_ctypeid(L, "BitSet128Ptr");
@@ -252,6 +253,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::POS_VEL_PTR] = lua_ctypeid(L, "PosVelPtr");
 	lua::ffi::CData[lua::ffi::CDataID::COSTUME] = lua_ctypeid(L, "ItemConfigCostume");
 	lua::ffi::CData[lua::ffi::CDataID::COSTUME_PTR] = lua_ctypeid(L, "ItemConfigCostumePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM] = lua_ctypeid(L, "ItemConfigItem");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR] = lua_ctypeid(L, "ItemConfigItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::KCOLOR] = lua_ctypeid(L, "KColor");
+	lua::ffi::CData[lua::ffi::CDataID::KCOLOR_PTR] = lua_ctypeid(L, "KColorPtr");
 
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);

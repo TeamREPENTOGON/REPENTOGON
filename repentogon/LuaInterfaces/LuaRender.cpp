@@ -18,6 +18,7 @@
 #include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.hpp"
 #include "../Utils/ShaderUtils.hpp"
+#include "../LuaClasses.h"
 
 using LuaRender::LuaImage;
 using LuaRender::LuaTransformer;
@@ -271,7 +272,7 @@ LUA_FUNCTION(Lua_Image_Render)
 	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
 	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
 	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	KColor color = *LuaKColor::Get(L, 4);
 	ColorMod colorMod =
 		lua_isnoneornil(L, 5)
 		? ColorMod()
@@ -294,7 +295,7 @@ LUA_FUNCTION(Lua_Image_RenderWithShader)
 	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
 	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
 	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *lua::GetLuabridgeUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	KColor color = *LuaKColor::Get(L, 4);
 	LuaShader::Userdata* luaShader = LuaShader::GetUserdata(L, 5);
 	if (!lua_istable(L, 6))
 	{
@@ -455,7 +456,7 @@ LUA_FUNCTION(lua_Transformer_Render) {
 	LuaImage* image = LuaRender::GetLuaImage(L, 2);
 	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
 	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod = *LuaKColor::Get(L, 5);
 
 	Transformation trans;
 	trans._input = image->image;
@@ -475,10 +476,10 @@ LUA_FUNCTION(lua_Transformer_RenderEx) {
 	LuaImage* image = LuaRender::GetLuaImage(L, 2);
 	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
 	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
-	KColor mod = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod2 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod3 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	KColor mod4 = *lua::GetLuabridgeUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	KColor mod = *LuaKColor::Get(L, 5);
+	KColor mod2 = *LuaKColor::Get(L, 5);
+	KColor mod3 = *LuaKColor::Get(L, 5);
+	KColor mod4 = *LuaKColor::Get(L, 5);
 
 	Transformation trans;
 	trans._input = image->image;
