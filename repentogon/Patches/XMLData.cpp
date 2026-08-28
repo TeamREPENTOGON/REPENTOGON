@@ -3613,6 +3613,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	}
 	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
 	//RegisterGenericCustomXML("poopoo.xml", "poopoos", "poo");
+	RegisterGenericCustomXML("edenhair.xml", "edenhair", "hair");
 	LoadCustomXMLs(); //this loads custom xmls into their respective xmldata structures
 
 	ItemConfigEx::ParseXMLData();

@@ -34,4 +34,5 @@ struct EntityConfig depends (EntityConfig_Entity, EntityConfig_Player, EntityCon
     }}
 
     vector_EntityConfig_Boss _bosses : 0x20;
+    vector_string _edenHair : 0x2c;
 } : 0x50;

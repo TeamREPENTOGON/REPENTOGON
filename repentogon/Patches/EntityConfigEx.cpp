@@ -77,6 +77,17 @@ void ParseXMLData() {
 			}
 		}
 	}
+
+	if (XMLStuff.CustomXMLData.count("edenhair.xml")) {
+		if (auto* data = XMLStuff.CustomXMLData["edenhair.xml"]) {
+			for (auto& [_, node] : data->nodes) {
+				std::string path = node["root"] + node["gfx"];
+				if (!path.empty()) {
+					g_Manager->GetEntityConfig()->_edenHair.push_back(path);
+				}
+			}
+		}
+	}
 }
 
 PlayerEx* GetPlayerEx(int playertype) {

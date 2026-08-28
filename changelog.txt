@@ -19,6 +19,7 @@ Added:
 * Added `EvaluateStatStage.PRE_FLAT_DAMAGE`, a new stage for MC_EVALUATE_STAT that runs before (most) flat damage ups are applied, right after the "character multiplier".
 * Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml
 * Added support for babies.xml in mod content folders! You can finally add co-op babies!
+* Added new content xml: "edenhair.xml"
 /newline/
 Modified:
 * "Extra debug render" feature now also visualizes "FindInCapsule".

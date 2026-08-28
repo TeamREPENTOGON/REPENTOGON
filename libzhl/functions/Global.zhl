@@ -62,6 +62,7 @@ typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
+typedef std::vector<std::string> vector_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
 typedef std::vector<ModManager_CharacterMap> vector_ModManager_CharacterMap;
 typedef std::list<ModReference> std_list_ModReference;
