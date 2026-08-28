@@ -70,6 +70,9 @@ static __fastcall int Entity_Familiar::GetRandomWisp(RNG& rng);
 "558bec6aff68????????64a1????????5081ec80000000a1????????33c58945??535657508d45??64a3????????8bf9":
 __thiscall void Entity_Familiar::RestoreState(FamiliarData* saveData);
 
+"558bec81ecbc000000a1????????33c58945??535657":
+__thiscall void Entity_Familiar::ai_buddy_inbox();
+
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return &this->_player; }

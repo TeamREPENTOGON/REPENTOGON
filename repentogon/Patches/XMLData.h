@@ -876,6 +876,7 @@ struct XMLData {
 	XMLGeneric* FxParamData = new XMLGeneric(0);
 	XMLGeneric* FxRayData = new XMLGeneric(0);
 	XMLBossColor* BossColorData = new XMLBossColor();
+	XMLGeneric* BabyData = new XMLGeneric(0);
 
 	unordered_map<string, XMLGeneric*> CustomXMLData;
 
@@ -1513,7 +1514,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
+			vector<string> paths = { dir + "\\resources-repentogon\\" + xml.filename, dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					targetresource = path;
@@ -1629,6 +1630,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["fxlayers"] = 26;
 	xmlnodeenum["fxparams"] = 27;
 	xmlnodeenum["fxrays"] = 28;
+	xmlnodeenum["babies"] = 29;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 

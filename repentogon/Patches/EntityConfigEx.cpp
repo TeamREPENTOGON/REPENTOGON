@@ -7,6 +7,8 @@
 #include "IsaacRepentance.h"
 #include "EvaluateStats.h"
 #include "XMLData.h"
+#include "AchievementsStuff.h"
+#include "HookSystem.h"
 
 namespace EntityConfigEx {
 
@@ -51,6 +53,21 @@ void PlayerEx::Parse(const EntityConfig_Player& player, const XMLAttributes& xml
 }
 
 void ParseXMLData() {
+	// Parse achievement IDs for modded babies.
+	// It is safe to put these here.
+	for (EntityConfig_Baby& baby : *g_Manager->GetEntityConfig()->GetBabies()) {
+		std::string sourceid = XMLStuff.BabyData->GetAttributeById(baby.id, "sourceid");
+		if (!sourceid.empty() && sourceid != "BaseGame") {
+			std::string achievement = XMLStuff.BabyData->GetAttributeById(baby.id, "achievement");
+			if (!achievement.empty()) {
+				baby.achievementID = GetAchievementIdByName(achievement);
+			}
+		}
+		if (baby.achievementID <= 0) {
+			baby.achievementID = -1;
+		}
+	}
+
 	const auto& players = *g_Manager->GetEntityConfig()->GetPlayers();
 	s_Players.resize(players.size());
 	for (const auto& player : players) {
@@ -67,6 +84,43 @@ PlayerEx* GetPlayerEx(int playertype) {
 		return &s_Players[playertype];
 	}
 	return nullptr;
+}
+
+// Reimplement co-op baby selection to ensure cooperation with modded babies
+EntityConfig_Baby* GetRandomBaby(uint32_t seed) {
+	auto& babies = *g_Manager->GetEntityConfig()->GetBabies();
+	std::vector<EntityConfig_Baby*> candidates;
+	for (EntityConfig_Baby& baby : babies) {
+		if (baby.achievementID <= 0 || g_Manager->GetPersistentGameData()->Unlocked(baby.achievementID)) {
+			candidates.push_back(&baby);
+		}
+	}
+	if (candidates.empty()) {
+		// Sanity fallback that shouldn't happen
+		return &babies.at((babies.size() > 71) ? 71 : 0);
+	}
+	RNG rng;
+	rng.SetSeed((seed > 0u) ? seed : 1u, 35);
+	return candidates[rng.RandomInt(candidates.size())];
+}
+
+HOOK_METHOD(Entity_Familiar, ai_buddy_inbox, () -> void) {
+	if (this->_subtype == 0) {
+		EntityConfig_Baby* baby = GetRandomBaby(this->_initSeed ^ g_Game->_dungeonPlacementSeed);
+		for (int i = 0; i < this->_sprite.GetLayerCount(); i++) {
+			this->_sprite.ReplaceSpritesheet(i, baby->gfx);
+		}
+		this->_sprite.LoadGraphics(true);
+		this->_subtype = 1;
+	}
+	super();
+}
+
+HOOK_METHOD(PlayerManager, SpawnCoPlayerBaby, (int babyID) -> Entity_Player*) {
+	if (babyID < 0) {
+		babyID = GetRandomBaby(Isaac::genrand_int32())->id;
+	}
+	return super(babyID);
 }
 
 }  // EntityConfigEx

@@ -2758,6 +2758,7 @@ XMLNode = {
 	FXLAYER = 32,
 	FXPARAM = 33,
 	FXRAY = 34,
+	BABY = 35,
 }
 
 AutocompleteType = {
@@ -3080,6 +3081,7 @@ EvaluateStatStage = {
 	FLAT_TEARS = 1,
 	DAMAGE_UP = 2,
 	FLAT_DAMAGE = 3,
+	PRE_FLAT_DAMAGE = 4,
 }
 
 StringTableCategory = {
