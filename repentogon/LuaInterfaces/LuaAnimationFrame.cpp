@@ -68,7 +68,7 @@ LUA_FUNCTION(Lua_AnimationFrameIsInterpolated)
 LUA_FUNCTION(Lua_AnimationFrameGetColor)
 {
 	AnimationFrame* animationFrame = *lua::GetRawUserdata<AnimationFrame**>(L, 1, lua::metatables::AnimationFrameMT);
-	lua::luabridge::UserdataValue<ColorMod>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_COLOR), animationFrame->color);
+	lua::ffi::pushCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::CONST_COLOR], animationFrame->color);
 	return 1;
 }
 

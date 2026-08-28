@@ -62,14 +62,12 @@ local getkeys = {
     Name = repentogon.L_ItemConfigItem_GetName,
 	Description = repentogon.L_ItemConfigItem_GetDesc,
 	GfxFileName = repentogon.L_ItemConfigItem_GetGfxFileName,
-    --Tags = repentogon.L_ItemConfigItem_GetTags,
 }
 
 local setkeys = {
     Name = repentogon.L_ItemConfigItem_SetName,
 	Description = repentogon.L_ItemConfigItem_SetDesc,
 	GfxFileName = repentogon.L_ItemConfigItem_SetGfxFileName,
-    --Tags = repentogon.L_ItemConfigItem_SetTags,
 }
 
 local ItemConfigItemMT
@@ -133,7 +131,6 @@ ItemConfigItemMT = {
     end,
     HasTags = function(self, tags)
         ffichecks.checknumber(2, tags)
-        --if tags & repentogon.L_ItemConfigItem_GetTags(self) ~= 0 then 
         if tags & self.Tags ~= 0 then
             return true
         end
