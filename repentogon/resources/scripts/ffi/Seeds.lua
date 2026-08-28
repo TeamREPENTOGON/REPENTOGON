@@ -31,7 +31,10 @@ void L_Seeds_SetStageSeed(struct Seeds*, int, unsigned int);
 ]]
 local GAME_START_SEED_NOT_SET_ERR = "Error: Game Start Seed was not set!"
 local seedStringBuffer = ffi.new("char[9]")
+
 -- Lua dictionary lookup will be faster. For optimization, all eastereggs here should be exactly 9 characters.
+-- That way all we have to do on our end before doing a lookup is adding padding to input strings and trimming
+-- them.
 local SEED_EFFECT_BY_CODE = {
     ["SL0W 4ME2"] = 1,
     ["HART BEAT"] = 2,
