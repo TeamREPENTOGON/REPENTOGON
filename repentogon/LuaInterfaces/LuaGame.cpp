@@ -1,6 +1,45 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
+
+#pragma region DLL export
+
+extern "C" {
+	__declspec(dllexport) void L_Game_Fadein(Game* game, float speed, bool showIcon, KColor* color) {
+		game->FadeIn(speed, showIcon, color);
+	}
+
+	__declspec(dllexport) void L_Game_Fadeout(Game* game, float speed, int fadeoutTarget, KColor* color) {
+		game->FadeOut(speed, fadeoutTarget, color);
+	}
+}
+
+#pragma endregion
+
+LUA_FUNCTION(Lua_GameFadein)
+{
+	Game* game = LuaGame::Get(L, 1);
+	float speed = (float)luaL_checknumber(L, 2);
+	bool showIcon = !lua_isnoneornil(L, 3) ? lua_toboolean(L, 3) : true;
+	KColor* optColor = LuaKColor::GetOpt(L, 4);
+	KColor color = optColor ? *optColor : KColor(0, 0, 0, 1);
+
+	L_Game_Fadein(game, speed, showIcon, &color);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameFadeout)
+{
+	Game* game = LuaGame::Get(L, 1);
+	float speed = (float)luaL_checknumber(L, 2);
+	int fadeoutTarget = (int)luaL_checkinteger(L, 3);
+	KColor* optColor = LuaKColor::GetOpt(L, 4);
+	KColor color = optColor ? *optColor : KColor(0, 0, 0, 1);
+
+	L_Game_Fadeout(game, speed, fadeoutTarget, &color);
+	return 0;
+}
 
 LUA_FUNCTION(Lua_GameBombDamage)
 {
@@ -585,6 +624,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "Fadein", Lua_GameFadein },
+		{ "Fadeout", Lua_GameFadeout },
 		{ "BombDamage", Lua_GameBombDamage },
 		{ "BombExplosionEffects", Lua_GameBombExplosionEffects },
 		{ "BombTearflagEffects", Lua_GameBombTearflagEffects },

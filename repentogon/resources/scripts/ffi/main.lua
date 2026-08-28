@@ -64,6 +64,11 @@ ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, v
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
 ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
 ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+ffichecks.checkinteger = function(index, val, level) 
+	if math.type(val) ~= "integer" then
+		error(string.format("bad argument #%d to '%s' (integer expected, got %s)", index, debug_getinfo(level or 2).name, type(val)), (level or 2)+1)
+	end
+end
 
 ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
 	if not (ffichecks.iscdata(var, ctype) or (allownil and ffichecks.isnil(var))) then
@@ -120,9 +125,11 @@ end
 
 pcall(require("ffi.Vector"))
 pcall(require("ffi.GridEntityDesc"))
+pcall(require("ffi.KColor"))
 pcall(require("ffi.Color"))
 pcall(require("ffi.PosVel"))
 pcall(require("ffi.BitSet128"))
+pcall(require("ffi.RNG"))
 pcall(require("ffi.ItemConfigCostume"))
 pcall(require("ffi.ItemConfigItem"))
 

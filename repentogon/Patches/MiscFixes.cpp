@@ -73,14 +73,6 @@ HOOK_METHOD(Font, Load, (char const* path, bool unusedIsLoading) -> void) {
 	super(path, unusedIsLoading);
 }
 
-
-// Fix crash if nil is passed as the string from luaside.
-HOOK_METHOD(Font, DrawString, (const char* str, Vector pos, Vector scale, KColor* color, FontSettings* settings) -> void) {
-	if (str) {
-		super(str, pos, scale, color, settings);
-	}
-}
-
 //Fix nasty behaviour when calling getgrident with a negative value
 HOOK_METHOD(Room, GetGridEntity, (unsigned int idx) -> GridEntity*) {
 	if (idx < 0) {
