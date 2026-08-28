@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_HUDShowItemText)
 		char* mainString = const_cast<char*>(luaL_checkstring(L, 2));
 		char* secondaryString = const_cast<char*>(luaL_checkstring(L, 3));
 		bool isCurseDisplay = lua::luaL_optboolean(L, 4, false);
-		bool stackUpText = lua::luaL_optboolean(L, 5, true);
+		bool stackUpText = lua::luaL_optboolean(L, 5, false);
 
 		if (stackUpText)
 			hud->ShowStackedItemTextCustomUTF8(mainString, secondaryString, false, isCurseDisplay);

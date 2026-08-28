@@ -2,12 +2,12 @@ ffi.cdef[[
 struct ItemConfigCostume
 {
     unsigned int ID;
-    char _pad_anm2_path[0x18];
+    padding char [0x18]; // Anm2Path
     unsigned int Priority;
     bool HasOverlay;
     bool IsFlying;
     bool HasSkinAlt;
-    char _pad;
+    padding char;
     int SkinColor;
     bool OverwriteColor;
 };

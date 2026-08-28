@@ -3,9 +3,9 @@ struct ItemConfigItem
 {
     int Type;
     int ID;
-    char _pad_name[0x18]; // Name
-    char _pad_desc[0x18]; // Desc
-    char _pad_gfx_file_name[0x18]; // GfxFileName
+    padding char [0x18]; // Name
+    padding char [0x18]; // Desc
+    padding char [0x18]; // GfxFileName
     int AchievementID;
     int CacheFlags;
     int AddMaxHearts;
@@ -27,7 +27,7 @@ struct ItemConfigItem
     bool Hidden;
     bool PersistentEffect;
     bool ClearEffectsOnRemove;
-    char _pad[0x2];
+    padding char [0x2];
     uint64_t Tags;
     int Quality;
     int CraftingQuality;
