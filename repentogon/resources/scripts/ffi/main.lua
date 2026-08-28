@@ -124,6 +124,7 @@ pcall(require("ffi.PosVel"))
 pcall(require("ffi.BitSet128"))
 pcall(require("ffi.RNG"))
 pcall(require("ffi.ItemConfigCostume"))
+pcall(require("ffi.Seeds"))
 
 ffi = nil
 ffidll = nil
