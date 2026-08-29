@@ -22,13 +22,15 @@ LUA_FUNCTION(Lua_EntityLaserCalculateEndPoint)
 LUA_FUNCTION(Lua_EntityLaserGetEndPoint)
 {
 	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], laser->_endPoint);
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	*toLua = laser->_endPoint;
+	
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityLaserGetEndPointVar) {
 	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdataPtr(L, &laser->_endPoint, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
+	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], laser->_endPoint);
 	return 1;
 }
 
