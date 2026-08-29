@@ -50,6 +50,17 @@ void PlayerEx::Parse(const EntityConfig_Player& player, const XMLAttributes& xml
 			noShake_ = false;
 		}
 	}
+
+	bloodyTears_ = player._id == PLAYER_ESAU || player._id == PLAYER_JUDAS_B || player._id == PLAYER_LAZARUS2_B || player._id == PLAYER_BETHANY_B;
+
+	if (xml.count("bloodytears")) {
+		const std::string value = xml.at("bloodytears");
+		if (value == "true") {
+			bloodyTears_ = true;
+		} else if (value == "false") {
+			bloodyTears_ = false;
+		}
+	}
 }
 
 void ParseXMLData() {

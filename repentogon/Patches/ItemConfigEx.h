@@ -12,11 +12,25 @@
 
 using namespace EvaluateStats;
 
+namespace CustomTags {
+	static const std::string NO_METRONOME = "nometronome";
+	static const std::string NO_EXPANSION_PACK = "noexpansionpack";
+	static const std::string BLOODY_TEARS = "bloodytears";
+	static const std::string BLOODY_TEARS_EFFECT = "bloodytearseffect";
+	static const std::string DISABLE_BLOODY_TEARS = "disablebloodytears";
+	static const std::string DISABLE_BLOODY_TEARS_EFFECT = "disablebloodytearseffect";
+
+	static const std::string REVIVE = "revive";
+	static const std::string REVIVE_EFFECT = "reviveeffect";
+	static const std::string HIDDEN_REVIVE = "hiddenrevive";
+	static const std::string CHANCE_REVIVE = "chancerevive";
+}
+
 namespace ItemConfigEx {
 
 using ItemsStats = std::unordered_map<ItemStat, float>;
 using StatsLookup = std::unordered_map<ItemStat, std::set<int>>;
-using ReviveLookup = std::set<int>;
+using CustomTagsLookup = std::unordered_map<std::string, std::set<int>>;
 
 
 // Add a CustomCache to execute whenever CACHE_ALL runs.
@@ -113,13 +127,10 @@ private:
 	void RefreshStats();
 
 	virtual StatsLookup& GetStatsLookup() = 0;
-	virtual ReviveLookup& GetReviveLookup() = 0;
+	virtual CustomTagsLookup& GetCustomTagsLookup() = 0;
 
 protected:
 	int id_ = -1;
-
-	bool noMetronome_ = false;
-	bool noExpansionPack_ = false;
 
 	bool customRevive_ = false;  // Grants a revive when item/trinket is held.
 	bool customReviveEffect_ = false;  // Grants a revive when the corresponding TemporaryEffect is applied.
@@ -136,11 +147,11 @@ protected:
 class CollectibleEx : public ItemEx {
 public:
 	inline bool NoMetronome() const {
-		return noMetronome_;
+		return customTags_.count(CustomTags::NO_METRONOME);
 	}
 
 	inline bool NoExpansionPack() const {
-		return noExpansionPack_;
+		return customTags_.count(CustomTags::NO_EXPANSION_PACK);
 	}
 
 	void Parse(const ItemConfig_Item& item, const XMLAttributes& xml) override;
@@ -155,7 +166,7 @@ public:
 
 private:
 	StatsLookup& GetStatsLookup() override;
-	ReviveLookup& GetReviveLookup() override;
+	CustomTagsLookup& GetCustomTagsLookup() override;
 
 	std::string customActiveGfx_;
 };
@@ -169,7 +180,7 @@ public:
 
 private:
 	StatsLookup& GetStatsLookup() override;
-	ReviveLookup& GetReviveLookup() override;
+	CustomTagsLookup& GetCustomTagsLookup() override;
 };
 
 
@@ -189,7 +200,7 @@ private:
 	}
 
 	StatsLookup& GetStatsLookup() override;
-	ReviveLookup& GetReviveLookup() override;
+	CustomTagsLookup& GetCustomTagsLookup() override;
 };
 
 
@@ -213,6 +224,19 @@ float CalculateStatChange(Entity_Player* player, const ItemStat stat);
 
 // Calculates the total ex stat multiplier from the player's items. Do not use for non-multiplier stats.
 float CalculateStatMult(Entity_Player* player, const ItemStat stat);
+
+const std::set<int>& GetCollectiblesWithCustomTag(const std::string& tag);
+const std::set<int>& GetTrinketsWithCustomTag(const std::string& tag);
+const std::set<int>& GetNullItemsWithCustomTag(const std::string& tag);
+
+bool HasCollectibleWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers);
+bool HasCollectibleEffectWithCustomTag(Entity_Player* player, const std::string& tag);
+bool HasTrinketWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers);
+bool HasTrinketEffectWithCustomTag(Entity_Player* player, const std::string& tag);
+bool HasNullEffectWithCustomTag(Entity_Player* player, const std::string& tag);
+bool HasItemWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers);
+bool HasEffectWithCustomTag(Entity_Player* player, const std::string& tag);
+bool HasItemOrEffectWithCustomTag(Entity_Player* player, const std::string& tag);
 
 // Returns the # of custom extra life items/effects that the player has.
 int GetCustomReviveCount(Entity_Player* player, const bool includeHidden);

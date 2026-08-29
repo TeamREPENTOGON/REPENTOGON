@@ -27,3 +27,5 @@ void ASMPatchPlayerDeathSoundSoulOfLazarus();
 void ASMPatchPlayerDeathSoundLost();
 void ASMPatchPlayerDeathSoundAstralProjection();
 void ASMPatchPlayerLostSoulSkipPeePuddle();
+void ASMPatchGetTearParamsAddBloodyTears();
+void ASMPatchGetTearParamsDisableBloodyTears();

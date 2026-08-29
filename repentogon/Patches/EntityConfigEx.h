@@ -24,11 +24,13 @@ public:
 	}
 
 	inline bool NoShake() const { return noShake_; }
+	inline bool HasBloodyTears() const { return bloodyTears_; }
 
 private:
 	std::unordered_map<EvaluateStats::PlayerStat, float> statModifiers_;
 
 	bool noShake_ = false;
+	bool bloodyTears_ = false;
 };
 
 // Scans XMLData to initialize all of the Ex configs.

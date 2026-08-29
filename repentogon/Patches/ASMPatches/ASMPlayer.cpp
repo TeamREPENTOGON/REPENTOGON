@@ -3,7 +3,8 @@
 
 #include "ASMPlayer.h"
 #include "../XMLData.h"
-
+#include "../EntityConfigEx.h"
+#include "../ItemConfigEx.h"
 #include "ASMDefinition.h"
 
 thread_local CheckFamiliarStorage familiarsStorage;
@@ -208,4 +209,53 @@ void ASMPatchPlayerLostSoulSkipPeePuddle() {
 
 	sASMPatcher.PatchAt(addr, &patch);
 
+}
+
+bool __stdcall ShouldAddBloodyTears(Entity_Player* player) {
+	if (auto* ex = EntityConfigEx::GetPlayerEx(player->GetPlayerType())) {
+		if (ex->HasBloodyTears()) {
+			return true;
+		}
+	}
+	return ItemConfigEx::HasItemWithCustomTag(player, CustomTags::BLOODY_TEARS, false)
+		|| ItemConfigEx::HasEffectWithCustomTag(player, CustomTags::BLOODY_TEARS_EFFECT);
+}
+void ASMPatchGetTearParamsAddBloodyTears() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GetTearHitParams_BloodyTears);
+	const int bloodyJumpOffset = *(int*)((char*)addr + 0xB) + 0xF;
+
+	ZHL::Log("[REPENTOGON] Patching GetTearHitParams for adding bloody tears at %p\n", addr);
+
+	ASMPatch patch;
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	patch//.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore instructions that we overwrote
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // Entity_Player*
+		.AddInternalCall(ShouldAddBloodyTears)
+		.AddBytes("\x84\xC0")  // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + bloodyJumpOffset)
+		.AddRelativeJump((char*)addr + 0x2A);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+bool __stdcall ShouldDisableBloodyTears(Entity_Player* player) {
+	// The chocolate milk check was overwritten by the patch.
+	return player->HasCollectible(COLLECTIBLE_CHOCOLATE_MILK, false)
+		|| ItemConfigEx::HasItemWithCustomTag(player, CustomTags::DISABLE_BLOODY_TEARS, false)
+		|| ItemConfigEx::HasEffectWithCustomTag(player, CustomTags::DISABLE_BLOODY_TEARS_EFFECT);
+}
+void ASMPatchGetTearParamsDisableBloodyTears() {
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::GetTearHitParams_BloodyTearsDisabled);
+
+	ZHL::Log("[REPENTOGON] Patching GetTearHitParams for overriding bloody tears at %p\n", addr);
+
+	ASMPatch patch;
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // Entity_Player*
+		.AddInternalCall(ShouldDisableBloodyTears)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xB);
+	sASMPatcher.PatchAt(addr, &patch);
 }
