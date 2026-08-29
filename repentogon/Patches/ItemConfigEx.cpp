@@ -281,6 +281,12 @@ void ItemEx::RefreshCustomTags() {
 	customReviveHidden_ = customTags_.count(CustomTags::HIDDEN_REVIVE);
 	customChanceRevive_ = customTags_.count(CustomTags::CHANCE_REVIVE);
 
+	if (customTags_.count(CustomTags::FLYING) || customTags_.count(CustomTags::FLYING_EFFECT)) {
+		if (ItemConfig_Item* item = GetItemConfigItem()) {
+			item->cacheFlags |= CACHE_FLYING;
+		}
+	}
+
 	auto& customTagsLookup = GetCustomTagsLookup();
 	for (auto& [k, v] : customTagsLookup) {
 		v.erase(id_);

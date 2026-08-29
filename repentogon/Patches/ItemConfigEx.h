@@ -19,6 +19,8 @@ namespace CustomTags {
 	static const std::string BLOODY_TEARS_EFFECT = "bloodytearseffect";
 	static const std::string DISABLE_BLOODY_TEARS = "disablebloodytears";
 	static const std::string DISABLE_BLOODY_TEARS_EFFECT = "disablebloodytearseffect";
+	static const std::string FLYING = "flying";
+	static const std::string FLYING_EFFECT = "flyingeffect";
 
 	static const std::string REVIVE = "revive";
 	static const std::string REVIVE_EFFECT = "reviveeffect";

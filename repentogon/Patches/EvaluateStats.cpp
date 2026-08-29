@@ -294,6 +294,8 @@ HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlag) -> 
 	} else if (cacheFlag & CACHE_FLYING) {
 		if (const EntityConfigEx::PlayerEx* ex = EntityConfigEx::GetPlayerEx(player->_playerType); ex && ex->ForceFlying()) {
 			player->_canFly = true;
+		} else if (ItemConfigEx::HasItemWithCustomTag(player, CustomTags::FLYING, false) || ItemConfigEx::HasEffectWithCustomTag(player, CustomTags::FLYING_EFFECT)) {
+			player->_canFly = true;
 		}
 	}
 	super(player, cacheFlag);
