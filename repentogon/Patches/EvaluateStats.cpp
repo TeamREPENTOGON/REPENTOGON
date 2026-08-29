@@ -291,6 +291,10 @@ HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlag) -> 
 	if (cacheFlag & CACHE_LUCK) {
 		ApplyPlayerStatModifier(player->GetPlayerType(), PlayerStat::LUCK_MODIFIER, player->_luck);
 		player->_luck += ItemConfigEx::CalculateStatChange(player, ItemStat::LUCK_UP);
+	} else if (cacheFlag & CACHE_FLYING) {
+		if (const EntityConfigEx::PlayerEx* ex = EntityConfigEx::GetPlayerEx(player->_playerType); ex && ex->ForceFlying()) {
+			player->_canFly = true;
+		}
 	}
 	super(player, cacheFlag);
 }

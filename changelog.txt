@@ -19,6 +19,7 @@ Added:
 	- tearsmultiplier="?"
 	- tearsmodifier="?" (This is a replacement for "firedelaymodifier", essentially the same but without the old quirk where negative values would be multiplied by ~0.687.)
 	- bloodytears="true"
+	- flying="true"
 * New items.xml customtags: "bloodytears", "bloodytearseffect", "disablebloodytears", "disablebloodytearseffect"
 * Added `EvaluateStatStage.PRE_FLAT_DAMAGE`, a new stage for MC_EVALUATE_STAT that runs before (most) flat damage ups are applied, right after the "character multiplier".
 * Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml

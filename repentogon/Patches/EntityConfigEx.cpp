@@ -61,6 +61,8 @@ void PlayerEx::Parse(const EntityConfig_Player& player, const XMLAttributes& xml
 			bloodyTears_ = false;
 		}
 	}
+
+	forceFlying_ = xml.count("flying") && xml.at("flying") == "true";
 }
 
 void ParseXMLData() {
