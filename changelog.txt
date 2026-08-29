@@ -14,7 +14,7 @@ Added:
 	- XMLData.GetCurrentMod()
 		Gets xmldata node of the running mod metadata
 	- Added more "untranslatedname" / "untranslateddescription" / etc attributes where localization strings are used.
-* players.xml attributes
+* New players.xml attributes:
 	- damagemultiplier="?"
 	- tearsmultiplier="?"
 	- tearsmodifier="?" (This is a replacement for "firedelaymodifier", essentially the same but without the old quirk where negative values would be multiplied by ~0.687.)
@@ -24,6 +24,7 @@ Added:
 * Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml
 * Added support for babies.xml in mod content folders! You can finally add co-op babies!
 * Added new content xml: "edenhair.xml"
+* Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 /newline/
 Modified:
 * "Extra debug render" feature now also visualizes "FindInCapsule".

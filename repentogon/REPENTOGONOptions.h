@@ -44,6 +44,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["ConsoleKeyScancode"] = "41";	// the backtick
 			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
+			ini["VanillaTweaks"]["BlockUnknownDevices"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -84,6 +85,7 @@ struct REPENTOGONOptions {
 		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
 		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
 		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
+		blockUnknownDevices = defstoi(ini["VanillaTweaks"]["BlockUnknownDevices"], 0);
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -130,6 +132,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "ConsoleKeyScancode", consoleKeyScancode);
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
+		Write("VanillaTweaks", "BlockUnknownDevices", blockUnknownDevices);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -167,6 +170,7 @@ struct REPENTOGONOptions {
 	int consoleKeyMode;	// 0 is virtualkey (default), 1 is scancode (layout-independent)
 	int consoleKeyVK;
 	int consoleKeyScancode;
+	bool blockUnknownDevices;
 };
 
 extern REPENTOGONOptions repentogonOptions;

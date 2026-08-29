@@ -454,6 +454,9 @@ I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES fl
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT, u8"Disable exit prompt")
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you try to quit the game, restoring original behavior.")
 
+I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES, u8"Block \"Unknown Device\" Controllers (Requires Reconnect/Restart)")
+I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK, u8"Prevents controllers from being used by the game if they cannot be properly identified. Can help prevent issues where a controller or other device creates one or more ghost \"Unknown Devices\" that cause controls to get messed up.")
+
 I(OPT_SAVE_MANAGEMENT, u8"Save Management")
 I(OPT_SAVE_MANAGEMENT_DISABLED_REASON, u8"Some options/utilities are disabled since a save file is currently opened.")
 I(OPT_SAVE_MANAGEMENT_ENABLE_SAVE_SYNCING, u8"Automatically sync progress between vanilla and REPENTOGON")
