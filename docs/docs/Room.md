@@ -20,7 +20,6 @@ Now returns a usable class. Describes the corners of an L-room shape (as divided
 
 ___
 ### Screen·Wrap·Position () {: aria-label='Functions' }
-[ ](#){: .alldlc .tooltip .badge }
 #### [Vector](Vector.md) ScreenWrapPosition ( [Vector](Vector.md) Pos, [Vector](Vector.md) TopLeft, [Vector](Vector.md) BottomRight )
 Override for base function that allows adjusting the boundaries more granularly.
 
