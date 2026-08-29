@@ -19,6 +19,12 @@ ___
 Now returns a usable class. Describes the corners of an L-room shape (as divided horizontally into two rectangles), in grid coordinates.
 
 ___
+### Screen·Wrap·Position () {: aria-label='Functions' }
+[ ](#){: .alldlc .tooltip .badge }
+#### [Vector](Vector.md) ScreenWrapPosition ( [Vector](Vector.md) Pos, [Vector](Vector.md) TopLeft, [Vector](Vector.md) BottomRight )
+Override for base function that allows adjusting the boundaries more granularly.
+
+__
 ### SetRedHeartDamage () {: aria-label='Modified Functions' }
 #### void SetRedHeartDamage ( boolean Value = true ) {: .copyable aria-label='Modified Functions' }
 Now accepts an optional parameter, allowing the flag to be set to false.
