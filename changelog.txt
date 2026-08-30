@@ -1,4 +1,4 @@
-v1.1.2e -
+v1.1.2h -
 Added:
 * Isaac:
 	- OpenConsole()
@@ -40,6 +40,7 @@ Fixes:
 	- Fixed being unable to add modded items to itempools.xml if they use a localization string name.
 	- Fixed specifying a tainted counterpart using bskinparent in players.xml not working properly for localized names.
 	- Content .anm2 file animations that use the character's name will now fall back to the English name (or raw string) if an animation matching the current localized name is not found.
+* Fixed modded filemap generation setting sometimes failing to load files
 /newline/
 /versionseparator/
 v1.1.2g -
