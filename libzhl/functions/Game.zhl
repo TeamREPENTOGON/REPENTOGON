@@ -268,6 +268,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _enterDoor : 0x1831c;
 	uint32_t _dungeonPlacementSeed : 0x1832c;
 	uint32_t _greedModeWave : 0x18334;
+	uint32_t _greedWaveRngSeeds[12] : 0x18338;
 	unsigned int _levelStateFlags : 0x1839c;
 	vector_EntitySaveState _myosotisPickups : 0x183a4;
 	uint32_t _greedModeTreasureRoomIdx : 0x18370;

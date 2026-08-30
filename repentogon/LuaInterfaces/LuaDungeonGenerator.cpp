@@ -246,7 +246,7 @@ DungeonGeneratorRoom* DungeonGenerator::TryPlaceRoom(XY& base_coords, int doors,
 }
 
 DungeonGeneratorRoom* DungeonGenerator::PlaceOffGridRoom(int off_grid_index, RoomConfig_Room* room_config) {
-	if (room_config == nullptr) {
+	if (room_config == nullptr || off_grid_index < -20 || off_grid_index > -1) {
 		return nullptr;
 	}
 
@@ -259,6 +259,10 @@ DungeonGeneratorRoom* DungeonGenerator::PlaceOffGridRoom(int off_grid_index, Roo
 }
 
 DungeonGeneratorRoom* DungeonGenerator::PlaceOffGridRoom(int off_grid_index, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode) {
+	if (off_grid_index < -20 || off_grid_index > -1) {
+		return nullptr;
+	}
+
 	int index = -off_grid_index - 1;
 
 	this->off_grid_rooms[index] = DungeonGeneratorRoom(-1, -1, -1, 0, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, subtype, mode);
@@ -298,7 +302,17 @@ DungeonGeneratorRoom* DungeonGenerator::TryPlaceDefaultStartingRoom(int doors) {
 }
 
 void DungeonGenerator::InitializeDefaultOffGridRooms() {
-	this->PlaceOffGridRoom(
+	auto PlaceIfEmpty = [this](int off_grid_index, auto&&... args) {
+		int index = -off_grid_index - 1;
+		if (index >= 0 && index < 20) {
+			if (this->off_grid_rooms[index].room != nullptr || this->off_grid_rooms[index].type != -1) {
+				return;
+			}
+		}
+		this->PlaceOffGridRoom(off_grid_index, std::forward<decltype(args)>(args)...);
+	};
+
+	PlaceIfEmpty(
 		ROOM_ERROR_IDX,
 		STB_SPECIAL_ROOMS,
 		ROOM_ERROR,
@@ -311,7 +325,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 		-1
 	);
 
-	this->PlaceOffGridRoom(
+	PlaceIfEmpty(
 		ROOM_DUNGEON_IDX,
 		STB_SPECIAL_ROOMS,
 		ROOM_DUNGEON,
@@ -324,7 +338,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 		-1
 	);
 
-	this->PlaceOffGridRoom(
+	PlaceIfEmpty(
 		ROOM_BLACK_MARKET_IDX,
 		STB_SPECIAL_ROOMS,
 		ROOM_BLACK_MARKET,
@@ -355,7 +369,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 
 		int shop_subtype = rng->RandomInt(a) + rng->RandomInt(b);
 
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_SECRET_SHOP_IDX,
 			STB_SPECIAL_ROOMS,
 			ROOM_SHOP,
@@ -370,7 +384,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 	}
 	
 	if (this->generation_type != HOME) {
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_ANGEL_SHOP_IDX,
 			STB_SPECIAL_ROOMS,
 			ROOM_ANGEL,
@@ -388,7 +402,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 	{
 		Entity_Player* player_with_broken_shovel = g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_BROKEN_SHOVEL_1, nullptr, false);
 		if (player_with_broken_shovel == nullptr) {
-			this->PlaceOffGridRoom(
+			PlaceIfEmpty(
 				ROOM_BOSSRUSH_IDX,
 				STB_SPECIAL_ROOMS,
 				ROOM_BOSSRUSH,
@@ -402,13 +416,13 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 			);
 		}
 		else {
-			this->PlaceOffGridRoom(
+			PlaceIfEmpty(
 				ROOM_BOSSRUSH_IDX,
 				g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(STB_SPECIAL_ROOMS, ROOM_BOSSRUSH, 0, -1)
 			);
 		}
 
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_MEGA_SATAN_IDX,
 			STB_SPECIAL_ROOMS,
 			ROOM_BOSS,
@@ -421,7 +435,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 			-1
 		);
 
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_BLUE_WOOM_IDX,
 			STB_BLUE_WOMB,
 			ROOM_DEFAULT,
@@ -436,7 +450,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 
 		if (this->level->IsAltPath()) {
 			if ((this->level->_stage == STAGE4_1 && (this->level->GetCurses() & 2) != 0) || this->level->_stage == STAGE4_2) {
-				this->PlaceOffGridRoom(
+				PlaceIfEmpty(
 					ROOM_SECRET_EXIT_IDX,
 					this->level->GetStageID(),
 					ROOM_BOSS,
@@ -452,7 +466,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 		}
 	}
 	else if (this->generation_type == BLUE_WOMB) {
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_THE_VOID_IDX,
 			STB_BLUE_WOMB,
 			ROOM_DEFAULT,
@@ -465,7 +479,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 			-1
 		);
 
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_MEGA_SATAN_IDX,
 			STB_SPECIAL_ROOMS,
 			ROOM_BOSS,
@@ -479,7 +493,7 @@ void DungeonGenerator::InitializeDefaultOffGridRooms() {
 		);
 	}
 	else if (this->generation_type == HOME) {
-		this->PlaceOffGridRoom(
+		PlaceIfEmpty(
 			ROOM_SECRET_EXIT_IDX,
 			g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(STB_HOME, ROOM_DUNGEON, 666, -1)
 		);
@@ -565,6 +579,10 @@ void DungeonGenerator::Reset() {
 	{
 		this->rooms[i] = DungeonGeneratorRoom();
 	}
+	for (size_t i = 0; i < 20; i++)
+	{
+		this->off_grid_rooms[i] = DungeonGeneratorRoom();
+	}
 }
 
 bool DungeonGenerator::PlaceRoomsInFloor() {
@@ -601,12 +619,8 @@ bool DungeonGenerator::PlaceRoomsInFloor() {
         }
     }
 
-    RoomDescriptor* lil_portal_room = this->level->GetRoomByIdx(ROOM_LIL_PORTAL_IDX, -1);
-    if (lil_portal_room == nullptr || lil_portal_room->Data == nullptr) {
-        this->level->initialize_lil_portal_room();
-    }
-
     g_Game->_lastBossRoomListIdx = this->final_boss_index;
+
     return true;
 }
 
@@ -624,6 +638,8 @@ bool DungeonGenerator::Generate() {
         g_Game->_greedModeTreasureRoomIdx = gold_idx;
     }
 
+    this->InitializeDefaultOffGridRooms();
+
     bool could_place_rooms = PlaceRoomsInFloor();
     if (!could_place_rooms) {
         KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
@@ -632,11 +648,10 @@ bool DungeonGenerator::Generate() {
     else {
         if (g_Game->IsGreedMode() || this->generation_type == GREED) {
             g_Game->_greedModeWave = 0;
-            uint32_t* wave_seeds = (uint32_t*)((char*)g_Game + 0x18338);
             for (int i = 0; i < 12; i++) {
                 uint32_t seed = this->rng->Next();
                 if (seed == 0) seed = 1;
-                wave_seeds[i] = seed;
+                g_Game->_greedWaveRngSeeds[i] = seed;
             }
         }
         else if (this->level->IsAltPath()) {
@@ -648,8 +663,8 @@ bool DungeonGenerator::Generate() {
             }
         }
 
-        g_Game->_gameStateFlags &= ~(1 << 30); // STATE_DONATION_SLOT_BLOWN
-        g_Game->_gameStateFlags &= ~(1 << 31); // STATE_SHOPKEEPER_KILLED
+        g_Game->_gameStateFlags &= ~(1ULL << STATE_DONATION_SLOT_BLOWN);
+        g_Game->_gameStateFlags &= ~(1ULL << STATE_SHOPKEEPER_KILLED);
 
         g_Game->_donationModGreed = 0;
     }
