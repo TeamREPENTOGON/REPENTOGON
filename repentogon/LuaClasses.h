@@ -27,7 +27,7 @@ struct LuabridgeType
         return lua::luabridge::UserdataValue<T>::place(L, lua::GetMetatableKey(MT));
     }
 
-    static void Push(lua_State* L, T value)
+    static void Push(lua_State* L, const T& value)
     {
         lua::luabridge::UserdataValue<T>::push(L, lua::GetMetatableKey(MT), value);
     }
@@ -61,7 +61,7 @@ struct CDataType
         return lua::ffi::placeCdata<T>(L, lua::ffi::CData[ID]);
     }
 
-    static void Push(lua_State* L, T value)
+    static void Push(lua_State* L, const T& value)
     {
         lua::ffi::pushCdata(L, lua::ffi::CData[ID], value);
     }
@@ -382,7 +382,7 @@ using LuaVector = CDataType<Vector, lua::ffi::CDataID::VECTOR, lua::ffi::CDataID
 using LuaPosVel = CDataType<PosVel, lua::ffi::CDataID::POS_VEL, lua::ffi::CDataID::POS_VEL_PTR>;
 using LuaBitSet128 = CDataType<BitSet128, lua::ffi::CDataID::BITSET_128, lua::ffi::CDataID::BITSET_128_PTR>;
 using LuaKColor = CDataType<KColor, lua::ffi::CDataID::KCOLOR, lua::ffi::CDataID::KCOLOR_PTR>;
-using LuaColor = LuabridgeType<ColorMod, lua::Metatables::COLOR>;
+using LuaColor = CDataType<ColorMod, lua::ffi::CDataID::COLOR, lua::ffi::CDataID::COLOR_PTR>;
 using LuaSprite = LuabridgeType<ANM2, lua::Metatables::SPRITE>;
 using LuaFont = LuabridgeType<Font, lua::Metatables::FONT>;
 using LuaFontRenderSettings = LuabridgeType<FontSettings, lua::Metatables::FONTRENDERSETTINGS>;

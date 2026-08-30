@@ -7,6 +7,7 @@
 
 #include "../XMLData.h"
 #include "../../LuaInit.h"
+#include "../../LuaClasses.h"
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
@@ -1577,7 +1578,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(sprite, lua::Metatables::SPRITE)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(&colorCopy, lua::Metatables::COLOR)
+			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 
 		if (!result) {
@@ -1604,7 +1605,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(sprite, lua::Metatables::SPRITE)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(&colorCopy, lua::Metatables::COLOR)
+			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 	}
 }

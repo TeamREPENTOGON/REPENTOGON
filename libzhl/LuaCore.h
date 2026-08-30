@@ -407,6 +407,20 @@ namespace lua {
             ++_n;
             return *this;
         }
+        template<typename LuaClass, typename T>
+        LuaCaller& pushClass(const T& value)
+        {
+            LuaClass::Push(_L, value);
+            ++_n;
+            return *this;
+        }
+        template<typename LuaClass, typename T>
+        LuaCaller& pushClassPtr(T* value)
+        {
+            LuaClass::PushPtr(_L, value);
+            ++_n;
+            return *this;
+        }
 
         void* pushUd(size_t size, const char* mt);
 
