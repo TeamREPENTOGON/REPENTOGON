@@ -619,6 +619,12 @@ LUA_FUNCTION(Lua_SetDifficulty) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetSeeds) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::SEEDS], game->_seedEffects);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -674,6 +680,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetGenericPrompt", Lua_GetGenericPrompt},
 		{ "ChainLightning", Lua_ChainLightning},
 		{ "IsStartingFromState", Lua_IsStartingFromState},
+		{ "GetSeeds", Lua_GetSeeds},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

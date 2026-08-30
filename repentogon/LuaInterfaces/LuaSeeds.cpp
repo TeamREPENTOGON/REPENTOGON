@@ -51,23 +51,6 @@ MOD_EXPORT bool L_Seeds_IsSeedComboBanned(unsigned int effect1, unsigned int eff
 	return Seeds::IsSeedComboBanned(effect1, effect2);
 }
 
-LUA_FUNCTION(Lua_SetStageSeed) {
-	Seeds* seeds = lua::GetLuabridgeUserdata<Seeds*>(L, 1, lua::Metatables::SEEDS, "Seeds");
-	const int stage = (int)luaL_checkinteger(L, 2);
-	unsigned int seed = (unsigned int)luaL_checkinteger(L, 3);
-
-	if (seed == 0) seed = 1;
-
-	if (stage >= 0 && stage <= LevelStage::NUM_STAGES - 1) {
-		seeds->_stageSeeds[stage] = seed;
-	}
-	else {
-		luaL_argerror(L, 2, "Invalid LevelStage (must be between 0 and 13)");
-	}
-	
-	return 0;
-}
-
 MOD_EXPORT void L_Seeds_SetStageSeed(Seeds* seeds, int stage, unsigned int seed) {
 	if (seed == 0) seed = 1;
 
@@ -91,17 +74,4 @@ MOD_EXPORT int L_Seeds_String2Seed(char* seed) {
 
 MOD_EXPORT void L_Seeds_SetStartSeed(Seeds* seeds, unsigned int seed) {
 	seeds->set_start_seed(seed);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "SetStageSeed", Lua_SetStageSeed },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterFunctions(_state, lua::Metatables::SEEDS, functions);
 }
