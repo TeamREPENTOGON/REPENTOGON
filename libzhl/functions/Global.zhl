@@ -1750,6 +1750,12 @@ enum LevelStateFlag
         NUM_STATE_FLAGS = 24
 };
 
+enum GameStateFlag
+{
+        STATE_DONATION_SLOT_BLOWN = 30,
+        STATE_SHOPKEEPER_KILLED = 31,
+};
+
 enum TrinketType
 {
         TRINKET_NULL = 0,
