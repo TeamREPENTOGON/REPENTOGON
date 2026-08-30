@@ -5375,8 +5375,8 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 			.call(1);
 
 		if (!result) {
-			if (lua_isuserdata(L, -1)) {
-				auto* retItem = lua::GetCData<ItemConfig_Item*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+			if (LuaItem::IsUnderlyingType(L, -1)) {
+				auto* retItem = LuaItem::Get(L, -1);
 				if (retItem) {
 					item = retItem;
 				}
