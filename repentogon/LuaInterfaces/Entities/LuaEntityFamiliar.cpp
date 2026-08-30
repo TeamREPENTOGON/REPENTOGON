@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/FamiliarTags.h"
 #include "../../Patches/EntityPlus.h"
@@ -30,8 +31,7 @@ LUA_FUNCTION(Lua_FamiliarFireProjectile)
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	lua::luabridge::UserdataPtr::push(L, fam->FireProjectile(*dir, false), lua::Metatables::ENTITY_TEAR);
-
+	LuaEntityTear::PushPtr(L, fam->FireProjectile(*dir, false));
 	return 1;
 }
 

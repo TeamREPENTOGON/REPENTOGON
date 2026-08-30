@@ -1270,7 +1270,7 @@ void __stdcall RunTearDeathCallback(Entity_Tear* tear) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(tear->_variant)
-			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.pushClassPtr<LuaEntityTear>(tear)
 			.call(1);
 	}
 

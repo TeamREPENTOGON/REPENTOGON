@@ -1,3 +1,5 @@
+#pragma once
+
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
@@ -61,6 +63,67 @@ struct LuabridgeType
     {
         lua::luabridge::UserdataPtr::push(L, ptr, lua::GetMetatableKey(CONST_MT));
     }
+
+    static constexpr lua::LuaClassInterface Interface
+    {
+        [](lua_State* L, const void* value)
+        {
+            Push(L, *static_cast<const T*>(value));
+        },
+
+        [](lua_State* L, void* value)
+        {
+            PushPtr(L, static_cast<T*>(value));
+        }
+    };
+};
+
+template<typename T, const char*& MT>
+struct LuabridgeRGONType
+{
+    static bool IsUnderlyingType(lua_State* L, int index)
+    {
+        return lua_type(L, index) == LUA_TUSERDATA;
+    }
+
+    static T* Get(lua_State* L, int index)
+    {
+        luaL_checkudata(L, index, MT);
+        return lua::UserdataToData<T*>(lua_touserdata(L, index));
+    }
+
+    static T* GetOpt(lua_State* L, int index)
+    {
+        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
+    }
+
+    static T* Place(lua_State* L)
+    {
+        return lua::luabridge::UserdataValue<T>::place(L, MT);
+    }
+
+    static void Push(lua_State* L, const T& value)
+    {
+        lua::luabridge::UserdataValue<T>::push(L, (void*)MT, value);
+    }
+
+    static void PushPtr(lua_State* L, T* ptr)
+    {
+        lua::luabridge::UserdataPtr::push(L, ptr, MT);
+    }
+
+    static constexpr lua::LuaClassInterface Interface
+    {
+        [](lua_State* L, const void* value)
+        {
+            Push(L, *static_cast<const T*>(value));
+        },
+
+        [](lua_State* L, void* value)
+        {
+            PushPtr(L, static_cast<T*>(value));
+        }
+    };
 };
 
 template<typename T, auto ID, auto PTR_ID>
@@ -95,6 +158,19 @@ struct CDataType
     {
         lua::ffi::pushCdataPtr(L, ptr, lua::ffi::CData[PTR_ID]);
     }
+
+    static constexpr lua::LuaClassInterface Interface
+    {
+        [](lua_State* L, const void* value)
+        {
+            Push(L, *static_cast<const T*>(value));
+        },
+
+        [](lua_State* L, void* value)
+        {
+            PushPtr(L, static_cast<T*>(value));
+        }
+    };
 };
 
 template<>
@@ -454,3 +530,7 @@ using LuaGridEntityPoop = LuabridgeType<GridEntity_Poop, lua::Metatables::GRID_E
 using LuaGridEntityDoor = LuabridgeType<GridEntity_Door, lua::Metatables::GRID_ENTITY_DOOR, lua::Metatables::CONST_GRID_ENTITY_DOOR>;
 using LuaGridEntityPressurePlate = LuabridgeType<GridEntity_PressurePlate, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, lua::Metatables::CONST_GRID_ENTITY_PRESSURE_PLATE>;
 using LuaGridEntityDesc = LuabridgeType<GridEntityDesc, lua::Metatables::GRID_ENTITY_DESC, lua::Metatables::CONST_GRID_ENTITY_DESC>;
+
+// RGON Classes
+
+using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
