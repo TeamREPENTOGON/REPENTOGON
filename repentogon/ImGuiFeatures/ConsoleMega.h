@@ -584,8 +584,8 @@ struct ConsoleMega : ImGuiWindowObject {
                     const ConsoleCommand* command = GetCommandByName(commandName);
                     if (command == nullptr) return 0;
 
-                    if (command == prev_command) {
-                        goto end_of_autocompl_switchcase;   //yeeees, i knoooow, goto bad blah blah blah
+                    if (command == prev_command && command->autocompleteType!=CUSTOM) {
+                        goto end_of_autocompl_switchcase;  
                     }
                     else {
                         entries.clear();    //clear the entries queue before working with it
