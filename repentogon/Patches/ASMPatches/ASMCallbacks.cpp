@@ -1575,7 +1575,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.push(playerType)
 			.push(playerType)
-			.push(sprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(sprite)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.pushClassPtr<LuaColor>(&colorCopy)
@@ -1602,7 +1602,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 		lua::LuaCaller(L).push(postcallbackid)
 			.push(playerType)
 			.push(playerType)
-			.push(sprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(sprite)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(&scaleCopy, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.pushClassPtr<LuaColor>(&colorCopy)
@@ -1675,8 +1675,8 @@ bool RunPreRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2* 
 			.push(playerType)
 			.push(playerType)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(vanillaSprite, lua::Metatables::SPRITE)
-			.push(customSprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(vanillaSprite)
+			.pushClassPtr<LuaSprite>(customSprite)
 			.push(renderCustomBackground)
 			.call(1);
 
@@ -1702,7 +1702,7 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 				.push(playerType)
 				.push(playerType)
 				.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-				.push(vanillaSprite, lua::Metatables::SPRITE)
+				.pushClassPtr<LuaSprite>(vanillaSprite)
 				.call(1);
 		}
 	}
@@ -1719,8 +1719,8 @@ void RunPostRenderCharacterMenuCallback(const int playerType, Vector* pos, ANM2*
 			.push(playerType)
 			.push(playerType)
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(vanillaSprite, lua::Metatables::SPRITE)
-			.push(customSprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(vanillaSprite)
+			.pushClassPtr<LuaSprite>(customSprite)
 			.push(renderCustomBackground)
 			.call(1);
 	}

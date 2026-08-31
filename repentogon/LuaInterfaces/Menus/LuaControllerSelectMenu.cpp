@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_ControllerSelectMenu_GetControllerSelectSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_ControllerSelectMenu_GetControllerSelectSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::ControllerSelectMenuMT);
 	Menu_ControllerSelect* menu = g_MenuManager->GetMenuControllerSelect();
 	ANM2* anm2 = menu->GetControllerSelectSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_CollectionMenu_GetCollectionMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_CollectionMenu_GetCollectionMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	ANM2* anm2 = menu->GetCollectionMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_CollectionMenu_GetDeathScreenSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	ANM2* anm2 = menu->GetDeathScreenSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

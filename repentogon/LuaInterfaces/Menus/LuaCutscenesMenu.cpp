@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_CutscenesMenu_GetCutscenesMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_CutscenesMenu_GetCutscenesMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CutscenesMenuMT);
 	Menu_Cutscenes* menu = g_MenuManager->GetMenuCutscenes();
 	ANM2* anm2 = menu->GetCutscenesMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

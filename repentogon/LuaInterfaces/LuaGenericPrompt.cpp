@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_GenericPromptConstructor) {
@@ -66,7 +67,7 @@ LUA_FUNCTION(Lua_GenericPromptDisappear) {
 
 LUA_FUNCTION(Lua_GenericPromptGetSprite) {
 	auto* genericPrompt = lua::GetRawUserdata<GenericPrompt*>(L, 1, lua::metatables::GenericPromptMT);
-	lua::luabridge::UserdataPtr::push(L, &genericPrompt->_anm2, lua::Metatables::SPRITE);
+	LuaSprite::PushPtr(L, &genericPrompt->_anm2);
 	return 1;
 }
 

@@ -2,6 +2,7 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 
@@ -600,7 +601,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedMenuBackgroundSprite)
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player->_moddedMenuBackgroundANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, player->_moddedMenuBackgroundANM2);
 	}
 	return 1;
 }
@@ -612,7 +613,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedPortraitSprite)
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player->_moddedMenuPortraitANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, player->_moddedMenuPortraitANM2);
 	}
 	return 1;
 }
@@ -624,7 +625,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedGameOverSprite)
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player->_moddedGameOverANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, player->_moddedGameOverANM2);
 	}
 	return 1;
 }
@@ -636,7 +637,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedCoopMenuSprite)
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player->_moddedCoopMenuANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, player->_moddedCoopMenuANM2);
 	}
 	return 1;
 }
@@ -648,7 +649,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetModdedControlsSprite)
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, player->_moddedControlsANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, player->_moddedControlsANM2);
 	}
 	return 1;
 }

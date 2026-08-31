@@ -1,6 +1,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 
 LUA_FUNCTION(Lua_EntityToEntitySlot) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -159,7 +160,7 @@ LUA_FUNCTION(Lua_SetTouch) {
 LUA_FUNCTION(Lua_GetPrizeSprite) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	lua::luabridge::UserdataPtr::push(L, &slot->_prizeAnm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &slot->_prizeAnm2);
 	return 1;
 }
 

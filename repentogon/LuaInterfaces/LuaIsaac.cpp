@@ -583,7 +583,7 @@ LUA_FUNCTION(Lua_IsaacShowErrorDialog) {
 }
 
 LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
-	lua::luabridge::UserdataPtr::push(L, &g_Manager->_cursorSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &g_Manager->_cursorSprite);
 	return 1;
 }
 
@@ -953,7 +953,7 @@ LUA_FUNCTION(Lua_IsaacIsShuttingDown) {
 }
 
 LUA_FUNCTION(Lua_IsaacGetButtonsSprite) {
-	lua::luabridge::UserdataPtr::push(L, &g_Manager->_buttonsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &g_Manager->_buttonsSprite);
 	return 1;
 }
 

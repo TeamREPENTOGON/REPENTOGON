@@ -1,6 +1,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "LuaRender.h"
 
 static Backdrop* GetBackdrop(lua_State* L, int idx = 1);
@@ -42,21 +43,21 @@ LUA_FUNCTION(lua_Backdrop_GetFloorImage) {
 LUA_FUNCTION(lua_Backdrop_GetFloorANM2) {
 	Backdrop* backdrop = GetBackdrop(L);
 	ANM2* sprite = &backdrop->floorANM2;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Backdrop_GetDetailANM2) {
 	Backdrop* backdrop = GetBackdrop(L);
 	ANM2* sprite = &backdrop->_wallDetailANM2;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Backdrop_GetControlsANM2) {
 	Backdrop* backdrop = GetBackdrop(L);
 	ANM2* sprite = &backdrop->_controlsANM2;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 	return 1;
 }
 
@@ -92,7 +93,7 @@ LUA_FUNCTION(lua_Backdrop_SetunkVec2) {
 LUA_FUNCTION(lua_Backdrop_GetControlsButtonsANM2) {
 	Backdrop* backdrop = GetBackdrop(L);
 	ANM2* sprite = &backdrop->_controlsButtonsANM2;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 	return 1;
 }
 

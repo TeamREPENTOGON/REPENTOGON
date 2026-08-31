@@ -1,10 +1,11 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_SpriteGetCurrentAnimationData)
 {
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = LuaSprite::Get(L, 1);
 
 	AnimationData* animData = anm2->GetAnimationState()->GetAnimationData();
 
@@ -22,7 +23,7 @@ LUA_FUNCTION(Lua_SpriteGetCurrentAnimationData)
 
 LUA_FUNCTION(Lua_SpriteGetOverlayAnimationData)
 {
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = LuaSprite::Get(L, 1);
 
 	AnimationData* animData = anm2->GetOverlayAnimationState()->GetAnimationData();
 
@@ -40,7 +41,7 @@ LUA_FUNCTION(Lua_SpriteGetOverlayAnimationData)
 
 LUA_FUNCTION(Lua_SpriteGetAnimationData)
 {
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = LuaSprite::Get(L, 1);
 	std_string animName = luaL_checkstring(L, 2);
 	AnimationData* animData = anm2->GetAnimationData(animName);
 
@@ -58,7 +59,7 @@ LUA_FUNCTION(Lua_SpriteGetAnimationData)
 
 LUA_FUNCTION(Lua_SpriteGetAllAnimationData)
 {
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = LuaSprite::Get(L, 1);
 
 	lua_newtable(L);
 	for (unsigned int i = 0; i < anm2->GetAnimationCount(); ++i) {

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 const char* errors[4] = {
@@ -19,7 +20,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
 
-	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = LuaSprite::Get(L, 1);
 
 	int layerID = 0;
 	if (lua_type(L, 2) == LUA_TSTRING) {
@@ -134,13 +135,13 @@ LUA_FUNCTION(Lua_BeamGetSprite) {
 	if (anm2 == nullptr) {
 		return luaL_error(L, "Beam Sprite is NULL!");
 	}
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetSprite) {
 	BeamRenderer* beam = lua::GetRawUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	ANM2* anm2 = lua::GetLuabridgeUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	ANM2* anm2 = LuaSprite::Get(L, 2);
 	
 	if (lua_gettop(L) > 2) {
 		int layerID = beam->_layer;

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 
@@ -15,7 +16,7 @@ LUA_FUNCTION(Lua_HUDGetChargeBarSprite)
 {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_chargeBarSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -23,7 +24,7 @@ LUA_FUNCTION(Lua_HUDGetChargeBarSprite)
 LUA_FUNCTION(Lua_HUDGetPickupsHUDSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_pickupHUDSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -31,7 +32,7 @@ LUA_FUNCTION(Lua_HUDGetPickupsHUDSprite) {
 LUA_FUNCTION(Lua_HUDGetHeartsSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_heartsSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -39,7 +40,7 @@ LUA_FUNCTION(Lua_HUDGetHeartsSprite) {
 LUA_FUNCTION(Lua_HUDGetCardsPillsSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_cardsPillsSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -48,7 +49,7 @@ LUA_FUNCTION(Lua_HUDGetStreakSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 
 	ANM2* sprite = &hud->_messageMain._streakSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -96,7 +97,7 @@ LUA_FUNCTION(Lua_HUDGetPlayerMessage) {
 LUA_FUNCTION(Lua_HUDGetFortuneSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_fortuneSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -104,7 +105,7 @@ LUA_FUNCTION(Lua_HUDGetFortuneSprite) {
 LUA_FUNCTION(Lua_HUDGetCoopMenuSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_coopMenuSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -112,7 +113,7 @@ LUA_FUNCTION(Lua_HUDGetCoopMenuSprite) {
 LUA_FUNCTION(Lua_HUDGetInventorySprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_inventorySprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -120,7 +121,7 @@ LUA_FUNCTION(Lua_HUDGetInventorySprite) {
 LUA_FUNCTION(Lua_HUDGetCraftingSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_craftingTableSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -128,7 +129,7 @@ LUA_FUNCTION(Lua_HUDGetCraftingSprite) {
 LUA_FUNCTION(Lua_HUDGetPoopSpellSprite) {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = &hud->_poopSpellsSprite;
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 
 	return 1;
 }
@@ -148,7 +149,7 @@ LUA_FUNCTION(Lua_HUDSetBossHPBarFill) {
 
 LUA_FUNCTION(Lua_HUDMessageGetSprite) {
 	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-	lua::luabridge::UserdataPtr::push(L, &message->_streakSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &message->_streakSprite);
 	return 1;
 }
 

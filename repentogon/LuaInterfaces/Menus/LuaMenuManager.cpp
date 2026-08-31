@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/MainMenuBlock.h"
 
@@ -39,7 +40,7 @@ LUA_FUNCTION(Lua_MenuManager_GetShadowSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_MenuShadowSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -51,7 +52,7 @@ LUA_FUNCTION(Lua_MenuManager_GetBackWidgetSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_BackWidgetSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -60,7 +61,7 @@ LUA_FUNCTION(Lua_MenuManager_GetSelectWidgetSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_SelectWidgetSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

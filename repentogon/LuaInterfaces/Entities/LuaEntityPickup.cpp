@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Utils/Entity/PickupUtils.h"
 
@@ -154,7 +155,7 @@ LUA_FUNCTION(Lua_PickupTryFlip) {
 
 LUA_FUNCTION(Lua_PickupGetPriceSprite) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua::luabridge::UserdataPtr::push(L, &pickup->_priceANM2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &pickup->_priceANM2);
 	return 1;
 }
 
@@ -285,7 +286,7 @@ LUA_FUNCTION(Lua_PickupReloadGraphics) {
 }
 
 LUA_FUNCTION(Lua_PickupSetupCollectibleGraphics) {
-	ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ANM2* sprite = LuaSprite::Get(L, 1);
 	const int layerId = (int)luaL_checkinteger(L, 2);
 
 	if (layerId < 0 || sprite->_layerCount <= layerId ) {

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_MainMenu_GetGameMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_MainMenu_GetGameMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetGameMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_MainMenu_GetContinueWidgetSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

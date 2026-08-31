@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetRoomTransition) {
@@ -14,7 +15,7 @@
 LUA_FUNCTION(Lua_RoomTransitionGetVersusScreenSprite) {
 	RoomTransition* roomTransition = g_Game->GetRoomTransition();
 	ANM2* sprite = roomTransition->GetVersusScreenSprite();
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, sprite);
 	return 1;
 }
 
@@ -70,9 +71,9 @@ LUA_FUNCTION(Lua_RoomTransitionGetPlayerExtraPortraitSprite) {
 	auto& map = *roomTransition->GetExtraLayerANM2s();
 
 	if (map.count(altLayer)) {
-		lua::luabridge::UserdataPtr::push(L, &map[altLayer], lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, &map[altLayer]);
 	} else if (map.count(layer)) {
-		lua::luabridge::UserdataPtr::push(L, &map[layer], lua::GetMetatableKey(lua::Metatables::SPRITE));
+		LuaSprite::PushPtr(L, &map[layer]);
 	} else {
 		lua_pushnil(L);
 	}

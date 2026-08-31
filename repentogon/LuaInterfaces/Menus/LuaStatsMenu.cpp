@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_StatsMenu_GetStatsMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetStatsMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_StatsMenuSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementsSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -27,7 +28,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite1)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite1;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -37,7 +38,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite2)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite2;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -47,7 +48,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite3)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite3;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -57,7 +58,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite4)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite4;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -67,7 +68,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite5)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite5;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -77,7 +78,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite6)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite6;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -87,7 +88,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite7)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite7;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -97,7 +98,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite8)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite8;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -107,7 +108,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite9)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite9;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -117,7 +118,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorLeftSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_cursorLeftSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -127,7 +128,7 @@ LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorRightSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_cursorRightSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

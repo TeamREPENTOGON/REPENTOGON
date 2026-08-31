@@ -1,6 +1,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/CardsExtras.h"
 #include "../Patches/ItemConfigEx.h"
@@ -23,7 +24,7 @@ LUA_FUNCTION(Lua_ItemConfigPill_EffectClass_propget) {
 
 LUA_FUNCTION(Lua_ItemConfigCard_ModdedCardFront_propget) {
 	ItemConfig_Card* config = lua::GetLuabridgeUserdata<ItemConfig_Card*>(L, 1, lua::Metatables::CONST_CARD, "Card");
-	lua::luabridge::UserdataPtr::push(L, config->moddedCardFront, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, config->moddedCardFront);
 	return 1;
 }
 

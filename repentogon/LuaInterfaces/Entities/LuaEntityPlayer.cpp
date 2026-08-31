@@ -1,5 +1,6 @@
 ﻿#include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../LuaClasses.h"
 
@@ -1915,13 +1916,13 @@ LUA_FUNCTION(Lua_PlayerSetNextUrethraBlockFrame)
 LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::luabridge::UserdataPtr::push(L, plr->GetHeldSprite(), lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, plr->GetHeldSprite());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerGetBloodGushSprite) {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::luabridge::UserdataPtr::push(L, &plr->_bloodGushSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &plr->_bloodGushSprite);
 	return 1;
 }
 
@@ -3810,7 +3811,7 @@ LUA_FUNCTION(Lua_PlayerSetMontezumaRevengeCharge) {
 
 LUA_FUNCTION(Lua_PlayerGetBodySprite) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::luabridge::UserdataPtr::push(L, &player->_bodySprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &player->_bodySprite);
 
 	return 1;
 }

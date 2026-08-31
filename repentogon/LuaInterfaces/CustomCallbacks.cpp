@@ -1328,7 +1328,7 @@ void PostMarksRender(CompletionWidget* cmp, Vector* pos, Vector* scale) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(cmp->GetANM2(), lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(cmp->GetANM2())
 			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
 			.push(*scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR])
 			.push(cmp->CharacterId)
@@ -1346,7 +1346,7 @@ HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.pushnil()
-		.push(this->GetANM2(), lua::Metatables::SPRITE)
+		.pushClassPtr<LuaSprite>(this->GetANM2())
 		.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 		.push(*scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 		.push(this->CharacterId)
@@ -1376,8 +1376,8 @@ void PostPauseScreenRender(PauseScreen* paws) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(&paws->mainsprite, lua::Metatables::SPRITE)
-			.push(&paws->statssprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(&paws->mainsprite)
+			.pushClassPtr<LuaSprite>(&paws->statssprite)
 			.call(1);
 	}
 
@@ -1393,8 +1393,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.pushnil()
-		.push(&this->mainsprite, lua::Metatables::SPRITE)
-		.push(&this->statssprite, lua::Metatables::SPRITE)
+		.pushClassPtr<LuaSprite>(&this->mainsprite)
+		.pushClassPtr<LuaSprite>(&this->statssprite)
 		.call(1);
 
 	if (!result) {
@@ -2774,7 +2774,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.pushnil()
 			.push(unk, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(sprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(sprite)
 			.push(posToSend, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
@@ -2799,7 +2799,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
 			.push(unk, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
-			.push(sprite, lua::Metatables::SPRITE)
+			.pushClassPtr<LuaSprite>(sprite)
 			.push(posToSend, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)

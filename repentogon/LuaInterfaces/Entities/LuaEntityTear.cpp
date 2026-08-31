@@ -86,19 +86,19 @@ LUA_FUNCTION(Lua_TearMakeMultidimensionalCopy)
 
 LUA_FUNCTION(Lua_GetTearHaloSprite) {
 	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
-	lua::luabridge::UserdataPtr::push(L, &tear->_tearHaloANM2, lua::Metatables::SPRITE);
+	LuaSprite::PushPtr(L, &tear->_tearHaloANM2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetTearEffectSprite) {
 	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
-	lua::luabridge::UserdataPtr::push(L, &tear->_tearEffectANM2, lua::Metatables::SPRITE);
+	LuaSprite::PushPtr(L, &tear->_tearEffectANM2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetDeadEyeSprite) {
 	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
-	lua::luabridge::UserdataPtr::push(L, &tear->_deadEyeANM2, lua::Metatables::SPRITE);
+	LuaSprite::PushPtr(L, &tear->_deadEyeANM2);
 	return 1;
 }
 

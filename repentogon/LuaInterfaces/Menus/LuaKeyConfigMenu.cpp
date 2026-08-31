@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_KeyConfigMenu_KeyConfigSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_KeyConfigMenu_KeyConfigSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	ANM2* anm2 = menu->GetKeyConfigSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
