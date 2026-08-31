@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GameGetMinimap)
@@ -53,14 +54,14 @@ LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 LUA_FUNCTION(Lua_MinimapGetItemIconsSprite)
 {
 	Minimap* minimap = g_Game->GetMinimap();
-	lua::luabridge::UserdataPtr::push(L, &minimap->_itemIconsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &minimap->_itemIconsSprite);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MinimapGetIconsSprite)
 {
 	Minimap* minimap = g_Game->GetMinimap();
-	lua::luabridge::UserdataPtr::push(L, &minimap->_iconsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));;
+	LuaSprite::PushPtr(L, &minimap->_iconsSprite);;
 	return 1;
 }
 

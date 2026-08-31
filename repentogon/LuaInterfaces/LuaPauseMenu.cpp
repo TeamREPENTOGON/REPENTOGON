@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PauseMenu_GetPauseMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetPauseMenuSprite)
 	
 	PauseScreen* menu =g_Game->GetPauseMenu();
 	ANM2* anm2 = &menu->mainsprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetMyStuffSprite)
 
 	PauseScreen* menu = g_Game->GetPauseMenu();
 	ANM2* anm2 = &menu->mystuffminispritebase;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -27,7 +28,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetCompletionMarksSprite)
 
 	CompletionWidget* widgt = g_Game->GetPauseMenu()->GetCompletionWidget();
 	ANM2* anm2 = &widgt->anm2;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -37,7 +38,7 @@ LUA_FUNCTION(Lua_PauseMenu_GetStatsSprite)
 	
 	PauseScreen* menu =g_Game->GetPauseMenu();
 	ANM2* anm2 = &menu->statssprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

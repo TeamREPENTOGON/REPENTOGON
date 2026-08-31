@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_BestiaryMenu_GetBestiaryMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_BestiaryMenu_GetBestiaryMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetBestiaryMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_BestiaryMenu_GetDeathScreenSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetDeathScreenSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -27,7 +28,7 @@ LUA_FUNCTION(Lua_BestiaryMenu_GetEnemySprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetEnemySprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

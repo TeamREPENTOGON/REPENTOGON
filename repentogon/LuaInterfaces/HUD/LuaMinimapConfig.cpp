@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_MinimapGetConfig)
@@ -14,7 +15,7 @@ LUA_FUNCTION(Lua_MinimapGetConfig)
 
 LUA_FUNCTION(Lua_MinimapConfigGetSprite) {
 	MinimapConfig* config = *lua::GetRawUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	lua::luabridge::UserdataValue<ANM2>::push(L, lua::GetMetatableKey(lua::Metatables::SPRITE), config->_mapSprite);
+	LuaSprite::PushPtr(L, &config->_mapSprite);
 	return 1;
 }
 

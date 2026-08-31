@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_SaveMenu_SaveSelectMenuSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_SaveMenu_SaveSelectMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSaveSelectMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_SaveMenu_DeleteButtonSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetDeleteButtonSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -27,7 +28,7 @@ LUA_FUNCTION(Lua_SaveMenu_DeletePopupSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetDeletePopupSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -37,7 +38,7 @@ LUA_FUNCTION(Lua_SaveMenu_Save1DrawingSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave1DrawingSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -47,7 +48,7 @@ LUA_FUNCTION(Lua_SaveMenu_Save2DrawingSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave2DrawingSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -57,7 +58,7 @@ LUA_FUNCTION(Lua_SaveMenu_Save3DrawingSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave3DrawingSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

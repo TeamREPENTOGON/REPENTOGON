@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_RoomGetRailManager)
@@ -15,7 +16,7 @@ LUA_FUNCTION(Lua_RailManagerGetRailsSprite)
 {
 	RailManager* railManager = *lua::GetRawUserdata<RailManager**>(L, 1, lua::metatables::RailManagerMT);
 	ANM2* anm2 = &railManager->_sprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

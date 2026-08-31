@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 /*LUA_FUNCTION(Lua_GetNightmareScene) {
@@ -24,7 +25,7 @@ LUA_FUNCTION(Lua_NightmareSceneGetBackgroundSprite)
 {
 	NightmareScene* nc = g_Manager->GetNightmareScene();
 	ANM2* anm2 = nc->GetBackgroundSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -33,7 +34,7 @@ LUA_FUNCTION(Lua_NightmareSceneGetBubbleSprite)
 {
 	NightmareScene* nc = g_Manager->GetNightmareScene();
 	ANM2* anm2 = nc->GetBubbleSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -42,7 +43,7 @@ LUA_FUNCTION(Lua_NightmareSceneGetProgressBarSprite)
 {
 	NightmareScene* nc = g_Manager->GetNightmareScene();
 	ANM2* anm2 = nc->GetProgressBarSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -68,7 +69,7 @@ LUA_FUNCTION(Lua_NightmareSceneIsDogmaNightmare) {
 LUA_FUNCTION(Lua_NightmareSceneGetPlayerExtraPortraitSprite) {
 	NightmareScene* nc = g_Manager->GetNightmareScene();
 	ANM2* anm2 = &nc->_playerExtraPortraitANM2;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

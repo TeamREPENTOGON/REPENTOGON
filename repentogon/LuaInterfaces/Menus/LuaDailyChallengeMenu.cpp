@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_DailyChallengeMenu_GetSprite)
@@ -7,7 +8,7 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_GetSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
 	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
 	ANM2* anm2 = &menu->_DailyRunSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -17,7 +18,7 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_GetLeaderboardSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
 	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
 	ANM2* anm2 = &menu->_leaderboard._leaderboardMenuSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -27,7 +28,7 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_GetLeaderboardScoreMenuSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
 	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
 	ANM2* anm2 = &menu->_leaderboard._scoreMenuSprite;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

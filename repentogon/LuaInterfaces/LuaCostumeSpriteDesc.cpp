@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs)
@@ -21,7 +22,7 @@ LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs)
 
 LUA_FUNCTION(CostumeSprDesc_GetSprite) {
 	CostumeSpriteDesc* costumeSprDesc = *lua::GetRawUserdata<CostumeSpriteDesc**>(L, 1, lua::metatables::CostumeSpriteDescMT);
-	lua::luabridge::UserdataPtr::push(L, &costumeSprDesc->_sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, &costumeSprDesc->_sprite);
 	return 1;
 }
 

@@ -4,11 +4,33 @@
 #include "LuaCore.h"
 
 template<typename T>
-struct LuaClassName;
+struct LuaClassTraits;
+
+namespace LuaClasses
+{
+    namespace detail
+    {
+        template<typename T, typename = void>
+        struct HasUserdataValueVftable : std::false_type {};
+        
+        template<typename T>
+        struct HasUserdataValueVftable<T, std::void_t<decltype(LuaClassTraits<T>::UserdataValueVftable)>>
+            : std::true_type {};
+
+        template<typename T>
+        constexpr bool HasUserdataValueVftable_v = HasUserdataValueVftable<T>::value;
+    }
+}
+
+
 
 template<typename T, auto MT, auto CONST_MT>
 struct LuabridgeType
 {
+private:
+    using Traits = LuaClassTraits<T>;
+
+public:
     static bool IsUnderlyingType(lua_State* L, int index)
     {
         return lua_type(L, index) == LUA_TUSERDATA;
@@ -16,12 +38,12 @@ struct LuabridgeType
 
     static T* Get(lua_State* L, int index)
     {
-        return lua::GetLuabridgeUserdata<T*>(L, index, MT, LuaClassName<T>::Name);
+        return lua::GetLuabridgeUserdata<T*>(L, index, MT, Traits::Name);
     }
 
     static const T* GetConst(lua_State* L, int index)
     {
-        return lua::GetLuabridgeUserdata<T*>(L, index, CONST_MT, LuaClassName<T>::Name);
+        return lua::GetLuabridgeUserdata<T*>(L, index, CONST_MT, Traits::Name);
     }
 
     static T* GetOpt(lua_State* L, int index)
@@ -36,22 +58,38 @@ struct LuabridgeType
 
     static T* Place(lua_State* L)
     {
-        return lua::luabridge::UserdataValue<T>::place(L, lua::GetMetatableKey(MT));
+        void* key = lua::GetMetatableKey(MT);
+        if constexpr (LuaClasses::detail::HasUserdataValueVftable<T>::value)
+        {
+            return lua::luabridge::UserdataValue<T>::place_with_vftable(L, key, Traits::UserdataValueVftable);
+        }
+        else
+        {
+            return lua::luabridge::UserdataValue<T>::place(L, key);
+        }
     }
 
     static T* PlaceConst(lua_State* L)
     {
-        return lua::luabridge::UserdataValue<T>::place(L, lua::GetMetatableKey(CONST_MT));
+        void* key = lua::GetMetatableKey(CONST_MT);
+        if constexpr (LuaClasses::detail::HasUserdataValueVftable<T>::value)
+        {
+            return lua::luabridge::UserdataValue<T>::place_with_vftable(L, key, Traits::UserdataValueVftable);
+        }
+        else
+        {
+            return lua::luabridge::UserdataValue<T>::place(L, key);
+        }
     }
 
     static void Push(lua_State* L, const T& value)
     {
-        lua::luabridge::UserdataValue<T>::push(L, lua::GetMetatableKey(MT), value);
+        new (Place(L))  T(value);
     }
     
     static void PushConst(lua_State* L, const T& value)
     {
-        lua::luabridge::UserdataValue<T>::push(L, lua::GetMetatableKey(CONST_MT), value);
+        new (PlaceConst(L))  T(value);
     }
 
     static void PushPtr(lua_State* L, T* ptr)
@@ -136,7 +174,7 @@ struct CDataType
 
     static T* Get(lua_State* L, int index)
     {
-        return lua::GetCData<T*>(L, index, lua::ffi::CData[ID], LuaClassName<T>::Name);
+        return lua::GetCData<T*>(L, index, lua::ffi::CData[ID], LuaClassTraits<T>::Name);
     }
 
     static T* GetOpt(lua_State* L, int index)
@@ -174,307 +212,308 @@ struct CDataType
 };
 
 template<>
-struct LuaClassName<Vector>
+struct LuaClassTraits<Vector>
 {
     static constexpr const char* Name = "Vector";
 };
 
 template<>
-struct LuaClassName<PosVel>
+struct LuaClassTraits<PosVel>
 {
     static constexpr const char* Name = "PosVel";
 };
 
 template<>
-struct LuaClassName<BitSet128>
+struct LuaClassTraits<BitSet128>
 {
     static constexpr const char* Name = "BitSet128";
 };
 
 template<>
-struct LuaClassName<KColor>
+struct LuaClassTraits<KColor>
 {
     static constexpr const char* Name = "KColor";
 };
 
 template<>
-struct LuaClassName<ColorMod>
+struct LuaClassTraits<ColorMod>
 {
     static constexpr const char* Name = "Color";
 };
 
 template<>
-struct LuaClassName<ANM2>
+struct LuaClassTraits<ANM2>
 {
     static constexpr const char* Name = "Sprite";
+    inline static void**& UserdataValueVftable = __ptr_UserdataValue_ANM2_vftable;
 };
 
 template<>
-struct LuaClassName<Font>
+struct LuaClassTraits<Font>
 {
     static constexpr const char* Name = "Font";
 };
 
 template<>
-struct LuaClassName<FontSettings>
+struct LuaClassTraits<FontSettings>
 {
     static constexpr const char* Name = "FontRenderSettings";
 };
 
 template<>
-struct LuaClassName<RNG>
+struct LuaClassTraits<RNG>
 {
     static constexpr const char* Name = "RNG";
 };
 
 template<>
-struct LuaClassName<Music>
+struct LuaClassTraits<Music>
 {
     static constexpr const char* Name = "MusicManager";
 };
 
 template<>
-struct LuaClassName<SoundEffects>
+struct LuaClassTraits<SoundEffects>
 {
     static constexpr const char* Name = "SFXManager";
 };
 
 template<>
-struct LuaClassName<ItemConfig>
+struct LuaClassTraits<ItemConfig>
 {
     static constexpr const char* Name = "ItemConfig";
 };
 
 template<>
-struct LuaClassName<ItemConfig_Item>
+struct LuaClassTraits<ItemConfig_Item>
 {
     static constexpr const char* Name = "Item";
 };
 
 template<>
-struct LuaClassName<ItemConfig_Card>
+struct LuaClassTraits<ItemConfig_Card>
 {
     static constexpr const char* Name = "Card";
 };
 
 template<>
-struct LuaClassName<ItemConfig_Pill>
+struct LuaClassTraits<ItemConfig_Pill>
 {
     static constexpr const char* Name = "PillEffect";
 };
 
 template<>
-struct LuaClassName<ItemConfig_Costume>
+struct LuaClassTraits<ItemConfig_Costume>
 {
     static constexpr const char* Name = "Costume";
 };
 
 template<>
-struct LuaClassName<RoomConfig_Room>
+struct LuaClassTraits<RoomConfig_Room>
 {
     static constexpr const char* Name = "RoomConfigRoom";
 };
 
 template<>
-struct LuaClassName<Seeds>
+struct LuaClassTraits<Seeds>
 {
     static constexpr const char* Name = "Seeds";
 };
 
 template<>
-struct LuaClassName<Game>
+struct LuaClassTraits<Game>
 {
     static constexpr const char* Name = "Game";
 };
 
 template<>
-struct LuaClassName<Level>
+struct LuaClassTraits<Level>
 {
     static constexpr const char* Name = "Level";
 };
 
 template<>
-struct LuaClassName<Room>
+struct LuaClassTraits<Room>
 {
     static constexpr const char* Name = "Room";
 };
 
 template<>
-struct LuaClassName<RoomDescriptor>
+struct LuaClassTraits<RoomDescriptor>
 {
     static constexpr const char* Name = "RoomDescriptor";
 };
 
 template<>
-struct LuaClassName<ItemPool>
+struct LuaClassTraits<ItemPool>
 {
     static constexpr const char* Name = "ItemPool";
 };
 
 template<>
-struct LuaClassName<HUD>
+struct LuaClassTraits<HUD>
 {
     static constexpr const char* Name = "HUD";
 };
 
 template<>
-struct LuaClassName<Entity>
+struct LuaClassTraits<Entity>
 {
     static constexpr const char* Name = "Entity";
 };
 
 template<>
-struct LuaClassName<Entity_Player>
+struct LuaClassTraits<Entity_Player>
 {
     static constexpr const char* Name = "EntityPlayer";
 };
 
 template<>
-struct LuaClassName<Entity_Tear>
+struct LuaClassTraits<Entity_Tear>
 {
     static constexpr const char* Name = "EntityTear";
 };
 
 template<>
-struct LuaClassName<Entity_Familiar>
+struct LuaClassTraits<Entity_Familiar>
 {
     static constexpr const char* Name = "EntityFamiliar";
 };
 
 template<>
-struct LuaClassName<Entity_Bomb>
+struct LuaClassTraits<Entity_Bomb>
 {
     static constexpr const char* Name = "EntityBomb";
 };
 
 template<>
-struct LuaClassName<Entity_Pickup>
+struct LuaClassTraits<Entity_Pickup>
 {
     static constexpr const char* Name = "EntityPickup";
 };
 
 template<>
-struct LuaClassName<Entity_Laser>
+struct LuaClassTraits<Entity_Laser>
 {
     static constexpr const char* Name = "EntityLaser";
 };
 
 template<>
-struct LuaClassName<Entity_Knife>
+struct LuaClassTraits<Entity_Knife>
 {
     static constexpr const char* Name = "EntityKnife";
 };
 
 template<>
-struct LuaClassName<Entity_Projectile>
+struct LuaClassTraits<Entity_Projectile>
 {
     static constexpr const char* Name = "EntityProjectile";
 };
 
 template<>
-struct LuaClassName<Entity_NPC>
+struct LuaClassTraits<Entity_NPC>
 {
     static constexpr const char* Name = "EntityNPC";
 };
 
 template<>
-struct LuaClassName<Entity_Effect>
+struct LuaClassTraits<Entity_Effect>
 {
     static constexpr const char* Name = "EntityEffect";
 };
 
 template<>
-struct LuaClassName<EntityRef>
+struct LuaClassTraits<EntityRef>
 {
     static constexpr const char* Name = "EntityRef";
 };
 
 template<>
-struct LuaClassName<EntityPtr>
+struct LuaClassTraits<EntityPtr>
 {
     static constexpr const char* Name = "EntityPtr";
 };
 
 template<>
-struct LuaClassName<NPCAI_Pathfinder>
+struct LuaClassTraits<NPCAI_Pathfinder>
 {
     static constexpr const char* Name = "Pathfinder";
 };
 
 template<>
-struct LuaClassName<TearParams>
+struct LuaClassTraits<TearParams>
 {
     static constexpr const char* Name = "TearParams";
 };
 
 template<>
-struct LuaClassName<ProjectileParams>
+struct LuaClassTraits<ProjectileParams>
 {
     static constexpr const char* Name = "ProjectileParams";
 };
 
 template<>
-struct LuaClassName<TemporaryEffects>
+struct LuaClassTraits<TemporaryEffects>
 {
     static constexpr const char* Name = "TemporaryEffects";
 };
 
 template<>
-struct LuaClassName<ActiveItemDesc>
+struct LuaClassTraits<ActiveItemDesc>
 {
     static constexpr const char* Name = "ActiveItemDesc";
 };
 
 template<>
-struct LuaClassName<GridEntity>
+struct LuaClassTraits<GridEntity>
 {
     static constexpr const char* Name = "GridEntity";
 };
 
 template<>
-struct LuaClassName<GridEntity_Rock>
+struct LuaClassTraits<GridEntity_Rock>
 {
     static constexpr const char* Name = "GridEntityRock";
 };
 
 template<>
-struct LuaClassName<GridEntity_Pit>
+struct LuaClassTraits<GridEntity_Pit>
 {
     static constexpr const char* Name = "GridEntityPit";
 };
 
 template<>
-struct LuaClassName<GridEntity_Spikes>
+struct LuaClassTraits<GridEntity_Spikes>
 {
     static constexpr const char* Name = "GridEntitySpikes";
 };
 
 template<>
-struct LuaClassName<GridEntity_TNT>
+struct LuaClassTraits<GridEntity_TNT>
 {
     static constexpr const char* Name = "GridEntityTNT";
 };
 
 template<>
-struct LuaClassName<GridEntity_Poop>
+struct LuaClassTraits<GridEntity_Poop>
 {
     static constexpr const char* Name = "GridEntityPoop";
 };
 
 template<>
-struct LuaClassName<GridEntity_Door>
+struct LuaClassTraits<GridEntity_Door>
 {
     static constexpr const char* Name = "GridEntityDoor";
 };
 
 template<>
-struct LuaClassName<GridEntity_PressurePlate>
+struct LuaClassTraits<GridEntity_PressurePlate>
 {
     static constexpr const char* Name = "GridEntityPressurePlate";
 };
 
 template<>
-struct LuaClassName<GridEntityDesc>
+struct LuaClassTraits<GridEntityDesc>
 {
     static constexpr const char* Name = "GridEntityDesc";
 };

@@ -1,6 +1,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "../../Patches/XMLPlayerExtras.h"
 
 LUA_FUNCTION(lua_CharMenu_GetBigCharPageSprite)
@@ -8,7 +9,7 @@ LUA_FUNCTION(lua_CharMenu_GetBigCharPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetBigCharPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -18,7 +19,7 @@ LUA_FUNCTION(lua_CharMenu_GetDifficultyOverlaySprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetDifficultyOverlaySprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -28,7 +29,7 @@ LUA_FUNCTION(lua_CharMenu_GetGreedDecoSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetGreedDecoSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -38,7 +39,7 @@ LUA_FUNCTION(lua_CharMenu_GetBGSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetBGSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -48,7 +49,7 @@ LUA_FUNCTION(lua_CharMenu_GetDifficultyPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetDifficultyPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -58,7 +59,7 @@ LUA_FUNCTION(lua_CharMenu_GetSeedPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -68,7 +69,7 @@ LUA_FUNCTION(lua_CharMenu_GetWinStreakPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetWinStreakPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -78,7 +79,7 @@ LUA_FUNCTION(lua_CharMenu_GetEastereggPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetEastereggPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -88,7 +89,7 @@ LUA_FUNCTION(lua_CharMenu_GetSeedUnlockPageSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedUnlockPageSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -98,7 +99,7 @@ LUA_FUNCTION(lua_CharMenu_GetCharacterPortraitSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetCharacterPortraitSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -108,7 +109,7 @@ LUA_FUNCTION(lua_CharMenu_GetSeedEntrySprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedEntrySprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -118,7 +119,7 @@ LUA_FUNCTION(lua_CharMenu_GetPageSwapWidgetSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetPageSwapWidgetSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -128,7 +129,7 @@ LUA_FUNCTION(lua_CharMenu_GetTaintedBGDecoSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetTaintedBGDecoSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -138,7 +139,7 @@ LUA_FUNCTION(lua_CharMenu_GetCompletionMarksSprite)
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = &menu->GetCompletionWidget()->anm2;
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }

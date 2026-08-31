@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 Menu_Options* GetAppropiateMenu() {
@@ -15,7 +16,7 @@ LUA_FUNCTION(Lua_OptionsMenu_GetOptionsMenuSprite)
 {
 	Menu_Options* menu = GetAppropiateMenu();
 	ANM2* anm2 = menu->GetOptionsSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
@@ -24,7 +25,7 @@ LUA_FUNCTION(Lua_OptionsMenu_GetGammaWidgetSprite)
 {
 	Menu_Options* menu = GetAppropiateMenu();
 	ANM2* anm2 = menu->GetGammaMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	LuaSprite::PushPtr(L, anm2);
 
 	return 1;
 }
