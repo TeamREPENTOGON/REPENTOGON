@@ -403,6 +403,14 @@ LUA_FUNCTION(Lua_DeterministicRandom) {
 	lua_Integer upper = 0;
 	if (argc == 1) {
 		upper = luaL_checkinteger(L, 1);
+		// Lua 5.3 gives math.random(0) its own meaning: an integer with every bit random,
+		// rather than a range. Treating it as the range [1,0] would raise "interval is
+		// empty" on a call that is legal and works in stock Lua.
+		if (upper == 0) {
+			unsigned long long high = (unsigned long long)Lua_NextRandom() << 32;
+			lua_pushinteger(L, (lua_Integer)(high | (unsigned long long)Lua_NextRandom()));
+			return 1;
+		}
 	} else {
 		lower = luaL_checkinteger(L, 1);
 		upper = luaL_checkinteger(L, 2);
@@ -447,7 +455,13 @@ LUA_FUNCTION(Lua_DeterministicRandomSeed) {
 // type (tables, functions, userdata) have nothing stable to sort on - their identity *is* an
 // address - so they keep discovery order after the sortable ones and are reported once,
 // because such a loop cannot be made deterministic from here.
-static bool s_deterministicPairs = true;
+// Off by default. This is the only one of the determinism measures that changes behaviour
+// for *every* pairs() call in every mod and in REPENTOGON's own Lua, which makes it both the
+// most useful and the most dangerous of them. A machine running these mods died with a stack
+// buffer overrun and this is the change with the widest blast radius, so it is opt-in until
+// that is understood: SetDeterministicPairs(true) enables it, which also makes it possible
+// to tell whether a crash is caused by this or by something else.
+static bool s_deterministicPairs = false;
 static bool s_unsortableKeyWarned = false;
 
 namespace {
@@ -598,8 +612,8 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 
 	lua_register(state, "pairs", Lua_DeterministicPairs);
 	lua_register(state, "SetDeterministicPairs", Lua_SetDeterministicPairs);
-	ZHL::Log("[ONLINE-DETERMINISM] pairs() now iterates in sorted order "
-		"(SetDeterministicPairs(false) restores stock behaviour)\n");
+	ZHL::Log("[ONLINE-DETERMINISM] sorted pairs() is installed but OFF; "
+		"SetDeterministicPairs(true) enables it\n");
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {
