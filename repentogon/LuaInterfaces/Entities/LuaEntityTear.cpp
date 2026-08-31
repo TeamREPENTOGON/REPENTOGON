@@ -2,19 +2,20 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
 
 LUA_FUNCTION(Lua_TearGetParentOffset) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_parentOffset);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearSetParentOffset) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	tear->_parentOffset = *offset;
@@ -22,14 +23,14 @@ LUA_FUNCTION(Lua_TearSetParentOffset) {
 }
 
 LUA_FUNCTION(Lua_TearGetContinueVelocity) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_continueVelocity);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearSetContinueVelocity) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Vector* velocity = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	tear->_continueVelocity = *velocity;
@@ -37,14 +38,14 @@ LUA_FUNCTION(Lua_TearSetContinueVelocity) {
 }
 
 LUA_FUNCTION(Lua_TearGetPosDisplacement) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_posDisplacement);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearSetPosDisplacement) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Vector* displacement = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	tear->_posDisplacement = *displacement;
@@ -52,14 +53,14 @@ LUA_FUNCTION(Lua_TearSetPosDisplacement) {
 }
 
 LUA_FUNCTION(Lua_TearGetStickDiff) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], tear->_stickDiff);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearSetStickDiff) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Vector* diff = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	tear->_stickDiff = *diff;
@@ -69,40 +70,41 @@ LUA_FUNCTION(Lua_TearSetStickDiff) {
 
 LUA_FUNCTION(Lua_TearGetDeadEyeIntensity)
 {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua_pushnumber(L, tear->_deadEyeIntensity);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearMakeMultidimensionalCopy)
 {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Entity* spawner = nullptr;
-	lua::luabridge::UserdataPtr::push(L, tear->MakeMultidimensionalCopy(spawner), lua::Metatables::ENTITY_TEAR);
+
+	LuaEntityTear::PushPtr(L, tear->MakeMultidimensionalCopy(spawner));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetTearHaloSprite) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua::luabridge::UserdataPtr::push(L, &tear->_tearHaloANM2, lua::Metatables::SPRITE);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetTearEffectSprite) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua::luabridge::UserdataPtr::push(L, &tear->_tearEffectANM2, lua::Metatables::SPRITE);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_GetDeadEyeSprite) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua::luabridge::UserdataPtr::push(L, &tear->_deadEyeANM2, lua::Metatables::SPRITE);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearResetSpriteScale)
 {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	bool force = lua::luaL_optboolean(L, 2, false);
 	if (force) {
 		tear->_scaleAnimNum = -1;
@@ -112,31 +114,31 @@ LUA_FUNCTION(Lua_TearResetSpriteScale)
 }
 
 LUA_FUNCTION(Lua_IsMultidimensionalTouched) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua_pushboolean(L, tear->_multidimensionalTouched);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetMultidimensionalTouched) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	tear->_multidimensionalTouched = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_IsPrismTouched) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua_pushboolean(L, tear->_prismTouched);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetPrismTouched) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	tear->_prismTouched = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetHitList) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 
 	lua_newtable(L);
 	int idx = 1;
@@ -151,14 +153,14 @@ LUA_FUNCTION(Lua_GetHitList) {
 }
 
 LUA_FUNCTION(Lua_ClearHitList) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	tear->_hitList.clear();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_TearRemoveFromHitList) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
 	auto iterator = std::find(tear->_hitList.begin(), tear->_hitList.end(), entity->GetHitListIndex());
@@ -172,7 +174,7 @@ LUA_FUNCTION(Lua_TearRemoveFromHitList) {
 }
 
 LUA_FUNCTION(Lua_TearAddToHitList) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	int hitListIndex = entity->GetHitListIndex();
 	auto &hitList = tear->_hitList;
@@ -186,7 +188,7 @@ LUA_FUNCTION(Lua_TearAddToHitList) {
 }
 
 LUA_FUNCTION(Lua_TearInHitList) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	int hitListIndex = entity->GetHitListIndex();
 	auto& hitList = tear->_hitList;
@@ -198,7 +200,7 @@ LUA_FUNCTION(Lua_TearInHitList) {
 }
 
 LUA_FUNCTION(Lua_TearSetInitSound) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	uint32_t soundId = (uint32_t)luaL_checkinteger(L, 2);
 
 	if (soundId >= g_Manager->_sfxManager._sounds.size())
@@ -214,13 +216,13 @@ LUA_FUNCTION(Lua_TearSetInitSound) {
 }
 
 LUA_FUNCTION(Lua_TearGetTearFlags) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], tear->_tearFlags);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_TearSetTearFlags) {
-	Entity_Tear* tear = lua::GetLuabridgeUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	Entity_Tear* tear = LuaEntityTear::Get(L, 1);
 	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 
 	tear->_tearFlags = *flags;

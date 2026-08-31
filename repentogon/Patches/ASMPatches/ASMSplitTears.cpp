@@ -10,20 +10,21 @@
 #include "SigScan.h"
 #include "HookSystem.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 
 namespace SplitTears {
 
 // MC_POST_FIRE_SPLIT_TEAR
 void RunPostFireSplitTearCallback(Entity_Tear* tear, Entity* sourceEntity, const CustomSplitTearType splitType) {
 	const uint32_t sourceType = *sourceEntity->GetType();
-	lua::Metatables sourceTypeMt;
 
+	const lua::LuaClassInterface* sourceClass = nullptr;
 	if (sourceType == 2) {
-		sourceTypeMt = lua::Metatables::ENTITY_TEAR;
+		sourceClass = &LuaEntityTear::Interface;
 	} else if (sourceType == 7) {
-		sourceTypeMt = lua::Metatables::ENTITY_LASER;
+		sourceClass = &LuaEntityLaser::Interface;
 	} else if (sourceType == 8) {
-		sourceTypeMt = lua::Metatables::ENTITY_KNIFE;
+		sourceClass = &LuaEntityKnife::Interface;
 	} else {
 		return;
 	}
@@ -51,8 +52,9 @@ void RunPostFireSplitTearCallback(Entity_Tear* tear, Entity* sourceEntity, const
 		} else {
 			luaCaller.push((int)splitTypeEnum);
 		}
-		luaCaller.push(tear, lua::Metatables::ENTITY_TEAR)
-			.push(sourceEntity, sourceTypeMt);
+		luaCaller.pushClassPtr<LuaEntityTear>(tear);
+		luaCaller.pushClassPtr(*sourceClass, sourceEntity);
+
 		if (!customSplitTypeStr.empty()) {
 			luaCaller.push(customSplitTypeStr.c_str());
 		} else {
@@ -174,7 +176,7 @@ LUALIB_API int Lua_FireSplitTear(lua_State* L) {
 	}
 	Entity_Tear* newTear = FireSplitTear(sourceEntity, pos, vel, damageMult, sizeMult, variant, splitType);
 	if (newTear) {
-		lua::luabridge::UserdataPtr::push(L, newTear, lua::GetMetatableKey(lua::Metatables::ENTITY_TEAR));
+		LuaEntityTear::PushPtr(L, newTear);
 	} else {
 		lua_pushnil(L);
 	}

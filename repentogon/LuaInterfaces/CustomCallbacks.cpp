@@ -5,6 +5,7 @@
 #include "IsaacRepentance.h"
 #include "../ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "LuaWeapon.h"
 #include "LuaLevelGenerator.h"
@@ -18,6 +19,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
 #include "CustomCallbacks.h"
+#include "../Utils/Entity/EntityUtils.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -337,15 +339,10 @@ struct CollisionInputs {
 	Entity* collider;
 	bool low;
 	bool override_vanilla_pre_collision;
+	const lua::LuaClassInterface* class_interface = &LuaEntity::Interface;
 
-	lua::Metatables vanilla_metatable = lua::Metatables::ENTITY;
-	const char* luabridge_metatable = nullptr;
-
-	void SetMetatable(const lua::Metatables metatable) {
-		vanilla_metatable = metatable;
-	}
-	void SetMetatable(const char* metatable) {
-		luabridge_metatable = metatable;
+	void SetClassInterface(const lua::LuaClassInterface* classInterface) {
+		class_interface = classInterface;
 	}
 };
 
@@ -357,21 +354,17 @@ struct PreCollisionResult {
 // Runs either a PRE_X_COLLISION or POST_X_COLLISION callback (they push the same parameters).
 lua::LuaResults RunCollisionCallback(const CollisionInputs& inputs, const int callbackid, lua_State* L) {
 	int discriminator = *inputs.entity->GetVariant();
-	if (inputs.vanilla_metatable == lua::Metatables::ENTITY_NPC) {
+	if (inputs.class_interface == &LuaEntityNPC::Interface) {
 		discriminator = *inputs.entity->GetType();
 	}
-	else if (inputs.vanilla_metatable == lua::Metatables::ENTITY_KNIFE) {
+	else if (inputs.class_interface == &LuaEntityKnife::Interface) {
 		discriminator = *inputs.entity->GetSubType();
 	}
 
-	lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid).push(discriminator);
-	if (inputs.luabridge_metatable != nullptr) {
-		lua_caller.pushLuabridge(inputs.entity, inputs.luabridge_metatable);
-	}
-	else {
-		lua_caller.push(inputs.entity, inputs.vanilla_metatable);
-	}
-	return lua_caller.push(inputs.collider, lua::Metatables::ENTITY)
+	return lua::LuaCaller(L).push(callbackid)
+		.push(discriminator)
+		.pushClassPtr(*inputs.class_interface, inputs.entity)
+		.push(inputs.collider, lua::Metatables::ENTITY)
 		.push(inputs.low)
 		.call(1);
 }
@@ -447,22 +440,22 @@ bool HandleCollisionCallbacks(const CollisionInputs& inputs, const int precallba
 
 // "super" is wrapped into a lambda so that I can share the logic for all the collision callbacks without shoving it all into the macro.
 #define _COLLISION_SUPER_LAMBDA() [this](Entity* collider, bool low) { return super(collider, low); }
-#define HOOK_COLLISION_CALLBACKS(_type, _metatable, _overridevanillaprecollision, _precallback, _postcallback) \
+#define HOOK_COLLISION_CALLBACKS(_type, _class_interface, _overridevanillaprecollision, _precallback, _postcallback) \
 HOOK_METHOD(_type, HandleCollision, (Entity* collider, bool low) -> bool) { \
 	CollisionInputs inputs = { this, collider, low, _overridevanillaprecollision }; \
-	inputs.SetMetatable(_metatable); \
+	inputs.SetClassInterface(_class_interface); \
 	return HandleCollisionCallbacks(inputs, _precallback, _postcallback, _COLLISION_SUPER_LAMBDA()); \
 }
 
-HOOK_COLLISION_CALLBACKS(Entity_Player, lua::Metatables::ENTITY_PLAYER, true, 33, 1231)
-HOOK_COLLISION_CALLBACKS(Entity_Tear, lua::Metatables::ENTITY_TEAR, true, 42, 1233)
-HOOK_COLLISION_CALLBACKS(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR, true, 26, 1235)
-HOOK_COLLISION_CALLBACKS(Entity_Bomb, lua::Metatables::ENTITY_BOMB, true, 60, 1237)
-HOOK_COLLISION_CALLBACKS(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, true, 38, 1239)
-HOOK_COLLISION_CALLBACKS(Entity_Knife, lua::Metatables::ENTITY_KNIFE, true, 53, 1243)
-HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, true, 46, 1245)
-HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, true, 30, 1247)
-HOOK_COLLISION_CALLBACKS(Entity_Slot, lua::metatables::EntitySlotMT, false, 1240, 1241)
+HOOK_COLLISION_CALLBACKS(Entity_Player, &LuaEntityPlayer::Interface, true, 33, 1231)
+HOOK_COLLISION_CALLBACKS(Entity_Tear, &LuaEntityTear::Interface, true, 42, 1233)
+HOOK_COLLISION_CALLBACKS(Entity_Familiar, &LuaEntityFamiliar::Interface, true, 26, 1235)
+HOOK_COLLISION_CALLBACKS(Entity_Bomb, &LuaEntityBomb::Interface, true, 60, 1237)
+HOOK_COLLISION_CALLBACKS(Entity_Pickup, &LuaEntityPickup::Interface, true, 38, 1239)
+HOOK_COLLISION_CALLBACKS(Entity_Slot, &LuaEntitySlot::Interface, false, 1240, 1241)
+HOOK_COLLISION_CALLBACKS(Entity_Knife, &LuaEntityKnife::Interface, true, 53, 1243)
+HOOK_COLLISION_CALLBACKS(Entity_Projectile, &LuaEntityProjectile::Interface, true, 46, 1245)
+HOOK_COLLISION_CALLBACKS(Entity_NPC, &LuaEntityNPC::Interface, true, 30, 1247)
 
 // Nullify the vanilla pre-collision callbacks.
 HOOK_METHOD(LuaEngine, PrePlayerCollide, (Entity_Player* player, Entity* collider, bool low) -> int) { return 0; }
@@ -495,21 +488,25 @@ HOOK_METHOD(Entity_Laser, DoDamage, (Entity* entity, float damage) -> void) {
 }
 
 // Returns true if the Update logic should be skipped.
-bool RunPreUpdateCallback(Entity* entity, const lua::Metatables metatable, const int callbackid) {
+bool RunPreUpdateCallback(Entity* entity, eEntityClass entityClass, const int callbackid) {
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
+		const lua::LuaClassInterface& classInterface = EntityUtils::GetLuaClassInterface(entityClass);
+
+		int discriminator = *entity->GetVariant();
+		if (entityClass == eEntityClass::CLASS_KNIFE)
+		{
+			discriminator = *entity->GetSubType();
+		}
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid);
-		if (metatable == lua::Metatables::ENTITY_KNIFE) {
-			lua_caller.push(*entity->GetSubType());
-		}
-		else {
-			lua_caller.push(*entity->GetVariant());
-		}
-		lua::LuaResults result = lua_caller.push(entity, metatable).call(1);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(discriminator)
+			.pushClassPtr(classInterface, entity)
+			.call(1);
 
 		if (!result && lua_isboolean(L, -1)) {
 			return lua_toboolean(L, -1);
@@ -520,9 +517,9 @@ bool RunPreUpdateCallback(Entity* entity, const lua::Metatables metatable, const
 
 // Still call Entity::Update() if we skip the subclass' update,
 // since that aligns with how MC_PRE_NPC_UPDATE works.
-#define HOOK_PRE_UPDATE_CALLBACK(_type, _metatable, _callbackid) \
+#define HOOK_PRE_UPDATE_CALLBACK(_type, _entityClass, _callbackid) \
 HOOK_METHOD(_type, Update, () -> void) { \
-	if (!RunPreUpdateCallback(this, _metatable, _callbackid)) { \
+	if (!RunPreUpdateCallback(this, _entityClass, _callbackid)) { \
 		super(); \
 	} else { \
 		((Entity*)this)->Original_Update(); \
@@ -530,15 +527,15 @@ HOOK_METHOD(_type, Update, () -> void) { \
 }
 
 // PRE_X_UPDATE (1160 ~ 1168) (PRE_SLOT_UPDATE is 1169)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Player, lua::Metatables::ENTITY_PLAYER, 1160)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Tear, lua::Metatables::ENTITY_TEAR, 1161)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR, 1162)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Bomb, lua::Metatables::ENTITY_BOMB, 1163)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, 1164)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Knife, lua::Metatables::ENTITY_KNIFE, 1165)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, 1166)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Laser, lua::Metatables::ENTITY_LASER, 1167)
-HOOK_PRE_UPDATE_CALLBACK(Entity_Effect, lua::Metatables::ENTITY_EFFECT, 1168)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Player, eEntityClass::CLASS_PLAYER, 1160)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Tear, eEntityClass::CLASS_TEAR, 1161)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Familiar, eEntityClass::CLASS_FAMILIAR, 1162)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Bomb, eEntityClass::CLASS_BOMB, 1163)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Pickup, eEntityClass::CLASS_PICKUP, 1164)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Knife, eEntityClass::CLASS_KNIFE, 1165)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Projectile, eEntityClass::CLASS_PROJECTILE, 1166)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Laser, eEntityClass::CLASS_LASER, 1167)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Effect, eEntityClass::CLASS_EFFECT, 1168)
 
 // NPC_PICK_TARGET
 HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
@@ -1858,6 +1855,8 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 //PRE_TEAR_RENDER (id: 1084)
 HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 	const int callbackid = 1084;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1866,8 +1865,8 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::Metatables::ENTITY_TEAR)
-			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+			.pushClassPtr<LuaEntityTear>(this)
+			.pushClass<LuaVector>(*offset)
 			.call(1);
 
 		if (!result) {
@@ -1876,8 +1875,9 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_isuserdata(L, -1)) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -3622,7 +3622,7 @@ HOOK_METHOD(Backdrop, RenderWalls, (Vector const& renderOffset, ColorMod mod) ->
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
 			.pushnil()
-			.push(&mod, lua::Metatables::COLOR)
+			.pushClassPtr<LuaColor>(&mod)
 			.call(0);
 	}
 
@@ -3638,7 +3638,7 @@ HOOK_METHOD(Backdrop, RenderFloor, (Vector const& renderOffset, ColorMod mod) ->
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
 			.pushnil()
-			.push(&mod, lua::Metatables::COLOR)
+			.pushClassPtr<LuaColor>(&mod)
 			.call(0);
 	}
 
@@ -3870,7 +3870,7 @@ HOOK_METHOD(Entity_Familiar, FireProjectile, (const Vector& AimDirection, bool u
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*fam->GetVariant())
-			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.pushClassPtr<LuaEntityTear>(tear)
 			.call(1);
 	}
 
@@ -5374,8 +5374,8 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 			.call(1);
 
 		if (!result) {
-			if (lua_isuserdata(L, -1)) {
-				auto* retItem = lua::GetCData<ItemConfig_Item*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+			if (LuaItem::IsUnderlyingType(L, -1)) {
+				auto* retItem = LuaItem::Get(L, -1);
 				if (retItem) {
 					item = retItem;
 				}
@@ -6724,7 +6724,7 @@ HOOK_STATIC(LuaEngine, PostTearRender, (Entity_Tear* tear, Vector* offset) -> vo
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(tear->_variant)
-			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.pushClassPtr<LuaEntityTear>(tear)
 			.push(*offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
 			.call(0);
 	}

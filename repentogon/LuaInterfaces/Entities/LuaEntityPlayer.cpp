@@ -172,7 +172,7 @@ LUA_FUNCTION(Lua_FireTear) {
 
 	int flags = (canBeEye ? 0x4 : 0) | (noTractorBeam ? 0x2 : 0) | (canTriggerStreakEnd ? 0x1 : 0);
 
-	lua::luabridge::UserdataPtr::push(L, player->FireTear(position, *velocity, flags, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_TEAR));
+	LuaEntityTear::PushPtr(L, player->FireTear(position, *velocity, flags, source, damageMultiplier));
 	return 1;
 }
 

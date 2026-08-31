@@ -353,6 +353,13 @@ namespace lua {
 
     class LuaResults;
 
+    // used for dynamic pushes in lua caller
+    struct LuaClassInterface
+    {
+        void (*Push)(lua_State*, const void*);
+        void (*PushPtr)(lua_State*, void*);
+    };
+
     class LIBZHL_API LuaCaller {
     public:
         LuaCaller(lua_State* L);
@@ -407,7 +414,32 @@ namespace lua {
             ++_n;
             return *this;
         }
-
+        template<typename LuaClass, typename T>
+        LuaCaller& pushClass(const T& value)
+        {
+            LuaClass::Push(_L, value);
+            ++_n;
+            return *this;
+        }
+        template<typename LuaClass, typename T>
+        LuaCaller& pushClassPtr(T* value)
+        {
+            LuaClass::PushPtr(_L, value);
+            ++_n;
+            return *this;
+        }
+        LuaCaller& pushClass(const LuaClassInterface& classInterface, const void* value)
+        {
+            classInterface.Push(_L, value);
+            ++_n;
+            return *this;
+        };
+        LuaCaller& pushClassPtr(const LuaClassInterface& classInterface, void* value)
+        {
+            classInterface.PushPtr(_L, value);
+            ++_n;
+            return *this;
+        };
         void* pushUd(size_t size, const char* mt);
 
         template<typename T, typename... Args>
