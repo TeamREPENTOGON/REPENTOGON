@@ -413,6 +413,108 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 	}
 }
 
+// [ONLINE-DETERMINISM] Fingerprint what the run asks about unlock state.
+//
+// This is the one cause that identical mod sets do not rule out, and it needs no mod at all:
+// two players have different save files. Achievements, completion marks and event counters
+// differ, and the item pool is filtered by exactly that - an item the host has unlocked and
+// the guest has not is in one pool and absent from the other. Walk into a treasure room and
+// the two machines roll against different contents from the same seed. It is also why the
+// desync protocol carries a save checksum alongside the framestate and RNG ones.
+//
+// Making the two agree is a real decision - somebody's unlocks would have to win, which
+// changes what a player can obtain in their own run - so this only measures. Every unlock
+// query during a run is folded into a rolling fingerprint over (id, answer) pairs. Two
+// players comparing the line logged at the same query count learn in one number whether
+// their saves diverge, instead of guessing.
+static unsigned int s_unlockFingerprint = 0;
+static unsigned int s_unlockQueryCount = 0;
+static unsigned int s_unlockFingerprintSeed = 0;
+
+HOOK_METHOD(PersistentGameData, Unlocked, (int achievementID) -> bool) {
+	const bool result = super(achievementID);
+
+	const unsigned int runSeed =
+		g_Manager ? g_Manager->_gamestate._seeds._gameStartSeed : 0u;
+	if (runSeed != s_unlockFingerprintSeed) {
+		s_unlockFingerprintSeed = runSeed;
+		s_unlockFingerprint = 2166136261u;   // FNV-1a offset basis
+		s_unlockQueryCount = 0;
+	}
+
+	// FNV-1a over the id and the answer. Order matters, which is what we want: two machines
+	// that ask the same questions in the same order and get the same answers agree here.
+	unsigned int value = ((unsigned int)achievementID << 1) | (result ? 1u : 0u);
+	for (int byte = 0; byte < 4; ++byte) {
+		s_unlockFingerprint ^= (value >> (byte * 8)) & 0xFFu;
+		s_unlockFingerprint *= 16777619u;
+	}
+	++s_unlockQueryCount;
+
+	// Checkpoints rather than every call, which would drown the log. Both players compare
+	// the line carrying the same count.
+	if (s_unlockQueryCount == 1 || s_unlockQueryCount % 500 == 0) {
+		ZHL::Log("[ONLINE-DETERMINISM] unlock fingerprint: seed=%u queries=%u hash=%08x\n",
+			s_unlockFingerprintSeed, s_unlockQueryCount, s_unlockFingerprint);
+	}
+
+	return result;
+}
+
+// [ONLINE-DETERMINISM] Put the mod list in an order both machines will agree on.
+//
+// ListMods fills _mods in whatever order the filesystem handed back the mod directories.
+// That order is not part of the mod set - it depends on when each mod was installed, on the
+// filesystem, on the drive. Two players who genuinely have identical mods can still end up
+// with _mods in different orders, and everything downstream that walks this vector inherits
+// the disagreement. Modded content IDs are assigned by walking it, so the same item can hold
+// a different ID on each machine; from there the two runs are simply not the same game, and
+// neither player can see why.
+//
+// Sorting on identity fixes that: the workshop ID where there is one, the directory name for
+// local mods. Both are properties of the mod itself rather than of the disk it sits on, so
+// the resulting order is a function of *which* mods are installed and nothing else.
+//
+// This runs right after ListMods and before content loading walks the list, and the order is
+// logged so a desync report can be checked against what each machine actually used.
+static void OnlineDeterminism_SortMods(ModManager* modManager) {
+	auto identity = [](ModEntry* mod) -> std::string {
+		if (!mod) {
+			return std::string();
+		}
+		const char* workshopId = mod->GetId();
+		// Local mods have no workshop ID, so fall back to the directory name. The prefixes
+		// keep the two namespaces from colliding with each other.
+		if (workshopId && *workshopId) {
+			return std::string("w:") + workshopId;
+		}
+		return std::string("d:") + mod->GetDir();
+	};
+
+	std::stable_sort(modManager->_mods.begin(), modManager->_mods.end(),
+		[&identity](ModEntry* a, ModEntry* b) {
+			// Null entries are not expected, but sorting must not depend on how they
+			// happen to be arranged, so give them a fixed place at the end.
+			if (!a || !b) {
+				return b == nullptr && a != nullptr;
+			}
+			return identity(a) < identity(b);
+		});
+
+	ZHL::Log("[ONLINE-DETERMINISM] mod order after sort (%u mods):\n",
+		(unsigned int)modManager->_mods.size());
+	unsigned int index = 0;
+	for (ModEntry* mod : modManager->_mods) {
+		if (!mod) {
+			ZHL::Log("[ONLINE-DETERMINISM]   %3u  <null>\n", index++);
+			continue;
+		}
+		ZHL::Log("[ONLINE-DETERMINISM]   %3u  %-24s %s%s\n", index++,
+			identity(mod).c_str(), mod->GetName().c_str(),
+			mod->IsEnabled() ? "" : "  (disabled)");
+	}
+}
+
 //prevents playing online modes
 // [ONLINE-EXPERIMENT] Upstream forces _modBanStatus = 3 here to block online outright. The
 // previous step replaced that with preserving whatever the game's own ListMods logic computed,
@@ -435,6 +537,8 @@ HOOK_METHOD(ModManager, ListMods, () -> void) {
 
 	_modBanStatus = 0;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods forcing _modBanStatus = %d (was %d)\n", _modBanStatus, postCallBanStatus);
+
+	OnlineDeterminism_SortMods(this);
 }
 
 // Fixes game crashing when spawning an entity with a seed of 0.

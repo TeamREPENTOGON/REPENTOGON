@@ -15,6 +15,8 @@
 #include <iostream>
 #include <random>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 #include <string>
 
 #include "LuaInit.h"
@@ -345,6 +347,226 @@ LUA_FUNCTION(Lua_ToDegrees) {
 	return 1;
 }
 
+// [ONLINE-DETERMINISM] Give Lua an RNG that both machines will agree on.
+//
+// Lua's stock math.random is seeded per process. Two players running byte-identical mod code
+// on the same run seed still get different numbers out of it, so any mod that reaches for
+// math.random instead of the game's RNG desyncs an online game every time - and nothing in
+// the mod looks wrong, which is what makes it hard to find.
+//
+// The fix is not to route these calls into the game's own RNG: that stream is part of the
+// game state, and consuming from it would change what every *other* roll returns. Instead
+// this is a separate generator seeded from the run seed. Both machines start a run with the
+// same seed and execute the same mod code, so they draw the same sequence, while the game's
+// own stream is left exactly as it was.
+//
+// Re-seeding is lazy rather than hooked to run start: the seed is compared on every draw and
+// the generator restarts whenever the run seed changes. That covers continues and restarts
+// without needing to catch every path into a new run.
+static unsigned int s_luaRngState = 0;
+static unsigned int s_luaRngSeed = 0;
+static bool s_luaRngReseedWarned = false;
+
+// Any non-zero constant works to keep xorshift out of its fixed point; this is the usual one.
+static const unsigned int LUA_RNG_FALLBACK = 0x9E3779B9u;
+
+static void Lua_SyncRngToRun() {
+	unsigned int runSeed = g_Manager ? g_Manager->_gamestate._seeds._gameStartSeed : 0u;
+	if (runSeed != s_luaRngSeed) {
+		s_luaRngSeed = runSeed;
+		s_luaRngState = runSeed ? runSeed : LUA_RNG_FALLBACK;
+	}
+}
+
+static unsigned int Lua_NextRandom() {
+	Lua_SyncRngToRun();
+	unsigned int x = s_luaRngState;
+	x ^= x << 13;
+	x ^= x >> 17;
+	x ^= x << 5;
+	s_luaRngState = x ? x : LUA_RNG_FALLBACK;
+	return s_luaRngState;
+}
+
+LUA_FUNCTION(Lua_DeterministicRandom) {
+	int argc = lua_gettop(L);
+	unsigned int raw = Lua_NextRandom();
+
+	if (argc == 0) {
+		// Stock math.random() returns a float in [0,1). Dividing by 2^32 keeps that range
+		// without ever reaching 1.0.
+		lua_pushnumber(L, (lua_Number)raw / 4294967296.0);
+		return 1;
+	}
+
+	lua_Integer lower = 1;
+	lua_Integer upper = 0;
+	if (argc == 1) {
+		upper = luaL_checkinteger(L, 1);
+	} else {
+		lower = luaL_checkinteger(L, 1);
+		upper = luaL_checkinteger(L, 2);
+	}
+	if (lower > upper) {
+		return luaL_error(L, "bad argument to 'random' (interval is empty)");
+	}
+
+	// Modulo over the span rather than over the raw value, so the bounds are respected.
+	// The bias this leaves is the same one stock Lua 5.3 has here and is irrelevant next to
+	// the determinism this exists to provide.
+	unsigned long long span = (unsigned long long)(upper - lower) + 1ull;
+	lua_pushinteger(L, lower + (lua_Integer)(raw % span));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_DeterministicRandomSeed) {
+	// A mod re-seeding by hand is the exact problem this replaces - math.randomseed(os.time())
+	// is the classic form and guarantees the two machines diverge. The call is accepted and
+	// ignored so nothing breaks, but it is reported once because it means some mod is trying
+	// to control this sequence and will not get what it expects.
+	if (!s_luaRngReseedWarned) {
+		s_luaRngReseedWarned = true;
+		ZHL::Log("[ONLINE-DETERMINISM] a mod called math.randomseed; ignoring it, since an "
+			"explicit seed would break agreement between players. The sequence stays tied "
+			"to the run seed.\n");
+	}
+	return 0;
+}
+
+// [ONLINE-DETERMINISM] Make pairs() iterate in an order both machines will agree on.
+//
+// pairs() has no defined order. Lua walks the hash part in whatever arrangement the table's
+// internal layout produced, which depends on insertion history and on pointer values, so the
+// same table built the same way can iterate differently in two processes. A mod that takes
+// the first match out of a pairs() loop, or accumulates floats across one, then produces
+// different results on each machine from identical code, identical mods and an identical
+// seed. Nothing in the mod looks wrong - this is the subtlest of the desync causes.
+//
+// Keys are collected, ordered by type and value, and walked through a closure. Numbers and
+// strings sort by their own value and so are fully machine-independent. Keys of any other
+// type (tables, functions, userdata) have nothing stable to sort on - their identity *is* an
+// address - so they keep discovery order after the sortable ones and are reported once,
+// because such a loop cannot be made deterministic from here.
+static bool s_deterministicPairs = true;
+static bool s_unsortableKeyWarned = false;
+
+namespace {
+	struct PairsKey {
+		int rank;              // 0 = number, 1 = string, 2 = anything else
+		double number;
+		std::string text;
+		int slot;              // position in the collected key table, 1-based
+
+		bool operator<(const PairsKey& other) const {
+			if (rank != other.rank) {
+				return rank < other.rank;
+			}
+			if (rank == 0) {
+				return number < other.number;
+			}
+			if (rank == 1) {
+				return text < other.text;
+			}
+			// Unsortable: hold discovery order rather than inventing one.
+			return slot < other.slot;
+		}
+	};
+}
+
+LUA_FUNCTION(Lua_SortedPairsIterator) {
+	lua_Integer index = lua_tointeger(L, lua_upvalueindex(3)) + 1;
+	lua_pushinteger(L, index);
+	lua_replace(L, lua_upvalueindex(3));
+
+	lua_rawgeti(L, lua_upvalueindex(2), (int)index);   // the key, or nil past the end
+	if (lua_isnil(L, -1)) {
+		return 1;
+	}
+	lua_pushvalue(L, -1);                              // key for the lookup
+	lua_gettable(L, lua_upvalueindex(1));              // its current value
+	return 2;
+}
+
+LUA_FUNCTION(Lua_DeterministicPairs) {
+	luaL_checktype(L, 1, LUA_TTABLE);
+
+	// __pairs must still win, or metatable-driven iteration silently stops working.
+	if (luaL_getmetafield(L, 1, "__pairs") != LUA_TNIL) {
+		lua_pushvalue(L, 1);
+		lua_call(L, 1, 3);
+		return 3;
+	}
+
+	if (!s_deterministicPairs) {
+		lua_getglobal(L, "next");
+		lua_pushvalue(L, 1);
+		lua_pushnil(L);
+		return 3;
+	}
+
+	lua_newtable(L);                                   // collected keys
+	int keysIndex = lua_gettop(L);
+	std::vector<PairsKey> order;
+	int count = 0;
+
+	lua_pushnil(L);
+	while (lua_next(L, 1) != 0) {
+		lua_pop(L, 1);                                 // value; only keys matter here
+		PairsKey key;
+		key.slot = ++count;
+		int type = lua_type(L, -1);
+		if (type == LUA_TNUMBER) {
+			key.rank = 0;
+			key.number = (double)lua_tonumber(L, -1);
+		} else if (type == LUA_TSTRING) {
+			key.rank = 1;
+			// Safe only because the type was just checked: lua_tolstring converts numbers
+			// in place, and doing that to a key mid-traversal would corrupt lua_next.
+			size_t length = 0;
+			const char* text = lua_tolstring(L, -1, &length);
+			key.text.assign(text, length);
+		} else {
+			key.rank = 2;
+			key.number = 0.0;
+			if (!s_unsortableKeyWarned) {
+				s_unsortableKeyWarned = true;
+				ZHL::Log("[ONLINE-DETERMINISM] pairs() saw a key that is neither number nor "
+					"string; its order cannot be made machine-independent, so that loop "
+					"stays a desync risk.\n");
+			}
+		}
+		order.push_back(key);
+
+		lua_pushvalue(L, -1);                          // duplicate key to store...
+		lua_rawseti(L, keysIndex, count);              // ...into the key table
+		// the original key stays on the stack as lua_next's cursor
+	}
+
+	std::stable_sort(order.begin(), order.end());
+
+	lua_newtable(L);                                   // keys, now in order
+	int sortedIndex = lua_gettop(L);
+	for (size_t i = 0; i < order.size(); ++i) {
+		lua_rawgeti(L, keysIndex, order[i].slot);
+		lua_rawseti(L, sortedIndex, (int)i + 1);
+	}
+
+	lua_pushvalue(L, 1);                               // upvalue 1: the table
+	lua_pushvalue(L, sortedIndex);                     // upvalue 2: ordered keys
+	lua_pushinteger(L, 0);                             // upvalue 3: cursor
+	lua_pushcclosure(L, Lua_SortedPairsIterator, 3);
+	lua_pushvalue(L, 1);
+	lua_pushnil(L);
+	return 3;
+}
+
+LUA_FUNCTION(Lua_SetDeterministicPairs) {
+	s_deterministicPairs = lua_toboolean(L, 1) != 0;
+	ZHL::Log("[ONLINE-DETERMINISM] deterministic pairs() %s\n",
+		s_deterministicPairs ? "enabled" : "disabled");
+	return 0;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	ZHL::Log("[REPENTOGON] Registering Lua functions and metatables\n");
@@ -359,6 +581,25 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);
 	lua_register(state, "ToDegrees", Lua_ToDegrees);
+
+	// Swap the two entry points into Lua's per-process RNG for run-seeded equivalents.
+	// Done here rather than at a lower priority so mod code never sees the stock versions.
+	lua_getglobal(state, "math");
+	if (lua_istable(state, -1)) {
+		lua_pushcfunction(state, Lua_DeterministicRandom);
+		lua_setfield(state, -2, "random");
+		lua_pushcfunction(state, Lua_DeterministicRandomSeed);
+		lua_setfield(state, -2, "randomseed");
+		ZHL::Log("[ONLINE-DETERMINISM] math.random/math.randomseed now follow the run seed\n");
+	} else {
+		ZHL::Log("[ONLINE-DETERMINISM] no global 'math' table; leaving Lua's RNG alone\n");
+	}
+	lua_pop(state, 1);
+
+	lua_register(state, "pairs", Lua_DeterministicPairs);
+	lua_register(state, "SetDeterministicPairs", Lua_SetDeterministicPairs);
+	ZHL::Log("[ONLINE-DETERMINISM] pairs() now iterates in sorted order "
+		"(SetDeterministicPairs(false) restores stock behaviour)\n");
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {
