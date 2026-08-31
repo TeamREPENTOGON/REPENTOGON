@@ -414,9 +414,16 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* result, std_string* filePa
 }
 
 //prevents playing online modes
-// [ONLINE-EXPERIMENT] Causality test: instead of forcing _modBanStatus = 3, preserve whatever
-// value the game's own ListMods logic computed (postCallBanStatus), to measure whether
-// online_mods_check() still rejects online with the native value. Logging unchanged.
+// [ONLINE-EXPERIMENT] Upstream forces _modBanStatus = 3 here to block online outright. The
+// previous step replaced that with preserving whatever the game's own ListMods logic computed,
+// which answered its question: with mods loaded the game computes 1 on its own, so removing
+// REPENTOGON's block still leaves the game's mod ban in place - that is the message that comes
+// back as soon as mods are enabled.
+//
+// This step forces 0, the value meaning "no mods", so the game's own check stops rejecting.
+// It is a deliberate lie to that check: mods really are loaded. Two players whose mod sets
+// differ will diverge, and the native NetDesyncHandler compares per-frame checksums, so this
+// is expected to surface as a desync rather than a clean refusal.
 HOOK_METHOD(ModManager, ListMods, () -> void) {
 	int preCallBanStatus = _modBanStatus;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods ENTER, _modBanStatus (original, pre-super) = %d\n", preCallBanStatus);
@@ -426,8 +433,8 @@ HOOK_METHOD(ModManager, ListMods, () -> void) {
 	int postCallBanStatus = _modBanStatus;
 	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods after game logic (post-super), _modBanStatus = %d\n", postCallBanStatus);
 
-	_modBanStatus = postCallBanStatus;
-	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods REPENTOGON forces _modBanStatus = %d (unchanged behavior)\n", _modBanStatus);
+	_modBanStatus = 0;
+	ZHL::Log("[ONLINE] -> mod check: ModManager::ListMods forcing _modBanStatus = %d (was %d)\n", _modBanStatus, postCallBanStatus);
 }
 
 // Fixes game crashing when spawning an entity with a seed of 0.
