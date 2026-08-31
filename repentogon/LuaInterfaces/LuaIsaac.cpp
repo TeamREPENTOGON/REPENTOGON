@@ -313,8 +313,8 @@ LUA_FUNCTION(Lua_StartNewGame) {
 	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors ourselves.
 	// However, StartNewGame will handle it for us. Just be aware of this.
 	Seeds seedobj;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		seedobj.construct_from_copy(lua::GetLuabridgeUserdata<Seeds*>(L, 4, lua::Metatables::SEEDS, "Seeds"));
+	if (lua_type(L, 4) == LUA_TCDATA) {
+		seedobj.construct_from_copy(lua::GetCData<Seeds*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::SEEDS], "Seeds"));
 	} else {
 		unsigned int seed = (unsigned int)luaL_optinteger(L, 4, 0);
 		bool isCustomRun = lua::luaL_optboolean(L, 5, false);
