@@ -31,6 +31,8 @@ Added:
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 /newline/
 Modified:
+* MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
+	- Change your CallbackPriority to be later instead of earlier if you need your value to be preferred.
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
 Fixes:
