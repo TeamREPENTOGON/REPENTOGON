@@ -201,7 +201,7 @@ __thiscall bool Room::IsPositionInRoom(Vector* pos, float margin);
 __thiscall void Room::MamaMegaExplosion(Vector* position, Entity_Player* player);
 
 "558bec83e4f883ec10f30f1045":
-__thiscall Vector* Room::ScreenWrapPosition(Vector* buffer, Vector* pos, float margin, float margin2, float margin3);
+__thiscall Vector* Room::ScreenWrapPosition (Vector* ret, Vector* pos, float topLeftXMargin<xmm3>, float topLeftYMargin, float bottomRightXMargin, float bottomRightYMargin);
 
 "558bec83ec08f30f100d":
 __thiscall Vector* Room::WorldToScreenPosition(Vector* buffer, Vector pos);

@@ -236,10 +236,26 @@ LUA_FUNCTION(Lua_MamaMegaExplosion) {
 LUA_FUNCTION(Lua_ScreenWrapPosition) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float margin = (float)luaL_checknumber(L, 3);
-
+	float margin[4]{};
+	if (lua_type(L, 3) == LUA_TCDATA) {
+		Vector* topLeft = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+		Vector* bottomRight = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+		margin[0] = topLeft->x;
+		margin[1] = topLeft->y;
+		margin[2] = bottomRight->x;
+		margin[3] = bottomRight->y;
+	}
+	else
+	{
+		float m = (float)luaL_checknumber(L, 3);
+		margin[0] = m;
+		margin[1] = m;
+		margin[2] = m;
+		margin[3] = m;
+	}
+		
 	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	room->ScreenWrapPosition(toLua, pos, margin, margin, margin);
+	room->ScreenWrapPosition(toLua, pos, margin[0], margin[1], margin[2], margin[3]);
 	return 1;
 }
 

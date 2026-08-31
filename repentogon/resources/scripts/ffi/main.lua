@@ -49,13 +49,15 @@ ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
 ffichecks.iscdata = function(var, ctype)
 	if not var then return false end
 	local ct = resolveCtype(ctype)
-	if ct ~= nil and lffi.istype(ct, var) then
+	if ct and lffi.istype(ct, var) then
 		return true
 	end
 	-- Also accept a pointer to the target type (reference cdata).
 	if type(var) == "cdata" then
 		local ptr = resolveCtype(ctype .. "*")
-		return ptr ~= nil and lffi.istype(ptr, var) or false
+		if ptr and lffi.istype(ptr, var) then
+			return true
+		end
 	end
 	return false
 end
