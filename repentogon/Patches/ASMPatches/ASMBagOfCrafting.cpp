@@ -5,6 +5,7 @@
 #include "../XMLData.h"
 #include "../ASMPatches.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 bool __stdcall CanPickupBePickedUp(Entity_Pickup* pickup, const bool ignorePrice, const bool boomerang, const int meleeVariant) {
@@ -93,8 +94,8 @@ bool __stdcall TryAddToBagOfCraftingTrampoline(Entity_Player* player, Entity_Pic
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
 			.push(pickup->_variant)
-			.push(player, lua::Metatables::ENTITY_PLAYER)
-			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.pushTable(numInitialPickups, 0);
 		for (int i = 0; i < 8; i++) {
 			if (initialPickups[i] > 0) {
@@ -192,8 +193,8 @@ HOOK_METHOD(Entity_Player, TryAddToBagOfCrafting, (Entity_Pickup* pickup) -> boo
 
 			lua::LuaCaller(L).push(callbackid)
 				.push(pickup->_variant)
-				.push(this, lua::Metatables::ENTITY_PLAYER)
-				.push(pickup, lua::Metatables::ENTITY_PICKUP)
+				.pushClassPtr<LuaEntityPlayer>(this)
+				.pushClassPtr<LuaEntityPickup>(pickup)
 				.call(1);
 		}
 	}

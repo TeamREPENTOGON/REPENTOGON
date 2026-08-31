@@ -164,6 +164,32 @@ struct LuabridgeRGONType
     };
 };
 
+template<typename T, const char*& MT>
+struct UserdataPtr
+{
+    static bool IsUnderlyingType(lua_State* L, int index)
+    {
+        return lua_type(L, index) == LUA_TUSERDATA;
+    }
+
+    static T* Get(lua_State* L, int index)
+    {
+        return *lua::GetRawUserdata<T**>(L, idx, MT);
+    }
+
+    static T* GetOpt(lua_State* L, int index)
+    {
+        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
+    }
+
+    static void PushPtr(lua_State* L, T* ptr)
+    {
+        void** result = (void**)lua_newuserdata(L, sizeof(void*));
+        *result = ptr;
+        luaL_setmetatable(L, MT);
+    }
+};
+
 template<typename T, auto ID, auto PTR_ID>
 struct CDataType
 {
@@ -572,4 +598,18 @@ using LuaGridEntityDesc = LuabridgeType<GridEntityDesc, lua::Metatables::GRID_EN
 
 // RGON Classes
 
+using LuaHistoryHUD = UserdataPtr<HistoryHUD, lua::metatables::HistoryHUDMT>;
+using LuaLevelGenerator = UserdataPtr<LevelGenerator, lua::metatables::LevelGeneratorMT>;
+using LuaBossPool = UserdataPtr<BossPool_Pool, lua::metatables::BossPoolMT>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
+using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
+using LuaGridEntityDecoration = LuabridgeRGONType<GridEntity_Decoration, lua::metatables::GridDecorationMT>;
+using LuaGridEntityWeb = LuabridgeRGONType<GridEntity_Web, lua::metatables::GridWebMT>;
+using LuaGridEntityLock = LuabridgeRGONType<GridEntity_Lock, lua::metatables::GridLockMT>;
+using LuaGridEntityFire = LuabridgeRGONType<GridEntity_Fire, lua::metatables::GridFireMT>;
+using LuaGridEntityWall = LuabridgeRGONType<GridEntity_Wall, lua::metatables::GridWallMT>;
+using LuaGridEntityTrapDoor = LuabridgeRGONType<GridEntity_TrapDoor, lua::metatables::GridTrapDoorMT>;
+using LuaGridEntityStairs = LuabridgeRGONType<GridEntity_Stairs, lua::metatables::GridStairsMT>;
+using LuaGridEntityGravity = LuabridgeRGONType<GridEntity_Gravity, lua::metatables::GridGravityMT>;
+using LuaGridEntityStatue = LuabridgeRGONType<GridEntity_Statue, lua::metatables::GridStatueMT>;
+using LuaGridEntityTeleporter = LuabridgeRGONType<GridEntity_Teleporter, lua::metatables::GridTeleporterMT>;

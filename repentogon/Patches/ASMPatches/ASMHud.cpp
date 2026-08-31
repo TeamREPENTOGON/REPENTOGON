@@ -6,6 +6,7 @@
 #include "HookSystem.h"
 #include "../../LuaInit.h"
 #include "Log.h"
+#include "../../LuaClasses.h"
 
 // Refresh the HistoryHUD at the start of a new room if player has smelted Modeling Clay or Error trinkets.
 // Note: Not needed anymore if we update to v1.9.7.13 or later.
@@ -119,7 +120,7 @@ HOOK_METHOD(HistoryHUD, Recompute, (int idx, bool immediate) -> void) {
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
 			.push(idx)
-			.push(this, lua::metatables::HistoryHUDMT)
+			.pushClassPtr<LuaHistoryHUD>(this)
 			.push(idx)
 			.call(1);
 	}
@@ -156,8 +157,8 @@ HOOK_METHOD(HistoryHUD, Render, (Vector* pos, bool mini) -> void) {
 
 		lua::LuaResults results = lua::LuaCaller(L).push(precallbackid)
 			.pushnil()
-			.push(this, lua::metatables::HistoryHUDMT)
-			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+			.pushClassPtr<LuaHistoryHUD>(this)
+			.pushClass<LuaVector>(*pos)
 			.push(mini)
 			.call(1);
 
@@ -181,8 +182,8 @@ HOOK_METHOD(HistoryHUD, Render, (Vector* pos, bool mini) -> void) {
 
 		lua::LuaResults results = lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
-			.push(this, lua::metatables::HistoryHUDMT)
-			.push(*pos, lua::ffi::CData[lua::ffi::CDataID::VECTOR])
+			.pushClassPtr<LuaHistoryHUD>(this)
+			.pushClass<LuaVector>(*pos)
 			.push(mini)
 			.call(1);
 	}

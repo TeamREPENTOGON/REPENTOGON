@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_WorldToMenuPosition)
 			return luaL_error(L, "Invalid Menu Id %d\n", menuid);
 		}
 		
-		lua::LuaCaller(L).push(Vector(offset.x + pos->x, offset.y + pos->y), lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+		lua::LuaCaller(L).pushClass<LuaVector>(Vector(offset.x + pos->x, offset.y + pos->y));
 		return 1;
 	}
 	else {

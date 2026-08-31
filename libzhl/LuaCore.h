@@ -192,6 +192,7 @@ namespace lua {
         extern LIBZHL_API const char* EntityConfigBabyMT;
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
+        extern LIBZHL_API const char* DeliriumMetatable;
         extern LIBZHL_API const char* FXLayersMT;
         extern LIBZHL_API const char* FXParamsMT;
         extern LIBZHL_API const char* GridDecorationMT;
@@ -390,30 +391,7 @@ namespace lua {
         LuaCaller& pushluaref(int t, int ref);
         LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
-        LuaCaller& push(void* ptr, Metatables meta);
-        LuaCaller& pushLuabridge(void* ptr, const char* meta); 
-        LuaCaller& pushLuabridge(void* ptr, lua::Metatables meta);
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
-        template<typename T>
-        std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) {
-            void** result = (void**)lua_newuserdata(_L, sizeof(void*));
-            *result = ptr;
-            luaL_setmetatable(_L, meta);
-            ++_n;
-            return *this;
-        }
-        template<typename T>
-        LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
-            luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);
-            ++_n;
-            return *this;
-        }
-        template<typename T>
-        LuaCaller& push(T const& value, lua_CTypeId ctypeid) {
-            lua_pushcdata(_L, ctypeid, &value, sizeof(T));
-            ++_n;
-            return *this;
-        }
         template<typename LuaClass, typename T>
         LuaCaller& pushClass(const T& value)
         {

@@ -7,6 +7,7 @@
 #include "IsaacRepentance.h"
 #include "ItemConfigEx.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "SigScan.h"
 #include "XMLData.h"
 #include "../LuaInit.h"
@@ -69,7 +70,7 @@ bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(1);
 
 		if (!player->_exists) {

@@ -2,6 +2,7 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "NotificationHandler.h"
 
 extern CustomImGui customImGui;
@@ -635,7 +636,7 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 		y = (float)*(double*)(g_KAGEInputController + 0x50);
 	}
 
-	lua::LuaCaller(L).push(Vector(x, y), lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	lua::LuaCaller(L).pushClass<LuaVector>(Vector(x, y));
 
 	return 1;
 }

@@ -44,7 +44,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::L
 			.push(param)
 			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.push(gridEntity, lua::Metatables::GRID_ENTITY)
+			.pushClassPtr<LuaGridEntity>(gridEntity)
 			.call(1);
 
 		// why does lua_toboolean return an int wtf
@@ -63,7 +63,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::L
 			.push(param)
 			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.push(gridEntity, lua::Metatables::GRID_ENTITY)
+			.pushClassPtr<LuaGridEntity>(gridEntity)
 			.call(0);
 	}
 
