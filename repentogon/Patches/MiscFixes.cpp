@@ -436,6 +436,16 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achievementID) -> bool) {
 
 	const unsigned int runSeed =
 		g_Manager ? g_Manager->_gamestate._seeds._gameStartSeed : 0u;
+
+	// Menus query unlock state relentlessly - browsing them for ten minutes produced 261500
+	// calls with no run in progress. Counting those would make the fingerprint depend on how
+	// long each player idled on a menu screen, which is precisely the noise this is meant to
+	// see through: the two counts would never line up and the hashes could not be compared.
+	// A run seed of zero means no run, so there is nothing worth fingerprinting yet.
+	if (runSeed == 0) {
+		return result;
+	}
+
 	if (runSeed != s_unlockFingerprintSeed) {
 		s_unlockFingerprintSeed = runSeed;
 		s_unlockFingerprint = 2166136261u;   // FNV-1a offset basis
@@ -452,8 +462,9 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achievementID) -> bool) {
 	++s_unlockQueryCount;
 
 	// Checkpoints rather than every call, which would drown the log. Both players compare
-	// the line carrying the same count.
-	if (s_unlockQueryCount == 1 || s_unlockQueryCount % 500 == 0) {
+	// the line carrying the same count. Kept sparse because this is a hot path - the menu
+	// measurement put it at roughly 435 calls a second.
+	if (s_unlockQueryCount == 1 || s_unlockQueryCount % 2000 == 0) {
 		ZHL::Log("[ONLINE-DETERMINISM] unlock fingerprint: seed=%u queries=%u hash=%08x\n",
 			s_unlockFingerprintSeed, s_unlockQueryCount, s_unlockFingerprint);
 	}
