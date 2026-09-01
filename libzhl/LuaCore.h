@@ -215,6 +215,8 @@ namespace lua {
         extern LIBZHL_API const char* KeyConfigMenuMT;
         extern LIBZHL_API const char* LayerStateMT;
         extern LIBZHL_API const char* LevelGeneratorMT;
+        extern LIBZHL_API const char* DungeonGeneratorMT;
+        extern LIBZHL_API const char* DungeonGeneratorRoomMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
         extern LIBZHL_API const char* LRoomAreaDescMT;

@@ -1750,6 +1750,65 @@ enum LevelStateFlag
         NUM_STATE_FLAGS = 24
 };
 
+enum GameStateFlag
+{
+        STATE_FAMINE_SPAWNED = 0,
+        STATE_PESTILENCE_SPAWNED = 1, // obsolete
+        STATE_WAR_SPAWNED = 2,        // obsolete
+        STATE_DEATH_SPAWNED = 3,      // obsolete
+        STATE_BOSSPOOL_SWITCHED = 4,
+        STATE_DEVILROOM_SPAWNED = 5,
+        STATE_DEVILROOM_VISITED = 6,
+        STATE_BOOK_REVELATIONS_USED = 7,
+        STATE_BOOK_PICKED_UP = 8,
+        STATE_WRATH_SPAWNED = 9,
+        STATE_GLUTTONY_SPAWNED = 10,
+        STATE_LUST_SPAWNED = 11,
+        STATE_SLOTH_SPAWNED = 12,
+        STATE_ENVY_SPAWNED = 13,
+        STATE_PRIDE_SPAWNED = 14,
+        STATE_GREED_SPAWNED = 15,
+        STATE_SUPERGREED_SPAWNED = 16,
+        STATE_DONATION_SLOT_BROKEN = 17,
+        STATE_DONATION_SLOT_JAMMED = 18,
+        STATE_HEAVEN_PATH = 19,
+        STATE_REBIRTH_BOSS_SWITCHED = 20, // obsolete
+        STATE_HAUNT_SELECTED = 21,        // obsolete
+        STATE_ADVERSARY_SELECTED = 22,    // obsolete
+        STATE_MR_FRED_SELECTED = 23,      // obsolete
+        STATE_MAMA_GURDY_SELECTED = 24,   // obsolete
+        STATE_URIEL_SPAWNED = 25,
+        STATE_GABRIEL_SPAWNED = 26,
+        STATE_FALLEN_SPAWNED = 27,
+        STATE_HEADLESS_HORSEMAN_SPAWNED = 28, // obsolete
+        STATE_KRAMPUS_SPAWNED = 29,
+        STATE_DONATION_SLOT_BLOWN = 30,
+        STATE_SHOPKEEPER_KILLED = 31,
+        STATE_ULTRAPRIDE_SPAWNED = 32,
+        STATE_BOSSRUSH_DONE = 33,
+        STATE_GREED_SLOT_JAMMED = 34,
+        STATE_AFTERBIRTH_BOSS_SWITCHED = 35, // obsolete
+        STATE_BROWNIE_SELECTED = 36,         // obsolete
+        STATE_SUPERBUM_APPEARED = 37,
+        STATE_BOSSRUSH_DOOR_SPAWNED = 38,
+        STATE_BLUEWOMB_DOOR_SPAWNED = 39,
+        STATE_BLUEWOMB_DONE = 40,
+        STATE_HEART_BOMB_COIN_PICKED = 41,
+        STATE_ABPLUS_BOSS_SWITCHED = 42, // obsolete
+        STATE_SISTERS_VIS_SELECTED = 43, // obsolete
+        STATE_MAX_COINS_OBTAINED = 43,   // set when reaching 99 coins, used to check for the Golden Razor achievement
+        STATE_SECRET_PATH = 44,          // set when entering a trapdoor that leads to the alternate path
+        STATE_PERFECTION_SPAWNED = 45,   // set when Perfection has dropped from a boss
+        STATE_MAUSOLEUM_HEART_KILLED = 46, // set when Mom's Heart has been killed in the Mausoleum
+        STATE_BACKWARDS_PATH_INIT = 47,  // set when entering Mausoleum/Gehenna II through the photo door, causes Dad's Note to spawn instead of the Mom boss room
+        STATE_BACKWARDS_PATH = 48,       // set during the Ascent
+        STATE_MEGA_SATAN_DOOR_OPENED = 49,
+        STATE_URIEL_KILLED = 50,
+        STATE_GABRIEL_KILLED = 51,
+        STATE_MOTHER_HEART_DOOR_OPENED = 52,
+        NUM_GAME_STATE_FLAGS = 53
+};
+
 enum TrinketType
 {
         TRINKET_NULL = 0,
