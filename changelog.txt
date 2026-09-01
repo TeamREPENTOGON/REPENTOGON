@@ -2,6 +2,13 @@ v1.1.2h -
 Added:
 * Isaac:
 	- OpenConsole()
+	- GetCompletionMarkData(string modid, string playername, bool tainted)
+		Variant of GetCompletionMarks that allows you to fetch the marks of a character by name, without requiring a valid PlayerType.
+		May be relevant if you want to fetch the marks of a character from a disabled mod, or change the name of a character.
+		"modid" is usually the workshop ID of the mod as a string, or the "directory" for non-workshop mods.
+	- GetModChallengeCompletionData(string modid, string challengename)
+		Similar to the above but for getting an arbitrary challenge clear state.
+	- SetChallengeCompletion(int challengeID, bool completed)
 * EntityPlayer:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
@@ -42,6 +49,8 @@ Fixes:
 	- Fixed being unable to add modded items to itempools.xml if they use a localization string name.
 	- Fixed specifying a tainted counterpart using bskinparent in players.xml not working properly for localized names.
 	- Content .anm2 file animations that use the character's name will now fall back to the English name (or raw string) if an animation matching the current localized name is not found.
+	- Modded challenge names can now be localized (using the "Challenges" string category)
+	- Fix some underlying quirks with localized player names and completion mark tracking
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
 /newline/

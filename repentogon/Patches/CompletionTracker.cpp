@@ -718,11 +718,6 @@ void PostMarksCallbackTrigger(int markid, int playertpe) {
 }
 
 
-
-
-int ischartainted = false;
-int hidemarks = false;
-
 XMLAttributes GetPlayerDataForMarks(int playerid) {
 	XMLAttributes playerdata = XMLStuff.PlayerData->GetNodeById(playerid);
 	if (playerdata.count("completionparent") > 0) {
@@ -739,39 +734,42 @@ XMLAttributes GetPlayerDataForMarks(int playerid) {
 	return playerdata;
 }
 
-string stolower(char* str)
-{
-	string s = string(str);
-	for (auto& c : s) {
-		c = tolower(c);
-	}
-	return s;
+bool IsTainted(const XMLAttributes& playerdata) {
+	return playerdata.count("bskinparent") > 0;
 }
 
-string GetMarksIdx(int playerid) {
-	XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
-	string idx = playerdata["sourceid"] + "-" + playerdata["name"];
-	ischartainted = false;
-	if (playerdata.count("bskinparent") > 0) {
+string GetMarksIdxByName(const string& sourceid, const string& playername, bool isTainted) {
+	string idx = sourceid + "-" + playername;
+	if (isTainted) {
 		idx = idx + "-Tainted-";
-		ischartainted = true;
 	}
 	return idx;
 }
 
-array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender = false) {
-	array<int, 15> marks; 
+string GetMarksIdx(int playerid) {
+	XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
+	string name = playerdata["untranslatedname"];
+	if (name.empty()) {
+		name = playerdata["name"];
+	}
+	return GetMarksIdxByName(playerdata["sourceid"], name, IsTainted(playerdata));
+}
+
+array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL, bool forrender = false, bool* hidemarks = nullptr) {
 	if ((XMLStuff.PlayerData->nodes.count(playerid) > 0) || !initializedrendercmpl) {
 		XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
-		if (forrender) {
-			hidemarks = false;
+		if (forrender && hidemarks != nullptr) {
+			*hidemarks = false;
 			if (playerdata.count("nomarks") > 0) {
 				if (playerdata["nomarks"] != "false") {
-					hidemarks = true;
+					*hidemarks = true;
 				}
 			}
 		}
+		
+		array<int, 15> marks = CompletionMarks[idx];
+
 		if (marks[CompletionType::ULTRA_GREED] == 2) {
 			marks[CompletionType::ULTRA_GREEDIER] = 2;
 		}
@@ -779,10 +777,9 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender =
 			marks[CompletionType::ULTRA_GREED] = 2;
 			marks[CompletionType::ULTRA_GREEDIER] = 2;
 		}
-
-		marks = CompletionMarks[idx];
+		
 		if (anm) {
-			if (ischartainted) {
+			if (IsTainted(playerdata)) {
 				anm->SetLayerFrame(0, marks[CompletionTypeRender[0]] + 5);
 			}
 			else {
@@ -812,6 +809,39 @@ HOOK_METHOD(Game,StartDebug, (int levelStage, int stageType, int difficulty, std
 	super(levelStage, stageType, difficulty, unk);
 }
 */
+
+void TryImportNonLocalizedCompletionData() {
+	// If any playertypes are completely lacking mark data, and are using a localized name,
+	// check if we have existing data for one of their translated names (from the same mod).
+	// If a match is found, copy the data over.
+	// This handles two cases:
+	// 1. Our initial switch from using the english-translated name to the raw name string for the save data.
+	// 2. If a character is migrated to using a localized name, this may allow the progress to be carried over automatically (if not, mods can handle it themselves).
+	for (int playerType = NUM_PLAYER_TYPES; playerType < g_Manager->GetEntityConfig()->GetPlayers()->size(); playerType++) {
+		string idx = GetMarksIdx(playerType);
+		if (!CompletionMarks.count(idx)) {
+			XMLAttributes playerdata = GetPlayerDataForMarks(playerType);
+			string namekey = playerdata["untranslatedname"];
+			if (!namekey.empty() && namekey.front() == '#') {
+				string sourceid = playerdata["sourceid"];
+				bool isTainted = IsTainted(playerdata);
+				namekey.erase(0, 1);  // Remove the '#'
+				for (int language = 0; language <= 13; language++) {
+					bool failed = false;
+					if (const char* translated = g_Manager->GetStringTable()->GetString("Players", language, namekey.c_str(), &failed); !failed && translated && strlen(translated) > 0) {
+						string oldidx = GetMarksIdxByName(sourceid, translated, isTainted);
+						if (CompletionMarks.count(oldidx)) {
+							ZHL::Log("[CompletionTracker] Copied completion marks from `%s` to `%s`.\n", oldidx.c_str(), idx.c_str());
+							CompletionMarks[idx] = CompletionMarks[oldidx];
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 	int saveslot = 1;
 	if (slot > 0) { saveslot = slot; }
@@ -824,6 +854,8 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 		initmarkstoevents();
 	}
 	LoadCompletionMarksFromJson();
+	TryImportNonLocalizedCompletionData();
+
 	super(slot);
 }
 
@@ -919,7 +951,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(playertype, anm,true);
+		bool hidemarks = false;
+		array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
 		if (!hidemarks) {
 			// Vanilla conditions to hide the completion widget for a character in the pause menu only
 			// Basically, hide if that character has no completion marks, or if achievements are disabled (challenge, easter egg seed)
@@ -955,7 +988,8 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 //		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(playertype, anm, true);
+		bool hidemarks = false;
+		array marks = GetMarksForPlayer(playertype, anm, true, &hidemarks);
 		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
 			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
@@ -1215,56 +1249,60 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 	return 1;
 }
 
+LUALIB_API void PushCompletionMarksTable(lua_State* L, int playertype, const array<int, 15>& marks) {
+	lua_newtable(L);
+	if (playertype > -1) {
+		lua_pushstring(L, "PlayerType");
+		lua_pushinteger(L, playertype);
+		lua_settable(L, -3);
+	}
+	lua_pushstring(L, "MomsHeart");
+	lua_pushinteger(L, marks[0]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Isaac");
+	lua_pushinteger(L, marks[1]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Satan");
+	lua_pushinteger(L, marks[2]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "BossRush");
+	lua_pushinteger(L, marks[3]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "BlueBaby");
+	lua_pushinteger(L, marks[4]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Lamb");
+	lua_pushinteger(L, marks[5]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "MegaSatan");
+	lua_pushinteger(L, marks[6]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "UltraGreed");
+	lua_pushinteger(L, marks[7]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Hush");
+	lua_pushinteger(L, marks[9]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "UltraGreedier");
+	lua_pushinteger(L, marks[11]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Delirium");
+	lua_pushinteger(L, marks[12]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Mother");
+	lua_pushinteger(L, marks[13]);
+	lua_settable(L, -3);
+	lua_pushstring(L, "Beast");
+	lua_pushinteger(L, marks[14]);
+	lua_settable(L, -3);
+}
 
 LUA_FUNCTION(Lua_IsaacGetCharacterMarks)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
-		lua_newtable(L);
-		lua_pushstring(L, "PlayerType");
-		lua_pushinteger(L, playertype);
-		lua_settable(L, -3);
-		lua_pushstring(L, "MomsHeart");
-		lua_pushinteger(L, marks[0]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Isaac");
-		lua_pushinteger(L, marks[1]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Satan");
-		lua_pushinteger(L, marks[2]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "BossRush");
-		lua_pushinteger(L, marks[3]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "BlueBaby");
-		lua_pushinteger(L, marks[4]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Lamb");
-		lua_pushinteger(L, marks[5]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "MegaSatan");
-		lua_pushinteger(L, marks[6]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "UltraGreed");
-		lua_pushinteger(L, marks[7]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Hush");
-		lua_pushinteger(L, marks[9]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "UltraGreedier");
-		lua_pushinteger(L, marks[11]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Delirium");
-		lua_pushinteger(L, marks[12]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Mother");
-		lua_pushinteger(L, marks[13]);
-		lua_settable(L, -3);
-		lua_pushstring(L, "Beast");
-		lua_pushinteger(L, marks[14]);
-		lua_settable(L, -3);
-
+		PushCompletionMarksTable(L, playertype, marks);
 	}
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
@@ -1317,12 +1355,26 @@ LUA_FUNCTION(Lua_IsaacGetCharacterMarks)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsaacGetCompletionMarkData) {
+	const string modid = luaL_checkstring(L, 1);
+	const string playername = luaL_checkstring(L, 2);
+	const bool tainted = lua::luaL_checkboolean(L, 3);
+	const string idx = GetMarksIdxByName(modid, playername, tainted);
+	if (CompletionMarks.count(idx)) {
+		PushCompletionMarksTable(L, -1, CompletionMarks[idx]);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCompletionMarks", Lua_IsaacGetCharacterMarks);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCompletionMarkData", Lua_IsaacGetCompletionMarkData);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCompletionMark", Lua_IsaacGetCharacterMark);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCompletionMarks", Lua_IsaacSetCharacterMarks);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCompletionMark", Lua_IsaacSetCharacterMark);
