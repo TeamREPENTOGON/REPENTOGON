@@ -2,89 +2,34 @@ ffi.cdef[[
     struct RNG
     {
         unsigned int _seed;
-        unsigned int _shift1;
-        unsigned int _shift2;
-        unsigned int _shift3;
+        padding char [0xc];
     };
     typedef struct RNG* RNGPtr;
 
-    const uint32_t* RNG_GetShiftsTable();
+    const uint32_t L_RNG_Next(struct RNG*);
+    const float L_RNG_RandomFloat(struct RNG*);
+    const float L_RNG_RandomInt(struct RNG*, uint32_t max);
+    const float L_RNG_SetSeed(struct RNG*, uint32_t seed, uint32_t shiftIdx);
+    const int L_RNG_GetShiftIdx(struct RNG*);
+    const uint32_t L_RNG_Previous(struct RNG*);
+    void L_RNG_RandomVector(struct RNG*, bool phantom, struct Vector* out);
 ]]
 
 local MAX_SHIFT_IDX = 80
 local RANDOM_UNIT_VECTOR_ROW_IDX = 18
-local NUM_SHIFT_INDEXES = MAX_SHIFT_IDX + 1
 local RNG_ZERO_SEED_ERR_STR = "RNG Seed is zero!"
 local RNG_INVALID_SHIFT_IDX_ERR_STR = "Invalid RNG ShiftIdx (must be between 0 and %d)"
 RNG_INVALID_SHIFT_IDX_ERR_STR = RNG_INVALID_SHIFT_IDX_ERR_STR:format(MAX_SHIFT_IDX)
 
+local L_RNG_Next = ffidll.L_RNG_Next
+local L_RNG_RandomFloat = ffidll.L_RNG_RandomFloat
+local L_RNG_RandomInt = ffidll.L_RNG_RandomInt
+local L_RNG_SetSeed = ffidll.L_RNG_SetSeed
+local L_RNG_GetShiftIdx = ffidll.L_RNG_GetShiftIdx
+local L_RNG_Previous = ffidll.L_RNG_Previous
+local L_RNG_RandomVector = ffidll.L_RNG_RandomVector
+
 local ffi = ffi
-local sin = math.sin
-local cos = math.cos
-
--- Lua uses 64-bit floats to represent numbers. But internally, `unsigned int` is 32 bits.
--- We need this mask to keep shifting behaviro defined.
-local UINT_32_MASK = 0xFFFFFFFF
-
--- From the decomp the constant is 0x2F7FFFFE before a MULSS instruction is performed.
--- The exact value is derived using the IEEE-754 formula.
-local INT_TO_RAND_FLOAT = 2.3283061589829401e-10
-
--- For precision (this is what the decomp uses, same method as `INT_TO_RAND_FLOAT`).
--- math.pi gives widely different digits after `3.14`.
-local PI = 3.140000104904175
-
-local s_Shifts = ffi.cast("const uint32_t(*)[3]", ffidll.RNG_GetShiftsTable())
-
-local function PerformSeedShift(self)
-    local newSeed = self._seed
-    newSeed = newSeed >> (self._shift1 & 0x1f) ~ newSeed
-    newSeed = (newSeed << (self._shift2 & 0x1f) ~ newSeed) & UINT_32_MASK
-    newSeed = newSeed >> (self._shift3 & 0x1f) ~ newSeed
-    return newSeed
-end
-
-
-local function DoRandomInt(self, max)
-    local newSeed = PerformSeedShift(self)
-    self._seed = newSeed
-
-    max = ffi.cast("uint32_t", max)
-
-    if max == 0 then
-        return 0
-    end
-
-    return tonumber(newSeed % max)
-end
-
-local function ReverseShrXor(result, shift)
-    local op1 = 0
-    local op2 = 0
-
-    local loops = math.ceil(32 / shift)
-
-    for i = 1, loops do
-        op1 = op2 >> shift
-        op2 = op1 ~ result
-    end
-
-    return op2
-end
-
-local function ReverseShlXor(result, shift)
-    local op1 = 0
-    local op2 = 0
-
-    local loops = math.ceil(32 / shift)
-
-    for i = 1, loops do
-        op1 = (op2 << shift) & UINT_32_MASK
-        op2 = op1 ~ result
-    end
-
-    return op2
-end
 
 local RngMT = {
     __type = "RNG",
@@ -97,9 +42,8 @@ local RngMT = {
         if self._seed == 0 then
             error(RNG_ZERO_SEED_ERR_STR)
         end
-
-        self._seed = PerformSeedShift(self)
-        return self._seed
+        
+        return L_RNG_Next(self)
     end,
 
     RandomFloat = function(self)
@@ -107,19 +51,12 @@ local RngMT = {
             error(RNG_ZERO_SEED_ERR_STR)
         end
 
-        local newSeed = PerformSeedShift(self)
-        self._seed = newSeed
-        
-        -- Needed cuz in the ASM there's a CVTPD2PS call, which rounds the seed to a 32-bit float
-        -- before performing a MULSS instruction. Probably overkill but RNG parity between vanilla
-        -- mods and REPENTOGON is a must.
-        local seed32 = tonumber(ffi.cast("float", newSeed))
-        return tonumber(ffi.cast("float", seed32 * INT_TO_RAND_FLOAT))
+        return L_RNG_RandomFloat(self)
     end,
 
     PhantomFloat = function(self)
         local oldSeed = self._seed
-        local res = self:RandomFloat()
+        local res = L_RNG_RandomFloat(self)
         self._seed = oldSeed
         return res
     end,
@@ -136,24 +73,18 @@ local RngMT = {
         end
 
         if max == nil then
-            return DoRandomInt(self, min)
+            return L_RNG_RandomInt(self, min)
         else
             if min > max then
                 error("Interval is empty")
             else
                 local interval = max - min
-                return min + DoRandomInt(self, interval + 1)
+                return min + L_RNG_RandomInt(self, interval + 1)
             end
         end
     end,
 
     PhantomInt = function(self, min, max)
-		ffichecks.checkinteger(1, min)
-
-        if max ~= nil then
-		    ffichecks.checkinteger(2, max)
-        end
-
         local oldSeed = self._seed
         local res = self:RandomInt(min, max)
         self._seed = oldSeed
@@ -167,78 +98,38 @@ local RngMT = {
 
 		ffichecks.checkinteger(1, seed)
 		ffichecks.checkinteger(2, shiftIdx)
-
-        -- The vanilla API accepts negative values but because it's unsigned, so a wraparound is performed.
-        -- This preserves the behavior in case mods use a negative seed for some weird cursed reason
-        seed = seed & UINT_32_MASK
-        shiftIdx = shiftIdx & UINT_32_MASK
-
-        if seed == 0 then
-            error("RNG seed must be an integer above 0")
-        end
-
-        if shiftIdx > MAX_SHIFT_IDX then
-            error("RNG shift index must be between 0 and " .. MAX_SHIFT_IDX .. " (inclusive)")
-        end
-
-        self._seed = seed
-        self._shift1 = s_Shifts[shiftIdx][0]
-        self._shift2 = s_Shifts[shiftIdx][1]
-        self._shift3 = s_Shifts[shiftIdx][2]
+        L_RNG_SetSeed(self, seed, shiftIdx)
     end,
 
     GetShiftIdx = function(self)
-        for i = 0, NUM_SHIFT_INDEXES - 1 do
-            local shifts = s_Shifts[i]
+        local res = L_RNG_GetShiftIdx(self)
 
-            if self._shift1 == shifts[0] and self._shift2 == shifts[1] and self._shift3 == shifts[2] then
-                return i
-            end
+        if res >= 0 then
+            return res
         end
-
-        return nil
     end,
 
     Previous = function(self)
-	    local newSeed = ReverseShrXor(self._seed, self._shift3)
-	    newSeed = ReverseShlXor(newSeed, self._shift2)
-        newSeed = ReverseShrXor(newSeed, self._shift1)
-        self._seed = newSeed
-        return newSeed
+        return L_RNG_Previous(self)
     end,
 
     PhantomPrevious = function(self)
         local oldSeed = self._seed
-        local res = self:Previous()
+        local res = L_RNG_Previous(self)
         self._seed = oldSeed
         return res
     end,
 
     RandomVector = function(self)
-        if self._seed == 0 then
-            error(RNG_ZERO_SEED_ERR_STR)
-        end
-
-        local newSeed = self._seed
-        newSeed = newSeed >> (s_Shifts[RANDOM_UNIT_VECTOR_ROW_IDX][0] & 0x1f) ~ newSeed
-        newSeed = (newSeed << (s_Shifts[RANDOM_UNIT_VECTOR_ROW_IDX][1] & 0x1f) ~ newSeed) & UINT_32_MASK
-        newSeed = newSeed >> (s_Shifts[RANDOM_UNIT_VECTOR_ROW_IDX][2] & 0x1f) ~ newSeed
-           
-        -- Ditto (same ASM)
-        local seedF32 = tonumber(ffi.cast("float", newSeed))
-        local angle = tonumber(ffi.cast("float", seedF32 * INT_TO_RAND_FLOAT))
-        angle = tonumber(ffi.cast("float", angle * PI)) * 2
-
-        self:Next()
-
-        return Vector(cos(angle), sin(angle))
+        local result = ffi.new("struct Vector")
+        L_RNG_RandomVector(self, false, result)
+        return result
     end,
 
     PhantomVector = function(self)
-        local oldSeed = self._seed
-        local res = self:RandomVector()
-        self._seed = oldSeed
-        return res
+        local result = ffi.new("struct Vector")
+        L_RNG_RandomVector(self, true, result)
+        return result
     end,
 
     PhantomNext = function(self)
@@ -247,7 +138,7 @@ local RngMT = {
         end
 
         local oldSeed = self._seed
-        local res = self:Next()
+        local res = L_RNG_Next(self)
         self._seed = oldSeed
         return res
     end
@@ -277,14 +168,7 @@ RNGF = setmetatable({}, {
         end
 
         local newRNG = RngT()
-        newRNG._seed = seed
-
-        if shiftIdx < 0 or shiftIdx > MAX_SHIFT_IDX then
-            error("Invalid shift index " .. shiftIdx .. " for RNG object")
-        end
-
-        newRNG:SetSeed(seed, shiftIdx)
-
+        L_RNG_SetSeed(newRNG, seed, shiftIdx)
         return newRNG
     end
 })

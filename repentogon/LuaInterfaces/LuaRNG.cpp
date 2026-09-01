@@ -95,6 +95,47 @@ inline uint32_t DoPrevious(RNG* rng) {
 	return ReverseShrXor(tmp, rng->_shift1);
 }
 
+MOD_EXPORT uint32_t L_RNG_Next(RNG* rng) {
+	return rng->Next();
+}
+
+MOD_EXPORT float L_RNG_RandomFloat(RNG* rng) {
+	return rng->RandomFloat();
+}
+
+MOD_EXPORT uint32_t L_RNG_RandomInt(RNG* rng, uint32_t max) {
+	return rng->RandomInt(max);
+}
+
+MOD_EXPORT void L_RNG_SetSeed(RNG* rng, uint32_t seed, uint32_t shiftIdx) {
+	rng->SetSeed(seed, shiftIdx);
+}
+
+MOD_EXPORT int L_RNG_GetShiftIdx(RNG* rng) {
+	for (int shift_idx = 0; shift_idx < NUM_SHIFT_INDEXES; shift_idx++) {
+		uint32_t* shifts = GetShifts(shift_idx);
+
+		if (rng->_shift1 == shifts[0] && rng->_shift2 == shifts[1] && rng->_shift3 == shifts[2]) {
+			return shift_idx;
+		}
+	}
+
+	return -1;
+}
+
+MOD_EXPORT uint32_t L_RNG_Previous(RNG* rng) {
+	rng->_seed = DoPrevious(rng);
+	return rng->_seed;
+}
+
+MOD_EXPORT void L_RNG_RandomVector(RNG* rng, bool phantom, Vector* out) {
+	*out = Isaac::RandomUnitVector(rng->_seed);
+
+	if (!phantom) {
+		rng->Next();
+	}
+}
+
 LUA_FUNCTION(Lua_RNG_Previous) {
 	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
