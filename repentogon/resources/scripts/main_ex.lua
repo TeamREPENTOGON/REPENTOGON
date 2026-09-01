@@ -1880,13 +1880,11 @@ local function RunPreGenerateDungeonCallback(callbackID, param, dungeonGenerator
 	for callback in GetCallbackIterator(callbackID, param) do
 		local success = RunCallbackInternal(callbackID, callback, dungeonGenerator, rng, dungeonType)
 
-		if success then
-			if dungeonGenerator:Validate() then
-				return true
-			else
-				dungeonGenerator:Reset()
-			end
+		if success and dungeonGenerator:Validate() then
+			return true
 		end
+
+		dungeonGenerator:Reset()
 	end
 end
 

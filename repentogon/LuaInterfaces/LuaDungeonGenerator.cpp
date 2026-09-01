@@ -514,6 +514,11 @@ void DungeonGenerator::SetGreedGoldRoom(int grid_index) {
 	this->greed_gold_room_index = grid_index;
 }
 
+static void PrintGeneratorError(const std::string& message) {
+    g_Game->GetConsole()->PrintError(message);
+    KAGE::LogMessage(3, (message + "\n").c_str());
+}
+
 bool DungeonGenerator::ValidateFloor() {
     if (this->level_generator._roomMap[84] == -1) {
         this->TryPlaceDefaultStartingRoom(15);
@@ -521,17 +526,19 @@ bool DungeonGenerator::ValidateFloor() {
 
     this->level_generator.calc_required_doors();
 
-    bool has_final_room = this->final_boss_index >= 0;
     int initial_seed = this->rng->_seed;
+
+    bool valid = true;
 
     // Index-based iteration allows bounds-checking _generationIndex before array lookup
     for (size_t i = 0; i < this->level_generator._rooms.size(); i++)
     {
         LevelGenerator_Room& room = this->level_generator._rooms[i];
-        
 
         if (room._generationIndex < 0 || room._generationIndex >= 169) {
-            return false;
+            PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: Room generation index " + std::to_string(room._generationIndex) + " is out of bounds");
+            valid = false;
+            continue;
         }
 
         DungeonGeneratorRoom& generator_room = this->rooms[room._generationIndex];
@@ -539,14 +546,22 @@ bool DungeonGenerator::ValidateFloor() {
         RoomConfig_Room* room_config = generator_room.GetRoomConfig(this->rng->Next(), room._doors, this->level);
 
         if (room_config == nullptr) {
-            return false;
+            int grid_index = generator_room.row * 13 + generator_room.col;
+            PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: Could not find valid RoomConfig for room at grid index " + std::to_string(grid_index));
+            valid = false;
         }
         
         this->rng->Next();
     }
     
     this->rng->_seed = initial_seed;
-    return has_final_room;
+
+    if (this->final_boss_index < 0) {
+        PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: No final boss room registered");
+        valid = false;
+    }
+
+    return valid;
 }
 
 void DungeonGenerator::CleanFloor() {
@@ -626,7 +641,7 @@ bool DungeonGenerator::PlaceRoomsInFloor() {
 
 bool DungeonGenerator::Generate() {
     if (!this->ValidateFloor()) {
-        KAGE::_LogMessage(1, "[WARN] Failed to validate custom floor, not placing rooms.\n");
+        PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: Failed to validate custom floor, not placing rooms");
         Reset();
         return false;
     }
@@ -642,7 +657,7 @@ bool DungeonGenerator::Generate() {
 
     bool could_place_rooms = PlaceRoomsInFloor();
     if (!could_place_rooms) {
-        KAGE::_LogMessage(1, "[WARN] Couldn't place the rooms in the level, clearing placed rooms...\n");
+        PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: Couldn't place the rooms in the level, clearing placed rooms...");
         Reset();
     }
     else {
