@@ -11,7 +11,7 @@ struct TearParams {
     float MassMultiplier;
     float KnockbackMultiplier;
     float SpeedMultiplier;
-    int _TearDisplacement;
+    private int _TearDisplacement;
 };
 
 typedef struct TearParams* TearParamsPtr;
