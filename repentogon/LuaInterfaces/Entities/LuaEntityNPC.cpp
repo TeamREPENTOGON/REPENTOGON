@@ -37,7 +37,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectiles) {
 
 	Vector* targetPos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float trajectoryModifier = (float)luaL_checknumber(L, 4);
-	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetCData<ProjectileParams*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS], "ProjectileParams");
 
 	lua::luabridge::UserdataPtr::push(L, npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params), lua::Metatables::ENTITY_PROJECTILE);
 	return 1;
@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectiles) {
 		return luaL_error(L, "Invalid projectile mode %u\n", mode);
 	}
 
-	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetCData<ProjectileParams*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS], "ProjectileParams");
 
 	npc->FireProjectiles(position, velocity, mode, params);
 
@@ -152,7 +152,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 		return luaL_error(L, "Invalid projectile mode %u\n", mode);
 	}
 
-	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetCData<ProjectileParams*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS], "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
 	npc->FireProjectiles(position, velocity, mode, params);
@@ -171,7 +171,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 
 	Vector* targetPos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float trajectoryModifier = (float)luaL_checknumber(L, 4);
-	ProjectileParams* params = lua::GetLuabridgeUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+	ProjectileParams* params = lua::GetCData<ProjectileParams*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS], "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
 	npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params);

@@ -135,6 +135,7 @@ pcall(require("ffi.RNG"))
 pcall(require("ffi.ItemConfigCostume"))
 pcall(require("ffi.ItemConfigItem"))
 pcall(require("ffi.TearParams"))
+pcall(require("ffi.ProjectileParams"))
 
 ffi = nil
 ffidll = nil

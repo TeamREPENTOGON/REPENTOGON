@@ -24,7 +24,7 @@ TearParamsMT = {
 
 TearParamsMT.__index = function(self, key)
     if key == "TearDisplacement" then
-        return self._TearDisplacement
+        return ffi.getprivate(self, "_TearDisplacement")
     end
 
     return TearParamsMT[key]
@@ -39,7 +39,7 @@ TearParamsMT.__newindex = function(self, key, value)
             error("TearDisplacement may only be set to -1 or 1")
         end
 
-        self._TearDisplacement = value
+        ffi.setprivate(self, "_TearDisplacement", value)
     end
 end
 
