@@ -2817,16 +2817,16 @@ bool RunRenderSpecialHudElementCallback(int callbackid, PlayerHUD* playerhud, Ve
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(playerhud->_player, lua::Metatables::ENTITY_PLAYER)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.pushClassPtr<LuaEntityPlayer>(playerhud->_player)
+			.pushClass<LuaVector>(*pos)
 			.push(scale)
 			.call(1);
 
 		if (isPre && !result) {
 			if (lua_isboolean(L, -1)) {
 				return lua_toboolean(L, -1);
-			} else if (lua_isuserdata(L, -1)) {
-				Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+			} else if (lua_type(L, -1) == LUA_TCDATA) {
+				Vector* newPos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 				if (newPos) {
 					*pos = *newPos;
 				}
