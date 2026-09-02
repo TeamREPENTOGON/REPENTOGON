@@ -273,7 +273,15 @@ Called after a challenge is marked as completed.
 |1472 | MC_POST_CHALLENGE_DONE {: .copyable } | ([Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html)) | [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) | void |
 
 ### MC_PRE_CHANGE_ROOM {: .copyable }
-Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
+Called every time a player is about to change room.
+The callback receives as parameters the index of the room and the index of the dimension in which the player is targeted to be sent to.
+
+The callback can return a table to override the room to which is sent.
+The table **must** contain exactly two integer-indexed fields. The first is interpreted as the index of the target room. The second is interpreted as the index of the target dimension.
+
+If there is no room at the selected index in the selected dimension, the return value is discarded and the callback has no effect.
+If the table does not contain exactly two fields, as if by calling the `rawlen` function on it, the return value is discarded and the callback has no effect.
+If the return value is not a table, the return value is discarded and the callback has no effect.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
