@@ -5950,14 +5950,14 @@ HOOK_METHOD(Entity_Player, GetTearHitParams, (TearParams* params, int weaponType
 			.pushClassPtr<LuaEntity>(source)
 			.call(1);
 
-		if (!results && lua_isuserdata(L, -1)) {
-			auto* ud = lua::GetLuabridgeUserdata<TearParams*>(L, -1, lua::Metatables::TEAR_PARAMS, "TearParams");
+		if (!results && lua_type(L, -1) == LUA_TCDATA) {
+			auto* cd = lua::GetCData<TearParams*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], "TearParams");
 
-			if (!ud) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
+			if (!cd) {
+				KAGE::LogMessage(2, "Invalid cdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
 			}
 			else {
-				*params = *ud;
+				*params = *cd;
 			}
 		}
 	}

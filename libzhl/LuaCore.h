@@ -624,6 +624,8 @@ namespace lua {
             ITEM_PTR,
             KCOLOR,
             KCOLOR_PTR,
+            TEAR_PARAMS,
+            TEAR_PARAMS_PTR,
             MAX_CDATA
         };
 

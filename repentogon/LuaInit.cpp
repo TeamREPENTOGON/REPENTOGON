@@ -257,6 +257,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR] = lua_ctypeid(L, "ItemConfigItemPtr");
 	lua::ffi::CData[lua::ffi::CDataID::KCOLOR] = lua_ctypeid(L, "KColor");
 	lua::ffi::CData[lua::ffi::CDataID::KCOLOR_PTR] = lua_ctypeid(L, "KColorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS] = lua_ctypeid(L, "TearParams");
+	lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS_PTR] = lua_ctypeid(L, "TearParamsPtr");
 
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);

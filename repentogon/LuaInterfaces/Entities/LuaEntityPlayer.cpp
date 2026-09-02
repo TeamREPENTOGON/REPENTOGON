@@ -2036,7 +2036,7 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	TearParams params;
 
 	if (lua_gettop(L) >= 2) {
-		params = *lua::GetLuabridgeUserdata<TearParams*>(L, 2, lua::Metatables::TEAR_PARAMS, "TearParams");
+		params = *lua::GetCData<TearParams*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], "TearParams");
 	}
 	else {
 		player->GetTearHitParams(&params, (int)WeaponType::WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
@@ -3992,6 +3992,24 @@ LUA_FUNCTION(Lua_PlayerQueueItem) {
 };
 
 
+LUA_FUNCTION(Lua_PlayerGetTearHitParams) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int weaponType = (int)luaL_checkinteger(L, 2);
+	float damageScale = (float)luaL_optnumber(L, 3, 1.0f);
+	int tearDisplacement = (int)luaL_optinteger(L, 4, 1);
+	Entity* source = nullptr;
+	
+	if (!lua_isnoneornil(L, 5)) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
+	}
+
+	TearParams params;
+	player->GetTearHitParams(&params, weaponType, damageScale, tearDisplacement, source);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], params);
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -4357,6 +4375,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaxInventorySize", Lua_PlayerGetMaxInventorySize },
 		{ "GetInventoryHistoryIndex", Lua_PlayerGetInventoryHistoryIndex },
 		{ "GetInventoryCollectible", Lua_PlayerGetInventoryCollectible },
+		{ "GetTearHitParams", Lua_PlayerGetTearHitParams },
 
 		{ NULL, NULL }
 	};
