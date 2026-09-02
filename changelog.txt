@@ -1,7 +1,18 @@
-v1.1.2g -
+v1.1.2h -
 Added:
+* ModCallbacks:
+	- MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY(EntityPlayer, Vector pos, float Scale)
+	- MC_PRE/POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE(EntityPlayer, Vector pos, float Scale)
+	- MC_PRE/POST_PLAYERHUD_RENDER_CRAFTING_TABLE(EntityPlayer, Vector pos, float Scale)
 * Isaac:
 	- OpenConsole()
+	- GetCompletionMarkData(string modid, string playername, bool tainted)
+		Variant of GetCompletionMarks that allows you to fetch the marks of a character by name, without requiring a valid PlayerType.
+		May be relevant if you want to fetch the marks of a character from a disabled mod, or change the name of a character.
+		"modid" is usually the workshop ID of the mod as a string, or the "directory" for non-workshop mods.
+	- GetModChallengeCompletionData(string modid, string challengename)
+		Similar to the above but for getting an arbitrary challenge clear state.
+	- SetChallengeCompletion(int challengeID, bool completed)
 * EntityPlayer:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
@@ -13,12 +24,45 @@ Added:
 * XMLData
 	- XMLData.GetCurrentMod()
 		Gets xmldata node of the running mod metadata
+	- Added more "untranslatedname" / "untranslateddescription" / etc attributes where localization strings are used.
+* New players.xml attributes:
+	- damagemultiplier="?"
+	- tearsmultiplier="?"
+	- tearsmodifier="?" (This is a replacement for "firedelaymodifier", essentially the same but without the old quirk where negative values would be multiplied by ~0.687.)
+	- bloodytears="true"
+	- flying="true"
+* New items.xml customtags:
+	- bloodytears(effect)
+	- disablebloodytears(effect)
+	- flying(effect)
+* Added `EvaluateStatStage.PRE_FLAT_DAMAGE`, a new stage for MC_EVALUATE_STAT that runs before (most) flat damage ups are applied, right after the "character multiplier".
+* Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml
+* Added support for babies.xml in mod content folders! You can finally add co-op babies!
+* Added new content xml: "edenhair.xml"
+* Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 /newline/
 Modified:
+* MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
+	- Change your CallbackPriority to be later instead of earlier if you need your value to be preferred.
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
 Fixes:
-* Fixed some strings not being translated in XMLData
+* REPENTOGON.MeetsVersion now correctly parses letter suffixes (for versions such as 1.1.2g)
+* Various fixes related to using localization strings (ie, "#MYMOD_ITEM_NAME")
+	- Localization strings can now be passed to GetItemIdByName to get the item ID (recommended).
+	- Fixed being unable to add modded items to itempools.xml if they use a localization string name.
+	- Fixed specifying a tainted counterpart using bskinparent in players.xml not working properly for localized names.
+	- Content .anm2 file animations that use the character's name will now fall back to the English name (or raw string) if an animation matching the current localized name is not found.
+	- Modded challenge names can now be localized (using the "Challenges" string category)
+	- Fix some underlying quirks with localized player names and completion mark tracking
+* Fixed modded filemap generation setting sometimes failing to load files
+* Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
+/newline/
+/versionseparator/
+v1.1.2g -
+/newline/
+Fixes:
+* Fix issue where Eternal Chests would pay out the same way over and over.
 /newline/
 /versionseparator/
 v1.1.2f -

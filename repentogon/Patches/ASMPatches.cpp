@@ -261,6 +261,8 @@ void PerformASMPatches() {
 	ASMPatchPlayerDeathSoundLost();
 	ASMPatchPlayerDeathSoundAstralProjection();
 	ASMPatchPlayerLostSoulSkipPeePuddle();
+	ASMPatchGetTearParamsAddBloodyTears();
+	ASMPatchGetTearParamsDisableBloodyTears();
 
 	// Status Effects
 	PatchInlinedGetStatusEffectTarget();

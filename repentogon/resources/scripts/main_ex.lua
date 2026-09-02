@@ -528,6 +528,9 @@ local typecheckFunctions = {
 		["number"] = checkInteger,
 		["boolean"] = true,
 	},
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
+		["Room"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -2105,6 +2108,15 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_MODS_LOADED] = RunPostModsLoadedCallback,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_BODY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_INVENTORY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_INVENTORY] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

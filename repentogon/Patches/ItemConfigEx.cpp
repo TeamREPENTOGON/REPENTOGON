@@ -29,14 +29,14 @@ StatsLookup& CollectibleEx::GetStatsLookup() { return s_CollectibleStatLookup; }
 StatsLookup& TrinketEx::GetStatsLookup() { return s_TrinketStatLookup; }
 StatsLookup& NullItemEx::GetStatsLookup() { return s_NullStatLookup; }
 
-// Lookup tables for items that are custom revives, for efficiency reasons.
-static ReviveLookup s_CollectibleReviveLookup;
-static ReviveLookup s_TrinketReviveLookup;
-static ReviveLookup s_NullReviveLookup;
+// Lookup tables for items with specific CustomTags, for efficiency and convenience.
+static CustomTagsLookup s_CollectibleCustomTagsLookup;
+static CustomTagsLookup s_TrinketCustomTagsLookup;
+static CustomTagsLookup s_NullCustomTagsLookup;
 
-ReviveLookup& CollectibleEx::GetReviveLookup() { return s_CollectibleReviveLookup; }
-ReviveLookup& TrinketEx::GetReviveLookup() { return s_TrinketReviveLookup; }
-ReviveLookup& NullItemEx::GetReviveLookup() { return s_NullReviveLookup; }
+CustomTagsLookup& CollectibleEx::GetCustomTagsLookup() { return s_CollectibleCustomTagsLookup; }
+CustomTagsLookup& TrinketEx::GetCustomTagsLookup() { return s_TrinketCustomTagsLookup; }
+CustomTagsLookup& NullItemEx::GetCustomTagsLookup() { return s_NullCustomTagsLookup; }
 
 
 float CalculateStatChange(Entity_Player* player, const ItemStat stat) {
@@ -121,20 +121,93 @@ float CalculateStatMult(Entity_Player* player, const ItemStat stat) {
 	return finalMult;
 }
 
+const std::set<int>& GetCollectiblesWithCustomTag(const std::string& tag) {
+	return s_CollectibleCustomTagsLookup[tag];
+}
+
+const std::set<int>& GetTrinketsWithCustomTag(const std::string& tag) {
+	return s_TrinketCustomTagsLookup[tag];
+}
+
+const std::set<int>& GetNullItemsWithCustomTag(const std::string& tag) {
+	return s_NullCustomTagsLookup[tag];
+}
+
+bool HasCollectibleWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers) {
+	for (const int id : GetCollectiblesWithCustomTag(tag)) {
+		if (player->HasCollectible(id, ignoreModifiers)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HasCollectibleEffectWithCustomTag(Entity_Player* player, const std::string& tag) {
+	for (const int id : GetCollectiblesWithCustomTag(tag)) {
+		if (player->_temporaryeffects.HasCollectibleEffect(id)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HasTrinketWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers) {
+	for (const int id : GetTrinketsWithCustomTag(tag)) {
+		if (player->HasTrinket(id, ignoreModifiers)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HasTrinketEffectWithCustomTag(Entity_Player* player, const std::string& tag) {
+	for (const int id : GetTrinketsWithCustomTag(tag)) {
+		if (player->_temporaryeffects.HasTrinketEffect(id)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HasNullEffectWithCustomTag(Entity_Player* player, const std::string& tag) {
+	for (const int id : GetNullItemsWithCustomTag(tag)) {
+		if (player->_temporaryeffects.HasNullEffect(id)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HasItemWithCustomTag(Entity_Player* player, const std::string& tag, const bool ignoreModifiers) {
+	return HasCollectibleWithCustomTag(player, tag, ignoreModifiers) || HasTrinketWithCustomTag(player, tag, ignoreModifiers);
+}
+
+bool HasEffectWithCustomTag(Entity_Player* player, const std::string& tag) {
+	return HasCollectibleEffectWithCustomTag(player, tag) || HasTrinketEffectWithCustomTag(player, tag) || HasNullEffectWithCustomTag(player, tag);
+}
+
+bool HasItemOrEffectWithCustomTag(Entity_Player* player, const std::string& tag) {
+	return HasItemWithCustomTag(player, tag, false) || HasEffectWithCustomTag(player, tag);
+}
+
 int GetCustomReviveCount(Entity_Player* player, const bool includeHidden) {
 	int numLives = 0;
 	TemporaryEffects& effects = player->_temporaryeffects;
-	for (const int id : s_CollectibleReviveLookup) {
+	for (const int id : s_CollectibleCustomTagsLookup[CustomTags::REVIVE]) {
 		if (CollectibleEx* ex = GetCollectibleEx(id)) {
 			if (ex->ShouldCountRevive(includeHidden)) {
 				numLives += player->GetCollectibleNum(id, !includeHidden);
 			}
+		}
+	}
+	for (const int id : s_CollectibleCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
+		if (CollectibleEx* ex = GetCollectibleEx(id)) {
 			if (ex->ShouldCountReviveEffect(includeHidden)) {
 				numLives += effects.GetCollectibleEffectNum(id);
 			}
 		}
 	}
-	for (const int id : s_TrinketReviveLookup) {
+	for (const int id : s_TrinketCustomTagsLookup[CustomTags::REVIVE]) {
 		if (TrinketEx* ex = GetTrinketEx(id)) {
 			if (ex->ShouldCountRevive(includeHidden)) {
 				if ((player->_trinketsID[0] & TRINKET_ID_MASK) == id) {
@@ -145,12 +218,16 @@ int GetCustomReviveCount(Entity_Player* player, const bool includeHidden) {
 				}
 				numLives += player->GetSmeltedTrinket()->at(id)._trinketNum + player->GetSmeltedTrinket()->at(id)._goldenTrinketNum;
 			}
+		}
+	}
+	for (const int id : s_TrinketCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
+		if (TrinketEx* ex = GetTrinketEx(id)) {
 			if (ex->ShouldCountReviveEffect(includeHidden)) {
 				numLives += effects.GetTrinketEffectNum(id);
 			}
 		}
 	}
-	for (const int id : s_NullReviveLookup) {
+	for (const int id : s_NullCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
 		if (NullItemEx* ex = GetNullItemEx(id)) {
 			if (ex->ShouldCountReviveEffect(includeHidden)) {
 				numLives += effects.GetNullEffectNum(id);
@@ -162,27 +239,35 @@ int GetCustomReviveCount(Entity_Player* player, const bool includeHidden) {
 
 bool HasCustomChanceRevive(Entity_Player* player) {
 	TemporaryEffects& effects = player->_temporaryeffects;
-	for (const int id : s_CollectibleReviveLookup) {
+	for (const int id : s_CollectibleCustomTagsLookup[CustomTags::REVIVE]) {
 		if (CollectibleEx* ex = GetCollectibleEx(id); ex && ex->IsChanceRevive()) {
 			if (ex->ShouldCountRevive(false) && player->HasCollectible(id, false)) {
 				return true;
 			}
+		}
+	}
+	for (const int id : s_CollectibleCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
+		if (CollectibleEx* ex = GetCollectibleEx(id); ex && ex->IsChanceRevive()) {
 			if (ex->ShouldCountReviveEffect(false) && effects.HasCollectibleEffect(id)) {
 				return true;
 			}
 		}
 	}
-	for (const int id : s_TrinketReviveLookup) {
+	for (const int id : s_TrinketCustomTagsLookup[CustomTags::REVIVE]) {
 		if (TrinketEx* ex = GetTrinketEx(id); ex && ex->IsChanceRevive()) {
 			if (ex->ShouldCountRevive(false) && player->HasTrinket(id, false)) {
 				return true;
 			}
+		}
+	}
+	for (const int id : s_TrinketCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
+		if (TrinketEx* ex = GetTrinketEx(id); ex && ex->IsChanceRevive()) {
 			if (ex->ShouldCountReviveEffect(false) && effects.HasTrinketEffect(id)) {
 				return true;
 			}
 		}
 	}
-	for (const int id : s_NullReviveLookup) {
+	for (const int id : s_NullCustomTagsLookup[CustomTags::REVIVE_EFFECT]) {
 		if (NullItemEx* ex = GetNullItemEx(id); ex && ex->ShouldCountReviveEffect(false) && ex->IsChanceRevive()) {
 			return true;
 		}
@@ -191,23 +276,23 @@ bool HasCustomChanceRevive(Entity_Player* player) {
 }
 
 void ItemEx::RefreshCustomTags() {
-	noMetronome_ = customTags_.count("nometronome");
-	noExpansionPack_ = customTags_.count("noexpansionpack");
+	customRevive_ = customTags_.count(CustomTags::REVIVE);
+	customReviveEffect_ = customTags_.count(CustomTags::REVIVE_EFFECT);
+	customReviveHidden_ = customTags_.count(CustomTags::HIDDEN_REVIVE);
+	customChanceRevive_ = customTags_.count(CustomTags::CHANCE_REVIVE);
 
-	customRevive_ = customTags_.count("revive");
-	customReviveEffect_ = customTags_.count("reviveeffect");
-	customReviveHidden_ = customTags_.count("hiddenrevive");
-	customChanceRevive_ = customTags_.count("chancerevive");
-
-	// Update the revive lookups.
-	if (customRevive_ || customReviveEffect_) {
-		if (IsNullItem()) {
-			customRevive_ = true;
-			customReviveEffect_ = true;
+	if (customTags_.count(CustomTags::FLYING) || customTags_.count(CustomTags::FLYING_EFFECT)) {
+		if (ItemConfig_Item* item = GetItemConfigItem()) {
+			item->cacheFlags |= CACHE_FLYING;
 		}
-		GetReviveLookup().insert(id_);
-	} else {
-		GetReviveLookup().erase(id_);
+	}
+
+	auto& customTagsLookup = GetCustomTagsLookup();
+	for (auto& [k, v] : customTagsLookup) {
+		v.erase(id_);
+	}
+	for (const std::string& tag : customTags_) {
+		customTagsLookup[tag].insert(id_);
 	}
 }
 
@@ -244,6 +329,12 @@ void ItemEx::Parse(const ItemConfig_Item& item, const XMLAttributes& xml) {
 	// Parse tags
 	if (xml.count("customtags")) {
 		XMLData::ParseTagsString(xml.at("customtags"), customTags_);
+		// Backwards compatability for "revive" tag being used on Null Items
+		// But I don't want to keep doing this sort of thing for every other "effect" tag.
+		if (IsNullItem() && customTags_.count(CustomTags::REVIVE)) {
+			customTags_.erase(CustomTags::REVIVE);
+			customTags_.insert(CustomTags::REVIVE_EFFECT);
+		}
 	}
 	if (xml.count("customcache")) {
 		XMLData::ParseTagsString(xml.at("customcache"), customCache_);

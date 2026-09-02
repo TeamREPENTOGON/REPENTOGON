@@ -755,20 +755,7 @@ LUA_FUNCTION(Lua_IsChallengeDone) {
 	if (challengeid < 1) {
 		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
 	}
-	if (challengeid <= 45) {
-		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeid]);
-	}
-	else {
-		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
-		lua_pushboolean(L, Challenges[node["name"] + node["sourceid"]] > 0);
-	}
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_UnDoChallenge) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
-	UndoChallenge(challengeid);
+	lua_pushboolean(L, IsChallengeCompleted(challengeid));
 	return 1;
 }
 
@@ -777,20 +764,44 @@ LUA_FUNCTION(Lua_ClearChallenge) {
 	if (challengeid < 1) {
 		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
 	}
-	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
-	if (challengeid <= 45) {
-		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!
-	}
-	return 1;
+	MarkChallengeCompleted(challengeid);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_UndoChallenge) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
-	UndoChallenge(challengeid);
+	ResetChallengeCompletion(challengeid);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SetChallengeCompletion) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
+	bool completed = lua::luaL_checkboolean(L, 2, lua::BOOL_CHECK_MODE_STRICT);
+	if (completed) {
+		MarkChallengeCompleted(challengeid);
+	} else {
+		ResetChallengeCompletion(challengeid);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetModChallengeCompletion) {
+	const string modid = luaL_checkstring(L, 1);
+	const string challengename = luaL_checkstring(L, 2);
+
+	const string key = challengename + modid;
+	if (Challenges.count(key)) {
+		lua_pushboolean(L, Challenges[key] > 0);
+	} else {
+		lua_pushnil(L);
+	}
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetModChallengeClearCount) {
+LUA_FUNCTION(Lua_GetModChallengeClearByName) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
 	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
 	lua_pushinteger(L, Challenges[node["name"] + node["sourceid"]]);
@@ -1179,8 +1190,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsChallengeDone", Lua_IsChallengeDone);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "UnClearChallenge", Lua_UndoChallenge);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UndoChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetChallengeCompletion", Lua_SetChallengeCompletion);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeCompletionData", Lua_GetModChallengeCompletion);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine

@@ -125,6 +125,11 @@ TypeInfo std_string {
     Align 4;
 };
 
+TypeInfo vector_string {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo HDC {
     Size 4;
 };

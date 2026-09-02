@@ -19,6 +19,15 @@ __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entit
 "558bec83ec40538b19":
 __thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float unused, float scale, bool unk);
 
+"558bec81ec50010000":
+__thiscall void PlayerHUD::RenderCraftingTable(Vector* pos, float scale<xmm2>);
+
+"558bec81ece000000053":
+__thiscall void PlayerHUD::RenderInventory(Vector* pos, float scale<xmm2>);
+
+"558bec83ec308b41":
+__thiscall void PlayerHUD::RenderSpellQueue(Vector* pos, float scale<xmm2>);
+
 struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem, PlayerHUDTrinket) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 }} 

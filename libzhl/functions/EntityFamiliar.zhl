@@ -79,6 +79,9 @@ __thiscall Vector* Entity_Familiar::GetOrbitPosition(Vector* buffer, Vector* off
 "558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bd9":
 __thiscall void Entity_Familiar::PickEnemyTarget(float maxDistance, int frameInterval, int flags, Vector * coneDir, float coneAngle);
 
+"558bec81ecbc000000a1????????33c58945??535657":
+__thiscall void Entity_Familiar::ai_buddy_inbox();
+
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return &this->_player; }

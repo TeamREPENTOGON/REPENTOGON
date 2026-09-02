@@ -138,16 +138,16 @@ public:
 
 	// Checks if a translation is available for the specified attribute in the specified category.
 	// If there is, the current attribute will be copied to "untranslated<attr>", and the original
-	// attribute will be replaced with its translated form.
+	// attribute will be replaced with its ENGLISH translated form.
 	static void CheckTranslatedAttribute(XMLAttributes& node, const std::string attr, const char* category) {
 		if (category) {
 			if (node.count(attr) && !node[attr].empty() && node[attr].front() == '#') {
-				bool unk = false;
-				std::string translated = g_Manager->GetStringTable()->GetString(category, 0, node[attr].substr(1, node[attr].length()).c_str(), &unk);
-				if (translated != "StringTable::InvalidCategory" && translated != "StringTable::InvalidKey") {
+				bool failed = false;
+				// Only translating to English here is intended
+				if (const char* english = g_Manager->GetStringTable()->GetString(category, 0, node[attr].substr(1, node[attr].length()).c_str(), &failed); !failed && english && strlen(english) > 0) {
 					const std::string untranslatedAttr = "untranslated" + attr;
 					node[untranslatedAttr] = node[attr];
-					node[attr] = translated;
+					node[attr] = english;
 				}
 			}
 		}
@@ -578,7 +578,8 @@ public:
 };
 
 class XMLChallenge : public XMLDataHolder {
-
+public:
+	const char* GetTranslationStringCategory() override { return "Challenges"; }
 };
 
 class XMLBossColor : public XMLDataHolder {
@@ -876,6 +877,7 @@ struct XMLData {
 	XMLGeneric* FxParamData = new XMLGeneric(0);
 	XMLGeneric* FxRayData = new XMLGeneric(0);
 	XMLBossColor* BossColorData = new XMLBossColor();
+	XMLGeneric* BabyData = new XMLGeneric(0);
 
 	unordered_map<string, XMLGeneric*> CustomXMLData;
 
@@ -1513,7 +1515,7 @@ inline void LoadCustomXML(CustomXML xml) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = filesystem::current_path().parent_path().string() + "\\mods\\" + mod->GetDir();
-			vector<string> paths = { dir + "\\resources-repentogon\\", dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
+			vector<string> paths = { dir + "\\resources-repentogon\\" + xml.filename, dir + "\\resources-dlc3\\" + xml.filename, dir + "\\resources\\" + xml.filename };
 			for (const string& path : paths) {
 				if (filesystem::exists(path)) {
 					targetresource = path;
@@ -1629,6 +1631,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["fxlayers"] = 26;
 	xmlnodeenum["fxparams"] = 27;
 	xmlnodeenum["fxrays"] = 28;
+	xmlnodeenum["babies"] = 29;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 

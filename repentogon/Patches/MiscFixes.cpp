@@ -2,6 +2,7 @@
 #include "HookSystem.h"
 #include "LuaCore.h"
 #include "Log.h"
+#include "../REPENTOGONOptions.h"
 #include <filesystem>
 #include <algorithm>
 
@@ -253,4 +254,12 @@ HOOK_METHOD(ModManager, UpdateRooms, (int id, int mode) -> void)
 	{
 		variantSet->Add(i);
 	}
+}
+
+// Allow anything that would register as an "Unknown Device" to get blocked from being registered as a controller.
+HOOK_METHOD(InputDeviceBase, Initialize, (void* unk) -> bool) {
+	if (repentogonOptions.blockUnknownDevices && this->_deviceName && std::string(this->_deviceName) == "Unknown Device") {
+		return false;
+	}
+	return super(unk);
 }

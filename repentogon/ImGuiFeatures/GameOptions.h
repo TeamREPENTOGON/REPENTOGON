@@ -431,6 +431,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.disableExitPrompt, false);
 
+						AddNewTableRow();
+						ImGui::Checkbox(LANG.OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES, &repentogonOptions.blockUnknownDevices);
+						ImGui::SameLine();
+						HelpMarker(LANG.OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK);
+						AddResetButton(++resetCounter, repentogonOptions.blockUnknownDevices, false);
+
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();
