@@ -1,4 +1,4 @@
-v1.1.2h -
+v1.1.3 -
 Added:
 * ModCallbacks:
 	- MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY(EntityPlayer, Vector pos, float Scale)
@@ -55,6 +55,7 @@ Fixes:
 	- Content .anm2 file animations that use the character's name will now fall back to the English name (or raw string) if an animation matching the current localized name is not found.
 	- Modded challenge names can now be localized (using the "Challenges" string category)
 	- Fix some underlying quirks with localized player names and completion mark tracking
+	- Fix missing fonts for certain languages
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
 /newline/
