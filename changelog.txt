@@ -1,5 +1,9 @@
 v1.1.2h -
 Added:
+* ModCallbacks:
+	- MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY(EntityPlayer, Vector pos, float Scale)
+	- MC_PRE/POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE(EntityPlayer, Vector pos, float Scale)
+	- MC_PRE/POST_PLAYERHUD_RENDER_CRAFTING_TABLE(EntityPlayer, Vector pos, float Scale)
 * Isaac:
 	- OpenConsole()
 	- GetCompletionMarkData(string modid, string playername, bool tainted)

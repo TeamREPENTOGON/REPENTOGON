@@ -2807,6 +2807,61 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 	}
 }
 
+bool RunRenderSpecialHudElementCallback(int callbackid, PlayerHUD* playerhud, Vector* pos, float scale, bool isPre) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(playerhud->_player, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(scale)
+			.call(1);
+
+		if (isPre && !result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			} else if (lua_isuserdata(L, -1)) {
+				Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				if (newPos) {
+					*pos = *newPos;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY
+HOOK_METHOD(PlayerHUD, RenderInventory, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1293, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1294, this, &pos, scale, false);
+	}
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE
+HOOK_METHOD(PlayerHUD, RenderSpellQueue, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1295, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1296, this, &pos, scale, false);
+	}
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_CRAFTING_TABLE
+HOOK_METHOD(PlayerHUD, RenderCraftingTable, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1297, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1298, this, &pos, scale, false);
+	}
+}
+
 //MC_PRE_GET_LIGHTING_ALPHA
 HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
 	const int callbackid = 1150;
