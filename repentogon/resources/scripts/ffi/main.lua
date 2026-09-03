@@ -136,6 +136,8 @@ pcall(require("ffi.ItemConfigCostume"))
 pcall(require("ffi.ItemConfigItem"))
 pcall(require("ffi.TearParams"))
 pcall(require("ffi.ProjectileParams"))
+-- pcall(require("ffi.Input"))
+
 
 ffi = nil
 ffidll = nil
