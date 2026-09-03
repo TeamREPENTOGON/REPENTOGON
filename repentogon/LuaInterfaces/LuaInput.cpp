@@ -12,7 +12,7 @@ MOD_EXPORT float L_Input_GetActionValue(int action, int controllerId) {
 }
 
 MOD_EXPORT float L_Input_GetButtonValue(int button, int controllerId) {
-	return LuaEngine::Input_GetButtonValue(button, controllerId);
+	return LuaEngine::GetButtonValue(button, controllerId);
 }
 
 MOD_EXPORT char* L_Input_GetDeviceNameByIdx(int controllerId) {
