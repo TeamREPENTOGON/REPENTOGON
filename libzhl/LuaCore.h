@@ -628,6 +628,8 @@ namespace lua {
             TEAR_PARAMS_PTR,
             PROJECTILE_PARAMS,
             PROJECTILE_PARAMS_PTR,
+            ACTIVE_ITEM_DESC,
+            ACTIVE_ITEM_DESC_PTR,
             MAX_CDATA
         };
 

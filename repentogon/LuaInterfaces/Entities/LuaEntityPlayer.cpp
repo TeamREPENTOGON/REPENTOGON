@@ -878,7 +878,7 @@ LUA_FUNCTION(Lua_PlayerGetActiveItemDesc)
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, desc, lua::GetMetatableKey(lua::Metatables::ACTIVE_ITEM_DESC));
+		lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC_PTR], desc);
 	}
 
 	return 1;
