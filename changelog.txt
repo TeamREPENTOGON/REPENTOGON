@@ -1,9 +1,14 @@
-v1.1.2h -
+v1.1.3 -
 Added:
 * ModCallbacks:
 	- MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY(EntityPlayer, Vector pos, float Scale)
 	- MC_PRE/POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE(EntityPlayer, Vector pos, float Scale)
 	- MC_PRE/POST_PLAYERHUD_RENDER_CRAFTING_TABLE(EntityPlayer, Vector pos, float Scale)
+	- MC_POST_USE_ITEM(CollectibleType, RNG, EntityPlayer, UseFlags, ActiveSlot, int CustomVarData, bool Discharge, bool Remove)
+		Better callback for AFTER an active item is used, since MC_USE_ITEM runs earlier, is intended for modded active logic, and is often terminated early.
+		Note that the game doesn't actually discharge the item as part of the internal UseActiveItem function,
+		but if Discharge is true and the item was activated properly, then it will be discharged afterwards.
+		If Remove is true, the game will have already attempted to remove the item.
 * Isaac:
 	- OpenConsole()
 	- GetCompletionMarkData(string modid, string playername, bool tainted)
@@ -44,6 +49,7 @@ Added:
 Modified:
 * MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
 	- Change your CallbackPriority to be later instead of earlier if you need your value to be preferred.
+* In MC_PRE_USE_ITEM, you can now `return { Discharge=false }` to cancel the activation without discharging the item.
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
 Fixes:
@@ -55,6 +61,7 @@ Fixes:
 	- Content .anm2 file animations that use the character's name will now fall back to the English name (or raw string) if an animation matching the current localized name is not found.
 	- Modded challenge names can now be localized (using the "Challenges" string category)
 	- Fix some underlying quirks with localized player names and completion mark tracking
+	- Fix missing fonts for certain languages
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
 /newline/

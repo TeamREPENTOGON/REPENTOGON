@@ -646,10 +646,13 @@ local typecheckWarnFunctions = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
 		["number"] = checkNumberGreaterOrEqualFunction(0),
 	},
+	[ModCallbacks.MC_PRE_USE_ITEM] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Discharge="boolean" }),
+	},
 }
 
 local boolCallbacks = {
-	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
@@ -996,6 +999,7 @@ end
 local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 	[ModCallbacks.MC_PRE_USE_ITEM] = true,
 	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_POST_USE_ITEM] = true,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_ADDED] = true,
@@ -2117,6 +2121,7 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunNoReturnCallback,
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_USE_ITEM] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

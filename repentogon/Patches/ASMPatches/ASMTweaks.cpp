@@ -484,6 +484,9 @@ namespace ASMPatches {
 			 delete[] modifiedContent;
 		 }
 
+		 // Replaced with ASMPatchLoadArchiveFile in ASMLocalization.cpp
+		 // We load the archive again but only allow specific files (ie, fonts)
+		 /*
 		 printf("[REPENTOGON] Removing outdate language resources.\n");
 		 {
 			 // this is before the while-loop of the call-site of LoadArchiveFile.
@@ -529,6 +532,7 @@ namespace ASMPatches {
 			 }
 			 *write_tail = NULL;
 		 }
+		 */
 
 	 }
 }
