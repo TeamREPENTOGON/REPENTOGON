@@ -6099,6 +6099,11 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 
 // MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1492)
 HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
+	if (Entity_Pickup::IsChest(this->_variant) && this->_subtype == 0) {
+		// Already-opened vanilla chest
+		return false;
+	}
+
 	const int preCallbackId = 1491;
 	const int postCallbackId = 1492;
 
