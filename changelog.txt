@@ -65,6 +65,7 @@ Fixes:
 	- Fix missing fonts for certain languages
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
+* Updated SoundEffect enum to align with the updated vanilla enum (only for sounds available in v1.9.7.12, up to `SoundEffect.SOUND_YO_LISTEN`)
 /newline/
 /versionseparator/
 v1.1.2g -
