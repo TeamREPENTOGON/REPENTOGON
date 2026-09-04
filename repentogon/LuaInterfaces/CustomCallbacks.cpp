@@ -2402,6 +2402,81 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	return normalMinCharge;
 }
 
+HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData) -> void) {
+	if (collectible == COLLECTIBLE_NULL) {
+		*resultFlags = 1;
+		return;
+	}
+
+	// Reimplemented MC_PRE_USE_ITEM (23) to enable no-discharge preventions, and to ensure that MC_POST_USE_ITEM doesn't run if the use is prevented.
+	const int precallbackid = 23;
+	if (VanillaCallbackState.test(precallbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(collectible)
+			.push(collectible)
+			.push(this->GetCollectibleRNG(collectible), lua::Metatables::RNG)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) {
+				// Default skip
+				*resultFlags = 1;
+				return;
+			} else if (lua_istable(L, -1)) {
+				// Skip, potentially without discharging.
+				lua_getfield(L, -1, "Discharge");
+				if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+					*resultFlags = 0;
+				} else {
+					*resultFlags = 1;
+				}
+				lua_pop(L, 1);
+				return;
+			}
+		}
+	}
+
+	super(resultFlags, collectible, useFlags, activeSlot, varData);
+
+	// MC_POST_USE_ITEM (1003)
+	const int postcallbackid = 1003;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		bool discharge = (*resultFlags) & (1 << 0);
+		bool removed = (*resultFlags) & (1 << 8);
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(collectible)
+			.push(collectible)
+			.push(this->GetCollectibleRNG(collectible), lua::Metatables::RNG)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.push(discharge)
+			.push(removed)
+			.call(1);
+	}
+}
+
+// Gutted PreUseItem since we reimplement it above.
+HOOK_METHOD(LuaEngine, PreUseItem, (int collectibleType, RNG* rng, Entity_Player* player, unsigned int useFlags, int activeSlot, int customVarData) -> bool) {
+	return false;
+}
+
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
 HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> bool) {
 	const int callbackid1 = 1116;

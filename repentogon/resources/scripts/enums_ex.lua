@@ -1,5 +1,6 @@
 --ModCallbacks.DEPRECATED_MC_USE_PILL = 1001  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 
+ModCallbacks.MC_POST_USE_ITEM = 1003
 ModCallbacks.MC_PRE_ADD_COLLECTIBLE = 1004
 ModCallbacks.MC_POST_ADD_COLLECTIBLE = 1005
 ModCallbacks.MC_POST_TAKE_DMG = 1006 -- deprecated but still in here for backwards compatibility
