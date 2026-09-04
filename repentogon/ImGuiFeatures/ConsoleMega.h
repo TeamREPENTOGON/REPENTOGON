@@ -134,6 +134,7 @@ struct ConsoleMega : ImGuiWindowObject {
         GRID,
         DEBUG_FLAG,
         ITEM,
+        EFFECT,
         CHALLENGE,
         COMBO,
         CUTSCENE,
@@ -207,6 +208,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("fullrestart", LANG.CONSOLE_FULLRESTART_DESC, LANG.CONSOLE_FULLRESTART_HELP, true);
         RegisterCommand("giveitem", LANG.CONSOLE_GIVEITEM_DESC, LANG.CONSOLE_GIVEITEM_HELP, false, ITEM, { "g" });
         RegisterCommand("giveitem2", LANG.CONSOLE_GIVEITEM2_DESC, LANG.CONSOLE_GIVEITEM2_HELP, false, ITEM, { "g2" });
+        RegisterCommand("giveeffect", LANG.CONSOLE_GIVEEFFECT_DESC, LANG.CONSOLE_GIVEEFFECT_HELP, false, EFFECT, { "ge" });
         RegisterCommand("goto", LANG.CONSOLE_GOTO_DESC, LANG.CONSOLE_GOTO_HELP, false, GOTO);
         RegisterCommand("gridspawn", LANG.CONSOLE_GRIDSPAWN_DESC, LANG.CONSOLE_GRIDSPAWN_HELP, false, GRID);
         RegisterCommand("help", LANG.CONSOLE_HELP_DESC, LANG.CONSOLE_HELP_HELP, true);
@@ -239,7 +241,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("stage", LANG.CONSOLE_STAGE_DESC, LANG.CONSOLE_STAGE_HELP, false, STAGE);
         RegisterCommand("time", LANG.CONSOLE_TIME_DESC, LANG.CONSOLE_TIME_HELP, false);
         RegisterCommand("testbosspool", LANG.CONSOLE_TESTBOSSPOOL_DESC, LANG.CONSOLE_TESTBOSSPOOL_HELP, false);
-        RegisterCommand("forceimport", LANG.CONSOLE_FORCEIMPORT_DESC, LANG.CONSOLE_FORCEIMPORT_HELP, true);
+        // RegisterCommand("forceimport", LANG.CONSOLE_FORCEIMPORT_DESC, LANG.CONSOLE_FORCEIMPORT_HELP, true);
     }
 
     const ConsoleCommand* GetCommandByName(const std::string& commandName) {
@@ -500,6 +502,30 @@ struct ConsoleMega : ImGuiWindowObject {
         return console->TextEditCallback(data);
     }
 
+	static std::string GetAutocompleteName(const XMLAttributes& xml, const char* stringCategory = nullptr) {
+		auto nameit = xml.find("name");
+		if (nameit == xml.end()) {
+			return "";
+		}
+		StringTable* stringTable = g_Manager->GetStringTable();
+		const std::string& engName = nameit->second;
+		if (!stringTable || stringTable->language == 0 || !stringCategory) {
+			return engName;
+		}
+		std::string result = engName;
+		if (auto unameit = xml.find("untranslatedname"); unameit != xml.end()) {
+			const std::string& untranslatedName = unameit->second;
+			if (!untranslatedName.empty() && untranslatedName.front() == '#') {
+				bool failed = false;
+				const char* translatedName = stringTable->GetString(stringCategory, stringTable->language, untranslatedName.substr(1).c_str(), &failed);
+				if (!failed && translatedName && result != translatedName) {
+					result += " / " + std::string(translatedName);
+				}
+			}
+		}
+		return result;
+	}
+
     int TextEditCallback(ImGuiInputTextCallbackData* data)
     {
         switch (data->EventFlag)
@@ -594,33 +620,30 @@ struct ConsoleMega : ImGuiWindowObject {
 
                     switch (command->autocompleteType) {
                         case ENTITY: {
-                            std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
-
-                            std::vector<std::pair<int, XMLNodes>> XMLPairs = {
-                                std::pair<int, XMLNodes>{100, XMLStuff.ItemData->nodes},
-                                std::pair<int, XMLNodes>{300, XMLStuff.CardData->nodes},
-                                std::pair<int, XMLNodes>{350, XMLStuff.TrinketData->nodes},
-                            };
-                                
-                            for (auto &entity : entities) {
-                                int type = get<0>(entity.first);
-                                int variant = get<1>(entity.first);
-                                int subtype = get<2>(entity.first);
-
-                                std::string name = entity.second["name"];
-                                std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
+                            for (const std::pair<std::tuple<int, int, int>, XMLAttributes>& entity : XMLStuff.EntityData->nodes) {
+                                int type = std::get<0>(entity.first);
+                                int variant = std::get<1>(entity.first);
+                                int subtype = std::get<2>(entity.first);
 
                                 if (type == 5 && variant == 300) { // This is completely invalid
                                     continue;
                                 }
 
-                                entries.insert(AutocompleteEntry(id, name));
+								const std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
+                                entries.insert(AutocompleteEntry(id, GetAutocompleteName(entity.second, "Entities")));
                             }
 
-                            for (std::pair<int, XMLNodes> &pair : XMLPairs) {
-                                for (std::pair<const int, XMLAttributes> &node : pair.second) {
-                                    std::string id = "5." + std::to_string(pair.first) + "." + std::to_string(node.first);
-                                    entries.insert(AutocompleteEntry(id, id == "5.300.0" ? "Tarot Card" : node.second["name"]));
+							const std::vector<std::pair<int, XMLDataHolder*>> XMLPairs = {
+								{100, XMLStuff.ItemData},
+								{300, XMLStuff.CardData},
+								{350, XMLStuff.TrinketData},
+							};
+
+                            for (const auto& pair : XMLPairs) {
+								const XMLDataHolder* xmlData = pair.second;
+                                for (const auto& node : xmlData->nodes) {
+                                    const std::string id = "5." + std::to_string(pair.first) + "." + std::to_string(node.first);
+                                    entries.insert(AutocompleteEntry(id, id == "5.300.0" ? "Tarot Card" : GetAutocompleteName(node.second, xmlData->GetTranslationStringCategory())));
                                 }
                             }
 
@@ -939,41 +962,52 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case ITEM: {
-                            std::vector<std::tuple<XMLNodes, std::string, const char *>> XMLPairs = {
-                                {XMLStuff.ItemData->nodes, "c", "Items"},
-                                {XMLStuff.TrinketData->nodes, "t", "Items"},
-                                {XMLStuff.CardData->nodes, "k", "PocketItems"},
-                                {XMLStuff.PillData->nodes, "p", "PocketItems"},
+                            const std::vector<std::pair<std::string, XMLDataHolder*>> XMLPairs = {
+                                { "c", XMLStuff.ItemData },
+                                { "t", XMLStuff.TrinketData },
+                                { "k", XMLStuff.CardData },
+                                { "p", XMLStuff.PillData },
                             };
 
-                            StringTable * stringTable = g_Manager->GetStringTable();
-                            unsigned int language = stringTable->language;
-                            for (auto& XMLPair : XMLPairs) {
-                                for (auto& node : std::get<0>(XMLPair)) {
+                            for (const auto& pair : XMLPairs) {
+								const XMLDataHolder* xmlData = pair.second;
+                                for (const auto& node : xmlData->nodes) {
                                     int id = node.first;
-                                    if ((id == 0) && (std::get<1>(XMLPair) != "p")) // dont display NULL item and trinket
+                                    if ((id == 0) && (pair.first != "p")) // dont display NULL item and trinket
                                       continue;
-                                    std::string name = node.second["name"];
-                                    auto& untranslated_name = node.second["untranslatedname"];
-                                    if (language && untranslated_name.length() != 0 && untranslated_name[0] == '#') {
-                                        bool unk;
-                                        name = name + " " + stringTable->GetString(std::get<2>(XMLPair), language, untranslated_name.substr(1).c_str(), &unk);
-                                    }
-                                    entries.insert(AutocompleteEntry(std::get<1>(XMLPair)+ std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(pair.first + std::to_string(id), GetAutocompleteName(node.second, xmlData->GetTranslationStringCategory())));
                                 }
                             }
                             break;
                         }
 
+						case EFFECT: {
+							const std::vector<std::pair<std::string, XMLDataHolder*>> XMLPairs = {
+								{ "", XMLStuff.NullItemData },
+								{ "c", XMLStuff.ItemData },
+								{ "t", XMLStuff.TrinketData },
+							};
+
+							for (const auto& pair : XMLPairs) {
+								const XMLDataHolder* xmlData = pair.second;
+								for (const auto& node : xmlData->nodes) {
+									int id = node.first;
+									if (id > 0) {
+										entries.insert(AutocompleteEntry(pair.first + std::to_string(id), GetAutocompleteName(node.second, xmlData->GetTranslationStringCategory())));
+									}
+								}
+							}
+							break;
+						}
+
                         case CHALLENGE: {
-                            XMLNodes challenges = XMLStuff.ChallengeData->nodes;
-                            for (auto& node : challenges) {
+                            for (const auto& node : XMLStuff.ChallengeData->nodes) {
                                 int id = node.first;
                                 std::string name;
                                 if (id == 45) 
                                     name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
                                 else
-                                    name = node.second["name"];
+                                    name = GetAutocompleteName(node.second);
 
                                 entries.insert(AutocompleteEntry(std::to_string(id), name));
                             }
@@ -1020,21 +1054,18 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case SFX: {
-                            XMLNodes sounds = XMLStuff.SoundData->nodes;
-                            for (auto& node : sounds) {
+                            for (const auto& node : XMLStuff.SoundData->nodes) {
                                 int id = node.first;
-                                std::string name = node.second["name"];
-                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                entries.insert(AutocompleteEntry(std::to_string(id), GetAutocompleteName(node.second)));
                             }
                             break;
                         }
 
                         case CURSE: {
-                            XMLNodes curses = XMLStuff.CurseData->nodes;
-                            for (auto& node : curses) {
+                            const XMLNodes& curses = XMLStuff.CurseData->nodes;
+                            for (const auto& node : curses) {
                                 int id = node.first;
-                                std::string name = node.second["name"];
-                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                entries.insert(AutocompleteEntry(std::to_string(id), GetAutocompleteName(node.second, "Curses")));
                             }
 
                             // This is a cut-down version of the parsing the other commands do.
@@ -1078,12 +1109,12 @@ struct ConsoleMega : ImGuiWindowObject {
                                     // number provided in the console is bigger than the max int value.
                                     return 0;
                                 }
-                                for (auto& node : curses) {
+                                for (const auto& node : curses) {
                                     int id = node.first;
                                     if ((mask & id) != 0) {
                                         if (!calcCurses.empty())
                                             calcCurses = calcCurses + " + ";
-                                        calcCurses = calcCurses + node.second["name"];
+                                        calcCurses = calcCurses + GetAutocompleteName(node.second, "Curses");
                                     }
                                 }
                                 autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(mask), calcCurses));
@@ -1093,11 +1124,9 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case METRO: {
-                            XMLNodes items = XMLStuff.ItemData->nodes;
-                            for (auto& node : items) {
+                            for (const auto& node : XMLStuff.ItemData->nodes) {
                                 int id = node.first;
-                                std::string name = node.second["name"];
-                                entries.insert(AutocompleteEntry("c" + std::to_string(id), name));
+                                entries.insert(AutocompleteEntry("c" + std::to_string(id), GetAutocompleteName(node.second, "Items")));
                             }
                             break;
                         }
@@ -1174,24 +1203,26 @@ struct ConsoleMega : ImGuiWindowObject {
                           entries = {
                               AutocompleteEntry("-1", "Enemy"),
                           };
-                          XMLNodes players = XMLStuff.PlayerData->nodes;
-                          for (auto& node : players) {
+                          for (const auto& node : XMLStuff.PlayerData->nodes) {
                             int id = node.first;
-                            std::string name = node.second["name"];
-                            entries.insert(AutocompleteEntry(std::to_string(id), name));
+							std::string prefix = "";
+							if (node.second.count("bskinparent") || (id > 20 && id <= 40)) {
+								prefix = "Tainted ";
+							}
+							std::string suffix = "";
+							if (id == 11 || id == 38 || id == 39) {
+								suffix = " 2";
+							}
+                            entries.insert(AutocompleteEntry(std::to_string(id), prefix + GetAutocompleteName(node.second, "Players") + suffix));
                           }
                           break;
                         }
 
                         case ACHIEVEMENT: {
-                            XMLNodes achievs = XMLStuff.AchievementData->nodes;
-                            for (auto& node : achievs) {
+                            for (const auto& node : XMLStuff.AchievementData->nodes) {
                                 int id = node.first;
                                 if (id > 0) { //to exclude negative achievement hackies
-                                    std::string name;
-                                    name = node.second["name"];
-
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(std::to_string(id), GetAutocompleteName(node.second)));
                                 }
                             }
                             break;

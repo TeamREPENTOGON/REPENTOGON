@@ -44,6 +44,7 @@ Added:
 * Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml
 * Added support for babies.xml in mod content folders! You can finally add co-op babies!
 * Added new content xml: "edenhair.xml"
+* Added new console command "giveeffect" / "ge" for giving TemporaryEffects / Null Items.
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 /newline/
 Modified:

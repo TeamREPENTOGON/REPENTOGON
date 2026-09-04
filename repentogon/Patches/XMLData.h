@@ -131,7 +131,7 @@ public:
 	virtual void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) {}
 
 	// Returns the category to use for translation strings. Returns nullptr if this data does not have translations.
-	virtual const char* GetTranslationStringCategory() { return nullptr; }
+	virtual const char* GetTranslationStringCategory() const { return nullptr; }
 	
 	// Inserts the node into the byname/bynamemod lookup tables.
 	virtual void AddByNameLookups(XMLAttributes& node, int id, const std::string& modid);
@@ -500,7 +500,7 @@ class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
 
-	const char* GetTranslationStringCategory() override { return "Items"; }
+	const char* GetTranslationStringCategory() const override { return "Items"; }
 
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
 };
@@ -509,7 +509,7 @@ class XMLCollectible : public XMLItem {};
 
 class XMLNullItem : public XMLItem {
 public:
-	const char* GetTranslationStringCategory() override { return nullptr; }
+	const char* GetTranslationStringCategory() const override { return nullptr; }
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -564,7 +564,7 @@ public:
 		this->defmaxid = m;
 	}
 
-	const char* GetTranslationStringCategory() override { return "Default"; }
+	const char* GetTranslationStringCategory() const override { return "Default"; }
 };
 
 class XMLGiantBook : public XMLDataHolder {
@@ -579,7 +579,7 @@ public:
 
 class XMLChallenge : public XMLDataHolder {
 public:
-	const char* GetTranslationStringCategory() override { return "Challenges"; }
+	const char* GetTranslationStringCategory() const override { return "Challenges"; }
 };
 
 class XMLBossColor : public XMLDataHolder {
@@ -622,7 +622,7 @@ public:
 	// XMLNodeIdxLookup bypickup;
 	vector<XMLAttributes> customachievitems;
 
-	const char* GetTranslationStringCategory() override { return "PocketItems"; }
+	const char* GetTranslationStringCategory() const override { return "PocketItems"; }
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) override;
 };
 
@@ -636,7 +636,7 @@ public:
 };
 
 class XMLPlayer : public XMLDataHolder {
-	const char* GetTranslationStringCategory() override { return "Players"; }
+	const char* GetTranslationStringCategory() const override { return "Players"; }
 
 	void AddByNameLookups(XMLAttributes& player, int id, const std::string& modid) override;
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& player, int id) override;
