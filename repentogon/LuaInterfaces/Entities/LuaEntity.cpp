@@ -861,7 +861,6 @@ LUA_FUNCTION(Lua_EntitySetVariant) {
 	return 0;
 }
 
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
