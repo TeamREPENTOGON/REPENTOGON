@@ -898,63 +898,6 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 }
 */
 
-static const unordered_map<string, int> bagOfCraftingTags = {
-	{"-1", 0},
-	{"none", 0},
-	{"false", 0},
-	{"redheart", 1},
-	{"heart", 1},
-	{"soulheart", 2},
-	{"blackheart", 3},
-	{"eternalheart", 4},
-	{"goldheart", 5},
-	{"boneheart", 6},
-	{"rottenheart", 7},
-	{"penny", 8},
-	{"nickel", 9},
-	{"dime", 10},
-	{"luckypenny", 11},
-	{"key", 12},
-	{"goldkey", 13},
-	{"chargedkey", 14},
-	{"bomb", 15},
-	{"goldbomb", 16},
-	{"gigabomb", 17},
-	{"minibattery", 18},
-	{"battery", 19},
-	{"megabattery", 20},
-	{"card", 21},
-	{"pill", 22},
-	{"rune", 23},
-	{"diceshard", 24},
-	{"crackedkey", 25},
-	{"goldpenny", 26},
-	{"goldpill", 27},
-	{"goldbattery", 28},
-	{"poop", 29}
-};
-
-void ParseBagOfCraftingAttribute(const string& str, vector<int>& out) {
-	const string tagsstr = stringlower(str.c_str());
-	if (!tagsstr.empty()) {
-		stringstream tagstream(tagsstr);
-		string tag;
-		while (getline(tagstream, tag, ' ')) {
-			if (out.size() >= 8)
-				break;
-			if (!tag.empty() && bagOfCraftingTags.find(tag) != bagOfCraftingTags.end()) {
-				const int n = bagOfCraftingTags.at(tag);
-				if (n > 0 || out.empty())
-					out.push_back(n);
-				if (n == 0)
-					break;
-			} else {
-				break;
-			}
-		}
-	}
-}
-
 // XMLDataHolder base logic ----------
 // Overrides defined below.
 
@@ -1372,12 +1315,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			entity["variant"] = to_string(var);
 			entity["sourceid"] = lastmodid;
 			XMLDataHolder::CheckTranslatedAttribute(entity, "name", "Entities");
-			if (entity.find("customtags") != entity.end()) {
-				XMLData::ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
-			}
-			if (type == ENTITY_PICKUP && entity.find("bagofcrafting") != entity.end()) {
-				ParseBagOfCraftingAttribute(entity["bagofcrafting"], XMLStuff.EntityData->bagofcraftingpickups[idx]);
-			}
+
 			if (iscontent && (entity["boss"] == "1")) {
 				tuple<int, int> clridx = { toint(entity["id"]), toint(entity["variant"]) };
 				if (XMLStuff.BossColorData->bytypevar.find(clridx) != XMLStuff.BossColorData->bytypevar.end()) {

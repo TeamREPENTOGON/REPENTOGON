@@ -158,6 +158,15 @@ static Entity_Effect* Game::ChainLightning(Vector* position, float damage<xmm2>,
 "558bec83ec0c568bb1":
 __thiscall bool Game::HasSeedEffect(int SeedEffect);
 
+"558bec83ec108b4d??538b1d":
+static void Game::AddErasedEnemy(Entity* entity);
+
+"558bec83e4f88b55??83ec0c8b4a":
+static bool Game::ShouldEraseEnemy(Entity* Entity);
+
+"558bec8b45??833800":
+static cleanup void Game::FixErasedEnemyID(int* type<ecx>, int* variant<edx>, int* subtype);
+
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 
@@ -244,6 +253,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	inline ColorModState* GetTargetColorModifier() { return &this->_targetColorModifier; }
 	inline ColorModState* GetLerpColorModifier() { return &this->_lerpColorModifier; }
 
+    void LIBZHL_API AddErasedEnemyByIds(int type, int variant, int subtype);
+    void LIBZHL_API RemoveErasedEnemy(int type, int variant, int subtype);
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
 	//Level _level : 0x0;
