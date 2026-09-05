@@ -416,6 +416,36 @@ void ParseXMLData() {
 			}
 		}
 	}
+
+	// Parsing announcer lines here because sounds.xml is loaded AFTER pocketitems.xml
+	for (ItemConfig_Card* card : *g_Manager->GetItemConfig()->GetCards()) {
+		if (card && card->announcerVoice <= 0) {
+			const std::string announcer = XMLStuff.CardData->GetAttributeById(card->id, "announcer");
+			if (!announcer.empty()) {
+				if (auto it = XMLStuff.SoundData->byname.find(announcer); it != XMLStuff.SoundData->byname.end()) {
+					card->announcerVoice = it->second;
+				}
+			}
+		}
+	}
+	for (ItemConfig_Pill* pill : *g_Manager->GetItemConfig()->GetPillEffects()) {
+		if (pill && pill->announcerVoice <= 0) {
+			const std::string announcer = XMLStuff.PillData->GetAttributeById(pill->id, "announcer");
+			if (!announcer.empty()) {
+				if (auto it = XMLStuff.SoundData->byname.find(announcer); it != XMLStuff.SoundData->byname.end()) {
+					pill->announcerVoice = it->second;
+				}
+			}
+		}
+		if (pill && pill->announcerVoiceSuper <= 0) {
+			const std::string announcer = XMLStuff.PillData->GetAttributeById(pill->id, "announcer2");
+			if (!announcer.empty()) {
+				if (auto it = XMLStuff.SoundData->byname.find(announcer); it != XMLStuff.SoundData->byname.end()) {
+					pill->announcerVoiceSuper = it->second;
+				}
+			}
+		}
+	}
 }
 
 void AddKnownCustomCache(const std::string& tag) {

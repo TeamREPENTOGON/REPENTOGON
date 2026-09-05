@@ -488,7 +488,32 @@ bool KAGE_Filesys_ContentManager::MountedFileExists(const std::string& filePath)
 	return MountedFileExists(filePath.c_str());
 }
 
+void Game::RemoveErasedEnemy(int type, int variant, int subtype) {
+	Game::FixErasedEnemyID(&type, &variant, &subtype);
+
+	_erasedEntities.erase(std::remove_if(std::begin(_erasedEntities), std::end(_erasedEntities), [&](const EntityId& entity) {
+		return entity.type == type && (variant == -1 || entity.variant == variant);
+	}), std::end(_erasedEntities));
+}
+
+void Game::AddErasedEnemyByIds(int type, int variant, int subtype) {
+	Game::FixErasedEnemyID(&type, &variant, &subtype);
+
+	for (EntityId const& entity : _erasedEntities) {
+		if (entity.type == type && entity.variant == variant && entity.subtype == subtype) {
+			return;
+		}
+	}
+
+	EntityId& newEntity = _erasedEntities.emplace_back();
+	newEntity.type = type;
+	newEntity.variant = variant;
+	newEntity.subtype = subtype;
+}
+
 bool Game::IsErased(int type, int variant, int subtype) {
+	Game::FixErasedEnemyID(&type, &variant, &subtype);
+
 	for (EntityId const& entity : _erasedEntities) {
 		if (entity.type == type) {
 			if (variant == -1) {

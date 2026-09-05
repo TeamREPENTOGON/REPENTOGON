@@ -9,8 +9,7 @@
 #include "LuaCore.h"
 #include "../LuaClasses.h"
 #include "../LuaInit.h"
-
-const int vanillaCoinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
+#include "EntityConfigEx.h"
 
 // Re-implementation of GetCoinValue that returns 1 for unknown (ie, modded) subtypes instead of random huge numbers.
 // Can also run our MC_PICKUP_GET_COIN_VALUE callback when desired.
@@ -37,15 +36,11 @@ int __stdcall GetCoinValueReimplementation(Entity_Pickup* pickup, const bool run
 		}
 	}
 
-	if (subtype < 8) {
-		return vanillaCoinValues[subtype];
-	}
-
-	XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
-	const std::string xmlCoinValue = xmlData["coinvalue"];
-
-	if (isdigit(xmlCoinValue[0])) {
-		return std::stoi(xmlCoinValue);
+	if (auto* ex = EntityConfigEx::GetEntityEx(ENTITY_PICKUP, PICKUP_COIN, subtype)) {
+		return ex->GetCoinValue();
+	} else if (subtype >= 0 && subtype < 8) {
+		static const int s_VanillaCoinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
+		return s_VanillaCoinValues[subtype];
 	}
 	return 1;
 }

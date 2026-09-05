@@ -128,6 +128,9 @@ I(CONSOLE_GIVEITEM_HELP, u8"Gives the main player items, trinkets, cards and pil
 I(CONSOLE_GIVEITEM2_DESC, u8"Give player 2 items, trinkets, cards, and pills")
 I(CONSOLE_GIVEITEM2_HELP, u8"Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (T) for golden trinkets, (p) for pills, (P) for horse pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.")
 
+I(CONSOLE_GIVEEFFECT_DESC, u8"Give the character a TemporaryEffect")
+I(CONSOLE_GIVEEFFECT_HELP, u8"Gives the main player TemporaryEffects, by ID or name. Grants the effect of Null Items by default, or prefix the ID with (c) for Collectible effects or (t) for Trinket effects.\nThis command also has shorthand which is just (ge).\nExamples:\n(giveeffect 74) will give the player Luna's tears up Null Item.\n(giveeffect c34) will give the player Book of Belial's damage up effect.")
+
 I(CONSOLE_GOTO_DESC, u8"Teleport to a new room")
 I(CONSOLE_GOTO_HELP, u8"Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.")
 

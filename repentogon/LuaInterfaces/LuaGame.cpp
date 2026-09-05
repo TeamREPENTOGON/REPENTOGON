@@ -373,6 +373,28 @@ LUA_FUNCTION(Lua_GameIsGreedFinalBoss)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GameAddErasedEnemy) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		game->AddErasedEnemy(entity);
+	} else {
+		int type = (int)luaL_checkinteger(L, 2);
+		int variant = (int)luaL_checkinteger(L, 3);
+		// The game ignores subtypes for erased enemies do not believe the lies
+		game->AddErasedEnemyByIds(type, variant, 0);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameRemoveErasedEnemy) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int type = (int)luaL_checkinteger(L, 2);
+	int variant = (int)luaL_optinteger(L, 3, -1);
+	game->RemoveErasedEnemy(type, variant, 0);
+	return 0;
+}
+
 LUA_FUNCTION(lua_GameIsErased) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
@@ -384,7 +406,7 @@ LUA_FUNCTION(lua_GameIsErased) {
 	else {
 		int type = (int)luaL_checkinteger(L, 2);
 		int variant = (int)luaL_optinteger(L, 3, -1);
-		int subtype = (int)luaL_optinteger(L, 4, -1);
+		int subtype = (int)luaL_optinteger(L, 4, -1);  // useless, basically ignored by the game
 
 		bool wasErased = game->IsErased(type, variant, subtype);
 		lua_pushboolean(L, wasErased);
@@ -656,6 +678,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsGreedBoss", Lua_GameIsGreedBoss},
 		{ "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss},
 		{ "StartStageTransition", lua_GameStartStageTransition},
+		{ "AddErasedEnemy", Lua_GameAddErasedEnemy},
+		{ "RemoveErasedEnemy", Lua_GameRemoveErasedEnemy},
 		{ "IsErased", lua_GameIsErased},
 		{ "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier},
 		{ "GetTargetColorModifier", Lua_GameGetTargetColorModifier},

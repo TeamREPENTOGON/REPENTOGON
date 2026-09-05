@@ -3649,7 +3649,7 @@ LUA_FUNCTION(Lua_PlayerIsPostLevelInitFinished) {
 
 LUA_FUNCTION(Lua_PlayerUseActiveItem) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+	const int collectibleType = (int)luaL_checkinteger(L, 2);
 
 	unsigned int useFlags = 0;
 	int activeSlot = -1;

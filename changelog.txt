@@ -18,6 +18,10 @@ Added:
 	- GetModChallengeCompletionData(string modid, string challengename)
 		Similar to the above but for getting an arbitrary challenge clear state.
 	- SetChallengeCompletion(int challengeID, bool completed)
+* Game:
+	- AddErasedEnemy(Entity)
+	- AddErasedEnemy(int Type, int Variant)
+	- RemoveErasedEnemy(int Type, int Variant = -1)
 * EntityPlayer:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible
@@ -40,10 +44,13 @@ Added:
 	- bloodytears(effect)
 	- disablebloodytears(effect)
 	- flying(effect)
+* New entities2.xml customtag: "noerase" (prevents the entity from being erased by the Eraser effect)
 * Added `EvaluateStatStage.PRE_FLAT_DAMAGE`, a new stage for MC_EVALUATE_STAT that runs before (most) flat damage ups are applied, right after the "character multiplier".
 * Modded cards can now be specified by name in the "startingcard" attribute in challenges.xml
+* Modded "announcer" and "announcer2" sounds can now be specified by name in pocketitems.xml
 * Added support for babies.xml in mod content folders! You can finally add co-op babies!
 * Added new content xml: "edenhair.xml"
+* Added new console command "giveeffect" / "ge" for giving TemporaryEffects / Null Items.
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 /newline/
 Modified:
@@ -64,6 +71,7 @@ Fixes:
 	- Fix missing fonts for certain languages
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
+* Updated SoundEffect enum to align with the updated vanilla enum (only for sounds available in v1.9.7.12, up to `SoundEffect.SOUND_YO_LISTEN`)
 /newline/
 /versionseparator/
 v1.1.2g -
