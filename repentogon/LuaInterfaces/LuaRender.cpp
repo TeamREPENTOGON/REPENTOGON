@@ -2685,142 +2685,142 @@ struct ContextDataVisitor {
 	}
 };
 
-void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
-	float* vertexBuffer = (float*)descriptor->_vertexBuffer.GetBase();
-	size_t size = 0;
-	switch (type) {
-	case GL_UNSIGNED_BYTE:
-		size = 1;
-		break;
+// void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderBatch* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
+// 	float* vertexBuffer = (float*)descriptor->_vertexBuffer.GetBase();
+// 	size_t size = 0;
+// 	switch (type) {
+// 	case GL_UNSIGNED_BYTE:
+// 		size = 1;
+// 		break;
 
-	case GL_UNSIGNED_SHORT:
-		size = 2;
-		break;
+// 	case GL_UNSIGNED_SHORT:
+// 		size = 2;
+// 		break;
 
-	case GL_UNSIGNED_INT:
-		size = 4;
-		break;
+// 	case GL_UNSIGNED_INT:
+// 		size = 4;
+// 		break;
 
-	default:
-		throw std::runtime_error("Bad.");
-	}
+// 	default:
+// 		throw std::runtime_error("Bad.");
+// 	}
 
-	const int callbackId = 1136;
-	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
-		GL::InitProjectionMatrix();
+// 	const int callbackId = 1136;
+// 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
+// 		GL::InitProjectionMatrix();
 
-		int currentShader; 
-		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
+// 		int currentShader; 
+// 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
 
-		int shaderId = -1;
-		if (currentShader != 0) {
-			for (int i = 0; i < SHADER_MAX; ++i) {
-				if (__ptr_g_AllShaders[i]->GetShaderId() == currentShader) {
-					shaderId = i;
-					break;
-				}
-			}
-		}
+// 		int shaderId = -1;
+// 		if (currentShader != 0) {
+// 			for (int i = 0; i < SHADER_MAX; ++i) {
+// 				if (__ptr_g_AllShaders[i]->GetShaderId() == currentShader) {
+// 					shaderId = i;
+// 					break;
+// 				}
+// 			}
+// 		}
 
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua::LuaCaller caller(L);
+// 		lua_State* L = g_LuaEngine->_state;
+// 		lua::LuaStackProtector protector(L);
+// 		lua::LuaCaller caller(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+// 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		caller.push(callbackId).pushnil();
-		GL::VertexBuffer* buffer = new GL::VertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
-		GL::VertexBuffer** bufferUd = (GL::VertexBuffer**)caller.pushUd(sizeof(buffer), LuaRender::VertexBufferMT);
-		*bufferUd = buffer;
-		caller.push(shaderId);
+// 		caller.push(callbackId).pushnil();
+// 		GL::VertexBuffer* buffer = new GL::VertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
+// 		GL::VertexBuffer** bufferUd = (GL::VertexBuffer**)caller.pushUd(sizeof(buffer), LuaRender::VertexBufferMT);
+// 		*bufferUd = buffer;
+// 		caller.push(shaderId);
 
-		auto vertexBufferDescriptor = &descriptor->_vertexBuffer;
-		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
-		if (it != LuaRender::VerticesRenderContext.end()) {
-			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
-			caller.pushUd<GL::RenderOperationContext>(LuaRender::ContextMT, &it->second);
-		}
-		else {
-			// ZHL::Log("No context found for vertex buffer %p (from descriptor %p\n", vertexBufferDescriptor, descriptor);
-			caller.pushnil();
-		}
+// 		auto vertexBufferDescriptor = &descriptor->_vertexBuffer;
+// 		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
+// 		if (it != LuaRender::VerticesRenderContext.end()) {
+// 			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
+// 			caller.pushUd<GL::RenderOperationContext>(LuaRender::ContextMT, &it->second);
+// 		}
+// 		else {
+// 			// ZHL::Log("No context found for vertex buffer %p (from descriptor %p\n", vertexBufferDescriptor, descriptor);
+// 			caller.pushnil();
+// 		}
 
-		// If the return value is a pipeline, override the default rendering.
-		lua::LuaResults results = caller.call(1);
-		if (!results) {
-			switch (lua_type(L, -1)) {
-			case LUA_TNUMBER:
-			{
-				int retShaderId = (int) lua_tointeger(L, -1);
-				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
-					if (retShaderId == -1)
-						break;
+// 		// If the return value is a pipeline, override the default rendering.
+// 		lua::LuaResults results = caller.call(1);
+// 		if (!results) {
+// 			switch (lua_type(L, -1)) {
+// 			case LUA_TNUMBER:
+// 			{
+// 				int retShaderId = (int) lua_tointeger(L, -1);
+// 				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
+// 					if (retShaderId == -1)
+// 						break;
 
-					bool ok = false;
-					for (std::unique_ptr<GL::Shader> const& shader : GL::Shader::_shaders) {
-						if (retShaderId == shader->GetProgram()) {
-							shader->Use();
-							buffer->Bind();
-							ok = true;
-							break;
-						}
-					}
+// 					bool ok = false;
+// 					for (std::unique_ptr<GL::Shader> const& shader : GL::Shader::_shaders) {
+// 						if (retShaderId == shader->GetProgram()) {
+// 							shader->Use();
+// 							buffer->Bind();
+// 							ok = true;
+// 							break;
+// 						}
+// 					}
 
-					if (!ok) {
-						ZHL::Log("[FATAL] Invalid shader ID %d (neither a native shader, nor a registered shader)\n", retShaderId);
-					}
-				}
-				else {
-					glUseProgram(__ptr_g_AllShaders[retShaderId]->GetShaderId());
-					buffer->Bind();
-				}
-				break;
-			}
+// 					if (!ok) {
+// 						ZHL::Log("[FATAL] Invalid shader ID %d (neither a native shader, nor a registered shader)\n", retShaderId);
+// 					}
+// 				}
+// 				else {
+// 					glUseProgram(__ptr_g_AllShaders[retShaderId]->GetShaderId());
+// 					buffer->Bind();
+// 				}
+// 				break;
+// 			}
 
-			case LUA_TUSERDATA:
-				lua_getmetatable(L, -1);
-				luaL_getmetatable(L, LuaRender::GLShaderMT);
-				if (lua_rawequal(L, -1, -2)) {
-					lua_pop(L, 2);
-					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::GLShaderMT);
-					shader->Use();
-					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
-					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
-					buffer->Bind();
-				}
-				else {
-					lua_pop(L, 1);
-					luaL_getmetatable(L, LuaRender::PipelineMT);
-					if (lua_rawequal(L, -1, -2)) {
-						lua_pop(L, 2);
-						GL::Pipeline* pipeline = lua::GetRawUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
-						pipeline->Render();
-					}
-					else {
-						lua_pop(L, 2);
-						ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
-					}
-				}
-				break;
+// 			case LUA_TUSERDATA:
+// 				lua_getmetatable(L, -1);
+// 				luaL_getmetatable(L, LuaRender::GLShaderMT);
+// 				if (lua_rawequal(L, -1, -2)) {
+// 					lua_pop(L, 2);
+// 					GL::Shader* shader = *lua::GetRawUserdata<GL::Shader**>(L, -1, LuaRender::GLShaderMT);
+// 					shader->Use();
+// 					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
+// 					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
+// 					buffer->Bind();
+// 				}
+// 				else {
+// 					lua_pop(L, 1);
+// 					luaL_getmetatable(L, LuaRender::PipelineMT);
+// 					if (lua_rawequal(L, -1, -2)) {
+// 						lua_pop(L, 2);
+// 						GL::Pipeline* pipeline = lua::GetRawUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
+// 						pipeline->Render();
+// 					}
+// 					else {
+// 						lua_pop(L, 2);
+// 						ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+// 					}
+// 				}
+// 				break;
 
-			case LUA_TNIL:
-			case LUA_TNONE:
-				break;
+// 			case LUA_TNIL:
+// 			case LUA_TNONE:
+// 				break;
 
-			default:
-			{
-				ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
-				break;
-			}
-			}
-		}
-	}
+// 			default:
+// 			{
+// 				ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+// 				break;
+// 			}
+// 			}
+// 		}
+// 	}
 
-	glDrawElements(mode, count, type, indices);
+// 	glDrawElements(mode, count, type, indices);
 
-	LuaRender::ElementsRenderContext[&descriptor->_indexBuffer].clear();
-	LuaRender::VerticesRenderContext[&descriptor->_vertexBuffer].clear();
-}
+// 	LuaRender::ElementsRenderContext[&descriptor->_indexBuffer].clear();
+// 	LuaRender::VerticesRenderContext[&descriptor->_vertexBuffer].clear();
+// }
 
 static void RegisterCustomRenderMetatables(lua_State* L) {
 	lua::LuaStackProtector protector(L);
@@ -3317,32 +3317,32 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 // Globals
 
 namespace LuaRender {
-	void PatchglDrawElements() {
-		// Call to glDrawElements in the second loop in Manager::apply_frame_images
-		SigScan secondLoopScan("ff15????????8b0d????????ff75f8ff75ec8b0157");
-		// Call to glDrawElements in ImageBase::apply_image
-		SigScan applyImageScan("ff15????????8b0d????????ff75e8ff75f48b0157");
+	// void PatchglDrawElements() {
+	// 	// Call to glDrawElements in the second loop in Manager::apply_frame_images
+	// 	SigScan secondLoopScan("ff15????????8b0d????????ff75f8ff75ec8b0157");
+	// 	// Call to glDrawElements in ImageBase::apply_image
+	// 	SigScan applyImageScan("ff15????????8b0d????????ff75e8ff75f48b0157");
 
-		secondLoopScan.Scan();
-		applyImageScan.Scan();
+	// 	secondLoopScan.Scan();
+	// 	applyImageScan.Scan();
 
-		void* secondLoop = secondLoopScan.GetAddress();
-		void* applyImage = applyImageScan.GetAddress();
+	// 	void* secondLoop = secondLoopScan.GetAddress();
+	// 	void* applyImage = applyImageScan.GetAddress();
 
-		ASMPatch secondLoopPatch, applyImagePatch;
-		secondLoopPatch.Push(ASMPatch::Registers::ESI, 0); // render descriptor
-		secondLoopPatch.AddInternalCall(LuaPreDrawElements);
-		secondLoopPatch.AddRelativeJump((char*)secondLoop + 0x6);
+	// 	ASMPatch secondLoopPatch, applyImagePatch;
+	// 	secondLoopPatch.Push(ASMPatch::Registers::ESI, 0); // render descriptor
+	// 	secondLoopPatch.AddInternalCall(LuaPreDrawElements);
+	// 	secondLoopPatch.AddRelativeJump((char*)secondLoop + 0x6);
 
-		applyImagePatch.Push(ASMPatch::Registers::ESI); // render descriptor
-		applyImagePatch.AddInternalCall(LuaPreDrawElements);
-		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
+	// 	applyImagePatch.Push(ASMPatch::Registers::ESI); // render descriptor
+	// 	applyImagePatch.AddInternalCall(LuaPreDrawElements);
+	// 	applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
-		if (EnableCustomRendering) {
-			sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
-			sASMPatcher.PatchAt(applyImage, &applyImagePatch);
-		}
-	}
+	// 	if (EnableCustomRendering) {
+	// 		sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
+	// 		sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+	// 	}
+	// }
 
 #define PAD(D, T, N) D.AddAttribute(T, N)
 

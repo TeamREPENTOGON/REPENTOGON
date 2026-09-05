@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "LuaWeapon.h"
+#include "../LuaClasses.h"
 
 Weapon* WeaponData::GetWeaponFromLua(lua_State* L, int idx) {
 	return lua::GetRawUserdata<WeaponData*>(L, idx, lua::metatables::WeaponMT)->weapon;

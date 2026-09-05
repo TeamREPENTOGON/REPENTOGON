@@ -777,7 +777,6 @@ void __stdcall RunPostNightmareSceneRender(NightmareScene* ns) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(ns, lua::metatables::NightmareSceneMT)
 			.call(1);
 	}
 }
@@ -1077,14 +1076,25 @@ bool __stdcall RunTrinketRenderCallback(PlayerHUD* playerHUD, uint32_t slot, Vec
 			if (lua_istable(L, -1)) {
 				lua_pushnil(L);
 				while (lua_next(L, -2) != 0) {
-					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
-						const std::string key = lua_tostring(L, -2);
-						if (key == "Position") {
-							Vector *new_pos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-							*(position) = *(new_pos);
-						}
-						else if (key == "CropOffset") {
-							cropOffset = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+					if (lua_isstring(L, -2) && LuaVector::IsUnderlyingType(L, -1)) {
+						size_t len;
+						const char* str = lua_tolstring(L, -2, &len);
+						std::string_view key(str, len);
+
+						Vector* target = nullptr;
+						if (key == "Position")
+							target = position;
+						else if (key == "CropOffset")
+							target = &cropOffset;
+
+						if (target) {
+							auto luaReturn = LuaVector::TryGet(L, -1);
+							if (luaReturn.is_err()) {
+								KAGE::LogMessage(2, REPENTOGON::StringFormat("bad return in MC_PRE_PLAYERHUD_TRINKET_RENDER for \"%s\": %s", key.data(), luaReturn.unwrap_err().message().c_str()).c_str());
+							}
+							else {
+								*target = *luaReturn.unwrap();
+							}
 						}
 					}
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
@@ -1582,8 +1592,14 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.call(1);
 
 		if (!result) {
-			if (lua_isuserdata(L, -1)) {
-				*pos = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			if (LuaVector::IsUnderlyingType(L, -1)) {
+				auto luaReturn = LuaVector::TryGet(L, -1);
+				if (luaReturn.is_err()) {
+					KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT : ", luaReturn.unwrap_err().message()).c_str());
+				}
+				else {
+					*pos = *luaReturn.unwrap();
+				}
 			} else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
 				return;
 			}
@@ -2153,8 +2169,14 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int activeSlot, const Vector&
 							_hideActiveItemOutline = (bool)lua_toboolean(L, -1);
 						} else if (key == "HideChargeBar" && lua_isboolean(L, -1)) {
 							_hideActiveItemChargeBar = (bool)lua_toboolean(L, -1);
-						} else if (key == "CropOffset" && lua_isuserdata(L, -1)) {
-							cropOffset = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+						} else if (key == "CropOffset" && LuaVector::IsUnderlyingType(L, -1)) {
+							auto luaReturn = LuaVector::TryGet(L, -1);
+							if (luaReturn.is_err()) {
+								KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_RENDER_CHARACTER_SELECT_PORTRAIT : ", luaReturn.unwrap_err().message()).c_str());
+							}
+							else {
+								cropOffset = *luaReturn.unwrap();
+							}
 						}
 					}
 					lua_pop(L, 1);

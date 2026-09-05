@@ -2,9 +2,7 @@
 #include "LuaCore.h"
 #include "../../LuaClasses.h"
 #include "HookSystem.h"
-#include "../../LuaClasses.h"
 
-#include "../LuaWeapon.h"
 #include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/CustomCache.h"

@@ -59,7 +59,7 @@ namespace LuaRender {
 	constexpr static const char* ContextMT = "Context";
 	constexpr static const char* RenderSetMT = "RenderSet";
 
-	void PatchglDrawElements();
+	// void PatchglDrawElements();
 	void InitShaders();
 
 	struct Layer { unsigned int id;  };

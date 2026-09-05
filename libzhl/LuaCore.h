@@ -391,7 +391,12 @@ namespace lua {
         LuaCaller& pushluaref(int t, int ref);
         LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
+        LuaCaller& push(void* ptr, Metatables meta) = delete;
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
+        template<typename T>
+        std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) = delete;
+        template<typename T>
+        LuaCaller& push(T const& value, lua_CTypeId ctypeid) = delete;
         template<typename LuaClass, typename T>
         LuaCaller& pushClass(const T& value)
         {
@@ -399,10 +404,10 @@ namespace lua {
             ++_n;
             return *this;
         }
-        template<typename LuaClass, typename T>
-        LuaCaller& pushClassPtr(T* value)
+        template<typename LuaClass, class... Args>
+        LuaCaller& pushClassPtr(Args&&... args)
         {
-            LuaClass::PushPtr(_L, value);
+            LuaClass::PushPtr(_L, std::forward<Args>(args)...);
             ++_n;
             return *this;
         }
@@ -418,17 +423,9 @@ namespace lua {
             ++_n;
             return *this;
         };
-        void* pushUd(size_t size, const char* mt);
-
+        void* pushUd(size_t size, const char* mt) = delete;
         template<typename T, typename... Args>
-        T* pushUd(const char* mt, Args&&... args) {
-            void* result = lua_newuserdata(_L, sizeof(T));
-            luaL_setmetatable(_L, mt);
-            new (result) T(std::forward<Args>(args)...);
-            ++_n;
-            return (T*)result;
-        }
-
+        T* pushUd(const char* mt, Args&&... args) = delete;
         void pushTable(int narr = 0, int nrec = 0);
 
         LuaResults call(int nresults);
