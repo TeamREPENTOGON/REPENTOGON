@@ -147,10 +147,7 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 LUA_FUNCTION(Lua_IsaacExplode)
 {
 	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = nullptr;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	};
+	Entity* source = LuaEntity::GetOpt(L, 2);
 	float damage = (float)luaL_checknumber(L, 3);
 
 	g_LuaEngine->Isaac_Explode(pos, source, damage);
@@ -215,10 +212,7 @@ LUA_FUNCTION(Lua_IsaacSpawn)
 	int subtype = (int)luaL_checkinteger(L, 3);
 	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* spawner = nullptr;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-	};
+	Entity* spawner = LuaEntity::GetOpt(L, 6);
 
 	lua::luabridge::UserdataPtr::push(L, g_LuaEngine->Isaac_Spawn(type, variant, subtype, pos, vel, spawner), lua::GetMetatableKey(lua::Metatables::ENTITY));
 
@@ -313,8 +307,9 @@ LUA_FUNCTION(Lua_StartNewGame) {
 	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors ourselves.
 	// However, StartNewGame will handle it for us. Just be aware of this.
 	Seeds seedobj;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		seedobj.construct_from_copy(lua::GetLuabridgeUserdata<Seeds*>(L, 4, lua::Metatables::SEEDS, "Seeds"));
+	bool seedsOverload = LuaSeeds::IsUnderlyingType(L, 4);
+	if (seedsOverload) {
+		seedobj.construct_from_copy(LuaSeeds::Get(L, 4));
 	} else {
 		unsigned int seed = (unsigned int)luaL_optinteger(L, 4, 0);
 		bool isCustomRun = lua::luaL_optboolean(L, 5, false);

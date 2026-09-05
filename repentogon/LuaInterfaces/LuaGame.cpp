@@ -48,14 +48,9 @@ LUA_FUNCTION(Lua_GameBombDamage)
 	float damage = (float)luaL_checknumber(L, 3);
 	float radius = (float)luaL_checknumber(L, 4);
 	bool lineCheck = lua::luaL_optboolean(L, 5, true);
-	Entity* source = nullptr;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-	}
-	BitSet128 tearFlags;
-	if (lua_type(L, 7) == LUA_TCDATA) {
-		tearFlags = *lua::GetCData<BitSet128*>(L, 7, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 6);
+	BitSet128* optTearFlags = LuaBitSet128::GetOpt(L, 7);
+	BitSet128 tearFlags = optTearFlags ? *optTearFlags : BitSet128();
 	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 8, eDamageFlag::DAMAGE_EXPLOSION);
 	bool damageSource = lua::luaL_optboolean(L, 9, false);
 
@@ -78,10 +73,7 @@ LUA_FUNCTION(Lua_GameBombExplosionEffects)
 	if (lua_type(L, 5) == LUA_TCDATA) {
 		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 	}
-	Entity* source = nullptr;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 6);
 	float radiusMult = (float)luaL_optnumber(L, 7, 1);
 	bool lineCheck = lua::luaL_optboolean(L, 8, true);
 	unsigned long long damageFlags = (unsigned long long)luaL_optinteger(L, 9, eDamageFlag::DAMAGE_EXPLOSION);
@@ -98,10 +90,7 @@ LUA_FUNCTION(Lua_GameBombTearflagEffects)
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float radius = (float)luaL_checknumber(L, 3);
 	BitSet128* tearFlags = lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-	Entity* source = nullptr;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 5);
 	float radiusMult = (float)luaL_optnumber(L, 6, 1);
 
 	game->BombTearflagEffects(pos, radius, *tearFlags, source, radiusMult);
@@ -140,10 +129,7 @@ LUA_FUNCTION(Lua_GameFart)
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float radius = (float)luaL_optnumber(L, 3, 85);
-	Entity* source = nullptr;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 4);
 	float fartScale = (float)luaL_optnumber(L, 5, 1);
 	int fartSubType = (int)luaL_optinteger(L, 6, 1);
 	ColorMod color;
@@ -348,10 +334,7 @@ LUA_FUNCTION(lua_GameStartStageTransition) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	bool sameStage = lua::luaL_checkboolean(L, 2);
 	int transition = (int)luaL_checkinteger(L, 3);
-	Entity_Player* player = nullptr;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
-	}
+	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 4);
 
 	game->StartStageTransition(sameStage, transition, player);
 	return 0;
@@ -375,8 +358,10 @@ LUA_FUNCTION(Lua_GameIsGreedFinalBoss)
 
 LUA_FUNCTION(Lua_GameAddErasedEnemy) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	bool entityOverload = LuaEntity::IsUnderlyingType(L, 2);
+	
+	if (entityOverload) {
+		Entity* entity = LuaEntity::Get(L, 2);
 		game->AddErasedEnemy(entity);
 	} else {
 		int type = (int)luaL_checkinteger(L, 2);
@@ -397,8 +382,10 @@ LUA_FUNCTION(Lua_GameRemoveErasedEnemy) {
 
 LUA_FUNCTION(lua_GameIsErased) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	bool entityOverloaded = LuaEntity::IsUnderlyingType(L, 2);
+
+	if (entityOverloaded) {
+		Entity* entity = LuaEntity::Get(L, 2);
 
 		bool wasErased = game->IsErased(entity->_type, entity->_variant, entity->_subtype);
 		lua_pushboolean(L, wasErased);
@@ -509,10 +496,7 @@ LUA_FUNCTION(Lua_MoveToRandomRoom) {
 		return luaL_error(L, "The given seed is not valid");
 	}
 
-	Entity_Player* player = nullptr;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
-	}
+	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 4);
 
 	game->MoveToRandomRoom(iAmErrorRoom, seed, player);
 	return 0;
@@ -609,15 +593,9 @@ LUA_FUNCTION(Lua_ChainLightning) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float baseDamage = (float)luaL_optnumber(L, 3, 3.5f);
-	BitSet128 flags { 0, 0, 0 ,0 };
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		flags = *lua::GetCData<BitSet128*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-	}
-	Entity* spawner = nullptr;
-
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		spawner = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
-	}
+	auto* optFlags = LuaBitSet128::GetOpt(L, 4);
+	BitSet128 flags = optFlags ? *optFlags : BitSet128();
+	Entity* spawner = LuaEntity::Get(L, 5);
 
 	lua::luabridge::UserdataPtr::push(L, game->ChainLightning(pos, baseDamage, flags, spawner), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 

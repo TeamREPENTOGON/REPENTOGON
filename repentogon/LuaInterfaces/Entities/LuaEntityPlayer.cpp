@@ -38,14 +38,9 @@ LUA_FUNCTION(Lua_AddBlueFlies) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int amount = (int)luaL_checkinteger(L, 2);
 	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	
-	Entity* target = nullptr;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		target = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* target = LuaEntity::GetOpt(L, 4);
 
 	lua::luabridge::UserdataPtr::push(L, player->AddBlueFlies(amount, position, target), lua::GetMetatableKey(lua::Metatables::ENTITY));
-
 	return 1;
 }
 
@@ -134,10 +129,7 @@ LUA_FUNCTION(Lua_FireBomb) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = nullptr;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 4);
 
 	lua::luabridge::UserdataPtr::push(L, player->FireBomb(position, velocity, source), lua::GetMetatableKey(lua::Metatables::ENTITY_BOMB));
 	return 1;
@@ -146,10 +138,7 @@ LUA_FUNCTION(Lua_FireBomb) {
 LUA_FUNCTION(Lua_FireBrimstone) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = nullptr;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 3);
 	float damageMultiplier = (float)luaL_optnumber(L, 4, 1.0f);
 
 	lua::luabridge::UserdataPtr::push(L, player->FireBrimstone(direction, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
@@ -163,10 +152,7 @@ LUA_FUNCTION(Lua_FireTear) {
 	bool canBeEye = lua::luaL_optboolean(L, 4, true);
 	bool noTractorBeam = lua::luaL_optboolean(L, 5, false);
 	bool canTriggerStreakEnd = lua::luaL_optboolean(L, 6, true);
-	Entity* source = nullptr;
-	if (lua_type(L, 7) == LUA_TUSERDATA) {
-		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 7, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 7);
 	float damageMultiplier = (float)luaL_optnumber(L, 8, 1.0f);
 
 	int flags = (canBeEye ? 0x4 : 0) | (noTractorBeam ? 0x2 : 0) | (canTriggerStreakEnd ? 0x1 : 0);
@@ -182,10 +168,7 @@ LUA_FUNCTION(Lua_FireTechLaser) {
 	Vector* direction = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool leftEye = lua::luaL_optboolean(L, 5, true);
 	bool oneHit = lua::luaL_optboolean(L, 6, false);
-	Entity* source = nullptr;
-	if (lua_type(L, 7) == LUA_TUSERDATA) {
-		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 7, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 7);
 	float damageMultiplier = (float)luaL_optnumber(L, 8, 1.0f);
 
 	lua::luabridge::UserdataPtr::push(L, player->FireTechLaser(*position, offsetID, *direction, leftEye, oneHit, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
@@ -197,10 +180,7 @@ LUA_FUNCTION(Lua_FireTechXLaser) {
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* direction = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float radius = (float)luaL_checknumber(L, 4);
-	Entity* source = nullptr;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		Entity* source = lua::GetLuabridgeUserdata<Entity*>(L, 5, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 5);
 	float damageMultiplier = (float)luaL_optnumber(L, 6, 1.0f);
 	
 	lua::luabridge::UserdataPtr::push(L, player->FireTechXLaser(*position, *direction, radius, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
@@ -757,10 +737,7 @@ LUA_FUNCTION(Lua_PlayerSetPocketActiveItem) {
 LUA_FUNCTION(Lua_PlayerDropCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int collectible = (int)luaL_checkinteger(L, 2);
-	Entity_Pickup* pickup = nullptr;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	}
+	Entity_Pickup* pickup = LuaEntityPickup::GetOpt(L, 3);
 	bool removeFromForm = lua::luaL_optboolean(L, 4, false);
 
 	Entity_Pickup* ret = player->DropCollectible(collectible, pickup, removeFromForm);
@@ -780,10 +757,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectible) {
 LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int idx = (int)luaL_checkinteger(L, 2);
-	Entity_Pickup* pickup = nullptr;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	}
+	Entity_Pickup* pickup = LuaEntityPickup::GetOpt(L, 3);
 
 	player->DropCollectibleByHistoryIndex(idx, pickup, false);
 	if (!pickup) {
@@ -2354,11 +2328,7 @@ LUA_FUNCTION(Lua_EntityPlayer_CheckFamiliarEx) {
 	int variant = (int)luaL_checkinteger(L, 2);
 	int targetCount = (int)luaL_checkinteger(L, 3);
 	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, lua::metatables::RngMT);
-	ItemConfig_Item* configPtr = nullptr;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		configPtr = lua::GetCData<ItemConfig_Item*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::ITEM], "ItemConfigItem");
-	}
-	
+	ItemConfig_Item* configPtr = LuaItem::GetOpt(L, 5);
 	int subtype = (int)luaL_optinteger(L, 6, -1);
 
 	std::vector<Entity_Familiar*>& familiars = InitFamiliarStorage();
@@ -2471,10 +2441,7 @@ LUA_FUNCTION(Lua_PlayerCanOverrideActiveItem) {
 // Spawns club, immediately kills it. Needs investigation
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 	Entity_Player* player = lua::GetRawUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity* parent = nullptr;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		parent = lua::GetRawUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* parent = LuaEntity::GetOpt(L, 2);
 	int variant = (int)luaL_checkinteger(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
 
@@ -2490,10 +2457,8 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Vector* vel = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector offset;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		offset = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optOffset = LuaVector::GetOpt(L, 4);
+	Vector offset = optOffset ? *optOffset : Vector();
 
 	Entity_Effect* effect = player->FireBrimstoneBall(*pos, *vel, offset, 0, 0, nullptr);
 	if (!effect) {
@@ -2537,10 +2502,8 @@ LUA_FUNCTION(Lua_PlayerGetGreedsGulletHearts) {
 
 LUA_FUNCTION(Lua_PlayerGetSpecialGridCollision) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector pos = *player->GetPosition();
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optPos = LuaVector::GetOpt(L, 2);
+	Vector pos = optPos ? *optPos : *player->GetPosition();
 
 	lua_pushinteger(L, player->GetSpecialGridCollision(&pos));
 	return 1;
@@ -2735,15 +2698,8 @@ LUA_FUNCTION(Lua_PlayerRemovePocketItem) {
 
 LUA_FUNCTION(Lua_PlayerRerollAllCollectibles) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	RNG* rng;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		rng = lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	}
-	else
-	{
-		rng = &player->_dropRNG;
-	}
-
+	RNG* rng = LuaRNG::GetOpt(L, 2);
+	rng = rng ? rng : &player->_dropRNG;
 	bool includeActives = lua::luaL_optboolean(L, 3, false);
 
 	player->RerollAllCollectibles(rng, includeActives);
@@ -2808,13 +2764,10 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	int pool = -1;
 
 	// pickup override
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-
-		if (lua_type(L, 3) == LUA_TUSERDATA) {
-			rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
-		}
-
+	bool entityOverload = LuaEntityPickup::IsUnderlyingType(L, 2);
+	if (entityOverload) {
+		Entity_Pickup* pickup = LuaEntityPickup::Get(L, 2);
+		rng = LuaRNG::GetOpt(L, 3);
 		pool = ValidatePool(L, 4);
 
 		salvage_collectible_entity(*player, *pickup, pool, rng);
@@ -2822,14 +2775,8 @@ LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	// CollectibleType override
 	else {
 		subtype = (int)luaL_checkinteger(L, 2);
-		if (lua_type(L, 3) == LUA_TUSERDATA) {
-			pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-		}
-
-		if (lua_type(L, 4) == LUA_TUSERDATA) {
-			rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
-		}
-
+		pos = LuaVector::GetOpt(L, 3);
+		rng = LuaRNG::GetOpt(L, 4);
 		pool = ValidatePool(L, 5);
 
 		salvage_collectible(*player, subtype, pool, pos, rng);
@@ -3597,14 +3544,8 @@ LUA_FUNCTION(Lua_PlayerCreateAfterimage) {
 //Repentance+ bug fix: https://github.com/epfly6/RepentanceAPIIssueTracker/issues/598
 LUA_FUNCTION(Lua_PlayerHasInvincibility) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-
 	const uint64_t flag = (uint64_t)luaL_optinteger(L, 2, 0);
-
-	EntityRef* ref = nullptr;
-
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
-	}
+	EntityRef* ref = LuaEntityRef::GetOpt(L, 3);
 
 	lua_pushboolean(L, player->HasInvincibility(flag, ref));
 

@@ -103,10 +103,7 @@ LUA_FUNCTION(Lua_PickupCanReroll)
 
 LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	RNG* rng = nullptr;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	}
+	RNG* rng = LuaRNG::GetOpt(L, 2);
 	int velType = (int)luaL_optinteger(L, 3, 0);
 
 	Vector velocity;

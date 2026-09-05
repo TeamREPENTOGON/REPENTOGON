@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 
 #include "RoomPlacement.h"
@@ -256,8 +257,9 @@ LUA_FUNCTION(Lua_GetValidNeighborPlacementLocations) {
 	int roomShape = ROOMSHAPE_1x1;
 	int doorMask = -1;
 
-	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	bool roomConfigOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
+	if (roomConfigOverload) {
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;

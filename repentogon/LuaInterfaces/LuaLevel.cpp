@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 #include "Level.h"
@@ -207,8 +208,9 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 	int roomShape = 0;
 	int doorMask = 0;
 
-	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
+	if (roomOverload) {
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -261,8 +263,9 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 	int roomShape = 0;
 	int doorMask = 0;
 
-	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
+	if (roomOverload) {
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -315,8 +318,9 @@ LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 	int roomShape = ROOMSHAPE_1x1;
 	int doorMask = -1;
 
-	if (lua_type(L, stackIdx) == LUA_TUSERDATA) {
-		RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, stackIdx++, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
+	if (roomOverload) {
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
