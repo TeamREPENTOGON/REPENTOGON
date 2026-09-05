@@ -59,9 +59,9 @@ void Repentogon_Renderer_CreateWindow(ImGuiViewport* vp) {
 	}
 
 	RepentogonRendererMap[vd->Hwnd] = newRC;// wglCreateContext(dc);
-	wglMakeCurrent(dc, newRC);
-
+	
 	wglShareLists(rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow,newRC);
+	wglMakeCurrent(dc, newRC);
 
 
 	ReleaseDC(vd->Hwnd, dc);
