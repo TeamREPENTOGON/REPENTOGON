@@ -134,7 +134,6 @@ struct ConsoleMega : ImGuiWindowObject {
         GRID,
         DEBUG_FLAG,
         ITEM,
-        EFFECT,
         CHALLENGE,
         COMBO,
         CUTSCENE,
@@ -146,7 +145,8 @@ struct ConsoleMega : ImGuiWindowObject {
         PLAYER,
 		ACHIEVEMENT,
         MODFOLDER,
-        CUSTOM
+        CUSTOM,
+		EFFECT,
     };
 
 

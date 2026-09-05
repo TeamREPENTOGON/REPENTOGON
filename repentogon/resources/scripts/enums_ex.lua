@@ -2840,6 +2840,7 @@ AutocompleteType = {
 	ACHIEVEMENT = 16,
 	MODFOLDER = 17,
 	CUSTOM = 18,
+	EFFECT = 19,
 }
 
 AnimRenderFlags = { -- bitwise

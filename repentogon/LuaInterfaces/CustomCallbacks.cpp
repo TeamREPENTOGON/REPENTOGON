@@ -2402,7 +2402,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	return normalMinCharge;
 }
 
-HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, CollectibleType collectible, unsigned int useFlags, int activeSlot, int varData) -> void) {
+HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, int collectible, unsigned int useFlags, int activeSlot, int varData) -> void) {
 	if (collectible == COLLECTIBLE_NULL) {
 		*resultFlags = 1;
 		return;
