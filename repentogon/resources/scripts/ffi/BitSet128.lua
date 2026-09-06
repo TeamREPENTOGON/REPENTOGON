@@ -1,6 +1,6 @@
 ffi.cdef[[
 struct BitSet128 { uint64_t L; uint64_t H; };
-typedef struct BitSet128* BitSet12Ptr;
+typedef struct BitSet128* BitSet128Ptr;
 ]]
 local repentogon = ffidll
 local lffi = ffi

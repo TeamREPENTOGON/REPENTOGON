@@ -26,7 +26,10 @@ end
 
 ffichecks.gettype = function(var)
 	local t = type(var)
-	if t == "cdata" then t = tostring(lffi.typeof(var)) end
+	if t == "cdata" or t == "userdata" then
+		local ok, ct = pcall(lffi.typeof, var)
+		if ok and ct then t = tostring(ct) end
+	end
 	return t
 end
 
@@ -74,8 +77,7 @@ end
 
 ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
 	if not (ffichecks.iscdata(var, ctype) or (allownil and ffichecks.isnil(var))) then
-		local t = type(var)
-		if t == "cdata" then t = tostring(lffi.typeof(var)) end
+		local t = ffichecks.gettype(var)
 
 		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", idx, debug_getinfo(level or 2).name, tostring(ctype), t), (level or 2)+1)
 	end

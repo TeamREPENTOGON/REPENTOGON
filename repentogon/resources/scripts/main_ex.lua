@@ -20,10 +20,13 @@ do
 	local _orig_getmetatable = getmetatable
 	local _dgmt = (type(debug) == "table" and debug.getmetatable) or nil
 	getmetatable = function(obj)
-		if _dgmt and type(obj) == "cdata" then
-			local mt = _dgmt(obj)
-			if mt and (mt.__type ~= nil or mt.__class ~= nil) then
-				return mt
+		if _dgmt then
+			local t = type(obj)
+			if t == "userdata" or t == "cdata" then
+				local mt = _dgmt(obj)
+				if mt and (mt.__type ~= nil or mt.__class ~= nil) then
+					return mt
+				end
 			end
 		end
 		return _orig_getmetatable(obj)
