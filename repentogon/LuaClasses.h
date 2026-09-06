@@ -358,7 +358,7 @@ public:
 
     static REPENTOGON::Result<T*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
     {
-        void* p = lua::TestCData(L, index, ID);
+        void* p = lua::TestCData(L, index, lua::ffi::CData[ID]);
         if (!p) {
             return REPENTOGON::err(LuaClasses::GetClassError(Traits::Name, lua_type(L, index)));
         }
