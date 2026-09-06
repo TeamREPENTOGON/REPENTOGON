@@ -3972,7 +3972,6 @@ LUA_FUNCTION(Lua_PlayerCheckFamiliar) {
 	return 0;
 };
 
-
 LUA_FUNCTION(Lua_PlayerQueueItem) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
@@ -3991,6 +3990,24 @@ LUA_FUNCTION(Lua_PlayerQueueItem) {
 	return 0;
 };
 
+LUA_FUNCTION(Lua_PlayerRemoveCostume) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+
+	player->RemoveCostume(item);
+	return 0;
+};
+
+LUA_FUNCTION(Lua_PlayerReplaceCostumeSprite) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ItemConfig_Item* item = lua::GetCData<ItemConfig_Item*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
+	std::string spritePath = luaL_checkstring(L, 3);
+	int spriteId = luaL_checknumber(L, 4);
+	
+	player->ReplaceCostumeSprite(item, &spritePath, spriteId);
+	return 0;
+};
+
 
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -4002,6 +4019,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "QueueItem", Lua_PlayerQueueItem },
 		{ "AddCostume", Lua_PlayerAddCostume },
 		{ "CheckFamiliar", Lua_PlayerCheckFamiliar },
+		{ "RemoveCostume", Lua_PlayerRemoveCostume },
+		{ "ReplaceCostumeSprite", Lua_PlayerReplaceCostumeSprite },
 		{ "AddBlueFlies", Lua_AddBlueFlies },
 		{ "AddBlueSpider", Lua_AddBlueSpider },
 		{ "AddFriendlyDip", Lua_AddFriendlyDip },

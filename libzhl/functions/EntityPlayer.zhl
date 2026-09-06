@@ -671,7 +671,7 @@ static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(Entity_Familiar
 __thiscall void Entity_Player::QueueItem(ItemConfig_Item* item, int charge, int flags, int varData);
 
 "558bec83ec0853568bf1578975":
-__thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_string* spritePath);
+__thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_string* spritePath, int spriteId);
 
 struct Entity_Player depends (Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
