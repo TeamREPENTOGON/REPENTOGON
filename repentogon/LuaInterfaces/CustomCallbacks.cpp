@@ -846,6 +846,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 	lua_State* L = g_LuaEngine->_state;
 	Entity* heldEntity = this->GetHeldEntity();
 	lua::LuaStackProtector protector(L);
+	Vector velocityOverride;
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
@@ -858,8 +859,9 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 		.call(1);
 
 	if (!results) {
-		if (lua_type(L, -1) == LUA_TCDATA) {
-			Velocity = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+		if (LuaVector::IsUnderlyingType(L, -1)) {
+			velocityOverride = *LuaVector::Get(L, -1);
+			Velocity = &velocityOverride;
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
@@ -1739,6 +1741,8 @@ HOOK_STATIC(LuaEngine, PostPlayerInit, (Entity_Player* player) -> void, _stdcall
 //PRE_FAMILIAR_RENDER (id: 1080)
 HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 	const int callbackid = 1080;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1757,8 +1761,9 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1768,6 +1773,8 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 //PRE_NPC_RENDER (id: 1081)
 HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 	const int callbackid = 1081;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1786,8 +1793,9 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1797,6 +1805,8 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 //PRE_PLAYER_RENDER (id: 1082)
 HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 	const int callbackid = 1082;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1815,8 +1825,9 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1826,6 +1837,8 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 //PRE_PICKUP_RENDER (id: 1083)
 HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 	const int callbackid = 1083;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1844,8 +1857,9 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1887,6 +1901,8 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 //PRE_PROJECTILE_RENDER (id: 1085)
 HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 	const int callbackid = 1085;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1905,8 +1921,9 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1916,6 +1933,8 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 //PRE_KNIFE_RENDER (id: 1086)
 HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 	const int callbackid = 1086;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1934,8 +1953,9 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1945,6 +1965,8 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 //PRE_EFFECT_RENDER (id: 1087)
 HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 	const int callbackid = 1087;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1963,8 +1985,9 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -1974,6 +1997,8 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 //PRE_BOMB_RENDER (id: 1088)
 HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 	const int callbackid = 1088;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1992,8 +2017,9 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -2004,6 +2030,8 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	const int callbackid1 = 1089;
 	lua_State* L = g_LuaEngine->_state;
+	Vector offsetOverride;
+
 	if (CallbackState.test(callbackid1 - 1000)) {
 		
 		lua::LuaStackProtector protector(L);
@@ -2022,8 +2050,9 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
-				offset = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+			else if (LuaVector::IsUnderlyingType(L, -1)) {
+				offsetOverride = *LuaVector::Get(L, -1);
+				offset = &offsetOverride;
 			}
 		}
 	}
@@ -2073,7 +2102,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				vardata = ProtectedCallbackIntAssign(L, vardata, 3);
 				seed = ProtectedCallbackIntAssign(L, seed, 4);
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
+			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR])) {
 				GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR], "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
@@ -2108,7 +2137,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 			.call(1);
 
 		if (!result) {
-			if (lua_type(L, -1) == LUA_TCDATA) {
+			if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC])) {
 				desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
 			}
 			else if (lua_istable(L, -1)) {
@@ -2179,7 +2208,7 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 			.call(1);
 
 		if (!result) {
-			if (lua_type(L, -1) == LUA_TCDATA) {
+			if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				Vector* p = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 				super(p);
 				postrenderbodyhead(1045, this, p);
@@ -2212,7 +2241,7 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 			.call(1);
 
 		if (!result) {
-			if (lua_type(L, -1) == LUA_TCDATA) {
+			if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				Vector* p = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 				super(p);
 				postrenderbodyhead(1046, this, p);
@@ -2825,7 +2854,7 @@ bool RunRenderSpecialHudElementCallback(int callbackid, PlayerHUD* playerhud, Ve
 		if (isPre && !result) {
 			if (lua_isboolean(L, -1)) {
 				return lua_toboolean(L, -1);
-			} else if (lua_type(L, -1) == LUA_TCDATA) {
+			} else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				Vector* newPos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 				if (newPos) {
 					*pos = *newPos;
@@ -2906,7 +2935,7 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 					return;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
+			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				offset = offset + *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 			}
 		}
@@ -2935,7 +2964,7 @@ static bool MC_PRE_ENTITY_LIGHT_RENDER(Entity* ent, Vector& offset)
 					return true;
 				}
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
+			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				offset = offset + *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 			}
 		}
@@ -4184,7 +4213,7 @@ PreGridEntityResult ProcessPreGridRenderCallback(const GridEntityRenderInputs& i
 				// Vanilla boolean returns always skip internal code.
 				result.skip_internal_code = true;
 			}
-			else if (lua_type(L, -1) == LUA_TCDATA) {
+			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 				result.renderOffset = *lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 			}
 		}
@@ -6058,7 +6087,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		lua::LuaResults results = caller.pushClassPtr<LuaBitSet128>(&tearFlags)
+		lua::LuaResults results = caller.pushClass<LuaBitSet128>(tearFlags)
 			.push(damageFlags)
 			.push(damageSource)
 			.call(1);
@@ -6081,14 +6110,14 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 								newDamage = 0;
 							}
 							damage = newDamage;
-						} else if (key == "TearFlags" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "TearFlags" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128])) {
 							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								tearFlags = *newFlags;
 							}
 						} else if (key == "DamageFlags" && lua_isnumber(L, -1)) {
 							damageFlags = (uint64_t)std::max(0.0, lua_tonumber(L, -1));
-						} else if (key == "Position" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "Position" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 							Vector* newPos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 							if (newPos) {
 								posCopy = *newPos;
@@ -6127,7 +6156,7 @@ HOOK_METHOD(Game, BombDamage, (Vector* pos, float damage, float radius, bool lin
 		} else {
 			caller.pushnil();
 		}
-		caller.pushClassPtr<LuaBitSet128>(&tearFlags)
+		caller.pushClass<LuaBitSet128>(tearFlags)
 			.push(damageFlags)
 			.push(damageSource)
 			.call(1);
@@ -6154,7 +6183,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		}
 		caller.pushClass<LuaVector>(posCopy)
 			.push(radius)
-			.pushClassPtr<LuaBitSet128>(&tearFlags);
+			.pushClass<LuaBitSet128>(tearFlags);
 		if (source) {
 			caller.pushClassPtr<LuaEntity>(source);
 		} else {
@@ -6180,12 +6209,12 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 								newRadiusMult = 0;
 							}
 							radiusMult = newRadiusMult;
-						} else if (key == "TearFlags" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "TearFlags" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128])) {
 							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								tearFlags = *newFlags;
 							}
-						} else if (key == "Position" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "Position" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 							Vector* newPos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 							if (newPos) {
 								posCopy = *newPos;
@@ -6217,7 +6246,7 @@ HOOK_METHOD(Game, BombTearflagEffects, (Vector* pos, float radius, BitSet128 tea
 		}
 		caller.pushClass<LuaVector>(posCopy)
 			.push(radius)
-			.pushClassPtr<LuaBitSet128>(&tearFlags);
+			.pushClass<LuaBitSet128>(tearFlags);
 		if (source) {
 			caller.pushClassPtr<LuaEntity>(source);
 		} else {
@@ -6262,7 +6291,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 		}
 		caller.pushClassPtr<LuaEntityNPC>((Entity_NPC*)entity)
 			.pushClass<LuaVector>(posCopy)
-			.pushClassPtr<LuaBitSet128>(&flags);
+			.pushClass<LuaBitSet128>(flags);
 		if (source) {
 			caller.pushClassPtr<LuaEntity>(source);
 		} else {
@@ -6282,12 +6311,12 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 								newDamage = 0;
 							}
 							damage = newDamage;
-						} else if (key == "TearFlags" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "TearFlags" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128])) {
 							BitSet128* newFlags = lua::GetCData<BitSet128*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 							if (newFlags) {
 								flags = *newFlags;
 							}
-						} else if (key == "Position" && lua_type(L, -1) == LUA_TCDATA) {
+						} else if (key == "Position" && lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR])) {
 							Vector* newPos = lua::GetCData<Vector*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 							if (newPos) {
 								posCopy = *newPos;
@@ -6320,7 +6349,7 @@ HOOK_STATIC(Entity_Tear, ApplyTearFlagEffects, (Entity* entity, Vector* pos, Bit
 		}
 		caller.pushClassPtr<LuaEntityNPC>((Entity_NPC*)entity)
 			.pushClass<LuaVector>(posCopy)
-			.pushClassPtr<LuaBitSet128>(&flags);
+			.pushClass<LuaBitSet128>(flags);
 		if (source) {
 			caller.pushClassPtr<LuaEntity>(source);
 		} else {
