@@ -358,12 +358,13 @@ public:
 
     static REPENTOGON::Result<T*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
     {
-        void* p = lua::TestCData(L, index, lua::ffi::CData[ID]);
-        if (!p) {
-            return REPENTOGON::err(LuaClasses::GetClassError(Traits::Name, lua_type(L, index)));
+        if (void* pp = lua::TestCData(L, index, lua::ffi::CData[PTR_ID])) {
+            return REPENTOGON::ok(*static_cast<T**>(pp));
         }
-
-        return REPENTOGON::ok(static_cast<T*>(p));
+        if (void* pv = lua::TestCData(L, index, lua::ffi::CData[ID])) {
+            return REPENTOGON::ok(static_cast<T*>(pv));
+        }
+        return REPENTOGON::err(LuaClasses::GetClassError(Traits::Name, lua_type(L, index)));
     }
 
     static T* GetOpt(lua_State* L, int index)

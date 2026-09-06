@@ -342,6 +342,9 @@ namespace lua {
         void* p = CheckCData(L, idx, ctypeid, name);
 
         if constexpr (std::is_pointer_v<T>) {
+            if (lua_tocdataid(L, idx) != ctypeid) {
+                return *reinterpret_cast<T*>(p);
+            }
             return static_cast<T>(p);
         } else {
             return *(T*)p;

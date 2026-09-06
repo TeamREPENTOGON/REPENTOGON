@@ -2106,8 +2106,8 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				vardata = ProtectedCallbackIntAssign(L, vardata, 3);
 				seed = ProtectedCallbackIntAssign(L, seed, 4);
 			}
-			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR])) {
-				GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR], "GridEntityDesc");
+			else if (lua::TestCData(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC])) {
+				GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
 			}
@@ -6023,12 +6023,12 @@ HOOK_METHOD(Entity_Player, GetTearHitParams, (TearParams* params, int weaponType
 			.call(1);
 
 		if (!results && lua_type(L, -1) == LUA_TCDATA) {
-			auto* cd = lua::GetCData<TearParams*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], "TearParams");
+			TearParams* cd = lua::GetCData<TearParams*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], "TearParams");
 
 			if (!cd) {
 				KAGE::LogMessage(2, "Invalid cdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
 			}
-			else {
+			else if (cd != params) {
 				*params = *cd;
 			}
 		}
