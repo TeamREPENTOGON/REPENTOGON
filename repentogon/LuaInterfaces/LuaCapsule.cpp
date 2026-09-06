@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_CapsuleConstructor) {
 	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
@@ -32,13 +33,8 @@ LUA_FUNCTION(Lua_EntityGetNullCapsule) {
 
 LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector offsetVec;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		offsetVec = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	else {
-		offsetVec = Vector(0, 0);
-	}
+	Vector* optOffset = LuaVector::GetOpt(L, 2);
+	Vector offsetVec = optOffset ? *optOffset : Vector(0, 0);
 
 	Capsule* ud = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
 	*ud = ent->GetCollisionCapsule(&offsetVec);

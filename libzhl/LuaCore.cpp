@@ -741,13 +741,6 @@ namespace lua {
 		return *this;
 	}
 
-	void* LuaCaller::pushUd(size_t s, const char* mt) {
-		void* result = lua_newuserdata(_L, s);
-		luaL_setmetatable(_L, mt);
-		++_n;
-		return result;
-	}
-
 	void LuaCaller::pushTable(int narr, int nrec) {
 		lua_createtable(_L, narr, nrec);
 		++_n;

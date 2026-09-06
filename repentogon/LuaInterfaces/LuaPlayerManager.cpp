@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "../Patches/ItemSpoofSystem.h"
 
@@ -204,15 +205,11 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 	// - FirstTrinketOwner(t, rng, bool) <- backwards compat
 	// - FirstTrinketOwner(t, bool) <- new!
 	// - FirstTrinketOwner(t) <- still fine
-	bool lazSharedGlobalTag = true;
 
-	const bool hasLegacyRngParam = lua_type(L, 2) == LUA_TUSERDATA && lua::TestUserdata(L, 2, lua::Metatables::RNG) != nullptr;
-	const bool hasNil = lua_type(L, 2) == LUA_TNIL;
-	if (!hasLegacyRngParam && !hasNil) {
-		lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
-	} else if (lua_gettop(L) > 2 && lua_type(L, 3) == LUA_TBOOLEAN) {
-		lazSharedGlobalTag = lua::luaL_checkboolean(L, 3);
-	}
+	bool legacySignature = lua_type(L, 2) == LUA_TNIL
+		|| (LuaRNG::IsUnderlyingType(L, 2) && LuaRNG::TryGet(L, 2).is_ok());
+	bool lazSharedGlobalIdx = legacySignature ? 3 : 2;
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, lazSharedGlobalIdx, true);
 
 	Entity_Player* firstTrinketOwner = PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(lazSharedGlobalTag).GetFirstOwner();
 	if (firstTrinketOwner) {

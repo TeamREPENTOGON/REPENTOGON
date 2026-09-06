@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../LuaClasses.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_LootListConstructor) {
@@ -14,11 +15,7 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 	const unsigned int variant = (unsigned int)luaL_checkinteger(L, 3);
 	const unsigned int subType = (unsigned int)luaL_checkinteger(L, 4);
 	const unsigned int seed = (unsigned int)luaL_optinteger(L, 5, Random());
-	RNG* rng = nullptr;
-
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		rng = lua::GetLuabridgeUserdata<RNG*>(L, 6, lua::Metatables::RNG, "RNG");
-	}
+	RNG* rng = LuaRNG::GetOpt(L, 6);
 
 	lootList->push_back({ type, variant, subType, seed, rng });
 

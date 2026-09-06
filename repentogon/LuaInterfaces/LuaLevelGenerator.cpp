@@ -11,7 +11,7 @@
 #include "LuaCore.h"
 #include "Exception.h"
 #include "Log.h"
-#include "LuaLevelGenerator.h"
+#include "../LuaClasses.h"
 
 #ifdef max
 #undef max
@@ -32,8 +32,8 @@ enum LinkDirection {
 static void ExtractRooms(lua_State* L, bool deadEnds);
 static void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Room& room);
 static LevelGenerator* GetLevelGenerator(lua_State* L, int idx = 1);
-static LuaLevelGeneratorRoom* GetLGR(lua_State* L, int idx = 1);
-static LuaLevelGeneratorRoom* CreateLGR(lua_State* L);
+static LuaLevelGeneratorRoomData* GetLGR(lua_State* L, int idx = 1);
+static LuaLevelGeneratorRoomData* CreateLGR(lua_State* L);
 static std::tuple<bool, std::optional<std::vector<int>>> ValidateRoomPlacement(LevelGenerator* generator, int col, int line, eRoomShape shape);
 static bool ValidateRoomPlacement(LevelGenerator_Room const& source, int col, int line, eRoomShape shape);
 static inline int ComposeGridIndex(int col, int line);
@@ -48,9 +48,9 @@ static LinkDirection ComputeAdjustedLinkDirection(LevelGenerator_Room const& sou
 static std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, LevelGenerator_Room const& target);
 
 LUA_FUNCTION(lua_LGR_gc) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
-	if (data->cleanup) {
-		data->cleanup = false;
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
+	if (data->isValue) {
+		data->isValue = false;
 		ZHL::Log("About to cleanup %p\n", data->room);
 		delete data->room;
 		ZHL::Log("Done cleaning up %p\n", data->room);
@@ -179,8 +179,8 @@ bool ValidateRoomPlacement(LevelGenerator_Room const& source, int col, int line,
 	return intersection.empty();
 }
 
-LuaLevelGeneratorRoom* CreateLGR(lua_State* L) {
-	LuaLevelGeneratorRoom* data = (LuaLevelGeneratorRoom*)lua_newuserdata(L, sizeof(LuaLevelGeneratorRoom));
+LuaLevelGeneratorRoomData* CreateLGR(lua_State* L) {
+	LuaLevelGeneratorRoomData* data = (LuaLevelGeneratorRoomData*)lua_newuserdata(L, sizeof(LuaLevelGeneratorRoomData));
 	luaL_setmetatable(L, lua::metatables::LevelGeneratorRoomMT);
 	return data;
 }
@@ -206,7 +206,7 @@ void ExtractRooms(lua_State* L, bool deadEnds) {
 
 void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Room& room) {
 	lua_pushinteger(L, i);
-	LuaLevelGeneratorRoom* data = CreateLGR(L);
+	LuaLevelGeneratorRoomData* data = CreateLGR(L);
 	data->context = generator;
 	data->room = &room;
 	lua_rawset(L, -3);
@@ -216,8 +216,8 @@ LevelGenerator* GetLevelGenerator(lua_State* L, int idx) {
 	return *lua::GetRawUserdata<LevelGenerator**>(L, idx, lua::metatables::LevelGeneratorMT);
 }
 
-LuaLevelGeneratorRoom* GetLGR(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaLevelGeneratorRoom*>(L, idx, lua::metatables::LevelGeneratorRoomMT);
+LuaLevelGeneratorRoomData* GetLGR(lua_State* L, int idx) {
+	return lua::GetRawUserdata<LuaLevelGeneratorRoomData*>(L, idx, lua::metatables::LevelGeneratorRoomMT);
 }
 
 std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source, LevelGenerator_Room const& target) {
@@ -466,9 +466,9 @@ LUA_FUNCTION(lua_LG_GetDeadEnds) {
 
 	room->_deadEnd = false;
 
-	LuaLevelGeneratorRoom* data = CreateLGR(L);
+	LuaLevelGeneratorRoomData* data = CreateLGR(L);
 	data->context = GetLevelGenerator(L);
-	data->cleanup = true;
+	data->isValue = true;
 	data->room = room;
 	return 1;
 } */
@@ -512,7 +512,7 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 		return luaL_error(L, err.str().c_str());
 	}
 
-	LuaLevelGeneratorRoom* neighborData = GetLGR(L, 5);
+	LuaLevelGeneratorRoomData* neighborData = GetLGR(L, 5);
 
 	// Reverse engineering is_placement_valid, the following must be known :
 	// gridCol, lineCol, horizontal / vertical size, shape, originNeighborConnect*, col / line link, distance from start
@@ -739,37 +739,37 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 }
 
 LUA_FUNCTION(lua_LGR_GenerationIndex) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushinteger(L, data->room->_generationIndex);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LGR_Column) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushinteger(L, data->room->_gridColIdx);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LGR_Line) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushinteger(L, data->room->_gridLineIdx);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LGR_Shape) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushinteger(L, data->room->_shape);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LGR_DoorMask) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushinteger(L, data->room->_doors);
 	return 1;
 }
 
 LUA_FUNCTION(lua_LGR_Neighbors) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_newtable(L);
 
 	int i = 1;
@@ -784,7 +784,7 @@ LUA_FUNCTION(lua_LGR_Neighbors) {
 }
 
 LUA_FUNCTION(lua_LGR_IsDeadEnd) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
+	LuaLevelGeneratorRoomData* data = GetLGR(L);
 	lua_pushboolean(L, data->room->_deadEnd);
 	return 1;
 }

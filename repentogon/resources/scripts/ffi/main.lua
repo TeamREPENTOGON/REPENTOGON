@@ -136,6 +136,11 @@ pcall(require("ffi.BitSet128"))
 pcall(require("ffi.RNG"))
 pcall(require("ffi.ItemConfigCostume"))
 pcall(require("ffi.ItemConfigItem"))
+pcall(require("ffi.TearParams"))
+pcall(require("ffi.ProjectileParams"))
+pcall(require("ffi.ActiveItemDesc"))
+-- pcall(require("ffi.Input"))
+
 
 ffi = nil
 ffidll = nil

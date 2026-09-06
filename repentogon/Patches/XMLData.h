@@ -131,7 +131,7 @@ public:
 	virtual void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) {}
 
 	// Returns the category to use for translation strings. Returns nullptr if this data does not have translations.
-	virtual const char* GetTranslationStringCategory() { return nullptr; }
+	virtual const char* GetTranslationStringCategory() const { return nullptr; }
 	
 	// Inserts the node into the byname/bynamemod lookup tables.
 	virtual void AddByNameLookups(XMLAttributes& node, int id, const std::string& modid);
@@ -500,7 +500,7 @@ class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
 
-	const char* GetTranslationStringCategory() override { return "Items"; }
+	const char* GetTranslationStringCategory() const override { return "Items"; }
 
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& item, int id) override;
 };
@@ -509,7 +509,7 @@ class XMLCollectible : public XMLItem {};
 
 class XMLNullItem : public XMLItem {
 public:
-	const char* GetTranslationStringCategory() override { return nullptr; }
+	const char* GetTranslationStringCategory() const override { return nullptr; }
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -564,7 +564,7 @@ public:
 		this->defmaxid = m;
 	}
 
-	const char* GetTranslationStringCategory() override { return "Default"; }
+	const char* GetTranslationStringCategory() const override { return "Default"; }
 };
 
 class XMLGiantBook : public XMLDataHolder {
@@ -579,7 +579,7 @@ public:
 
 class XMLChallenge : public XMLDataHolder {
 public:
-	const char* GetTranslationStringCategory() override { return "Challenges"; }
+	const char* GetTranslationStringCategory() const override { return "Challenges"; }
 };
 
 class XMLBossColor : public XMLDataHolder {
@@ -622,7 +622,7 @@ public:
 	// XMLNodeIdxLookup bypickup;
 	vector<XMLAttributes> customachievitems;
 
-	const char* GetTranslationStringCategory() override { return "PocketItems"; }
+	const char* GetTranslationStringCategory() const override { return "PocketItems"; }
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& node, int id) override;
 };
 
@@ -636,7 +636,7 @@ public:
 };
 
 class XMLPlayer : public XMLDataHolder {
-	const char* GetTranslationStringCategory() override { return "Players"; }
+	const char* GetTranslationStringCategory() const override { return "Players"; }
 
 	void AddByNameLookups(XMLAttributes& player, int id, const std::string& modid) override;
 	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& player, int id) override;
@@ -672,9 +672,6 @@ public:
 	unordered_map<string, tuple<int, int, int>> bybossid;
 	XMLNodeIdxLookup bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
-	// Holds the contents of an entity's "customtags" attribute, converted to lowercase and parsed into a set.
-	unordered_map<tuple<int, int, int>, set<string>> customtags;
-	unordered_map<tuple<int, int, int>, vector<int>> bagofcraftingpickups;
 
 	void Clear() {
 		nodes.clear();
@@ -683,7 +680,6 @@ public:
 		bynamemod.clear();
 		bymod.clear();
 		bytypevar.clear();
-		customtags.clear();
 		maxid = 0;
 	}
 
@@ -791,39 +787,6 @@ public:
 			}
 		}
 		return "";
-	}
-
-	const set<string>& GetCustomTags(int type, int var, int sub) {
-		auto iter = this->customtags.find({ type, var, sub });
-		if (iter != this->customtags.end()) {
-			return iter->second;
-		}
-		iter = this->customtags.find({ type, var, 0 });
-		if (iter != this->customtags.end()) {
-			return iter->second;
-		}
-		return this->customtags[{ type, 0, 0 }];
-	}
-
-	const set<string>& GetCustomTags(const EntityConfig_Entity& entity) {
-		return GetCustomTags(entity.id, entity.variant, entity.subtype);
-	}
-
-	bool HasCustomTag(int type, int var, int sub, const std::string& tag) {
-		const set<string>& customtags = GetCustomTags(type, var, sub);
-		return customtags.find(stringlower(tag.c_str())) != customtags.end();
-	}
-
-	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string& tag) {
-		return HasCustomTag(entity.id, entity.variant, entity.subtype, tag);
-	}
-
-	const vector<int>& GetBagOfCraftingPickups(int var, int sub) {
-		auto iter = this->bagofcraftingpickups.find({ ENTITY_PICKUP, var, sub });
-		if (iter != this->bagofcraftingpickups.end()) {
-			return iter->second;
-		}
-		return this->bagofcraftingpickups[{ ENTITY_PICKUP, var, 0 }];
 	}
 
 	void ProcessChilds(const xml_node<char>* parentnode, tuple<int, int, int> id) {

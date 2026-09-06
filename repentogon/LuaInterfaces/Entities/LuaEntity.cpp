@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/ASMPatches/ASMCallbacks.h"
 #include "../../Patches/EntityPlus.h"
@@ -404,10 +405,8 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 LUA_FUNCTION(Lua_EntitySpawnWaterImpactEffects) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector vel;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		vel = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	Vector* optVel = LuaVector::GetOpt(L, 3);
+	Vector vel = optVel ? *optVel : Vector();
 	const float scale = (float)luaL_checknumber(L, 4);
 
 	Entity::DoGroundImpactEffects(pos, &vel, scale);
@@ -429,22 +428,17 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	int subtype = (int)luaL_optinteger(L, 2, 0);
-	Vector pos = *entity->GetPosition();
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pos = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	Vector offset;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		offset = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	ColorMod color;
-	if (lua_type(L, 5) == LUA_TCDATA) {
-		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-	}
-	Vector velocity;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		velocity = *lua::GetCData<Vector*>(L, 6, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optPos = LuaVector::GetOpt(L, 3);
+	Vector pos = optPos ? *optPos : *entity->GetPosition();
+
+	auto* optOffset = LuaVector::GetOpt(L, 4);
+	Vector offset = optOffset ? *optOffset : Vector();
+
+	auto* optColor = LuaColor::GetOpt(L, 5);
+	ColorMod color = optColor ? *optColor : ColorMod();
+
+	auto* optVelocity = LuaVector::GetOpt(L, 6);
+	Vector velocity = optVelocity ? *optVelocity : Vector();
 
 	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 2, pos, velocity, nullptr, subtype, Isaac::genrand_int32(), 0);
 	effect->SetColor(&color, -1, 255, false, true);
@@ -458,15 +452,11 @@ LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 // TODO: asm patch to return effect
 LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector pos = *entity->GetPosition();
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optPos = LuaVector::GetOpt(L, 2);
+	Vector pos = optPos ? *optPos : *entity->GetPosition();
 	
-	ColorMod color;
-	if (lua_type(L, 3) == LUA_TCDATA) {
-		color = *lua::GetCData<ColorMod*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-	}
+	auto* optColor = LuaColor::GetOpt(L, 3);
+	ColorMod color = optColor ? *optColor : ColorMod();
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
@@ -484,15 +474,11 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 
 LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector pos = *entity->GetPosition();
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optPos = LuaVector::GetOpt(L, 2);
+	Vector pos = optPos ? *optPos : *entity->GetPosition();
 
-	ColorMod color;
-	if (lua_type(L, 3) == LUA_TCDATA) {
-		color = *lua::GetCData<ColorMod*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-	}
+	auto* optColor = LuaColor::GetOpt(L, 3);
+	ColorMod color = optColor ? *optColor : ColorMod();
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 

@@ -90,18 +90,16 @@ LUA_FUNCTION(Lua_FamiliarGetPathFinder)
 LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 {
 	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Vector aimDirection;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		aimDirection = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
+	auto* optAimDirection = LuaVector::GetOpt(L, 2);
+	Vector aimDirection = optAimDirection ? *optAimDirection : Vector();
 	int direction = (int)luaL_optinteger(L, 3, -1);
+	// arg4 was the targetPosition buffer, though we aren't actually using it.
+	// We were originally making a copy of the passed vector, so the original was not actually modified.
+	bool legacyOverload = lua_gettop(L) == 3;
 	Vector targetPosBuffer;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		targetPosBuffer = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
 	bool success = fam->TryAimAtMarkedTarget(&aimDirection, &direction, &targetPosBuffer);
 
-	if (lua_gettop(L) == 3) {
+	if (legacyOverload) {
 		if (success) {
 			lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], targetPosBuffer);
 		}

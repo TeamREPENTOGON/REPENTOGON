@@ -84,7 +84,7 @@ __thiscall void Entity_Familiar::ai_buddy_inbox();
 
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item, NPCAI_Pathfinder, Vector, Entity_Player) : public Entity {
 {{
-	inline Entity_Player** GetPlayer() { return &this->_player; }
+	inline Entity_Player* GetPlayer() { return this->_player; }
 	inline NPCAI_Pathfinder* GetPathFinder() { return &this->_pathfinder; }
 	inline Weapon** GetWeapon() { return &this->_weapon; }
 }}

@@ -7,8 +7,6 @@
 #include "LuaCore.h"
 #include "../LuaClasses.h"
 #include "HookSystem.h"
-#include "LuaWeapon.h"
-#include "LuaLevelGenerator.h"
 #include "Log.h"
 #include "../Patches/XMLData.h"
 #include "Level.h"
@@ -539,7 +537,7 @@ HOOK_PRE_UPDATE_CALLBACK(Entity_Effect, eEntityClass::CLASS_EFFECT, 1168)
 
 // NPC_PICK_TARGET
 HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
-	Entity* unmodifiedTarget = super();
+	Entity* target = super();
 
 	const int callbackid = 1222;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -550,15 +548,21 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetType())
 			.pushClassPtr<LuaEntityNPC>(this)
-			.pushClassPtr<LuaEntity>(unmodifiedTarget)
+			.pushClassPtr<LuaEntity>(target)
 			.call(1);
 
-		if (!lua_result && lua_isuserdata(L, -1)) {
-			return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+		if (!lua_result && LuaEntity::IsUnderlyingType(L, -1)) {
+			auto luaReturn = LuaEntity::TryGet(L, -1);
+			if (luaReturn.is_err()) {
+				KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_NPC_PICK_TARGET: ", luaReturn.unwrap_err().message()).c_str());
+			}
+			else {
+				target = luaReturn.unwrap();
+			}
 		}
 	}
 
-	return unmodifiedTarget;
+	return target;
 }
 
 // PRE_ROOM_COLLISION_PASS (1227)
@@ -2431,6 +2435,81 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	return normalMinCharge;
 }
 
+HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, int collectible, unsigned int useFlags, int activeSlot, int varData) -> void) {
+	if (collectible == COLLECTIBLE_NULL) {
+		*resultFlags = 1;
+		return;
+	}
+
+	// Reimplemented MC_PRE_USE_ITEM (23) to enable no-discharge preventions, and to ensure that MC_POST_USE_ITEM doesn't run if the use is prevented.
+	const int precallbackid = 23;
+	if (VanillaCallbackState.test(precallbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(collectible)
+			.push(collectible)
+			.pushClassPtr<LuaRNG>(this->GetCollectibleRNG(collectible))
+			.pushClassPtr<LuaEntityPlayer>(this)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) {
+				// Default skip
+				*resultFlags = 1;
+				return;
+			} else if (lua_istable(L, -1)) {
+				// Skip, potentially without discharging.
+				lua_getfield(L, -1, "Discharge");
+				if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+					*resultFlags = 0;
+				} else {
+					*resultFlags = 1;
+				}
+				lua_pop(L, 1);
+				return;
+			}
+		}
+	}
+
+	super(resultFlags, collectible, useFlags, activeSlot, varData);
+
+	// MC_POST_USE_ITEM (1003)
+	const int postcallbackid = 1003;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		bool discharge = (*resultFlags) & (1 << 0);
+		bool removed = (*resultFlags) & (1 << 8);
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(collectible)
+			.push(collectible)
+			.pushClassPtr<LuaRNG>(this->GetCollectibleRNG(collectible))
+			.pushClassPtr<LuaEntityPlayer>(this)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.push(discharge)
+			.push(removed)
+			.call(1);
+	}
+}
+
+// Gutted PreUseItem since we reimplement it above.
+HOOK_METHOD(LuaEngine, PreUseItem, (int collectibleType, RNG* rng, Entity_Player* player, unsigned int useFlags, int activeSlot, int customVarData) -> bool) {
+	return false;
+}
+
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
 HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> bool) {
 	const int callbackid1 = 1116;
@@ -2639,7 +2718,6 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(_overlayID)
-			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(_overlayID)
 			.push(unk)
 			.call(1);
@@ -2658,7 +2736,6 @@ HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.push(overlayID)
-			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(overlayID)
 			.push(delay)
 			.pushClassPtr<LuaEntityPlayer>(player)
@@ -2682,7 +2759,6 @@ HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
 			.push(overlayID)
-			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(overlayID)
 			.push(delay)
 			.pushClassPtr<LuaEntityPlayer>(player)
@@ -3318,29 +3394,13 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> voi
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller caller(L);
-		caller.push(callbackid)
+		lua::LuaCaller(L).push(callbackid)
 			.push(GetWeaponType())
 			.pushClass<LuaVector>(dir)
 			.push(FireAmount)
-			.pushClassPtr<LuaEntity>(ent);
-		
-		WeaponData* data = new (caller.pushUd(sizeof(WeaponData), lua::metatables::WeaponMT)) WeaponData;
-		data->weapon = this;
-		if (Entity_Familiar* familiar = ent->ToFamiliar()) {
-			data->owner = familiar;
-		}
-		else if (Entity_Player* player = ent->ToPlayer()) {
-			data->owner = player;
-			for (int i = 0; i < 4; ++i) {
-				if (*(player->GetWeapon(i)) == this) {
-					data->slot = i;
-					break;
-				}
-			}
-		}
-
-		lua::LuaResults result = caller.call(1);
+			.pushClassPtr<LuaEntity>(ent)
+			.pushClassPtr<LuaWeapon>(this, ent)
+			.call(1);
 	}
 }
 
@@ -3355,24 +3415,10 @@ HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolat
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller caller(L);
-		caller.push(callbackid)
-			.push(this->GetWeaponType());
-		WeaponData* data = new (caller.pushUd(sizeof(WeaponData), lua::metatables::WeaponMT)) WeaponData;
-		data->weapon = this;
-		if (Entity_Familiar* familiar = ent->ToFamiliar()) {
-			data->owner = familiar;
-		}
-		else if (Entity_Player* player = ent->ToPlayer()) {
-			data->owner = player;
-			for (int i = 0; i < 4; ++i) {
-				if (*(player->GetWeapon(i)) == this) {
-					data->slot = i;
-					break;
-				}
-			}
-		}
-		caller.pushClass<LuaVector>(dir)
+		lua::LuaCaller(L).push(callbackid)
+			.push(this->GetWeaponType())
+			.pushClassPtr<LuaWeapon>(this, ent)
+			.pushClass<LuaVector>(dir)
 			.push(isShooting)
 			.push(isInterpolated)
 			.call(1);
@@ -3408,15 +3454,13 @@ HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate, EntityRef* Source) -> boo
 }
 
 // MC_PRE_GRID_HURT (1017)
-bool RunPreGridHurtCallback(GridEntity* grid, lua::Metatables mt, int* damage, EntityRef* source) {
+bool RunPreGridHurtCallback(GridEntity* grid, int* damage, EntityRef* source) {
 	const int callbackid = 1017;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(grid->GetType())
@@ -3441,15 +3485,13 @@ bool RunPreGridHurtCallback(GridEntity* grid, lua::Metatables mt, int* damage, E
 }
 
 // MC_POST_GRID_HURT (1018)
-void RunPostGridHurtCallback(GridEntity* grid, lua::Metatables mt, int damage, EntityRef* source) {
+void RunPostGridHurtCallback(GridEntity* grid, int damage, EntityRef* source) {
 	const int callbackid = 1018;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::Metatables mt = lua::Metatables::GRID_ENTITY;
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(grid->GetType())
@@ -3462,24 +3504,24 @@ void RunPostGridHurtCallback(GridEntity* grid, lua::Metatables mt, int damage, E
 
 HOOK_METHOD(GridEntity_Poop, Hurt, (int damage, EntityRef* source) -> bool) {
 	const bool canBeHurt = this->_desc._state != 1000;
-	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, &damage, source)) {
+	if (canBeHurt && !RunPreGridHurtCallback(this, &damage, source)) {
 		return false;
 	}
 	bool result = super(damage, source);
 	if (canBeHurt && result) {
-		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_POOP, damage, source);
+		RunPostGridHurtCallback(this, damage, source);
 	}
 	return result;
 }
 
 HOOK_METHOD(GridEntity_TNT, Hurt, (int damage, EntityRef* source) -> bool) {
 	const bool canBeHurt = this->_desc._state < 4;
-	if (canBeHurt && !RunPreGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, &damage, source)) {
+	if (canBeHurt && !RunPreGridHurtCallback(this, &damage, source)) {
 		return false;
 	}
 	bool result = super(damage, source);
 	if (canBeHurt && result) {
-		RunPostGridHurtCallback(this, lua::Metatables::GRID_ENTITY_TNT, damage, source);
+		RunPostGridHurtCallback(this, damage, source);
 	}
 	return result;
 }
@@ -3599,7 +3641,6 @@ HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4,
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(this, lua::metatables::NightmareSceneMT)
 			.call(1);
 	}
 }
@@ -3616,7 +3657,6 @@ HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(this, lua::metatables::NightmareSceneMT)
 			.push(unk)
 			.call(1);
 	}
@@ -3839,27 +3879,21 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller caller(L);
-		caller.push(callbackid).pushnil();
-		LuaLevelGeneratorRoom* room = caller.pushUd<LuaLevelGeneratorRoom>(lua::metatables::LevelGeneratorRoomMT);
-
-		room->cleanup = false;
-		room->context = nullptr;
-		room->room = slot;
-
-		RoomConfig_Room* other = nullptr;
-		lua::LuaResults result = caller.pushClassPtr<LuaRoomConfigRoom>(config)
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.pushClassPtr<LuaLevelGeneratorRoom>(nullptr, slot)
+			.pushClassPtr<LuaRoomConfigRoom>(config)
 			.push(seed)
 			.call(1);
 
+		RoomConfig_Room* other = nullptr;
 		if (LuaRoomConfigRoom::IsUnderlyingType(L, -1)) {
-			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
-
-			if (!opt) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_PRE_LEVEL_PLACE_ROOM");
+			auto luaReturn = LuaRoomConfigRoom::TryGet(L, -1);
+			if (luaReturn.is_err()) {
+				KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_LEVEL_PLACE_ROOM: ", luaReturn.unwrap_err().message()).c_str());
 			}
 			else {
-				other = *opt;
+				other = luaReturn.unwrap();
 			}
 		}
 
@@ -3918,20 +3952,20 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 		}();
 		lua_rawgeti(L, LUA_REGISTRYINDEX, customRunCallbackRef);
 
-		lua::LuaCaller caller(L);
-		caller.push(this->GetPlayerType());
-		caller.pushClassPtr<LuaEntityPlayer>(this);
-		Weapon_MultiShotParams* luaParams = caller.pushUd<Weapon_MultiShotParams>(lua::metatables::MultiShotParamsMT);
-		*luaParams = *params;
-		lua::LuaResults results = caller.push(weaponType).call(1);
+		lua::LuaResults results = lua::LuaCaller(L)
+			.push(this->GetPlayerType())
+			.pushClassPtr<LuaEntityPlayer>(this)
+			.pushClass<LuaMultiShotParams>(*params)
+			.push(weaponType)
+			.call(1);
 
-		if (!results && lua_isuserdata(L, -1)) {
-			auto* ud = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
-
-			if (!ud) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_EVALUATE_MULTI_SHOT_PARAMS!");
-			} else {
-				*params = *ud;
+		if (!results && LuaMultiShotParams::IsUnderlyingType(L, -1)) {
+			auto luaReturn = LuaMultiShotParams::TryGet(L, -1);
+			if (luaReturn.is_err()) {
+				KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_EVALUATE_MULTI_SHOT_PARAMS: ", luaReturn.unwrap_err().message()).c_str());
+			}
+			else {
+				*params = *luaReturn.unwrap();
 			}
 		}
 	}
@@ -4623,9 +4657,15 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 			.pushClassPtr<LuaEntityPlayer>(player)
 			.call(1);
 
-		if (!result && lua_isuserdata(L, -1)) {
-			LootList& override = *lua::GetRawUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
-			list = std::move(override);
+		if (!result && LuaLootList::IsUnderlyingType(L, -1)) {
+			auto luaReturn = LuaLootList::TryGet(L, -1);
+			if (luaReturn.is_err()) {
+				KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_PRE_PICKUP_GET_LOOT_LIST: ", luaReturn.unwrap_err().message()).c_str());
+			}
+			else {
+				LootList& override = *luaReturn.unwrap();
+				list = std::move(override);
+			}
 		}
 	}
 
@@ -4634,8 +4674,7 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 		lua::LuaStackProtector protector(L);
 
 		// prepare LuaLootList
-		LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
-		luaL_setmetatable(L, lua::metatables::LootListMT);
+		LootList* toLua = LuaLootList::Place(L);
 		new (toLua) LootList(std::move(list));
 
 		int lootListAbsIdx = lua_absindex(L, -1);
@@ -5576,9 +5615,13 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 			.pushClassPtr<LuaEntity>(this)
 			.call(1);
 
-		if (!results) {
-			if (lua_isuserdata(L, -1)) {
-				return lua::GetLuabridgeUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+		if (!results && LuaEntity::IsUnderlyingType(L, -1)) {
+			auto luaReturn = LuaEntity::TryGet(L, -1);
+			if (luaReturn.is_err()) {
+				KAGE::LogMessage(2, REPENTOGON::StringConcat("bad return in MC_NPC_PICK_TARGET: ", luaReturn.unwrap_err().message()).c_str());
+			}
+			else {
+				return luaReturn.unwrap();
 			}
 		}
 	}
@@ -5979,14 +6022,14 @@ HOOK_METHOD(Entity_Player, GetTearHitParams, (TearParams* params, int weaponType
 			.pushClassPtr<LuaEntity>(source)
 			.call(1);
 
-		if (!results && lua_isuserdata(L, -1)) {
-			auto* ud = lua::GetLuabridgeUserdata<TearParams*>(L, -1, lua::Metatables::TEAR_PARAMS, "TearParams");
+		if (!results && lua_type(L, -1) == LUA_TCDATA) {
+			auto* cd = lua::GetCData<TearParams*>(L, -1, lua::ffi::CData[lua::ffi::CDataID::TEAR_PARAMS], "TearParams");
 
-			if (!ud) {
-				KAGE::LogMessage(2, "Invalid userdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
+			if (!cd) {
+				KAGE::LogMessage(2, "Invalid cdata returned in MC_EVALUATE_TEAR_HIT_PARAMS!");
 			}
 			else {
-				*params = *ud;
+				*params = *cd;
 			}
 		}
 	}
@@ -6022,6 +6065,11 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 
 // MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1492)
 HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
+	if (Entity_Pickup::IsChest(this->_variant) && this->_subtype == 0) {
+		// Already-opened vanilla chest
+		return false;
+	}
+
 	const int preCallbackId = 1491;
 	const int postCallbackId = 1492;
 

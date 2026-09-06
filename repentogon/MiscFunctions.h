@@ -474,7 +474,7 @@ namespace REPENTOGON {
 					return false;
 				}
 
-				lua_Unsigned luaInteger = lua_tointeger(L, index);
+				lua_Unsigned luaInteger = (lua_Unsigned)lua_tointeger(L, index);
 				T value = DynamicNumberCast<T>(luaInteger, error);
 				if (error)
 				{

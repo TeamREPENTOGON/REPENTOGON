@@ -214,14 +214,9 @@ LUA_FUNCTION(Lua_IsPositionInRoom) {
 
 LUA_FUNCTION(Lua_MamaMegaExplosion) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Vector pos;
-	if (lua_type(L, 2) == LUA_TCDATA) {
-		pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	Entity_Player* player = nullptr;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 3, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	}
+	auto* optPos = LuaVector::GetOpt(L, 2);
+	Vector pos = optPos ? *optPos : Vector();
+	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 3);
 
 	if (player == nullptr) {
 		room->MamaMegaExplosion(&pos);
@@ -275,8 +270,10 @@ LUA_FUNCTION(Lua_SpawnGridEntity) {
 	if (GridIndex < 0 || GridIndex > 447) {
 		return luaL_error(L, "Grid index %d invalid", GridIndex);
 	}
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
+
+	bool gridDescOverload = LuaGridEntityDesc::IsUnderlyingType(L, 3);
+	if (gridDescOverload) {
+		GridEntityDesc* desc = LuaGridEntityDesc::Get(L, 3);
 		ret = room->SpawnGridEntityDesc(GridIndex, desc);
 	}
 	else
@@ -767,11 +764,9 @@ LUA_FUNCTION(Lua_RoomTriggerOutput) {
 
 LUA_FUNCTION(Lua_RoomClearBossHazards) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	Entity* source = nullptr;
 	const bool excludeNPCs = lua::luaL_optboolean(L, 2, true);
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 3);
+
 	// this function only uses [this] to create an EntityRef, and the constructor cleanly handles cases where Entity is nullptr
 	source->ClearBossHazards(excludeNPCs);
 	return 0;

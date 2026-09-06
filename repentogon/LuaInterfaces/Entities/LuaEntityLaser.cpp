@@ -2,6 +2,7 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/EntityPlus.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
@@ -60,13 +61,9 @@ LUA_FUNCTION(Lua_EntityLaserShootAngle) {
 	float angleDegrees = (float)luaL_checknumber(L, 3);
 	int timeout = (int)luaL_checkinteger(L, 4);
 	Vector* posOffset = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = nullptr;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-	}
+	Entity* source = LuaEntity::GetOpt(L, 6);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_Laser::ShootAngle(variant, sourcePos, angleDegrees, timeout, posOffset, source, false), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
-
 	return 1;
 }
 
