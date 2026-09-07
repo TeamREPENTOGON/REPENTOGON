@@ -139,6 +139,7 @@ pcall(require("ffi.ItemConfigItem"))
 pcall(require("ffi.TearParams"))
 pcall(require("ffi.ProjectileParams"))
 pcall(require("ffi.ActiveItemDesc"))
+pcall(require("ffi.QueueItemData"))
 -- pcall(require("ffi.Input"))
 
 

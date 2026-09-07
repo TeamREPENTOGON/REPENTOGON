@@ -405,6 +405,19 @@ LUA_FUNCTION(Lua_PlayerSetTearFlags) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetQueuedItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA], player->_queuedItem);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetQueuedItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	QueueItemData* queuedItem = lua::GetCData<QueueItemData*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA], "QueueItemData");
+
+	player->_queuedItem = *queuedItem;
+	return 0;
+}
 
 LUA_FUNCTION(Lua_HasCollectible) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
@@ -4347,6 +4360,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "LaserColor", Lua_PlayerGetLaserColor, Lua_PlayerSetLaserColor);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearColor", Lua_PlayerGetTearColor, Lua_PlayerSetTearColor);
 	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "TearFlags", Lua_PlayerGetTearFlags, Lua_PlayerSetTearFlags);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY_PLAYER, "QueuedItem", Lua_PlayerGetQueuedItem, Lua_PlayerSetQueuedItem);
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPlayer", "CalculateBagOfCraftingOutput", Lua_CalculateBagOfCraftingOutput);
 }

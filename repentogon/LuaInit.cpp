@@ -263,6 +263,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS_PTR] = lua_ctypeid(L, "ProjectileParamsPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC] = lua_ctypeid(L, "ActiveItemDesc");
 	lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC_PTR] = lua_ctypeid(L, "ActiveItemDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA] = lua_ctypeid(L, "QueueItemData");
+	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA_PTR] = lua_ctypeid(L, "QueueItemDataPtr");
 
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);

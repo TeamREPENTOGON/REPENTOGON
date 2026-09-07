@@ -630,6 +630,8 @@ namespace lua {
             PROJECTILE_PARAMS_PTR,
             ACTIVE_ITEM_DESC,
             ACTIVE_ITEM_DESC_PTR,
+            QUEUE_ITEM_DATA,
+            QUEUE_ITEM_DATA_PTR,
             MAX_CDATA
         };
 
