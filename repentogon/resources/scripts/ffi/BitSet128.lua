@@ -5,6 +5,8 @@ typedef struct BitSet128* BitSet128Ptr;
 local repentogon = ffidll
 local lffi = ffi
 
+local U64_ONE = lffi.new("uint64_t", 1)
+
 local function bsNorm(op, idx)
 	if type(op) == "number" then
 		return lffi.new("uint64_t", op), lffi.new("uint64_t", 0)
@@ -84,19 +86,11 @@ __bnot = function(self)
     Set = function(self, pos, state)
         ffichecks.checknumber(2, pos)
         ffichecks.checkboolean(3, state)
-        local shift = pos % 64
+        local bit = U64_ONE << (pos % 64)
         if pos < 64 then
-            if state then
-                self.L = self.L | (1 << shift)
-            else
-                self.L = self.L & ~(1 << shift)
-            end
+            self.L = state and (self.L | bit) or (self.L & ~bit)
         else
-            if state then
-                self.H = self.H | (1 << shift)
-            else
-                self.H = self.H & ~(1 << shift)
-            end
+            self.H = state and (self.H | bit) or (self.H & ~bit)
         end
     end
 }
