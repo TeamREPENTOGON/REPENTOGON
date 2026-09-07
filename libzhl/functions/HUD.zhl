@@ -29,6 +29,9 @@ __thiscall void HUD::ShowStackedItemTextCustomUTF16(wchar_t* title, wchar_t* sub
 "558bec5153565733c08d91????????90803a0074??4081c2f401000083f80672??5f5e5b595dc2100069c0f4010000":
 __thiscall void HUD::ShowStackedItemTextCustomUTF8(char* title, char* subtitle, bool unused, bool isCurseDisplay);
 
+"5356578db9????????bb06000000":
+__thiscall void HUD::ClearStackedItemText();
+
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void HUD::ShowFortuneText(int * * param_1);
 

@@ -8,17 +8,15 @@ LUA_FUNCTION(Lua_HUDShowItemText)
 {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 
-	if (lua_isstring(L, 2)) {
-		char* mainString = const_cast<char*>(luaL_checkstring(L, 2));
-		char* secondaryString = const_cast<char*>(luaL_checkstring(L, 3));
+	if (lua_isstring(L, 2) | lua_isstring(L, 3)) {
+		char* mainString = const_cast<char*>(luaL_optstring(L, 2, ""));
+		char* secondaryString = const_cast<char*>(luaL_optstring(L, 3, ""));
 		bool isCurseDisplay = lua::luaL_optboolean(L, 4, false);
-		bool stackUpText = lua::luaL_optboolean(L, 5, false);
+		bool stackUpText = lua::luaL_optboolean(L, 5, true);
 
 		if (stackUpText)
-			hud->ShowStackedItemTextCustomUTF8(mainString, secondaryString, false, isCurseDisplay);
-		else {
-			hud->_messageMain.Show(mainString, secondaryString, true, isCurseDisplay);
-		}	
+			hud->ClearStackedItemText();
+		hud->ShowStackedItemTextCustomUTF8(mainString, secondaryString, false, isCurseDisplay);
 	}
 	else {
 		Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 2, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -26,9 +24,8 @@ LUA_FUNCTION(Lua_HUDShowItemText)
 		bool stackUpText = lua::luaL_optboolean(L, 4, true);
 
 		if (stackUpText)
-			hud->ShowStackedItemTextCustomUTF8(item->name.data(), item->desc.data(), false, false);
-		else
-			hud->ShowItemText(player, item);
+			hud->ClearStackedItemText();
+		hud->ShowItemText(player, item);
 	}
 
 	return 0;
