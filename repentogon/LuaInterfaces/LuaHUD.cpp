@@ -8,7 +8,7 @@ LUA_FUNCTION(Lua_HUDShowItemText)
 {
 	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 
-	if (lua_isstring(L, 2) | lua_isstring(L, 3)) {
+	if (lua_isstring(L, 2) || lua_isstring(L, 3)) {
 		char* mainString = const_cast<char*>(luaL_optstring(L, 2, ""));
 		char* secondaryString = const_cast<char*>(luaL_optstring(L, 3, ""));
 		bool isCurseDisplay = lua::luaL_optboolean(L, 4, false);
