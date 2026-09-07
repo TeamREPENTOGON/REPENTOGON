@@ -186,9 +186,8 @@ VectorMT = {
     end
 }
 
-VectorMT.__index = function(self, key)
-	return VectorMT[key]
-end 
+setmetatable(VectorMT, { __index = function() end })
+VectorMT.__index = VectorMT
 
 local VectorT = ffi.metatype("struct Vector", VectorMT)
 

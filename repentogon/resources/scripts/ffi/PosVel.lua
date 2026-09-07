@@ -8,9 +8,8 @@ PosVelMT = {
     __type = "PosVel",
 }
 
-PosVelMT.__index = function(self, key)
-	return PosVelMT[key]
-end 
+setmetatable(PosVelMT, { __index = function() end })
+PosVelMT.__index = PosVelMT
 
 local PosVelT = ffi.metatype("struct PosVel", PosVelMT)
 

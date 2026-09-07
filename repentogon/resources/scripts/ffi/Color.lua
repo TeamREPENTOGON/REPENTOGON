@@ -140,9 +140,8 @@ local ColorMT = {
 
 local ColorT = ffi.metatype("struct Color", ColorMT)
 
-ColorMT.__index = function(self, key)
-	return ColorMT[key]
-end
+setmetatable(ColorMT, { __index = function() end })
+ColorMT.__index = ColorMT
 
 local ColorGlobalMT = {
     __call = function(_, R, G, B, A, RO, GO, BO, RC, GC, BC, AC)

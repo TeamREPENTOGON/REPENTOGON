@@ -21,8 +21,7 @@ GridEntityDescMT = {
 
 local GridEntityDescT = ffi.metatype("struct GridEntityDesc", GridEntityDescMT)
 
-GridEntityDescMT.__index = function(self, key)
-	return GridEntityDescMT[key]
-end 
+setmetatable(GridEntityDescMT, { __index = function() end })
+GridEntityDescMT.__index = GridEntityDescMT
 
 GridEntityDesc = setmetatable({}, {__class = GridEntityDescMT})

@@ -253,9 +253,8 @@ local RngMT = {
     end
 }
 
-RngMT.__index = function(self, key)
-	return RngMT[key]
-end
+setmetatable(RngMT, { __index = function() end })
+RngMT.__index = RngMT
 
 local RngT = ffi.metatype("struct RNG", RngMT)
 RNGF = setmetatable({}, {

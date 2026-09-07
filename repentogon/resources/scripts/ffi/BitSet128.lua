@@ -101,9 +101,8 @@ __bnot = function(self)
     end
 }
 
-BitSet128MT.__index = function(self, key)
-	return BitSet128MT[key]
-end 
+setmetatable(BitSet128MT, { __index = function() end })
+BitSet128MT.__index = BitSet128MT
 
 local BitSet128T = ffi.metatype("struct BitSet128", BitSet128MT)
 
