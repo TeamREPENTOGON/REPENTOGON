@@ -641,7 +641,7 @@ __thiscall Entity_Laser* Entity_Player::FireBrimstone(Vector* direction, Entity*
 __thiscall Entity_Tear* Entity_Player::FireTear(Vector* Position, Vector Velocity, unsigned int flags, Entity* source, float DamageMultiplier);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec90000000a1????????33c58945??5657508d45??64a3????????8bd1":
-__thiscall Vector* Entity_Player::GetCostumeNullPos(const char* NullFrameName, bool headScale, Vector* Direction);
+__thiscall Vector* Entity_Player::GetCostumeNullPos(Vector* buffer, std_string* NullFrameName, bool headScale, Vector* Direction);
 
 "558beca1????????83ec0c8b80":
 __thiscall Vector* Entity_Player::GetFlyingOffset(Vector* buffer);
