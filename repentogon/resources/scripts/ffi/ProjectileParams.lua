@@ -26,6 +26,7 @@ struct ProjectileParams {
     uint32_t Variant;
     padding char[0x4];
     private float _Damage;
+    padding char[0x8];
 };
 
 typedef struct ProjectileParams* ProjectileParamsPtr;
