@@ -12,6 +12,8 @@ namespace CustomTags {
 	static const std::string FAMILIAR_BLOCK_PROJECTILES = "familiarblockprojectiles";  // Allows familiars to block projectiles automatically.
 	static const std::string FAMILIAR_NO_CHARM = "nocharm";  // Makes the familiar not be charmed by Siren.
 	static const std::string ENTITY_NO_ERASE = "noerase";  // Makes the entity immune to being erased by the Eraser effect.
+	static const std::string PICKUP_NO_REROLL = "norerollpickup";  // Makes pickups immune to being rerolled, as well as similar effects like Ace cards and Moving Box
+	static const std::string PICKUP_NO_JERA = "nojera";  // Prevents a pickup from being duplicated by Jera even if they are otherwise able to be rerolled
 }
 
 namespace EntityConfigEx {

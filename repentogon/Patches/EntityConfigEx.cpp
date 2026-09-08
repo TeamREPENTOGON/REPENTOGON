@@ -285,4 +285,22 @@ HOOK_STATIC(Game, ShouldEraseEnemy, (Entity* entity) -> bool, __stdcall) {
 	return super(entity);
 }
 
+HOOK_STATIC(Entity_Pickup, CanRerollVariant, (int variant, int subtype) -> bool, __cdecl) {
+	if (EntityEx* ex = GetEntityEx(ENTITY_PICKUP, variant, subtype)) {
+		if (ex->HasCustomTag(CustomTags::PICKUP_NO_REROLL)) {
+			return false;
+		}
+	}
+	return super(variant, subtype);
+}
+
+HOOK_METHOD(Entity_Pickup, CanJeraDuplicate, () -> bool) {
+	if (EntityEx* ex = GetEntityEx(this->_type, this->_variant, this->_subtype)) {
+		if (ex->HasCustomTag(CustomTags::PICKUP_NO_JERA)) {
+			return false;
+		}
+	}
+	return super();
+}
+
 }  // EntityConfigEx
