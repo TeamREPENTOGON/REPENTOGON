@@ -52,8 +52,12 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["VanillaTweaks"]["MarsDoubleTapWindow"] = "10";
 			ini["VanillaTweaks"]["ConsoleAutofillLimit"] = "10";
+			ini["VanillaTweaks"]["ConsoleKeyMode"] = "0";	
+			ini["VanillaTweaks"]["ConsoleKeyVK"] = "192";		// VK_OEM_3
+			ini["VanillaTweaks"]["ConsoleKeyScancode"] = "41";	// the backtick
 			ini["VanillaTweaks"]["EcoMode"] = "0";
 			ini["VanillaTweaks"]["DisableExitPrompt"] = "0";
+			ini["VanillaTweaks"]["BlockUnknownDevices"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -91,10 +95,17 @@ struct REPENTOGONOptions {
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
+
 		fontSize = defstoi(ini["internal"]["FontSize"], 16);
 		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
 		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
+
+		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
+		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
+		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
+		blockUnknownDevices = defstoi(ini["VanillaTweaks"]["BlockUnknownDevices"], 0);
+
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -136,8 +147,12 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("VanillaTweaks", "MarsDoubleTapWindow", marsDoubleTapWindow);
 		Write("VanillaTweaks", "ConsoleAutofillLimit", consoleAutofillLimit);
+		Write("VanillaTweaks", "ConsoleKeyMode", consoleKeyMode);
+		Write("VanillaTweaks", "ConsoleKeyVK", consoleKeyVK);
+		Write("VanillaTweaks", "ConsoleKeyScancode", consoleKeyScancode);
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
+		Write("VanillaTweaks", "BlockUnknownDevices", blockUnknownDevices);
 //		Write("internal",	   "EnableUnifont",		   enableUnifont);
 //		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -178,8 +193,14 @@ struct REPENTOGONOptions {
 	bool disableExitPrompt;
 	bool skipArchiveChecks;
 	bool didInputConfigsImport;
+
 	bool enableImGuiMultiView;
 	int fontRenderStyle;
+
+	int consoleKeyMode;	// 0 is virtualkey (default), 1 is scancode (layout-independent)
+	int consoleKeyVK;
+	int consoleKeyScancode;
+	bool blockUnknownDevices;
 };
 
 extern REPENTOGONOptions repentogonOptions;

@@ -43,6 +43,12 @@ class EntityTearPlus : public EntityPlus {
 	std::optional<uint32_t> initSound = std::nullopt;
 };
 
+// Attributes for EntityPickup
+class EntityPickupPlus : public EntityPlus {
+public:
+	std::optional<bool> canRerollOverride = std::nullopt;
+};
+
 // Attributes for EntityLaser.
 class EntityLaserPlus : public EntityPlus {
   public:
@@ -65,6 +71,7 @@ EntityPlus* GetEntityPlus(Entity* entity);
 EntityPlayerPlus* GetEntityPlayerPlus(Entity_Player* player);
 EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar);
 EntityTearPlus* GetEntityTearPlus(Entity_Tear* tear);
+EntityPickupPlus* GetEntityPickupPlus(Entity_Pickup* pickup);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
 EntityKnifePlus* GetEntityKnifePlus(Entity_Knife* knife);
 

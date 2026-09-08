@@ -7,6 +7,7 @@
 #include "EntityPlus.h"
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
+#include "ItemConfigEx.h"
 
 
 // Max coins/keys/bombs is a global thing so no need to store it on any player.
@@ -282,22 +283,25 @@ void TriggerCustomCache(Entity_Player* player, const std::set<std::string>& cust
 	}
 }
 
-void TriggerCustomCache(Entity_Player* player, XMLItem* xmlData, const int id, const bool immediate) {
-	if (xmlData->HasAnyCustomCache(id)) {
-		TriggerCustomCache(player, xmlData->GetCustomCache(id), immediate);
+void TriggerCustomCache(Entity_Player* player, ItemConfigEx::ItemEx* ex, const bool immediate) {
+	if (ex) {
+		const std::set<std::string>& cache = ex->GetCustomCaches();
+		if (!cache.empty()) {
+			TriggerCustomCache(player, cache, immediate);
+		}
 	}
 }
 
 void TriggerNullCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.NullItemData, id, immediate);
+	TriggerCustomCache(player, ItemConfigEx::GetNullItemEx(id), immediate);
 }
 
 void TriggerCollectibleCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.ItemData, id, immediate);
+	TriggerCustomCache(player, ItemConfigEx::GetCollectibleEx(id), immediate);
 }
 
 void TriggerTrinketCustomCache(Entity_Player* player, const int id, const bool immediate) {
-	TriggerCustomCache(player, XMLStuff.TrinketData, id & TRINKET_ID_MASK, immediate);
+	TriggerCustomCache(player, ItemConfigEx::GetTrinketEx(id), immediate);
 }
 
 void TriggerItemCustomCache(Entity_Player* player, ItemConfig_Item* item, const bool immediate) {
@@ -315,7 +319,7 @@ HOOK_METHOD_PRIORITY(Entity_Player, EvaluateItems, -1, () -> void) {
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(this);
 	if (playerPlus) {
 		if ((this->_cacheFlags & CACHE_ALL) == CACHE_ALL) {  // If visual studio tries to tell you that this equality check is not needed do NOT listen
-			for (const std::string& customcache : XMLStuff.AllCustomCaches) {
+			for (const std::string& customcache : ItemConfigEx::GetKnownCustomCaches()) {
 				playerPlus->customCacheTags.insert(customcache);
 			}
 		}

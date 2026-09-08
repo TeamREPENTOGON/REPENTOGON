@@ -273,7 +273,15 @@ Called after a challenge is marked as completed.
 |1472 | MC_POST_CHALLENGE_DONE {: .copyable } | ([Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html)) | [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) | void |
 
 ### MC_PRE_CHANGE_ROOM {: .copyable }
-Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
+Called every time a player is about to change room.
+The callback receives as parameters the index of the room and the index of the dimension in which the player is targeted to be sent to.
+
+The callback can return a table to override the room to which is sent.
+The table **must** contain exactly two integer-indexed fields. The first is interpreted as the index of the target room. The second is interpreted as the index of the target dimension.
+
+If there is no room at the selected index in the selected dimension, the return value is discarded and the callback has no effect.
+If the table does not contain exactly two fields, as if by calling the `rawlen` function on it, the return value is discarded and the callback has no effect.
+If the return value is not a table, the return value is discarded and the callback has no effect.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1542,7 +1550,7 @@ Accepts `false` to cancel the pickup getting consumed.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1267 |MC_PRE_PICKUP_VOIDED {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1267 |MC_PRE_PICKUP_COMPOSTED {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_PICKUP_GET_COIN_VALUE {: .copyable }
 Accepts `int` CoinValue to modify the amount of coins a coin can give you on pickup.
@@ -3141,14 +3149,14 @@ Fires before a chest is opened. Return false to prevent it from opening.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1491 |MC_PRE_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+|1491 |MC_PRE_OPEN_CHEST  {: .copyable } | ([EntityPickup](../EntityPickup.md) Chest, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_POST_OPEN_CHEST {: .copyable }
 Fires after a chest opened.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1492 |MC_POST_OPEN_CHEST  {: .copyable } | ([PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) PickupVariant, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
+|1492 |MC_POST_OPEN_CHEST  {: .copyable } | ([EntityPickup](../EntityPickup.md) Chest, [EntityPlayer](../EntityPlayer.md) Player) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
 
 ### MC_GET_BOSS_THEMATIC_ITEM {: .copyable }
 Fires after boss room clean.

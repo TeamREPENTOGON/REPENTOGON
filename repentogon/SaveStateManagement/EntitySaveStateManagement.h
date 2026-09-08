@@ -9,11 +9,11 @@ namespace EntitySaveStateManagement
     short& EntitySaveState_GetGridSpawnIdx(EntitySaveState& data);
     uint32_t& EntitySaveState_GetI7(EntitySaveState& data);
 
-    uint32_t& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data);
-    uint32_t& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data);
+	int& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data);
+	int& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data);
 
-    uint32_t& FamiliarData_GetState(FamiliarData& data);
-    uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data);
+	int& FamiliarData_GetState(FamiliarData& data);
+	int& FamiliarData_GetRoomClearCount(FamiliarData& data);
 
     void EntitySaveState_ClearBatch(std::vector<EntitySaveState>& vector);
 

@@ -5,20 +5,14 @@
 #include "ASMDefinition.h"
 #include "SigScan.h"
 #include "XMLData.h"
-
-// Contains the code for some tag strings that can be added to the new "customtags" XML attribute in players.xml.
-constexpr char ITEM_NO_METRONOME[] = "nometronome";  // Prevent items from being picked by Metronome.
-constexpr char ITEM_NO_EXPANSION_PACK[] = "noexpansionpack";  // Prevent active items from being picked by Expansion Pack.
+#include "ItemConfigEx.h"
+#include "EntityConfigEx.h"
 
 bool __stdcall PlayerTypeNoShake(int playerType) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
-
-	if (!playerXML["noshake"].empty()) {
-		std::string noShake = playerXML["noshake"];
-		return noShake == "true" ? true : noShake == "false" ? false : false;
+	if (const EntityConfigEx::PlayerEx* ex = EntityConfigEx::GetPlayerEx(playerType)) {
+		return ex->NoShake();
 	}
-
-	return playerType == PLAYER_BLUEBABY || playerType == PLAYER_THEFORGOTTEN || playerType == PLAYER_THESOUL || playerType == PLAYER_KEEPER || playerType == PLAYER_BLUEBABY_B || playerType == PLAYER_THEFORGOTTEN_B || playerType == PLAYER_KEEPER_B;
+	return false;
 }
 
 void ASMPatchNightmareSceneNoShake() {
@@ -68,7 +62,7 @@ void ASMPatchPlayerNoShake() {
 }
 
 bool __stdcall PlayerItemNoMetronome(int itemID) {
-	if (XMLStuff.ItemData->HasCustomTag(itemID, ITEM_NO_METRONOME)) {
+	if (ItemConfigEx::CollectibleEx* ex = ItemConfigEx::GetCollectibleEx(itemID); ex && ex->NoMetronome()) {
 		return false;
 	}
 
@@ -100,7 +94,7 @@ void ASMPatchPlayerItemNoMetronome() {
 }
 
 bool __stdcall PlayerItemNoExpansionPack(int itemID) {
-	if (XMLStuff.ItemData->HasCustomTag(itemID, ITEM_NO_EXPANSION_PACK)) {
+	if (ItemConfigEx::CollectibleEx* ex = ItemConfigEx::GetCollectibleEx(itemID); ex && ex->NoExpansionPack()) {
 		return false;
 	}
 

@@ -10,7 +10,9 @@
 #include "Log.h"
 #include "../../Patches/MainMenuBlock.h"
 #include "../../Patches/EntityManager.h"
+#include "../../Patches/ItemConfigEx.h"
 #include "../XMLPlayerExtras.h"
+#include "../EntityConfigEx.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -701,14 +703,12 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 				}
 			}
 		}
-		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(npc->_type, npc->_variant, npc->_subtype, false);
-		const std::string nosplit = xmlData["nosplit"];
 
-		if (nosplit == "true") {
-			resSplit = true;
-		}
-		else if (nosplit == "false") {
-			resSplit = false;
+		if (auto* ex = EntityConfigEx::GetEntityEx(npc->_type, npc->_variant, npc->_subtype)) {
+			const auto& noSplit = ex->GetNoSplitOverride();
+			if (noSplit.has_value()) {
+				resSplit = *noSplit;
+			}
 		}
 	}
 }
@@ -2215,10 +2215,11 @@ const char* __stdcall ReplaceGFXPath(const char* gfxPath, PlayerHUD* hud, int sl
 
 	const int collectibleID = hud->_activeItem[slot].id;
 
-	const char* customGfxPath = XMLStuff.ItemData->GetCustomActiveGFX(collectibleID);
-
-	if (customGfxPath[0] != '\0') {
-		return customGfxPath;
+	if (ItemConfigEx::CollectibleEx* ex = ItemConfigEx::GetCollectibleEx(collectibleID)) {
+		const std::string& customGfxPath = ex->GetCustomActiveGfx();
+		if (!customGfxPath.empty()) {
+			return customGfxPath.c_str();
+		}
 	}
 
 	return gfxPath;

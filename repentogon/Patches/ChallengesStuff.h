@@ -29,7 +29,9 @@ inline void InitChals() {
 	Challenges.clear();
 }
 
-extern void UndoChallenge(int challengeid);
+bool IsChallengeCompleted(int challengeid);
+void MarkChallengeCompleted(int challengeid);
+void ResetChallengeCompletion(int challengeid);
 
 
 #endif

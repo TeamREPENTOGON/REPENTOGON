@@ -17,7 +17,6 @@ static std::vector<Entity_Familiar*>& InitFamiliarStorage() {
 }
 
 void ASMPatchCheckFamiliar();
-void ASMPatchPlayerStats();
 void ASMPatchPlayerNoShake();
 void ASMPatchPlayerItemNoMetronome();
 void ASMPatchMarsDoubleTapWindow();
@@ -28,3 +27,5 @@ void ASMPatchPlayerDeathSoundSoulOfLazarus();
 void ASMPatchPlayerDeathSoundLost();
 void ASMPatchPlayerDeathSoundAstralProjection();
 void ASMPatchPlayerLostSoulSkipPeePuddle();
+void ASMPatchGetTearParamsAddBloodyTears();
+void ASMPatchGetTearParamsDisableBloodyTears();

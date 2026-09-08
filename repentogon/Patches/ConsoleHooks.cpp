@@ -181,6 +181,8 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             "goto",
             "giveitem",
             "g",
+			"giveeffect",
+			"ge",
             "gridspawn",
             "listcollectibles",
             "macro",
@@ -330,5 +332,34 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         return;
     }
 
+	if (in.rfind("giveeffect ", 0) == 0 || in.rfind("ge ", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommand(in, 2);
+
+		if (cmdlets.size() > 1) {
+			const std::string& cmd = cmdlets[1];
+			if (!cmd.empty()) {
+				Entity_Player* player = g_Game->GetPlayer(0);
+				const char prefix = cmd.front();
+				const int id = std::atoi(std::isalpha(prefix) ? cmd.substr(1).c_str() : cmd.c_str());
+				if (player && id > 0) {
+					if (prefix == 'c') {
+						player->_temporaryeffects.AddCollectibleEffect(id, true, 1);
+					} else if (prefix == 't') {
+						player->_temporaryeffects.AddTrinketEffect(id, true, 1);
+					} else {
+						player->_temporaryeffects.AddNullEffect(id, true, 1);
+					}
+				}
+			}
+		}
+
+		return;
+	}
+
     super(in, out, player);
 }
+
+HOOK_METHOD(Console, ProcessInput, (void)->void) {
+    //skip the whole input processing, we are replacing the console, otherwise this causes game pausing when backtick is pressed
+    return super();
+};

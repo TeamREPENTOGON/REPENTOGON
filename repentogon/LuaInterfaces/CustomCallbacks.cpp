@@ -2402,6 +2402,81 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	return normalMinCharge;
 }
 
+HOOK_METHOD(Entity_Player, UseActiveItem, (short* resultFlags, int collectible, unsigned int useFlags, int activeSlot, int varData) -> void) {
+	if (collectible == COLLECTIBLE_NULL) {
+		*resultFlags = 1;
+		return;
+	}
+
+	// Reimplemented MC_PRE_USE_ITEM (23) to enable no-discharge preventions, and to ensure that MC_POST_USE_ITEM doesn't run if the use is prevented.
+	const int precallbackid = 23;
+	if (VanillaCallbackState.test(precallbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(collectible)
+			.push(collectible)
+			.push(this->GetCollectibleRNG(collectible), lua::Metatables::RNG)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && lua_toboolean(L, -1)) {
+				// Default skip
+				*resultFlags = 1;
+				return;
+			} else if (lua_istable(L, -1)) {
+				// Skip, potentially without discharging.
+				lua_getfield(L, -1, "Discharge");
+				if (lua_isboolean(L, -1) && !lua_toboolean(L, -1)) {
+					*resultFlags = 0;
+				} else {
+					*resultFlags = 1;
+				}
+				lua_pop(L, 1);
+				return;
+			}
+		}
+	}
+
+	super(resultFlags, collectible, useFlags, activeSlot, varData);
+
+	// MC_POST_USE_ITEM (1003)
+	const int postcallbackid = 1003;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		bool discharge = (*resultFlags) & (1 << 0);
+		bool removed = (*resultFlags) & (1 << 8);
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(collectible)
+			.push(collectible)
+			.push(this->GetCollectibleRNG(collectible), lua::Metatables::RNG)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(varData)
+			.push(discharge)
+			.push(removed)
+			.call(1);
+	}
+}
+
+// Gutted PreUseItem since we reimplement it above.
+HOOK_METHOD(LuaEngine, PreUseItem, (int collectibleType, RNG* rng, Entity_Player* player, unsigned int useFlags, int activeSlot, int customVarData) -> bool) {
+	return false;
+}
+
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
 HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> bool) {
 	const int callbackid1 = 1116;
@@ -2804,6 +2879,61 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 			.push(scale)
 			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
+	}
+}
+
+bool RunRenderSpecialHudElementCallback(int callbackid, PlayerHUD* playerhud, Vector* pos, float scale, bool isPre) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(playerhud->_player, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(scale)
+			.call(1);
+
+		if (isPre && !result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			} else if (lua_isuserdata(L, -1)) {
+				Vector* newPos = lua::GetLuabridgeUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				if (newPos) {
+					*pos = *newPos;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_INVENTORY
+HOOK_METHOD(PlayerHUD, RenderInventory, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1293, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1294, this, &pos, scale, false);
+	}
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE
+HOOK_METHOD(PlayerHUD, RenderSpellQueue, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1295, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1296, this, &pos, scale, false);
+	}
+}
+
+// MC_PRE/POST_PLAYERHUD_RENDER_CRAFTING_TABLE
+HOOK_METHOD(PlayerHUD, RenderCraftingTable, (Vector* initialPos, float scale) -> void) {
+	Vector pos = *initialPos;
+	if (RunRenderSpecialHudElementCallback(1297, this, &pos, scale, true)) {
+		super(&pos, scale);
+		RunRenderSpecialHudElementCallback(1298, this, &pos, scale, false);
 	}
 }
 
@@ -4629,7 +4759,7 @@ static void Patch_EntityPlayerGetLootList_SelectRNG()
 
 	ASMPatch patch;
 	ByteBuffer buffer;
-	buffer.AddString("\x89\xF7\x90"); // Replace CMOV with MOV + NOP padding
+	buffer.AddString("\x89\xFE\x90"); // Replace CMOV with MOV + NOP padding
 	patch.AddBytes(buffer);
 
 	sASMPatcher.FlatPatch((void*)addr, &patch);
@@ -4878,6 +5008,15 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 	}
 }
 
+static bool is_valid_special_boss_id(int bossId)
+{
+	size_t realValue = -bossId;
+	bool validDoubleTrouble = (RoomConfig_Room::BOSS_DOUBLE_TROUBLE_START <= realValue && realValue < RoomConfig_Room::BOSS_DOUBLE_TROUBLE_END) // valid range
+		&& (realValue % 50) == 0; // valid start
+
+	return validDoubleTrouble;
+}
+
 //MC_PRE_BOSS_SELECT (1280)
 static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int levelType, int levelVariant)
 {
@@ -4906,7 +5045,13 @@ static std::optional<int> PRE_BOSS_SELECT(int bossId, BossPool_Pool& pool, int l
 		return std::nullopt;
 	}
 
-	return (int)lua_tointeger(L, -1);
+	int newBossId = (int)lua_tointeger(L, -1);
+	if (newBossId < 0 && !is_valid_special_boss_id(newBossId)) // special value
+	{
+		return std::nullopt;
+	}
+
+	return newBossId;
 }
 
 BossPool_Entry* s_lastPickedBoss = nullptr;
@@ -5954,6 +6099,11 @@ HOOK_METHOD(ItemOverlay, Render, () -> void) {
 
 // MC_PRE_OPEN_CHEST/MC_POST_OPEN_CHEST (1491, 1492)
 HOOK_METHOD(Entity_Pickup, TryOpenChest, (Entity_Player* player) -> bool) {
+	if (Entity_Pickup::IsChest(this->_variant) && this->_subtype == 0) {
+		// Already-opened vanilla chest
+		return false;
+	}
+
 	const int preCallbackId = 1491;
 	const int postCallbackId = 1492;
 

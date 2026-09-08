@@ -20,8 +20,15 @@ There are two ways you may obtain the REPENTOGON Launcher- either by downloading
 
 ### Manually
 * Download the [REPENTOGON Launcher](https://github.com/TeamREPENTOGON/Launcher/releases/latest)
-* Extract the REPENTOGON Launcher to a directory of your choosing, *except* directly into Isaac's installation folder, or into a folder named `repentogon` in the Isaac installation folder
-    * These folders need to be accessed or modified by the launcher later, so it cannot reside there
+* Extract the REPENTOGON Launcher into a directory of your choosing. The launcher can be placed *almost* anywhere, but a couple of things to note:
+    * Being placed inside a directory that is protected or synced to OneDrive may cause issues for the launcher (Desktop, Documents, etc.).
+    * If needed, a couple of reliable location options are:
+        1. Create a new folder at your drive root, such as `C:/REPENTOGONLauncher/`
+        1. Create a new folder specifically called "REPENTOGONLauncher" within Isaac's installation directory.
+            * For example: `.../steamapps/common/The Binding of Isaac Rebirth/REPENTOGONLauncher/`
+            * Do not extract the REPENTOGON Launcher directly into the game's installation due to possible file conflicts.
+            * Do not create a folder simply called "repentogon" within the game's installation, we will need that later.
+
 
 ### Automatically (upgrading from legacy version)
 * If you had a legacy installation of the Repentance version of REPENTOGON, it may have notified you about the Repentance+ update, automatically downloaded the Launcher, and created a shortcut on your desktop. If needed, you can find the Launcher's files in your Isaac installation directory, under the `REPENTOGONLauncher` subfolder
@@ -49,11 +56,12 @@ There are two ways you may obtain the REPENTOGON Launcher- either by downloading
 
 
 ???+ info
-    If the installation fails, or the Launcher reports that the installation is corrupt, you may need to try one of the following:
+    If the installation fails, the game crashes instantly on launch, or the Launcher reports that the installation is corrupt, try the following:
 
-    * Click `Choose exe` in the main Launcher window to repeat first-time setup
-    * Click `Advanced options...` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
-    * If both of those fail, navigate to the game's installation folder, delete the `repentogon` subfolder and launch the launcher again
+    * Click `Choose exe` in the main Launcher window to repeat first-time setup, and make sure the correct Isaac executable is selected
+    * Verify the integrity of your vanilla installation with Steam: https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB
+        * If any files fail to validate and Steam starts redownloading them, wait for them to finish.
+    * Click `Update/Repair Installation` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
 
 ## (Optional/RECOMMENDED) Launching REPENTOGON through Steam
 
@@ -89,6 +97,8 @@ If you wish, you can make it so that launching Isaac through Steam runs the REPE
     * If the folder already exists and already contains a `REPENTOGONLauncher.exe`, you may have received an automatic download of the Launcher from the legacy REPENTOGON updater used for the old Repentance version. This is fine, and you may skip the next step
 * Download the [REPENTOGON Launcher](https://github.com/TeamREPENTOGON/Launcher/releases/latest)
 * Extract the REPENTOGON Launcher into the newly created `REPENTOGONLauncher` subdirectory
+* The full path to the launcher should be `.../steamapps/common/The Binding of Isaac Rebirth/REPENTOGONLauncher/REPENTOGONLauncher.exe`
+    * Take care not to use the wrong folder name or nest the files into an additional folder.
 
 ![Linux launcher folder structure example](img/linux_launcher_example.png)
 
@@ -99,9 +109,15 @@ echo "%command%" | sed 's|isaac-ng.exe|REPENTOGONLauncher/REPENTOGONLauncher.exe
 ```
     * Launching Isaac through Steam will now launch the REPENTOGON Launcher instead
 
+* In the `Compatability` section, make sure that compatability is enabled and set to specifically `Proton 9.0-4`
+
 ![Linux launch options example](img/linux_launch_options_example.png)
 
 * Launch Isaac, which will run the REPENTOGON Launcher
+    * If nothing happens, double check everything again:
+        * The full path to the launcher should be `.../steamapps/common/The Binding of Isaac Rebirth/REPENTOGONLauncher/REPENTOGONLauncher.exe`
+        * Double check that the Steam Launch Params are *exactly* as shown above
+        * In the Properties for Isaac in Steam, under "Compatability", make sure compatability is enabled and set to specifically `Proton 9.0-4`
 
 ???+ info
     The Launcher will check for updates on startup. Please keep the launcher as up to date as possible to ensure proper functionality.
@@ -119,11 +135,12 @@ echo "%command%" | sed 's|isaac-ng.exe|REPENTOGONLauncher/REPENTOGONLauncher.exe
         * If a new update just released, try updating the launcher, and if that doesn't work, be patient! It may take us up to a day to release a new patch for that version.
 
 ???+ info
-    If the installation fails, or the Launcher reports that the installation is corrupt, you may need to try one of the following:
+    If the installation fails, the game crashes instantly on launch, or the Launcher reports that the installation is corrupt, try the following:
 
-    * Click `Choose exe` in the main Launcher window to repeat first-time setup
-    * Click `Advanced options...` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
-    * If both of those fail, navigate to the game's installation folder, delete the `repentogon` subfolder and launch the launcher again
+    * Click `Choose exe` in the main Launcher window to repeat first-time setup, and make sure the correct Isaac executable is selected
+    * Verify the integrity of your vanilla installation with Steam: https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB
+        * If any files fail to validate and Steam starts redownloading them, wait for them to finish.
+    * Click `Update/Repair Installation` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
 
 # Frequently Asked Questions
 
@@ -162,8 +179,9 @@ You may need to try the following:
 * **Be sure you followed the above installation instructions, *especially* if you use Linux or a Steam Deck!**
 * Restart the Launcher and make sure to accept any update prompts
 * Click `Choose exe` in the main Launcher window to repeat first-time setup, and make sure the correct Isaac executable is selected
-* Click `Advanced options...` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
-* If all of the above fails, navigate to the game's installation folder, delete the `repentogon` subfolder and launch the launcher again
+* Verify the integrity of your vanilla installation with Steam: https://help.steampowered.com/en/faqs/view/0C48-FCBD-DA71-93EB
+    * If any files fail to validate and Steam starts redownloading them, wait for them to finish.
+* Click `Update/Repair Installation` in the main Launcher window, then select `Re-install/Repair REPENTOGON`
 
 If you still have issues, or if this issue occurs repeatedly, [feel free to reach out for help](#reporting--contact).
 
@@ -190,6 +208,15 @@ Thankfully, REPENTOGON allows you to freely import your missing achievements/unl
     * The import/export process will never remove existing achievements or progress. It will only unlock ones that are obtained in one version but missing on the other
 
 ![Save Import window](img/save_import_2.png)
+
+## My controller inputs are messed up!
+
+* For third-party controllers (such as 8BitDo), enable the Steam Input override for Isaac for the most consistent results.
+    * Note: You must close both Isaac AND the REPENTOGON Launcher entirely for this change to take effect.
+
+![Steam Input setting](img/steam_input_example.png)
+
+* You may also try going into the in-game control mapping menu and hit "Reset To Default".
 
 ## How do I use Basement Renovator with REPENTOGON?
 

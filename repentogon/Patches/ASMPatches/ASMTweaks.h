@@ -12,6 +12,7 @@ namespace ASMPatches {
 	void PatchGotInvaldParameterReadingChallengesXml();
 
 	bool SkipWombAchievementBlock();
+	bool FixGridDebugInfo();
 
 	void DisableExitPrompt();
 	void PatchLeaderboardGoalSprite();

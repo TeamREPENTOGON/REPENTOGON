@@ -125,6 +125,11 @@ TypeInfo std_string {
     Align 4;
 };
 
+TypeInfo vector_string {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo HDC {
     Size 4;
 };
@@ -191,6 +196,11 @@ TypeInfo vector_ErasedEntities {
 
 TypeInfo vector_EntityPlayerPtr {
     Size 12;
+    Align 4;
+};
+
+TypeInfo std_map_string_int {
+    Size 8;
     Align 4;
 };
 

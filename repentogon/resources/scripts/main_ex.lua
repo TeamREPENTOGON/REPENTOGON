@@ -97,7 +97,11 @@ local function MeetsVersion(targetVersion)
         end
     end
     
-    return true
+	
+	local targetsuffix = targetVersion:match("%a+$")
+	local currsuffix = REPENTOGON.Version:match("%a+$")
+	
+    return (not targetsuffix) or (targetsuffix <= currsuffix)
 end
 
 REPENTOGON.MeetsVersion = MeetsVersion
@@ -507,6 +511,9 @@ local typecheckFunctions = {
 		["number"] = checkInteger,
 		["boolean"] = true,
 	},
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
+		["Room"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -622,10 +629,13 @@ local typecheckWarnFunctions = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
 		["number"] = checkNumberGreaterOrEqualFunction(0),
 	},
+	[ModCallbacks.MC_PRE_USE_ITEM] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Discharge="boolean" }),
+	},
 }
 
 local boolCallbacks = {
-	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
@@ -971,6 +981,7 @@ end
 local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 	[ModCallbacks.MC_PRE_USE_ITEM] = true,
 	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_POST_USE_ITEM] = true,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_ADDED] = true,
@@ -1920,6 +1931,16 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_GRID_HURT] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_GRID_HURT] = RunNoReturnCallback,
 	[ModCallbacks.MC_POST_MODS_LOADED] = RunPostModsLoadedCallback,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_BODY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_INVENTORY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_INVENTORY] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_USE_ITEM] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({

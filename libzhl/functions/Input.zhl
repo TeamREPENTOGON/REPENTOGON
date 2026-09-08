@@ -24,3 +24,11 @@ struct InputManager {
 
 "b9(????????)32ffe8":
 reference InputManager g_InputManagerBase;
+
+
+"53568bf133d2":
+__thiscall bool InputDeviceBase::Initialize(void* unk);
+
+struct InputDeviceBase {
+	char* _deviceName : 0x3fc;
+};

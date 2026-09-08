@@ -53,7 +53,7 @@ namespace REPENTOGONFileMap {
 		};
 	};
 	std::wstring wpathbuf(260, 0);
-	std::wstring_view relpath;
+	std::wstring relpath;
 	std::wstring tokenholder;
 	std::wstring outputholder;
 	std::wistringstream normalize_stringstream;
@@ -116,7 +116,7 @@ namespace REPENTOGONFileMap {
 		for (const auto& file : fs::recursive_directory_iterator(input, fs::directory_options::skip_permission_denied)) {
 			if (!file.is_directory()) {
 				//                const char* relpath = file.path().string().c_str() + moddir.string().size() + 1;   //account for "\\"
-				relpath = std::wstring_view{ file.path().wstring() }.substr(moddir.wstring().size() + 1);
+				relpath = std::wstring{ file.path().wstring() }.substr(moddir.wstring().size() + 1);
 				AddModEntry(relpath, modfoldertype, modid);
 			};
 		};

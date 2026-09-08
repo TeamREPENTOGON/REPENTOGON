@@ -16,9 +16,19 @@ tags:
         
 ## Functions
 
+### IsClampEnabled () {: aria-label='Functions' }
+#### boolean IsClampEnabled ( ) {: .copyable aria-label='Functions' }
+Returns if the camera is clamped to the room boundaries.
+
+___
 ### IsPosVisible () {: aria-label='Functions' }
 #### boolean IsPosVisible ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
 Returns if the in-world position is visible to the camera.
+
+___
+### SetClampEnabled () {: aria-label='Functions' }
+#### void SetClampEnabled ( boolean Clamped ) {: .copyable aria-label='Functions' }
+Setting this to `true` will make the camera no longer be stopped by room boundaries.
 
 ___
 ### SetFocusPosition () {: aria-label='Functions' }

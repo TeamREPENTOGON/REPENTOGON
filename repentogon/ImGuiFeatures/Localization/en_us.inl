@@ -128,6 +128,9 @@ I(CONSOLE_GIVEITEM_HELP, u8"Gives the main player items, trinkets, cards and pil
 I(CONSOLE_GIVEITEM2_DESC, u8"Give player 2 items, trinkets, cards, and pills")
 I(CONSOLE_GIVEITEM2_HELP, u8"Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (T) for golden trinkets, (p) for pills, (P) for horse pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.")
 
+I(CONSOLE_GIVEEFFECT_DESC, u8"Give the character a TemporaryEffect")
+I(CONSOLE_GIVEEFFECT_HELP, u8"Gives the main player TemporaryEffects, by ID or name. Grants the effect of Null Items by default, or prefix the ID with (c) for Collectible effects or (t) for Trinket effects.\nThis command also has shorthand which is just (ge).\nExamples:\n(giveeffect 74) will give the player Luna's tears up Null Item.\n(giveeffect c34) will give the player Book of Belial's damage up effect.")
+
 I(CONSOLE_GOTO_DESC, u8"Teleport to a new room")
 I(CONSOLE_GOTO_HELP, u8"Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.")
 
@@ -367,6 +370,15 @@ I(OPT_HUD_BOSS_HEALTH_BAR_ON_BOTTOM, u8"Boss Healthbar on bottom")
 I(OPT_HUD_EXTRA_HUD, u8"Extra Hud")
 I(OPT_HUD_EXTRA_HUD_MARKER, u8"Displays collected items of the player on the right side of the screen.")
 
+I(OPT_HUD_IMGUI_UI_OPTION, u8"REPENTOGON ImGui UI Options")
+I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW, u8"Enable Multi Viewport")
+I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW_MARK, u8"Enable this will allow console/mods window move outside game window.")
+I(OPT_HUD_FONT_SIZE, u8"Font Size")
+I(OPT_HUD_FONT_SELECT, u8"Font Select")
+I(OPT_HUD_FONT_RENDER_STYLE, u8"Font Render Style")
+I(OPT_HUD_FONT_RENDER_STYLE_PIXELATED, u8"Pixelated")
+I(OPT_HUD_FONT_RENDER_STYLE_SMOOTH, u8"Smooth")
+
 I(OPT_CONSOLE, u8"Console")
 I(OPT_CONSOLE_ENABLE_DEBUG_CONSOLE, u8"Enable Debug Console")
 I(OPT_CONSOLE_FADED_CONSOLE_DISPLAY, "Faded Console Display")
@@ -454,14 +466,8 @@ I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES fl
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT, u8"Disable exit prompt")
 I(OPT_REPENTOGON_DISABLE_EXIT_PROMPT_MARK, u8"Disables the exit prompt when you try to quit the game, restoring original behavior.")
 
-I(OPT_HUD_IMGUI_UI_OPTION, u8"REPENTOGON ImGui UI Options")
-I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW, u8"Enable Multi Viewport")
-I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW_MARK, u8"Enable this will allow console/mods window move outside game window.")
-I(OPT_HUD_FONT_SIZE, u8"Font Size")
-I(OPT_HUD_FONT_SELECT, u8"Font Select")
-I(OPT_HUD_FONT_RENDER_STYLE, u8"Font Render Style")
-I(OPT_HUD_FONT_RENDER_STYLE_PIXELATED, u8"Pixelated")
-I(OPT_HUD_FONT_RENDER_STYLE_SMOOTH, u8"Smooth")
+I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES, u8"Block \"Unknown Device\" Controllers (Requires Reconnect/Restart)")
+I(OPT_REPENTOGON_BLOCK_UNKNOWN_DEVICES_MARK, u8"Prevents controllers from being used by the game if they cannot be properly identified. Can help prevent issues where a controller or other device creates one or more ghost \"Unknown Devices\" that cause controls to get messed up.")
 
 I(OPT_SAVE_MANAGEMENT, u8"Save Management")
 I(OPT_SAVE_MANAGEMENT_DISABLED_REASON, u8"Some options/utilities are disabled since a save file is currently opened.")

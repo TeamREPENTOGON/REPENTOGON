@@ -1,3 +1,5 @@
+#include <tuple>
+
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "XMLData.h"
@@ -9,8 +11,7 @@
 #include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
 #include "ASMPatches/ASMCallbacks.h"
-
-#include <tuple>
+#include "ASMPatches/ASMLocalization.h"
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
@@ -48,39 +49,6 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 	this->update_red_hearts(); 
 	this->update_golden_hearts(false); 
 	this->update_bone_hearts(); 
-}
-
-// GetHealthType hook merged into the one in CustomCallbacks.cpp
-
-namespace PlayerStats {
-	float modCharacterSpeed = 0;
-	float modCharacterFireDelay = 0;
-	float modCharacterDamage = 0;
-	float modCharacterRange = 0;
-	float modCharacterShotSpeed = 0;
-	float modCharacterLuck = 0;
-}
-
-HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
-
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
-
-	std::tuple<std::string, float*, float> statValues[] = {
-	{"speedmodifier", &PlayerStats::modCharacterSpeed, 1.f},
-	{"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1.f},
-	{"damagemodifier", &PlayerStats::modCharacterDamage, 1.f},
-	{"rangemodifier", &PlayerStats::modCharacterRange, 40.f},
-	{"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1.f},
-	{"luckmodifier", &PlayerStats::modCharacterLuck, 1.f},
-	};
-
-	for (auto& value : statValues) {
-		*std::get<1>(value) = 0;
-
-		if (!playerXML[std::get<0>(value)].empty())
-			*std::get<1>(value) = stof(playerXML[std::get<0>(value)]) * std::get<2>(value);
-	}
-	super();
 }
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
@@ -141,11 +109,14 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlPath, ModEntry* modEntry) -> vo
 }
 
 void RenderModdedCharacterPortrait(int playerType, Vector* pos, ColorMod* color, Vector* scale, bool isCharacterWheel) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
+	if (playerType < 0 || playerType >= g_Manager->GetPlayerConfig()->size()) {
+		return;
+	}
 
-	ANM2* portrait = g_Manager->GetPlayerConfig()->at(playerType).GetModdedMenuPortraitANM2();
-	if (portrait != nullptr) {
-		portrait->Play(playerXML["name"].c_str(), true);
+	EntityConfig_Player* player = &g_Manager->GetPlayerConfig()->at(playerType);
+	if (ANM2* portrait = player->GetModdedMenuPortraitANM2()) {
+		std::string anim = GetLocalizedPlayerAnimationForAnm2(player, portrait);
+		portrait->Play(anim.c_str(), true);
 		portrait->_color = *color;
 		portrait->_scale = *scale;
 

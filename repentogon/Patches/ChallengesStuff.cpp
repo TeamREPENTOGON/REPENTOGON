@@ -38,8 +38,20 @@ using namespace rapidxml;
 using namespace rapidjson;
 using namespace std;
 
-unordered_map<string, int > Challenges;
+unordered_map<string, int> Challenges;
 string chaljsonpath;
+
+string GetChallengeName(const int challengeid) {
+	const std::string untranslated = XMLStuff.ChallengeData->GetAttributeById(challengeid, "untranslatedname");
+	if (untranslated.empty()) {
+		return XMLStuff.ChallengeData->GetAttributeById(challengeid, "name");
+	}
+	return untranslated;
+}
+
+string GetChallengeSaveKey(const int challengeid) {
+	return GetChallengeName(challengeid) + XMLStuff.ChallengeData->GetAttributeById(challengeid, "sourceid");
+}
 
 void SaveChallengesToJson() {
 	rapidjson::Document doc;
@@ -85,15 +97,34 @@ void LoadChallengesFromJson() {
 }
 
 
-void UndoChallenge(int challengeid) {
+bool IsChallengeCompleted(int challengeid) {
+	if (challengeid > 0) {
+		if (challengeid <= 45) {
+			return g_Manager->GetPersistentGameData()->challenges[challengeid];
+		} else {
+			const string key = GetChallengeSaveKey(challengeid);
+			return Challenges.count(key) && Challenges[key] > 0;
+		}
+	}
+	return false;
+}
+
+void MarkChallengeCompleted(int challengeid) {
+	if (challengeid < 1) { return; }
+	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
+	if (challengeid <= 45) {
+		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!
+	}
+}
+
+void ResetChallengeCompletion(int challengeid) {
 	if (challengeid < 0) { return; }
 	if (challengeid <= 45) {
 		g_Manager->GetPersistentGameData()->challenges[challengeid] = false;
 		g_Manager->GetPersistentGameData()->Save();
 	}
 	else {
-		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
-		Challenges[node["name"] + node["sourceid"]] = 0;
+		Challenges[GetChallengeSaveKey(challengeid)] = 0;
 		SaveChallengesToJson();
 	}
 }
@@ -261,11 +292,21 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	Vector pos = Vector(70 + offset.x, 53 + offset.y);
 	Vector z = Vector(0, 0);
 	int count = 0;
-	for each(int i in visiblechallenges) {
+	for (int i : visiblechallenges) {
 		count++;
 		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(i);
+		string name = GetChallengeName(i);
+		// Attempt to translate the displayed name if appropriate.
+		if (!name.empty() && name.front() == '#') {
+			name.erase(0, 1);  // Remove the '#'
+			StringTable* st = g_Manager->GetStringTable();
+			bool failed = false;
+			if (const char* translated = st->GetString("Challenges", st->language, name.c_str(), &failed); !failed && translated && strlen(translated) > 0) {
+				name = translated;
+			}
+		}
 		string order = to_string(count) + ".";
-		string challengesrt = (order + node["name"]);
+		string challengesrt = (order + name);
 		pos.y += 25;
 		const char* text = challengesrt.c_str();
 		Vector renderPos(pos.x, pos.y - 20);
@@ -280,11 +321,11 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		}
 		else {
 			g_Manager->_font2_TeamMeatEx12.DrawString(challengesrt.c_str(), renderPos, scale, &color, &settings);
-			if (Challenges[node["name"] + node["sourceid"]] > 0) {
+			if (Challenges[GetChallengeSaveKey(i)] > 0) {
 				srand(i-40);
 				Streak.SetFrame(&string("Idle"), (float)(rand() % 6));
 				Streak.Update();
-				Streak._scale.x =  (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(node["name"].c_str()) / 294.0);
+				Streak._scale.x =  (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(name.c_str()) / 294.0);
 				Streak._offset.x = (float)(g_Manager->_font2_TeamMeatEx12.GetStringWidth(order.c_str()) - 10);
 				Streak.Render(&pos, &z, &z);
 			}
@@ -300,12 +341,12 @@ HOOK_METHOD(PersistentGameData, AddChallenge, (int challengeid) -> void) {
 	if ((challengeid >= 0) && (challengeid <= 45)) {
 		return super(challengeid);
 	}
-	XMLAttributes modachiev = XMLStuff.ChallengeData->GetNodeById(challengeid);
-	string chalid = modachiev["name"] + modachiev["sourceid"];
+	XMLAttributes modchallenge = XMLStuff.ChallengeData->GetNodeById(challengeid);
+	string chalid = GetChallengeSaveKey(challengeid);
 	Challenges[chalid] += 1;
-	if (modachiev.find("unlockachievement") != modachiev.end()) {
-		g_Manager->GetPersistentGameData()->TryUnlock(tointc(modachiev["unlockachievement"]));
+	if (modchallenge.find("unlockachievement") != modchallenge.end()) {
+		g_Manager->GetPersistentGameData()->TryUnlock(tointc(modchallenge["unlockachievement"]));
 	}
 	SaveChallengesToJson();
-	ZHL::Log("[Callenge] %s completed (total: %d)", modachiev["name"].c_str(), Challenges[chalid]);
+	ZHL::Log("[Callenge] %s completed (total: %d)", modchallenge["name"].c_str(), Challenges[chalid]);
 }

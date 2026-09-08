@@ -1,3 +1,11 @@
+{{
+	struct AnimationData_EventTrigger
+	{
+		uint32_t eventId; // max 32
+		int animationFrame;
+	};
+}}
+
 struct AnimationData depends (AnimationLayer) { {{
 	inline std_string GetName() { return this->_name; };
 	inline int GetLayerCount() { return this->_layerCount; };
@@ -29,7 +37,9 @@ struct AnimationData depends (AnimationLayer) { {{
 	// Note that this is the raw number of layers in this animation, not necessarily the max layer id +1.
 	int _layerCount : 0x1C;
 	char _nullLayersPtr[4] : 0x20;  // Can examine this more later. We have NullFrame access elsewhere.
-	int _nullLayerCount : 0x28;
+	int _nullLayerCount : 0x24;
+	AnimationData_EventTrigger* _eventTriggers : 0x28;
+	uint32_t _eventTriggerCount : 0x2c;
 	int _length : 0x30;
 	bool _loop : 0x34;
 	// Since the ordering of layers can be different than the order of their IDs,

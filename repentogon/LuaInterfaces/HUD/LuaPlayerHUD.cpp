@@ -87,6 +87,42 @@ LUA_FUNCTION(Lua_PlayerHUDGetLayout) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerHUDSetFlashRedHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	int duration = (int)luaL_optinteger(L, 2, 4);
+	playerHUD->_redHeartFlashCountdown = (int8_t)std::clamp(duration, 0, 127);
+	return 0;
+}
+LUA_FUNCTION(Lua_PlayerHUDGetFlashRedHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua_pushinteger(L, playerHUD->_redHeartFlashCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerHUDSetFlashSoulHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	int duration = (int)luaL_optinteger(L, 2, 4);
+	playerHUD->_soulHeartFlashCountdown = (int8_t)std::clamp(duration, 0, 127);
+	return 0;
+}
+LUA_FUNCTION(Lua_PlayerHUDGetFlashSoulHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua_pushinteger(L, playerHUD->_soulHeartFlashCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerHUDSetFlashGoldHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	int duration = (int)luaL_optinteger(L, 2, 4);
+	playerHUD->_goldHeartFlashCountdown = (int8_t)std::clamp(duration, 0, 127);
+	return 0;
+}
+LUA_FUNCTION(Lua_PlayerHUDGetFlashGoldHearts) {
+	PlayerHUD* playerHUD = *lua::GetRawUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua_pushinteger(L, playerHUD->_goldHeartFlashCountdown);
+	return 1;
+}
+
 static void RegisterPlayerHUD(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::HUD, "GetPlayerHUD", Lua_GetPlayerHUD);
 
@@ -98,6 +134,12 @@ static void RegisterPlayerHUD(lua_State* L) {
 		{ "GetHeartByIndex", Lua_PlayerHUDGetHeartByIndex},
 		{ "GetIndex", Lua_PlayerHUDGetIndex },
 		{ "GetLayout", Lua_PlayerHUDGetLayout},
+		{ "SetFlashRedHearts", Lua_PlayerHUDSetFlashRedHearts},
+		{ "GetFlashRedHearts", Lua_PlayerHUDGetFlashRedHearts},
+		{ "SetFlashSoulHearts", Lua_PlayerHUDSetFlashSoulHearts},
+		{ "GetFlashSoulHearts", Lua_PlayerHUDGetFlashSoulHearts},
+		{ "SetFlashGoldHearts", Lua_PlayerHUDSetFlashGoldHearts},
+		{ "GetFlashGoldHearts", Lua_PlayerHUDGetFlashGoldHearts},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::PlayerHUDMT, lua::metatables::PlayerHUDMT, functions);
