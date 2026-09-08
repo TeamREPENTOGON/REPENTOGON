@@ -605,7 +605,7 @@ struct ConsoleMega : ImGuiWindowObject {
                     }
                 }
                 
-                if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
+                if (cmdlets.size() >= 2 || (strBuf.size() > 0 && cmdlets.size() > 0 && cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                     std::string commandName = cmdlets.front();
                     commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
