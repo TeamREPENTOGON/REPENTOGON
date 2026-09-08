@@ -30,6 +30,16 @@ An example mod using the ImGui class can be found [here.](./examples/ImGuiMenu.m
 
     Result: ":fontawesome-solid-truck-medical: My Text"
 
+???+ info
+    For multi-viewport support, ImGui coordinates are relative to game window position. The red axis below shows ImGui coordinates. Now ImGui window can move outside the game window.  
+    ![ImGuiCoordinate](img/imgui-coordinates.png)
+
+???+ info
+    Now ImGui window can be merged with other window by players. To disable this feature for your window, use   
+    ```lua
+    ImGui.SetWindowFlags("foo",ImGuiWindowFlags.NoDocking)
+    ```
+    ![ImGuiDockingFeature](img/imgui-docking.png)
 
 ## Functions
 
@@ -160,9 +170,27 @@ ___
 #### boolean ElementExists ( string ElementId ) {: .copyable aria-label='Functions' }
 Returns true if an element with the given ID exists already.
 ___
+### GetGameWindowRect () {: aria-label='Functions' }
+#### [Vector](Vector.md),[Vector](Vector.md) GetGameWindowRect() {: .copyable aria-label='Functions' }
+
+Returns two vectors that describe the position and size of the game window.
+
+```lua
+local position_vector, size_vector = ImGui.GetGameWindowRect()
+
+ImGui.SetWindowPosition("foo", -position_vector.X, -position_vector.Y) -- this will move window to the left-up corner of monitor.
+
+ImGui.SetWindowPosition("foo", size_vector.X, size_vector.Y) -- this will move window to the outside of right-bottom corner of the game window.
+
+```
+
+The position is relative to the monitor's position. The red axis shows ImGui coordinates.
+
+![ImGuiWindowPosition](img/imgui-win-pos.png)
+
 ### GetMousePosition () {: aria-label='Functions' }
 #### void GetMousePosition ( ) {: .copyable aria-label='Functions' }
-Returns the mouse position in Screen coordinates.
+Returns the mouse position in ImGui coordinates.
 
 Use this instead of `Input.GetMousePosition()` when working with imgui!
 ___
@@ -190,8 +218,6 @@ ___
 #### void ImGuiToWorld ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
-???+ bug "Bug"
-    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
 ### IsVisible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
@@ -282,7 +308,7 @@ Set the pinned state of a window, making it visible when the ImGui interface is 
 ___
 ### SetWindowPosition () {: aria-label='Functions' }
 #### void SetWindowPosition ( string WindowId, float x, float y ) {: .copyable aria-label='Functions' }
-Set the position of a window in screen coordinates.
+Set the position of a window in ImGui coordinates.
 ___
 ### SetWindowSize () {: aria-label='Functions' }
 #### void SetWindowSize ( string WindowId, float width, float Height ) {: .copyable aria-label='Functions' }
@@ -310,6 +336,4 @@ ___
 #### void WorldToImGui ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
-???+ bug "Bug"
-    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
