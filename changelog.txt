@@ -64,6 +64,15 @@ Added:
 * Added new content xml: "edenhair.xml"
 * Added new console command "giveeffect" / "ge" for giving TemporaryEffects / Null Items.
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
+* Updated ImGui version with many benifits
+	- ImGui version has been upgraded to 1.92.9b.
+	- Viewport support. You can move imgui window(e.g. Debug Console) outside the game window.
+	- Docking support. 
+	- Font rendering improvement.
+	- Add emoji support.
+	- Fixed string bugs in imgui's reset buttom.
+	- Added `ImGuiWindowFlags.NoDocking`.
+	- Fixed `ImGui.WorldToImGui` and `ImGui.ImGuiToWorld`.
 /newline/
 Modified:
 * MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
