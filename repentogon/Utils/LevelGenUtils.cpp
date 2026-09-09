@@ -291,107 +291,151 @@ std::vector<XY> GetForbiddenNeighbors(XY& base_coords, int shape, int doors) {
 	return forbidden_neighbors;
 }
 
+XY GetDoorTargetCoords(const XY& base_coords, int shape, int slot) {
+	int dx = 0, dy = 0;
+
+	switch (shape) {
+	case ROOMSHAPE_1x1:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 1; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 1; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_IH:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_RIGHT0: dx = 1; dy = 0; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_IV:
+		switch (slot) {
+		case DOOR_SLOT_UP0:   dx = 0; dy = -1; break;
+		case DOOR_SLOT_DOWN0: dx = 0; dy = 1; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_1x2:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 1; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 2; break;
+		case DOOR_SLOT_LEFT1:  dx = -1; dy = 1; break;
+		case DOOR_SLOT_RIGHT1: dx = 1; dy = 1; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_IIV:
+		switch (slot) {
+		case DOOR_SLOT_UP0:   dx = 0; dy = -1; break;
+		case DOOR_SLOT_DOWN0: dx = 0; dy = 2; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_2x1:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 1; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = -1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 1; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_IIH:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_2x2:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 2; break;
+		case DOOR_SLOT_LEFT1:  dx = -1; dy = 1; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = -1; break;
+		case DOOR_SLOT_RIGHT1: dx = 2; dy = 1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 2; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_LTL:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = 0; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = 0; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 2; break;
+		case DOOR_SLOT_LEFT1:  dx = -1; dy = 1; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = -1; break;
+		case DOOR_SLOT_RIGHT1: dx = 2; dy = 1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 2; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_LTR:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 1; dy = 0; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 2; break;
+		case DOOR_SLOT_LEFT1:  dx = -1; dy = 1; break;
+		case DOOR_SLOT_RIGHT1: dx = 2; dy = 1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 2; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_LBL:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 1; break;
+		case DOOR_SLOT_LEFT1:  dx = 0; dy = 1; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = -1; break;
+		case DOOR_SLOT_RIGHT1: dx = 2; dy = 1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 2; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	case ROOMSHAPE_LBR:
+		switch (slot) {
+		case DOOR_SLOT_LEFT0:  dx = -1; dy = 0; break;
+		case DOOR_SLOT_UP0:    dx = 0; dy = -1; break;
+		case DOOR_SLOT_RIGHT0: dx = 2; dy = 0; break;
+		case DOOR_SLOT_DOWN0:  dx = 0; dy = 2; break;
+		case DOOR_SLOT_LEFT1:  dx = -1; dy = 1; break;
+		case DOOR_SLOT_UP1:    dx = 1; dy = -1; break;
+		case DOOR_SLOT_RIGHT1: dx = 1; dy = 1; break;
+		case DOOR_SLOT_DOWN1:  dx = 1; dy = 1; break;
+		default: return XY(-1, -1);
+		}
+		break;
+	default:
+		return XY(-1, -1);
+	}
+
+	return XY(base_coords.x + dx, base_coords.y + dy);
+}
+
 int CalculateAutoDoors(const int* roomMap, XY& base_coords, int shape) {
 	int doors = 0;
-	auto check = [&](int slot, int dx, int dy) {
-		XY target(base_coords.x + dx, base_coords.y + dy);
+	for (int slot = 0; slot < NUM_DOOR_SLOTS; slot++) {
+		XY target = GetDoorTargetCoords(base_coords, shape, slot);
 		int grid_idx = target.ToGridIdx();
 		if (grid_idx >= 0 && grid_idx < 169) {
 			if (roomMap[grid_idx] > -1) {
 				doors |= (1 << slot);
 			}
 		}
-	};
-
-	switch (shape) {
-	case ROOMSHAPE_1x1:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 1, 0);
-		check(DOOR_SLOT_DOWN0, 0, 1);
-		break;
-	case ROOMSHAPE_IH:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_RIGHT0, 1, 0);
-		break;
-	case ROOMSHAPE_IV:
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_DOWN0, 0, 1);
-		break;
-	case ROOMSHAPE_1x2:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 1, 0);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		check(DOOR_SLOT_LEFT1, -1, 1);
-		check(DOOR_SLOT_RIGHT1, 1, 1);
-		break;
-	case ROOMSHAPE_IIV:
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		break;
-	case ROOMSHAPE_2x1:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		check(DOOR_SLOT_DOWN0, 0, 1);
-		check(DOOR_SLOT_UP1, 1, -1);
-		check(DOOR_SLOT_DOWN1, 1, 1);
-		break;
-	case ROOMSHAPE_IIH:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		break;
-	case ROOMSHAPE_2x2:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		check(DOOR_SLOT_LEFT1, -1, 1);
-		check(DOOR_SLOT_UP1, 1, -1);
-		check(DOOR_SLOT_RIGHT1, 2, 1);
-		check(DOOR_SLOT_DOWN1, 1, 2);
-		break;
-	case ROOMSHAPE_LTL:
-		check(DOOR_SLOT_LEFT0, 0, 0);
-		check(DOOR_SLOT_UP0, 0, 0);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		check(DOOR_SLOT_LEFT1, -1, 1);
-		check(DOOR_SLOT_UP1, 1, -1);
-		check(DOOR_SLOT_RIGHT1, 2, 1);
-		check(DOOR_SLOT_DOWN1, 1, 2);
-		break;
-	case ROOMSHAPE_LTR:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 1, 0);
-		check(DOOR_SLOT_UP1, 1, 0);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		check(DOOR_SLOT_LEFT1, -1, 1);
-		check(DOOR_SLOT_RIGHT1, 2, 1);
-		check(DOOR_SLOT_DOWN1, 1, 2);
-		break;
-	case ROOMSHAPE_LBL:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		check(DOOR_SLOT_DOWN0, 0, 1);
-		check(DOOR_SLOT_LEFT1, 0, 1);
-		check(DOOR_SLOT_UP1, 1, -1);
-		check(DOOR_SLOT_RIGHT1, 2, 1);
-		check(DOOR_SLOT_DOWN1, 1, 2);
-		break;
-	case ROOMSHAPE_LBR:
-		check(DOOR_SLOT_LEFT0, -1, 0);
-		check(DOOR_SLOT_UP0, 0, -1);
-		check(DOOR_SLOT_RIGHT0, 2, 0);
-		check(DOOR_SLOT_DOWN0, 0, 2);
-		check(DOOR_SLOT_LEFT1, -1, 1);
-		check(DOOR_SLOT_UP1, 1, -1);
-		check(DOOR_SLOT_RIGHT1, 1, 1);
-		check(DOOR_SLOT_DOWN1, 1, 1);
-		break;
 	}
 	return doors;
 }

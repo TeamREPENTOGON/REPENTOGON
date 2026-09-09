@@ -6554,9 +6554,19 @@ void CustomCallbacks::detail::ApplyPatches()
 
 //MC_PRE_GENERATE_DUNGEON (1340)
 bool should_reset_lil_portal = false;
+bool g_CustomDungeonGenerated = false;
+
 HOOK_METHOD(Level, Init, (bool reset_lil_portal) -> void) {
+	g_CustomDungeonGenerated = false;
 	should_reset_lil_portal = reset_lil_portal;
 	super(reset_lil_portal);
+}
+
+HOOK_METHOD(Level, update_doors, () -> void) {
+	if (g_CustomDungeonGenerated) {
+		return;
+	}
+	super();
 }
 
 bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationType dungeonType) {
@@ -6583,6 +6593,7 @@ bool ProcessGenerateDungeonCallback(Level* level, RNG& rng, DungeonGenerationTyp
 	}
 
 	bool correctGeneration = generator.Generate();
+	g_CustomDungeonGenerated = correctGeneration;
 
 	return correctGeneration;
 }

@@ -24,11 +24,12 @@ struct DungeonGeneratorRoom {
 	int subtype;
 	int mode;
 	int list_index;
+	bool explicit_doors = false;
 	
 	DungeonGeneratorRoom();
 
-	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, RoomConfig_Room* room);
-	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, RoomConfig_Room* room, bool explicit_doors = false);
+	DungeonGeneratorRoom(int list_index, uint32_t col, uint32_t row, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode, bool explicit_doors = false);
 
 	RoomConfig_Room* GetRoomConfig(uint32_t seed, uint32_t required_doors, Level* level);
 };
@@ -47,23 +48,23 @@ struct DungeonGenerator {
 
 	DungeonGenerator(RNG* rng, Level* level, DungeonGenerationType generation_type, bool reset_lil_portal);
 
-	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected);
+	bool CanRoomBePlaced(XY& base_coords, int shape, int allowed_doors, bool allow_unconnected, bool explicit_doors = false);
 
 	void BlockPositionsFromAllowedDoords(XY& base_coords, int shape, int allowed_doors);
 
-	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config);
+	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config, bool explicit_doors = false);
 
-	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+	DungeonGeneratorRoom* TryPlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode, bool explicit_doors = false);
 
-	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config);
+	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, RoomConfig_Room* room_config, bool explicit_doors = false);
 
-	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
+	DungeonGeneratorRoom* PlaceRoom(XY& base_coords, int doors, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode, bool explicit_doors = false);
 
 	DungeonGeneratorRoom* PlaceOffGridRoom(int off_grid_index, RoomConfig_Room* room_config);
 
 	DungeonGeneratorRoom* PlaceOffGridRoom(int off_grid_index, int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, int subtype, int mode);
 
-	DungeonGeneratorRoom* TryPlaceDefaultStartingRoom(int doors);
+	DungeonGeneratorRoom* TryPlaceDefaultStartingRoom(int doors = 15, bool explicit_doors = false);
 
 	void InitializeDefaultOffGridRooms();
 
@@ -72,6 +73,8 @@ struct DungeonGenerator {
 	void SetGreedGoldRoom(DungeonGeneratorRoom* gold_room);
 	
 	void SetGreedGoldRoom(int grid_index);
+
+	void SanitizeRoomDoors();
 
 	bool ValidateFloor();
 
