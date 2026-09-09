@@ -39,6 +39,8 @@ Added:
 	- Get/SetFlashRedHearts
 	- Get/SetFlashSoulHearts
 	- Get/SetFlashGoldHearts
+* ItemConfig:
+	- GetItemsWithCustomTag
 * XMLData
 	- XMLData.GetCurrentMod()
 		Gets xmldata node of the running mod metadata

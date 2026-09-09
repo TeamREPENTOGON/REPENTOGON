@@ -246,6 +246,36 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfig_GetItemsWithCustomTag) {
+	ItemConfig* config = lua::GetLuabridgeUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "ItemConfig");
+	const std::string tag = luaL_checkstring(L, 2);
+
+	lua_newtable(L);
+	int idx = 0;
+	for (const int id : ItemConfigEx::GetCollectiblesWithCustomTag(tag)) {
+		if (ItemConfig_Item* item = config->GetCollectible(id)) {
+			lua_pushinteger(L, ++idx);
+			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua_rawset(L, -3);
+		}
+	}
+	for (const int id : ItemConfigEx::GetTrinketsWithCustomTag(tag)) {
+		if (ItemConfig_Item* item = config->GetTrinket(id)) {
+			lua_pushinteger(L, ++idx);
+			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua_rawset(L, -3);
+		}
+	}
+	for (const int id : ItemConfigEx::GetNullItemsWithCustomTag(tag)) {
+		if (ItemConfig_Item* item = config->GetNullItem(id)) {
+			lua_pushinteger(L, ++idx);
+			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua_rawset(L, -3);
+		}
+	}
+	return 1;
+}
+
 /*LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
 	ItemConfig* config = lua::GetRawUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
 	const unsigned int trinketType = (const unsigned int)luaL_checkinteger(L, 2);
@@ -283,6 +313,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetTaggedItems", Lua_ItemConfig_GetTaggedItems },
+		{ "GetItemsWithCustomTag", Lua_ItemConfig_GetItemsWithCustomTag },
 		{ "CanRerollCollectible", Lua_ItemConfig_CanRerollCollectible },
 		//{ "IsValidTrinket", Lua_ItemConfig_IsValidTrinket },
 		{ NULL, NULL }
