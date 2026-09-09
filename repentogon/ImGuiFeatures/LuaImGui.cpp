@@ -1022,7 +1022,9 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 	float y = (float)luaL_checknumber(L, 3);
 
 	RECT rect = { 0,0,0,0 };
-	if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+	if ((ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) &&  GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+		// when viewports enabled, the position is relative to monitor, so we fix it
+		// when viewports disabled, the position is relative to the game window, that's fine
 		x += rect.left;
 		y += rect.top;
 	}
