@@ -529,7 +529,9 @@ void LoadImGuiFont() {
 	if (selected_font < 0 || selected_font >= (int)predefinedFonts.size())
 		selected_font = 0;
 	auto& font = predefinedFonts[selected_font];
-	if (font.maybe_missing && !std::filesystem::exists(font.fontPath)) {
+	if (selected_font == 0 || (font.maybe_missing && !std::filesystem::exists(font.fontPath))) {
+		io.Fonts->AddFontDefaultBitmap();
+		cfg.MergeMode = true;
 		imFontUnifont = io.Fonts->AddFontFromFileTTF(predefinedFonts[0].fontPath, 0, &cfg);
 	}
 	else {
