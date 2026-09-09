@@ -667,7 +667,7 @@ void __stdcall RunImGui(HDC hdc) {
 	// Draw the overlay
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	
 	{
 		HDC hdc = wglGetCurrentDC();
 		HGLRC glrc = wglGetCurrentContext();
@@ -677,7 +677,8 @@ void __stdcall RunImGui(HDC hdc) {
 		wglMakeCurrent(hdc, glrc);
 
 		// obs compat: we'll draw these windows later
-		drawImGuiAt = hdc;
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			drawImGuiAt = hdc;
 	}
 
 	glUseProgram(last_program);
