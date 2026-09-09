@@ -96,7 +96,17 @@ struct REPENTOGONOptions {
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
 
-		fontSize = defstoi(ini["internal"]["FontSize"], 16);
+		int defaultFontSize = 8;
+		switch (defstoi(ini["internal"]["UnifontRenderMode"], -1))
+		{
+		case 0: defaultFontSize = 13; break;
+		case 1: defaultFontSize = 16; break;
+		case 2: defaultFontSize = 14; break;
+		case 3: defaultFontSize = 8; break;
+		case 4: defaultFontSize = 8; break;
+		default: break;
+		}
+		fontSize = defstoi(ini["internal"]["FontSize"], defaultFontSize);
 		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
 		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
