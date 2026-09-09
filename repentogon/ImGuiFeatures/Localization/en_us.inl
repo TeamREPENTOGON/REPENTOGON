@@ -373,6 +373,7 @@ I(OPT_HUD_EXTRA_HUD_MARKER, u8"Displays collected items of the player on the rig
 I(OPT_HUD_IMGUI_UI_OPTION, u8"REPENTOGON ImGui UI Options")
 I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW, u8"Enable Multi Viewport")
 I(OPT_HUD_IMGUI_ENABLE_MULTIVIEW_MARK, u8"Enable this will allow console/mods window move outside game window.")
+I(OPT_HUD_IMGUI_ENABLE_DOCKING, u8"Enable Docking")
 I(OPT_HUD_FONT_SIZE, u8"Font Size")
 I(OPT_HUD_FONT_SELECT, u8"Font Select")
 I(OPT_HUD_FONT_RENDER_STYLE, u8"Font Render Style")

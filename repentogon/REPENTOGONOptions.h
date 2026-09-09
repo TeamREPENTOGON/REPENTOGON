@@ -110,6 +110,7 @@ struct REPENTOGONOptions {
 		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
 		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
+		enableDocking = defstoi(ini["internal"]["EnableDocking"], 1);
 
 		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
 		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
@@ -175,6 +176,7 @@ struct REPENTOGONOptions {
 		// Write("internal", "FontSelectedPredefined", fontSelectedPredefined); // this is never released to users
 		Write("internal", "FontRenderStyle", fontRenderStyle);
 		Write("internal", "EnableImGuiMultiView", enableImGuiMultiView);
+		Write("internal", "EnableDocking", enableDocking);
 	}
 
 	mINI::INIStructure ini;
@@ -206,6 +208,7 @@ struct REPENTOGONOptions {
 
 	bool enableImGuiMultiView;
 	int fontRenderStyle;
+	bool enableDocking;
 
 	int consoleKeyMode;	// 0 is virtualkey (default), 1 is scancode (layout-independent)
 	int consoleKeyVK;

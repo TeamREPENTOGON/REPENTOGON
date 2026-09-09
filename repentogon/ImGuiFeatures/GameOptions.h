@@ -223,6 +223,10 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddResetButton(++resetCounter, repentogonOptions.enableImGuiMultiView, true);
                         AddNewTableRow();
 
+                        ImGui::Checkbox(LANG.OPT_HUD_IMGUI_ENABLE_DOCKING, &repentogonOptions.enableDocking);
+                        AddResetButton(++resetCounter, repentogonOptions.enableDocking, true);
+                        AddNewTableRow();
+
                         ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 6, 26);
                         ImGui::SameLine();
                         AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);

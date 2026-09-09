@@ -586,7 +586,7 @@ void __stdcall RunImGui(HDC hdc) {
 		iniFilePath = std::string(REPENTOGON::GetRepentogonDataPath()) + "imgui.ini";
 
 		// mouse, keyboard and gamepad support
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
 		ImGui::SetNextFrameWantCaptureMouse(true);
@@ -606,6 +606,10 @@ void __stdcall RunImGui(HDC hdc) {
 	*/
 	if (repentogonOptions.enableImGuiMultiView)
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	if (repentogonOptions.enableDocking)
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	else
+		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;
 
 	LoadImGuiFont();
 
