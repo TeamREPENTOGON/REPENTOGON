@@ -610,7 +610,7 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::PushFont(imFontUnifont, (float)clamp(repentogonOptions.fontSize, 12, 32));
+	ImGui::PushFont(imFontUnifont, g_PointScale * (float)clamp(repentogonOptions.fontSize, 12, 32));
 	UpdateImGuiSettings();
 		
 	
