@@ -223,7 +223,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         AddResetButton(++resetCounter, repentogonOptions.enableImGuiMultiView, true);
                         AddNewTableRow();
 
-                        ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 12, 32);
+                        ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 6, 26);
                         ImGui::SameLine();
                         AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
                         AddNewTableRow();
