@@ -599,9 +599,6 @@ void DungeonGenerator::SanitizeRoomDoors() {
             DungeonGeneratorRoom& neighbor_gen_room = this->rooms[neighbor_idx];
             int neighbor_grid_idx = neighbor_gen_room.col + neighbor_gen_room.row * 13;
 
-            bool is_secret = (generator_room.type == ROOM_SECRET || generator_room.type == ROOM_SUPERSECRET ||
-                              neighbor_gen_room.type == ROOM_SECRET || neighbor_gen_room.type == ROOM_SUPERSECRET);
-
             bool neighbor_has_matching_door = false;
 
             for (int n_slot = 0; n_slot < NUM_DOOR_SLOTS; n_slot++) {
@@ -615,7 +612,7 @@ void DungeonGenerator::SanitizeRoomDoors() {
             }
 
             if (!neighbor_has_matching_door) {
-                if (generator_room.explicit_doors && !is_secret) {
+                if (generator_room.explicit_doors) {
                     PrintGeneratorError("MC_PRE_GENERATE_DUNGEON: Room at grid index " + std::to_string(grid_idx) + 
                         " specifies a door facing Room at grid index " + std::to_string(neighbor_grid_idx) + 
                         ", but Room at grid index " + std::to_string(neighbor_grid_idx) + " does not allow a connection");
