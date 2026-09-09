@@ -83,6 +83,32 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
 
     static inline void StartLightRendering() { g_ANM2_LightRendering = true; }
     static inline void EndLightRendering() { g_ANM2_LightRendering = false; }
+
+    inline std::optional<uint32_t> GetAnimationByName(std::string_view name) const
+    {
+        for (size_t i = 0; i < (size_t)this->_animCount; ++i)
+        {
+            if (name == this->_animData[i]._name)
+            {
+                return i;
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    inline std::optional<uint32_t> GetEventByName(std::string_view name) const
+    {
+        for (size_t i = 0; i < this->_numEvents; ++i)
+        {
+            if (name == this->_eventNames[i])
+            {
+                return i;
+            }
+        }
+
+        return std::nullopt;
+    }
 }} 
     std_string _filename : 0x0;
     std_string _animDefaultName : 0x18;

@@ -629,10 +629,13 @@ local typecheckWarnFunctions = {
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
 		["number"] = checkNumberGreaterOrEqualFunction(0),
 	},
+	[ModCallbacks.MC_PRE_USE_ITEM] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Discharge="boolean" }),
+	},
 }
 
 local boolCallbacks = {
-	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
@@ -978,6 +981,7 @@ end
 local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
 	[ModCallbacks.MC_PRE_USE_ITEM] = true,
 	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_POST_USE_ITEM] = true,
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
 	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_ADDED] = true,
@@ -1943,6 +1947,13 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = RunAdditiveSecondArgCallback,
 	[ModCallbacks.MC_PRE_GENERATE_DUNGEON] = RunPreGenerateDungeonCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_INVENTORY] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_INVENTORY] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunNoReturnCallback,
+	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunAdditiveSecondArgCallbackWithBreak,
+	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_CRAFTING_TABLE] = RunNoReturnCallback,
+	[ModCallbacks.MC_POST_USE_ITEM] = RunNoReturnCallback,
 }
 
 for _, callback in ipairs({
@@ -1996,8 +2007,16 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 --local ImGui = Isaac.GetImGui()
-ImGui.ImGuiToWorld = function (position) return Isaac.ScreenToWorld(position) end
-ImGui.WorldToImGui = function (position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
+ImGui.WorldToImGui = function (world_pos) 
+	local scr_xy = Isaac.WorldToScreen(world_pos)
+	-- scale the screen xy to the window rectangle
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Vector(scr_xy.X  * imgui_wh.X / Isaac.GetScreenWidth(), scr_xy.Y * imgui_wh.Y / Isaac.GetScreenHeight())
+end
+ImGui.ImGuiToWorld = function (imgui_pos) 
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Isaac.RenderToWorld(Vector(imgui_pos.X * Isaac.GetScreenWidth() / imgui_wh.X, imgui_pos.Y * Isaac.GetScreenHeight() / imgui_wh.Y))
+end
 
 if not _LUADEBUG then
 	debug = nil

@@ -12,7 +12,7 @@
 #include "SavedataHandler.h"
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
-#include "UnifontSupport.h"
+#include "FontSupport.h"
 #include "Lang.h"
 
 #include <Windows.h>
@@ -25,7 +25,8 @@
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
 #include "../REPENTOGONOptions.h"
-
+#include "MultiViewportEnhanced.h"
+#include "RepentogonImGuiHook.h"
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -205,83 +206,15 @@ void UpdateImGuiSettings()
 	}
 }
 
-inline void handleImguiInput(const char bytes[], int len) {
-	wchar_t w;
-	int has_val = ::MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, bytes, len, &w, 1);
-	if (has_val && ImGui::GetCurrentContext()) {
-		ImGui::GetIO().AddInputCharacter(w);
-	}
-}
 
-bool handleImguiInputDBCS(WPARAM wParam, LPARAM lParam) {
-	static char bytes[2] = { 0,0 };
-	if (bytes[0] == 0) {
-		if (!IsDBCSLeadByte(wParam)) {
-			return false;
-		}
-		bytes[0] = wParam;
-		return true;
-	}
-	else {
-		bytes[1] = wParam;
-		handleImguiInput(bytes, 2);
-		bytes[0] = 0;
-		return true;
-	}
-}
-
-// Not work for chinese IME in Win11, the only thing I got is '??'
-// probably it works with other language.
-bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
-	static int byte_length = 0;
-	static int next_byte = 0;
-	static char bytes[4] = { 0 };
-	if (0 == (wParam & 0x80)) {
-		byte_length = next_byte = 0;
-		return false; // ascii code
-	}
-	if (byte_length) {
-		if ((wParam & 0xC0) == 0x80) {
-			bytes[next_byte++] = wParam;
-			if (next_byte == byte_length) {
-				handleImguiInput(bytes, byte_length);
-				byte_length = next_byte = 0;
-			}
-			return true;
-		}
-		else {
-			byte_length = next_byte = 0;
-			return false;
-		}
-	}
-	else {
-		bytes[next_byte++] = wParam;
-		if ((wParam & 0xE0) == 0xC0) { // 110xxxxx
-			byte_length = 2;
-		}
-		else if ((wParam & 0xF0) == 0xE0) { // 1110xxxx
-			byte_length = 3;
-		}
-		else if ((wParam & 0xF8) == 0xF0) { // 11110xxx
-			byte_length = 4;
-		}
-		else {
-			byte_length = 0;
-		}
-		return true;
-	}
-}
 
 float WINMouseWheelMove_Vert = 0;
 float WINMouseWheelMove_Hori = 0;
 
 static std::vector<WPARAM> pressedKeys;
 
-LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	if (shutdownInitiated)
-		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
-
+// this function is called by both game window and imgui created window
+std::optional<LRESULT> windowProc_ImGuiCreatedWindow(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	// Enable the overlay using the grave key, disable using ESC
 	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
@@ -322,6 +255,53 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 		}
 	}
+
+	if (uMsg == WM_IME_COMPOSITION) {
+		if (lParam & GCS_RESULTSTR) {
+			HIMC hIMC = ImmGetContext(hWnd);
+
+			LONG len = ImmGetCompositionStringW(hIMC,GCS_RESULTSTR,nullptr,0);
+			static wchar_t* buff = NULL;
+
+			auto nbuff = realloc(buff, len);
+			if (nbuff == NULL) {
+				return true;
+			}
+			buff = (wchar_t*)nbuff;
+
+			ImmGetCompositionStringW(
+				hIMC,
+				GCS_RESULTSTR,
+				buff,
+				len
+			);
+#pragma warning(push)
+#pragma warning(disable: 6385)
+			for (size_t i = 0; i < len / sizeof(wchar_t); i++)
+				ImGui::GetIO().AddInputCharacterUTF16(buff[i]);
+#pragma warning(pop)
+			ImmReleaseContext(hWnd, hIMC);
+			return true;
+		}
+	}
+	if(uMsg == WM_CHAR) {
+		// do nothing
+	}
+	if (uMsg == WM_IME_CHAR) {
+		// don't call imgui's ime handle, it's buggy. we've handled by WM_IME_COMPOSITION
+		return true;
+	}
+	return std::nullopt;
+}
+
+LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (shutdownInitiated)
+		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+	
+	auto ret = windowProc_ImGuiCreatedWindow(hWnd, uMsg, wParam, lParam);
+	if (ret.has_value())
+		return ret.value();
 
 	if (menuShown && g_Game->GetConsole()->_state != 2) {
 		// Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
@@ -411,25 +391,6 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 		}
 
-		//we should manually handle multibyte input
-		//https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
-		if (uMsg == WM_CHAR) {
-			switch (GetACP()) {
-			case 932: //shift_jis		Japanese
-			case 936: //gb2312			Chinese Simplified
-			case 949: //ks_c_5601-1987	Korean
-			case 950: //big5			Chinese Traditional
-				if (handleImguiInputDBCS(wParam, lParam))
-					return true;
-				break;
-			case 65001:
-				if (handleImguiInputUTF8(wParam, lParam))
-					return true;
-				break;
-
-			}
-		}
-
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 		return true;
 	}
@@ -496,7 +457,8 @@ void RenderLuamodErrorPopup() {
 		if (ImGui::BeginPopupModal("Luamod Error", NULL)) {
 				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
 				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
-				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Border)) {
+				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Borders)) {
+					ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
 					ImGui::TextWrapped(luamoderrorcache.c_str());
 					if (!popupscrolled) {
 						ImGui::SetScrollHereY(1.0f);
@@ -522,6 +484,73 @@ ImFont* imFontUnifont = NULL;
 
 PFNGLUSEPROGRAMPROC glUseProgram;
 
+bool requestFontReload = true;
+
+std::vector<PredefinedFont> predefinedFonts = {
+	PredefinedFont{"Unifont", "resources-repentogon\\fonts\\unifont-15.1.04.otf", false /* the first font must not missing*/},
+	//PredefinedFont{"Unifont(jp)", "resources-repentogon\\fonts\\unifont_jp-15.1.04.otf"},
+	//PredefinedFont{"MiSans", "resources-repentogon\\fonts\\MiSans-Regular.ttf"},
+	//PredefinedFont{"MiSans-Bold", "resources-repentogon\\fonts\\MiSans-Bold.ttf"},
+	//PredefinedFont{"MS YaHei", "C:\\Windows\\Fonts\\msyh.ttc"},
+};
+
+
+void LoadImGuiFont() {
+	if (!requestFontReload)
+		return;
+	requestFontReload = false;
+
+	if (imFontUnifont) {
+		// maybe memleak because old font not be released, this only happen when player change their font, so fine.
+		ImGui::GetIO().FontDefault = NULL;
+		ImGui::GetIO().Fonts->ClearFonts();
+		imFontUnifont = NULL;
+	}
+
+	ImFontConfig cfg;
+	cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_LoadColor;
+	
+	switch (repentogonOptions.fontRenderStyle) {
+	case ImGuiFontRenderStyle::ImGuiFontRenderStyle_PIXELATED:
+	default:
+		// don't forget check emoji render if someone change this flag
+		cfg.FontLoaderFlags |= ImGuiFreeTypeLoaderFlags_Monochrome;
+		break;
+	case ImGuiFontRenderStyle::ImGuiFontRenderStyle_SMOOTH:
+		break;
+	}
+
+	cfg.OversampleH = cfg.OversampleV = 1; // do not oversample fonts, because freetype will font size it now.
+	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow) / 96.f);
+
+	auto & io = ImGui::GetIO();
+	io.Fonts->AddFontDefaultBitmap();
+	int selected_font = repentogonOptions.fontSelectedPredefined;
+	if (selected_font < 0 || selected_font >= (int)predefinedFonts.size())
+		selected_font = 0;
+	auto& font = predefinedFonts[selected_font];
+	if (font.maybe_missing && !std::filesystem::exists(font.fontPath)) {
+		imFontUnifont = io.Fonts->AddFontFromFileTTF(predefinedFonts[0].fontPath, 0, &cfg);
+	}
+	else {
+		imFontUnifont = io.Fonts->AddFontFromFileTTF(predefinedFonts[selected_font].fontPath, 0, &cfg);
+	}
+	static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	cfg.MergeMode = true;
+	// icon font
+	cfg.Flags = ImFontFlags_LockBakedSizes;
+	if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
+		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
+	}
+	else {
+		ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
+	} 
+	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
+	io.FontDefault = imFontUnifont;
+}
+
+void ImGuiDrawMultiViewports();
+std::optional<HDC> drawImGuiAt = std::nullopt;
 void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
@@ -530,13 +559,18 @@ void __stdcall RunImGui(HDC hdc) {
 	WINMouseWheelMove_Hori = 0;
 
 	if (!imguiInitialized) {
+		repentogonImGuiHookData.MultiViewport_WndProcHandler = windowProc_ImGuiCreatedWindow;
 		HWND window = WindowFromDC(hdc);
+		rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow = window;
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
 			GWLP_WNDPROC, (LONG_PTR)windowProc_hook);
 		glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
 		ImGui::CreateContext();
-		ImGui_ImplWin32_Init(window);
+		ImGui_ImplWin32_InitForOpenGL(window);
 		ImGui_ImplOpenGL2_Init();
+		ImGui_ImplRepentogon_InitMultiViewport();
+		ImGui::GetPlatformIO().DrawCallback_SetSamplerNearest(NULL,NULL); // this is implemented by ImplOpenGL2
+
 		ImGui::StyleColorsDark();
 		ImGui::GetStyle().AntiAliasedFill = false;
 		ImGui::GetStyle().AntiAliasedLines = false;
@@ -550,91 +584,40 @@ void __stdcall RunImGui(HDC hdc) {
 		iniFilePath = std::string(REPENTOGON::GetRepentogonDataPath()) + "imgui.ini";
 
 		// mouse, keyboard and gamepad support
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_DockingEnable;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		io.FontAllowUserScaling = false; // disable mouse wheel zoom. We handle it ourselfs
-		ImGui::CaptureMouseFromApp();
-		ImGui::CaptureKeyboardFromApp();
-		ImFontConfig cfg;
-		cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
-		cfg.OversampleH = 1;
-		cfg.OversampleV = 1;
-		cfg.PixelSnapH = 1;
+		ImGui::SetNextFrameWantCaptureMouse(true);
+		ImGui::SetNextFrameWantCaptureKeyboard(true);
 
 		RegisterSaveDataHandler();
 
-		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-		static UnifontRange unifont_ranges;
-
-		float font_base_size = 13;
-		cfg.MergeMode = false;
-		cfg.SizePixels = font_base_size;
-		if (!repentogonOptions.enableUnifont) {
-			imFontUnifont = io.Fonts->AddFontDefault(&cfg);
-			cfg.MergeMode = true;
-		}
-		else {
-			// the pixel perfect size for unifont is 16px
-			float size_config[5][2] = {
-				{13,1},
-				{16,1},
-				{14,1},//12px unifont can't tell 3 and 9, so use 14 here
-				{16,0.5},
-				{8,1}
-			};
-			font_base_size = size_config[repentogonOptions.unifontRenderMode][0];
-			unifont_global_scale = size_config[repentogonOptions.unifontRenderMode][1];
-
-			if (repentogonOptions.unifontRenderMode == UNIFONT_RENDER_NORMAL) {
-				imFontUnifont = io.Fonts->AddFontDefault(&cfg); // this font is better for english word, but only perfect in 13px
-			}
-			else {
-				cfg.SizePixels = font_base_size;
-				imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, ImGui::GetIO().Fonts->GetGlyphRangesDefault());
-			}
-			cfg.MergeMode = true;
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, unifont_ranges.Get());
-		}
-		ImGui::GetIO().FontDefault = imFontUnifont;
-		// icon font
-		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
-		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
-	
 		imguiInitialized = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		ZHL::Log("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
+	/*
+		The design is, if player start game without enable multi-viewports, they get a perfect single window imgui.
+		If player turn off multiview in game, most behavior will be okay, not perfect.
+
+		The flag can't be removed once it's added, we use ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow if possible.
+	*/
+	if (repentogonOptions.enableImGuiMultiView)
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	LoadImGuiFont();
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	ImGui::PushFont(imFontUnifont, (float)clamp(repentogonOptions.fontSize, 12, 32));
 	UpdateImGuiSettings();
-	float scale_to_set = g_PointScale;
-	if (repentogonOptions.imGuiScale != 0) {
-		scale_to_set = (float)repentogonOptions.imGuiScale;
-	}
-	if (g_PointScale > 0) {
-		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
-		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;
-		ImGui::GetStyle().ItemSpacing.x = 6 * scale_to_set * unifont_global_scale;
-	}
 		
-
-	static bool unifont_tex_nearest = false;
-	if(!unifont_tex_nearest)
-	{
-		unifont_tex_nearest = true;
-		// use nearest scale to ensure unifont is pixel perfect. must do this after ImGui_ImplOpenGL3_NewFrame()
-		GLint last_texture;
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
-		glBindTexture(GL_TEXTURE_2D, (GLuint)imFontUnifont->ContainerAtlas->TexID);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glBindTexture(GL_TEXTURE_2D, last_texture);
-	}
 	
 	if (menuShown) {
+		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		if (ImGui::BeginMainMenuBar()) {
+			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
 			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
 				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
@@ -659,6 +642,7 @@ void __stdcall RunImGui(HDC hdc) {
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
+		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();
@@ -673,7 +657,7 @@ void __stdcall RunImGui(HDC hdc) {
 	notificationHandler.Draw(menuShown);
 
 	HandleZoomWithMouseWheel();
-
+	ImGui::PopFont();
 	ImGui::Render();
 
 
@@ -682,9 +666,50 @@ void __stdcall RunImGui(HDC hdc) {
 	glUseProgram(0);
 	// Draw the overlay
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		HDC hdc = wglGetCurrentDC();
+		HGLRC glrc = wglGetCurrentContext();
+		rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow = glrc;
+		ImGui::UpdatePlatformWindows(); 
+		// update only, don't draw
+		wglMakeCurrent(hdc, glrc);
+
+		// obs compat: we'll draw these windows later
+		drawImGuiAt = hdc;
+	}
+
 	glUseProgram(last_program);
 }
 
+void ImGuiDrawMultiViewports() {
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLint last_program;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+		glUseProgram(0);
+
+		HDC hdc = wglGetCurrentDC();
+		HGLRC glrc = wglGetCurrentContext();
+
+		rgonImGuiMultiViewportConfig.mainGLContextForCreateImGuiWindow = glrc;
+		ImGui::RenderPlatformWindowsDefault(); // already updated, render only
+
+		wglMakeCurrent(hdc, glrc);
+
+		glUseProgram(last_program);
+	}
+}
+
+HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall) {
+	if (drawImGuiAt.has_value() && drawImGuiAt.value() == hdc) {
+		drawImGuiAt = std::nullopt;
+		//obs compat: now we're safe, obs hook already done.
+		ImGuiDrawMultiViewports();
+	}
+	return super(hdc);
+}
 
 /*
 * Initially, we were hooking wglSwapBuffers directly for ImGui. This worked, but wouldn't appear in screen sharing in Discord and streaming in OBS.

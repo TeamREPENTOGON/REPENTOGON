@@ -301,6 +301,7 @@ void PerformASMPatches() {
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();
 	ASMPatchLocalizedPlayerAnimations();
+	ASMPatchLoadArchiveFile();
 	ASMFixes();
 	HookImGui();
 

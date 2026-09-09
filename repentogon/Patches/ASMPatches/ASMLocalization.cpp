@@ -1,6 +1,8 @@
 #include "ASMLocalization.h"
 
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -187,4 +189,108 @@ void ASMPatchLocalizedPlayerAnimations() {
 	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::RenderCustomCharacterCoopMenu_GetAnimName, offsetof(EntityConfig_Player, _moddedCoopMenuANM2));
 	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::Backdrop_PreRenderControls_GetCharacterAnimName, offsetof(EntityConfig_Player, _moddedControlsANM2));
 	ASMPatchLocalizedPlayerAnimationName(&AsmDefinitions::GameOver_Render_GetCharacterAnimName, offsetof(EntityConfig_Player, _moddedGameOverANM2));
+}
+
+// Map of (outdated) repentance localization archives to a whitelist of files that we still want to use.
+// Mainly to keep the fonts, since the actual resources are a mixed bag in terms of usability.
+static const std::unordered_map<std::string, std::vector<const char*>> s_LocalizationArchiveWhitelists = {
+	{"resources/packed/repentance_de.a", {}},
+	{"resources/packed/repentance_es.a", {}},
+	{"resources/packed/repentance_fr.a", {}},
+	{"resources/packed/repentance_ru.a", {}},
+	{
+		"resources/packed/repentance_jp.a",
+		{
+			"resources.jp/font/mplus_10r.fnt",
+			"resources.jp/font/mplus_10r_0.png",
+			"resources.jp/font/mplus_12b.fnt",
+			"resources.jp/font/mplus_12b_0.png",
+		}
+	},
+	{
+		"resources/packed/repentance_kr.a",
+		{
+			"resources.kr/font/kr_font12.fnt",
+			"resources.kr/font/kr_font12_0.png",
+			"resources.kr/font/kr_font12_1.png",
+			"resources.kr/font/kr_font12_2.png",
+			"resources.kr/font/kr_font12_3.png",
+			"resources.kr/font/kr_font12_4.png",
+			"resources.kr/font/kr_font14.fnt",
+			"resources.kr/font/kr_font14_0.png",
+			"resources.kr/font/kr_font14_1.png",
+			"resources.kr/font/kr_meatfont14.fnt",
+			"resources.kr/font/kr_meatfont14_0.png",
+			"resources.kr/font/kr_meatfont14_1.png",
+		}
+	},
+	{
+		"resources/packed/repentance_zh.a",
+		{
+			"resources.zh/font/teammeatfontextended10.fnt",
+			"resources.zh/font/teammeatfontextended10_0.png",
+			"resources.zh/font/teammeatfontextended10_1.png",
+			"resources.zh/font/teammeatfontextended12.fnt",
+			"resources.zh/font/teammeatfontextended12_0.png",
+			"resources.zh/font/teammeatfontextended12_1.png",
+			"resources.zh/font/teammeatfontextended16bold.fnt",
+			"resources.zh/font/teammeatfontextended16bold_0.png",
+			"resources.zh/font/teammeatfontextended16bold_1.png",
+			"resources.zh/font/upheavalextended.fnt",
+			"resources.zh/font/upheavalextended_0.png",
+			"resources.zh/font/upheavalextended_1.png",
+		}
+	},
+};
+
+bool __stdcall SkipArchivedFile(KAGE_Filesys_ArchivedFile* archiveFile) {
+	if (!archiveFile || !archiveFile->_archiveEntry || !archiveFile->_fileEntry) {
+		// Sanity check.
+		return false;
+	}
+
+	std::string archiveFilePath = archiveFile->_archiveEntry->_filePath;
+
+	if (auto it = s_LocalizationArchiveWhitelists.find(archiveFilePath); it != s_LocalizationArchiveWhitelists.end()) {
+		for (const char* path : it->second) {
+			// Exact path not available in the archive, only hashes.
+			// Technically not 100% accurate due to the possibility of hash collisions, but they are very
+			// unlikely since the collision would also need to be within the same archive, for both hashes.
+			// Also, hash collisions can just be detected (there are none in the current whitelist, so)
+			uint32_t primaryHash = KAGE_Filesys_FileManager::GetPrimaryFilePathHash(path);
+			uint32_t secondaryHash = KAGE_Filesys_FileManager::GetSecondaryFilePathHash(path);
+			if (primaryHash == archiveFile->_fileEntry->_primaryHash && secondaryHash == archiveFile->_fileEntry->_secondaryHash) {
+				// On the whitelist, so allow this file.
+				return false;
+			}
+		}
+		// In restricted archive and not whitelisted, so skip this file.
+		return true;
+	}
+
+	// Archive not restricted, allow this file.
+	return false;
+}
+void ASMPatchLoadArchiveFile() {
+	void* patchAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_CheckFile);
+	void* checksumFailedAddr = (char*)patchAddr + 0x5;
+	void* continueAddr = (char*)checksumFailedAddr + *(int8_t*)((char*)patchAddr + 0x4);
+	void* skipFileAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_SkipFile);
+	int archiveFileOffset = *(int*)((char*)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_ArchiveFileOffset) + 0x2);
+
+	printf("[REPENTOGON] Patching LoadArchiveFile @ %p\n", patchAddr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)patchAddr, 0x3))  // CMP ESI,dword ptr [EAX + 0x14]
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, checksumFailedAddr)
+		.PreserveRegisters(savedRegisters)
+		.LoadEffectiveAddress(ASMPatch::Registers::EBP, archiveFileOffset, ASMPatch::Registers::EAX)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(SkipArchivedFile)
+		.AddBytes("\x84\xC0")  // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, skipFileAddr)
+		.AddRelativeJump(continueAddr);
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }

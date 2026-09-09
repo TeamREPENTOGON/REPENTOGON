@@ -546,7 +546,7 @@ Otherwise, returns `nil`.
 ___
 ### GetFocusEntity () {: aria-label='Functions' }
 #### [Entity](Entity.md) GetFocusEntity ( ) {: .copyable aria-label='Functions' }
-Returns the entity used by Active Camera to determine where the camera should focus. This can be either the [Marked](https://bindingofisaacrebirth.fandom.com/wiki/Marked) target [EntityEffect](EntityEffect.md) or a weapon's entity. 
+Returns the entity used by Active Camera to determine where the camera should focus. This can be either the [Marked](https://bindingofisaacrebirth.wiki.gg/wiki/Marked) target [EntityEffect](EntityEffect.md) or a weapon's entity. 
 If none of these exist, this returns `nil`.
 
 ___
@@ -564,7 +564,7 @@ ___
 ___
 ### GetGlyphOfBalanceDrop () {: aria-label='Functions' }
 #### table GetGlyphOfBalanceDrop ( int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
-Returns a table containing the variant and subtype of the possible [Glyph of Balance](https://bindingofisaacrebirth.fandom.com/wiki/Glyph_of_Balance) drop.
+Returns a table containing the variant and subtype of the possible [Glyph of Balance](https://bindingofisaacrebirth.wiki.gg/wiki/Glyph_of_Balance) drop.
 ___
 ### GetGnawedLeafTimer () {: aria-label='Functions' }
 #### int GetGnawedLeafTimer ( ) {: .copyable aria-label='Functions' }
@@ -590,7 +590,7 @@ ___
 ___
 ### GetHeldEntity () {: aria-label='Functions' }
 #### [Entity](Entity.md) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
-Returns the Entity that the player is holding over their head, such as with throwable red bombs or [Suplex!](https://bindingofisaacrebirth.fandom.com/wiki/Suplex!)
+Returns the Entity that the player is holding over their head, such as with throwable red bombs or [Suplex!](https://bindingofisaacrebirth.wiki.gg/wiki/Suplex!)
 Returns `nil` if no entity is currently being held.
 
 ___
@@ -646,7 +646,7 @@ ___
 ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
 #### int GetKeepersSackBonus ( ) {: .copyable aria-label='Functions' }
-Gets the number of coins spent while possessing [Keeper's Sack](https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
+Gets the number of coins spent while possessing [Keeper's Sack](https://bindingofisaacrebirth.wiki.gg/wiki/Keeper's_Sack).
 
 ___
 ### GetLaserColor () {: aria-label='Functions' }
@@ -673,7 +673,7 @@ Returns the amount of frames left until Tainted Magdalene's swing attack from be
 ___
 ### GetMarkedTarget () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) GetMarkedTarget ( ) { : .copyable aria-label='Functions' }
-Returns the entity effect representing the target of the [Marked](https://bindingofisaacrebirth.fandom.com/wiki/Marked) item. 
+Returns the entity effect representing the target of the [Marked](https://bindingofisaacrebirth.wiki.gg/wiki/Marked) item. 
 If the target is not displayed on the ground, this function returns `nil`.
 
 ___
@@ -729,7 +729,7 @@ Returns the pickups that are stored on the player through the use of the Moving 
 ___
 ### GetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### int GetNextUrethraBlockFrame ( ) {: .copyable aria-label='Functions' }
-Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ___
 ### GetPlanCKillCountdown () {: aria-label='Functions' }
@@ -738,7 +738,7 @@ ___
 ___
 ### GetPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
-Returns the attack duration of the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+Returns the attack duration of the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ___
 ### GetPotatoPeelerUses () {: aria-label='Functions' }
@@ -766,7 +766,7 @@ Returns the amount of frames left until the charging effect from the A Pony or W
 ___
 ### GetPurityState () {: aria-label='Functions' }
 #### [PurityState](enums/PurityState.md) GetPurityState ( ) {: .copyable aria-label='Functions' }
-Returns the state in which the [Purity](https://bindingofisaacrebirth.fandom.com/wiki/Purity) item effect currently is. Returns `PurityState.BLUE` if the player does not have the Purity collectible.
+Returns the state in which the [Purity](https://bindingofisaacrebirth.wiki.gg/wiki/Purity) item effect currently is. Returns `PurityState.BLUE` if the player does not have the Purity collectible.
 
 ___
 ### GetRedStewBonusDuration () {: aria-label='Functions' }
@@ -1087,7 +1087,7 @@ Returns true if the [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums
 ___
 ### IsUrethraBlocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
-Returns true when the player can no longer shoot due to charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+Returns true when the player can no longer shoot due to charging the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ___
 ### MorphToCoopGhost () {: aria-label='Functions' }
@@ -1191,7 +1191,7 @@ ___
 ___
 ### SetBladderCharge () {: aria-label='Functions' }
 #### void SetBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
-Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+Used by the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ???+ bug "Bug"
     The player's head turns pitch black when this function is used without Kidney Stone.
@@ -1397,7 +1397,7 @@ ___
 ___
 ### SetKeepersSackBonus () {: aria-label='Functions' }
 #### void SetKeepersSackBonus ( int Bonus ) {: .copyable aria-label='Functions' }
-Sets the current coin bonus for the player's [Keeper's Sack](https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack) collectible.
+Sets the current coin bonus for the player's [Keeper's Sack](https://bindingofisaacrebirth.wiki.gg/wiki/Keeper's_Sack) collectible.
 
 ___
 ### SetLaserColor () {: aria-label='Functions' }
@@ -1469,7 +1469,7 @@ ___
 ___
 ### SetPurityState () {: aria-label='Functions' }
 #### void SetPurityState ( [PurityState](enums/PurityState.md) State ) {: .copyable aria-label='Functions' }
-Set the state in which the [Purity](https://bindingofisaacrebirth.fandom.com/wiki/Purity) item effect currently is.
+Set the state in which the [Purity](https://bindingofisaacrebirth.wiki.gg/wiki/Purity) item effect currently is.
 
 ___
 ### SetRedStewBonusDuration () {: aria-label='Functions' }
@@ -1694,7 +1694,7 @@ Unblocks the [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/Trinke
 ___
 ### UpdateIsaacPregnancy () {: aria-label='Functions' }
 #### void UpdateIsaacPregnancy ( boolean UpdateCambion ) {: .copyable aria-label='Functions' }
-Set `true` if you want to update the [Cambion Conception](https://bindingofisaacrebirth.fandom.com/wiki/Cambion_Conception) costume, otherwise updates the [Immaculate Conception](https://bindingofisaacrebirth.fandom.com/wiki/Immaculate_Conception) costume.
+Set `true` if you want to update the [Cambion Conception](https://bindingofisaacrebirth.wiki.gg/wiki/Cambion_Conception) costume, otherwise updates the [Immaculate Conception](https://bindingofisaacrebirth.wiki.gg/wiki/Immaculate_Conception) costume.
 
 ___
 ### VoidHasCollectible () {: aria-label='Functions' }
