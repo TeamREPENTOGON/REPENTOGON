@@ -386,39 +386,59 @@ void CollectibleEx::Parse(const ItemConfig_Item& item, const XMLAttributes& xml)
 	}
 }
 
-void ParseXMLData() {
-	const auto& collectibles = *g_Manager->GetItemConfig()->GetCollectibles();
-	s_Collectibles.resize(collectibles.size());
-	for (const auto* item : collectibles) {
-		if (item && item->id > 0) {
-			if (const auto* xml = XMLStuff.ItemData->GetNodeOrNullById(item->id)) {
-				s_Collectibles[item->id].Parse(*item, *xml);
+void PostLoadItems(const std::string& modid) {
+	// Collectibles
+	const size_t numCollectibles = g_Manager->GetItemConfig()->GetCollectibles()->size();
+	if (s_Collectibles.size() < numCollectibles) {
+		s_Collectibles.resize(numCollectibles);
+	}
+	for (const int id : XMLStuff.ItemData->bymod[modid]) {
+		const ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
+		const XMLAttributes* xml = XMLStuff.ItemData->GetNodeOrNullById(id);
+		if (item && xml) {
+			s_Collectibles[id].Parse(*item, *xml);
+
+			// _collectibleNameMap is pretty much exclusively used for mod-related stuff.
+			// Ofc the basegame does not account for translation string support. It puts only the TRANSLATED names in the map.
+			// Here we shove all of the raw, untranslated strings into the map too.
+			// This fixes putting mod items into item pools, and GetItemIdByName.
+			if (!item->name.empty() && item->id > 0) {
+				g_Manager->GetItemConfig()->_collectibleNameMap[item->name] = item->id;
 			}
 		}
 	}
 
-	const auto& trinkets = *g_Manager->GetItemConfig()->GetTrinkets();
-	s_Trinkets.resize(trinkets.size());
-	for (const auto* item : trinkets) {
-		if (item && item->id > 0) {
-			if (const auto* xml = XMLStuff.TrinketData->GetNodeOrNullById(item->id)) {
-				s_Trinkets[item->id].Parse(*item, *xml);
-			}
+	// Trinkets
+	const size_t numTrinkets = g_Manager->GetItemConfig()->GetTrinkets()->size();
+	if (s_Trinkets.size() < numTrinkets) {
+		s_Trinkets.resize(numTrinkets);
+	}
+	for (const int id : XMLStuff.TrinketData->bymod[modid]) {
+		const ItemConfig_Item* item = g_Manager->GetItemConfig()->GetTrinket(id);
+		const XMLAttributes* xml = XMLStuff.TrinketData->GetNodeOrNullById(id);
+		if (item && xml) {
+			s_Trinkets[id].Parse(*item, *xml);
 		}
 	}
 
-	const auto& nullItems = *g_Manager->GetItemConfig()->GetNullItems();
-	s_NullItems.resize(nullItems.size());
-	for (const auto* item : nullItems) {
-		if (item && item->id > 0) {
-			if (const auto* xml = XMLStuff.NullItemData->GetNodeOrNullById(item->id)) {
-				s_NullItems[item->id].Parse(*item, *xml);
-			}
+	// Null Items
+	const size_t numNulls = g_Manager->GetItemConfig()->GetNullItems()->size();
+	if (s_NullItems.size() < numNulls) {
+		s_NullItems.resize(numNulls);
+	}
+	for (const int id : XMLStuff.NullItemData->bymod[modid]) {
+		const ItemConfig_Item* item = g_Manager->GetItemConfig()->GetNullItem(id);
+		const XMLAttributes* xml = XMLStuff.NullItemData->GetNodeOrNullById(id);
+		if (item && xml) {
+			s_NullItems[id].Parse(*item, *xml);
 		}
 	}
+}
 
+void PostLoadSounds(const std::string& modid) {
 	// Parsing announcer lines here because sounds.xml is loaded AFTER pocketitems.xml
-	for (ItemConfig_Card* card : *g_Manager->GetItemConfig()->GetCards()) {
+	for (const int id : XMLStuff.CardData->bymod[modid]) {
+		ItemConfig_Card* card = g_Manager->GetItemConfig()->GetCard(id);
 		if (card && card->announcerVoice <= 0) {
 			const std::string announcer = XMLStuff.CardData->GetAttributeById(card->id, "announcer");
 			if (!announcer.empty()) {
@@ -428,7 +448,9 @@ void ParseXMLData() {
 			}
 		}
 	}
-	for (ItemConfig_Pill* pill : *g_Manager->GetItemConfig()->GetPillEffects()) {
+	for (const int id : XMLStuff.PillData->bymod[modid]) {
+		auto& pills = *g_Manager->GetItemConfig()->GetPillEffects();
+		ItemConfig_Pill* pill = id < pills.size() ? pills.at(id) : nullptr;
 		if (pill && pill->announcerVoice <= 0) {
 			const std::string announcer = XMLStuff.PillData->GetAttributeById(pill->id, "announcer");
 			if (!announcer.empty()) {
@@ -488,6 +510,16 @@ ItemEx* GetItemEx(ItemConfig_Item* item) {
 		return GetCollectibleEx(item->id);
 	}
 	return nullptr;
+}
+
+HOOK_METHOD_PRIORITY(ItemConfig, Load, -1, (char* xmlpath, ModEntry* modentry)->void) {
+	super(xmlpath, modentry);
+	PostLoadItems(GetXMLDataLastModId());
+}
+
+HOOK_METHOD_PRIORITY(SFXManager, LoadConfig, -1, (char* xmlpath, bool ismod)->void) {
+	super(xmlpath, ismod);
+	PostLoadSounds(GetXMLDataLastModId());
 }
 
 }  // ItemConfigEx

@@ -97,9 +97,6 @@ private:
 	bool forceFlying_ = false;
 };
 
-// Scans XMLData to initialize all of the Ex configs.
-void ParseXMLData();
-
 EntityEx* GetEntityEx(EntityConfig_Entity* entity);
 EntityEx* GetEntityEx(int type, int variant, int subtype);
 PlayerEx* GetPlayerEx(int playertype);

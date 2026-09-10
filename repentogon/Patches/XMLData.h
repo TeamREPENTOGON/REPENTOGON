@@ -670,7 +670,7 @@ public:
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
 	unordered_map<string, tuple<int, int, int>> bybossid;
-	XMLNodeIdxLookup bymod;
+	unordered_map<string, vector<tuple<int, int, int>>> bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
 
 	void Clear() {

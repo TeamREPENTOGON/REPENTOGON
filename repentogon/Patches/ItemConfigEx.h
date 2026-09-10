@@ -205,10 +205,6 @@ private:
 	CustomTagsLookup& GetCustomTagsLookup() override;
 };
 
-
-// Scans XMLData to initialize all of the Ex configs.
-void ParseXMLData();
-
 // Get the ex config for a Collectible, or nullptr if the ID is invalid.
 CollectibleEx* GetCollectibleEx(int id);
 
