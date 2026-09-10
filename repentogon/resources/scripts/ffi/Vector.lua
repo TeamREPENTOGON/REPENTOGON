@@ -201,7 +201,7 @@ Vector = setmetatable({
     Zero = VectorT(0, 0),
     One = VectorT(1, 1)
 }, {
-    __call = function(_, X, Y) return VectorT(X or 0, Y or 0) end,
+    __call = function(_, X, Y) local v = VectorT(X or 0, Y or 0) return v end,
     __class = VectorMT,
 })
 
