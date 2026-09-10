@@ -420,7 +420,7 @@ LUA_FUNCTION(Lua_RoomGetEffects)
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 
 	TemporaryEffects* effects = room->GetTemporaryEffects();
-	lua::luabridge::UserdataPtr::push(L, effects, lua::GetMetatableKey(lua::Metatables::_TEMPORARY_EFFECTS));
+	lua::ffi::pushCdataPtr(L, effects, lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS_PTR]);
 
 	return 1;
 }

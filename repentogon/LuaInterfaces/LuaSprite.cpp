@@ -652,7 +652,7 @@ LUA_FUNCTION(Lua_LayerStateSetColor)
 	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
 	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
 
-	*layerState->GetColor() = *color;
+	layerState->_color = *color;
 	return 0;
 }
 

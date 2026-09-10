@@ -140,6 +140,8 @@ pcall(require("ffi.TearParams"))
 pcall(require("ffi.ProjectileParams"))
 pcall(require("ffi.ActiveItemDesc"))
 pcall(require("ffi.QueueItemData"))
+pcall(require("ffi.TemporaryEffect"))
+pcall(require("ffi.TemporaryEffects"))
 -- pcall(require("ffi.Input"))
 
 

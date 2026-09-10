@@ -332,51 +332,6 @@ end
 
 EndClass()
 
----------------------------------------------------------
-BeginClass(TemporaryEffects)
-
--- void TemporaryEffects:AddCollectibleEffect(CollectibleType CollectibleType, boolean AddCostume = true, int Count = 1)
-local TemporaryEffects_AddCollectibleEffect = META0.AddCollectibleEffect
-function META:AddCollectibleEffect(id, addCostume, num)
-	TemporaryEffects_AddCollectibleEffect(self, id, addCostume or addCostume == nil, num or 1)
-end
-
--- void TemporaryEffects:AddTrinketEffect(TrinketType TrinketType, boolean AddCostume = true, int Count = 1)
-local TemporaryEffects_AddTrinketEffect = META0.AddTrinketEffect
-function META:AddTrinketEffect(id, addCostume, num)
-	TemporaryEffects_AddTrinketEffect(self, id, addCostume or addCostume == nil, num or 1)
-end
-
--- void TemporaryEffects:AddNullEffect(NullItemID NullId, boolean AddCostume = true, int Count = 1)
-local TemporaryEffects_AddNullEffect = META0.AddNullEffect
-function META:AddNullEffect(id, addCostume, num)
-	TemporaryEffects_AddNullEffect(self, id, addCostume or addCostume == nil, num or 1)
-end
-
--- void TemporaryEffects:RemoveCollectibleEffect(CollectibleType CollectibleType, int Count = 1)
--- * Count=-1 removes all instances of that effect
-local TemporaryEffects_RemoveCollectibleEffect = META0.RemoveCollectibleEffect
-function META:RemoveCollectibleEffect(id, num)
-	TemporaryEffects_RemoveCollectibleEffect(self, id, num or 1)
-end
-
--- void TemporaryEffects:RemoveTrinketEffect(TrinketType TrinketType, int Count = 1)
--- * Count=-1 removes all instances of that effect
-local TemporaryEffects_RemoveTrinketEffect = META0.RemoveTrinketEffect
-function META:RemoveTrinketEffect(id, num)
-	TemporaryEffects_RemoveTrinketEffect(self, id, num or 1)
-end
-
--- void TemporaryEffects:RemoveNullEffect(NullItemID NullId, int Count = 1)
--- * Count=-1 removes all instances of that effect
-local TemporaryEffects_RemoveNullEffect = META0.RemoveNullEffect
-function META:RemoveNullEffect(id, num)
-	TemporaryEffects_RemoveNullEffect(self, id, num or 1)
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(Room)
 
 -- Vector Room:FindFreePickupSpawnPosition(Vector Pos, float InitialStep = 0, boolean AvoidActiveEntities = false, boolean AllowPits = false, boolean avoidDoors = false)

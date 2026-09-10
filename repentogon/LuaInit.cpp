@@ -265,6 +265,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ACTIVE_ITEM_DESC_PTR] = lua_ctypeid(L, "ActiveItemDescPtr");
 	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA] = lua_ctypeid(L, "QueueItemData");
 	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA_PTR] = lua_ctypeid(L, "QueueItemDataPtr");
+	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS] = lua_ctypeid(L, "TemporaryEffects");
+	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS_PTR] = lua_ctypeid(L, "TemporaryEffectsPtr");
 
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
@@ -388,6 +390,23 @@ LUA_FUNCTION(Lua_ToDegrees) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetPtrHash) {
+	if (lua_isuserdata(L, 1)) {
+		const char* ud = (const char*)lua_touserdata(L, 1);
+		uintptr_t inner = *(const uint32_t*)(ud + 4);
+		lua_pushinteger(L, (lua_Integer)g_LuaEngine->GetMaskedPointer(inner));
+		return 1;
+	}
+	else if (lua_type(L, 1) == LUA_TCDATA) {
+		void* payload = lua_tocdata(L, 1);
+		uintptr_t inner = payload ? *(const uintptr_t*)payload : 0;
+		lua_pushinteger(L, (lua_Integer)g_LuaEngine->GetMaskedPointer(inner));
+		return 1;
+	}
+	lua_settop(L, -2);
+	return luaL_error(L, "The parameter is not a userdata or cdata!");
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	ZHL::Log("[REPENTOGON] Registering Lua functions and metatables\n");
@@ -402,6 +421,7 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);
 	lua_register(state, "ToDegrees", Lua_ToDegrees);
+	lua_register(state, "GetPtrHash", Lua_GetPtrHash);
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {

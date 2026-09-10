@@ -632,6 +632,8 @@ namespace lua {
             ACTIVE_ITEM_DESC_PTR,
             QUEUE_ITEM_DATA,
             QUEUE_ITEM_DATA_PTR,
+            TEMPORARY_EFFECTS,
+            TEMPORARY_EFFECTS_PTR,
             MAX_CDATA
         };
 

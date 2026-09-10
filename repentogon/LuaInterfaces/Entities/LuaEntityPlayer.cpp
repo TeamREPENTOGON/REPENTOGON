@@ -3980,6 +3980,13 @@ LUA_FUNCTION(Lua_PlayerGetTearHitParams) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetEffects)
+{
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua::ffi::pushCdataPtr(L, &player->_temporaryeffects, lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS_PTR]);
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -3987,6 +3994,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetEffects", Lua_PlayerGetEffects },
 		{ "QueueItem", Lua_PlayerQueueItem },
 		{ "AddCostume", Lua_PlayerAddCostume },
 		{ "CheckFamiliar", Lua_PlayerCheckFamiliar },

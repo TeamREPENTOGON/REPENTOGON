@@ -49,6 +49,8 @@ __thiscall void TemporaryEffects::RemoveTrinketEffect(int trinkettype, int count
 "558bec53568bf157807e??00":
 __thiscall void TemporaryEffects::AddEffect(TemporaryEffect* Effect, bool addcostume, int count);
 
+"558bec83e4f883ec0c53568bf157807e??00":
+__thiscall void TemporaryEffects::ClearEffects();
 
 struct TemporaryEffects
 {
