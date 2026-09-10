@@ -1150,7 +1150,7 @@ void XMLGiantBook::ProcessAttributes(const xml_node<char>& auxnode, XMLAttribute
 // XMLChallenge ----------
 
 void XMLChallenge::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& challenge, int id) {
-	CheckTranslatedAttribute(giantbook, "lockeddesc");
+	CheckTranslatedAttribute(challenge, "lockeddesc");
 }
 
 // XMLRecipe ----------
