@@ -168,7 +168,7 @@ __thiscall Vector * Room::GetCenterPos(Vector * buffer);
 __thiscall int Room::GetClampedGridIndex(Vector* position);
 
 "558bec83e4f883ec34568bf10f28c3":
-__thiscall Vector * Room::GetClampedPosition(Vector * buffer, Vector * pos, float margin, float margin2, float margin3);
+__thiscall Vector * Room::GetClampedPosition (Vector* ret, Vector* pos, float topLeftXMargin<xmm3>, float topLeftYMargin, float bottomRightXMargin, float bottomRightYMargin);
 
 "558bec8b45??83f80777":
 __thiscall Vector * Room::GetDoorSlotPosition(Vector * buffer, int slot);
