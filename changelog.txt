@@ -64,7 +64,7 @@ Added:
 * Modded "announcer" and "announcer2" sounds can now be specified by name in pocketitems.xml
 * Added support for babies.xml in mod content folders! You can finally add co-op babies!
 * Added new content xml: "edenhair.xml"
-* Added new console command "giveeffect" / "ge" for giving TemporaryEffects / Null Items.
+* Added new console commands "giveeffect" / "ge" / "removeeffect" / "re" for adding/removing TemporaryEffects / Null Items.
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
 * Updated ImGui version with many benifits
 	- ImGui version has been upgraded to 1.92.9b.

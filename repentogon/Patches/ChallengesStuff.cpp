@@ -49,6 +49,18 @@ string GetChallengeName(const int challengeid) {
 	return untranslated;
 }
 
+string GetChallengeLockedDesc(const int challengeid) {
+	const std::string untranslated = XMLStuff.ChallengeData->GetAttributeById(challengeid, "untranslatedlockeddesc");
+	if (!untranslated.empty()) {
+		return untranslated;
+	}
+	const std::string desc = XMLStuff.ChallengeData->GetAttributeById(challengeid, "lockeddesc");
+	if (!desc.empty()) {
+		return desc;
+	}
+	return "LOCKED :(";
+}
+
 string GetChallengeSaveKey(const int challengeid) {
 	return GetChallengeName(challengeid) + XMLStuff.ChallengeData->GetAttributeById(challengeid, "sourceid");
 }
@@ -178,7 +190,6 @@ HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 ANM2 Streak = ANM2();
 int prevchalselect = -1;
 unordered_map<int, bool> lockedchallenges;
-string lockedchalstr = string("LOCKED :(");
 
 
 int firstunlocked = 1;
@@ -286,6 +297,9 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		Streak.Play("Idle", true);
 		Streak.Update();
 	}
+
+	StringTable* st = g_Manager->GetStringTable();
+
 	Vector ref = g_MenuManager->_ViewPosition; 
 	ref = Vector(ref.x + 39, ref.y + 15);
 	Vector offset = Vector(ref.x - 950, ref.y + 216);
@@ -299,7 +313,6 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		// Attempt to translate the displayed name if appropriate.
 		if (!name.empty() && name.front() == '#') {
 			name.erase(0, 1);  // Remove the '#'
-			StringTable* st = g_Manager->GetStringTable();
 			bool failed = false;
 			if (const char* translated = st->GetString("Challenges", st->language, name.c_str(), &failed); !failed && translated && strlen(translated) > 0) {
 				name = translated;
@@ -312,10 +325,16 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		Vector renderPos(pos.x, pos.y - 20);
 		color._alpha = 1;
 		if (lockedchallenges[i]) {
-			string locked = order + lockedchalstr;
-			if ((node.find("lockeddesc") != node.end())) {
-				locked = order + node["lockeddesc"];
+			string locked = GetChallengeLockedDesc(i);
+			// Attempt to translate the locked desc if appropriate.
+			if (!locked.empty() && locked.front() == '#') {
+				locked.erase(0, 1);  // Remove the '#'
+				bool failed = false;
+				if (const char* translated = st->GetString("Challenges", st->language, locked.c_str(), &failed); !failed && translated && strlen(translated) > 0) {
+					locked = translated;
+				}
 			}
+			locked = order + locked;
 			color._alpha = 0.5;
 			g_Manager->_font2_TeamMeatEx12.DrawString(locked.c_str(), renderPos, scale, &color, &settings);
 		}

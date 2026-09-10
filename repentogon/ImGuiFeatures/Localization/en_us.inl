@@ -131,6 +131,9 @@ I(CONSOLE_GIVEITEM2_HELP, u8"Gives the second player items, trinkets, cards and 
 I(CONSOLE_GIVEEFFECT_DESC, u8"Give the character a TemporaryEffect")
 I(CONSOLE_GIVEEFFECT_HELP, u8"Gives the main player TemporaryEffects, by ID or name. Grants the effect of Null Items by default, or prefix the ID with (c) for Collectible effects or (t) for Trinket effects.\nThis command also has shorthand which is just (ge).\nExamples:\n(giveeffect 74) will give the player Luna's tears up Null Item.\n(giveeffect c34) will give the player Book of Belial's damage up effect.")
 
+I(CONSOLE_REMOVEEFFECT_DESC, u8"Removes a TemporaryEffect from the character")
+I(CONSOLE_REMOVEEFFECT_HELP, u8"Removes TemporaryEffects from the main player, by ID or name. Removes Null Items by default, or prefix the ID with (c) for Collectible effects or (t) for Trinket effects.\nThis command also has shorthand which is just (re).")
+
 I(CONSOLE_GOTO_DESC, u8"Teleport to a new room")
 I(CONSOLE_GOTO_HELP, u8"Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.")
 

@@ -580,6 +580,8 @@ public:
 class XMLChallenge : public XMLDataHolder {
 public:
 	const char* GetTranslationStringCategory() const override { return "Challenges"; }
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& challenge, int id) override;
 };
 
 class XMLBossColor : public XMLDataHolder {

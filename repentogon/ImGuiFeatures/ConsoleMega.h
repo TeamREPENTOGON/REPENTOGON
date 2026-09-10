@@ -207,9 +207,9 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("eggs", LANG.CONSOLE_EGGS_DESC, LANG.CONSOLE_EGGS_HELP, true);
         RegisterCommand("forceroom", LANG.CONSOLE_FORCEROOM_DESC, LANG.CONSOLE_FORCEROOM_HELP, false, GOTO);
         RegisterCommand("fullrestart", LANG.CONSOLE_FULLRESTART_DESC, LANG.CONSOLE_FULLRESTART_HELP, true);
+		RegisterCommand("giveeffect", LANG.CONSOLE_GIVEEFFECT_DESC, LANG.CONSOLE_GIVEEFFECT_HELP, false, EFFECT, { "ge" });
         RegisterCommand("giveitem", LANG.CONSOLE_GIVEITEM_DESC, LANG.CONSOLE_GIVEITEM_HELP, false, ITEM, { "g" });
         RegisterCommand("giveitem2", LANG.CONSOLE_GIVEITEM2_DESC, LANG.CONSOLE_GIVEITEM2_HELP, false, ITEM, { "g2" });
-        RegisterCommand("giveeffect", LANG.CONSOLE_GIVEEFFECT_DESC, LANG.CONSOLE_GIVEEFFECT_HELP, false, EFFECT, { "ge" });
         RegisterCommand("goto", LANG.CONSOLE_GOTO_DESC, LANG.CONSOLE_GOTO_HELP, false, GOTO);
         RegisterCommand("gridspawn", LANG.CONSOLE_GRIDSPAWN_DESC, LANG.CONSOLE_GRIDSPAWN_HELP, false, GRID);
         RegisterCommand("help", LANG.CONSOLE_HELP_DESC, LANG.CONSOLE_HELP_HELP, true);
@@ -229,6 +229,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("profstop", LANG.CONSOLE_PROFSTOP_DESC, LANG.CONSOLE_PROFSTOP_HELP, true);
         RegisterCommand("remove", LANG.CONSOLE_REMOVE_DESC, LANG.CONSOLE_REMOVE_HELP, false, ITEM, { "r" });
         RegisterCommand("remove2", LANG.CONSOLE_REMOVE2_DESC, LANG.CONSOLE_REMOVE2_HELP, false, ITEM, { "r2" });
+		RegisterCommand("removeeffect", LANG.CONSOLE_REMOVEEFFECT_DESC, LANG.CONSOLE_REMOVEEFFECT_HELP, false, EFFECT, { "re" });
         RegisterCommand("reloadfx", LANG.CONSOLE_RELOADFX_DESC, LANG.CONSOLE_RELOADFX_HELP, false);
         RegisterCommand("reloadshaders", LANG.CONSOLE_RELOADSHADERS_DESC, LANG.CONSOLE_RELOADSHADERS_HELP, false);
         RegisterCommand("reloadwisps", LANG.CONSOLE_RELOADWISPS_DESC, LANG.CONSOLE_RELOADWISPS_HELP, false);
@@ -1201,24 +1202,35 @@ struct ConsoleMega : ImGuiWindowObject {
                             break;
                         }
 
-                        case PLAYER: {
-                          entries = {
-                              AutocompleteEntry("-1", "Enemy"),
-                          };
-                          for (const auto& node : XMLStuff.PlayerData->nodes) {
-                            int id = node.first;
-							std::string prefix = "";
-							if (node.second.count("bskinparent") || (id > 20 && id <= 40)) {
-								prefix = "Tainted ";
+						case PLAYER:{
+							entries = {
+								AutocompleteEntry("-1", "Enemy"),
+							};
+							for (const auto& node : XMLStuff.PlayerData->nodes) {
+								int id = node.first;
+								std::string prefix = "";
+								if (id > 20 && id <= 40) {
+									prefix = "Tainted ";
+								} else {
+									// Check if a mod did the thing where the tainted has a different name
+									if (auto bskinparent = node.second.find("bskinparent");  bskinparent != node.second.end()) {
+										auto name = node.second.find("untranslatedname");
+										if (name == node.second.end()) {
+											name = node.second.find("name");
+										}
+										if (name != node.second.end() && name->second == bskinparent->second) {
+											prefix = "Tainted ";
+										}
+									}
+								}
+								std::string suffix = "";
+								if (id == 11 || id == 38 || id == 39) {
+									suffix = " 2";
+								}
+								entries.insert(AutocompleteEntry(std::to_string(id), prefix + GetAutocompleteName(node.second, "Players") + suffix));
 							}
-							std::string suffix = "";
-							if (id == 11 || id == 38 || id == 39) {
-								suffix = " 2";
-							}
-                            entries.insert(AutocompleteEntry(std::to_string(id), prefix + GetAutocompleteName(node.second, "Players") + suffix));
-                          }
-                          break;
-                        }
+							break;
+						}
 
                         case ACHIEVEMENT: {
                             for (const auto& node : XMLStuff.AchievementData->nodes) {
