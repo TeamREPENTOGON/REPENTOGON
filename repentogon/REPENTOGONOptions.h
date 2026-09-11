@@ -109,7 +109,7 @@ struct REPENTOGONOptions {
 		fontSize = defstoi(ini["internal"]["FontSize"], defaultFontSize);
 		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
 		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
-		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
+		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], 0);
 		enableDocking = defstoi(ini["internal"]["EnableDocking"], 1);
 
 		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
