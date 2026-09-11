@@ -112,10 +112,8 @@ LUA_FUNCTION(Lua_GetClampedPosition) {
 		margin[3] = m;
 	}
 
-	Vector buffer;
 	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
 	room->GetClampedPosition(toLua, pos, margin[0], margin[1], margin[2], margin[3]);
-	*toLua = buffer;
 
 	return 1;
 }
