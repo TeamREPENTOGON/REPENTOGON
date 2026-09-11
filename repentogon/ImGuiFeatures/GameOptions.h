@@ -6,10 +6,12 @@
 #include "IsaacRepentance.h"
 #include "imgui.h"
 #include "Lang.h"
+#include "MultiViewportEnhanced.h"
 
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
+extern bool requestFontReload;
 
 static bool PromptUserYesNo(const char* prompt) {
     const int response = MessageBoxA(0, prompt, "REPENTOGON", MB_ICONINFORMATION | MB_YESNO);
@@ -27,6 +29,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
     const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
+    const char* fontRenderStyle[2] = { "Pixelated", "Smooth" };
     const char* jacobAndEsauControlModes[2] = { "Classic", "Better" };
 
     const char* saveImportExportSlots[4] = { "ALL", "1", "2", "3"};
@@ -66,6 +69,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
         unifontRenderMode[4] = LANG.OPT_UNIFONT_RENDER_MODE_TINY_LOW;
 
         saveImportExportSlots[0] = LANG.OPT_SAVE_MANAGEMENT_ALL_SLOTS;
+
+        fontRenderStyle[0] = LANG.OPT_HUD_FONT_RENDER_STYLE_PIXELATED;
+        fontRenderStyle[1] = LANG.OPT_HUD_FONT_RENDER_STYLE_SMOOTH;
     }
 
     template <typename T>
@@ -76,7 +82,9 @@ struct GameOptionsWindow : ImGuiWindowObject {
             ImGui::BeginDisabled();
         }
         ImGui::TableSetColumnIndex(1);
-        ImGui::PushID("RESET_" + id);
+        char idstr[256];
+        sprintf(idstr, "RESET_%d", id);
+        ImGui::PushID(idstr);
         const bool clicked = ImGui::SmallButton(ICON_FA_ROTATE_LEFT);
         if (clicked) {
             valueRef = defaultValue;
@@ -129,7 +137,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
-
+        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
@@ -206,15 +214,49 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SliderInt(LANG.OPT_CONSOLE_CONSOLE_FONT, &g_Manager->GetOptions()->_consoleFont, 0, 2, consoleFontModes[g_Manager->GetOptions()->_consoleFont], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_consoleFont, 0);
                         AddNewTableRow();
-                        ImGui::Checkbox(LANG.OPT_CONSOLE_ENABLE_UNICODE_FONT, &repentogonOptions.enableUnifont);
-                        ImGui::SameLine();
-                        HelpMarker(LANG.OPT_CONSOLE_ENABLE_UNICODE_FONT_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.enableUnifont, true);
+
+                        ImGui::SeparatorText(LANG.OPT_HUD_IMGUI_UI_OPTION);
                         AddNewTableRow();
-                        ImGui::SliderInt(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE, &repentogonOptions.unifontRenderMode, 0, 4, unifontRenderMode[repentogonOptions.unifontRenderMode], ImGuiSliderFlags_NoInput);
+                        ImGui::Checkbox(LANG.OPT_HUD_IMGUI_ENABLE_MULTIVIEW, &repentogonOptions.enableImGuiMultiView);
                         ImGui::SameLine();
-                        HelpMarker(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.unifontRenderMode, 0);
+                        HelpMarker(LANG.OPT_HUD_IMGUI_ENABLE_MULTIVIEW_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.enableImGuiMultiView, true);
+                        AddNewTableRow();
+
+                        ImGui::Checkbox(LANG.OPT_HUD_IMGUI_ENABLE_DOCKING, &repentogonOptions.enableDocking);
+                        AddResetButton(++resetCounter, repentogonOptions.enableDocking, true);
+                        AddNewTableRow();
+
+                        ImGui::SliderInt(LANG.OPT_HUD_FONT_SIZE, &repentogonOptions.fontSize, 6, 26);
+                        ImGui::SameLine();
+                        AddResetButton(++resetCounter, repentogonOptions.fontSize, 16);
+                        AddNewTableRow();
+
+                        if (ImGui::SliderInt(LANG.OPT_HUD_FONT_RENDER_STYLE, &repentogonOptions.fontRenderStyle, 0, 1, fontRenderStyle[repentogonOptions.fontRenderStyle]))
+                            requestFontReload = true;
+                        ImGui::SameLine();
+                        if (AddResetButton(++resetCounter, repentogonOptions.fontRenderStyle, 0))
+                            requestFontReload = true;
+                        AddNewTableRow();
+
+                        if (predefinedFonts.size() > 1) {
+                            ImGui::Text(LANG.OPT_HUD_FONT_SELECT);
+                            AddNewTableRow();
+                            for (size_t i = 0; i < predefinedFonts.size(); i++) {
+                                ImGui::SameLine();
+                                ImGui::BeginDisabled(i == repentogonOptions.fontSelectedPredefined);
+                                if (ImGui::SmallButton(predefinedFonts[i].fontName)) {
+                                    repentogonOptions.fontSelectedPredefined = i;
+                                    requestFontReload = true;
+                                }
+                                ImGui::EndDisabled();
+                            }
+                            ImGui::SameLine();
+                            if (AddResetButton(++resetCounter, repentogonOptions.fontSelectedPredefined, 0)) {
+                                requestFontReload = true;
+                            }
+                        }
+
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();

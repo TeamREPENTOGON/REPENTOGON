@@ -17,6 +17,19 @@ inline int defstoi(const std::string& str, int default) {
 	return default;
 }
 
+// be careful with this: don't block any feature for wine users.
+inline bool isRunningInWine() {
+	static const char* (CDECL * pwine_get_version)(void);
+	HMODULE hntdll = GetModuleHandle("ntdll.dll");
+	if (!hntdll)
+		return 1;
+	pwine_get_version = (decltype(pwine_get_version))GetProcAddress(hntdll, "wine_get_version");
+	if (pwine_get_version)
+		return 1;
+	return 0;
+}
+
+
 struct REPENTOGONOptions {
 	void Init() {
 		optionsPath = std::string(REPENTOGON::GetRepentogonDataPath());
@@ -74,18 +87,36 @@ struct REPENTOGONOptions {
 		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		marsDoubleTapWindow = std::max(std::min(defstoi(ini["VanillaTweaks"]["MarsDoubleTapWindow"], 10), 20), 2);
 		disableExitPrompt = defstoi(ini["VanillaTweaks"]["DisableExitPrompt"], 0);
-		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
-		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
+//		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
+//		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
 		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		imGuiScale = defstoi(ini["internal"]["ImGuiScale"], 0);
 		renderDebugFindInRadius = defstoi(ini["internal"]["RenderDebugFindInRadius"], 0);
 		skipArchiveChecks = defstoi(ini["internal"]["SkipArchiveChecks"], 0);
 		didInputConfigsImport = defstoi(ini["internal"]["DidInputConfigsImport"], 0);
+
+		int defaultFontSize = 8;
+		switch (defstoi(ini["internal"]["UnifontRenderMode"], -1))
+		{
+		case 0: defaultFontSize = 13; break;
+		case 1: defaultFontSize = 16; break;
+		case 2: defaultFontSize = 14; break;
+		case 3: defaultFontSize = 8; break;
+		case 4: defaultFontSize = 8; break;
+		default: break;
+		}
+		fontSize = defstoi(ini["internal"]["FontSize"], defaultFontSize);
+		fontSelectedPredefined = 0; // defstoi(ini["internal"]["FontSelectedPredefined"], 0); // don't touch config file until we do support alternative font.
+		fontRenderStyle = defstoi(ini["internal"]["FontRenderStyle"], 0);
+		enableImGuiMultiView = defstoi(ini["internal"]["EnableImGuiMultiView"], isRunningInWine() ? 0 : 1);
+		enableDocking = defstoi(ini["internal"]["EnableDocking"], 1);
+
 		consoleKeyMode = defstoi(ini["VanillaTweaks"]["ConsoleKeyMode"],0);
 		consoleKeyVK = defstoi(ini["VanillaTweaks"]["ConsoleKeyVK"], 192);
 		consoleKeyScancode = defstoi(ini["VanillaTweaks"]["ConsoleKeyScancode"], 41);
 		blockUnknownDevices = defstoi(ini["VanillaTweaks"]["BlockUnknownDevices"], 0);
+
 		ZHL::Log("Loaded REPENTOGON INI\n");
 	}
 
@@ -133,14 +164,19 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "EcoMode", ecoMode);
 		Write("VanillaTweaks", "DisableExitPrompt", disableExitPrompt);
 		Write("VanillaTweaks", "BlockUnknownDevices", blockUnknownDevices);
-		Write("internal",	   "EnableUnifont",		   enableUnifont);
-		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
+//		Write("internal",	   "EnableUnifont",		   enableUnifont);
+//		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
 		Write("internal", "FileMap", fileMap);
 		Write("internal", "ImGuiScale", imGuiScale);
 		Write("internal", "RenderDebugFindInRadius", renderDebugFindInRadius);
 		Write("internal", "SkipArchiveChecks", skipArchiveChecks);
 		Write("internal", "DidInputConfigsImport", didInputConfigsImport);
+		Write("internal", "FontSize", fontSize);
+		// Write("internal", "FontSelectedPredefined", fontSelectedPredefined); // this is never released to users
+		Write("internal", "FontRenderStyle", fontRenderStyle);
+		Write("internal", "EnableImGuiMultiView", enableImGuiMultiView);
+		Write("internal", "EnableDocking", enableDocking);
 	}
 
 	mINI::INIStructure ini;
@@ -150,9 +186,11 @@ struct REPENTOGONOptions {
 	bool hushLaserSpeedFix;
 	bool quickRoomClear;
 	bool preventModUpdates;
-	bool enableUnifont;
+	//bool enableUnifont;
+	int fontSize;
+	int fontSelectedPredefined;
 	bool statHUDPlanetarium;
-	int unifontRenderMode;
+	//int unifontRenderMode;
 	bool fastLasers;
 	int lastSaveFile;
 	bool skipIntro;
@@ -167,6 +205,11 @@ struct REPENTOGONOptions {
 	bool disableExitPrompt;
 	bool skipArchiveChecks;
 	bool didInputConfigsImport;
+
+	bool enableImGuiMultiView;
+	int fontRenderStyle;
+	bool enableDocking;
+
 	int consoleKeyMode;	// 0 is virtualkey (default), 1 is scancode (layout-independent)
 	int consoleKeyVK;
 	int consoleKeyScancode;

@@ -4,10 +4,11 @@
 #include "../Patches/XMLData.h"
 #include "natural_sort.hpp"
 #include "LuaCore.h"
-#include "UnifontSupport.h"
+#include "FontSupport.h"
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"
+#include "MultiViewportEnhanced.h"
 
 #include <sstream>
 #include <cctype>
@@ -206,9 +207,9 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("eggs", LANG.CONSOLE_EGGS_DESC, LANG.CONSOLE_EGGS_HELP, true);
         RegisterCommand("forceroom", LANG.CONSOLE_FORCEROOM_DESC, LANG.CONSOLE_FORCEROOM_HELP, false, GOTO);
         RegisterCommand("fullrestart", LANG.CONSOLE_FULLRESTART_DESC, LANG.CONSOLE_FULLRESTART_HELP, true);
+		RegisterCommand("giveeffect", LANG.CONSOLE_GIVEEFFECT_DESC, LANG.CONSOLE_GIVEEFFECT_HELP, false, EFFECT, { "ge" });
         RegisterCommand("giveitem", LANG.CONSOLE_GIVEITEM_DESC, LANG.CONSOLE_GIVEITEM_HELP, false, ITEM, { "g" });
         RegisterCommand("giveitem2", LANG.CONSOLE_GIVEITEM2_DESC, LANG.CONSOLE_GIVEITEM2_HELP, false, ITEM, { "g2" });
-        RegisterCommand("giveeffect", LANG.CONSOLE_GIVEEFFECT_DESC, LANG.CONSOLE_GIVEEFFECT_HELP, false, EFFECT, { "ge" });
         RegisterCommand("goto", LANG.CONSOLE_GOTO_DESC, LANG.CONSOLE_GOTO_HELP, false, GOTO);
         RegisterCommand("gridspawn", LANG.CONSOLE_GRIDSPAWN_DESC, LANG.CONSOLE_GRIDSPAWN_HELP, false, GRID);
         RegisterCommand("help", LANG.CONSOLE_HELP_DESC, LANG.CONSOLE_HELP_HELP, true);
@@ -228,6 +229,7 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterCommand("profstop", LANG.CONSOLE_PROFSTOP_DESC, LANG.CONSOLE_PROFSTOP_HELP, true);
         RegisterCommand("remove", LANG.CONSOLE_REMOVE_DESC, LANG.CONSOLE_REMOVE_HELP, false, ITEM, { "r" });
         RegisterCommand("remove2", LANG.CONSOLE_REMOVE2_DESC, LANG.CONSOLE_REMOVE2_HELP, false, ITEM, { "r2" });
+		RegisterCommand("removeeffect", LANG.CONSOLE_REMOVEEFFECT_DESC, LANG.CONSOLE_REMOVEEFFECT_HELP, false, EFFECT, { "re" });
         RegisterCommand("reloadfx", LANG.CONSOLE_RELOADFX_DESC, LANG.CONSOLE_RELOADFX_HELP, false);
         RegisterCommand("reloadshaders", LANG.CONSOLE_RELOADSHADERS_DESC, LANG.CONSOLE_RELOADSHADERS_HELP, false);
         RegisterCommand("reloadwisps", LANG.CONSOLE_RELOADWISPS_DESC, LANG.CONSOLE_RELOADWISPS_HELP, false);
@@ -352,21 +354,22 @@ struct ConsoleMega : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
-        
+        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
-
+            
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);
+            bool textInputScrollbarVisible = ImGui::CalcTextSize(inputBuf, inputBuf + strlen(inputBuf), false, 0).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (ImGui::GetTextLineHeight() * imFontUnifont->Scale) - (textInputScrollbarVisible ? 14 : 0);
 
             if (!isImGuiActive)
             {
               textboxHeight = 0;
             }
-            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Border)) {
+            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Borders)) {
+                ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
@@ -438,8 +441,8 @@ struct ConsoleMega : ImGuiWindowObject {
               }
               ImVec2 drawPos = ImGui::GetCursorPos();
 
-              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
-                
+              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine;// | ImGuiInputTextFlags_NoHorizontalScroll;
+
               // This works around multiline losing focus on enter (genius!)
               //if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
               //   ImGui::SetKeyboardFocusHere(0);
@@ -449,7 +452,7 @@ struct ConsoleMega : ImGuiWindowObject {
                   reclaimFocus = false;
               }
 
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (ImGui::GetTextLineHeight() * imFontUnifont->Scale) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   if (!ImGui::GetIO().KeyShift) { // Prevent submission when Shift+Enter is pressed
                       char* s = inputBuf;
                       Strtrim(s);
@@ -603,7 +606,7 @@ struct ConsoleMega : ImGuiWindowObject {
                     }
                 }
                 
-                if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
+                if (cmdlets.size() >= 2 || (strBuf.size() > 0 && cmdlets.size() > 0 && cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                     std::string commandName = cmdlets.front();
                     commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
@@ -1199,24 +1202,35 @@ struct ConsoleMega : ImGuiWindowObject {
                             break;
                         }
 
-                        case PLAYER: {
-                          entries = {
-                              AutocompleteEntry("-1", "Enemy"),
-                          };
-                          for (const auto& node : XMLStuff.PlayerData->nodes) {
-                            int id = node.first;
-							std::string prefix = "";
-							if (node.second.count("bskinparent") || (id > 20 && id <= 40)) {
-								prefix = "Tainted ";
+						case PLAYER:{
+							entries = {
+								AutocompleteEntry("-1", "Enemy"),
+							};
+							for (const auto& node : XMLStuff.PlayerData->nodes) {
+								int id = node.first;
+								std::string prefix = "";
+								if (id > 20 && id <= 40) {
+									prefix = "Tainted ";
+								} else {
+									// Check if a mod did the thing where the tainted has a different name
+									if (auto bskinparent = node.second.find("bskinparent");  bskinparent != node.second.end()) {
+										auto name = node.second.find("untranslatedname");
+										if (name == node.second.end()) {
+											name = node.second.find("name");
+										}
+										if (name != node.second.end() && name->second == bskinparent->second) {
+											prefix = "Tainted ";
+										}
+									}
+								}
+								std::string suffix = "";
+								if (id == 11 || id == 38 || id == 39) {
+									suffix = " 2";
+								}
+								entries.insert(AutocompleteEntry(std::to_string(id), prefix + GetAutocompleteName(node.second, "Players") + suffix));
 							}
-							std::string suffix = "";
-							if (id == 11 || id == 38 || id == 39) {
-								suffix = " 2";
-							}
-                            entries.insert(AutocompleteEntry(std::to_string(id), prefix + GetAutocompleteName(node.second, "Players") + suffix));
-                          }
-                          break;
-                        }
+							break;
+						}
 
                         case ACHIEVEMENT: {
                             for (const auto& node : XMLStuff.AchievementData->nodes) {

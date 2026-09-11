@@ -1,10 +1,12 @@
 #pragma once
 #include "imgui.h"
+#include "imgui_internal.h"
 #include <IsaacRepentance.h>
 #include <iostream>
 #include <list>
 #include <sstream>
 #include <string>
+#include "MultiViewportEnhanced.h"
 
 #include "LuaCore.h"
 #include "IconsFontAwesome6_unicode.h"
@@ -149,7 +151,7 @@ struct Data {
     bool newSizeRequested = false;
     ImVec2 size = ImVec2(0, 0); // 0,0 initializes elements with dynamic size
     ImGuiWindowFlags windowFlags = 0;
-    ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
+    ImGuiChildFlags childFlags = ImGuiChildFlags_Borders;
 };
 
 struct ElementData : Data {
@@ -1028,6 +1030,7 @@ struct CustomImGui {
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 RunPreRenderCallbacks(&(*window));
+                ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
                 if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
@@ -1140,6 +1143,7 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::Window: {
                 if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
+                    ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                     RunCallbacks(&(*element));
                     DrawElements(element->children, overflowElements);
                 }

@@ -1994,8 +1994,16 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 --local ImGui = Isaac.GetImGui()
-ImGui.ImGuiToWorld = function (position) return Isaac.ScreenToWorld(position) end
-ImGui.WorldToImGui = function (position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
+ImGui.WorldToImGui = function (world_pos) 
+	local scr_xy = Isaac.WorldToScreen(world_pos)
+	-- scale the screen xy to the window rectangle
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Vector(scr_xy.X  * imgui_wh.X / Isaac.GetScreenWidth(), scr_xy.Y * imgui_wh.Y / Isaac.GetScreenHeight())
+end
+ImGui.ImGuiToWorld = function (imgui_pos) 
+	local _, imgui_wh = ImGui.GetGameWindowRect()
+	return Isaac.RenderToWorld(Vector(imgui_pos.X * Isaac.GetScreenWidth() / imgui_wh.X, imgui_pos.Y * Isaac.GetScreenHeight() / imgui_wh.Y))
+end
 
 if not _LUADEBUG then
 	debug = nil

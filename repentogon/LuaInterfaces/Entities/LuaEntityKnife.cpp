@@ -145,6 +145,19 @@ LUA_FUNCTION(Lua_SetKnifeVelocity) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_InitHomingPath) {
+	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	Vector* direction = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity* source = knife;
+	if (!lua_isnoneornil(L, 3)) {
+		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
+	} else if (Entity* parent = knife->GetParent()) {
+		source = parent;
+	}
+	knife->InitHomingPath(*direction, source, knife->_pathOffset);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -168,6 +181,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "InHitList", Lua_KnifeInHitList },
 		{ "SetKnifeDistance", Lua_SetKnifeDistance },
 		{ "SetKnifeVelocity", Lua_SetKnifeVelocity },
+		{ "InitHomingPath", Lua_InitHomingPath },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);
