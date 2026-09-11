@@ -32,6 +32,8 @@ Added:
 		Can be used to override the usual result of CanReroll (which is usually a fixed result based on Variant/SubType).
 		Affects rerolls as well as effects like Jera, Void, Ace cards, Moving Box, etc.
 		This attribute is persistent and will be remembered even if you leave the room.
+* EntityKnife:
+	- InitHomingPath(Vector direction, Entity source = nil)
 * Sprite:
 	- GetEventTriggerFrames(string AnimationName, string EventName)
 		Returns a list of frames at which the specified event will triggered (ie, `{5, 10, 12}`)
@@ -95,6 +97,7 @@ Fixes:
 * Fixed modded filemap generation setting sometimes failing to load files
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
 * Updated SoundEffect enum to align with the updated vanilla enum (only for sounds available in v1.9.7.12, up to `SoundEffect.SOUND_YO_LISTEN`)
+* Knives spawned as KnifeSubType.PROJECTILE (1) will no longer crash the game.
 /newline/
 /versionseparator/
 v1.1.2g -

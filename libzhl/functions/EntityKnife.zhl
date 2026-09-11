@@ -13,18 +13,27 @@ __thiscall void Entity_Knife::Constructor();
 "8b81????????85c074??8378??0875??8b88":
 __thiscall Entity_Player* Entity_Knife::GetPlayer();
 
+"558bec83e4f883ec0c5356578bf951":
+__thiscall void Entity_Knife::InitHomingPath(Vector direction, Entity* source, float pathOffset<xmm3>);
+
 struct Entity_Knife depends (BitSet128) : public Entity { 
 	BitSet128 _tearFlags : 0x410;
 	float _knifeDistance : 0x444;
 	float _knifeVelocity : 0x448;
 	bool _isSwinging : 0x465;
+	float _pathOffset : 0x4c4;
+	float _pathFollowSpeed : 0x4c8;
 	bool _prismApplied : 0x4e5;
 	bool _multidimensionalApplied : 0x4e6;
 	bool _isSpinAttack : 0x4ea;
 
 	__vtable {
 		skip; // Free
-		skip; // Init
+		
+		override
+		"558bec6aff68????????64a1????????5083ec20a1????????33c58945??5657508d45??64a3????????8bf9":
+		void Init(unsigned int Type, unsigned int Variant, unsigned int SubType, unsigned int Seed);
+		
 		skip; // PreUpdate
 		
 		override

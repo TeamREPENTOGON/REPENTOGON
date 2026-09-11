@@ -271,3 +271,18 @@ HOOK_METHOD(InputDeviceBase, Initialize, (void* unk) -> bool) {
 	}
 	return super(unk);
 }
+
+// SubType 1 knives crash during Update if the HomingLaser stuff isn't initialized (like if a mod spawns one).
+// This initializes it to a basic straight line solely to prevent crashes.
+// If something calls InitHomingPath again later on this gets cleanly overwritten.
+HOOK_STATIC(LuaEngine, PostKnifeInit, (Entity_Knife* knife) -> void, __stdcall) {
+	if (knife->_subtype == 1) {
+		// Source needs to be non-null
+		Entity* source = knife;
+		if (Entity* parent = knife->GetParent()) {
+			source = parent;
+		}
+		knife->InitHomingPath(knife->_velocity, source, knife->_pathOffset);
+	}
+	super(knife);
+}
