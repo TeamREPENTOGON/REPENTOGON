@@ -1143,7 +1143,6 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::Window: {
                 if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
-                    ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                     RunCallbacks(&(*element));
                     DrawElements(element->children, overflowElements);
                 }
