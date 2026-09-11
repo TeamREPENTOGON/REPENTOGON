@@ -9,4 +9,3 @@ struct RgonImGuiMultiViewportConfig {
 extern RgonImGuiMultiViewportConfig rgonImGuiMultiViewportConfig;
 
 void ImGui_ImplRepentogon_InitMultiViewport();
-void ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();

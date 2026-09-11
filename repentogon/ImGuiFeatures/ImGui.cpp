@@ -601,7 +601,8 @@ void __stdcall RunImGui(HDC hdc) {
 		The design is, if player start game without enable multi-viewports, they get a perfect single window imgui.
 		If player turn off multiview in game, most behavior will be okay, not perfect.
 
-		The flag can't be removed once it's added, we use ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow if possible.
+		The flag can't be removed once it's added, we manually set every window to main viewport in imgui's hack.
+		see `repentogonImGuiHookData.shouldDisableMultiViewport`
 	*/
 	if (repentogonOptions.enableImGuiMultiView)
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -609,6 +610,15 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	else
 		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;
+	repentogonImGuiHookData.shouldDisableMultiViewport = false;
+	if (repentogonOptions.enableDocking && g_Manager) {
+		auto opts = g_Manager->GetOptions();
+		if (opts) {
+			if (opts->_isFullscreen) {
+				repentogonImGuiHookData.shouldDisableMultiViewport = true;
+			}
+		}
+	}
 
 	LoadImGuiFont();
 
@@ -620,7 +630,6 @@ void __stdcall RunImGui(HDC hdc) {
 		
 	
 	if (menuShown) {
-		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
@@ -647,7 +656,6 @@ void __stdcall RunImGui(HDC hdc) {
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();

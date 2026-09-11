@@ -137,7 +137,6 @@ struct GameOptionsWindow : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
-        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
