@@ -4,7 +4,7 @@
 
 // For any class that's FFI'd but has functions that return or consume non FFI'd classes, we define globals, set them on the class's metatable then nil them afterwards.
 LUA_FUNCTION(Lua_EntityRefCtor) {
-	Entity* ent = LuaEntity::Get(L, 1);
+	Entity* ent = LuaEntity::GetOpt(L, 1);
 
 	EntityRef* toLua = LuaEntityRef::Place(L);
 	new (toLua) EntityRef(ent);
