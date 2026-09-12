@@ -11,6 +11,12 @@ extern "C" {
 		delete self;
 	}
 
+	__declspec(dllexport) ANM2* L_Sprite_Copy(ANM2* self) {
+		ANM2* copy = (ANM2*)::operator new(sizeof(ANM2));
+		copy->construct_from_copy(self);
+		return copy;
+	}
+
 	__declspec(dllexport) void L_Sprite_ClearCustomShader(ANM2* sprite, bool champion) {
 		ClearCustomShader(sprite, champion);
 	}

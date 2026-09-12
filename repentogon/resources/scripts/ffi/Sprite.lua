@@ -33,6 +33,7 @@ typedef struct Sprite* SpritePtr;
 
 struct Sprite* L_Sprite_New();
 void L_Sprite_Delete(struct Sprite*);
+struct Sprite* L_Sprite_Copy(struct Sprite*);
 void L_Sprite_ClearCustomShader(struct Sprite*, bool);
 const char* L_Sprite_GetAnimation(struct Sprite*);
 struct AnimationData* L_Sprite_GetAnimationData(struct Sprite*, const char*);
@@ -87,6 +88,9 @@ end
 local SpriteMT
 SpriteMT = {
     __type = "Sprite",
+    __gc = function(self)
+        repentogon.L_Sprite_Delete(self)
+    end,
     ClearCustomChampionShader = function(self)
         repentogon.L_Sprite_ClearCustomShader(self, true)
     end,
@@ -102,6 +106,9 @@ SpriteMT = {
     end,
     ContinueOverlay = function(self) 
         ffi.getprivate(self, "OverlayAnimState"):Play()
+    end,
+    Copy = function(self)
+        return repentogon.L_Sprite_Copy(self)
     end,
     GetAllAnimationData = function(self)
         local ret = {}
@@ -414,7 +421,7 @@ Sprite = setmetatable({}, {
         loadGraphics = ffichecks.optboolean(loadGraphics, true)
         local isLoaded = false
 
-        local sprite = ffi.gc(repentogon.L_Sprite_New(), repentogon.L_Sprite_Delete)
+        local sprite = repentogon.L_Sprite_New()
 
         if anm2Path ~= "" then
             sprite:Load(anm2Path, loadGraphics)
