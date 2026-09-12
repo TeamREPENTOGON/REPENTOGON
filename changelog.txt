@@ -68,20 +68,24 @@ Added:
 * Added new content xml: "edenhair.xml"
 * Added new console commands "giveeffect" / "ge" / "removeeffect" / "re" for adding/removing TemporaryEffects / Null Items.
 * Added option to block "Unknown Device" controllers (under REPENTOGON options in the console menu)
-* Updated ImGui version with many benifits
+* Added AltRockType enum
+* Updated ImGui version with many benefits:
 	- ImGui version has been upgraded to 1.92.9b.
-	- Viewport support. You can move imgui window(e.g. Debug Console) outside the game window.
-	- Docking support. 
+	- Viewport support. You can move ImGui windows (e.g. Debug Console) outside the game window. This can be enabled under "Game Options -> HUDs".
+	- Docking support. Windows can be attached together or combined as tabs. This can be disabled under "Game Options -> HUDs".
 	- Font rendering improvement.
 	- Add emoji support.
-	- Fixed string bugs in imgui's reset buttom.
+	- Fixed string bugs in imgui's reset button.
 	- Added `ImGuiWindowFlags.NoDocking`.
 	- Fixed `ImGui.WorldToImGui` and `ImGui.ImGuiToWorld`.
 /newline/
 Modified:
-* MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
-	- Change your CallbackPriority to be later instead of earlier if you need your value to be preferred.
-* In MC_PRE_USE_ITEM, you can now `return { Discharge=false }` to cancel the activation without discharging the item.
+* ModCallbacks:
+	- MC_PRE_RENDER_PLAYER_BODY/HEAD and MC_PRE_LEVEL_PLACE_ROOM now pass returned values to later callbacks instead of terminating.
+		Change your CallbackPriority to be later instead of earlier if you need your value to be preferred.
+	- In MC_PRE_USE_ITEM, you can now `return { Discharge=false }` to cancel the activation without discharging the item.
+* GridEntityRock:
+	- GetAltRockType(BackdropType = 0) can now be called statically (like `GridEntityRock.GetAltRockType()`)
 * "Extra debug render" feature now also visualizes "FindInCapsule".
 /newline/
 Fixes:
@@ -98,6 +102,7 @@ Fixes:
 * Fixed `ModCallbacks.MC_POST_SHUFFLE_COSTUMES` having the incorrect value (making the callback unusable via the enum)
 * Updated SoundEffect enum to align with the updated vanilla enum (only for sounds available in v1.9.7.12, up to `SoundEffect.SOUND_YO_LISTEN`)
 * Knives spawned as KnifeSubType.PROJECTILE (1) will no longer crash the game.
+* Fixed Gold/Spiked Rocks not being considered "crushable" for purposes such as the CheckLine function (possible vanilla oversight).
 /newline/
 /versionseparator/
 v1.1.2g -
