@@ -475,6 +475,27 @@ function META:ShowHallucination(frameCount, backdrop)
 	Game_ShowHallucination(self, frameCount, backdrop or BackdropType.NUM_BACKDROPS)
 end
 
+local cachedRoom
+-- Room Game:GetRoom()
+local Game_GetRoom = META0.GetRoom
+function META:GetRoom()
+	if not cachedRoom then
+		cachedRoom = Game_GetRoom(self)
+	end
+	return cachedRoom
+end
+
+local cachedLevel
+-- Level Game:GetLevel()
+local Game_GetLevel = META0.GetLevel
+function META:GetLevel()
+	if not cachedLevel then
+		cachedLevel = Game_GetLevel(self)
+	end
+	return cachedLevel
+end
+
+
 -- void Game:Fadein(float Speed, bool ShowIcon = true, const Color & FadeColor = KAGE::Graphics::Colors.Black)
 -- local Game_Fadein = META0.Fadein
 -- function META:Fadein(speed, show_icon, color)

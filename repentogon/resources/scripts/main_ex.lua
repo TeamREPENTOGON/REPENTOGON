@@ -2224,6 +2224,15 @@ function Game()
 	return gaymeinstance
 end
 
+local sfxManagerInstance
+local oldSFXManager = SFXManager
+function SFXManager()
+	if not sfxManagerInstance then
+		sfxManagerInstance = oldSFXManager()
+	end
+	return sfxManagerInstance
+end
+
 
 local oldregmod = RegisterMod
 
