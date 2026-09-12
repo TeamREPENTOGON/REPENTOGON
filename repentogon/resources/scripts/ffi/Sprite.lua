@@ -352,7 +352,7 @@ SpriteMT = {
     SetOverlayAnimation = function(self, name, reset)
         ffichecks.checkstring(1, name)
         reset = ffichecks.optboolean(reset, true)
-        return L_Sprite_SetOverlayAnimation(self, name, reset);
+        return repentogon.L_Sprite_SetOverlayAnimation(self, name, reset);
     end,
     SetOverlayFrame = function(self, param, param2)
         if ffichecks.isstring(param) then
