@@ -1154,6 +1154,7 @@ struct CustomImGui {
                   const float menuWidth = ImGui::CalcTextSize(name).x + ImGui::GetStyle().FramePadding.x * 2.0f;
                   if (GetAvailableMenuSpace() - menuWidth <= 0) {
                     overflowElements->push_back(*element);
+                    ImGui::PopID();
                     continue;
                   }
                 }
