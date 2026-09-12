@@ -762,8 +762,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityRef";
         using Type = EntityRef;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_REF;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_REF;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_REF;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_REF_PTR;
     };
 
     struct LuaEntityPtr
@@ -978,7 +978,7 @@ using LuaEntityKnife = LuabridgeType<LuaTraits::LuaEntityKnife>;
 using LuaEntityProjectile = LuabridgeType<LuaTraits::LuaEntityProjectile>;
 using LuaEntityNPC = LuabridgeType<LuaTraits::LuaEntityNPC>;
 using LuaEntityEffect = LuabridgeType<LuaTraits::LuaEntityEffect>;
-using LuaEntityRef = LuabridgeType<LuaTraits::LuaEntityRef>;
+using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;
 using LuaEntityPtr = LuabridgeType<LuaTraits::LuaEntityPtr>;
 using LuaEntityList = LuabridgeType<LuaTraits::LuaEntityList>;
 using LuaPathfinder = LuabridgeType<LuaTraits::LuaPathfinder>;

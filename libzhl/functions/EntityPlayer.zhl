@@ -676,7 +676,7 @@ __thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_s
 "558bec83e4f881ec74010000":
 __thiscall void Entity_Player::AnimatePickup(ANM2* anm2, bool hideShadow, std_string* animName);
 
-struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128) : public Entity { {{
+struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128, EntityRef) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -853,7 +853,7 @@ struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, Pla
 	Vector _tearsOffset : 0x1640;
 	Vector _recentMovementVector : 0x1648;
 	Vector _velocityBeforeUpdate : 0x1654;
-	Vector _lastDamageSource : 0x1670;
+	EntityRef _lastDamageSource : 0x1670;
 	uint32_t _trinketsID[2] : 0x16b0;
 	std_vector_int _collectibleCounts: 0x16b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1738;

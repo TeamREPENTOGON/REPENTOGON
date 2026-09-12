@@ -646,6 +646,8 @@ namespace lua {
             SPRITE_PTR,
             BLEND_MODE,
             BLEND_MODE_PTR,
+            ENTITY_REF,
+            ENTITY_REF_PTR,
             MAX_CDATA
         };
 

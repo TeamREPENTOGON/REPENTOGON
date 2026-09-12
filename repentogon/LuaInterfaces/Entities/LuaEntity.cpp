@@ -163,7 +163,7 @@ LUA_FUNCTION(Lua_EntityClearEntityFlags)
 LUA_FUNCTION(Lua_EntityAddBleeding)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBleeding(*ref, duration, false);
 	return 0;
@@ -172,7 +172,7 @@ LUA_FUNCTION(Lua_EntityAddBleeding)
 LUA_FUNCTION(Lua_EntityAddMagnetized)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddMagnetized(*ref, duration, false);
 	return 0;
@@ -181,7 +181,7 @@ LUA_FUNCTION(Lua_EntityAddMagnetized)
 LUA_FUNCTION(Lua_EntityAddBaited)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBaited(*ref, duration, false);
 	return 0;
@@ -190,7 +190,7 @@ LUA_FUNCTION(Lua_EntityAddBaited)
 LUA_FUNCTION(Lua_EntityAddWeakness)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddWeakness(*ref, duration);
 	return 0;
@@ -199,7 +199,7 @@ LUA_FUNCTION(Lua_EntityAddWeakness)
 LUA_FUNCTION(Lua_EntityAddBrimstoneMark)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBrimstoneMark(*ref, duration);
 	return 0;
@@ -208,7 +208,7 @@ LUA_FUNCTION(Lua_EntityAddBrimstoneMark)
 LUA_FUNCTION(Lua_EntityAddIce)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddIce(*ref, duration);
 	return 0;
@@ -217,7 +217,7 @@ LUA_FUNCTION(Lua_EntityAddIce)
 LUA_FUNCTION(Lua_EntityAddKnockback)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector"); //replace with const?
 	int duration = (int)luaL_checkinteger(L, 4);
 	bool TakeImpactDamage = lua::luaL_checkboolean(L, 5);
@@ -244,7 +244,7 @@ LUA_FUNCTION(Lua_EntityComputeStatusEffectDuration)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	unsigned int initial = std::max((int)luaL_checkinteger(L, 2), 0);
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 3);
 	lua_pushinteger(L, ent->ComputeStatusEffectDuration(initial, ref));
 
 	return 1;
@@ -394,7 +394,7 @@ LUA_FUNCTION(Lua_Entity_SetSpeedMultiplier) {
 
 LUA_FUNCTION(Lua_EntityTryThrow) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	Vector* dir = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float force = (float)luaL_checknumber(L, 4);
 	lua_pushboolean(L, entity->TryThrow(*ref, dir, force));
@@ -496,7 +496,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 
 LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
 	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	lua_pushboolean(L, entity->IgnoreEffectFromFriendly(ref));
 	return 0;
 }
@@ -1021,11 +1021,11 @@ LUA_FUNCTION(Lua_EntitySetVariant) {
 
 	return 0;
 }
-
+	
 LUA_FUNCTION(Lua_EntityAddSlowing)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	int duration = (int)luaL_checkinteger(L, 3);
 	float amount = (float)luaL_checknumber(L, 4);
 	ColorMod* color = lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
@@ -1069,12 +1069,134 @@ LUA_FUNCTION(Lua_Entity_GetSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityAddBurn)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	float damage = (float)luaL_checknumber(L, 4);
+	bool ignoreBosses = lua::luaL_optboolean(L, 5, false);
+
+	ent->AddBurn(*ref, duration, damage, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddCharmed)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, false);
+
+	ent->AddCharmed(*ref, duration, ignoreBosses, true);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddConfusion)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, false);
+
+	ent->AddConfusion(*ref, duration, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddFear)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, false);
+
+	ent->AddFear(*ref, duration, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddFreeze)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, false);
+
+	ent->AddFreeze(*ref, duration, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddMidasFreeze)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, false);
+
+	ent->AddMidasFreeze(*ref, duration, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddPoison)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	float damage = (float)luaL_checknumber(L, 4);
+	bool ignoreBosses = lua::luaL_optboolean(L, 5, true);
+
+	ent->AddPoison(*ref, duration, damage, ignoreBosses);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityAddShrink)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	int duration = (int)luaL_checkinteger(L, 3);
+	bool ignoreBosses = lua::luaL_optboolean(L, 4, true);
+
+	ent->AddShrink(*ref, duration, ignoreBosses, false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityKillWithSource)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
+	
+	ent->Kill(ref);
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_EntityTakeDamage)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	float damage = (float)luaL_checknumber(L, 2);
+	uint64_t flags = lua::luaL_checkuint64(L, 3);
+	EntityRef* source = LuaEntityRef::Get(L, 4);
+	int damageCountdown = (int)luaL_checkinteger(L, 5);
+	
+	lua_pushboolean(L, ent->TakeDamage(damage, flags, source, damageCountdown));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AddBurn", Lua_EntityAddBurn },
+		{ "AddCharmed", Lua_EntityAddCharmed },
+		{ "AddConfusion", Lua_EntityAddConfusion },
+		{ "AddFear", Lua_EntityAddFear },
+		{ "AddFreeze", Lua_EntityAddFreeze },
+		{ "AddMidasFreeze", Lua_EntityAddMidasFreeze },
+		{ "AddPoison", Lua_EntityAddPoison },
+		{ "AddShrink", Lua_EntityAddShrink },
+		{ "KillWithSource", Lua_EntityKillWithSource },
+		{ "TakeDamage", Lua_EntityTakeDamage },
 		{ "GetSprite", Lua_Entity_GetSprite },
 		{ "AddVelocity", Lua_EntityAddVelocity },
 		{ "Render", Lua_EntityRender },
@@ -1171,7 +1293,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanDevolve", Lua_EntityCanDevolve },
 		{ "GetColor", Lua_EntityGetColor },
 		{ "SetColor", Lua_EntitySetColor },
-		{ "AddSlowing", Lua_EntityAddSlowing },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

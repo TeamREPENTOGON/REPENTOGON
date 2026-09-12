@@ -277,6 +277,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD_PTR] = lua_ctypeid(L, "SourceQuadPtr");
 	lua::ffi::CData[lua::ffi::CDataID::SPRITE] = lua_ctypeid(L, "Sprite");
 	lua::ffi::CData[lua::ffi::CDataID::SPRITE_PTR] = lua_ctypeid(L, "SpritePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_REF] = lua_ctypeid(L, "EntityRef");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_REF_PTR] = lua_ctypeid(L, "EntityRefPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

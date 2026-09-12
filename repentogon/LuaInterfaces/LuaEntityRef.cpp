@@ -1,25 +1,38 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
-LUA_FUNCTION(Lua_EntityRef_GetPosition) {
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 1, lua::Metatables::ENTITY_REF, "EntityRef");
+// For any class that's FFI'd but has functions that return or consume non FFI'd classes, we define globals, set them on the class's metatable then nil them afterwards.
+LUA_FUNCTION(Lua_EntityRefCtor) {
+	Entity* ent = LuaEntity::Get(L, 1);
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ref->_position);
+	EntityRef* toLua = LuaEntityRef::Place(L);
+	new (toLua) EntityRef(ent);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityRef_SetPosition) {
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 1, lua::Metatables::ENTITY_REF, "EntityRef");
-	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+LUA_FUNCTION(Lua_EntityRefGetEntity) {
+	EntityRef* ref = LuaEntityRef::Get(L, 1);
 
-	ref->_position = *position;
+	LuaEntity::PushPtr(L, ref->_entity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityRefSetEntity) {
+	EntityRef* ref = LuaEntityRef::Get(L, 1);
+	Entity* ent = LuaEntity::Get(L, 2);
+
+	ref->_entity = ent;
 	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	lua_pushcfunction(_state, Lua_EntityRefCtor);
+	lua_setglobal(_state, "__Lua_EntityRef_Ctor");
+	lua_pushcfunction(_state, Lua_EntityRefGetEntity);
+	lua_setglobal(_state, "__Lua_EntityRef_GetEntity");
+	lua_pushcfunction(_state, Lua_EntityRefSetEntity);
+	lua_setglobal(_state, "__Lua_EntityRef_SetEntity");
 
-	lua::LuaStackProtector protector(_state);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_REF, "Position", Lua_EntityRef_GetPosition, Lua_EntityRef_SetPosition);
+	super();
 }

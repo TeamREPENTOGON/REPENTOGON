@@ -320,7 +320,7 @@ LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
 
 LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	EntityRef* ref = lua::GetLuabridgeUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = LuaEntityRef::Get(L, 2);
 	Vector* dir = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float force = (float)luaL_checknumber(L, 4);
 	lua_pushboolean(L, npc->TryThrow(*ref, dir, force));
@@ -459,7 +459,7 @@ LUA_FUNCTION(Lua_EntityNPC_ApplyTearflagEffects) {
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	const float defaultDamage = (float)luaL_checknumber(L, 2);
-	auto* source  = lua::GetLuabridgeUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	auto* source = LuaEntityRef::Get(L, 2);
 	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
 
 	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));

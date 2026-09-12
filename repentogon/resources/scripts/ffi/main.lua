@@ -156,6 +156,7 @@ pcall(require("ffi.BlendMode"))
 pcall(require("ffi.LayerState"))
 pcall(require("ffi.AnimationState"))
 pcall(require("ffi.Sprite"))
+pcall(require("ffi.EntityRef"))
 -- pcall(require("ffi.Input"))
 
 

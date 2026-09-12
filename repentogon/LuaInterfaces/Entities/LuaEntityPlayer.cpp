@@ -229,7 +229,7 @@ LUA_FUNCTION(Lua_GetLaserOffset) {
 LUA_FUNCTION(Lua_GetLastDamageSource) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], player->_lastDamageSource);
+	LuaEntityRef::Push(L, player->_lastDamageSource);
 	return 1;
 }
 
