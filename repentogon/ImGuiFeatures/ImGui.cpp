@@ -624,13 +624,16 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::PushFont(imFontUnifont, g_PointScale * (float)clamp(repentogonOptions.fontSize, 6, 26));
+	if (g_PointScale > 0) {
+		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale;
+	}
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
 		
 	
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
-			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
 			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
 				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
