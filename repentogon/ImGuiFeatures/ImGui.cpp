@@ -520,7 +520,6 @@ void LoadImGuiFont() {
 	}
 
 	cfg.OversampleH = cfg.OversampleV = 1; // do not oversample fonts, because freetype will font size it now.
-	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow) / 96.f);
 
 	auto & io = ImGui::GetIO();
 	io.Fonts->AddFontDefaultBitmap();
