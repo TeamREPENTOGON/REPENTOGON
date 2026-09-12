@@ -518,88 +518,6 @@ end
 
 EndClass()
 
-BeginClass(Sprite)
-
--- void Sprite:SetFrame(int Frame)
--- void Sprite:SetFrame(string Anim, int Frame)
-local Sprite_SetFrame = META0.SetFrame
-local Sprite_SetFrame_1 = META0.SetFrame_1
-function META:SetFrame(a, b)
-	if type(a) == "number" then
-		Sprite_SetFrame_1(self, a)
-	else
-		Sprite_SetFrame(self, a, b)
-	end
-end
-
--- void Sprite:Render(Vector Pos, Vector TopLeftClamp = Vector.Zero, Vector BottomRightClamp = Vector.Zero)
-local Sprite_Render = META0.Render
-function META:Render(pos, tl, br)
-	Sprite_Render(self, pos, tl or Vector.Zero, br or Vector.Zero)
-end
-
--- void Sprite:RenderLayer(int LayerId, Vector Pos, Vector TopLeftClamp = Vector.Zero, Vector BottomRightClamp = Vector.Zero)
-local Sprite_RenderLayer = META0.RenderLayer
-function META:RenderLayer(layer, pos, tl, br)
-	Sprite_RenderLayer(self, layer, pos, tl or Vector.Zero, br or Vector.Zero)
-end
-
--- boolean Sprite:IsFinished(string Anim = "")
-local Sprite_IsFinished = META0.IsFinished
-function META:IsFinished(anim)
-	return Sprite_IsFinished(self, anim or "")
-end
-
--- boolean Sprite:IsPlaying(string Anim = "")
-local Sprite_IsPlaying = META0.IsPlaying
-function META:IsPlaying(anim)
-	return Sprite_IsPlaying(self, anim or "")
-end
-
--- boolean Sprite:IsOverlayFinished(string Anim = "")
-local Sprite_IsOverlayFinished = META0.IsOverlayFinished
-function META:IsOverlayFinished(anim)
-	return Sprite_IsOverlayFinished(self, anim or "")
-end
-
--- boolean Sprite:IsOverlayPlaying(string Anim = "")
-local Sprite_IsOverlayPlaying = META0.IsOverlayPlaying
-function META:IsOverlayPlaying(anim)
-	return Sprite_IsOverlayPlaying(self, anim or "")
-end
-
--- void Sprite:Load(string Path, boolean LoadGraphics = true)
-local Sprite_Load = META0.Load
-function META:Load(path, loadGraphics)
-	Sprite_Load(self, path, loadGraphics ~= false)
-end
-
--- void Sprite:PlayRandom(int Seed = Random())
-local Sprite_PlayRandom = META0.PlayRandom
-function META:PlayRandom(seed)
-	Sprite_PlayRandom(self, seed or Random())
-end
-
--- void Sprite:SetAnimation(string Anim, boolean Reset = true)
-local Sprite_SetAnimation = META0.SetAnimation
-function META:SetAnimation(anim, reset)
-	Sprite_SetAnimation(self, anim, reset ~= false)
-end
-
--- void Sprite:SetOverlayAnimation(string Anim, boolean Reset = true)
-local Sprite_SetOverlayAnimation = META0.SetOverlayAnimation
-function META:SetOverlayAnimation(anim, reset)
-	Sprite_SetOverlayAnimation(self, anim, reset ~= false)
-end
-
--- KColor Sprite:GetTexel(Vector SamplePos, Vector RenderPos, float AlphaThreshold = 0.01, int LayerId  = -1)
--- local Sprite_GetTexel = META0.GetTexel
--- function META:GetTexel(samplePos, renderPos, alphaThreshold, layerId)
--- 	return Sprite_GetTexel(self, samplePos, renderPos, alphaThreshold or 0.01, layerId or -1)
--- end
-
-EndClass()
-
 ---------------------------------------------------------
 BeginClass(EntityTear)
 
@@ -937,12 +855,6 @@ end
 local Entity_Player_AnimateCollectible = META0.AnimateCollectible
 function META:AnimateCollectible(id, anim, spriteAnim)
 	return Entity_Player_AnimateCollectible(self, id, anim or "Pickup", spriteAnim or "PlayerPickupSparkle")
-end
-
--- void EntityPlayer:AnimatePickup(Sprite Sprite, boolean HideShadow = false, string AnimName = "Pickup")
-local Entity_Player_AnimatePickup = META0.AnimatePickup
-function META:AnimatePickup(sprite, hideShadow, anim)
-	return Entity_Player_AnimatePickup(self, sprite, hideShadow, anim or "Pickup")
 end
 
 -- boolean EntityPlayer:HasCollectible(CollectibleType Type, boolean IgnoreModifiers = false)

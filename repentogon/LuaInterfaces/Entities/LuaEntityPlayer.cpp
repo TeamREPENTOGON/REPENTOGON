@@ -3988,12 +3988,31 @@ LUA_FUNCTION(Lua_PlayerGetEffects)
 	return 1;
 }
 
+
+LUA_FUNCTION(Lua_PlayerAnimatePickup) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ANM2* anm2 = LuaSprite::Get(L, 2);
+	bool hideShadow = lua::luaL_optboolean(L, 3, false);
+	std::string animName;
+	if (lua_isstring(L, 4)) {
+		animName = luaL_checkstring(L, 4);
+	}
+	else {
+		animName = "Pickup";
+	}
+
+	player->AnimatePickup(anm2, hideShadow, &animName);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AnimatePickup", Lua_PlayerAnimatePickup },
 		{ "GetEffects", Lua_PlayerGetEffects },
 		{ "QueueItem", Lua_PlayerQueueItem },
 		{ "AddCostume", Lua_PlayerAddCostume },

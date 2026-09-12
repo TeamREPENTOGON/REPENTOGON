@@ -825,10 +825,6 @@ namespace lua {
 	namespace metatables
 	{
 		const char* AmbushMT = "Ambush";
-		const char* AnimationDataMT = "AnimationData";
-		const char* AnimationStateMT = "AnimationState";
-		const char* AnimationLayerMT = "AnimationLayer";
-		const char* AnimationFrameMT = "AnimationFrame";
 		const char* BackdropMT = "Backdrop";
 		const char* BeamMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
@@ -880,7 +876,6 @@ namespace lua {
 		const char* ImGuiMT = "ImGui";
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* KeyConfigMenuMT = "KeyConfigMenu";
-		const char* LayerStateMT = "LayerState";
 		const char* LevelGeneratorMT = "LevelGenerator";
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
@@ -892,7 +887,6 @@ namespace lua {
 		const char* ModsMenuMT = "ModsMenu";
 		const char* MultiShotParamsMT = "MultiShotParams";
 		const char* NightmareSceneMT = "NightmareScene";
-		const char* NullFrameMT = "NullFrame";
 		const char* OptionsMenuMT = "OptionsMenu";
 		const char* PauseMenuMT = "PauseMenu";
 		const char* PersistentGameDataMT = "PersistentGameData";

@@ -12,6 +12,16 @@ LUA_FUNCTION(Lua_GridEntityDoor_GetExtraSprite)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GridEntityDoor_SetExtraSprite)
+{
+	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	ANM2* anm2 = LuaSprite::Get(L, 2);
+	
+	gridEnt->_extraSprite = *anm2;
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GridEntityDoor_GetPreviousState) {
 	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
 	lua_pushinteger(L, gridEnt->_previousState);
@@ -56,6 +66,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_DOOR, functions);
 	
+	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "ExtraSprite", Lua_GridEntityDoor_GetExtraSprite, Lua_GridEntityDoor_SetExtraSprite);
+
 	//fix PreviousState/PreviousVariant
 	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "PreviousState", Lua_GridEntityDoor_GetPreviousState, Lua_GridEntityDoor_SetPreviousState);
 	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "PreviousVariant", Lua_GridEntityDoor_GetPreviousVarinat, Lua_GridEntityDoor_SetPreviousVariant);

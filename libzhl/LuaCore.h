@@ -634,6 +634,18 @@ namespace lua {
             QUEUE_ITEM_DATA_PTR,
             TEMPORARY_EFFECTS,
             TEMPORARY_EFFECTS_PTR,
+            SHADER,
+            SHADER_PTR,
+            IMAGE,
+            IMAGE_PTR,
+            DESTINATION_QUAD,
+            DESTINATION_QUAD_PTR,
+            SOURCE_QUAD,
+            SOURCE_QUAD_PTR,
+            SPRITE,
+            SPRITE_PTR,
+            BLEND_MODE,
+            BLEND_MODE_PTR,
             MAX_CDATA
         };
 

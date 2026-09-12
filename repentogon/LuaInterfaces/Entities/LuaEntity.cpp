@@ -1062,12 +1062,20 @@ LUA_FUNCTION(Lua_Entity_SetSplatColor) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Entity_GetSprite) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	
+	LuaSprite::PushPtr(L, &ent->_sprite);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetSprite", Lua_Entity_GetSprite },
 		{ "AddVelocity", Lua_EntityAddVelocity },
 		{ "Render", Lua_EntityRender },
 		{ "RenderShadowLayer", Lua_EntityRenderShadowLayer },

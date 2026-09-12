@@ -476,6 +476,8 @@ namespace LuaTraits
         using Type = ANM2;
         static constexpr lua::Metatables MT = lua::Metatables::SPRITE;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_SPRITE;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::SPRITE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::SPRITE_PTR;
         inline static void**& UserdataValueVftable = __ptr_UserdataValue_ANM2_vftable;
     };
 
@@ -924,6 +926,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_DESC;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_DESC_PTR;
     };
+
+    struct LuaBlendMode
+    {
+        static constexpr const char* Name = "BlendMode";
+        using Type = BlendMode;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::BLEND_MODE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::BLEND_MODE_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -933,7 +943,7 @@ using LuaPosVel = CDataType<LuaTraits::LuaPosVel>;
 using LuaBitSet128 = CDataType<LuaTraits::LuaBitSet128>;
 using LuaKColor = CDataType<LuaTraits::LuaKColor>;
 using LuaColor = CDataType<LuaTraits::LuaColor>;
-using LuaSprite = LuabridgeType<LuaTraits::LuaSprite>;
+using LuaSprite = CDataType<LuaTraits::LuaSprite>;
 using LuaFont = LuabridgeType<LuaTraits::LuaFont>;
 using LuaFontRenderSettings = LuabridgeType<LuaTraits::LuaFontRenderSettings>;
 using LuaRNG = LuabridgeType<LuaTraits::LuaRNG>;
@@ -988,6 +998,7 @@ using LuaGridEntityPoop = LuabridgeType<LuaTraits::LuaGridEntityPoop>;
 using LuaGridEntityDoor = LuabridgeType<LuaTraits::LuaGridEntityDoor>;
 using LuaGridEntityPressurePlate = LuabridgeType<LuaTraits::LuaGridEntityPressurePlate>;
 using LuaGridEntityDesc = CDataType<LuaTraits::LuaGridEntityDesc>;
+using LuaBlendMode = CDataType<LuaTraits::LuaBlendMode>;
 
 struct WeaponData {
 	Weapon* weapon;

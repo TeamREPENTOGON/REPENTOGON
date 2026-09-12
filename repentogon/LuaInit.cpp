@@ -267,7 +267,16 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::QUEUE_ITEM_DATA_PTR] = lua_ctypeid(L, "QueueItemDataPtr");
 	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS] = lua_ctypeid(L, "TemporaryEffects");
 	lua::ffi::CData[lua::ffi::CDataID::TEMPORARY_EFFECTS_PTR] = lua_ctypeid(L, "TemporaryEffectsPtr");
-
+	lua::ffi::CData[lua::ffi::CDataID::SHADER] = lua_ctypeid(L, "Shader");
+	lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR] = lua_ctypeid(L, "ShaderPtr");
+	lua::ffi::CData[lua::ffi::CDataID::IMAGE] = lua_ctypeid(L, "Image");
+	lua::ffi::CData[lua::ffi::CDataID::IMAGE_PTR] = lua_ctypeid(L, "ImagePtr");
+	lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD] = lua_ctypeid(L, "DestinationQuad");
+	lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD_PTR] = lua_ctypeid(L, "DestinationQuadPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD] = lua_ctypeid(L, "SourceQuad");
+	lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD_PTR] = lua_ctypeid(L, "SourceQuadPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SPRITE] = lua_ctypeid(L, "Sprite");
+	lua::ffi::CData[lua::ffi::CDataID::SPRITE_PTR] = lua_ctypeid(L, "SpritePtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

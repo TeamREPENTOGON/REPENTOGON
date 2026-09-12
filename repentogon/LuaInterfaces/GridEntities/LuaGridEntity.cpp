@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/GridEntityPlus.h"
+#include "../../LuaClasses.h"
 
 LUA_FUNCTION(Lua_GridEntityGetDesc)
 {
@@ -102,12 +103,20 @@ LUA_FUNCTION(Lua_GridEntityResetWaterClipFlags)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GridEntityGetSprite)
+{
+	GridEntity* gridEnt = lua::GetLuabridgeUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
+
+	LuaSprite::PushPtr(L, &gridEnt->_sprite);
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetSprite", Lua_GridEntityGetSprite },
 		{ "GetSaveState", Lua_GridEntityGetDesc },
 		{ "Render", Lua_GridEntityRender },
 		{ "HurtDamage", Lua_GridEntityHurtDamage },

@@ -26,17 +26,15 @@ Backdrop* GetBackdrop(lua_State* L, int idx) {
 
 LUA_FUNCTION(lua_Backdrop_GetWallImage) {
 	Backdrop* backdrop = GetBackdrop(L);
-	LuaRender::LuaImage* image = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
-	image->image = backdrop->wallsBuffer;
-	luaL_setmetatable(L, LuaRender::ImageMT);
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], &backdrop->wallsBuffer);
 	return 1;
 }
 
 LUA_FUNCTION(lua_Backdrop_GetFloorImage) {
 	Backdrop* backdrop = GetBackdrop(L);
-	LuaRender::LuaImage* image = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
-	image->image = backdrop->floorBuffer;
-	luaL_setmetatable(L, LuaRender::ImageMT);
+
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], &backdrop->floorBuffer);
 	return 1;
 }
 

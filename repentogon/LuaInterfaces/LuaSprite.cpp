@@ -1,848 +1,145 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-#include "LuaRender.h"
-#include "LuaBlendMode.h"
-#include "../MiscFunctions.h"
 #include "../Patches/Anm2Extras.h"
-#include "../Utils/ANM2Utils.hpp"
-#include "../LuaClasses.h"
-
-/*
-* While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
-* I've named this file "LuaSprite" for consistency with the existing API metatable.
-*/
-
-#pragma region DLL export
 
 extern "C" {
-	__declspec(dllexport) KColor* L_Sprite_GetTexel(ANM2* sprite, KColor* result, Vector samplePos, Vector renderPos, float alphaThreshold, int layerID) {
-		sprite->GetTexel(result, samplePos, renderPos, alphaThreshold, layerID);
-        return result;
-	}
-}
 
-#pragma endregion
-
-LUA_FUNCTION(Lua_SpriteGetTexel)
-{
-	ANM2* sprite = LuaSprite::Get(L, 1);
-	Vector* samplePos = LuaVector::Get(L, 2);
-	Vector* renderPos = LuaVector::Get(L, 3);
-	float alphaThreshold = (float)luaL_optnumber(L, 4, 0.01);
-	int layerID = (int)luaL_optinteger(L, 5, -1);
-
-	KColor* result = LuaKColor::Place(L);
-	L_Sprite_GetTexel(sprite, result, *samplePos, *renderPos, alphaThreshold, layerID);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteRender)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector topLeftClamp;
-	if (LuaVector::IsUnderlyingType(L, 3)) {
-		topLeftClamp = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	Vector bottomRightClamp;
-	if (LuaVector::IsUnderlyingType(L, 4)) {
-		bottomRightClamp = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	__declspec(dllexport) ANM2* L_Sprite_New() {
+		return new ANM2();
 	}
 
-	anm2->Render(pos, &topLeftClamp, &bottomRightClamp);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteRenderLayer)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	int layerId = (int)luaL_checkinteger(L, 2);
-	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector topLeftClamp;
-	if (lua_type(L, 4) == LUA_TCDATA) {
-		topLeftClamp = *lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	Vector bottomRightClamp;
-	if (lua_type(L, 5) == LUA_TCDATA) {
-		bottomRightClamp = *lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
+	__declspec(dllexport) void L_Sprite_Delete(ANM2* self) {
+		delete self;
 	}
 
-	anm2->RenderLayer(layerId, pos, &topLeftClamp, &bottomRightClamp);
-	return 0;
-}
+	__declspec(dllexport) void L_Sprite_ClearCustomShader(ANM2* sprite, bool champion) {
+		ClearCustomShader(sprite, champion);
+	}
 
-LUA_FUNCTION(Lua_SpriteGetColor) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
+	__declspec(dllexport) const char* L_Sprite_GetAnimation(ANM2* sprite) {
+		AnimationState* state = sprite->GetAnimationState();
+		if (!state->_animData) return "";
+		return state->_animData->_name.c_str();
+	}
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::COLOR], *anm2->GetColor());
-	return 1;
-}
+	__declspec(dllexport) AnimationData* L_Sprite_GetAnimationData(ANM2* sprite, const char* animName) {
+		return sprite->GetAnimationData(animName);
+	}
 
-LUA_FUNCTION(Lua_SpriteSetColor) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+	__declspec(dllexport) const char* L_Sprite_GetDefaultAnimation(ANM2* sprite) {
+		return sprite->_animDefaultName.c_str();
+	}
 
-	*anm2->GetColor() = *color;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteGetOffset) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
+	__declspec(dllexport) const char* L_Sprite_GetFilename(ANM2* sprite) {
+		return sprite->_filename.c_str();
+	}
 	
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], anm2->_offset);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteSetOffset) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	anm2->_offset = *offset;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteGetScale) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], anm2->_scale);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteSetScale) {
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	Vector* scale = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	anm2->_scale = *scale;
-	return 0;
-}
-
-
-LUA_FUNCTION(Lua_SpriteCopy)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-
-	ANM2* copy = LuaSprite::Place(L);
-	copy->construct_from_copy(anm2);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	int layerId = (int)luaL_checkinteger(L, 2);
-
-	std::string filename = luaL_checkstring(L, 3);
-
-	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
-
-	bool successful = anm2->ReplaceSpritesheet(layerId, filename);
-
-	if (successful && loadGraphics) {
-		anm2->LoadGraphics(false);
+	__declspec(dllexport) LayerState* L_Sprite_GetLayerById(ANM2* sprite, int layerId) {
+		return sprite->GetLayer(layerId);
 	}
 
-	lua_pushboolean(L, successful);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteSetSpritesheet)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	uint32_t layerId = (uint32_t)luaL_checkinteger(L, 2);
-	LuaRender::LuaImage* luaImage = lua::GetRawUserdata<LuaRender::LuaImage*>(L, 3, LuaRender::ImageMT);
-
-	LayerState* layer = anm2->GetLayer(layerId);
-	if (layer)
-	{
-		layer->SetSpriteSheet(luaImage->image);
+	__declspec(dllexport) LayerState* L_Sprite_GetLayerByName(ANM2* sprite, const char* layerName) {
+		return sprite->GetLayer(layerName);
 	}
 
-	lua_pushboolean(L, layer != nullptr);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteGetSpritesheet)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	uint32_t layerId = (uint32_t)luaL_checkinteger(L, 2);
-	LayerState* layer = anm2->GetLayer(layerId);
-	if (!layer)
-	{
-		lua_pushnil(L);
-		return 1;
+	__declspec(dllexport) KColor* L_Sprite_GetTexel(ANM2* sprite, KColor* out, Vector samplePos, Vector renderPos, float alphaThreshold, int layerID) {
+		return sprite->GetTexel(out, samplePos, renderPos, alphaThreshold, layerID);
 	}
 
-	LuaRender::LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = layer->GetSpriteSheet();
-
-	if (!ud->image.image)
-	{
-		lua_pop(L, 1);
-		lua_pushnil(L);
+	__declspec(dllexport) bool L_Sprite_HasCustomShader(ANM2* sprite, bool champion) {
+		return HasCustomShader(sprite, champion);
 	}
 
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteIsOverlayEventTriggered)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const char* eventName = luaL_checkstring(L, 2);
-	lua_pushboolean(L, anm2->GetOverlayAnimationState()->IsEventTriggered(eventName));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteLoadRgonSprite)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const char* path = luaL_checkstring(L, 2);
-	bool loadg = lua::luaL_checkboolean(L, 3);
-	anm2->Load(REPENTOGON::GetRGONGfxAbsolutePath(path), loadg);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteWasOverlayEventTriggered)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const char* eventName = luaL_checkstring(L, 2);
-	lua_pushboolean(L, anm2->GetOverlayAnimationState()->WasEventTriggered(eventName));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteGetLayer)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	LayerState* layerState = nullptr;
-	if (lua_type(L, 2) == LUA_TSTRING) {
-		const char* layerName = luaL_checkstring(L, 2);
-		layerState = anm2->GetLayer(layerName);
-	}
-	else {
-		const int layerID = (const int)luaL_checkinteger(L, 2);
-		const unsigned int layerCount = anm2->GetLayerCount();
-		if (layerID >= 0 && (const unsigned int)layerID < layerCount) {
-			layerState = anm2->GetLayer(layerID);
-		}
-	}
-	if (layerState == nullptr) {
-		lua_pushnil(L);
-		return 1;
-	}
-	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-	*luaLayer = layerState;
-	luaL_setmetatable(L, lua::metatables::LayerStateMT);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteGetAllLayers)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-
-	lua_newtable(L);
-	LayerState* layerState = nullptr;
-	for (size_t i = 0; i < anm2->GetLayerCount(); ++i) {
-		lua_pushinteger(L, i + 1);
-		layerState = anm2->GetLayer(i);
-		LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-		*luaLayer = layerState;
-		luaL_setmetatable(L, lua::metatables::LayerStateMT);
-		lua_rawset(L, -3);
+	__declspec(dllexport) bool L_Sprite_HasCustomShaderWithPath(ANM2* sprite, const char* path, bool champion) {
+		return HasCustomShader(sprite, path, champion);
 	}
 
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_SpriteGetRenderFlags)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	lua_pushinteger(L, *anm2->GetRenderFlags());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteSetRenderFlags)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	*anm2->GetRenderFlags() = (unsigned int)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteSetOverlayFrame)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	if (lua_type(L, 2) == LUA_TSTRING) {
-		const char* animName = luaL_checkstring(L, 2);
-		anm2->SetOverlayFrame(animName, (int)luaL_checkinteger(L, 3));
-	}
-	else {
-		anm2->SetOverlayFrame((int)luaL_checkinteger(L, 2));
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteSetOverlayLayerFrame)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const int layerID = (int)luaL_checkinteger(L, 2);
-	const int frame = (int)luaL_checkinteger(L, 3);
-	if (anm2->GetOverlayAnimationState()->GetAnimationData()) {
-		anm2->GetOverlayAnimationState()->SetLayerFrame(layerID, frame);
-	}
-	return 0;
-}
-
-LUALIB_API void LuaGetLayerFrameDataInternal(lua_State* L, AnimationState* animState, const int layerID) {
-	AnimationData* animData = animState ? animState->GetAnimationData() : nullptr;
-	if (!animData) {
-		lua_pushnil(L);
-		return;
-	}
-	const int layerIndex = animData->GetLayerOrder(layerID);
-	AnimationLayer* animLayer = animData->GetLayerById(layerID);
-	if (layerIndex < 0 || !animLayer) {
-		lua_pushnil(L);
-		return;
-	}
-	const int animFrameIndex = std::clamp(animState->_layerFrames[layerIndex], 0, animLayer->GetFrameCount() - 1);
-	AnimationFrame* animFrame = animLayer->GetFrame(animFrameIndex);
-	if (animFrame) {
-		AnimationFrame** toLua = (AnimationFrame**)lua_newuserdata(L, sizeof(AnimationFrame*));
-		*toLua = animFrame;
-		luaL_setmetatable(L, lua::metatables::AnimationFrameMT);
-	}
-	else {
-		lua_pushnil(L);
-	}
-}
-
-LUA_FUNCTION(Lua_SpriteGetLayerFrameData)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const int layerID = (int)luaL_checkinteger(L, 2);
-	LuaGetLayerFrameDataInternal(L, anm2->GetAnimationState(), layerID);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteGetOverlayLayerFrameData)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const int layerID = (int)luaL_checkinteger(L, 2);
-	LuaGetLayerFrameDataInternal(L, anm2->GetOverlayAnimationState(), layerID);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteStop)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	bool stopOverlay = lua::luaL_optboolean(L, 2, true);
-	anm2->GetAnimationState()->Stop();
-	if (stopOverlay) {
-		anm2->GetOverlayAnimationState()->Stop();
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteStopOverlay)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	anm2->GetOverlayAnimationState()->Stop();
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteContinue)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	bool continueOverlay = lua::luaL_optboolean(L, 2, true);
-	anm2->GetAnimationState()->Play();
-	if (continueOverlay) {
-		anm2->GetOverlayAnimationState()->Play();
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteContinueOverlay)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	anm2->GetOverlayAnimationState()->Play();
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteSetCustomShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const std::string path = luaL_checkstring(L, 2);
-	const bool success = SetCustomShader(anm2, path, /*champion=*/false);
-	if (!success) {
-		return luaL_error(L, ("Failed to load shader: " + path).c_str());
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteClearCustomShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	ClearCustomShader(anm2, /*champion=*/false);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteHasCustomShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-
-	const std::string path = luaL_optstring(L, 2, "");
-	bool result = false;
-	if (path.empty()) {
-		result = HasCustomShader(anm2, /*champion=*/false);
-	}
-	else {
-		result = HasCustomShader(anm2, path, /*champion=*/false);
-	}
-	lua_pushboolean(L, result);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpriteSetCustomChampionShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	const std::string path = luaL_checkstring(L, 2);
-	const bool success = SetCustomShader(anm2, path, /*champion=*/true);
-	if (!success) {
-		return luaL_error(L, ("Failed to load shader: " + path).c_str());
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteClearCustomChampionShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-	ClearCustomShader(anm2, /*champion=*/true);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
-{
-	ANM2* anm2 = LuaSprite::Get(L, 1);
-
-	const std::string path = luaL_optstring(L, 2, "");
-	bool result = false;
-	if (path.empty()) {
-		result = HasCustomShader(anm2, /*champion=*/true);
-	}
-	else {
-		result = HasCustomShader(anm2, path, /*champion=*/true);
-	}
-	lua_pushboolean(L, result);
-
-	return 1;
-}
-
-// LayerState from here on out
-
-LUA_FUNCTION(Lua_LayerStateSetCustomShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	const std::string path = luaL_checkstring(L, 2);
-	const bool success = SetCustomShader(layerState, path, /*champion=*/false);
-	if (!success) {
-		return luaL_error(L, ("Failed to load shader: " + path).c_str());
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateClearCustomShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ClearCustomShader(layerState, /*champion=*/false);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateHasCustomShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-
-	const std::string path = luaL_optstring(L, 2, "");
-	bool result = false;
-	if (path.empty()) {
-		result = HasCustomShader(layerState, /*champion=*/false);
-	}
-	else {
-		result = HasCustomShader(layerState, path, /*champion=*/false);
-	}
-	lua_pushboolean(L, result);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetCustomChampionShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	const std::string path = luaL_checkstring(L, 2);
-	const bool success = SetCustomShader(layerState, path, /*champion=*/true);
-	if (!success) {
-		return luaL_error(L, ("Failed to load shader: " + path).c_str());
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateClearCustomChampionShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ClearCustomShader(layerState, /*champion=*/true);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateHasCustomChampionShader)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-
-	const std::string path = luaL_optstring(L, 2, "");
-	bool result = false;
-	if (path.empty()) {
-		result = HasCustomShader(layerState, /*champion=*/true);
-	}
-	else {
-		result = HasCustomShader(layerState, path, /*champion=*/true);
-	}
-	lua_pushboolean(L, result);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetLayerID)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, layerState->GetLayerID());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetName)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushstring(L, layerState->GetName().c_str());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetSpritesheet)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	LuaRender::LuaImage* luaImage = lua::GetRawUserdata<LuaRender::LuaImage*>(L, 2, LuaRender::ImageMT);
-
-	layerState->SetSpriteSheet(luaImage->image);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetSpritesheet)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-
-	LuaRender::LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaRender::LuaImage))) LuaRender::LuaImage;
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = layerState->GetSpriteSheet();
-
-	if (!ud->image.image)
-	{
-		lua_pop(L, 1);
-		lua_pushnil(L);
+	__declspec(dllexport) bool L_Sprite_IsFinished(ANM2* sprite, const char* name) {
+		std::string nameStr = name;
+		return sprite->IsFinished(nameStr);
 	}
 
-	return 1;
+	__declspec(dllexport) bool L_Sprite_IsOverlayFinished(ANM2* sprite, const char* name) {
+		std::string nameStr = name;
+		return sprite->IsOverlayFinished(nameStr);
+	}
+
+	__declspec(dllexport) void L_Sprite_Load(ANM2* sprite, const char* path, bool loadGraphics) {
+		std::string pathStr = path;
+		sprite->Load(pathStr, loadGraphics);
+	}
+
+	__declspec(dllexport) void L_Sprite_LoadGraphics(ANM2* sprite) {
+		sprite->LoadGraphics(false);
+	}
+
+	__declspec(dllexport) void L_Sprite_Play(ANM2* sprite, const char* name, bool force) {
+		sprite->Play(name, force);
+	}
+	
+	__declspec(dllexport) void L_Sprite_PlayOverlay(ANM2* sprite, const char* name, bool force) {
+		std::string nameStr = name;
+		sprite->PlayOverlay(nameStr, force);
+	}
+	
+	__declspec(dllexport) void L_Sprite_PlayRandom(ANM2* sprite, unsigned int seed) {
+		sprite->PlayRandom(seed);
+	}
+	
+	__declspec(dllexport) void L_Sprite_Reload(ANM2* sprite) {
+		sprite->Reload();
+	}
+	
+	__declspec(dllexport) void L_Sprite_Render(ANM2* sprite, Vector* position, Vector* topLeftClamp, Vector* bottomRightClamp) {
+		sprite->Render(position, topLeftClamp, bottomRightClamp);
+	}
+
+	__declspec(dllexport) void L_Sprite_RenderLayer(ANM2* sprite, int layer, Vector* position, Vector* topLeftClamp, Vector* bottomRightClamp) {
+		sprite->RenderLayer(layer, position, topLeftClamp, bottomRightClamp);
+	}
+
+	__declspec(dllexport) bool L_Sprite_ReplaceSpritesheet(ANM2* sprite, int layerId, const char* filename) {
+		std::string filenameStr = filename;
+		return sprite->ReplaceSpritesheet(layerId, filenameStr);
+	}
+	
+	__declspec(dllexport) void L_Sprite_Reset(ANM2* sprite) {
+		sprite->Reset();
+	}
+
+	__declspec(dllexport) bool L_Sprite_SetAnimation(ANM2* sprite, const char* animation, bool reset) {
+		return sprite->SetAnimation(animation, reset);
+	}
+
+	__declspec(dllexport) bool L_Sprite_SetCustomShader(ANM2* sprite, const char* path, bool champion) {
+		return SetCustomShader(sprite, path, champion);
+	}
+	
+	__declspec(dllexport) void L_Sprite_SetFrameWithAnim(ANM2* sprite, const char* animation, int frame) {
+		std::string animationStr = animation;
+		sprite->SetFrame(&animationStr, frame);
+	}
+
+	__declspec(dllexport) void L_Sprite_SetFrame(ANM2* sprite, int frame) {
+		sprite->SetFrame(frame);
+	}
+
+	__declspec(dllexport) void L_Sprite_SetLayerFrame(ANM2* sprite, int id, int frame) {
+		sprite->SetLayerFrame(id, frame);
+	}
+
+	__declspec(dllexport) void L_Sprite_SetOverlayAnimation(ANM2* sprite, const char* anim, bool reset) {
+		sprite->SetOverlayAnimation(anim, reset);
+	}
+
+	__declspec(dllexport) void L_Sprite_SetOverlayFrameWithAnim(ANM2* sprite, const char* anim, int frame) {
+		sprite->SetOverlayFrame(anim, frame);
+	}
+
+	__declspec(dllexport) void L_Sprite_SetOverlayFrame(ANM2* sprite, int frame) {
+		sprite->SetOverlayFrame(frame);
+	}
+
+	__declspec(dllexport) void L_Sprite_Update(ANM2* sprite) {
+		sprite->Update();
+	}
 }
-
-LUA_FUNCTION(Lua_LayerStateGetSpritesheetPath)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushstring(L, layerState->GetSpritesheetPath().c_str());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetDefaultSpritesheetPath)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushstring(L, layerState->GetDefaultSpritesheetPath().c_str());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateIsVisible)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushboolean(L, *layerState->IsVisible());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetVisible)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->IsVisible() = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetSize)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = *layerState->GetSize();
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetSize)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetSize() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetRotation)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushnumber(L, *layerState->GetRotation());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetRotation)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetRotation() = (float)luaL_checknumber(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetPos)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = *layerState->GetPos();
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetPos)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetPos() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetColor)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
-	*toLua = *layerState->GetColor();
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetColor)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	ColorMod* color = lua::GetCData<ColorMod*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-
-	layerState->_color = *color;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetRenderFlags)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, *layerState->GetRenderFlags());
-	return 1;
-}
-LUA_FUNCTION(Lua_LayerStateSetRenderFlags)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetRenderFlags() = (unsigned int)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetCropOffset)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = *layerState->GetCropOffset();
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetCropOffset)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetCropOffset() = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	LuaBlendMode::NewPointer(L, layerState->GetBlendMode());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, layerState->_wrapSMode);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_wrapSMode = (int)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushinteger(L, layerState->_wrapTMode);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_wrapTMode = (int)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetFlipX)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushboolean(L, layerState->_flipX);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetFlipX)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_flipX = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LayerStateGetFlipY)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushboolean(L, layerState->_flipY);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LayerStateSetFlipY)
-{
-	LayerState* layerState = *lua::GetRawUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_flipY = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
-static void RegisterSpriteFuncs(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetTexel", Lua_SpriteGetTexel },
-		{ "Render", Lua_SpriteRender },
-		{ "RenderLayer", Lua_SpriteRenderLayer },
-		{ "Copy", Lua_SpriteCopy },
-		{ "GetLayer", Lua_SpriteGetLayer},
-		{ "GetAllLayers", Lua_SpriteGetAllLayers},
-		{ "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet},
-		{ "SetSpritesheet", Lua_SpriteSetSpritesheet },
-		{ "GetSpritesheet", Lua_SpriteGetSpritesheet },
-		{ "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered},
-		{ "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered},
-		{ "SetOverlayFrame", Lua_SpriteSetOverlayFrame},
-		{ "SetOverlayLayerFrame", Lua_SpriteSetOverlayLayerFrame},
-		{ "GetLayerFrameData", Lua_SpriteGetLayerFrameData},
-		{ "GetOverlayLayerFrameData", Lua_SpriteGetOverlayLayerFrameData},
-		{ "Stop", Lua_SpriteStop},
-		{ "StopOverlay", Lua_SpriteStopOverlay},
-		{ "Continue", Lua_SpriteContinue},
-		{ "ContinueOverlay", Lua_SpriteContinueOverlay},
-		{ "GetRenderFlags", Lua_SpriteGetRenderFlags},
-		{ "SetRenderFlags", Lua_SpriteSetRenderFlags},
-		{ "LoadRGON", Lua_SpriteLoadRgonSprite},
-		{ "SetCustomShader", Lua_SpriteSetCustomShader},
-		{ "ClearCustomShader", Lua_SpriteClearCustomShader},
-		{ "HasCustomShader", Lua_SpriteHasCustomShader},
-		{ "SetCustomChampionShader", Lua_SpriteSetCustomChampionShader},
-		{ "ClearCustomChampionShader", Lua_SpriteClearCustomChampionShader},
-		{ "HasCustomChampionShader", Lua_SpriteHasCustomChampionShader},
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);
-
-	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Color", Lua_SpriteGetColor, Lua_SpriteSetColor);
-	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Offset", Lua_SpriteGetOffset, Lua_SpriteSetOffset);
-	lua::RegisterVariable(L, lua::Metatables::SPRITE, "Scale", Lua_SpriteGetScale, Lua_SpriteSetScale);
-}
-
-static void RegisterLayerState(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetLayerID", Lua_LayerStateGetLayerID },
-		{ "GetName", Lua_LayerStateGetName },
-		{ "SetSpritesheet", Lua_LayerStateSetSpritesheet },
-		{ "GetSpritesheet", Lua_LayerStateGetSpritesheet },
-		{ "GetSpritesheetPath", Lua_LayerStateGetSpritesheetPath },
-		{ "GetDefaultSpritesheetPath", Lua_LayerStateGetDefaultSpritesheetPath },
-		{ "IsVisible", Lua_LayerStateIsVisible },
-		{ "SetVisible", Lua_LayerStateSetVisible},
-		{ "GetSize", Lua_LayerStateGetSize},
-		{ "SetSize", Lua_LayerStateSetSize},
-		{ "GetRotation", Lua_LayerStateGetRotation},
-		{ "SetRotation", Lua_LayerStateSetRotation},
-		{ "GetPos", Lua_LayerStateGetPos},
-		{ "SetPos", Lua_LayerStateSetPos},
-		{ "GetColor", Lua_LayerStateGetColor},
-		{ "SetColor", Lua_LayerStateSetColor},
-		{ "GetCropOffset", Lua_LayerStateGetCropOffset},
-		{ "SetCropOffset", Lua_LayerStateSetCropOffset},
-		{ "GetRenderFlags", Lua_LayerStateGetRenderFlags},
-		{ "SetRenderFlags", Lua_LayerStateSetRenderFlags},
-		{ "GetBlendMode", Lua_LayerStateGetBlendMode},
-		{ "GetWrapSMode", Lua_LayerStateGetWrapSMode},
-		{ "SetWrapSMode", Lua_LayerStateSetWrapSMode},
-		{ "GetWrapTMode", Lua_LayerStateGetWrapTMode},
-		{ "SetWrapTMode", Lua_LayerStateSetWrapTMode},
-		{ "GetFlipX", Lua_LayerStateGetFlipX},
-		{ "SetFlipX", Lua_LayerStateSetFlipX},
-		{ "GetFlipY", Lua_LayerStateGetFlipY},
-		{ "SetFlipY", Lua_LayerStateSetFlipY},
-		{ "SetCustomShader", Lua_LayerStateSetCustomShader},
-		{ "ClearCustomShader", Lua_LayerStateClearCustomShader},
-		{ "HasCustomShader", Lua_LayerStateHasCustomShader},
-		{ "SetCustomChampionShader", Lua_LayerStateSetCustomChampionShader},
-		{ "ClearCustomChampionShader", Lua_LayerStateClearCustomChampionShader},
-		{ "HasCustomChampionShader", Lua_LayerStateHasCustomChampionShader},
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::LayerStateMT, lua::metatables::LayerStateMT, functions);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-	RegisterSpriteFuncs(_state);
-	RegisterLayerState(_state);
-}
-

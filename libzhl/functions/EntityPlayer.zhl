@@ -673,6 +673,9 @@ __thiscall void Entity_Player::QueueItem(ItemConfig_Item* item, int charge, int 
 "558bec83ec0853568bf1578975":
 __thiscall void Entity_Player::ReplaceCostumeSprite(ItemConfig_Item* item, std_string* spritePath, int spriteId);
 
+"558bec83e4f881ec74010000":
+__thiscall void Entity_Player::AnimatePickup(ANM2* anm2, bool hideShadow, std_string* animName);
+
 struct Entity_Player depends (QueueItemData, Vector, ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects, ConsumableData, History, BagOfCraftingOutput, EntityDesc, GameStatePlayer, EntityPtr, BitSet128) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }

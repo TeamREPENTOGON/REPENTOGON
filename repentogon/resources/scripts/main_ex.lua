@@ -2302,23 +2302,6 @@ rawset(Isaac, "GetAllowedDoorsMaskForRoomShape", function(roomShape)
 	return roomShape and RoomShapeToDoorMask[roomShape] or 0
 end)
 
-
-local SpriteMT=getmetatable(Sprite)
-local OldSprConstructor=SpriteMT.__call
-
-function SpriteMT.__call(_,ANM2Path,LoadGraphics)
-	local out,isloaded=OldSprConstructor(),false
-	if LoadGraphics==nil then LoadGraphics=true end
-
-	if ANM2Path and type(ANM2Path)=="string" then
-		out:Load(ANM2Path,LoadGraphics)
-		isloaded=out:GetLayerCount()>0
-	end
-
-	return out,isloaded
-end
-
-
 local FontMT=getmetatable(Font)
 local OldFontConstructor=FontMT.__call
 

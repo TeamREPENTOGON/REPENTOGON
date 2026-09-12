@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 LUA_FUNCTION(Lua_GridEntityRockRenderTop)
 {
@@ -75,11 +76,20 @@ LUA_FUNCTION(Lua_GridEntityRockSpawnDrops)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GridEntityRockGetSprite)
+{
+	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
+
+	LuaSprite::PushPtr(L, &gridEnt->_sprite);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetSprite", Lua_GridEntityRockGetSprite },
 		{ "RenderTop", Lua_GridEntityRockRenderTop },
 		{ "TrySpawnWorms", Lua_GridEntityRockTrySpawnWorms },
 		{ "TrySpawnLadder", Lua_GridEntityRockTrySpawnLadder },

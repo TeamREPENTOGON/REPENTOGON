@@ -1586,7 +1586,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.pushClassPtr<LuaSprite>(sprite)
 			.pushClass<LuaVector>(*pos)
-			.pushClassPtr<LuaVector>(&scaleCopy)
+			.pushClass<LuaVector>(scaleCopy)
 			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 
@@ -1619,7 +1619,7 @@ void RunRenderCharacterWheelCallbacks(ANM2* sprite, Vector* pos, const int playe
 			.push(playerType)
 			.pushClassPtr<LuaSprite>(sprite)
 			.pushClass<LuaVector>(*pos)
-			.pushClassPtr<LuaVector>(&scaleCopy)
+			.pushClass<LuaVector>(scaleCopy)
 			.pushClassPtr<LuaColor>(&colorCopy)
 			.call(1);
 	}

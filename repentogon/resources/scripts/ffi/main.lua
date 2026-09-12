@@ -49,6 +49,7 @@ ffichecks.isnullptr = function(cdata) return cdata == nil end
 ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
 ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
 ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
+ffichecks.istable = function(var) return ffichecks.istype(var, "table") end
 ffichecks.iscdata = function(var, ctype)
 	if not var then return false end
 	local ct = resolveCtype(ctype)
@@ -69,6 +70,7 @@ ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, v
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
 ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
 ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
 ffichecks.checkinteger = function(index, val, level) 
 	if math.type(val) ~= "integer" then
 		error(string.format("bad argument #%d to '%s' (integer expected, got %s)", index, debug_getinfo(level or 2).name, type(val)), (level or 2)+1)
@@ -142,6 +144,18 @@ pcall(require("ffi.ActiveItemDesc"))
 pcall(require("ffi.QueueItemData"))
 pcall(require("ffi.TemporaryEffect"))
 pcall(require("ffi.TemporaryEffects"))
+pcall(require("ffi.AnimationFrame"))
+pcall(require("ffi.AnimationLayer"))
+pcall(require("ffi.AnimationData"))
+pcall(require("ffi.Shader"))
+pcall(require("ffi.DestinationQuad"))
+pcall(require("ffi.SourceQuad"))
+pcall(require("ffi.Image"))
+pcall(require("ffi.NullFrame"))
+pcall(require("ffi.BlendMode"))
+pcall(require("ffi.LayerState"))
+pcall(require("ffi.AnimationState"))
+pcall(require("ffi.Sprite"))
 -- pcall(require("ffi.Input"))
 
 

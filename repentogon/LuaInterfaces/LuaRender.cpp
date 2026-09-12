@@ -14,7 +14,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h"
-#include "LuaBlendMode.h"
 #include "../ShaderLoader.h"
 #include "../Utils/ImageUtils.hpp"
 #include "../Utils/ShaderUtils.hpp"
@@ -45,332 +44,6 @@ static void RenderToSurface(KAGE_Graphics_ImageBase& surface, Func&& renderFn)
 
 	manager.Present();
 	Rendering::RestorePreviousRenderTarget();
-}
-
-static void fill_shader_vertices(float* vertexBuffer, const KAGE_Graphics_ShaderBase& shader, lua_State* L, int tableIdx, std::vector<const char*>& errorFields)
-{
-	lua::LuaStackProtector protector(L);
-	tableIdx = lua_absindex(L, tableIdx);
-
-	auto fill_single_float = [&](const char* name, size_t attributeOffset, size_t vertexSize)
-	{
-		lua_getfield(L, tableIdx, name);
-		if (!lua_isnumber(L, -1))
-		{
-			errorFields.push_back(name);
-			lua_pop(L, 1);
-			return;
-		}
-
-		float data = (float)lua_tonumber(L, -1);
-		lua_pop(L, 1);
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			vertexBuffer[attributeOffset + (i * vertexSize)] = data;
-		}
-	};
-
-	auto fill_vector = [&](const char* name, size_t attributeOffset, size_t vectorSize, size_t vertexSize)
-	{
-		lua_getfield(L, tableIdx, name);
-		if (!lua_istable(L, -1))
-		{
-			errorFields.push_back(name);
-			lua_pop(L, 1); // pop table field
-			return;
-		}
-
-		float* data = (float*)alloca(vectorSize * sizeof(float));
-
-		for (size_t i = 0; i < vectorSize; i++)
-		{
-			lua_rawgeti(L, -1, i + 1);
-			if (!lua_isnumber(L, -1))
-			{
-				errorFields.push_back(name);
-				lua_pop(L, 2);
-				return;
-			}
-
-			data[i] = (float)lua_tonumber(L, -1);
-			lua_pop(L, 1);
-		}
-
-		lua_pop(L, 1);
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			std::memcpy(&vertexBuffer[attributeOffset + (i * vertexSize)], data, vectorSize * sizeof(float));
-		}
-	};
-
-	const KAGE_Graphics_VertexAttributeDescriptor* attributes = shader._vertexAttributes;
-	size_t numAttributes = shader._numVertexAttributes;
-	size_t vertexSize = ShaderUtils::GetVertexSize(attributes, numAttributes);
-	size_t attributeOffset = 0;
-	for (size_t i = 0; i < numAttributes; i++)
-	{
-		auto& attribute = attributes[i];
-
-		size_t formatSize = 0;
-		switch (attribute.format)
-		{
-		case (uint32_t)eVertexAttributeFormat::FLOAT:
-			formatSize = 1;
-			fill_single_float(attribute.name, attributeOffset, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_2:
-			formatSize = 2;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_3:
-			formatSize = 3;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		case (uint32_t)eVertexAttributeFormat::VEC_4:
-			formatSize = 4;
-			fill_vector(attribute.name, attributeOffset, formatSize, vertexSize);
-			break;
-		default:
-			formatSize = ShaderUtils::GetFormatSize(attribute.format);
-			break;
-		}
-
-		attributeOffset += formatSize;
-	}
-}
-
-static RenderMatrix get_render_matrix(lua_State* L, int idx)
-{
-	if (!lua_istable(L, idx))
-	{
-		luaL_argerror(L, idx, "render matrix is not a table");
-	}
-
-	RenderMatrix matrix;
-
-	int luaMatrix = lua_absindex(L, idx);
-	lua_rawgeti(L, luaMatrix, 1);
-	lua_rawgeti(L, luaMatrix, 2);
-	
-	int xTransform = lua_absindex(L, -2);
-	int yTransform = lua_absindex(L, -1);
-
-	if (!lua_istable(L, xTransform) || !lua_istable(L, yTransform))
-	{
-		luaL_argerror(L, luaMatrix, "render matrix row is not a table");
-	}
-
-	auto assign_matrix_field = [](float& field, lua_State* L, int luaMatrix, int row, int columnIdx)
-	{
-		lua_rawgeti(L, row, columnIdx);
-		if (!lua_isnumber(L, -1))
-		{
-			luaL_argerror(L, luaMatrix, "render matrix element is not a number!");
-		}
-
-		field = (float)lua_tonumber(L, -1);
-		lua_pop(L, 1);
-	};
-
-	assign_matrix_field(matrix.a, L, luaMatrix, xTransform, 1);
-	assign_matrix_field(matrix.b, L, luaMatrix, xTransform, 2);
-	assign_matrix_field(matrix.tx, L, luaMatrix, xTransform, 3);
-
-	assign_matrix_field(matrix.c, L, luaMatrix, yTransform, 1);
-	assign_matrix_field(matrix.d, L, luaMatrix, yTransform, 2);
-	assign_matrix_field(matrix.ty, L, luaMatrix, yTransform, 3);
-
-	lua_pop(L, 2); // pop xTransform, yTransform
-	
-	return matrix;
-}
-
-// ===========================================================================
-// Shader
-namespace LuaShader {
-	struct Userdata {
-		static constexpr char* MT = "Shader";
-		KAGE_Graphics_Shader* shader = nullptr;
-
-		Userdata(KAGE_Graphics_Shader* shader)
-			: shader(shader) {
-		}
-	};
-
-	static Userdata* GetUserdata(lua_State* L, int idx) {
-		return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-	}
-
-	static Userdata* NewUserdata(lua_State* L, KAGE_Graphics_Shader* shader)
-	{
-		Userdata* userdata = new (lua_newuserdata(L, sizeof(Userdata))) Userdata(shader);
-		luaL_setmetatable(L, Userdata::MT);
-		return userdata;
-	}
-
-	static void RegisterUserdataClass(lua_State* L) {
-		luaL_Reg functions[] = {
-			{ NULL, NULL }
-		};
-
-		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
-	}
-}
-
-// ============================================================================
-// Image
-
-LuaImage* LuaRender::GetLuaImage(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaImage*>(L, idx, LuaRender::ImageMT);
-}
-
-LUA_FUNCTION(lua_Image_gc) {
-	LuaImage* image = LuaRender::GetLuaImage(L);
-	image->image.DecrRef();
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_GetWidth)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetWidth());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetHeight)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetHeight());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetPaddedWidth)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetPaddedWidth());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetPaddedHeight)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushinteger(L, luaImage->image.image->GetPaddedHeight());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_GetName)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	lua_pushstring(L, luaImage->image.image->_name);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Image_Render)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
-	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *LuaKColor::Get(L, 4);
-	ColorMod colorMod =
-		lua_isnoneornil(L, 5)
-		? ColorMod()
-		: *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-
-	auto& image = *luaImage->image.image;
-
-	auto& shader = *__ptr_g_AllShaders[ShaderType::SHADER_COLOR_OFFSET];
-	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, *sourceQuad, *destQuad, ImageUtils::QuadColor(color));
-	if (vertexBuffer)
-	{
-		ShaderUtils::ColorOffset::FillVertices(vertexBuffer, image, colorMod);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_RenderWithShader)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	SourceQuad* sourceQuad = LuaRender::GetSourceQuad(L, 2);
-	DestinationQuad* destQuad = LuaRender::GetDestQuad(L, 3);
-	KColor color = *LuaKColor::Get(L, 4);
-	LuaShader::Userdata* luaShader = LuaShader::GetUserdata(L, 5);
-	if (!lua_istable(L, 6))
-	{
-		return luaL_typeerror(L, 6, lua_typename(L, LUA_TTABLE));
-	}
-
-	auto& shader = *luaShader->shader;
-	if (!shader._initialized)
-	{
-		// shader was shutdown or never successfully compiled.
-		return luaL_argerror(L, 5, "invalid shader used");
-	}
-
-	auto& image = *luaImage->image.image;
-
-	float* vertexBuffer = ImageUtils::SubmitQuadForShader(image, shader, *sourceQuad, *destQuad, ImageUtils::QuadColor(color));
-	if (!vertexBuffer)
-	{
-		return 0;
-	}
-
-	// no reserve, since the error path should be a rare and non desirable occurrence.
-	std::vector<const char*> errorFields;
-	fill_shader_vertices(vertexBuffer, shader, L, 6, errorFields);
-
-	if (!errorFields.empty())
-	{
-		std::string errorMessage = "some fields were not properly set :";
-		for (size_t i = 0; i < errorFields.size(); i++)
-		{
-			const char* separator = i == 0 ? " " : ", ";
-			errorMessage += std::string(separator) + errorFields[i];
-		}
-
-		// field not being setup correctly is purely the caller's fault, so even tho we can safely continue it's better to error.
-		return luaL_argerror(L, 6, errorMessage.c_str());
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Image_GetTexelRegion)
-{
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 1);
-	int x = (int)luaL_checkinteger(L, 2);
-	int y = (int)luaL_checkinteger(L, 3);
-	uint32_t width = (uint32_t)luaL_checkinteger(L, 4);
-	uint32_t height = (uint32_t)luaL_checkinteger(L, 5);
-
-	auto& image = *luaImage->image.image;
-	uint32_t size = width * height * 4; // (RGBA)
-	luaL_Buffer buffer;
-	luaL_buffinit(L, &buffer);
-
-	uint8_t* dst = (uint8_t*)luaL_prepbuffsize(&buffer, size);
-	image.GetTexelRegion(x, y, width, height, dst);
-
-	luaL_addsize(&buffer, size);
-	luaL_pushresult(&buffer);
-	return 1;
-}
-
-static void RegisterImageClass(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetWidth", Lua_Image_GetWidth },
-		{ "GetHeight", Lua_Image_GetHeight },
-		{ "GetPaddedWidth", Lua_Image_GetPaddedWidth },
-		{ "GetPaddedHeight", Lua_Image_GetPaddedHeight },
-		{ "GetName", Lua_Image_GetName },
-		{ "GetTexelRegion", Lua_Image_GetTexelRegion },
-		{ "Render", Lua_Image_Render },
-		{ "RenderWithShader", Lua_Image_RenderWithShader },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, "Image", "Image", functions, lua_Image_gc);
 }
 
 // ===========================================================================
@@ -453,13 +126,13 @@ LUA_FUNCTION(lua_Transformer_Render) {
 	if (!transformer->_valid) {
 		return luaL_error(L, "No operations allowed after a transformer has been applied");
 	}
-	LuaImage* image = LuaRender::GetLuaImage(L, 2);
-	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
-	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
+	KAGE_SmartPointer_ImageBase* image = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
+	SourceQuad* source = lua::GetCData<SourceQuad*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD], "SourceQuad");
+	DestinationQuad* dest = lua::GetCData<DestinationQuad*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD], "DestinationQuad");
 	KColor mod = *LuaKColor::Get(L, 5);
 
 	Transformation trans;
-	trans._input = image->image;
+	trans._input = *image;
 	trans._source = *source;
 	trans._dest = *dest;
 	trans._color1 = trans._color2 = trans._color3 = trans._color4 = mod;
@@ -473,16 +146,16 @@ LUA_FUNCTION(lua_Transformer_RenderEx) {
 	if (!transformer->_valid) {
 		return luaL_error(L, "No operations allowed after a transformed has been applied");
 	}
-	LuaImage* image = LuaRender::GetLuaImage(L, 2);
-	SourceQuad* source = LuaRender::GetSourceQuad(L, 3);
-	DestinationQuad* dest = LuaRender::GetDestQuad(L, 4);
+	KAGE_SmartPointer_ImageBase* image = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
+	SourceQuad* source = lua::GetCData<SourceQuad*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD], "SourceQuad");
+	DestinationQuad* dest = lua::GetCData<DestinationQuad*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD], "DestinationQuad");
 	KColor mod = *LuaKColor::Get(L, 5);
 	KColor mod2 = *LuaKColor::Get(L, 5);
 	KColor mod3 = *LuaKColor::Get(L, 5);
 	KColor mod4 = *LuaKColor::Get(L, 5);
 
 	Transformation trans;
-	trans._input = image->image;
+	trans._input = *image;
 	trans._source = *source;
 	trans._dest = *dest;
 	trans._color1 = mod;
@@ -528,368 +201,6 @@ static void RegisterTransformerClass(lua_State* L) {
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, LuaRender::TransformerMT, LuaRender::TransformerMT, functions);
-}
-
-// ============================================================================
-// Quads
-
-// DestinationQuad is used as the generic quad.
-static DestinationQuad* get_quad(lua_State* L, int idx)
-{
-	DestinationQuad* ud = (DestinationQuad*)luaL_testudata(L, idx, LuaRender::SourceQuadMT);
-	if (ud)
-	{
-		return ud;
-	}
-
-	ud = (DestinationQuad*)luaL_checkudata(L, idx, LuaRender::DestinationQuadMT);
-	return ud;
-}
-
-SourceQuad* LuaRender::GetSourceQuad(lua_State* L, int idx) {
-	return (SourceQuad*)luaL_checkudata(L, idx, LuaRender::SourceQuadMT);
-}
-
-DestinationQuad* LuaRender::GetDestQuad(lua_State* L, int idx) {
-	return (DestinationQuad*)luaL_checkudata(L, idx, LuaRender::DestinationQuadMT);
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_Copy)
-{
-	DestinationQuad* quad = LuaRender::GetDestQuad(L, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	*result = *quad;
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_Copy)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	*result = *quad;
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetTopLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_topLeft);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetTopRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_topRight);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetBottomLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_bottomLeft);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_GetBottomRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], quad->_bottomRight);
-	return 1;
-}
-
-LUA_FUNCTION(lua_Quad_SetTopLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topLeft = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetTopRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_topRight = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetBottomLeft) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomLeft = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(lua_Quad_SetBottomRight) {
-	DestinationQuad* quad = get_quad(L, 1);
-	quad->_bottomRight = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Translate)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector offset = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	
-	quad->Translate(offset);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Scale)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector scale = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	quad->Scale(scale, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Rotate)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	float rotation = (float)luaL_checknumber(L, 2);
-	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	quad->RotateDegrees(anchor, rotation);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Shear)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	Vector shear = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	quad->Shear(shear, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_ApplyMatrix)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	if (!lua_istable(L, 2))
-	{
-		luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
-	}
-	RenderMatrix matrix = get_render_matrix(L, 2);
-	Vector anchor = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	quad->ApplyMatrix(matrix, anchor);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_Quad_Flip)
-{
-	DestinationQuad* quad = get_quad(L, 1);
-	bool flipX = lua_isnoneornil(L, 2) ? true : lua_toboolean(L, 2);
-	bool flipY = lua_isnoneornil(L, 3) ? true : lua_toboolean(L, 3);
-
-	if (flipX)
-	{
-		quad->FlipX();
-	}
-
-	if (flipY)
-	{
-		quad->FlipY();
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_DestQuad_ToString)
-{
-	DestinationQuad* quad = LuaRender::GetDestQuad(L, 1);
-
-	lua_pushfstring(L, "[DestQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f]",
-		quad->_topLeft.x, quad->_topLeft.y,
-		quad->_topRight.x, quad->_topRight.y,
-		quad->_bottomLeft.x, quad->_bottomLeft.y,
-		quad->_bottomRight.x, quad->_bottomRight.y);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_IsUVSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	lua_pushboolean(L, quad->_coordinateSpace == SourceQuad::eCoordinateSpace::NORMALIZED_UV);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ConvertToPixelSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 2);
-
-	quad->ConvertToPixelSpace(*luaImage->image.image);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ConvertToUVSpace)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-	LuaImage* luaImage = LuaRender::GetLuaImage(L, 2);
-
-	quad->ConvertToUVSpace(*luaImage->image.image);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_ToString)
-{
-	SourceQuad* quad = LuaRender::GetSourceQuad(L, 1);
-
-	lua_pushfstring(L, "[SourceQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f | UV %s]",
-		quad->_topLeft.x, quad->_topLeft.y,
-		quad->_topRight.x, quad->_topRight.y,
-		quad->_bottomLeft.x, quad->_bottomLeft.y,
-		quad->_bottomRight.x, quad->_bottomRight.y,
-		quad->_coordinateSpace == SourceQuad::eCoordinateSpace::NORMALIZED_UV ? "true" : "false");
-
-	return 1;
-}
-
-static void RegisterQuadClasses(lua_State* L) {
-	luaL_Reg destinationQuadFunctions[] = {
-		{ "Copy", Lua_DestinationQuad_Copy },
-		{ "GetTopLeft", lua_Quad_GetTopLeft },
-		{ "GetTopRight", lua_Quad_GetTopRight },
-		{ "GetBottomLeft", lua_Quad_GetBottomLeft },
-		{ "GetBottomRight", lua_Quad_GetBottomRight },
-		{ "SetTopLeft", lua_Quad_SetTopLeft },
-		{ "SetTopRight", lua_Quad_SetTopRight },
-		{ "SetBottomLeft", lua_Quad_SetBottomLeft },
-		{ "SetBottomRight", lua_Quad_SetBottomRight },
-		{ "Translate", Lua_Quad_Translate },
-		{ "Scale", Lua_Quad_Scale },
-		{ "Rotate", Lua_Quad_Rotate },
-		{ "Shear", Lua_Quad_Shear },
-		{ "ApplyMatrix", Lua_Quad_ApplyMatrix },
-		{ "Flip", Lua_Quad_Flip },
-		{ "__tostring", Lua_DestQuad_ToString },
-		{ NULL, NULL }
-	};
-
-	luaL_Reg sourceQuadFunctions[] = {
-		{ "Copy", Lua_SourceQuad_Copy },
-		{ "IsUVSpace", Lua_SourceQuad_IsUVSpace },
-		{ "ConvertToPixelSpace", Lua_SourceQuad_ConvertToPixelSpace },
-		{ "ConvertToUVSpace", Lua_SourceQuad_ConvertToUVSpace },
-		{ "__tostring", Lua_SourceQuad_ToString },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, LuaRender::DestinationQuadMT, LuaRender::DestinationQuadMT, destinationQuadFunctions);
-
-	lua::RegisterNewClass(L, LuaRender::SourceQuadMT, LuaRender::SourceQuadMT, sourceQuadFunctions);
-	luaL_getmetatable(L, LuaRender::SourceQuadMT);
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	lua_pop(L, 1);
-}
-
-static void FillQuad(lua_State* L, DestinationQuad& quad, int startIdx) {
-	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	quad._topRight = *lua::GetCData<Vector*>(L, startIdx + 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	quad._bottomLeft = *lua::GetCData<Vector*>(L, startIdx + 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	quad._bottomRight = *lua::GetCData<Vector*>(L, startIdx + 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-}
-
-static void init_from_bounds(lua_State* L, DestinationQuad& quad, int startIdx)
-{
-	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	quad._bottomRight = *lua::GetCData<Vector*>(L, startIdx + 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	quad._topRight = Vector(quad._bottomRight.x, quad._topLeft.y);
-	quad._bottomLeft = Vector(quad._topLeft.x, quad._bottomRight.y);
-}
-
-static void init_from_aa_rect(lua_State* L, DestinationQuad& quad, int startIdx)
-{
-	quad._topLeft = *lua::GetCData<Vector*>(L, startIdx + 0, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector pos = quad._topLeft;
-	float width = (float)luaL_checknumber(L, startIdx + 1);
-	float height = (float)luaL_checknumber(L, startIdx + 2);
-
-	quad._topRight = Vector(pos.x + width, pos.y);
-	quad._bottomLeft = Vector(pos.x, pos.y + height);
-	quad._bottomRight = Vector(pos.x + width, pos.y + height);
-}
-
-LUA_FUNCTION(lua_SourceQuad_new) {
-	SourceQuad quad;
-	// __call passes the table itself as the first arg
-	FillQuad(L, quad, 2);
-	bool uvSpace = lua_toboolean(L, 6);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_NewFromBounds)
-{
-	SourceQuad quad;
-	init_from_bounds(L, quad, 1);
-	bool uvSpace = lua_toboolean(L, 3);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SourceQuad_NewFromRectangle)
-{
-	SourceQuad quad;
-	init_from_aa_rect(L, quad, 1);
-	bool uvSpace = lua_toboolean(L, 4);
-	quad._coordinateSpace = uvSpace ? SourceQuad::eCoordinateSpace::NORMALIZED_UV : SourceQuad::eCoordinateSpace::PIXEL;
-
-	SourceQuad* result = (SourceQuad*)lua_newuserdata(L, sizeof(SourceQuad));
-	luaL_setmetatable(L, LuaRender::SourceQuadMT);
-	memcpy(result, &quad, sizeof(SourceQuad));
-	return 1;
-}
-
-LUA_FUNCTION(lua_DestinationQuad_new) {
-	DestinationQuad quad;
-	// __call passes the table itself as the first arg
-	FillQuad(L, quad, 2);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_NewFromBounds)
-{
-	DestinationQuad quad;
-	init_from_bounds(L, quad, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_DestinationQuad_NewFromRectangle)
-{
-	DestinationQuad quad;
-	init_from_aa_rect(L, quad, 1);
-
-	DestinationQuad* result = (DestinationQuad*)lua_newuserdata(L, sizeof(DestinationQuad));
-	luaL_setmetatable(L, LuaRender::DestinationQuadMT);
-	memcpy(result, &quad, sizeof(DestinationQuad));
-	return 1;
 }
 
 // ============================================================================
@@ -2854,10 +2165,7 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 		return luaL_error(L, "Image %s does not exist", path);
 	}
 
-	LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaImage))) LuaImage;
-	memset(ud, 0, sizeof(LuaImage));
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = image;
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], image);
 	return 1;
 }
 
@@ -2875,10 +2183,7 @@ LUA_FUNCTION(Lua_Renderer_CreateImage) {
 		return luaL_error(L, "Unable to create Image");
 	}
 
-	LuaImage* ud = new (lua_newuserdata(L, sizeof(LuaImage))) LuaImage;
-	memset(ud, 0, sizeof(LuaImage));
-	luaL_setmetatable(L, LuaRender::ImageMT);
-	ud->image = pointer;
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], pointer);
 	return 1;
 }
 
@@ -2893,8 +2198,9 @@ LUA_FUNCTION(Lua_RenderToImage_ErrorHandler)
 }
 
 LUA_FUNCTION(Lua_Renderer_RenderToImage) {
-	LuaImage* luaImage = LuaRender::GetLuaImage(L);
-	auto* image = luaImage->image.image;
+	KAGE_SmartPointer_ImageBase* imageBase = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
+
+	auto* image = imageBase->image;
 	if ((image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
 	{
 		return luaL_error(L, "Cannot use a non procedural image as the render target");
@@ -2955,9 +2261,8 @@ LUA_FUNCTION(Lua_Renderer_RenderToImage) {
 }
 
 LUA_FUNCTION(lua_Renderer_StartTransformation) {
-	LuaImage* luaImage = LuaRender::GetLuaImage(L);
-	auto& pointer = luaImage->image;
-	if ((pointer.image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
+	KAGE_SmartPointer_ImageBase* imageBase = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
+	if ((imageBase->image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
 	{
 		return luaL_error(L, "Cannot use a non procedural image as the render target");
 	}
@@ -2965,7 +2270,7 @@ LUA_FUNCTION(lua_Renderer_StartTransformation) {
 	LuaTransformer* transformer = new (lua_newuserdata(L, sizeof(LuaTransformer))) LuaTransformer;
 	transformer->_valid = true;
 	luaL_setmetatable(L, LuaRender::TransformerMT);
-	transformer->_output = pointer;
+	transformer->_output = *imageBase;
 	return 1;
 }
 
@@ -3051,7 +2356,7 @@ LUA_FUNCTION(Lua_Renderer_LoadShader)
 		luaL_error(L, "Unable to load shader \"%s\": %s", path.c_str(), shader.unwrap_err().c_str());
 	}
 
-	LuaShader::NewUserdata(L, shader.unwrap());
+	lua::ffi::pushCdataPtr(L, shader.unwrap(), lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR]);
 	
 	return 1;
 }
@@ -3065,7 +2370,7 @@ LUA_FUNCTION(Lua_Renderer_GetShaderByType)
 		return luaL_argerror(L, 2, "invalid shader type");
 	}
 
-	LuaShader::Userdata* ud = LuaShader::NewUserdata(L, __ptr_g_AllShaders[shaderType]);
+	lua::ffi::pushCdataPtr(L, __ptr_g_AllShaders[shaderType], lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR]);
 	return 1;
 }
 
@@ -3198,48 +2503,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_State* L = _state;
 	lua::LuaStackProtector protector(L);
-	RegisterImageClass(L);
-	LuaShader::RegisterUserdataClass(L);
 	LuaSurfaceRenderController::RegisterUserdataClass(L);
 	RegisterTransformerClass(L);
-	RegisterQuadClasses(L);
 	RegisterCustomRenderMetatables(L);
-
-	// SourceQuad static methods
-
-	lua_createtable(L, 0, 2); // table
-	lua_createtable(L, 0, 1); // metatable
-
-	lua_pushcfunction(L, lua_SourceQuad_new);
-	lua_setfield(L, -2, "__call");
-
-	lua_setmetatable(L, -2);
-
-	lua_pushcfunction(L, Lua_SourceQuad_NewFromBounds);
-	lua_setfield(L, -2, "NewFromBounds");
-
-	lua_pushcfunction(L, Lua_SourceQuad_NewFromRectangle);
-	lua_setfield(L, -2, "NewFromRectangle");
-
-	lua_setglobal(L, "SourceQuad");
-
-	// DestinationQuad static methods
-
-	lua_createtable(L, 0, 2); // table
-	lua_createtable(L, 0, 1); // metatable
-
-	lua_pushcfunction(L, lua_DestinationQuad_new);
-	lua_setfield(L, -2, "__call");
-
-	lua_setmetatable(L, -2);
-
-	lua_pushcfunction(L, Lua_DestinationQuad_NewFromBounds);
-	lua_setfield(L, -2, "NewFromBounds");
-
-	lua_pushcfunction(L, Lua_DestinationQuad_NewFromRectangle);
-	lua_setfield(L, -2, "NewFromRectangle");
-
-	lua_setglobal(L, "DestinationQuad");
 
 	lua_newtable(L);
 

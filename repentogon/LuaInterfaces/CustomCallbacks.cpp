@@ -1335,8 +1335,8 @@ void PostMarksRender(CompletionWidget* cmp, Vector* pos, Vector* scale) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.pushClassPtr<LuaSprite>(cmp->GetANM2())
-			.pushClassPtr<LuaVector>(pos)
-			.pushClassPtr<LuaVector>(scale)
+			.pushClass<LuaVector>(*pos)
+			.pushClass<LuaVector>(*scale)
 			.push(cmp->CharacterId)
 			.call(1);
 	}
@@ -2880,7 +2880,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.pushnil()
-			.pushClassPtr<LuaVector>(unk)
+			.pushClass<LuaVector>(*unk)
 			.pushClassPtr<LuaSprite>(sprite)
 			.pushClass<LuaVector>(posToSend)
 			.push(scale)
@@ -2905,7 +2905,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk, ANM2* sprite, int playerHudLa
 
 		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
-			.pushClassPtr<LuaVector>(unk)
+			.pushClass<LuaVector>(*unk)
 			.pushClassPtr<LuaSprite>(sprite)
 			.pushClass<LuaVector>(posToSend)
 			.push(scale)
@@ -5829,7 +5829,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 			.pushClassPtr<LuaEntity>(this)
 			.pushClassPtr<LuaEntityRef>((EntityRef*)(&ref))
 			.push(duration)
-			.pushClassPtr<LuaVector>(&pushVector)
+			.pushClass<LuaVector>(pushVector)
 			.push(takeImpactDamage)
 			.call(1);
 
@@ -5874,7 +5874,7 @@ HOOK_METHOD(Entity, AddKnockback, (const EntityRef& ref, const Vector& pushDirec
 			.pushClassPtr<LuaEntity>(this)
 			.pushClassPtr<LuaEntityRef>((EntityRef*)(&ref))
 			.push(duration)
-			.pushClassPtr<LuaVector>(&pushVector)
+			.pushClass<LuaVector>(pushVector)
 			.push(takeImpactDamage)
 			.call(1);
 	}
