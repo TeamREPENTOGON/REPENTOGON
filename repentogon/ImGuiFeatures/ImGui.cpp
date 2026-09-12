@@ -538,13 +538,13 @@ void LoadImGuiFont() {
 	static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	cfg.MergeMode = true;
 	// icon font
-	cfg.Flags = ImFontFlags_LockBakedSizes;
 	if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
 		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
 	}
 	else {
 		ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
 	} 
+	cfg.FontLoaderFlags |= ImGuiFreeTypeBuilderFlags_RGON_FONT_AWESOME;
 	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
 	io.FontDefault = imFontUnifont;
 }
