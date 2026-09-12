@@ -458,7 +458,6 @@ void RenderLuamodErrorPopup() {
 				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
 				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
 				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Borders)) {
-					ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
 					ImGui::TextWrapped(luamoderrorcache.c_str());
 					if (!popupscrolled) {
 						ImGui::SetScrollHereY(1.0f);
@@ -521,7 +520,6 @@ void LoadImGuiFont() {
 	}
 
 	cfg.OversampleH = cfg.OversampleV = 1; // do not oversample fonts, because freetype will font size it now.
-	ImGui::GetStyle().ScaleAllSizes(GetDpiForWindow(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow) / 96.f);
 
 	auto & io = ImGui::GetIO();
 	io.Fonts->AddFontDefaultBitmap();
@@ -540,13 +538,13 @@ void LoadImGuiFont() {
 	static const ImWchar fa_icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	cfg.MergeMode = true;
 	// icon font
-	cfg.Flags = ImFontFlags_LockBakedSizes;
 	if (std::filesystem::exists("C:\\Windows\\Fonts\\seguiemj.ttf")) {
 		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguiemj.ttf", 0, &cfg);
 	}
 	else {
 		ZHL::Log("[REPENTOGON] Dear ImGui can't load emoji font, file doesn't exists.\n");
 	} 
+	cfg.FontLoaderFlags |= ImGuiFreeTypeBuilderFlags_RGON_FONT_AWESOME;
 	io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 0, &cfg, fa_icon_ranges);
 	io.FontDefault = imFontUnifont;
 }
@@ -602,7 +600,8 @@ void __stdcall RunImGui(HDC hdc) {
 		The design is, if player start game without enable multi-viewports, they get a perfect single window imgui.
 		If player turn off multiview in game, most behavior will be okay, not perfect.
 
-		The flag can't be removed once it's added, we use ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow if possible.
+		The flag can't be removed once it's added, we manually set every window to main viewport in imgui's hack.
+		see `repentogonImGuiHookData.shouldDisableMultiViewport`
 	*/
 	if (repentogonOptions.enableImGuiMultiView)
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -610,20 +609,31 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	else
 		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_DockingEnable;
+	repentogonImGuiHookData.shouldDisableMultiViewport = false;
+	if (repentogonOptions.enableDocking && g_Manager) {
+		auto opts = g_Manager->GetOptions();
+		if (opts) {
+			if (opts->_isFullscreen) {
+				repentogonImGuiHookData.shouldDisableMultiViewport = true;
+			}
+		}
+	}
 
 	LoadImGuiFont();
 
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
 	ImGui::PushFont(imFontUnifont, g_PointScale * (float)clamp(repentogonOptions.fontSize, 6, 26));
+	if (g_PointScale > 0) {
+		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale;
+	}
+	ImGui::NewFrame();
 	UpdateImGuiSettings();
 		
 	
 	if (menuShown) {
-		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		if (ImGui::BeginMainMenuBar()) {
-			ImGui::GetCurrentWindow()->FontWindowScale = 1; // scale menu bar is buggy, so not allowed. 
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
 			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
 				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
@@ -648,7 +658,6 @@ void __stdcall RunImGui(HDC hdc) {
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();

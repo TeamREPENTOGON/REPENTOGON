@@ -354,7 +354,6 @@ struct ConsoleMega : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
-        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
@@ -369,7 +368,6 @@ struct ConsoleMega : ImGuiWindowObject {
               textboxHeight = 0;
             }
             if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Borders)) {
-                ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.

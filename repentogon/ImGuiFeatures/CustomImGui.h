@@ -1030,7 +1030,6 @@ struct CustomImGui {
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 RunPreRenderCallbacks(&(*window));
-                ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
                 if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(window->data.windowFlags))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
@@ -1143,7 +1142,6 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::Window: {
                 if (ImGui::BeginChild(element->name.c_str(), element->data.size, element->data.childFlags, element->data.windowFlags)) {
-                    ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                     RunCallbacks(&(*element));
                     DrawElements(element->children, overflowElements);
                 }
@@ -1156,6 +1154,7 @@ struct CustomImGui {
                   const float menuWidth = ImGui::CalcTextSize(name).x + ImGui::GetStyle().FramePadding.x * 2.0f;
                   if (GetAvailableMenuSpace() - menuWidth <= 0) {
                     overflowElements->push_back(*element);
+                    ImGui::PopID();
                     continue;
                   }
                 }
@@ -1171,11 +1170,11 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Text:
-                ImGui::Text(name);
+                ImGui::TextUnformatted(name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::TextWrapped:
-                ImGui::TextWrapped(name);
+                ImGui::TextWrapped("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SeparatorText:
@@ -1183,7 +1182,7 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::BulletText:
-                ImGui::BulletText(name);
+                ImGui::BulletText("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Separator:

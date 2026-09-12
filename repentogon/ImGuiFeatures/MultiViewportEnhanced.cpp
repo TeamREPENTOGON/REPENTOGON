@@ -105,18 +105,3 @@ void ImGui_ImplRepentogon_InitMultiViewport() {
 	ImGui::GetPlatformIO().Platform_RenderWindow = Repentogon_Platform_RenderWindow;
 	ImGui::GetPlatformIO().Platform_SwapBuffers = Repentogon_Platform_SwapBuffers;
 }
-void ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow() {
-	bool useMultiview = true;
-	if (!repentogonOptions.enableImGuiMultiView)
-		useMultiview = false;
-	if (useMultiview && g_Manager) {
-		auto opts = g_Manager->GetOptions();
-		if (opts) {
-			if (opts->_isFullscreen) {
-				useMultiview = false;
-			}
-		}
-	}
-	if (!useMultiview)
-		ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
-}

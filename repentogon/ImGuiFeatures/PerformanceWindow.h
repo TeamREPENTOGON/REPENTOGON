@@ -29,7 +29,6 @@ struct PerformanceWindow : ImGuiWindowObject {
 			return;
 		}
 		ImGui::SetNextWindowSize(ImVec2(450, 200), ImGuiCond_FirstUseEver);
-		ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
 		if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
 			AddWindowContextMenu();
 

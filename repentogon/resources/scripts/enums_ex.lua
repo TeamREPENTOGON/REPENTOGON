@@ -3242,6 +3242,14 @@ TrinketSlot = {
 	BELLY_BUTTON = 1,
 }
 
+AltRockType = {
+	POT = 1,
+	MUSHROOM = 2,
+	SKULL = 3,
+	POLYP = 4,
+	BUCKET = 5,
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529

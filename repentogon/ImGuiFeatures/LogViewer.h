@@ -201,7 +201,6 @@ struct LogViewer : ImGuiWindowObject {
             return;
         }
         ImGui::SetNextWindowSize(ImVec2(550, 300), ImGuiCond_FirstUseEver);
-        ImGui_ImplRepentogon_DisableViewportAsNeedForNextWindow();
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
 
@@ -254,7 +253,6 @@ struct LogViewer : ImGuiWindowObject {
             internalFilter = internalFilterRes.str().c_str();
 
             if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_AlwaysHorizontalScrollbar)) {
-                ImGui::GetCurrentWindow()->FontWindowScale = ImGui::GetCurrentWindow()->ParentWindow->FontWindowScale;
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
 

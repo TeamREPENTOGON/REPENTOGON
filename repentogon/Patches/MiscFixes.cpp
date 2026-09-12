@@ -286,3 +286,21 @@ HOOK_STATIC(LuaEngine, PostKnifeInit, (Entity_Knife* knife) -> void, __stdcall) 
 	}
 	super(knife);
 }
+
+// Fix gold rocks not being considered crushable
+HOOK_METHOD(GridEntity, IsEasyCrushableOrWalkable, () -> bool) {
+	// gridpath > 0 check matches function logic
+	if (this->_gridIndex < 448 && g_Game->_room->_gridPaths[this->_gridIndex] > 0 && this->_desc._type == GRID_ROCK_GOLD) {
+		return true;
+	}
+	return super();
+}
+
+// Fix spiked rocks not being considered crushable
+HOOK_METHOD(GridEntity, IsDangerousCrushableOrWalkable, () -> bool) {
+	// gridpath > 999 check matches function logic
+	if (this->_gridIndex < 448 && g_Game->_room->_gridPaths[this->_gridIndex] > 999 && this->_desc._type == GRID_ROCK_SPIKED) {
+		return true;
+	}
+	return super();
+}
