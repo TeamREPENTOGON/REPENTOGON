@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_EntityRefGetEntity) {
 
 LUA_FUNCTION(Lua_EntityRefSetEntity) {
 	EntityRef* ref = LuaEntityRef::Get(L, 1);
-	Entity* ent = LuaEntity::Get(L, 2);
+	Entity* ent = LuaEntity::GetOpt(L, 2);
 
 	ref->_entity = ent;
 	return 0;
@@ -33,6 +33,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_setglobal(_state, "__Lua_EntityRef_GetEntity");
 	lua_pushcfunction(_state, Lua_EntityRefSetEntity);
 	lua_setglobal(_state, "__Lua_EntityRef_SetEntity");
-
+	
 	super();
 }

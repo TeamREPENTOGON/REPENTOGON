@@ -330,10 +330,10 @@ SpriteMT = {
     end,
     SetFrame = function(self, param, param2)
         if ffichecks.isstring(param) then
-            ffichecks.checkinteger(2, param2)
+            ffichecks.checknumber(2, param2)
             repentogon.L_Sprite_SetFrameWithAnim(self, param, param2)
         else
-            ffichecks.checkinteger(1, param)
+            ffichecks.checknumber(1, param)
             repentogon.L_Sprite_SetFrame(self, param)
         end
     end,
@@ -356,10 +356,10 @@ SpriteMT = {
     end,
     SetOverlayFrame = function(self, param, param2)
         if ffichecks.isstring(param) then
-            ffichecks.checkinteger(2, param2)
+            ffichecks.checknumber(2, param2)
             repentogon.L_Sprite_SetOverlayFrameWithAnim(self, param, param2)
         else
-            ffichecks.checkinteger(1, param)
+            ffichecks.checknumber(1, param)
             repentogon.L_Sprite_SetOverlayFrame(self, param)
         end
     end,
