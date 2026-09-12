@@ -148,8 +148,8 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	lua_pushstring(L, "AllowedDoors");
 	lua_pushcfunction(L, Lua_RoomDescriptorSetAllowedDoors);
-
 	lua_rawset(L, -3);
+
 	lua_pop(L, 2);
 
 	luaL_newmetatable(L, lua::metatables::RoomDescriptorDoors);
