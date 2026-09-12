@@ -1170,11 +1170,11 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Text:
-                ImGui::Text(name);
+                ImGui::TextUnformatted(name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::TextWrapped:
-                ImGui::TextWrapped(name);
+                ImGui::TextWrapped("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SeparatorText:
@@ -1182,7 +1182,7 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::BulletText:
-                ImGui::BulletText(name);
+                ImGui::BulletText("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Separator:
