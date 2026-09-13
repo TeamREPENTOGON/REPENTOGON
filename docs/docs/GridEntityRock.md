@@ -6,14 +6,17 @@ tags:
 
 ## Functions
 
-### GetAltRockType () {: aria-label='Functions' }
-#### int GetAltRockType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
+### static GetAltRockType () {: aria-label='Functions' }
+#### [AltRockType](enums/AltRockType.md) GetAltRockType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
+Can be used the check the [AltRockType](enums/AltRockType.md) corresponding to a particular [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html).
 
-___  
+By default, returns the [AltRockType](enums/AltRockType.md) for the backdrop of the current room.
+
+___
 ### PlayBreakSound () {: aria-label='Functions' }
 #### void PlayBreakSound ( [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }    
 
-___  
+___
 ### RegisterRockDestroyed () {: aria-label='Functions' }
 #### void RegisterRockDestroyed ( [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type ) {: .copyable aria-label='Functions' }
 

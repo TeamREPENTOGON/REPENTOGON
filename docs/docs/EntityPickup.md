@@ -12,12 +12,36 @@ tags:
 #### boolean AddCollectibleCycle ( int id ) {: .copyable aria-label='Functions' }
 
 ___
+### CanJeraDuplicate () {: aria-label='Functions' }
+#### boolean CanJeraDuplicate ( ) {: .copyable aria-label='Functions' }
+Returns true if the Jera rune can be used to duplicate this pickup. Note that a pickup MUST be considered "rerollable" (ie `CanReroll`) in order to be eligible for Jera duplication.
+
+Custom pickups can be blacklisted from Jera duplication using the `nojera` customtag in [entities2.xml](xml/entities.md).
+
+___
 ### CanReroll () {: aria-label='Functions' }
 #### boolean CanReroll ( ) {: .copyable aria-label='Functions' }
+Returns true if this pickup can be "rerolled". Note that this also covers other actions such as Moving Box, Jera, Void, Ace Cards, etc.
+
+Custom pickups can be blacklisted from Jera duplication using the `norerollpickup` customtag in [entities2.xml](xml/entities.md).
+
+You can also dynamically alter the result of this function using [SetCanRerollOverride](EntityPickup.md#setcanrerolloverride).
+
+___
+### ClearCanRerollOverride () {: aria-label='Functions' }
+#### void ClearCanRerollOverride ( ) {: .copyable aria-label='Functions' }
+Removes any override set by [SetCanRerollOverride](EntityPickup.md#setcanrerolloverride).
 
 ___
 ### GetAlternatePedestal () {: aria-label='Functions' }
 #### int GetAlternatePedestal ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetCanRerollOverride () {: aria-label='Functions' }
+#### boolean GetCanRerollOverride ( ) {: .copyable aria-label='Functions' }
+See [SetCanRerollOverride](EntityPickup.md#setcanrerolloverride).
+
+Returns `nil` if no override is set.
 
 ___
 ### GetCollectibleCycle () {: aria-label='Functions' }
@@ -110,6 +134,15 @@ ___
 ### SetAlternatePedestal () {: aria-label='Functions' }
 #### void SetAlternatePedestal ( int PedestalType ) {: .copyable aria-label='Functions' }
 Sets the graphics of the item pedestal. Does nothing for non-collectible EntityPickups.
+
+___
+### SetCanRerollOverride () {: aria-label='Functions' }
+#### void SetCanRerollOverride ( boolean CanReroll ) {: .copyable aria-label='Functions' }
+Overrides all other conditions for whether or not a pickup can be rerolled (see [CanReroll](EntityPickup.md#canreroll)). Primarily useful to dynamically make a specific pickup unable to be rerolled.
+
+The override can be dismissed using [ClearCanRerollOverride](EntityPickup.md#clearcanrerolloverride).
+
+Note that this attribute is persistent and will be remembered even if you leave the room and come back.
 
 ___
 ### SetDropDelay () {: aria-label='Functions' }
