@@ -91,32 +91,21 @@ namespace ASMPatches {
 	};
 
 	bool SkipArchiveChecksums() {
-		SigScan loop_sig("8bc83d00020000");						//first line in the outer "do-while" block (loadarchivefile)
-		SigScan if_check_sig("74??ffb5????????ff77");			//branch condition for checksum comparsion
-		SigScan loop_end_sig("8b85????????8bbd????????3b70");	//immediately outside the while loop, a few lines above if check
-		ASMPatch if_patch;
-		ASMPatch patch;
+		void* loop_begin = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_DoWhileBegin);
+		void* loop_end = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_DoWhileEnd);
+		void* comparsion_addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::LoadArchiveFile_CheckFile);
 
-		if ( !( loop_sig.Scan() && if_check_sig.Scan() && loop_end_sig.Scan() ) ) {
-			printf("Failed to find SkipArchiveChecks addresses!\nloop: %p, loop_end: %p, if_check: %p\n",loop_sig.GetAddress(),loop_end_sig.GetAddress(),if_check_sig.GetAddress());
-			return false;
+		ASMPatch loop_skip;
+		loop_skip.AddRelativeJump(loop_end);
+
+		ASMPatch comparsion_patch;
+		comparsion_patch.AddBytes("\x39\xC0\x90");	// cmp eax,eax -> results in a guaranteed "match", plus a nop to make these three bytes more pretty
+
+		if (repentogonOptions.skipArchiveChecks) {
+			sASMPatcher.FlatPatch(loop_begin, &loop_skip);
+			sASMPatcher.FlatPatch(comparsion_addr, &comparsion_patch);
 		};
-
-		void* start_ptr = loop_sig.GetAddress();
-		void* end_ptr = loop_end_sig.GetAddress();
-		void* if_check = if_check_sig.GetAddress();
-
-		if_patch.AddBytes("\xEB");	//swap to uncond jump
-		patch.AddRelativeJump(end_ptr);
-
-		for (int i = 1; i < __argc; i++) {
-			char* arg = __argv[i];
-			if (repentogonOptions.skipArchiveChecks) {
-				sASMPatcher.FlatPatch(start_ptr,&patch);
-				sASMPatcher.FlatPatch(if_check, &if_patch);
-				break;
-			};
-		};
+		
 		return true;
 	};
 
