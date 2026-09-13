@@ -8,6 +8,7 @@
 #include "../LuaClasses.h"
 #include "HookSystem.h"
 #include "Log.h"
+#include "../Utils/GridEntity/GridEntityUtils.h"
 #include "../Patches/XMLData.h"
 #include "Level.h"
 #include "../LuaInit.h"
@@ -2176,7 +2177,7 @@ HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetDesc()->_type)
-			.pushClassPtr<LuaGridEntity>(this)
+			.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*this), this)
 			.call(1);
 	}
 };
@@ -3001,7 +3002,7 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(grid->GetType())
-			.pushClassPtr<LuaGridEntity>(grid)
+			.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*grid), grid)
 			.pushClass<LuaVector>(offset)
 			.call(1);
 
@@ -3464,7 +3465,7 @@ bool RunPreGridHurtCallback(GridEntity* grid, int* damage, EntityRef* source) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(grid->GetType())
-			.pushClassPtr<LuaGridEntity>(grid)
+			.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*grid), grid)
 			.push(*damage)
 			.pushClassPtr<LuaEntityRef>(source)
 			.call(1);
@@ -3495,7 +3496,7 @@ void RunPostGridHurtCallback(GridEntity* grid, int damage, EntityRef* source) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(grid->GetType())
-			.pushClassPtr<LuaGridEntity>(grid)
+			.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*grid), grid)
 			.push(damage)
 			.pushClassPtr<LuaEntityRef>(source)
 			.call(1);
@@ -3545,7 +3546,7 @@ void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int d
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(type)
-			.pushClassPtr<LuaGridEntity>(gridEnt)
+			.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*gridEnt), gridEnt)
 			.pushClassPtr<LuaEntity>(ent)
 			.push(damage)
 			.push(damageFlags)
@@ -3567,7 +3568,7 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, float enemyDamage, int playerDa
 
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.push(gridType)
-		.pushClassPtr<LuaGridEntity>(this)
+		.pushClassPtr(GridEntityUtils::GetLuaClassInterface(*this), this)
 		.pushClassPtr<LuaEntity>(ent)
 		.push(playerDamage)
 		.push(damageFlags)

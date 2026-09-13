@@ -3,7 +3,7 @@ ffi.cdef [[
     struct AnimationState {
         struct Sprite* Animation;
         struct AnimationData* AnimData;
-        struct AnimationFrame* LayerFrames;
+        int* LayerFrames;
         struct NullFrame* NullLayerFrames;
         float AnimFrame;
         bool IsPlaying;
@@ -18,6 +18,7 @@ ffi.cdef [[
     void L_AnimationState_Reset(struct AnimationState*);
     void L_AnimationState_Rewind(struct AnimationState*);
     void L_AnimationState_SetLayerFrame(struct AnimationState*, int, int);
+    void L_AnimationState_SetPosition(struct AnimationState*, float);
     bool L_AnimationState_WasEventTriggered(struct AnimationState*, const char*);
 ]]
 local ffi = ffi
@@ -49,6 +50,9 @@ AnimationStateMT = {
     end,
     SetLayerFrame = function(self, layerId, frameNum)
         repentogon.L_AnimationState_SetLayerFrame(self, layerId, frameNum)
+    end,
+    SetPosition = function(self, pos)
+        repentogon.L_AnimationState_SetPosition(self, pos)
     end,
     WasEventTriggered = function(self, name)
         return repentogon.L_AnimationState_WasEventTriggered(self, name)

@@ -22,7 +22,7 @@ BitSet128MT = {
     __tostring = function(self) 
         return string.format("BitSet128: %016x%016x", tonumber(self.H), tonumber(self.L))
     end,
-__bnot = function(self)
+    __bnot = function(self)
         local a = ~self.L
         local b = ~self.H
         return BitSet128(a, b)

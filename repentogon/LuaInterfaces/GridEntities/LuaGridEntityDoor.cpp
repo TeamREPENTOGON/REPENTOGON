@@ -1,74 +1,91 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
-LUA_FUNCTION(Lua_GridEntityDoor_GetExtraSprite)
-{
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	ANM2* anm2 = &gridEnt->_extraSprite;
-	LuaSprite::PushPtr(L, anm2);
+extern "C" {
+	__declspec(dllexport) void L_GridEntityDoor_Bar(GridEntity_Door* door) {
+		door->Bar();
+	}
 
+	__declspec(dllexport) bool L_GridEntityDoor_CanBlowOpen(GridEntity_Door* door) {
+		return door->CanBlowOpen();
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_Close(GridEntity_Door* door, bool force) {
+		door->Close(force);
+	}
+
+	__declspec(dllexport) const char* L_GridEntityDoor_GetCloseAnimation(GridEntity_Door* door) {
+		return door->_closeAnimation.c_str();
+	}
+
+	__declspec(dllexport) const char* L_GridEntityDoor_GetLockedAnimation(GridEntity_Door* door) {
+		return door->_lockedAnimation.c_str();
+	}
+
+	__declspec(dllexport) const char* L_GridEntityDoor_GetOpenAnimation(GridEntity_Door* door) {
+		return door->_openAnimation.c_str();
+	}
+
+	__declspec(dllexport) const char* L_GridEntityDoor_GetOpenLockedAnimation(GridEntity_Door* door) {
+		return door->_openLockedAnimation.c_str();
+	}
+
+	__declspec(dllexport) bool L_GridEntityDoor_IsLocked(GridEntity_Door* door) {
+		return door->IsLocked();
+	}
+
+	__declspec(dllexport) bool L_GridEntityDoor_IsTargetRoomArcade(GridEntity_Door* door) {
+		return door->IsTargetRoomArcade();
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_Open(GridEntity_Door* door) {
+		door->Open();
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_PlayAnimation(GridEntity_Door* door) {
+		door->play_animation();
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_Render(GridEntity_Door* door, Vector offset) {
+		door->Render(offset);
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_SetLocked(GridEntity_Door* door, bool locked) {
+		door->SetLocked(locked);
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_SetRoomTypes(GridEntity_Door* door, int currentRoomType, int targetRoomType) {
+		door->SetRoomTypes(currentRoomType, targetRoomType);
+	}
+
+	__declspec(dllexport) void L_GridEntityDoor_Update(GridEntity_Door* door) {
+		door->Update();
+	}
+}
+
+LUA_FUNCTION(Lua_GridEntityDoorTryBlowOpen) {
+	GridEntity_Door* door = LuaGridEntityDoor::Get(L, 1);
+	bool fromExplosion = lua::luaL_checkboolean(L, 2);
+	Entity* source = LuaEntity::GetOpt(L, 3);
+
+	lua_pushboolean(L, door->TryBlowOpen(fromExplosion, source));
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GridEntityDoor_SetExtraSprite)
-{
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	ANM2* anm2 = LuaSprite::Get(L, 2);
-	
-	gridEnt->_extraSprite = *anm2;
+LUA_FUNCTION(Lua_GridEntityDoorTryUnlock) {
+	GridEntity_Door* door = LuaGridEntityDoor::Get(L, 1);
+	Entity_Player* player = LuaEntityPlayer::Get(L, 2);
+	bool force = lua::luaL_checkboolean(L, 3);
 
+	lua_pushboolean(L, door->TryUnlock(player, force));
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GridEntityDoor_GetPreviousState) {
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	lua_pushinteger(L, gridEnt->_previousState);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GridEntityDoor_SetPreviousState) {
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	gridEnt->_previousState = (unsigned int)luaL_checkinteger(L, 2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GridEntityDoor_GetPreviousVarinat) {
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	lua_pushinteger(L, gridEnt->_previousVariant);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GridEntityDoor_SetPreviousVariant) {
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	gridEnt->_previousVariant = (unsigned int)luaL_checkinteger(L, 2);
-	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GridEntityDoor_PlayAnimation) {
-	GridEntity_Door* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
-	gridEnt->play_animation();
-	return 0;
-}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	lua_register(_state, "__Lua_GridEntityDoor_TryBlowOpen", Lua_GridEntityDoorTryBlowOpen);
+	lua_register(_state, "__Lua_GridEntityDoor_TryUnlock", Lua_GridEntityDoorTryUnlock);
+
 	super();
-
-	lua::LuaStackProtector protector(_state);
-	luaL_Reg functions[] = {
-		{ "GetExtraSprite", Lua_GridEntityDoor_GetExtraSprite },
-		{ "PlayAnimation", Lua_GridEntityDoor_PlayAnimation },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_DOOR, functions);
-	
-	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "ExtraSprite", Lua_GridEntityDoor_GetExtraSprite, Lua_GridEntityDoor_SetExtraSprite);
-
-	//fix PreviousState/PreviousVariant
-	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "PreviousState", Lua_GridEntityDoor_GetPreviousState, Lua_GridEntityDoor_SetPreviousState);
-	lua::RegisterVariable(_state, lua::Metatables::GRID_ENTITY_DOOR, "PreviousVariant", Lua_GridEntityDoor_GetPreviousVarinat, Lua_GridEntityDoor_SetPreviousVariant);
 }

@@ -857,72 +857,150 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "GridEntity";
         using Type = GridEntity;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_PTR;
     };
 
     struct LuaGridEntityRock
     {
         static constexpr const char* Name = "GridEntityRock";
         using Type = GridEntity_Rock;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_ROCK;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_ROCK;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_ROCK;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_ROCK_PTR;
     };
 
     struct LuaGridEntityPit
     {
         static constexpr const char* Name = "GridEntityPit";
         using Type = GridEntity_Pit;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_PIT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_PIT;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_PIT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_PIT_PTR;
     };
 
     struct LuaGridEntitySpikes
     {
         static constexpr const char* Name = "GridEntitySpikes";
         using Type = GridEntity_Spikes;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_SPIKES;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_SPIKES;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_SPIKES;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_SPIKES_PTR;
     };
 
     struct LuaGridEntityTNT
     {
         static constexpr const char* Name = "GridEntityTNT";
         using Type = GridEntity_TNT;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_TNT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_TNT;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_TNT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_TNT_PTR;
     };
 
     struct LuaGridEntityPoop
     {
         static constexpr const char* Name = "GridEntityPoop";
         using Type = GridEntity_Poop;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_POOP;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_POOP;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_POOP;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_POOP_PTR;
     };
 
     struct LuaGridEntityDoor
     {
         static constexpr const char* Name = "GridEntityDoor";
         using Type = GridEntity_Door;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_DOOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_DOOR;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_DOOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_DOOR_PTR;
     };
 
     struct LuaGridEntityPressurePlate
     {
         static constexpr const char* Name = "GridEntityPressurePlate";
         using Type = GridEntity_PressurePlate;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_PRESSURE_PLATE;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_PRESSURE_PLATE;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_PRESSURE_PLATE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_PRESSURE_PLATE_PTR;
+    };
+
+    struct LuaGridEntityDecoration
+    {
+        static constexpr const char* Name = "GridEntityDecoration";
+        using Type = GridEntity_Decoration;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_DECORATION;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_DECORATION_PTR;
+    };
+
+    struct LuaGridEntityWeb
+    {
+        static constexpr const char* Name = "GridEntityWeb";
+        using Type = GridEntity_Web;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_WEB;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_WEB_PTR;
+    };
+
+    struct LuaGridEntityLock
+    {
+        static constexpr const char* Name = "GridEntityLock";
+        using Type = GridEntity_Lock;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_LOCK;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_LOCK_PTR;
+    };
+
+    struct LuaGridEntityFire
+    {
+        static constexpr const char* Name = "GridEntityFire";
+        using Type = GridEntity_Fire;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_FIRE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_FIRE_PTR;
+    };
+
+    struct LuaGridEntityWall
+    {
+        static constexpr const char* Name = "GridEntityWall";
+        using Type = GridEntity_Wall;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_WALL;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_WALL_PTR;
+    };
+
+    struct LuaGridEntityTrapDoor
+    {
+        static constexpr const char* Name = "GridEntityTrapDoor";
+        using Type = GridEntity_TrapDoor;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_TRAP_DOOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_TRAP_DOOR_PTR;
+    };
+
+    struct LuaGridEntityStairs
+    {
+        static constexpr const char* Name = "GridEntityStairs";
+        using Type = GridEntity_Stairs;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_STAIRS;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_STAIRS_PTR;
+    };
+
+    struct LuaGridEntityGravity
+    {
+        static constexpr const char* Name = "GridEntityGravity";
+        using Type = GridEntity_Gravity;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_GRAVITY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_GRAVITY_PTR;
+    };
+
+    struct LuaGridEntityStatue
+    {
+        static constexpr const char* Name = "GridEntityStatue";
+        using Type = GridEntity_Statue;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_STATUE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_STATUE_PTR;
+    };
+
+    struct LuaGridEntityTeleporter
+    {
+        static constexpr const char* Name = "GridEntityTeleporter";
+        using Type = GridEntity_Teleporter;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_TELEPORTER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_TELEPORTER_PTR;
     };
 
     struct LuaGridEntityDesc
     {
         static constexpr const char* Name = "GridEntityDesc";
         using Type = GridEntityDesc;
-        static constexpr lua::Metatables MT = lua::Metatables::GRID_ENTITY_DESC;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_GRID_ENTITY_DESC;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITY_DESC;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITY_DESC_PTR;
     };
@@ -989,14 +1067,14 @@ using LuaTemporaryEffect = LuabridgeType<LuaTraits::LuaTemporaryEffect>;
 using LuaEffectList = LuabridgeType<LuaTraits::LuaEffectList>;
 using LuaActiveItemDesc = LuabridgeType<LuaTraits::LuaActiveItemDesc>;
 using LuaQueueItemData = LuabridgeType<LuaTraits::LuaQueueItemData>;
-using LuaGridEntity = LuabridgeType<LuaTraits::LuaGridEntity>;
-using LuaGridEntityRock = LuabridgeType<LuaTraits::LuaGridEntityRock>;
-using LuaGridEntityPit = LuabridgeType<LuaTraits::LuaGridEntityPit>;
-using LuaGridEntitySpikes = LuabridgeType<LuaTraits::LuaGridEntitySpikes>;
-using LuaGridEntityTNT = LuabridgeType<LuaTraits::LuaGridEntityTNT>;
-using LuaGridEntityPoop = LuabridgeType<LuaTraits::LuaGridEntityPoop>;
-using LuaGridEntityDoor = LuabridgeType<LuaTraits::LuaGridEntityDoor>;
-using LuaGridEntityPressurePlate = LuabridgeType<LuaTraits::LuaGridEntityPressurePlate>;
+using LuaGridEntity = CDataType<LuaTraits::LuaGridEntity>;
+using LuaGridEntityRock = CDataType<LuaTraits::LuaGridEntityRock>;
+using LuaGridEntityPit = CDataType<LuaTraits::LuaGridEntityPit>;
+using LuaGridEntitySpikes = CDataType<LuaTraits::LuaGridEntitySpikes>;
+using LuaGridEntityTNT = CDataType<LuaTraits::LuaGridEntityTNT>;
+using LuaGridEntityPoop = CDataType<LuaTraits::LuaGridEntityPoop>;
+using LuaGridEntityDoor = CDataType<LuaTraits::LuaGridEntityDoor>;
+using LuaGridEntityPressurePlate = CDataType<LuaTraits::LuaGridEntityPressurePlate>;
 using LuaGridEntityDesc = CDataType<LuaTraits::LuaGridEntityDesc>;
 using LuaBlendMode = CDataType<LuaTraits::LuaBlendMode>;
 
@@ -1049,16 +1127,16 @@ using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::Deliriu
 using LuaWeapon = LuaUserdataPtr<Weapon, lua::metatables::WeaponMT, WeaponData>;
 using LuaMultiShotParams = LuaUserdataValue<Weapon_MultiShotParams, lua::metatables::MultiShotParamsMT>;
 using LuaLootList = LuaUserdataValue<LootList, lua::metatables::LootListMT>;
-using LuaGridEntityDecoration = LuabridgeRGONType<GridEntity_Decoration, lua::metatables::GridDecorationMT>;
-using LuaGridEntityWeb = LuabridgeRGONType<GridEntity_Web, lua::metatables::GridWebMT>;
-using LuaGridEntityLock = LuabridgeRGONType<GridEntity_Lock, lua::metatables::GridLockMT>;
-using LuaGridEntityFire = LuabridgeRGONType<GridEntity_Fire, lua::metatables::GridFireMT>;
-using LuaGridEntityWall = LuabridgeRGONType<GridEntity_Wall, lua::metatables::GridWallMT>;
-using LuaGridEntityTrapDoor = LuabridgeRGONType<GridEntity_TrapDoor, lua::metatables::GridTrapDoorMT>;
-using LuaGridEntityStairs = LuabridgeRGONType<GridEntity_Stairs, lua::metatables::GridStairsMT>;
-using LuaGridEntityGravity = LuabridgeRGONType<GridEntity_Gravity, lua::metatables::GridGravityMT>;
-using LuaGridEntityStatue = LuabridgeRGONType<GridEntity_Statue, lua::metatables::GridStatueMT>;
-using LuaGridEntityTeleporter = LuabridgeRGONType<GridEntity_Teleporter, lua::metatables::GridTeleporterMT>;
+using LuaGridEntityDecoration = CDataType<LuaTraits::LuaGridEntityDecoration>;
+using LuaGridEntityWeb = CDataType<LuaTraits::LuaGridEntityWeb>;
+using LuaGridEntityLock = CDataType<LuaTraits::LuaGridEntityLock>;
+using LuaGridEntityFire = CDataType<LuaTraits::LuaGridEntityFire>;
+using LuaGridEntityWall = CDataType<LuaTraits::LuaGridEntityWall>;
+using LuaGridEntityTrapDoor = CDataType<LuaTraits::LuaGridEntityTrapDoor>;
+using LuaGridEntityStairs = CDataType<LuaTraits::LuaGridEntityStairs>;
+using LuaGridEntityGravity = CDataType<LuaTraits::LuaGridEntityGravity>;
+using LuaGridEntityStatue = CDataType<LuaTraits::LuaGridEntityStatue>;
+using LuaGridEntityTeleporter = CDataType<LuaTraits::LuaGridEntityTeleporter>;
 
 struct LuaLevelGeneratorRoom
 {

@@ -2,6 +2,7 @@
 #include "../ASMPatches.h"
 #include "HookSystem.h"
 #include "../../LuaClasses.h"
+#include "../../Utils/GridEntity/GridEntityUtils.h"
 
 /* /////////////////////
 // Grid Collision Callbacks
@@ -33,6 +34,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::LuaClassInterface& classInterface, const int param, const int precallbackid, const int postcallbackid) {
 	GridEntity* gridEntity = g_Game->GetCurrentRoom()->GetGridEntity(gridIndex);
+	const lua::LuaClassInterface& gridInterface = gridEntity ? GridEntityUtils::GetLuaClassInterface(*gridEntity) : LuaGridEntity::Interface;
 
 	// MC_PRE_X_GRID_COLLISION
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -44,7 +46,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::L
 			.push(param)
 			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.pushClassPtr<LuaGridEntity>(gridEntity)
+			.pushClassPtr(gridInterface, gridEntity)
 			.call(1);
 
 		// why does lua_toboolean return an int wtf
@@ -63,7 +65,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::L
 			.push(param)
 			.pushClassPtr(classInterface, entity)
 			.push(gridIndex)
-			.pushClassPtr<LuaGridEntity>(gridEntity)
+			.pushClassPtr(gridInterface, gridEntity)
 			.call(0);
 	}
 

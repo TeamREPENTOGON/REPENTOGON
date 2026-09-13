@@ -9,6 +9,7 @@ ffi.cdef[[
         unsigned int SpawnSeed;
         int VarData;
         bool Initialized;
+        padding char[0x3];
         unsigned int VariableSeed;
     };  
     typedef struct GridEntityDesc* GridEntityDescPtr;

@@ -1612,11 +1612,11 @@ namespace GL {
 		}
 
 		void operator()(GridEntity_Rock* r) {
-			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::Metatables::GRID_ENTITY_ROCK);
+			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK]);
 		}
 
 		void operator()(AnimationState* s) {
-			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::Metatables::SPRITE);
+			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::ffi::CData[lua::ffi::CDataID::SPRITE]);
 		}
 
 		void operator()(AnimationLayer* l) {
@@ -1647,6 +1647,15 @@ namespace GL {
 			lua::TableAssoc(L, "Type", ctx);
 			lua_pushstring(L, "Data");
 			lua::luabridge::UserdataPtr::push(L, p, mt);
+			lua_rawset(L, -3);
+			CloseTable();
+		}
+
+		void Expose(void* p, LuaRender::ContextType ctx, lua_CTypeId cd) {
+			OpenTable();
+			lua::TableAssoc(L, "Type", ctx);
+			lua_pushstring(L, "Data");
+			lua::ffi::pushCdataPtr(L, p, cd);
 			lua_rawset(L, -3);
 			CloseTable();
 		}

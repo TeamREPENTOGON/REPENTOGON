@@ -11,7 +11,7 @@ extern "C" {
 
 	__declspec(dllexport) bool L_AnimationState_IsEventTriggered(AnimationState* state, const char* name) {
 		return state->IsEventTriggered(name);
-	};
+	}
 
 	__declspec(dllexport) void L_AnimationState_Reset(AnimationState* state) {
 		state->Reset(nullptr);
@@ -19,13 +19,17 @@ extern "C" {
 
 	__declspec(dllexport) void L_AnimationState_Rewind(AnimationState* state) {
 		state->Rewind();
-	};
+	}
 
 	__declspec(dllexport) void L_AnimationState_SetLayerFrame(AnimationState* state, int layerId, int frame) {
 		state->SetLayerFrame(layerId, frame);
-	};
+	}
+
+	__declspec(dllexport) void L_AnimationState_SetPosition(AnimationState* state, float position) {
+		state->SetPosition(position);
+	}
 
 	__declspec(dllexport) bool L_AnimationState_WasEventTriggered(AnimationState* state, const char* name) {
 		return state->WasEventTriggered(name);
-	};
+	}
 }

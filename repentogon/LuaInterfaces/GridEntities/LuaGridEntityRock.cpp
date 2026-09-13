@@ -1,106 +1,63 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-#include "../../LuaClasses.h"
 
-LUA_FUNCTION(Lua_GridEntityRockRenderTop)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	const Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	gridEnt->RenderTop(*offset);
-	return 0;
-}
+extern "C" {
+	__declspec(dllexport) bool L_GridEntityRock_Destroy(GridEntity_Rock* rock, bool immediate, EntityRef* source) {
+		return rock->Destroy(immediate, source);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockTrySpawnWorms)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	gridEnt->TrySpawnWorms();
-	return 0;
-}
+	//TODO: we can probably reimplement this one in Lua pretty easily
+	__declspec(dllexport) int L_GridEntityRock_GetAltRockType(GridEntity_Rock* rock, int backdrop) {
+		return rock->GetAltRockType(backdrop);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockTrySpawnLadder)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	gridEnt->TrySpawnLadder();
-	return 0;
-}
+	__declspec(dllexport) const char* L_GridEntityRock_GetAnim(GridEntity_Rock* rock) {
+		return rock->_anim.c_str();
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockUpdateNeighbors)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	gridEnt->UpdateNeighbors();
-	return 0;
-}
+	__declspec(dllexport) const char* L_GridEntityRock_GetRubbleAnim(GridEntity_Rock* rock) {
+		return rock->_rubbleAnim.c_str();
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockPlayBreakSound)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int gridType = (int)luaL_checkinteger(L, 2);
-	int backdrop = (int)luaL_optinteger(L, 3, 0);
-	gridEnt->PlayBreakSound(gridType, backdrop);
-	return 0;
-}
+	// ditto
+	__declspec(dllexport) void L_GridEntityRock_PlayBreakSound(GridEntity_Rock* rock, int gridType, int backdrop) {
+		rock->PlayBreakSound(gridType, backdrop);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockGetAltRockType)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int backdrop = (int)luaL_optinteger(L, 2, 0);
-	lua_pushinteger(L, gridEnt->GetAltRockType(backdrop));
-	return 1;
-}
+	// ditto
+	__declspec(dllexport) void L_GridEntityRock_RegisterRocksDestroyed(GridEntity_Rock* rock, int gridType) {
+		rock->RegisterRockDestroyed(gridType);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockRegisterRockDestroyed)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int gridType = (int)luaL_checkinteger(L, 2);
-	gridEnt->RegisterRockDestroyed(gridType);
-	return 0;
-}
+	__declspec(dllexport) void L_GridEntityRock_Render(GridEntity_Rock* rock, Vector offset) {
+		rock->Render(offset);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockUpdateCollision)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	gridEnt->update_collision();
-	return 0;
-}
+	__declspec(dllexport) void L_GridEntityRock_RenderTop(GridEntity_Rock* rock, Vector offset) {
+		rock->RenderTop(offset);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockSpawnDrops)
-{
-	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	int gridType = (int)luaL_checkinteger(L, 2);
-	int gridVariant = (int)luaL_checkinteger(L, 3);
-	unsigned int seed = (unsigned int)luaL_checkinteger(L, 4);
-	bool unk = lua::luaL_checkboolean(L, 5);
-	int backdropType = (int)luaL_optinteger(L, 6, 0);
-	GridEntity_Rock::SpawnDrops(*position, gridType, gridVariant, seed, unk, backdropType);
-	return 0;
-}
+	__declspec(dllexport) void L_GridEntityRock_SpawnDrops(Vector position, int gridType, int gridVariant, unsigned int seed, bool unk, int backdropType) {
+		GridEntity_Rock::SpawnDrops(position, gridType, gridVariant, seed, unk, backdropType);
+	}
 
-LUA_FUNCTION(Lua_GridEntityRockGetSprite)
-{
-	GridEntity_Rock* gridEnt = lua::GetLuabridgeUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
+	__declspec(dllexport) void L_GridEntityRock_TrySpawnLadder(GridEntity_Rock* rock) {
+		rock->TrySpawnLadder();
+	}
 
-	LuaSprite::PushPtr(L, &gridEnt->_sprite);
-	return 1;
-}
+	__declspec(dllexport) void L_GridEntityRock_TrySpawnWorms(GridEntity_Rock* rock) {
+		rock->TrySpawnWorms();
+	}
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	__declspec(dllexport) void L_GridEntityRock_Update(GridEntity_Rock* rock) {
+		rock->Update();
+	}
+	
+	// ditto
+	__declspec(dllexport) void L_GridEntityRock_UpdateCollision(GridEntity_Rock* rock) {
+		rock->update_collision();
+	}
 
-	lua::LuaStackProtector protector(_state);
-	luaL_Reg functions[] = {
-		{ "GetSprite", Lua_GridEntityRockGetSprite },
-		{ "RenderTop", Lua_GridEntityRockRenderTop },
-		{ "TrySpawnWorms", Lua_GridEntityRockTrySpawnWorms },
-		{ "TrySpawnLadder", Lua_GridEntityRockTrySpawnLadder },
-		{ "UpdateNeighbors", Lua_GridEntityRockUpdateNeighbors },
-		{ "PlayBreakSound", Lua_GridEntityRockPlayBreakSound },
-		{ "GetAltRockType", Lua_GridEntityRockGetAltRockType },
-		{ "RegisterRockDestroyed", Lua_GridEntityRockRegisterRockDestroyed },
-		{ "UpdateCollision", Lua_GridEntityRockUpdateCollision },
-		//{ "SpawnDrops", Lua_GridEntityRockSpawnDrops },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_ROCK, functions);
-	lua::RegisterGlobalClassFunction(_state, "GridEntityRock", "SpawnDrops", Lua_GridEntityRockSpawnDrops);
+	__declspec(dllexport) void L_GridEntityRock_UpdateNeighbors(GridEntity_Rock* rock) {
+		rock->UpdateNeighbors();
+	}
 }

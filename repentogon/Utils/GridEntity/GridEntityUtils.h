@@ -82,7 +82,7 @@ namespace GridEntityUtils
         }
     }
 
-    eGridEntityClass GetGridEntityClass(const GridEntity& entity)
+    inline eGridEntityClass GetGridEntityClass(const GridEntity& entity)
     {
         return GetGridEntityClass(entity._desc._type);
     }
@@ -118,7 +118,7 @@ namespace GridEntityUtils
         return GetLuaClassInterface(GetGridEntityClass(entityType));
     }
 
-    const lua::LuaClassInterface& GetLuaClassInterface(const GridEntity& entity)
+    inline const lua::LuaClassInterface& GetLuaClassInterface(const GridEntity& entity)
     {
         return GetLuaClassInterface(GetGridEntityClass(entity));
     }

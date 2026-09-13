@@ -1,3 +1,9 @@
+"558bec8379??0075":
+__thiscall void GridEntity_Pit::MakeBridge(GridEntity* parent);
+
+"a1????????568b90????????83ba????????20":
+__thiscall void GridEntity_Pit::UpdateCollision();
+
 struct GridEntity_Pit : public GridEntity {
 	__vtable {
 		skip; // Free

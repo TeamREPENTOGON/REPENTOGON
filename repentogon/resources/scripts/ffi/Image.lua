@@ -1,6 +1,7 @@
 ffi.cdef[[
 struct Image {
-    padding char[0x8]; // We just need the right shape for GC purposes.
+    private void* NativeImage;
+    private void* Counter;
 };
 
 typedef struct Image* ImagePtr;

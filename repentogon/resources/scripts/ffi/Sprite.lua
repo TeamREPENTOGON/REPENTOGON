@@ -69,9 +69,9 @@ void L_Sprite_Update(struct Sprite*);
 local ffi = ffi
 local repentogon = ffidll
 
-local function GetLayerFrameDataInternal(animData, layerId)
-        local animData = ffichecks.isnullptr(animState) and nil or animState.animData
-        if not animdata then
+local function GetLayerFrameDataInternal(animState, layerId)
+        local animData = animState.AnimData
+        if ffichecks.isnullptr(animData) then
             return nil
         end
         local layerIndex = animData:GetLayerOrder(layerId)
@@ -80,9 +80,7 @@ local function GetLayerFrameDataInternal(animData, layerId)
             return nil
         end
         local animFrameIndex = math.max(0, math.min(ffi.getprivate(animLayer, "FrameCount") - 1, animState.LayerFrames[layerIndex]))
-        local animFrame = animLayer->GetFrame(animFrameindex)
-
-        return animFrame;
+        return animLayer:GetFrame(animFrameIndex)
 end
 
 local SpriteMT
@@ -148,7 +146,7 @@ SpriteMT = {
         if ffichecks.isnullptr(state.AnimData) then
             return -1
         end
-        return state.AnimFrame
+        return math.floor(state.AnimFrame)
     end,
     GetLayer = function(self, param)
         local layerState = nil
@@ -195,10 +193,10 @@ SpriteMT = {
     GetSpritesheet = function(self, layer)
         ffichecks.checkinteger(1, layer)
         layer = self:GetLayer(layer)
-        if not layer then 
-            return nil 
+        if not layer then
+            return nil
         end
-        return ffi.getprivate(layer, "Spritesheet")
+        return layer:GetSpritesheet()
     end,
     GetTexel = function(self, samplePos, renderPos, alphaThreshold, layerId)
         ffichecks.checkcdata(1, samplePos, "Vector")

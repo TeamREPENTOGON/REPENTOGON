@@ -27,12 +27,10 @@ LUA_FUNCTION(Lua_EntityRefSetEntity) {
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_pushcfunction(_state, Lua_EntityRefCtor);
-	lua_setglobal(_state, "__Lua_EntityRef_Ctor");
-	lua_pushcfunction(_state, Lua_EntityRefGetEntity);
-	lua_setglobal(_state, "__Lua_EntityRef_GetEntity");
-	lua_pushcfunction(_state, Lua_EntityRefSetEntity);
-	lua_setglobal(_state, "__Lua_EntityRef_SetEntity");
+
+	lua_register(_state, "__Lua_EntityRef_Ctor", Lua_EntityRefCtor);
+	lua_register(_state, "__Lua_EntityRef_GetEntity", Lua_EntityRefGetEntity);
+	lua_register(_state, "__Lua_EntityRef_SetEntity", Lua_EntityRefSetEntity);
 	
 	super();
 }

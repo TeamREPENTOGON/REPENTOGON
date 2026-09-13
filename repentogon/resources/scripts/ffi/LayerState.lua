@@ -91,7 +91,11 @@ LayerStateMT = {
         return ffi.getprivate(self, "Size")
     end,
     GetSpritesheet = function(self)
-        return ffi.getprivate(self, "Spritesheet")
+        local sheet = ffi.getprivate(self, "Spritesheet")
+        if ffichecks.isnullptr(ffi.getprivate(sheet, "NativeImage")) then
+            return nil
+        end
+        return sheet
     end,
     GetSpritesheetPath = function(self)
         return ffi.string(repentogon.L_LayerState_GetSpritesheetPath(self))

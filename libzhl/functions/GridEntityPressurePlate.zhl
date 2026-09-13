@@ -1,4 +1,9 @@
+"558bec6aff68????????64a1????????5083ec64a1????????33c58945??535657508d45??64a3????????8bd9":
+__thiscall void GridEntity_PressurePlate::Reward();
+
+
 struct GridEntity_PressurePlate : public GridEntity {
+	std_string _nextGreedAnimation : 0x26c;
 	__vtable {
 		skip; // Free
 		skip; // PostInit
@@ -22,4 +27,4 @@ struct GridEntity_PressurePlate : public GridEntity {
 		skip; // EndBatches
 		skip; // InitSubclass
     };
-} : 0x27c;
+} : 0x2d0;

@@ -139,7 +139,15 @@ LUA_FUNCTION(Lua_GetGridEntityFromPos) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	lua::luabridge::UserdataPtr::push(L, room->GetGridEntityFromPos(pos), lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	LuaGridEntity::PushPtr(L, room->GetGridEntityFromPos(pos));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetGridEntity) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int idx = luaL_checkinteger(L, 2);
+
+	LuaGridEntity::PushPtr(L, room->GetGridEntity(idx));
 	return 1;
 }
 
@@ -789,6 +797,15 @@ LUA_FUNCTION(Lua_RoomClearBossHazards) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetDoor) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	int doorSlotPosition = luaL_checkinteger(L, 2);
+	
+	LuaGridEntityDoor::PushPtr(L, room->GetDoor(doorSlotPosition));
+	return 1;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -802,8 +819,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetCenterPos", Lua_GetCenterPos },
 		{ "GetClampedGridIndex", Lua_GetClampedGridIndex },
 		{ "GetClampedPosition", Lua_GetClampedPosition },
+		{ "GetDoor", Lua_GetDoor },
 		{ "GetDoorSlotPosition", Lua_GetDoorSlotPosition },
 		{ "GetGridCollisionAtPos", Lua_GetGridCollisionAtPos },
+		{ "GetGridEntity", Lua_GetGridEntity },
 		{ "GetGridEntityFromPos", Lua_GetGridEntityFromPos },
 		{ "GetGridIndex", Lua_GetGridIndex },
 		{ "GetGridPathFromPos", Lua_GetGridPathFromPos },
@@ -817,7 +836,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsPositionInRoom", Lua_IsPositionInRoom },
 		{ "MamaMegaExplosion", Lua_MamaMegaExplosion },
 		{ "ScreenWrapPosition", Lua_ScreenWrapPosition },
-		// TrySpawnLadder is missing from the API - investigate later
+		// TryPlaceLadder is missing from the API - investigate later
 		{ "WorldToScreenPosition", Lua_WorldToScreenPosition },
 
 		{ "SetRedHeartDamage", Lua_RoomSetRedHeartDamage_Override },

@@ -180,7 +180,7 @@ LUA_FUNCTION(Lua_IsaacGridSpawn)
 	int variant = (int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool forced = lua::luaL_checkboolean(L, 4);
-	lua::luabridge::UserdataPtr::push(L, g_LuaEngine->Isaac_GridSpawn(type, variant, pos, forced), lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	LuaGridEntity::PushPtr(L, g_LuaEngine->Isaac_GridSpawn(type, variant, pos, forced));
 	
 	return 1;
 }
@@ -288,7 +288,7 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	bool persistent = lua::luaL_optboolean(L, 4, true);
 
 	Entity_Effect* effect = Entity_Effect::CreateTimer(&TimerFunction, delay, times, persistent);
-
+	
 	// Register function in the registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, timerFnTable);
 	lua_pushlightuserdata(L, effect);

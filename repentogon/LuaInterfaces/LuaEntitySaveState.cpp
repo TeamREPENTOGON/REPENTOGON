@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../SaveStateManagement/EntitySaveStateManagement.h"
+#include "../LuaClasses.h"
 
 #include "LuaEntitySaveState.h"
 
@@ -495,7 +496,7 @@ struct Lua_GridEntitiesSaveStateVectorAPI : Lua_GridEntitiesSaveStateVector {
 			return luaL_error(L, "Invalid index for Get(): %d\n", index);
 		}
 
-		lua::luabridge::UserdataPtr::push(L, &ud->data->data()[index], lua::Metatables::GRID_ENTITY_DESC);
+		LuaGridEntityDesc::PushPtr(L, &ud->data->data()[index]);
 		return 1;
 	}
 
@@ -510,7 +511,7 @@ struct Lua_GridEntitiesSaveStateVectorAPI : Lua_GridEntitiesSaveStateVector {
 			GridEntityDesc& st = (*ud->data)[i];
 			if (st._type == type) {
 				lua_pushinteger(L, j);
-				lua::luabridge::UserdataPtr::push(L, &st, lua::Metatables::GRID_ENTITY_DESC);
+				LuaGridEntityDesc::PushPtr(L, &st);
 				lua_rawset(L, -3);
 
 				++j;
