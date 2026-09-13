@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include "Log.h"
 
+#include <chrono>
+
 namespace GL {
 	static HMODULE OpenGLLibrary;
 }
@@ -29,8 +31,24 @@ static void load_gl()
     //glDebugMessageCallback(GL::OpenGLErrorCallback, 0);
 }
 
+// taken from libzhl's Log.cpp, then adjusted to use gmtime instead of localtime
+static bool FormatTime(char* buffer, size_t size) {
+    time_t now = time(nullptr);
+    tm* nowtm = gmtime(&now);
+    size_t count = strftime(buffer, size, "[%Y-%m-%d %H:%M:%S GMT] ", nowtm);
+    return count != 0;
+};
+
 HOOK_GLOBAL(KAGE_EngineStartup, (int numArgs, char** args) -> void, __cdecl)
 {
+    char buffer[4096];
+
+    if (FormatTime(buffer, 4095)) {
+        KAGE::_LogMessage(0, "Logging started at %s\n", buffer);
+    }
+    else {
+        KAGE::_LogMessage(0, "Failed to produce a timestamp string!\n");
+    };
     super(numArgs, args);
     ZHL::Log("REPENTOGON: Initializing OPENGL\n");
     load_gl();

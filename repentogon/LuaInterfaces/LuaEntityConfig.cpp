@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
+#include "../Patches/EntityConfigEx.h"
 
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
@@ -355,16 +356,16 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryFloorAlt)
 LUA_FUNCTION(Lua_EntityConfigEntityGetCustomTags)
 {
 	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
-	const std::set<std::string>& customtags = XMLStuff.EntityData->GetCustomTags(*entity);
 
 	lua_newtable(L);
-	int i = 0;
-	for (const std::string& tag : customtags) {
-		lua_pushinteger(L, ++i);
-		lua_pushstring(L, tag.c_str());
-		lua_settable(L, -3);
+	if (EntityConfigEx::EntityEx* ex = EntityConfigEx::GetEntityEx(entity)) {
+		int i = 0;
+		for (const std::string& tag : ex->GetCustomTags()) {
+			lua_pushinteger(L, ++i);
+			lua_pushstring(L, tag.c_str());
+			lua_settable(L, -3);
+		}
 	}
-
 	return 1;
 }
 
@@ -372,7 +373,11 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
 {
 	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	const std::string tag = luaL_checkstring(L, 2);
-	lua_pushboolean(L, XMLStuff.EntityData->HasCustomTag(*entity, tag));
+	if (EntityConfigEx::EntityEx* ex = EntityConfigEx::GetEntityEx(entity)) {
+		lua_pushboolean(L, ex->HasCustomTag(tag));
+	} else {
+		lua_pushboolean(L, false);
+	}
 	return 1;
 }
 

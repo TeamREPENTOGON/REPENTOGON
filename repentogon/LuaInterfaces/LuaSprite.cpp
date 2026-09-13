@@ -340,6 +340,45 @@ LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Sprite_GetEventTriggerFrames)
+{
+	const ANM2* sprite = lua::GetLuabridgeUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	
+	size_t len; const char* str = luaL_checklstring(L, 2, &len);
+	std::string_view animName{str, len};
+	
+	str = luaL_checklstring(L, 3, &len);
+	std::string_view eventName{str, len};
+
+	lua_newtable(L);
+	int tblIdx = 0;
+
+	auto animId = sprite->GetAnimationByName(animName);
+	if (!animId)
+	{
+		return 1;
+	}
+
+	auto eventId = sprite->GetEventByName(eventName);
+	if (!eventId)
+	{
+		return 1;
+	}
+
+	const AnimationData* animData = &sprite->_animData[*animId];
+	for (size_t i = 0; i < animData->_eventTriggerCount; i++)
+	{
+		const auto& trigger = animData->_eventTriggers[i];
+		if (trigger.eventId == *eventId)
+		{
+			lua_pushinteger(L, trigger.animationFrame);
+			lua_rawseti(L, -2, ++tblIdx);
+		}
+	}
+	
+	return 1;
+}
+
 // LayerState from here on out
 
 LUA_FUNCTION(Lua_LayerStateSetCustomShader)
@@ -678,6 +717,7 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "SetCustomChampionShader", Lua_SpriteSetCustomChampionShader},
 		{ "ClearCustomChampionShader", Lua_SpriteClearCustomChampionShader},
 		{ "HasCustomChampionShader", Lua_SpriteHasCustomChampionShader},
+		{ "GetEventTriggerFrames", Lua_Sprite_GetEventTriggerFrames },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);

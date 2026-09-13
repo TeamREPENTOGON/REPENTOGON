@@ -1,10 +1,12 @@
 #pragma once
 #include "imgui.h"
+#include "imgui_internal.h"
 #include <IsaacRepentance.h>
 #include <iostream>
 #include <list>
 #include <sstream>
 #include <string>
+#include "MultiViewportEnhanced.h"
 
 #include "LuaCore.h"
 #include "IconsFontAwesome6_unicode.h"
@@ -149,7 +151,7 @@ struct Data {
     bool newSizeRequested = false;
     ImVec2 size = ImVec2(0, 0); // 0,0 initializes elements with dynamic size
     ImGuiWindowFlags windowFlags = 0;
-    ImGuiChildFlags childFlags = ImGuiChildFlags_Border;
+    ImGuiChildFlags childFlags = ImGuiChildFlags_Borders;
 };
 
 struct ElementData : Data {
@@ -1152,6 +1154,7 @@ struct CustomImGui {
                   const float menuWidth = ImGui::CalcTextSize(name).x + ImGui::GetStyle().FramePadding.x * 2.0f;
                   if (GetAvailableMenuSpace() - menuWidth <= 0) {
                     overflowElements->push_back(*element);
+                    ImGui::PopID();
                     continue;
                   }
                 }
@@ -1167,11 +1170,11 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Text:
-                ImGui::Text(name);
+                ImGui::TextUnformatted(name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::TextWrapped:
-                ImGui::TextWrapped(name);
+                ImGui::TextWrapped("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SeparatorText:
@@ -1179,7 +1182,7 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::BulletText:
-                ImGui::BulletText(name);
+                ImGui::BulletText("%s", name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::Separator:

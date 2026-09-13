@@ -6,15 +6,18 @@
 #include "../ASMPatches.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../EntityConfigEx.h"
 
 bool __stdcall CanPickupBePickedUp(Entity_Pickup* pickup, const bool ignorePrice, const bool boomerang, const int meleeVariant) {
-	const std::vector<int>& xmlCraftingPickups = XMLStuff.EntityData->GetBagOfCraftingPickups(pickup->_variant, pickup->_subtype);
-	const bool hasCraftingPickups = !xmlCraftingPickups.empty() && xmlCraftingPickups.at(0) > 0;
-	const std::string nodeValue = XMLStuff.EntityData->GetNodesByTypeVarSub(pickup->_type, pickup->_variant, pickup->_subtype, false)[boomerang ? "boomerang" : "meleecollide"];
-	if ((!boomerang && meleeVariant == 4 && hasCraftingPickups) || nodeValue == "true") {
-		return ignorePrice || pickup->_price == 0;
-	} else if (nodeValue == "false") {
-		return false;
+	if (EntityConfigEx::EntityEx* ex = EntityConfigEx::GetEntityEx(pickup->_type, pickup->_variant, pickup->_subtype)) {
+		const bool hasCraftingPickups = !ex->GetBagOfCraftingPickups().empty() && ex->GetBagOfCraftingPickups().front() > 0;
+		std::optional<bool> collideOverride = boomerang ? ex->GetPickupBoomerangOverride() : ex->GetPickupMeleeCollideOverride();
+		if (!boomerang && meleeVariant == 4 && hasCraftingPickups) {
+			collideOverride = true;
+		}
+		if (collideOverride.has_value()) {
+			return *collideOverride && (ignorePrice || pickup->_price == 0);
+		}
 	}
 	return pickup->CanBePickedUp(ignorePrice);
 }
@@ -66,9 +69,10 @@ bool __stdcall TryAddToBagOfCraftingTrampoline(Entity_Player* player, Entity_Pic
 	int8_t numInitialPickups = 0;
 	int8_t initialPickups[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	const std::vector<int>& xmlPickups = XMLStuff.EntityData->GetBagOfCraftingPickups(pickup->_variant, pickup->_subtype);
-
-	if (!xmlPickups.empty()) {
+	EntityConfigEx::EntityEx* ex = EntityConfigEx::GetEntityEx(pickup->_type, pickup->_variant, pickup->_subtype);
+	
+	if (ex && !ex->GetBagOfCraftingPickups().empty()) {
+		const std::vector<int>& xmlPickups = ex->GetBagOfCraftingPickups();
 		for (uint8_t i = 0; i < 8 && i < xmlPickups.size(); i++) {
 			initialPickups[i] = xmlPickups[i];
 			numInitialPickups++;

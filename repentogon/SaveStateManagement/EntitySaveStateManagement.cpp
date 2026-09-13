@@ -754,44 +754,62 @@ namespace ESSM
 {
     short& EntitySaveState_GetGridSpawnIdx(EntitySaveState& data)
     {
-        assert(EntityHijackManager::IsHijacked(data));
-        uint32_t id = EntityHijackManager::GetId(data);
-        return *(short*)&s_systemData.hijackedStates[id].marker;
+		if (EntityHijackManager::IsHijacked(data))
+		{
+			uint32_t id = EntityHijackManager::GetId(data);
+			return *(short*)&s_systemData.hijackedStates[id].marker;
+		}
+		return data.gridSpawnIdx;
     }
 
     uint32_t& EntitySaveState_GetI7(EntitySaveState& data)
     {
-        assert(EntityHijackManager::IsHijacked(data));
-        uint32_t id = EntityHijackManager::GetId(data);
-        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+		if (EntityHijackManager::IsHijacked(data))
+		{
+			uint32_t id = EntityHijackManager::GetId(data);
+			return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+		}
+		return data._intStorage7;
     }
 
-    uint32_t& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data)
+    int& GameStatePlayer_GetImmaculateConceptionState(GameStatePlayer& data)
     {
-        assert(PlayerHijackManager::IsHijacked(data));
-        uint32_t id = PlayerHijackManager::GetId(data);
-        return *(uint32_t*)&s_systemData.hijackedStates[id].marker;
+		if (PlayerHijackManager::IsHijacked(data))
+		{
+			uint32_t id = PlayerHijackManager::GetId(data);
+			return s_systemData.hijackedStates[id].marker;
+		}
+		return data._immaculateConceptionState;
     }
 
-    uint32_t& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data)
+	int& GameStatePlayer_GetCambionConceptionState(GameStatePlayer& data)
     {
-        assert(PlayerHijackManager::IsHijacked(data));
-        uint32_t id = PlayerHijackManager::GetId(data);
-        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+		if (PlayerHijackManager::IsHijacked(data))
+		{
+			uint32_t id = PlayerHijackManager::GetId(data);
+			return s_systemData.hijackedStates[id].id;
+		}
+		return data._cambionConceptionState;
     }
 
-    uint32_t& FamiliarData_GetState(FamiliarData& data)
+	int& FamiliarData_GetState(FamiliarData& data)
     {
-        assert(FamiliarHijackManager::IsHijacked(data));
-        uint32_t id = FamiliarHijackManager::GetId(data);
-        return *(uint32_t*)&s_systemData.hijackedStates[id].marker;
+		if (FamiliarHijackManager::IsHijacked(data))
+		{
+			uint32_t id = FamiliarHijackManager::GetId(data);
+			return s_systemData.hijackedStates[id].marker;
+		}
+		return data._state;
     }
 
-    uint32_t& FamiliarData_GetRoomClearCount(FamiliarData& data)
+	int& FamiliarData_GetRoomClearCount(FamiliarData& data)
     {
-        assert(FamiliarHijackManager::IsHijacked(data));
-        uint32_t id = FamiliarHijackManager::GetId(data);
-        return *(uint32_t*)&s_systemData.hijackedStates[id].id;
+		if (FamiliarHijackManager::IsHijacked(data))
+		{
+			uint32_t id = FamiliarHijackManager::GetId(data);
+			return s_systemData.hijackedStates[id].id;
+		}
+		return data._roomClearCount;
     }
 }
 
@@ -1087,6 +1105,15 @@ namespace ESSM::Utils
 
 namespace ESSM::Core
 {
+	static auto IsHijacked = [](auto* obj) -> bool
+	{
+		using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
+		using Traits = ESSM::Traits::TraitsFor<T>;
+		using Manager = typename Traits::Hijack;
+
+		return Manager::IsHijacked(*obj);
+	};
+
     static auto NewState = [](auto* obj)
     {
         using T = std::remove_cv_t<std::remove_pointer_t<decltype(obj)>>;
@@ -1155,10 +1182,26 @@ namespace ESSM::Core
     {
         ClearedIds clearedIds;
         clearedIds.reserve(collectedSaves.size());
+
+		bool hasNonHijacked = false;
+
         for (auto& entity : collectedSaves)
         {
+			std::visit([&](auto* obj)
+			{
+				if (!IsHijacked(obj))
+				{
+					hasNonHijacked = true;
+				}
+			}, entity);
             std::visit([&](auto* obj) { ClearState(obj, clearedIds); }, entity);
         }
+
+		if (hasNonHijacked)
+		{
+			ZHL::Log(LOG_ERROR_HEADER "ESSM::Core::ClearSaveStates found an unhijacked entity\n");
+		}
+
         EntitySaveStateEx::ClearSaveStates(clearedIds);
         s_luaCallbacks.ClearStates(clearedIds);
     }
@@ -1167,10 +1210,31 @@ namespace ESSM::Core
     {
         ClearedIds clearedIds;
         clearedIds.reserve(collectedSaves.size());
+
+		bool hasHijacked = false;
+		bool hasNonHijacked = false;
+
         for (auto& entity : collectedSaves)
         {
+			std::visit([&](auto* obj)
+			{
+				if (IsHijacked(obj))
+				{
+					hasHijacked = true;
+				}
+				else
+				{
+					hasNonHijacked = true;
+				}
+			}, entity);
             std::visit([&](auto* obj) { ClearState_HijackedOnly(obj, clearedIds); }, entity);
         }
+
+		if (hasHijacked && hasNonHijacked)
+		{
+			ZHL::Log(LOG_ERROR_HEADER "ESSM::Core::ClearSaveStates_HijackedOnly found both hijacked and unhijacked entities\n");
+		}
+
         EntitySaveStateEx::ClearSaveStates(clearedIds);
         s_luaCallbacks.ClearStates(clearedIds);
     }
@@ -1207,10 +1271,28 @@ namespace ESSM
     {
         ClearedIds clearedIds;
         clearedIds.reserve(vector.size());
+
+		bool hasHijacked = false;
+		bool hasNonHijacked = false;
+
         for (auto& entity : vector)
         {
-            Core::ClearState(&entity, clearedIds);
+			if (EntityHijackManager::IsHijacked(entity))
+			{
+				hasHijacked = true;
+			}
+			else
+			{
+				hasNonHijacked = true;
+			}
+            Core::ClearState_HijackedOnly(&entity, clearedIds);
         }
+
+		if (hasHijacked && hasNonHijacked)
+		{
+			ZHL::Log(LOG_ERROR_HEADER "ESSM::EntitySaveState_ClearBatch found both hijacked and unhijacked entities\n");
+		}
+
         s_luaCallbacks.ClearStates(clearedIds);
     }
 
@@ -3279,8 +3361,12 @@ namespace ESSM::LuaFunctions
     {
         EntitySaveState& state = Lua_EntitySaveState::GetEntitySaveState(L, 1);
 
-        // lua ids are sent over as if they were 1-indexed
-        assert(EntityHijackManager::IsHijacked(state));
+		if (!EntityHijackManager::IsHijacked(state))
+		{
+			return luaL_argerror(L, 1, "Provided EntitiesSaveState is not supported by EntitySaveStateManager.");
+		}
+
+		// lua ids are sent over as if they were 1-indexed
         lua_pushinteger(L, EntityHijackManager::GetId(state) + 1);
         return 1;
     }

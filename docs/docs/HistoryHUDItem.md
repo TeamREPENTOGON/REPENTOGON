@@ -17,8 +17,8 @@ ___
 #### int GetItemID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetRenderoffset () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetRenderoffset ( ) {: .copyable aria-label='Functions' }
+### GetRenderOffset () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetRenderOffset ( ) {: .copyable aria-label='Functions' }
 Returns the offset that this item would be rendered at, relative to the [HistoryHUD](HistoryHUD.md).
 
 ___

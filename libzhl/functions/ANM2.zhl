@@ -68,12 +68,8 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
     inline AnimationState* GetAnimationState() { return &this->_animState; }
     inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
     inline unsigned int GetAnimationCount() { return this->_animCount; }
-    inline AnimationData* GetAnimationData(const int index) {
-        if (this->_animData != nullptr && index >= 0 && index < this->_animCount) {
-			return &this->_animData[index];
-		}
-		return nullptr;
-    }
+    LIBZHL_API AnimationData* GetAnimationData(const int index);
+	LIBZHL_API AnimationData* GetAnimationData(const std_string& animName);
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline NullFrame* GetOverlayNullFrame(const char * name) {return this->GetOverlayAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return this->_layerCount; } 
@@ -87,6 +83,32 @@ struct ANM2 depends (AnimationState, ColorMod, Vector) { {{
 
     static inline void StartLightRendering() { g_ANM2_LightRendering = true; }
     static inline void EndLightRendering() { g_ANM2_LightRendering = false; }
+
+    inline std::optional<uint32_t> GetAnimationByName(std::string_view name) const
+    {
+        for (size_t i = 0; i < (size_t)this->_animCount; ++i)
+        {
+            if (name == this->_animData[i]._name)
+            {
+                return i;
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    inline std::optional<uint32_t> GetEventByName(std::string_view name) const
+    {
+        for (size_t i = 0; i < this->_numEvents; ++i)
+        {
+            if (name == this->_eventNames[i])
+            {
+                return i;
+            }
+        }
+
+        return std::nullopt;
+    }
 }} 
     std_string _filename : 0x0;
     std_string _animDefaultName : 0x18;

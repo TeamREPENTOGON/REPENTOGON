@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Utils/Entity/PickupUtils.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
@@ -317,6 +318,38 @@ LUA_FUNCTION(Lua_PickupSetupCollectibleGraphics) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PickupGetCanRerollOverride) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup); entityPlus && entityPlus->canRerollOverride.has_value()) {
+		lua_pushboolean(L, *entityPlus->canRerollOverride);
+	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupSetCanRerollOverride) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
+		entityPlus->canRerollOverride = lua::luaL_checkboolean(L, 2);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PickupClearCanRerollOverride) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
+		entityPlus->canRerollOverride = std::nullopt;
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PickupCanJeraDuplicate) {
+	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushboolean(L, pickup->CanJeraDuplicate());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -354,6 +387,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "InitFlipState", Lua_PickupInitFlipState },
 		{ "HasFlipData", Lua_PickupHasFlipData },
 		{ "ReloadGraphics", Lua_PickupReloadGraphics },
+		{ "GetCanRerollOverride", Lua_PickupGetCanRerollOverride },
+		{ "SetCanRerollOverride", Lua_PickupSetCanRerollOverride },
+		{ "ClearCanRerollOverride", Lua_PickupClearCanRerollOverride },
+		{ "CanJeraDuplicate", Lua_PickupCanJeraDuplicate },
 		{ NULL, NULL }
 	};
 

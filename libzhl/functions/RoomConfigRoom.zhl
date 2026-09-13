@@ -22,6 +22,8 @@ struct RoomConfig_Room depends (RoomSpawn)
 
     {{
         static constexpr uint32_t VIRTUAL_ROOM_FLAG = 1 << 31;
+        static constexpr uint32_t BOSS_DOUBLE_TROUBLE_START = 3700;
+        static constexpr uint32_t BOSS_DOUBLE_TROUBLE_END = 3850;
 
     private:
         void copy(const RoomConfig_Room& other)

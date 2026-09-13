@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "WaterClipFlag"
+# Enum "EnemyTargetFlags"
 ???+ tip "Bitset Calculator"
     [](#){: .bitsetCalculator }
 |Value|Enumerator|Comment|

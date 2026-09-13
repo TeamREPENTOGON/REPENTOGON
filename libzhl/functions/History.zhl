@@ -7,4 +7,4 @@ __thiscall void History::AddHistoryItem(History_HistoryItem* historyItem);
 struct History {
 	//char _pad[4];
 	std_vector_history_historyitem _historyItems : 0x0;
-} : 0x30;
+} : 0x14;		//it might have gotten smaller based on where tisaac inventory indices live

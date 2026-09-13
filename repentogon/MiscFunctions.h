@@ -10,6 +10,10 @@
 #include <sstream>
 #include <optional>
 #include "document.h" // rapidjson
+#include <type_traits>
+#include <array>
+#include <string_view>
+#include <charconv>
 
 extern std::string GetUserPath();
 
@@ -135,6 +139,37 @@ namespace REPENTOGON {
 		return result;
 	}
 
+	/// @brief Concatenates all passed strings.
+	/// all arguments must be convertible to std::string_view
+	template <typename... Args, std::enable_if_t<(std::is_convertible_v<Args, std::string_view> && ...),int> = 0>
+	static std::string StringConcat(const Args&... args)
+	{
+		const std::size_t size = (std::string_view(args).size() + ...);
+
+		std::string result;
+		result.reserve(size);
+
+		(result.append(std::string_view(args)), ...);
+
+		return result;
+	}
+
+	template <typename T>
+	static std::optional<T> StringToNumber(const std::string_view& string)
+	{
+		T value;
+		const char* start = string.data();
+		const char* end = string.data() + string.size();
+
+		auto [ptr, ec] = std::from_chars(start, end, value);
+
+		if (ec == std::errc{} && ptr == end) {
+			return value;
+		}
+
+		return std::nullopt;
+	}
+
 	template <typename NewType, typename OldType>
 	static inline NewType DynamicNumberCast(OldType value, std::optional<std::string>& error)
 	{
@@ -167,6 +202,22 @@ namespace REPENTOGON {
 		}
 
 		return static_cast<NewType>(value);
+	}
+
+	template<typename K, typename V, typename Key, std::enable_if_t<std::is_convertible_v<Key, K>, int> = 0>
+	static inline V* FindInMap(std::unordered_map<K, V>& map, const Key& key)
+	{
+		auto it = map.find(key);
+		if (it == map.end()) { return nullptr; }
+		return &it->second;
+	}
+
+	template<typename K, typename V, typename Key, std::enable_if_t<std::is_convertible_v<Key, K>, int> = 0>
+	static inline const V* FindInMap(const std::unordered_map<K, V>& map, const Key& key)
+	{
+		auto it = map.find(key);
+		if (it == map.end()) { return nullptr; }
+		return &it->second;
 	}
 
 	static void FinishProgressDisplay() {
@@ -276,13 +327,44 @@ namespace REPENTOGON {
 		return !ec;
 	}
 
+	/// @brief returns the modded redirect for this file.
+	/// Unlike TryRedirectPath, this does not return the original path if no redirection occurred.
+	static std::optional<std::string> GetResourcesRedirect(std::string_view filePath)
+	{
+		const std::array<std::string_view, 3> resourceFolders = {{ "/resources-repentogon/", "/resources-dlc3/", "/resources/" }};
+		const std::vector<ModEntry*>& mods = g_Manager->GetModManager()->_mods;
+		std::string_view modDirectory = std::string_view(&g_ModsDirectory);
+
+		for (size_t i = 0; i < mods.size(); i++)
+		{
+			const ModEntry* mod = mods[i];
+			if (!mod->_loaded)
+			{
+				continue;
+			}
+
+			std::string baseDir = REPENTOGON::StringConcat(modDirectory, mod->_directory);
+			for (auto& resourceFolder : resourceFolders)
+			{
+				std::string redirect = REPENTOGON::StringConcat(baseDir, resourceFolder, filePath);
+				std::error_code err;
+				if (std::filesystem::exists(redirect, err))
+				{
+					return redirect;
+				}
+			}
+		}
+
+		return std::nullopt;
+	}
+
 	static std::vector<std::string> GetAllModContentPaths(const std::string& filePath)
 	{
 		std::vector<std::string> paths;
 
 		for (ModEntry* mod : g_Manager->GetModManager()->_mods)
 		{
-			if (!mod->IsEnabled()) continue;
+			if (!mod->_loaded) continue;
 
 			std::string contentPath;
 			mod->GetContentPath(&contentPath, &filePath);

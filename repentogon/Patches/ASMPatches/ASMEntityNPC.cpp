@@ -5,6 +5,7 @@
 
 #include "HookSystem.h"
 #include "../XMLData.h"
+#include "../EntityConfigEx.h"
 
 thread_local FireProjectilesStorage projectilesStorage;
 
@@ -136,11 +137,11 @@ void ASMPatchApplyFrozenEnemyDeathEffects() {
 
 HOOK_METHOD(Entity, IsActiveEnemy, (bool includeDead) -> bool) {
 	if (this->_type >= ENTITY_GAPER && this->_type < ENTITY_EFFECT) {
-		const std::string attr = XMLStuff.EntityData->GetAttributeByTypeVarSub(this->_type, this->_variant, this->_subtype, false, "isactiveenemy");
-		if (attr == "true") {
-			return !this->_dead || includeDead;
-		} else if (attr == "false") {
-			return false;
+		if (auto* ex = EntityConfigEx::GetEntityEx(this->_type, this->_variant, this->_subtype)) {
+			const auto& isActiveEnemy = ex->GetIsActiveEnemyOverride();
+			if (isActiveEnemy.has_value()) {
+				return *isActiveEnemy && (!this->_dead || includeDead);
+			}
 		}
 	}
 	return super(includeDead);

@@ -153,11 +153,12 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 
 		if (id == 0 || XMLStuff.PlayerData->nodes.count(id) == 0) continue;
 
-		const XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(id);
+		XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(id);
+		const std::string xmlPlayerName = playerXML.count("untranslatedname") ? playerXML["untranslatedname"] : playerXML["name"];
 		EntityConfig_Player* playerConfig = g_Manager->GetEntityConfig()->GetPlayer(id);
 
-		if (!playerConfig || playerConfig->_name != playerXML.at("name")) {
-			ZHL::Log("WARNING: Player ID [%d] used in XMLData for player [%s] does not match corresponding EntityConfig_Player [%s]!\n", id, playerXML.at("name").c_str(), (playerConfig ? playerConfig->_name : "<NULL>").c_str());
+		if (!playerConfig || playerConfig->_name != xmlPlayerName) {
+			ZHL::Log("WARNING: Player ID [%d] used in XMLData for player [%s] does not match corresponding EntityConfig_Player [%s]!\n", id, xmlPlayerName.c_str(), (playerConfig ? playerConfig->_name : "<NULL>").c_str());
 			if (!playerConfig) continue;
 		}
 

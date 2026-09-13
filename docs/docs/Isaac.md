@@ -300,6 +300,11 @@ ___
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
 
 ___
+### LoadModDataFromFolder () {: aria-label='Functions' }
+#### void LoadModDataFromFolder ( string FolderName ) {: .copyable aria-label='Functions' }
+Similar to [LoadModData](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#loadmoddata), but lets you read the saveX.dat file from any existing mod data folder, even if that mod is not currently enabled.
+
+___
 ### MarkChallengeAsNotDone () {: aria-label='Functions' }
 #### void MarkChallengeAsNotDone ( int challengeid ) {: .copyable aria-label='Functions' }
 Sets the challenge as not done.

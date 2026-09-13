@@ -3246,7 +3246,7 @@ LUA_FUNCTION(Lua_PlayerIsPostLevelInitFinished) {
 
 LUA_FUNCTION(Lua_PlayerUseActiveItem) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+	const int collectibleType = (int)luaL_checkinteger(L, 2);
 
 	unsigned int useFlags = 0;
 	int activeSlot = -1;
@@ -3408,7 +3408,7 @@ LUA_FUNCTION(Lua_PlayerGetBodySprite) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua::luabridge::UserdataPtr::push(L, &player->_bodySprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
-	return 0;
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerPlayItemNullAnimation) {
@@ -3503,6 +3503,45 @@ LUA_FUNCTION(Lua_PlayerShootRedCandle) {
 
 	return 1;
 }
+
+inline int _player_GetMaxInventorySize_w_check(Entity_Player* player) {
+	if (player->_playerType != ePlayerType::PLAYER_ISAAC_B) {
+		return 0;
+	};
+	return player->GetMaxInventorySize();
+};
+
+LUA_FUNCTION(Lua_PlayerGetInventoryHistoryIndex) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = (int)luaL_checkinteger(L, 2);
+	if (slot < 0 || slot >= _player_GetMaxInventorySize_w_check(player)) {
+		return luaL_error(L, "Invalid slot index %d\n", slot);
+	};
+	if (player->_inventoryHistoryIdx[slot] >= 0) {
+		lua_pushinteger(L, player->_inventoryHistoryIdx[slot]);
+		return 1;
+	}
+	return 0;
+};
+
+LUA_FUNCTION(Lua_PlayerGetInventoryCollectible) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = (int)luaL_checkinteger(L, 2);
+	if (slot < 0 || slot >= _player_GetMaxInventorySize_w_check(player)) {
+		return luaL_error(L, "Invalid slot index %d\n", slot);
+	};
+	if (player->_inventoryHistoryIdx[slot] >= 0) {
+		lua_pushinteger(L, player->GetHistory()->_historyItems[player->_inventoryHistoryIdx[slot]]._itemID);
+		return 1;
+	}
+	return 0;
+};
+
+LUA_FUNCTION(Lua_PlayerGetMaxInventorySize) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, _player_GetMaxInventorySize_w_check(player));
+	return 1;
+};
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -3824,6 +3863,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetRUAWizardTimer", Lua_PlayerGetRUAWizardTimer },
 		{ "SetRUAWizardTimer", Lua_PlayerSetRUAWizardTimer },
 		{ "GetErrorTrinketEffect", Lua_PlayerGetErrorTrinketEffect },
+		{ "GetMaxInventorySize", Lua_PlayerGetMaxInventorySize },
+		{ "GetInventoryHistoryIndex", Lua_PlayerGetInventoryHistoryIndex },
+		{ "GetInventoryCollectible", Lua_PlayerGetInventoryCollectible },
 
 		{ NULL, NULL }
 	};
