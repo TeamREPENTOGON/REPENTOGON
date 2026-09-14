@@ -19,6 +19,8 @@
 
 #include "LuaInit.h"
 
+extern "C" int luaopen_utf8(lua_State* L);
+
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 
 int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
@@ -212,6 +214,10 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 	lua_pop(L, n);
 
 	luaL_requiref(L, "ffi", luaopen_ffi, 1);
+	lua_pop(L, 1);
+
+	// For whatever rhyme or reason, string functions don't work in luadebug without us explicitly opening utf8 :shrugging:
+	luaL_requiref(L, "utf8", luaopen_utf8, 1);
 	lua_pop(L, 1);
 
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
