@@ -4006,12 +4006,24 @@ LUA_FUNCTION(Lua_PlayerAnimatePickup) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBombFlags) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool isFetus = lua::luaL_optboolean(L, 2, false);
+
+	BitSet128 flags;
+	player->GetBombFlags(&flags, isFetus);
+	LuaBitSet128::Push(L, flags);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetBombFlags", Lua_PlayerGetBombFlags },
 		{ "AnimatePickup", Lua_PlayerAnimatePickup },
 		{ "GetEffects", Lua_PlayerGetEffects },
 		{ "QueueItem", Lua_PlayerQueueItem },
