@@ -6,8 +6,8 @@ tags:
 
 ## Functions
 
-### static GetAltRockType () {: aria-label='Functions' }
-#### [AltRockType](enums/AltRockType.md) GetAltRockType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
+### GetAltRockType () {: aria-label='Functions' }
+#### static [AltRockType](enums/AltRockType.md) GetAltRockType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) Backdrop = 0 ) {: .copyable aria-label='Functions' }
 Can be used the check the [AltRockType](enums/AltRockType.md) corresponding to a particular [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html).
 
 By default, returns the [AltRockType](enums/AltRockType.md) for the backdrop of the current room.

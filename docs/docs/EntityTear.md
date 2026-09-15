@@ -67,16 +67,6 @@ ___
 Copies the tear and applies a black and white effect to it. This effect is the same one used by the Multidimensional Baby familiar.
 
 ___
-### SetMultidimensionalTouched () {: aria-label='Functions' }
-#### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
-Sets if the tear was created through the Angelic Prism effect.
-
-___
-### SetPrismTouched () {: aria-label='Functions' }
-#### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
-Sets if the tear was created through the Angelic Prism effect.
-
-___
 ### SetInitSound () {: aria-label='Functions' }
 #### void SetInitSound ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/SoundEffect.html) SoundID ) {: .copyable aria-label='Functions' }
 Sets the sound that will be automatically played when the tear is spawned. Can be set to `SoundEffect.SOUND_NULL` to make no sound play.
@@ -93,5 +83,15 @@ Should be set on [MC_POST_TEAR_INIT](https://wofsauge.github.io/IsaacDocs/rep/en
 
       mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, mod.TearInit)
     ```
+
+___
+### SetMultidimensionalTouched () {: aria-label='Functions' }
+#### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the tear was created through the Angelic Prism effect.
+
+___
+### SetPrismTouched () {: aria-label='Functions' }
+#### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the tear was created through the Angelic Prism effect.
 
 ___

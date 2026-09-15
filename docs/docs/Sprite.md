@@ -31,10 +31,6 @@ ___
 
 ## Functions
 
-### Copy () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
-
-___
 ### ClearCustomChampionShader () {: aria-label='Functions' }
 #### void ClearCustomChampionShader ( ) {: .copyable aria-label='Functions' }
 Removes any custom `coloroffset_champion` shader applied by `sprite:SetCustomChampionShader(path)`.
@@ -53,6 +49,10 @@ ___
 ### ContinueOverlay () {: aria-label='Functions' }
 #### void ContinueOverlay ( ) {: .copyable aria-label='Functions' }
 Same as above, but only for the overlay animation.
+
+___
+### Copy () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetAllAnimationData () {: aria-label='Functions' }
@@ -113,6 +113,10 @@ ___
 #### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
+
+___
 ### HasCustomChampionShader () {: aria-label='Functions' }
 #### boolean HasCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Returns true if the specified custom champion shader is currently loaded (see `SetCustomChampionShader` below). If no string is provided, returns true if ANY custom champion shader is applied.
@@ -158,6 +162,10 @@ ___
 #### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
 
 ___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }
+
+___
 ### StopOverlay () {: aria-label='Functions' }
 #### void StopOverlay ( ) {: .copyable aria-label='Functions' }
 
@@ -166,9 +174,3 @@ ___
 #### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
-### GetSpritesheet () {: aria-label='Functions' }
-#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
-
-___
-### SetSpritesheet () {: aria-label='Functions' }
-#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }

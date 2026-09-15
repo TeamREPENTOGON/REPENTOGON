@@ -64,7 +64,7 @@ ___
 Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
-### ShootRedCandle () {: aria-label='Functions' }
+### ShootRedCandle () {: aria-label='Modified Functions' }
 #### [EntityEffect](EntityEffect.md) ShootRedCandle ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }
 Now returns the EntityEffect for the flame.
 
@@ -190,6 +190,11 @@ ___
 Blocks the provided [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html). This will make it so the game thinks you don't have the trinket, even if it's in your inventory.
 
 ___
+### CalculateBagOfCraftingOutput () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html), [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) CalculateBagOfCraftingOutput ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] pickups ) {: .copyable aria-label='Functions' }
+
+___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
 #### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Used to determine which items can be added to Tainted Isaac's limited inventory.
@@ -228,7 +233,7 @@ ___
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
 
 ___
-### ClearInnateItemGroup () {: aria-label='Modified Functions' }
+### ClearInnateItemGroup () {: aria-label='Functions' }
 #### void ClearInnateItemGroup ( string GroupKey ) {: .copyable aria-label='Modified Functions' }
 Remove all innate collectibles and trinkets added under the specified group.
 
@@ -293,11 +298,6 @@ ___
 #### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
 
 ___
-### CalculateBagOfCraftingOutput () {: aria-label='Functions' }
-[ ](#){: .static .tooltip .badge }
-#### static [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html), [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) CalculateBagOfCraftingOutput ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] pickups ) {: .copyable aria-label='Functions' }
-
-___
 ### GetBagOfCraftingOutput () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetBagOfCraftingOutput ( ) {: .copyable aria-label='Functions' }
 
@@ -329,14 +329,14 @@ ___
 #### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetBombPlaceDelay () {: aria-label='Functions' }
-#### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
-Default bomb place delay is `30 frames`.
-
-___
 ### GetBodySprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetBodySprite ( ) {: .copyable aria-label='Functions' }
 Temporary copy of body player sprite while null animation is active.
+
+___
+### GetBombPlaceDelay () {: aria-label='Functions' }
+#### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
+Default bomb place delay is `30 frames`.
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -344,16 +344,16 @@ ___
 Returns how many times the player has taken damage with the Cambion Conception item.
 
 ___
+### GetCambionPregnancyLevel () {: aria-label='Functions' }
+#### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
+Corresponds to the current visible state of Cambion Conception's costume (0-2).
+
+___
 ### GetCandyHeartBonus () {: aria-label='Functions' }
 #### table GetCandyHeartBonus ( ) {: .copyable aria-label='Functions' }
 Returns a table of fields corresponding to each stat that Candy Heart can increase and the active amount of bonuses tied to each stat.
 
 The fields are: `FireDelay`, `Damage`, `TearRange`, `ShotSpeed`, `Luck`, `MoveSpeed`.
-
-___
-### GetCambionPregnancyLevel () {: aria-label='Functions' }
-#### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
-Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
 ### GetCharmOfTheVampireKills () {: aria-label='Functions' }
@@ -640,13 +640,13 @@ The returned table has [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/en
 Note that golden trinkets are counted separately.
 
 ___
+### GetInventoryCollectible () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetInventoryCollectible ( int Slot ) {: .copyable aria-label='Functions' }
+
+___
 ### GetInventoryHistoryIndex () {: aria-label='Functions' }
 #### int GetInventoryHistoryIndex ( int Slot ) {: .copyable aria-label='Functions' }
 Returns an zero-based index into History's collectibles list.
-
-___
-### GetInventoryCollectible () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetInventoryCollectible ( int Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetItemStateCooldown () {: aria-label='Functions' }
@@ -746,18 +746,13 @@ ___
 Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ___
-### GetPlanCKillCountdown () {: aria-label='Functions' }
-#### int GetPlanCKillCountdown ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 Returns the attack duration of the [Kidney Stone](https://bindingofisaacrebirth.wiki.gg/wiki/Kidney_Stone) item.
 
 ___
-### GetPotatoPeelerUses () {: aria-label='Functions' }
-#### int GetPotatoPeelerUses ( ) {: .copyable aria-label='Functions' }
-Used to increment [Cube of Meat](https://bindingofisaacrebirth.wiki.gg/wiki/Cube_of_Meat) familiar form.
+### GetPlanCKillCountdown () {: aria-label='Functions' }
+#### int GetPlanCKillCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlayerFormCounter () {: aria-label='Functions' }
@@ -776,6 +771,11 @@ ___
 ### GetPonyCharge () {: aria-label='Functions' }
 #### int GetPonyCharge ( ) {: .copyable aria-label='Functions' }
 Returns the amount of frames left until the charging effect from the A Pony or White Pony item deactivates.
+
+___
+### GetPotatoPeelerUses () {: aria-label='Functions' }
+#### int GetPotatoPeelerUses ( ) {: .copyable aria-label='Functions' }
+Used to increment [Cube of Meat](https://bindingofisaacrebirth.wiki.gg/wiki/Cube_of_Meat) familiar form.
 
 ___
 ### GetPurityState () {: aria-label='Functions' }
@@ -829,6 +829,16 @@ Adds `0.2 * modifier` to the player's ShotSpeed.
 Experimental Treatment adds `-1`, `0` or `1` depending on the shot speed rolled. Void may randomly add `1`.
 
 ___
+### GetSmeltedTrinketDesc () {: aria-label='Functions' }
+#### table GetSmeltedTrinketDesc ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) ) {: .copyable aria-label='Functions' }
+Returns a table of the provided smelted trinket and their corresponding amounts. The returned table contains the following fields:
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| trinketAmount | int | |
+| goldenTrinketAmount | int | |
+
+___
 ### GetSmeltedTrinkets () {: aria-label='Functions' }
 #### table GetSmeltedTrinkets ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)[] TrinketList = nil ) {: .copyable aria-label='Functions' }
 Returns a table of smelted trinkets and their corresponding amounts. The returned table contains the following fields:
@@ -839,16 +849,6 @@ Returns a table of smelted trinkets and their corresponding amounts. The returne
 | goldenTrinketAmount | int | |
 
 The optional TrinketList param can be used as a filter to only return the provided TrinketTypes for better performance.
-
-___
-### GetSmeltedTrinketDesc () {: aria-label='Functions' }
-#### table GetSmeltedTrinketDesc ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) ) {: .copyable aria-label='Functions' }
-Returns a table of the provided smelted trinket and their corresponding amounts. The returned table contains the following fields:
-
-|Field|Type|Comment|
-|:--|:--|:--|
-| trinketAmount | int | |
-| goldenTrinketAmount | int | |
 
 ___
 ### GetSoulLocketBonus () {: aria-label='Functions' }
@@ -1129,15 +1129,6 @@ ___
 Removes the collectible from the player associated with the specified history index.
 
 ___
-### RemovePocketItem () {: aria-label='Functions' }
-#### void RemovePocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Functions' }
-
-___
-### RemovePoopSpell () {: aria-label='Functions' }
-#### void RemovePoopSpell ( int Position = 0 ) {: .copyable aria-label='Functions' }
-Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position. Poop spells are only used by Tainted ???.
-
-___
 ### RemoveInnateCollectible () {: aria-label='Functions' }
 #### int RemoveInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1, string GroupKey = "" ) {: .copyable aria-label='Functions' }
 Removes innate collectibles from the specified group. Returns the actual number of innate items removed.
@@ -1148,6 +1139,15 @@ ___
 Removes innate trinkets from the specified group. Returns the actual number of innate items removed.
 
 Note that golden trinkets must be added/removed separately.
+
+___
+### RemovePocketItem () {: aria-label='Functions' }
+#### void RemovePocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Functions' }
+
+___
+### RemovePoopSpell () {: aria-label='Functions' }
+#### void RemovePoopSpell ( int Position = 0 ) {: .copyable aria-label='Functions' }
+Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position. Poop spells are only used by Tainted ???.
 
 ___
 ### RerollAllCollectibles () {: aria-label='Functions' }

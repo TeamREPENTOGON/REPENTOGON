@@ -20,10 +20,6 @@ tags:
 #### boolean CanOverwriteColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetSkinColor () {: aria-label='Functions' }
-#### int GetSkinColor ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetDefaultSkinColor () {: aria-label='Functions' }
 #### int GetDefaultSkinColor ( ) {: .copyable aria-label='Functions' }
 
@@ -38,6 +34,10 @@ ___
 ___
 ### GetPriority () {: aria-label='Functions' }
 #### int GetPriority ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSkinColor () {: aria-label='Functions' }
+#### int GetSkinColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetSprite () {: aria-label='Functions' }
