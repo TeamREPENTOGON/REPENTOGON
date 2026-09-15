@@ -180,25 +180,6 @@ HOOK_METHOD_PRIORITY(EntityConfig, Load, -1, (char* xmlpath, ModEntry* mod)->voi
 	}
 }
 
-HOOK_METHOD_PRIORITY(EntityConfig, LoadBabies, -1, (char* xmlpath)->void) {
-	super(xmlpath);
-
-	// Parse achievement IDs for modded babies.
-	// It is safe to put these here.
-	for (EntityConfig_Baby& baby : *g_Manager->GetEntityConfig()->GetBabies()) {
-		std::string sourceid = XMLStuff.BabyData->GetAttributeById(baby.id, "sourceid");
-		if (!sourceid.empty() && sourceid != "BaseGame") {
-			std::string achievement = XMLStuff.BabyData->GetAttributeById(baby.id, "achievement");
-			if (!achievement.empty()) {
-				baby.achievementID = GetAchievementIdByName(achievement);
-			}
-		}
-		if (baby.achievementID <= 0) {
-			baby.achievementID = -1;
-		}
-	}
-}
-
 HOOK_METHOD_PRIORITY(EntityConfig, LoadPlayers, -1, (char* xmlpath, ModEntry* modentry)->void) {
 	super(xmlpath, modentry);
 
@@ -229,6 +210,25 @@ HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -1, () -> void) {
 					g_Manager->GetEntityConfig()->_edenHair.push_back(path);
 				}
 			}
+		}
+	}
+
+	// Parse achievement IDs for modded babies.
+	// It is safe to put these here.
+	for (EntityConfig_Baby& baby : *g_Manager->GetEntityConfig()->GetBabies()) {
+		std::string sourceid = XMLStuff.BabyData->GetAttributeById(baby.id, "sourceid");
+		if (!sourceid.empty() && sourceid != "BaseGame") {
+			std::string achievement = XMLStuff.BabyData->GetAttributeById(baby.id, "achievement");
+			if (!achievement.empty()) {
+				baby.achievementID = GetAchievementIdByName(achievement);
+			}
+		}
+		if (XMLStuff.BabyData->GetAttributeById(baby.id, "hidden") == "true") {
+			// This is what vanilla does lolol
+			baby.achievementID = 9999;
+		}
+		if (baby.achievementID <= 0) {
+			baby.achievementID = -1;
 		}
 	}
 }
