@@ -26,4 +26,4 @@ A baby's spritesheet in this example would be located at `resources/gfx/characte
 |name|string|The name of the baby.|
 |skin|string|Path to the baby's spritesheet, starting from the `root` (see example below).|
 |achievement|int or string|Optionally allows you to lock your baby behind an achievement (modded achievements must be specified by name).|
-|achievement|boolean|Prevents the baby from appearing naturally.|
+|hidden|boolean|Prevents the baby from appearing naturally.|
