@@ -245,14 +245,14 @@ SpriteMT = {
     IsOverlayPlaying = function(self, name)
         name = ffichecks.optstring(name, "")
         local state = ffi.getprivate(self, "OverlayAnimState")
-        if not state.IsPlaying then return false end
+        if ffichecks.isnullptr(state.AnimData) or not state.IsPlaying then return false end
         if name == "" then return true end
         return self:GetOverlayAnimation() == name
     end,
     IsPlaying = function(self, name)
         name = ffichecks.optstring(name, "")
         local state = ffi.getprivate(self, "AnimState")
-        if not state.IsPlaying then return false end
+        if ffichecks.isnullptr(state.AnimData) or not state.IsPlaying then return false end
         if name == "" then return true end
         return self:GetAnimation() == name
     end,
