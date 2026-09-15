@@ -22,6 +22,10 @@ Added:
 	- AddErasedEnemy(Entity)
 	- AddErasedEnemy(int Type, int Variant)
 	- RemoveErasedEnemy(int Type, int Variant = -1)
+* EntityConfig:
+	- GetBabyIdByName(string CoopBabyName)
+* MenuManager:
+	- GetSeeds
 * EntityPlayer:
 	- GetInventoryHistoryIndex
 	- GetInventoryCollectible

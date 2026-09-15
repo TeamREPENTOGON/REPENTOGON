@@ -228,6 +228,14 @@ LUA_FUNCTION(Lua_IsActive) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetSeeds) {
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
+
+	Seeds* seeds = &g_MenuManager->_seedsObject;
+	lua::luabridge::UserdataPtr::push(L, seeds, lua::GetMetatableKey(lua::Metatables::SEEDS));
+
+	return 1;
+}
 
 static void RegisterMenuManager(lua_State* L)
 {
@@ -251,6 +259,7 @@ static void RegisterMenuManager(lua_State* L)
 	lua::TableAssoc(L, "GetInputMask", Lua_GetInputMask);
 	lua::TableAssoc(L, "SetInputMask", Lua_SetInputMask);
 	lua::TableAssoc(L, "IsActive", Lua_IsActive);
+	lua::TableAssoc(L, "GetSeeds", Lua_GetSeeds);
 
 	lua_setglobal(L, lua::metatables::MenuManagerMT);
 }
