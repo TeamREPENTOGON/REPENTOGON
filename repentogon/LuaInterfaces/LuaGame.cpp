@@ -179,18 +179,18 @@ LUA_FUNCTION(Lua_GameMakeShockwave)
 
 LUA_FUNCTION(Lua_GameSpawn)
 {
-	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Game* game = LuaGame::Get(L, 1);
 	int type = (int)luaL_checkinteger(L, 2);
 	int variant = (int)luaL_checkinteger(L, 3);
-	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
+	Vector* pos = LuaVector::Get(L, 4);
+	Vector* vel = LuaVector::Get(L, 5);
+	Entity* spawner = LuaEntity::GetOpt(L, 6);
 	int subtype = (int)luaL_checkinteger(L, 7);
 	int seed = (int)luaL_checkinteger(L, 8);
 
-	game->Spawn(type, variant, *pos, *vel, spawner, subtype, seed, 0);
+	LuaEntity::PushPtr(L, game->Spawn(type, variant, *pos, *vel, spawner, subtype, seed, 0));
 
-	return 0;
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GameSpawnParticles)
