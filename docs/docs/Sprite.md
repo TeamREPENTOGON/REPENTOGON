@@ -73,6 +73,11 @@ ___
 #### [AnimationData](AnimationData.md) GetCurrentAnimationData ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetEventTriggerFrames () {: aria-label='Functions' }
+#### string[] GetCurrentAnimationData ( string AnimationName, string EventName ) {: .copyable aria-label='Functions' }
+Returns a table of frames at which the specified event will trigger in the specified animation (for example: `{5, 10, 12}`).
+
+___
 ### GetLayer () {: aria-label='Functions' }
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 #### [LayerState](LayerState.md) GetLayer ( string LayerName ) {: .copyable aria-label='Functions' }

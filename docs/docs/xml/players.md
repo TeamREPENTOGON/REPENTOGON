@@ -29,8 +29,10 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |healthtype|int|The health type the player should start with. The int corresponds to the [HealthType](../enums/HealthType.md) enum.|
 |healthlimit|int|A maximum amount of HP the character should be able to have. 1 unit = 1/2 heart|
 |speedmodifier|float|An inherent offset to the speed stat the character should start with. Base this offset off of Isaac's stats.|
-|firedelaymodifier|float|An inherent offset to the fire delay stat the character should start with. Base this offset off of Isaac's stats.|
+|tearsmodifier|float|An inherent offset to the tears stat the character should start with. Base this offset off of Isaac's stats.|
+|tearsmultiplier|float|Assigns a character tears multiplier, akin to those of Azazel (0.267) or Tainted Eve (0.66).|
 |damagemodifier|float|An inherent offset to the damage stat the character should start with. Base this offset off of Isaac's stats.|
+|damagemultiplier|float|Assigns a character damage multiplier, akin to those of Judas (1.35), Azazel (1.5), or Eve (0.75). Note that this is applied before most "flat" damage ups.|
 |rangemodifier|float|An inherent offset to the range stat the character should start with. Base this offset off of Isaac's stats.|
 |shotspeedmodifier|float|An inherent offset to the shot speed stat the character should start with. Base this offset off of Isaac's stats.|
 |luckmodifier|float|An inherent offset to the luck stat the character should start with. Base this offset off of Isaac's stats.|
@@ -43,6 +45,8 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |modcostume|int|Set this to match the "id" attribute of a costume with type="none" defined in the same mod (in [costumes2.xml](costumes.md)) to have that costume permanantly applied to the character (including during the mineshaft chase sequence). You cannot set both this and the "costume" attribute for vanilla costumes at the same time.|
 |hurtsound|int or string|Set this to define a hurt sound for the character whenever they would take damage.|
 |deathsound|int or string|Set this to define a death sound for the character whenever they would die or touch a White Fireplace.|
+|bloodytears|boolean|Set to true to give the player bloody tears by default, akin to Esau or Tainted Judas.|
+|flying|boolean|Set to true to grant the player "flying" by default, like Azazel. Note that this does not provide a costume appropriate for flying.|
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/players.html).

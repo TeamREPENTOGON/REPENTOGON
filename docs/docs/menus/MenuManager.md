@@ -42,6 +42,10 @@ ___
 Returns the input mask of allowed inputs on the main menu.
 
 ___
+### GetSeeds () {: aria-label='Functions' }
+#### [Seeds](../Seeds.md) GetSeeds ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetSelectWidgetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSelectWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
