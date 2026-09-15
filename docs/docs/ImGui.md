@@ -171,7 +171,7 @@ ___
 Returns true if an element with the given ID exists already.
 ___
 ### GetGameWindowRect () {: aria-label='Functions' }
-#### [Vector](Vector.md),[Vector](Vector.md) GetGameWindowRect() {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md),[Vector](Vector.md) GetGameWindowRect ( ) {: .copyable aria-label='Functions' }
 
 Returns two vectors that describe the position and size of the game window.
 

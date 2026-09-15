@@ -135,7 +135,7 @@ ___
 #### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
-### GetButtonsSprite () {: aria-label='Modified Functions' }
+### GetButtonsSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetButtonsSprite ( ) {: .copyable aria-label='Functions' }
 Controllers buttons sprite
 
@@ -302,7 +302,7 @@ Similar to [LoadModData](https://wofsauge.github.io/IsaacDocs/rep/Isaac.html#loa
 
 ___
 ### OpenConsole () {: aria-label='Functions' }
-#### void OpenConsole () {: .copyable aria-label='Functions' }
+#### void OpenConsole ( ) {: .copyable aria-label='Functions' }
 Opens the Imgui interface which pops up the console by default, similar functionality as hitting the Open Console key (idem ImGui.Show()).
 
 ___
