@@ -147,6 +147,10 @@ ___
 #### [Vector](Vector.md) GetAxisAlignedUnitVectorFromDir ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction = -1 ) {: .copyable aria-label='Functions' }
 
 ___
+### GetBabyIdByName () {: aria-label='Functions' }
+#### int GetBabyIdByName ( string CoopBabyName ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBackdropIdByName () {: aria-label='Functions' }
 #### int GetBackdropIdByName ( string BackdropName ) {: .copyable aria-label='Functions' }
 
