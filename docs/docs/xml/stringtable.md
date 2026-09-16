@@ -79,7 +79,7 @@ The following are the most relevant string categories for modding purposes:
 | "Items" | [items.xml](items.md) | `name` and `description` of collectibles and trinkets. |
 | "PocketItems" | [pocketitems.xml](pocketitems.md) | `name`/`hud`/`description` of cards and pills. |
 | "Players" | [players.xml](players.md) | `name` and `birthright` descriptions for players. |
-| "Entities" | [entities2.xml](entities.md) | `name` for enemies, viewable in the besiary. |
+| "Entities" | [entities2.xml](entities.md) | `name` for enemies, viewable in the bestiary. |
 | "Curses" | [curses.xml](curses.md) | `name` for curses. |
 | "Challenges" | [challenges.xml](challenges.md) | `name` and `lockeddesc` for modded challenges only. Vanilla does not use this category, since vanilla challenge names are pngs. |
 | "Minibosses" | N/A | Vanilla miniboss names, such as the sins. |
