@@ -127,10 +127,10 @@ SpriteMT = {
     end,
     GetAnimationData = function(self, animationName)
         ffichecks.checkstring(1, animationName)
-        return ffichecks.fixreturn(repentogon.L_Sprite_GetAnimationData(self, animationName))
+        return repentogon.L_Sprite_GetAnimationData(self, animationName)
     end,
     GetCurrentAnimationData = function(self)
-        return ffichecks.fixreturn(ffi.getprivate(self, "AnimState").AnimData)
+        return ffi.getprivate(self, "AnimState").AnimData
     end,
     GetDefaultAnimation = function(self)
         return ffi.string(repentogon.L_Sprite_GetDefaultAnimation(self))
@@ -155,7 +155,7 @@ SpriteMT = {
         elseif param >= 0 and param < ffi.getprivate(self, "LayerCount") then
             layerState = repentogon.L_Sprite_GetLayerById(self, param)
         end
-        return ffichecks.fixreturn(layerState)
+        return layerState
     end,
     GetLayerCount = function(self)
         return ffi.getprivate(self, "LayerCount")

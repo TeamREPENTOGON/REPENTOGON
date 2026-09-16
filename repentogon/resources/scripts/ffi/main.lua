@@ -90,13 +90,6 @@ ffichecks.callcdatafunc = function(this, cdata, ctype, cfunc)
 	cfunc(this, cdata)
 end
 
-ffichecks.fixreturn = function(cdata)
-	if not ffichecks.isnullptr(cdata) then
-		return cdata
-	end
-	return nil
-end
-
 ffichecks.optnumber = function(var, opt)
 	if ffichecks.isnumber(var) then
 		return var
