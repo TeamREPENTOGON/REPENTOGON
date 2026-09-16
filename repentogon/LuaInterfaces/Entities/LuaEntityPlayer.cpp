@@ -3939,7 +3939,7 @@ LUA_FUNCTION(Lua_PlayerQueueItem) {
 	if (golden)
 		flags = flags + 2;
 
-	player->QueueItem(item, charge, flags, varData);
+	player->QueueItem(item, charge, flags, varData, 0);
 	return 0;
 };
 
