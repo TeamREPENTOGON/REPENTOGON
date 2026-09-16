@@ -73,7 +73,7 @@ Every `key` string you add needs **EXACTLY** 8 strings, which matches the order 
 
 The following are the most relevant string categories for modding purposes:
 
-| Category Name | Relevant Modded XML | Supported Modded Attributes | Description |
+| Category Name | Relevant Modded XML | Description |
 |:--|:--|:--|
 | "Default" | N/A | Generic category used for various things, such as game inputs, transformations, system prompts/messages, and miscellaneous UI text. |
 | "Items" | [items.xml](items.md) | `name` and `description` of collectibles and trinkets. |
