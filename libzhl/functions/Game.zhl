@@ -177,7 +177,7 @@ __thiscall Entity_Player* Game::GetRandomPlayer(Vector* pos, float Radius);
 __thiscall void Game::SpawnParticles(Vector* pos, int particleType, int numParticles, float speed, const ColorMod  &color, float height, int subType);
 
 "558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????0f28c3":
-__thiscall void Game::UpdateStrangeAttractor(Vector* pos, float force, float radius);	
+__thiscall void Game::UpdateStrangeAttractor(Vector* pos, void* unk, int unk2, float force<xmm2>, float radius<xmm3>);
 
 "558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf18b7d":
 __thiscall void Game::Fart(Vector* position, float radius, Entity* source, float fartScale, int fartSubType, const ColorMod &fartColor);

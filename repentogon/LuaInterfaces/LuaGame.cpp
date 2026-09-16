@@ -219,7 +219,7 @@ LUA_FUNCTION(Lua_GameUpdateStrangeAttractor)
 	float force = (float)luaL_optnumber(L, 3, 10);
 	float radius = (float)luaL_optnumber(L, 4, 250);
 
-	game->UpdateStrangeAttractor(pos, force, radius);
+	game->UpdateStrangeAttractor(pos, nullptr, 0, force, radius);
 
 	return 0;
 }
