@@ -218,6 +218,10 @@ Thankfully, REPENTOGON allows you to freely import your missing achievements/unl
 
 * You may also try going into the in-game control mapping menu and hit "Reset To Default".
 
+* If all else fails, and you see one or more "Unknown Device" listed in the in-game controls menu, you can try enabling the "Block Unknown Device" option in the REPENTOGON console menus, then restarting your game.
+
+![Steam Input setting](img/unknown_device.png)
+
 ## How do I use Basement Renovator with REPENTOGON?
 
 * First, make sure your Basement Renovator is up to date. **Basement Renovator needs to be at least version 3.3.1 to work with REPENTOGON.** Grab the latest version [here](https://github.com/Basement-Renovator/basement-renovator/releases/latest).

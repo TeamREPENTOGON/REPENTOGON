@@ -12,6 +12,9 @@ This can be used to replace vanilla strings (such as to rename vanilla items), o
 
 Please follow this guide to ensure future compatability.
 
+???+ note
+	You can change the game's language using the "Change Game Options" menu in the REPENTOGON Launcher.
+
 ## File Locations
 
 There are two stringtable files: `stringtable.sta` and `stringtable_pc.sta`.
