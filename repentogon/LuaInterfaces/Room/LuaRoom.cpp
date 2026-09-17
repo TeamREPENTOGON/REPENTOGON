@@ -42,7 +42,8 @@ LUA_FUNCTION(Lua_CheckLine) {
 
 	Vector hitPos;
 	lua_pushboolean(L, room->CheckLine(pos1, pos2, mode, threshold, ignoreWalls, ignoreCrushable, &hitPos));
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], hitPos);
+	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
+	*toLua = hitPos;
 	return 2;
 }
 
