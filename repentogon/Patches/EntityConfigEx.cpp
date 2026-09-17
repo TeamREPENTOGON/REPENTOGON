@@ -165,12 +165,51 @@ void PlayerEx::Parse(const EntityConfig_Player& player, const XMLAttributes& xml
 	forceFlying_ = xml.count("flying") && xml.at("flying") == "true";
 }
 
-void ParseXMLData() {
-	for (const auto& [key, xml] : XMLStuff.EntityData->nodes) {
+
+HOOK_METHOD_PRIORITY(EntityConfig, Load, -1, (char* xmlpath, ModEntry* mod)->void) {
+	super(xmlpath, mod);
+
+	for (const auto& key : XMLStuff.EntityData->bymod[GetXMLDataLastModId()]) {
 		const auto [type, variant, subtype] = key;
-		EntityConfig_Entity* entity = g_Manager->GetEntityConfig()->GetEntity(type, variant, subtype);
-		if (entity && entity->id == type && entity->variant == variant && entity->subtype == subtype && !s_Entities.count(key)) {
-			s_Entities[key].Parse(*entity, xml);
+		if (auto xml = XMLStuff.EntityData->nodes.find(key); xml != XMLStuff.EntityData->nodes.end()) {
+			EntityConfig_Entity* entity = g_Manager->GetEntityConfig()->GetEntity(type, variant, subtype);
+			if (entity && entity->id == type && entity->variant == variant && entity->subtype == subtype && !s_Entities.count(key)) {
+				s_Entities[key].Parse(*entity, xml->second);
+			}
+		}
+	}
+}
+
+HOOK_METHOD_PRIORITY(EntityConfig, LoadPlayers, -1, (char* xmlpath, ModEntry* modentry)->void) {
+	super(xmlpath, modentry);
+
+	const size_t numPlayers = g_Manager->GetEntityConfig()->GetPlayers()->size();
+	if (s_Players.size() < numPlayers) {
+		s_Players.resize(numPlayers);
+	}
+	for (const int id : XMLStuff.PlayerData->bymod[GetXMLDataLastModId()]) {
+		const EntityConfig_Player* player = g_Manager->GetEntityConfig()->GetPlayer(id);
+		const XMLAttributes* xml = XMLStuff.PlayerData->GetNodeOrNullById(id);
+		if (player && xml) {
+			s_Players[id].Parse(*player, *xml);
+		}
+	}
+}
+
+// Load custom edenhair.xml
+HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -1, () -> void) {
+	RegisterGenericCustomXML("edenhair.xml", "edenhair", "hair");
+
+	super();
+
+	if (XMLStuff.CustomXMLData.count("edenhair.xml")) {
+		if (auto* data = XMLStuff.CustomXMLData["edenhair.xml"]) {
+			for (auto& [_, node] : data->nodes) {
+				std::string path = node["root"] + node["gfx"];
+				if (!path.empty()) {
+					g_Manager->GetEntityConfig()->_edenHair.push_back(path);
+				}
+			}
 		}
 	}
 
@@ -184,32 +223,16 @@ void ParseXMLData() {
 				baby.achievementID = GetAchievementIdByName(achievement);
 			}
 		}
+		if (XMLStuff.BabyData->GetAttributeById(baby.id, "hidden") == "true") {
+			// This is what vanilla does lolol
+			baby.achievementID = 9999;
+		}
 		if (baby.achievementID <= 0) {
 			baby.achievementID = -1;
 		}
 	}
-
-	const auto& players = *g_Manager->GetEntityConfig()->GetPlayers();
-	s_Players.resize(players.size());
-	for (const auto& player : players) {
-		if (player._id > 0) {
-			if (const auto* xml = XMLStuff.PlayerData->GetNodeOrNullById(player._id)) {
-				s_Players[player._id].Parse(player, *xml);
-			}
-		}
-	}
-
-	if (XMLStuff.CustomXMLData.count("edenhair.xml")) {
-		if (auto* data = XMLStuff.CustomXMLData["edenhair.xml"]) {
-			for (auto& [_, node] : data->nodes) {
-				std::string path = node["root"] + node["gfx"];
-				if (!path.empty()) {
-					g_Manager->GetEntityConfig()->_edenHair.push_back(path);
-				}
-			}
-		}
-	}
 }
+
 
 EntityEx* GetEntityEx(EntityConfig_Entity* entity) {
 	if (entity) {
@@ -283,6 +306,24 @@ HOOK_STATIC(Game, ShouldEraseEnemy, (Entity* entity) -> bool, __stdcall) {
 		}
 	}
 	return super(entity);
+}
+
+HOOK_STATIC(Entity_Pickup, CanRerollVariant, (int variant, int subtype) -> bool, __cdecl) {
+	if (EntityEx* ex = GetEntityEx(ENTITY_PICKUP, variant, subtype)) {
+		if (ex->HasCustomTag(CustomTags::PICKUP_NO_REROLL)) {
+			return false;
+		}
+	}
+	return super(variant, subtype);
+}
+
+HOOK_METHOD(Entity_Pickup, CanJeraDuplicate, () -> bool) {
+	if (EntityEx* ex = GetEntityEx(this->_type, this->_variant, this->_subtype)) {
+		if (ex->HasCustomTag(CustomTags::PICKUP_NO_JERA)) {
+			return false;
+		}
+	}
+	return super();
 }
 
 }  // EntityConfigEx

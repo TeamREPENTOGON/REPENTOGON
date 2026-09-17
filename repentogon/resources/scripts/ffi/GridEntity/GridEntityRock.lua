@@ -16,7 +16,7 @@ ffi.cdef[[
     typedef struct GridEntityRock* GridEntityRockPtr;
     
     bool L_GridEntityRock_Destroy(struct GridEntityRock*, int, struct EntityRef*);
-    int L_GridEntityRock_GetAltRockType(struct GridEntityRock*, int);
+    int L_GridEntityRock_GetAltRockType(int);
     const char* L_GridEntityRock_GetAnim(struct GridEntityRock*);
     const char* L_GridEntityRock_GetRubbleAnim(struct GridEntityRock*);
     void L_GridEntityRock_PlayBreakSound(struct GridEntityRock*, int, int);
@@ -42,9 +42,10 @@ GridEntityRockMT = {
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntityRock_Destroy(self, immediate, source)
     end,
-    GetAltRockType = function(self, backdrop)
+    GetAltRockType = function(_, backdrop)
+        backdrop = backdrop or 0
         ffichecks.checkinteger(1, backdrop)
-        return repentogon.L_GridEntityRock_GetAltRockType(self, backdrop)
+        return repentogon.L_GridEntityRock_GetAltRockType(backdrop)
     end,
     GetBigRockFrame = function(self)
         if self.Desc.Variant < 1000 then
@@ -136,5 +137,10 @@ GridEntityRock = setmetatable({
         ffichecks.checkinteger(4, seed)
         ffichecks.checkboolean(5, unk)
         L_GridEntityRock_SpawnDrops(position, gridType, gridVariant, seed, unk, backdrop)
+    end,
+    GetAltRockType = function(backdrop)
+        backdrop = backdrop or 0
+        ffichecks.checkinteger(1, backdrop)
+        return repentogon.L_GridEntityRock_GetAltRockType(backdrop)
     end,
 }, {__class = GridEntityRockMT})

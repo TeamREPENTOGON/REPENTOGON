@@ -132,18 +132,36 @@ void FamiliarSaveStateEx::Serialize(rapidjson::Value& node, rapidjson::Document:
 void FamiliarSaveStateEx::Deserialize(const rapidjson::Value& node) {}
 
 // ----------------------------------------------------------------------------------------------------
-// EntityPickup (stub)
+// EntityPickup
 
 void PickupSaveStateEx::Save(Entity& entity) {
-	//Entity_Pickup* pickup = entity.ToPickup();
-	//if (!pickup) return;
+	Entity_Pickup* pickup = entity.ToPickup();
+	if (!pickup) return;
+
+	if (EntityPickupPlus* pickupPlus = GetEntityPickupPlus(pickup)) {
+		_canRerollOverride = pickupPlus->canRerollOverride;
+	}
 }
 void PickupSaveStateEx::Restore(Entity& entity) {
-	//Entity_Pickup* pickup = entity.ToPickup();
-	//if (!pickup) return;
+	Entity_Pickup* pickup = entity.ToPickup();
+	if (!pickup) return;
+
+	if (EntityPickupPlus* pickupPlus = GetEntityPickupPlus(pickup)) {
+		pickupPlus->canRerollOverride = _canRerollOverride;
+	}
 }
-void PickupSaveStateEx::Serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) {}
-void PickupSaveStateEx::Deserialize(const rapidjson::Value& node) {}
+void PickupSaveStateEx::Serialize(rapidjson::Value& node, rapidjson::Document::AllocatorType& allocator) {
+	if (_canRerollOverride.has_value()) {
+		node.AddMember("canRerollOverride", *_canRerollOverride, allocator);
+	}
+}
+void PickupSaveStateEx::Deserialize(const rapidjson::Value& node) {
+	if (node.HasMember("canRerollOverride") && node["canRerollOverride"].IsBool()) {
+		_canRerollOverride = node["canRerollOverride"].GetBool();
+	} else {
+		_canRerollOverride = std::nullopt;
+	}
+}
 
 // ----------------------------------------------------------------------------------------------------
 // General Handling

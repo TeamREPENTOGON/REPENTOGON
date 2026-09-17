@@ -1112,6 +1112,20 @@ LUA_FUNCTION(Lua_IsaacLoadModDataFromFolder) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsaacGetBabyIdByName) {
+	const string name = luaL_checkstring(L, 1);
+
+	for (const EntityConfig_Baby& baby : *g_Manager->GetEntityConfig()->GetBabies()) {
+		if (baby.name == name) {
+			lua_pushinteger(L, baby.id);
+			return 1;
+		}
+	}
+
+	lua_pushinteger(L, -1);
+	return 1;
+}
+
 
 //Deprecated methods
 
@@ -1206,6 +1220,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBabyIdByName", Lua_IsaacGetBabyIdByName);
 
 	//deprecated methods
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearBossHazards", Lua_IsaacClearBossHazards);

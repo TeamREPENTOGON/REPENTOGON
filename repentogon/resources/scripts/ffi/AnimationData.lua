@@ -1,12 +1,17 @@
 ffi.cdef [[
+    struct AnimationData_EventTrigger {
+        private unsigned int EventId; // max 32
+        private int AnimationFrame;
+    };
+
     struct AnimationData {
         padding char[0x18]; // std::string _name
         private const struct AnimationLayer* AnimationLayers;
         private const unsigned int LayerCount;
         padding char[0x4]; // NullLayer* _nullLayers
         private const unsigned int NullLayerCount;
-        padding char[0x4]; // unk
-        padding char[0x4]; // unk
+        private const struct AnimationData_EventTrigger* EventTriggers;
+        private const unsigned int EventTriggerCount;
         private const int Length;
         private const bool Loop;
         padding char[0x3];

@@ -35,6 +35,14 @@ extern "C" {
 		return sprite->_animDefaultName.c_str();
 	}
 
+	__declspec(dllexport) int L_Sprite_GetEventId(ANM2* sprite, const char* eventName) {
+		auto evt = sprite->GetEventByName(eventName);
+		if (evt.has_value()) {
+			return (int)*evt;
+		}
+		return -1;
+	}
+
 	__declspec(dllexport) const char* L_Sprite_GetFilename(ANM2* sprite) {
 		return sprite->_filename.c_str();
 	}

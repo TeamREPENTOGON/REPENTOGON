@@ -6,8 +6,8 @@ extern "C" {
 	}
 
 	//TODO: we can probably reimplement this one in Lua pretty easily
-	__declspec(dllexport) int L_GridEntityRock_GetAltRockType(GridEntity_Rock* rock, int backdrop) {
-		return rock->GetAltRockType(backdrop);
+	__declspec(dllexport) int L_GridEntityRock_GetAltRockType(int backdrop) {
+		return GridEntity_Rock::GetAltRockType(backdrop);
 	}
 
 	__declspec(dllexport) const char* L_GridEntityRock_GetAnim(GridEntity_Rock* rock) {

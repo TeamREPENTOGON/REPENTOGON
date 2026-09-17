@@ -19,7 +19,7 @@ In order to install and run REPENTOGON, you'll need:
 There are two ways you may obtain the REPENTOGON Launcher- either by downloading it yourself, or automatically by upgrading from a legacy installation of REPENTOGON.
 
 ### Manually
-* Download the [REPENTOGON Launcher](https://github.com/TeamREPENTOGON/Launcher/releases/latest)
+* Download the [REPENTOGON Launcher](https://github.com/TeamREPENTOGON/Launcher/releases/latest/download/REPENTOGONLauncher.zip)
 * Extract the REPENTOGON Launcher into a directory of your choosing. The launcher can be placed *almost* anywhere, but a couple of things to note:
     * Being placed inside a directory that is protected or synced to OneDrive may cause issues for the launcher (Desktop, Documents, etc.).
     * If needed, a couple of reliable location options are:
@@ -217,6 +217,10 @@ Thankfully, REPENTOGON allows you to freely import your missing achievements/unl
 ![Steam Input setting](img/steam_input_example.png)
 
 * You may also try going into the in-game control mapping menu and hit "Reset To Default".
+
+* If all else fails, and you see one or more "Unknown Device" listed in the in-game controls menu, you can try enabling the "Block Unknown Device" option in the REPENTOGON console menus, then restarting your game.
+
+![Steam Input setting](img/unknown_device.png)
 
 ## How do I use Basement Renovator with REPENTOGON?
 

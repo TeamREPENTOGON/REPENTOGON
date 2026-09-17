@@ -301,6 +301,11 @@ void PerformASMPatches() {
 	ASMPatchesForCustomModManager();
 	ASMPatchRedirectToLocalizationFolders();
 	ASMPatchLocalizedPlayerAnimations();
+
+	if (!ASMPatches::SkipArchiveChecksums()) {	//want to run this one before localization patch to have bytes patched ahead of time
+		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
+	};
+
 	ASMPatchLoadArchiveFile();
 	ASMFixes();
 	HookImGui();
@@ -317,13 +322,6 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
-
-	if (!ASMPatches::SkipArchiveChecksums()) {
-		ZHL::Log("[ERROR] Error while applying an archive checksum skip\n");
-	};
-
-	// LuaJIT
-	ASMPatchLuaGC();
 
 	//patch disabled, due to bugged steam details
 	/*if (!ASMPatches::LeaderboarEntryCheckerUpdate()) {

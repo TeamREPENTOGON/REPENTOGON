@@ -31,10 +31,6 @@ ___
 
 ## Functions
 
-### Copy () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
-
-___
 ### ClearCustomChampionShader () {: aria-label='Functions' }
 #### void ClearCustomChampionShader ( ) {: .copyable aria-label='Functions' }
 Removes any custom `coloroffset_champion` shader applied by `sprite:SetCustomChampionShader(path)`.
@@ -55,6 +51,10 @@ ___
 Same as above, but only for the overlay animation.
 
 ___
+### Copy () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) Copy ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetAllAnimationData () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md)[] GetAllAnimationData ( ) {: .copyable aria-label='Functions' }
 Returns a table of [AnimationData](AnimationData.md) representing all animations in this anm2 file.
@@ -71,6 +71,11 @@ ___
 ___
 ### GetCurrentAnimationData () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetCurrentAnimationData ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetEventTriggerFrames () {: aria-label='Functions' }
+#### string[] GetCurrentAnimationData ( string AnimationName, string EventName ) {: .copyable aria-label='Functions' }
+Returns a table of frames at which the specified event will trigger in the specified animation (for example: `{5, 10, 12}`).
 
 ___
 ### GetLayer () {: aria-label='Functions' }
@@ -106,6 +111,10 @@ Returns the [NullFrame](NullFrame.md) from the provided layer name of the overla
 ___
 ### GetRenderFlags () {: aria-label='Functions' }
 #### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSpritesheet () {: aria-label='Functions' }
+#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
 
 ___
 ### HasCustomChampionShader () {: aria-label='Functions' }
@@ -153,6 +162,10 @@ ___
 #### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
 
 ___
+### SetSpritesheet () {: aria-label='Functions' }
+#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }
+
+___
 ### StopOverlay () {: aria-label='Functions' }
 #### void StopOverlay ( ) {: .copyable aria-label='Functions' }
 
@@ -161,9 +174,3 @@ ___
 #### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
-### GetSpritesheet () {: aria-label='Functions' }
-#### [Image](renderer/Image.md)? GetSpritesheet ( int Layer ) {: .copyable aria-label='Functions' }
-
-___
-### SetSpritesheet () {: aria-label='Functions' }
-#### void SetSpritesheet ( int Layer, [Image](renderer/Image.md) Spritesheet ) {: .copyable aria-label='Functions' }

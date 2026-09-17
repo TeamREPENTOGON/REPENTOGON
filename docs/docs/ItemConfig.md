@@ -14,6 +14,11 @@ Returns `true` if the collectible can be rerolled.
     Despite not being a static function, this function must be called with a `.`, like `Isaac.GetItemConfig().CanRerollCollectible(1)`.
 
 ___    
+### GetItemsWithCustomTag () {: aria-label='Functions' }
+#### [ItemConfig_Item](ItemConfig_Item.md)[] GetItemsWithCustomTag ( string CustomTag ) {: .copyable aria-label='Functions' }
+Returns a table of [ItemConfig_Item](ItemConfig_Item.md) objects with the given customtag. See [items.xml](xml/items.md).
+
+___
 ### GetTaggedItems () {: aria-label='Functions' }
 #### [ItemConfig_Item](ItemConfig_Item.md)[] GetTaggedItems ( int Tags ) {: .copyable aria-label='Functions' }
 Returns a table of [ItemConfig_Item](ItemConfig_Item.md) objects with the given tags

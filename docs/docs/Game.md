@@ -50,6 +50,14 @@ ___
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`).
 
 ___
+### AddErasedEnemy () {: aria-label='Functions' }
+#### void AddErasedEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
+#### void AddErasedEnemy ( int Type, int Variant ) {: .copyable aria-label='Functions' }
+Adds an enemy's Type and Variant to the list of "erased" enemies (as with the "Eraser" active item).
+
+Note that the game does not utilize SubType-specific erasing.
+
+___
 ### AddShopVisits () {: aria-label='Functions' }
 #### void AddShopVisits ( int Count ) {: .copyable aria-label='Functions' }
 Adds the amount of shops the player has entered this run.
@@ -122,8 +130,10 @@ Returns the target ColorModifier. If currently lerping between two [ColorModifie
 ___
 ### IsErased () {: aria-label='Functions' }
 #### boolean IsErased ( [Entity](Entity.md) Entity ) {: .copyable aria-label='Functions' }
-#### boolean IsErased ( int Type, int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
+#### boolean IsErased ( int Type, int Variant = -1 ) {: .copyable aria-label='Functions' }
 Checks if an entity was erased.
+
+Note that the game does not utilize SubType-specific erasing.
 
 ___
 ### IsGreedBoss () {: aria-label='Functions' }
@@ -159,6 +169,13 @@ ___
 ### RecordPlayerCompletion () {: aria-label='Functions' }
 #### void RecordPlayerCompletion ( [CompletionType](enums/CompletionType.md) Type ) {: .copyable aria-label='Functions' }
 Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
+
+___
+### RemoveErasedEnemy () {: aria-label='Functions' }
+#### void RemoveErasedEnemy ( int Type, int Variant = -1 ) {: .copyable aria-label='Functions' }
+Removes a specific Type/Variant from the list of "erased" enemies (as with the "Eraser" active item), allowing it to spawn again.
+
+Note that the game does not utilize SubType-specific erasing.
 
 ___
 ### SetBloom () {: aria-label='Functions' }
