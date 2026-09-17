@@ -153,21 +153,21 @@ LUA_FUNCTION(Lua_ItemConfig_GetItemsWithCustomTag) {
 	for (const int id : ItemConfigEx::GetCollectiblesWithCustomTag(tag)) {
 		if (ItemConfig_Item* item = config->GetCollectible(id)) {
 			lua_pushinteger(L, ++idx);
-			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua::ffi::pushCdataPtr(L, item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
 			lua_rawset(L, -3);
 		}
 	}
 	for (const int id : ItemConfigEx::GetTrinketsWithCustomTag(tag)) {
 		if (ItemConfig_Item* item = config->GetTrinket(id)) {
 			lua_pushinteger(L, ++idx);
-			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua::ffi::pushCdataPtr(L, item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
 			lua_rawset(L, -3);
 		}
 	}
 	for (const int id : ItemConfigEx::GetNullItemsWithCustomTag(tag)) {
 		if (ItemConfig_Item* item = config->GetNullItem(id)) {
 			lua_pushinteger(L, ++idx);
-			lua::luabridge::UserdataPtr::push(L, item, lua::GetMetatableKey(lua::Metatables::ITEM));
+			lua::ffi::pushCdataPtr(L, item, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
 			lua_rawset(L, -3);
 		}
 	}
