@@ -38,6 +38,7 @@ void L_Sprite_ClearCustomShader(struct Sprite*, bool);
 const char* L_Sprite_GetAnimation(struct Sprite*);
 struct AnimationData* L_Sprite_GetAnimationData(struct Sprite*, const char*);
 const char* L_Sprite_GetDefaultAnimation(struct Sprite*);
+int L_Sprite_GetEventId(struct Sprite*, const char*);
 const char* L_Sprite_GetFilename(struct Sprite*);
 struct LayerState* L_Sprite_GetLayerById(struct Sprite*, int);
 struct LayerState* L_Sprite_GetLayerByName(struct Sprite*, const char*);
@@ -137,6 +138,23 @@ SpriteMT = {
     end,
     GetDefaultAnimationName = function(self)
         return ffi.string(repentogon.L_Sprite_GetDefaultAnimation(self))
+    end,
+    GetEventTriggerFrames = function(self, animationName, eventName)
+        ffichecks.checkstring(1, animationName)
+        ffichecks.checkstring(2, eventName)
+        local ret = {}
+        local animData = repentogon.L_Sprite_GetAnimationData(self, animationName)
+        local eventId = repentogon.L_Sprite_GetEventId(self, eventName)
+        if animData and eventId > -1 then
+            local events = ffi.getprivate(animData, "EventTriggers")
+            for i = 0, ffi.getprivate(animData, "EventTriggerCount") - 1 do
+                local event = events[i]
+                if ffi.getprivate(event, "EventId") == eventId then
+                    table.insert(ret, ffi.getprivate(event, "AnimationFrame"))
+                end
+            end
+        end
+        return ret
     end,
     GetFilename = function(self)
         return ffi.string(repentogon.L_Sprite_GetFilename(self))
