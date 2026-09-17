@@ -29,6 +29,14 @@ Returns a table containing the attributes of the bosscolor on bosscolors.xml tha
 	```lua
 	print("Red Monstro's suffix:", XMLData.GetBossColorByTypeVarSub(20,0,1).suffix)
 	```
+
+___
+### GetCurrentMod () {: aria-label='Functions' }
+#### table GetCurrentMod ( ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the metadata.xml of the currently running mod.
+???+ note "Currently running mod?"
+    The mod entry returned by this will change based on the folder in which the lua file resides in, basically. Calling it normally will return your mod but if you make a call to another mod's lua file that makes a call to this function, you will get that mod's table.
+	
 ___
 ### GetEntityByTypeVarSub () {: aria-label='Functions' }
 #### table GetEntityByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = 0 , int SubType = 0, boolean Strict = false) {: .copyable aria-label='Functions' }

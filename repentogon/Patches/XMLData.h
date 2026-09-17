@@ -580,6 +580,8 @@ public:
 class XMLChallenge : public XMLDataHolder {
 public:
 	const char* GetTranslationStringCategory() const override { return "Challenges"; }
+
+	void ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& challenge, int id) override;
 };
 
 class XMLBossColor : public XMLDataHolder {
@@ -670,7 +672,7 @@ public:
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
 	unordered_map<string, tuple<int, int, int>> bybossid;
-	XMLNodeIdxLookup bymod;
+	unordered_map<string, vector<tuple<int, int, int>>> bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
 
 	void Clear() {

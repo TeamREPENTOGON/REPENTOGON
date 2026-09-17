@@ -20,8 +20,6 @@
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
-#include "ItemConfigEx.h"
-#include "EntityConfigEx.h"
 
 #include "../ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
@@ -1149,6 +1147,12 @@ void XMLGiantBook::ProcessAttributes(const xml_node<char>& auxnode, XMLAttribute
 	}
 }
 
+// XMLChallenge ----------
+
+void XMLChallenge::ProcessAttributes(const xml_node<char>& auxnode, XMLAttributes& challenge, int id) {
+	CheckTranslatedAttribute(challenge, "lockeddesc");
+}
+
 // XMLRecipe ----------
 
 int XMLRecipe::AssignId(XMLAttributes& recipe, const bool isContent) {
@@ -1334,6 +1338,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			}
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
 			XMLStuff.EntityData->bybossid[entity["bossid"]] = idx;
+			XMLStuff.EntityData->bymod[lastmodid].push_back(idx);
 		}
 	break;
 	case 2: //player 
@@ -3528,16 +3533,6 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 
 	super();
 
-	// _collectibleNameMap is pretty much exclusively used for mod-related stuff.
-	// Ofc the basegame does not account for translation string support. It puts only the TRANSLATED names in the map.
-	// Here we shove all of the raw, untranslated strings into the map too.
-	// This fixes putting mod items into item pools, and GetItemIdByName.
-	for (ItemConfig_Item* item : *g_Manager->GetItemConfig()->GetCollectibles()) {
-		if (item && !item->name.empty() && item->id > 0) {
-			g_Manager->GetItemConfig()->_collectibleNameMap[item->name] = item->id;
-		}
-	}
-
 	//retroactively patch playertype for challenges because the game sucks ass and loads modded challenges before players
 	for (int i = 46; i<=XMLStuff.ChallengeData->maxid; i++) {
 		ChallengeParam* chalpram = g_Manager->GetChallengeParams(i);
@@ -3551,11 +3546,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	}
 	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
 	//RegisterGenericCustomXML("poopoo.xml", "poopoos", "poo");
-	RegisterGenericCustomXML("edenhair.xml", "edenhair", "hair");
 	LoadCustomXMLs(); //this loads custom xmls into their respective xmldata structures
-
-	ItemConfigEx::ParseXMLData();
-	EntityConfigEx::ParseXMLData();
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
