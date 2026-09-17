@@ -97,10 +97,11 @@ ffichecks.optnumber = function(var, opt)
 	return opt
 end
 ffichecks.optboolean = function(var, opt)
-	if ffichecks.isboolean(var) then
-		return var
+	if var == nil then
+		return opt
 	end
-	return opt
+	-- Cheap enough coercion for me
+	return not not var
 end
 ffichecks.optstring = function(var, opt)
 	if ffichecks.isstring(var) then
