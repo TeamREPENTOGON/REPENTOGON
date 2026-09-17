@@ -661,8 +661,9 @@ LUA_FUNCTION(Lua_ImGui_GetGameWindowRect)
 			y = rect.top;
 		}
 	//}
-	lua::LuaCaller(L).pushUserdataValue(Vector(rect.left,rect.top), lua::Metatables::VECTOR);
-	lua::LuaCaller(L).pushUserdataValue(Vector(rect.right - rect.left, rect.bottom - rect.top), lua::Metatables::VECTOR);
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], Vector(rect.left, rect.top));
+	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], Vector(rect.right - rect.left, rect.bottom - rect.top));
+
 	return 2;
 }
 
