@@ -459,7 +459,7 @@ LUA_FUNCTION(Lua_EntityNPC_ApplyTearflagEffects) {
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	const float defaultDamage = (float)luaL_checknumber(L, 2);
-	auto* source = LuaEntityRef::Get(L, 2);
+	auto* source = LuaEntityRef::Get(L, 3);
 	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
 
 	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
