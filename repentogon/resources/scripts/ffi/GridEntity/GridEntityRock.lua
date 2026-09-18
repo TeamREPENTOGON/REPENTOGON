@@ -25,7 +25,8 @@ ffi.cdef[[
     void L_GridEntityRock_RenderTop(struct GridEntityRock*, struct Vector);
     void L_GridEntityRock_SpawnDrops(struct Vector, int, int, unsigned int, bool, int);
     void L_GridEntityRock_Update(struct GridEntityRock*);
-    void L_GridEntityRock_UpdateCollision(struct GridEntityRock*);
+    void L_GridEntityRock_UpdateCollision(struct GridEntityRock*);  
+    void L_GridEntityRock_UpdateNeighbors(struct GridEntityRock*);
 ]]
 local ffi = ffi
 local repentogon = ffidll
