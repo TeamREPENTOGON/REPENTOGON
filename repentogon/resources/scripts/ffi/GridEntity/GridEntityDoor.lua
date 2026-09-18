@@ -7,6 +7,7 @@ ffi.cdef[[
         private struct RNG RNG;
         int CollisionClass;
         private struct Sprite Sprite;
+        padding char[0x4];
         int Slot;
         int CurrentRoomType;
         int TargetRoomType;
@@ -109,7 +110,7 @@ GridEntityDoorMT = {
     end,
     SetRoomTypes = function(self, currentRoomType, targetRoomType)
         ffichecks.checkinteger(1, currentRoomType)
-        ffichecks.checkinteger(2, currentRoomType)
+        ffichecks.checkinteger(2, targetRoomType)
         repentogon.L_GridEntityDoor_SetRoomTypes(self, currentRoomType, targetRoomType)
     end,
     Update = function(self)
