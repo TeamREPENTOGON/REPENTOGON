@@ -6,7 +6,8 @@ ffi.cdef [[
         private const struct Vector Pos;
         private const struct Vector Scale;
         private const struct Vector Pivot;
-        private const bool Duration;
+        private const int Duration;
+        private const bool Visible;
         padding char[0x3];
         private const struct Color Color;
         private const float Rotation;
