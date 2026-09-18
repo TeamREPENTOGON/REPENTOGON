@@ -1,7 +1,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "LuaRender.h";
-#include "../Utils/ImageUtils.hpp"
+#include "../Utils/ImageUtils.h"
+#include "../Utils/ShaderUtils.h"
 
 //TODO: We might be able to move a lot of this Lua side at some point.
 extern "C" {
