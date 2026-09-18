@@ -286,6 +286,9 @@ void PerformASMPatches() {
 	EntitySaveStateManagement::detail::Patches::ApplyPatches();
 	EntityManager::detail::Patches::ApplyPatches();
 
+	// Lua related
+	ASMPatchLuaGC();
+
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
