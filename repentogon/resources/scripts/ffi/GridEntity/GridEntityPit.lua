@@ -12,6 +12,7 @@ ffi.cdef[[
     typedef struct GridEntityPit* GridEntityPitPtr;
     
     void L_GridEntityPit_MakeBridge(struct GridEntityPit*, struct GridEntity*);
+    void L_GridEntityPit_PostInit(struct GridEntityPit*);
     void L_GridEntityPit_Render(struct GridEntityPit*, struct Vector);
     void L_GridEntityPit_Update(struct GridEntityPit*);
     void L_GridEntityPit_UpdateCollision(struct GridEntityPit*);
@@ -25,6 +26,9 @@ GridEntityPitMT = {
     MakeBridge = function(self, parent)
         parent = ffichecks.optcdata(1, parent, nil)
         repentogon.L_GridEntityPit_MakeBridge(self, parent)
+    end,
+    PostInit = function(self)
+        repentogon.L_GridEntityPit_PostInit(self)
     end,
     Render = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")

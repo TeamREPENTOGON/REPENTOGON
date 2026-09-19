@@ -20,6 +20,7 @@ ffi.cdef[[
     const char* L_GridEntityRock_GetAnim(struct GridEntityRock*);
     const char* L_GridEntityRock_GetRubbleAnim(struct GridEntityRock*);
     void L_GridEntityRock_PlayBreakSound(struct GridEntityRock*, int, int);
+    void L_GridEntityRock_PostInit(struct GridEntityRock*);
     void L_GridEntityRock_RegisterRocksDestroyed(struct GridEntityRock*, int);
     void L_GridEntityRock_Render(struct GridEntityRock*, struct Vector);
     void L_GridEntityRock_RenderTop(struct GridEntityRock*, struct Vector);
@@ -61,6 +62,9 @@ GridEntityRockMT = {
         ffichecks.checkinteger(1, gridType)
         ffichecks.checkinteger(2, backdrop)
         L_GridEntityRock_PlayBreakSound(self, gridType, backdrop)
+    end,
+    PostInit = function(self)
+        repentogon.L_GridEntityRock_PostInit(self)
     end,
     RegisterRocksDestroyed = function(self, gridType)
         repentogon.ffichecks.checkinteger(1, gridType)

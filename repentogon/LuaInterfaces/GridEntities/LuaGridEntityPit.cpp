@@ -5,6 +5,10 @@ extern "C" {
 		pit->MakeBridge(parent);
 	}
 
+	__declspec(dllexport) void L_GridEntityPit_PostInit(GridEntity_Pit* pit) {
+		pit->PostInit();
+	}
+
 	__declspec(dllexport) void L_GridEntityPit_Render(GridEntity_Pit* pit, Vector offset) {
 		pit->Render(offset);
 	}

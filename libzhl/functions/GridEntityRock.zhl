@@ -25,6 +25,9 @@ static cleanup void GridEntity_Rock::RegisterRockDestroyed(int GridEntityType<ec
 "8bd18b42??83f801":
 __thiscall void GridEntity_Rock::update_collision();
 
+"558bec83ec34a1????????33c58945??f30f7e05":
+__thiscall void GridEntity_Rock::PostInit();
+
 struct GridEntity_Rock depends (Vector) : public GridEntity { 
 
 	std_string _anim : 0x154;

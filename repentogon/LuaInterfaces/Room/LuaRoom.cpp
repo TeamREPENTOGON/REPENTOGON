@@ -806,6 +806,15 @@ LUA_FUNCTION(Lua_GetDoor) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_TryMakeBridge) {
+	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	GridEntity_Pit* pit = LuaGridEntityPit::Get(L, 2);
+	GridEntity_Rock* rock = LuaGridEntityRock::Get(L, 3);
+
+	lua_pushboolean(L, room->TryMakeBridge(pit, rock));
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -813,6 +822,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "TryMakeBridge", Lua_TryMakeBridge },
 		{ "CheckLine", Lua_CheckLine },
 		{ "FindFreePickupSpawnPosition", Lua_FindFreePickupSpawnPosition },
 		{ "FindFreeTilePosition", Lua_FindFreeTilePosition },

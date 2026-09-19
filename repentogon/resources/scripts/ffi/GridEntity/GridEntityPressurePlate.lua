@@ -8,12 +8,11 @@ ffi.cdef[[
         int CollisionClass;
         private struct Sprite Sprite;
         struct Sprite TimerPlate;
-        padding char StdString_NextGreedAnimation[0x18];
+        const char* NextGreedAnimation;
         struct RNG GreedModeRNG;
     };
     typedef struct GridEntityPressurePlate* GridEntityPressurePlatePtr;
     
-    const char* L_GridEntityPressurePlate_GetNextGreedAnimation(struct GridEntityPressurePlate*);
     void L_GridEntityPressurePlate_Render(struct GridEntityPressurePlate*, struct Vector);
     void L_GridEntityPressurePlate_Reward(struct GridEntityPressurePlate*);
     void L_GridEntityPressurePlate_Update(struct GridEntityPressurePlate*);
@@ -40,9 +39,6 @@ local baseIndex = getmetatable(GridEntity).__class.__index
 local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityPressurePlateMT.__index = function(self, key)
-    if key == "NextGreedAnimation" then
-        return ffi.string(repentogon.L_GridEntityPressurePlate_NextGreedAnimation(self))
-    end 
     if GridEntityPressurePlateMT[key] ~= nil then
         return GridEntityPressurePlateMT[key]
     end

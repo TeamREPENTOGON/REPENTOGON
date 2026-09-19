@@ -10,6 +10,7 @@ ffi.cdef[[
     };
     typedef struct GridEntityGravity* GridEntityGravityPtr;
     
+    void L_GridEntityGravity_PostInit(struct GridEntityGravity*);
     void L_GridEntityGravity_Update(struct GridEntityGravity*);
 ]]
 local ffi = ffi
@@ -18,6 +19,9 @@ local repentogon = ffidll
 local GridEntityGravityMT
 GridEntityGravityMT = {
     __type = "GridEntityGravity",
+    PostInit = function(self)
+        repentogon.L_GridEntityGravity_PostInit(self)
+    end,
     Update = function(self)
         repentogon.L_GridEntityGravity_Update(self)
     end,

@@ -11,12 +11,13 @@ ffi.cdef[[
         padding char StdString_StateAnimation[0x18];
         bool UnderPlayer;
         private bool Destroyed;
-        padding char[0x2];
+        padding char[0x2a];
     };
     typedef struct GridEntityPoop* GridEntityPoopPtr;
     
     const char* L_GridEntityPoop_GetStateAnimation(struct GridEntityPoop*);
     bool L_GridEntityPoop_Hurt(struct GridEntityPoop*, int, struct EntityRef*);
+    void L_GridEntityPoop_PostInit(struct GridEntityPoop*);
     void L_GridEntityPoop_Render(struct GridEntityPoop*, struct Vector);
     void L_GridEntityPoop_RespawnRedPoop(struct GridEntityPoop*);
     void L_GridEntityPoop_Update(struct GridEntityPoop*);
@@ -42,6 +43,9 @@ GridEntityPoopMT = {
         ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntityPoop_Hurt(self, damage, source)
+    end,
+    PostInit = function(self)
+        repentogon.L_GridEntityPoop_PostInit(self)
     end,
     ReduceSpawnRate = function(self)
         self.Desc.VarData = 1

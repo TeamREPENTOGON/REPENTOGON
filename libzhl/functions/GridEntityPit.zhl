@@ -4,6 +4,9 @@ __thiscall void GridEntity_Pit::MakeBridge(GridEntity* parent);
 "a1????????568b90????????83ba????????20":
 __thiscall void GridEntity_Pit::UpdateCollision();
 
+"558bec83e4f883ec14a1????????53":
+__thiscall void GridEntity_Pit::PostInit(); // crashes when called as part of the vtable, idk*/
+
 struct GridEntity_Pit : public GridEntity {
 	__vtable {
 		skip; // Free

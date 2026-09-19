@@ -42,7 +42,7 @@ ffi.cdef[[
     void L_GridEntityDoor_Render(struct GridEntityDoor*, struct Vector);
     void L_GridEntityDoor_SetLocked(struct GridEntityDoor*, bool);
     void L_GridEntityDoor_SetRoomTypes(struct GridEntityDoor*, int, int);
-
+    void L_GridEntityDoor_Update(struct GridEntityDoor*);
 ]]
     
 local ffi = ffi

@@ -206,6 +206,9 @@ __thiscall Vector* Room::ScreenWrapPosition (Vector* ret, Vector* pos, float top
 "558bec83ec08f30f100d":
 __thiscall Vector* Room::WorldToScreenPosition(Vector* buffer, Vector pos);
 
+"558bec83e4f8518b45??53568bf157":
+__thiscall bool Room::TryMakeBridge(GridEntity_Pit* pit, GridEntity_Rock* rock);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, FXLayers, KColor, ColorMod, Backdrop, Vector) {
 {{
 	inline Camera* GetCamera() { return this->_Camera; }

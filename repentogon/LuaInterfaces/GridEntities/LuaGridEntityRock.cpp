@@ -23,6 +23,11 @@ extern "C" {
 		rock->PlayBreakSound(gridType, backdrop);
 	}
 
+	__declspec(dllexport) void L_GridEntityRock_PostInit(GridEntity_Rock* rock) {
+		rock->PostInit();
+	}
+
+
 	// ditto
 	__declspec(dllexport) void L_GridEntityRock_RegisterRocksDestroyed(GridEntity_Rock* rock, int gridType) {
 		rock->RegisterRockDestroyed(gridType);

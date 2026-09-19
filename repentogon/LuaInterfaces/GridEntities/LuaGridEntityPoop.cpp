@@ -9,6 +9,10 @@ extern "C" {
 		return poop->Hurt(damage, source);
 	}
 
+	__declspec(dllexport) void L_GridEntityPoop_PostInit(GridEntity_Poop* poop) {
+		poop->PostInit();
+	}
+
 	__declspec(dllexport) void L_GridEntityPoop_Render(GridEntity_Poop* poop, Vector offset) {
 		poop->Render(offset);
 	}

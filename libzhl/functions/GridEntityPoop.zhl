@@ -1,8 +1,11 @@
 "518379??015657":
 __thiscall void GridEntity_Poop::RespawnRedPoop();
 
+"558bec83ec10a1????????33c58945??57":
+__thiscall void GridEntity_Poop::PostInit();
+
 struct GridEntity_Poop : public GridEntity {
-	std_string _stateAnimation : 0x15c;
+	std_string _stateAnimation : 0x158;
 	__vtable {
 		skip; // Free
 		skip; // PostInit

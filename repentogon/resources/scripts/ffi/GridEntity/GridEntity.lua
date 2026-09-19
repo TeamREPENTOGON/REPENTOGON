@@ -148,11 +148,41 @@ GridEntityMT = {
         return false
     end,
     PostInit = function(self)
-        return
+        if self:ToGravity() then
+            self:ToGravity():PostInit()
+        elseif self:ToPit() then
+            self:ToPit():PostInit()
+        elseif self:ToPoop() then
+            self:ToPoop():PostInit()
+        elseif self:ToRock() then
+            self:ToRock():PostInit()
+        end
     end,
     Render = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")
-        repentogon.L_GridEntity_Render(ffi.cast("struct GridEntity*", self), offset)
+        if self:ToDecoration() then
+            self:ToDecoration():Render(offset)
+        elseif self:ToDoor() then
+            self:ToDoor():Render(offset)
+        elseif self:ToFire() then
+            self:ToFire():Render(offset)
+        elseif self:ToLock() then
+            self:ToLock():Render(offset)
+        elseif self:ToPit() then
+            self:ToPit():Render(offset)
+        elseif self:ToPoop() then
+            self:ToPoop():Render(offset)
+        elseif self:ToPressurePlate() then
+            self:ToPressurePlate():Render(offset)
+        elseif self:ToRock() then
+            self:ToRock():Render(offset)
+        elseif self:ToTeleporter() then
+            self:ToTeleporter():Render(offset)
+        elseif self:ToWall() then
+            self:ToWall():Render(offset)
+        else
+            repentogon.L_GridEntity_Render(ffi.cast("struct GridEntity*", self), offset)
+        end
     end,
     ResetWaterClipFlags = function(self)
         repentogon.L_GridEntity_ResetWaterClipFlags(ffi.cast("struct GridEntity*", self))
@@ -242,7 +272,34 @@ GridEntityMT = {
         return ffi.cast("struct GridEntityWeb*", self)
     end,
     Update = function(self)
-        return
+        -- before you accuse me of being yanderedev, this should be faster than caching the functions in a table with the jit compiler
+        if self:ToDecoration() then
+            self:ToDecoration():Update()
+        elseif self:ToDoor() then
+            self:ToDoor():Update()
+        elseif self:ToFire() then
+            self:ToFire():Update()
+        elseif self:ToGravity() then
+            self:ToGravity():Update()
+        elseif self:ToLock() then
+            self:ToLock():Update()
+        elseif self:ToPit() then
+            self:ToPit():Update()
+        elseif self:ToPoop() then
+            self:ToPoop():Update()
+        elseif self:ToPressurePlate() then
+            self:ToPressurePlate():Update()
+        elseif self:ToRock() then
+            self:ToRock():Update()
+        elseif self:ToSpikes() then
+            self:ToSpikes():Update()
+        elseif self:ToTeleporter() then
+            self:ToTeleporter():Update()
+        elseif self:ToTrapDoor() then
+            self:ToTrapDoor():Update()
+        elseif self:Web() then
+            self:ToWeb():Update()
+        end
     end,
 }
 

@@ -220,7 +220,7 @@ SpriteMT = {
         ffichecks.checkcdata(1, samplePos, "Vector")
         ffichecks.checkcdata(2, renderPos, "Vector")
         ffichecks.checknumber(3, alphaThreshold)
-        ffichecks.checknumber(4, layerId)
+        layerId = ffichecks.optnumber(4, layerId, 0)
         local result = ffi.new("struct KColor")
         if repentogon.L_Sprite_GetTexel(self, result, samplePos, renderPos, alphaThreshold, layerId) == nil then
             return nil
