@@ -1174,7 +1174,7 @@ LUA_FUNCTION(Lua_EntityTakeDamage)
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	float damage = (float)luaL_checknumber(L, 2);
 	uint64_t flags = lua::luaL_checkuint64(L, 3);
-	EntityRef* source = LuaEntityRef::Get(L, 4);
+	EntityRef* source = LuaEntityRef::GetOpt(L, 4);
 	int damageCountdown = (int)luaL_checkinteger(L, 5);
 	
 	lua_pushboolean(L, ent->TakeDamage(damage, flags, source, damageCountdown));
