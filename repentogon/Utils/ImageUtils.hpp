@@ -3,7 +3,7 @@
 
 #include "IsaacRepentance.h"
 #include "ImageUtils.h"
-#include "ShaderUtils.h"
+#include "ShaderUtils.hpp"
 
 namespace ImageUtils
 {
