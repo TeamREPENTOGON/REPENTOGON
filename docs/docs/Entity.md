@@ -413,6 +413,9 @@ ___
 ### TeleportToRandomPosition () {: aria-label='Functions' }
 #### void TeleportToRandomPosition ( ) {: .copyable aria-label='Functions' }
 
+???+ info "Info"
+    Spawns blue `EffectVariant.POOF01` effects at both the entity's starting position and its destination.
+
 ___
 ### ToDelirium () {: aria-label='Functions' }
 #### [EntityDelirium](EntityDelirium.md) ToDelirium ( ) {: .copyable aria-label='Functions' }
