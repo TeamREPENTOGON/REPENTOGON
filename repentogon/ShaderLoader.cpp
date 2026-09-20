@@ -1,5 +1,5 @@
 #include "ShaderLoader.h"
-#include "Utils/ShaderUtils.hpp"
+#include "Utils/ShaderUtils.h"
 #include "MiscFunctions.h"
 #include <numeric>
 #include <filesystem>

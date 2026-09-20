@@ -16,8 +16,8 @@
 #include "LuaRender.h"
 #include "LuaBlendMode.h"
 #include "../ShaderLoader.h"
-#include "../Utils/ImageUtils.hpp"
-#include "../Utils/ShaderUtils.hpp"
+#include "../Utils/ImageUtils.h"
+#include "../Utils/ShaderUtils.h"
 
 using LuaRender::LuaImage;
 using LuaRender::LuaTransformer;

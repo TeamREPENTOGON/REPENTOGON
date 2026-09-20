@@ -7,7 +7,7 @@
 #include "LuaBlendMode.h"
 #include "../MiscFunctions.h"
 #include "../Patches/Anm2Extras.h"
-#include "../Utils/ANM2Utils.hpp"
+#include "../Utils/ANM2Utils.h"
 
 /*
 * While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
