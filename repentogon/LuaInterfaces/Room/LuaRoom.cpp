@@ -244,12 +244,8 @@ LUA_FUNCTION(Lua_MamaMegaExplosion) {
 	Vector pos = optPos ? *optPos : Vector();
 	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 3);
 
-	if (player == nullptr) {
-		room->MamaMegaExplosion(&pos);
-	}
-	else {
-		room->MamaMegaExplosion(&pos, player);
-	}
+	// function handles nullptr player
+	room->MamaMegaExplosion(&pos, player);
 
 	return 0;
 }

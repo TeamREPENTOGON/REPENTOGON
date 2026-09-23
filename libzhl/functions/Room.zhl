@@ -125,9 +125,6 @@ static cleanup int Room::GetItemPool(uint32_t seed<ecx>, RoomDescriptor* roomDes
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
-"558bec83e4f883ec0c538bd9568b75??578b43??8148??00400000":
-__thiscall void Room::MamaMegaExplosion(Vector * Position);
-
 "558bec83e4f883ec1c5356578bf98b47":
 __thiscall LRoomAreaDesc * Room::GetLRoomAreaDesc(LRoomAreaDesc * buffer);
 
