@@ -9,7 +9,7 @@ ffi.cdef [[
     } : 0x400;
 
     struct Room {
-        private bool IsInitialized : 0x0;
+        private bool Initialized : 0x0;
         private bool FirstVisit : 0x1;
         private struct RoomDescriptor* RoomDescriptor : 0x4;
         private int Type : 0x8;
@@ -598,7 +598,7 @@ RoomMT = {
         return ffi.getprivate(self, "FirstVisit")
     end,
     IsInitialized = function(self)
-        return ffi.getprivate(self, "IsInitialized")
+        return ffi.getprivate(self, "Initialized")
     end,
     IsLShapedRoom = function(self)
         return ffi.getprivate(self, "RoomDescriptor").Data.Shape - 9 < 4;
