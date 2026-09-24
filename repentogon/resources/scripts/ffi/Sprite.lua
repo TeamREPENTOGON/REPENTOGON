@@ -431,6 +431,11 @@ setmetatable(SpriteMT, {
 })
 SpriteMT.__index = SpriteMT
 
+SpriteMT.__propget = {}
+for _, key in ipairs({ "Color", "Rotation", "Scale", "Offset", "PlaybackSpeed", "FlipY", "FlipX" }) do
+    SpriteMT.__propget[key] = function(self) return self[key] end
+end
+
 local SpriteT = ffi.metatype("struct Sprite", SpriteMT)
 
 Sprite = setmetatable({}, {
