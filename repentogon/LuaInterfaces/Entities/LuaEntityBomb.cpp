@@ -197,6 +197,7 @@ LUA_FUNCTION(Lua_BombSetTearFlags) {
 	Entity_Bomb* bomb = lua::GetLuabridgeUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
 
+	bomb->_loadCostumes = true; // nicalis brand lunacy
 	bomb->_tearFlags = *flags;
 	return 0;
 }
