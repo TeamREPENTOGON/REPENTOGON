@@ -533,7 +533,7 @@ local typecheckFunctions = {
 		["boolean"] = true,
 	},
 	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
 }
 
