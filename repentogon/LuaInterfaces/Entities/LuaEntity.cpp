@@ -151,6 +151,29 @@ LUA_FUNCTION(Lua_EntityAddEntityFlags)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityGetEntityFlags)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	const int64_t flags = static_cast<int64_t>(ent->_flags);
+	
+	if (flags >= -(1LL << 53) && flags <= (1LL << 53)) {
+		lua_pushinteger(L, flags);
+	}
+	else {
+		lua_pushcdata(L, lua_ctypeid(L, "int64_t"), &flags, sizeof(flags));
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityHasEntityFlags)
+{
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	uint64_t flags = lua::luaL_checkuint64(L, 2);
+	
+	lua_pushboolean(L, (ent->_flags & flags) != 0);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_EntityClearEntityFlags)
 {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -1205,6 +1228,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetSize", Lua_EntitySetSize },
 		{ "AddEntityFlags", Lua_EntityAddEntityFlags },
 		{ "ClearEntityFlags", Lua_EntityClearEntityFlags },
+		{ "HasEntityFlags", Lua_EntityHasEntityFlags },
+		{ "GetEntityFlags", Lua_EntityGetEntityFlags },
 		{ "AddBleeding", Lua_EntityAddBleeding },
 		{ "AddMagnetized", Lua_EntityAddMagnetized },
 		{ "AddBaited", Lua_EntityAddBaited },
