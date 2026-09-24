@@ -91,7 +91,9 @@ TemporaryEffectsMT = {
     end,
     GetCollectibleEffect = function(self, CollectibleType)
         ffichecks.checkinteger(1, CollectibleType)
-        return repentogon.L_TemporaryEffects_GetCollectibleEffect(self, CollectibleType)
+        local effect = repentogon.L_TemporaryEffects_GetCollectibleEffect(self, CollectibleType)
+        if effect == nil then return nil end
+        return effect
     end,
     GetCollectibleEffectNum = function(self, CollectibleType)
         ffichecks.checkinteger(1, CollectibleType)
@@ -100,7 +102,9 @@ TemporaryEffectsMT = {
     GetEffectsList = function(self) return ffi.getprivate(self, "Effects") end,
     GetNullEffect = function(self, NullId)
         ffichecks.checkinteger(1, NullId)
-        return repentogon.L_TemporaryEffects_GetNullEffect(self, NullId)
+        local effect = repentogon.L_TemporaryEffects_GetNullEffect(self, NullId)
+        if effect == nil then return nil end
+        return effect
     end,
     GetNullEffectNum = function(self, NullId)
         ffichecks.checkinteger(1, NullId)
@@ -108,7 +112,9 @@ TemporaryEffectsMT = {
     end,
     GetTrinketEffect = function(self, TrinketType)
         ffichecks.checkinteger(1, TrinketType)
-        return repentogon.L_TemporaryEffects_GetTrinketEffect(self, TrinketType)
+        local effect = repentogon.L_TemporaryEffects_GetTrinketEffect(self, TrinketType)
+        if effect == nil then return nil end
+        return effect
     end,
     GetTrinketEffectNum = function(self, TrinketType)
         ffichecks.checkinteger(1, TrinketType)

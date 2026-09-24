@@ -32,7 +32,9 @@ AnimationStateMT = {
         repentogon.L_AnimationState_AdvancePosition(self, frame)
     end,
     GetNullFrame = function(self, name)
-        return repentogon.L_AnimationState_GetNullFrame(self, name)
+        local frame = repentogon.L_AnimationState_GetNullFrame(self, name)
+        if frame == nil then return nil end
+        return frame
     end,
     IsEventTriggered = function(self, name)
         return repentogon.L_AnimationState_IsEventTriggered(self, name)

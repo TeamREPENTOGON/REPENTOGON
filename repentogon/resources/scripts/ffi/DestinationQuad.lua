@@ -13,14 +13,12 @@ local ffi = ffi
 
 local function get_render_matrix(index, val, level)
     if type(val) ~= "table" then
-        error(string.format("bad argument #%d to '%s' (table expected, got %s)",
-            index, debug_getinfo(level or 2).name, type(val)), (level or 2) + 1)
+        ffichecks.argerror(index, string.format("table expected, got %s", type(val)))
     end
 
     local xRow, yRow = val[1], val[2]
     if type(xRow) ~= "table" or type(yRow) ~= "table" then
-        error(string.format("bad argument #%d to '%s' (render matrix row is not a table)",
-            index, debug_getinfo(level or 2).name), (level or 2) + 1)
+        ffichecks.argerror(index, "render matrix row is not a table")
     end
 
     local a, b, tx = xRow[1], xRow[2], xRow[3]
@@ -28,12 +26,14 @@ local function get_render_matrix(index, val, level)
 
     if type(a) ~= "number" or type(b) ~= "number" or type(tx) ~= "number"
     or type(c) ~= "number" or type(d) ~= "number" or type(ty) ~= "number" then
-        error(string.format("bad argument #%d to '%s' (render matrix element is not a number!)",
-            index, debug_getinfo(level or 2).name), (level or 2) + 1)
+        ffichecks.argerror(index, "render matrix element is not a number!")
     end
 
     return a, b, tx, c, d, ty
 end
+
+local DestinationQuadT 
+local QUAD_CORNERS = { "TopLeft", "TopRight", "BottomLeft", "BottomRight" }
 
 local DestinationQuadMT
 DestinationQuadMT = {
@@ -71,7 +71,7 @@ DestinationQuadMT = {
     end,
     Translate = function(self, offset) 
         ffichecks.checkcdata(1, offset, "Vector")
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             ffi.setprivate(self, field, ffi.getprivate(self, field) + offset)
         end
     end,
@@ -79,7 +79,7 @@ DestinationQuadMT = {
         ffichecks.checkcdata(1, scale, "Vector")
         ffichecks.checkcdata(2, anchor, "Vector")
         self:Translate(-anchor)
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             ffi.setprivate(self, field, ffi.getprivate(self, field) * scale)
         end
         self:Translate(anchor)
@@ -88,9 +88,9 @@ DestinationQuadMT = {
         ffichecks.checknumber(1, rotation)
         ffichecks.checkcdata(2, anchor, "Vector")
 
-        local radians = degrees * math.pi / 180
+        local radians = rotation * math.pi / 180
         local sin, cos = math.sin(radians), math.cos(radians)
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             local p = ffi.getprivate(self, field)
             local v = p - anchor
             p.X = anchor.X + cos * v.X - sin * v.Y
@@ -102,7 +102,7 @@ DestinationQuadMT = {
         ffichecks.checkcdata(1, shear, "Vector")
         ffichecks.checkcdata(2, anchor, "Vector") 
         self:Translate(-anchor)
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             local p = ffi.getprivate(self, field)
             local x = p.X
             local y = p.Y
@@ -118,7 +118,7 @@ DestinationQuadMT = {
 
         local a, b, tx, c, d, ty = get_render_matrix(2, matrix, 2)
         self:Translate(-anchor)
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             local p = ffi.getprivate(self, field)
             local x = p.X
             local y = p.Y
@@ -132,32 +132,37 @@ DestinationQuadMT = {
         flipX = ffichecks.optboolean(flipX, true)
         flipY = ffichecks.optboolean(flipY, true)
 
+        local function copyCorner(field)
+            local v = ffi.getprivate(self, field)
+            return Vector(v.X, v.Y)
+        end
+
         if flipX then 
-            local tl = VectorT(ffi.getprivate(self, "TopLeft"))
+            local tl = copyCorner("TopLeft")
             ffi.setprivate(self, "TopLeft", ffi.getprivate(self, "TopRight"))
             ffi.setprivate(self, "TopRight", tl)
 
-            local bl = VectorT(ffi.getprivate(self, "BottomLeft"))
+            local bl = copyCorner("BottomLeft")
             ffi.setprivate(self, "BottomLeft", ffi.getprivate(self, "BottomRight"))
-            ffi.setprivate(self, "BottomRight", tl)
+            ffi.setprivate(self, "BottomRight", bl)
         end
         
         if flipY then 
-            local tl = VectorT(ffi.getprivate(self, "TopLeft"))
+            local tl = copyCorner("TopLeft")
             ffi.setprivate(self, "TopLeft", ffi.getprivate(self, "BottomLeft"))
             ffi.setprivate(self, "BottomLeft", tl)
 
-            local tr = VectorT(ffi.getprivate(self, "TopRight"))
+            local tr = copyCorner("TopRight")
             ffi.setprivate(self, "TopRight", ffi.getprivate(self, "BottomRight"))
             ffi.setprivate(self, "BottomRight", tr)
         end
     end,
     __tostring = function(self)
         return string.format("[DestQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f]",
-            ffi.getprivate(self, "TopLeft").x, ffi.getprivate(self, "TopLeft").y,
-            ffi.getprivate(self, "TopRight").x, ffi.getprivate(self, "TopRight").y,
-            ffi.getprivate(self, "BottomLeft").x, ffi.getprivate(self, "BottomLeft").y,
-            ffi.getprivate(self, "BottomRight").x, ffi.getprivate(self, "BottomRight").y)
+            ffi.getprivate(self, "TopLeft").X, ffi.getprivate(self, "TopLeft").Y,
+            ffi.getprivate(self, "TopRight").X, ffi.getprivate(self, "TopRight").Y,
+            ffi.getprivate(self, "BottomLeft").X, ffi.getprivate(self, "BottomLeft").Y,
+            ffi.getprivate(self, "BottomRight").X, ffi.getprivate(self, "BottomRight").Y)
      end,
 }
 
@@ -166,7 +171,7 @@ setmetatable(DestinationQuadMT, {
 })
 DestinationQuadMT.__index = DestinationQuadMT
 
-local DestinationQuadT = ffi.metatype("struct DestinationQuad", DestinationQuadMT)
+DestinationQuadT = ffi.metatype("struct DestinationQuad", DestinationQuadMT)
 DestinationQuad = setmetatable({ 
     NewFromBounds = function(TopLeft, BottomRight)
         ffichecks.checkcdata(1, TopLeft, "Vector")
@@ -193,7 +198,7 @@ DestinationQuad = setmetatable({
     end, 
 }, {
     __class = DestinationQuadMT,
-    __call = function(_, TopLeft, BottomLeft, TopRight, BottomRight) 
+    __call = function(_, TopLeft, TopRight, BottomLeft, BottomRight) 
         ffichecks.checkcdata(1, TopLeft, "Vector")
         ffichecks.checkcdata(2, TopRight, "Vector")
         ffichecks.checkcdata(3, BottomLeft, "Vector")

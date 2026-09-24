@@ -107,7 +107,7 @@ SpriteMT = {
         ffi.getprivate(self, "OverlayAnimState"):Play()
     end,
     Copy = function(self)
-        return repentogon.L_Sprite_Copy(self)
+        return ffi.gc(repentogon.L_Sprite_Copy(self), SpriteMT.__gc)
     end,
     GetAllAnimationData = function(self)
         local ret = {}
@@ -128,7 +128,9 @@ SpriteMT = {
     end,
     GetAnimationData = function(self, animationName)
         ffichecks.checkstring(1, animationName)
-        return repentogon.L_Sprite_GetAnimationData(self, animationName)
+        local data = repentogon.L_Sprite_GetAnimationData(self, animationName)
+        if data == nil then return nil end
+        return data
     end,
     GetCurrentAnimationData = function(self)
         return ffi.getprivate(self, "AnimState").AnimData
@@ -145,7 +147,7 @@ SpriteMT = {
         local ret = {}
         local animData = repentogon.L_Sprite_GetAnimationData(self, animationName)
         local eventId = repentogon.L_Sprite_GetEventId(self, eventName)
-        if animData and eventId > -1 then
+        if animData ~= nil and eventId > -1 then
             local events = ffi.getprivate(animData, "EventTriggers")
             for i = 0, ffi.getprivate(animData, "EventTriggerCount") - 1 do
                 local event = events[i]
@@ -173,6 +175,7 @@ SpriteMT = {
         elseif param >= 0 and param < ffi.getprivate(self, "LayerCount") then
             layerState = repentogon.L_Sprite_GetLayerById(self, param)
         end
+        if layerState == nil then return nil end
         return layerState
     end,
     GetLayerCount = function(self)
@@ -230,9 +233,9 @@ SpriteMT = {
     HasCustomShader = function(self, path)
         path = ffichecks.optstring(path, "")
         if path == "" then
-            return repentogon.L_Sprite_HasCustomShader(self, true)
+            return repentogon.L_Sprite_HasCustomShader(self, false)
         end
-        return repentogon.L_Sprite_HasCustomShaderWithPath(self, path, true)
+        return repentogon.L_Sprite_HasCustomShaderWithPath(self, path, false)
     end,
     HasCustomChampionShader = function(self, path)
         path = ffichecks.optstring(path, "")
@@ -338,9 +341,9 @@ SpriteMT = {
             error("Failed to load shader: " .. path)
         end
     end,
-    SetChampionShader = function(self, path)
+    SetCustomShader = function(self, path)
         ffichecks.checkstring(1, path)
-        if not repentogon.L_Sprite_SetCustomShader(self, path, true) then 
+        if not repentogon.L_Sprite_SetCustomShader(self, path, false) then 
             error("Failed to load shader: " .. path)
         end
     end,
@@ -437,7 +440,7 @@ Sprite = setmetatable({}, {
         loadGraphics = ffichecks.optboolean(loadGraphics, true)
         local isLoaded = false
 
-        local sprite = repentogon.L_Sprite_New()
+        local sprite = ffi.gc(repentogon.L_Sprite_New(), SpriteMT.__gc)
 
         if anm2Path ~= "" then
             sprite:Load(anm2Path, loadGraphics)

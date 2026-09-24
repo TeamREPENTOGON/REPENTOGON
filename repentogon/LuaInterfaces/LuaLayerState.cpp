@@ -30,4 +30,8 @@ extern "C" {
 	__declspec(dllexport) bool L_LayerState_SetCustomShader(LayerState* layer, const char* path, bool champion) {
 		return SetCustomShader(layer, path, champion);
 	}
+
+	__declspec(dllexport) void L_LayerState_SetSpritesheet(LayerState* layer, KAGE_SmartPointer_ImageBase* image) {
+		layer->SetSpriteSheet(*image);
+	}
 }

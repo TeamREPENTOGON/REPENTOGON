@@ -17,6 +17,8 @@ local CoordinateSpace = {
     NORMALIZED_UV = 1,
 }
 
+local QUAD_CORNERS = { "TopLeft", "TopRight", "BottomLeft", "BottomRight" }
+
 local SourceQuadMT
 SourceQuadMT = {
     __type = "SourceQuad",
@@ -32,7 +34,7 @@ SourceQuadMT = {
 
         local conv = Vector(image:GetWidth(), image:GetHeight())
 
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             ffi.setprivate(self, field, ffi.getprivate(self, field) * conv)
         end 
         ffi.setprivate(self, "CoordinateSpace", CoordinateSpace.PIXEL)
@@ -43,17 +45,17 @@ SourceQuadMT = {
 
         local conv = Vector(1 / image:GetWidth(), 1 / image:GetHeight())
 
-        for _, field in ipairs("TopLeft", "TopRight", "BottomLeft", "BottomRight") do
+        for _, field in ipairs(QUAD_CORNERS) do
             ffi.setprivate(self, field, ffi.getprivate(self, field) * conv)
         end
         ffi.setprivate(self, "CoordinateSpace", CoordinateSpace.NORMALIZED_UV)
     end,
     __tostring = function(self)
         return string.format("[SourceQuad: TopLeft %f %f | TopRight %f %f | BottomLeft %f %f | BottomRight %f %f | UV %s]",
-            ffi.getprivate(self, "TopLeft").x, ffi.getprivate(self, "TopLeft").y,
-            ffi.getprivate(self, "TopRight").x, ffi.getprivate(self, "TopRight").y,
-            ffi.getprivate(self, "BottomLeft").x, ffi.getprivate(self, "BottomLeft").y,
-            ffi.getprivate(self, "BottomRight").x, ffi.getprivate(self, "BottomRight").y,
+            ffi.getprivate(self, "TopLeft").X, ffi.getprivate(self, "TopLeft").Y,
+            ffi.getprivate(self, "TopRight").X, ffi.getprivate(self, "TopRight").Y,
+            ffi.getprivate(self, "BottomLeft").X, ffi.getprivate(self, "BottomLeft").Y,
+            ffi.getprivate(self, "BottomRight").X, ffi.getprivate(self, "BottomRight").Y,
             ffi.getprivate(self, "CoordinateSpace") == CoordinateSpace.NORMALIZED_UV and true or false)
      end,
 }
@@ -94,7 +96,7 @@ SourceQuad = setmetatable({
     end, 
 }, {
     __class = SourceQuadMT,
-        __call = function(_, TopLeft, BottomLeft, TopRight, BottomRight, UV) 
+        __call = function(_, TopLeft, TopRight, BottomLeft, BottomRight, UV) 
         ffichecks.checkcdata(1, TopLeft, "Vector")
         ffichecks.checkcdata(2, TopRight, "Vector")
         ffichecks.checkcdata(3, BottomLeft, "Vector")

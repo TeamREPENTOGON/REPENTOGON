@@ -113,7 +113,7 @@ ImageMT = {
         ffichecks.checkcdata(1, sourceQuad, "SourceQuad")
         ffichecks.checkcdata(2, destQuad, "DestinationQuad")
         ffichecks.checkcdata(3, color, "KColor")
-        ffichecks.checkcdata(4, colorMod, "Color")
+        colorMod = ffichecks.optcdata(colorMod, "Color", Color())
         repentogon.L_Image_Render(self, sourceQuad, destQuad, color, colorMod)
     end,
 
@@ -121,8 +121,7 @@ ImageMT = {
         ffichecks.checkcdata(1, sourceQuad, "SourceQuad")
         ffichecks.checkcdata(2, destQuad, "DestinationQuad")
         ffichecks.checkcdata(3, color, "KColor")
-        ffichecks.checkcdata(4, colorMod, "Color")
-        ffichecks.checkcdata(5, shader, "Shader")
+        ffichecks.checkcdata(4, shader, "Shader")
         if not shader.Initialized then
             error("bad argument #4 to 'RenderWithShader' (invalid shader used)")
         end

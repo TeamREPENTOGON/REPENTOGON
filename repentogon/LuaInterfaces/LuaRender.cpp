@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <new>
 #include <fstream>
 #include <sstream>
 #include <variant>
@@ -1612,11 +1613,11 @@ namespace GL {
 		}
 
 		void operator()(GridEntity_Rock* r) {
-			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK]);
+			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_ROCK_PTR]);
 		}
 
 		void operator()(AnimationState* s) {
-			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::ffi::CData[lua::ffi::CDataID::SPRITE]);
+			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::ffi::CData[lua::ffi::CDataID::SPRITE_PTR]);
 		}
 
 		void operator()(AnimationLayer* l) {
@@ -2159,6 +2160,13 @@ static void RegisterCustomRenderMetatables(lua_State* L) {
 // ============================================================================
 // Renderer
 
+static void PushImageCData(lua_State* L, const KAGE_SmartPointer_ImageBase& image)
+{
+	auto* dst = lua::ffi::placeCdata<KAGE_SmartPointer_ImageBase>(
+		L, lua::ffi::CData[lua::ffi::CDataID::IMAGE]);
+	new (dst) KAGE_SmartPointer_ImageBase(image);
+}
+
 LUA_FUNCTION(lua_Renderer_LoadImage) {
 	const char* path = luaL_checkstring(L, 1);
 	std::filesystem::path p = path;
@@ -2174,7 +2182,7 @@ LUA_FUNCTION(lua_Renderer_LoadImage) {
 		return luaL_error(L, "Image %s does not exist", path);
 	}
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], image);
+	PushImageCData(L, image);
 	return 1;
 }
 
@@ -2192,7 +2200,7 @@ LUA_FUNCTION(Lua_Renderer_CreateImage) {
 		return luaL_error(L, "Unable to create Image");
 	}
 
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::IMAGE], pointer);
+	PushImageCData(L, pointer);
 	return 1;
 }
 

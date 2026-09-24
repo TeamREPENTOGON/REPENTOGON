@@ -39,6 +39,7 @@ const char* L_LayerState_GetSpritesheetPath(struct LayerState*);
 bool L_LayerState_HasCustomShader(struct LayerState*, bool);
 bool L_LayerState_HasCustomShaderWithPath(struct LayerState*, const char*, bool);
 bool L_LayerState_SetCustomShader(struct LayerState*, const char*, bool);
+void L_LayerState_SetSpritesheet(struct LayerState*, struct Image*);
 ]]
 
 
@@ -169,7 +170,7 @@ LayerStateMT = {
     end,
     SetSpritesheet = function(self, spritesheet)
         ffichecks.checkcdata(1, spritesheet, "Image")
-        ffi.setprivate(self, "Spritesheet", spritesheet)
+        repentogon.L_LayerState_SetSpritesheet(self, spritesheet)
     end,
     SetVisible = function(self, visible)
         ffichecks.checkboolean(1, visible)

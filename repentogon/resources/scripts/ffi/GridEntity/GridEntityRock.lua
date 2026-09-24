@@ -61,7 +61,7 @@ GridEntityRockMT = {
     PlayBreakSound = function(self, gridType, backdrop)
         ffichecks.checkinteger(1, gridType)
         ffichecks.checkinteger(2, backdrop)
-        L_GridEntityRock_PlayBreakSound(self, gridType, backdrop)
+        repentogon.L_GridEntityRock_PlayBreakSound(self, gridType, backdrop)
     end,
     PostInit = function(self)
         repentogon.L_GridEntityRock_PostInit(self)
@@ -141,7 +141,7 @@ GridEntityRock = setmetatable({
         ffichecks.checkinteger(3, gridVariant)
         ffichecks.checkinteger(4, seed)
         ffichecks.checkboolean(5, unk)
-        L_GridEntityRock_SpawnDrops(position, gridType, gridVariant, seed, unk, backdrop)
+        repentogon.L_GridEntityRock_SpawnDrops(position, gridType, gridVariant, seed, unk, backdrop)
     end,
     GetAltRockType = function(backdrop)
         backdrop = backdrop or 0
