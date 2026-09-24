@@ -1,11 +1,12 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_LevelPlaceRoom) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	LevelGenerator_Room* room = lua::GetRawUserdata<LevelGenerator_Room*>(L, 2, lua::metatables::LevelGeneratorEntryMT);
-	RoomConfig_Room* config = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomConfig_Room* config = LuaRoomConfigRoom::Get(L, 3);
 	uint32_t seed = (uint32_t)luaL_checkinteger(L, 4);
 
 	bool result = game->PlaceRoom(room, config, seed, 0);

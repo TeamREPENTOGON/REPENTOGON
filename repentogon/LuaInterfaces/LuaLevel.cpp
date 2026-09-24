@@ -1,4 +1,4 @@
-#include "IsaacRepentance.h"
+﻿#include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "../LuaClasses.h"
 #include "HookSystem.h"
@@ -210,7 +210,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 
 	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
 	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -236,7 +236,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
-	RoomConfig_Room* roomConfig = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, 2);
 	const int gridIndex = (int)luaL_checkinteger(L, 3);
 	if (gridIndex < 0 || gridIndex > 168) {
 		lua_pushboolean(L, false);
@@ -265,7 +265,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 
 	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
 	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -285,7 +285,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 }
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
-	RoomConfig_Room* roomConfigToPlace = lua::GetLuabridgeUserdata<RoomConfig_Room*>(L, 2, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	RoomConfig_Room* roomConfigToPlace = LuaRoomConfigRoom::Get(L, 2);
 	RoomDescriptor* roomDescToConnect = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	if (!roomDescToConnect || !roomDescToConnect->Data) {
 		lua_pushboolean(L, false);
@@ -320,7 +320,7 @@ LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
 
 	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
 	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::GetConst(L, stackIdx++);
+		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
 		if (roomConfig) {
 			roomShape = roomConfig->Shape;
 			doorMask = roomConfig->Doors;
@@ -368,12 +368,46 @@ LUA_FUNCTION(Lua_LevelGetGenerationRNG) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LevelGetCurrentRoom) {
+	LuaRoom::PushPtr(L, g_Game->_room);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelGetCurrentRoomDesc) {
+	LuaRoomDescriptor::PushPtr(L, g_Game->GetCurrentRoomDesc());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelGetRooms) {
+	LuaArrayProxy<RoomDescriptor>* list = LuaRoomDescriptorList::Place(L);
+	list->size = g_Game->_nbRooms;
+	list->data = g_Game->_gridRooms;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelGetLastRoomDesc) {
+	LuaRoomDescriptor::PushPtr(L, g_Game->GetRoomByIdx(g_Game->_lastRoomIdx, g_Game->_lastRoomDimensionIdx));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelGetRoomByIdx) {
+	int idx = luaL_checkinteger(L, 2);
+	int dimension = luaL_checkinteger(L, 3);
+	LuaRoomDescriptor::PushPtr(L, g_Game->GetRoomByIdx(idx, dimension));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetCurrentRoomDesc", Lua_LevelGetCurrentRoomDesc },
+		{ "GetRooms", Lua_LevelGetRooms },
+		{ "GetLastRoomDesc", Lua_LevelGetLastRoomDesc },
+		{ "GetRoomByIdx", Lua_LevelGetRoomByIdx },
+		{ "GetCurrentRoom", Lua_LevelGetCurrentRoom },
 		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
 		{ "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
 		{ "HasMirrorDimension", Lua_LevelHasMirrorDimension },

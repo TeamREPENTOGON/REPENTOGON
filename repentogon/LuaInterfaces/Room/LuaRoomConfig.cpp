@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 #include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 
 /*LUA_FUNCTION(Lua_GameGetRoomConfig) {
@@ -42,7 +43,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
+		LuaRoomConfigRoom::PushPtr(L, config);
 	}
 
 	return 1;
@@ -107,7 +108,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 
 
 	RoomConfig_Room* config = roomConfig->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
-	lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::CONST_ROOM_CONFIG_ROOM);
+	LuaRoomConfigRoom::PushPtr(L, config);
 	return 1;
 }
 

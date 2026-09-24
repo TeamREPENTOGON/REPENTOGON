@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 #include "LuaCore.h"
+#include "LuaClasses.h"
 #include "LogUtility.h"
 #include "MiscFunctions.h"
 
@@ -885,7 +886,7 @@ static inline rapidjson::Document get_json_document(const std::string& filePath,
 
 LUA_FUNCTION(Lua_Debug_GetTestRoom)
 {
-	lua::luabridge::UserdataPtr::push(L, &s_TestRoom, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
+	LuaRoomConfigRoom::PushPtr(L, &s_TestRoom);
 	return 1;
 }
 

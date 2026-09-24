@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 #include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 #include "LuaRoomConfigSet.h"
 
@@ -25,7 +26,7 @@ LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 		size_t vanillaCount = ud->vanillaSet->_count;
 		if ((size_t)idx < vanillaCount)
 		{
-			lua::luabridge::UserdataPtr::push(L, &ud->vanillaSet->_configs[idx], lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+			LuaRoomConfigRoom::PushPtr(L, &ud->vanillaSet->_configs[idx]);
 			return 1;
 		}
 
@@ -34,7 +35,7 @@ LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
 	
 	if ((size_t)idx < ud->virtualSet.size())
 	{
-		lua::luabridge::UserdataPtr::push(L, ud->virtualSet[idx], lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+		LuaRoomConfigRoom::PushPtr(L, ud->virtualSet[idx]);
 		return 1;
 	}
 

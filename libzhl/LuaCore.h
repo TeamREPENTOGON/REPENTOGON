@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "lua.hpp"
 #include "libzhl.h"
@@ -684,6 +684,16 @@ namespace lua {
             GRID_ENTITY_STATUE_PTR,
             GRID_ENTITY_TELEPORTER,
             GRID_ENTITY_TELEPORTER_PTR,
+            ROOM_CONFIG_ROOM,
+            ROOM_CONFIG_ROOM_PTR,
+            COLOR_MODIFIER,
+            COLOR_MODIFIER_PTR,
+            ROOM,
+            ROOM_PTR,
+            ROOM_DESCRIPTOR,
+            ROOM_DESCRIPTOR_PTR,
+            ROOM_DESCRIPTOR_LIST,
+            ROOM_DESCRIPTOR_LIST_PTR,
             MAX_CDATA
         };
 

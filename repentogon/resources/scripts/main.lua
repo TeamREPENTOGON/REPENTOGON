@@ -332,39 +332,6 @@ end
 
 EndClass()
 
-BeginClass(Room)
-
--- Vector Room:FindFreePickupSpawnPosition(Vector Pos, float InitialStep = 0, boolean AvoidActiveEntities = false, boolean AllowPits = false, boolean avoidDoors = false)
-local Room_FindFreePickupSpawnPosition = META0.FindFreePickupSpawnPosition
-function META:FindFreePickupSpawnPosition(pos, initStep, avoidActive, allowPits, avoidDoors)
-	return Room_FindFreePickupSpawnPosition(self, pos, initStep or 0, avoidActive, allowPits, avoidDoors or 0)
-end
-
--- boolean, Vector Room:CheckLine(Vector Pos1, Vector Pos2, LinecheckMode Mode, int GridPathThreshold = 0, boolean IgnoreWalls = false, boolean IgnoreCrushable = false)
--- * Returns
---      boolean: true if there are no obstructions between Pos1 and Pos2, false otherwise
---      Vector: first hit position from Pos1 to Pos2 (returns Pos2 if the line didn't hit anything)
---local Room_CheckLine = META0.CheckLine
---function META:CheckLine(pos1, pos2, mode, gridPathThreshold, ignoreWalls, ignoreCrushable)
---	local out = Vector(0, 0)
---	local ok = Room_CheckLine(self, pos1, pos2, mode, gridPathThreshold or 0, ignoreWalls, ignoreCrushable, out)
---	return ok, out
---end
-
--- boolean Room:TrySpawnBlueWombDoor(boolean FirstTime = true, boolean IgnoreTime = false, boolean Force = false)
-local Room_TrySpawnBlueWombDoor = META0.TrySpawnBlueWombDoor
-function META:TrySpawnBlueWombDoor(firstTime, ignoreTime, force)
-	return Room_TrySpawnBlueWombDoor(self, firstTime or firstTime == nil, ignoreTime, force)
-end
-
--- void Room:MamaMegaExplosion(Vector Position = Vector.Zero, EntityPlayer Player = nil)
-local Room_MamaMegaExplosion = META0.MamaMegaExplosion
-function META:MamaMegaExplosion(position, player)
-	return Room_MamaMegaExplosion(self, position or Vector.Zero, player)
-end
-
-EndClass()
-
 ---------------------------------------------------------
 BeginClass(MusicManager)
 

@@ -214,11 +214,40 @@ static inline void delete_save(const GameStateSaveInfo& info, bool isRerun)
 	ESSM::detail::SaveData::DeleteGameState(fileName);
 }
 
+/* Level::SaveGameState doesn't write anything to rooms with null RoomDescriptor data
+   but Level::RestoreGameState happily reads it back, hilarity ensues.                 */
+static void zero_skipped_room_configs(Game* game, GameState* state)
+{
+	if (!game || !state)
+	{
+		return;
+	}
+
+	constexpr size_t ROOM_CONFIG_COUNT =
+		sizeof(GameState::_roomConfigs) / sizeof(GameState::_roomConfigs[0]);
+	static_assert(sizeof(GameState::_rooms) / sizeof(GameState::_rooms[0]) == ROOM_CONFIG_COUNT,
+		"GameState room and roomConfig counts must match");
+
+
+	const RoomDescriptor* rooms = game->_gridRooms;
+	for (size_t i = 0; i < ROOM_CONFIG_COUNT; i++)
+	{
+		if (rooms[i].Data == nullptr)
+		{
+			state->_roomConfigs[i]._compactData = 0;
+			state->_roomConfigs[i]._type = 0;
+			state->_roomConfigs[i]._variant = 0;
+		}
+	}
+}
+
 #pragma region Hooks
 
 HOOK_METHOD(Game, SaveState, (GameState* state) -> void)
 {
 	super(state);
+
+	zero_skipped_room_configs(this, state);
 
 	auto slot = get_game_state_slot(state);
 	if (slot == GameStateSlot::NULL_SLOT)

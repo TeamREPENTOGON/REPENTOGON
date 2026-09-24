@@ -229,6 +229,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
 	super(Debug);
 	lua_State* L = g_LuaEngine->_state;
+	luaJIT_setapifatal([](const char* msg) { ZHL::Log("[ERROR] %s", msg); });
+
 	luaL_requiref(L, "debug", luaopen_debug, 1);
 	lua_pop(L, 1);
 	luaL_requiref(L, "os", luaopen_os, 1);
@@ -321,7 +323,17 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_STATUE_PTR] = lua_ctypeid(L, "GridEntityStatuePtr");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TELEPORTER] = lua_ctypeid(L, "GridEntityTeleporter");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_TELEPORTER_PTR] = lua_ctypeid(L, "GridEntityTeleporterPtr");
-
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_CONFIG_ROOM] = lua_ctypeid(L, "RoomConfigRoom");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_CONFIG_ROOM_PTR] = lua_ctypeid(L, "RoomConfigRoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_MODIFIER] = lua_ctypeid(L, "ColorModifier");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_MODIFIER_PTR] = lua_ctypeid(L, "ColorModifierPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM] = lua_ctypeid(L, "Room");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_PTR] = lua_ctypeid(L, "RoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR] = lua_ctypeid(L, "RoomDescriptor");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_PTR] = lua_ctypeid(L, "RoomDescriptorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST] = lua_ctypeid(L, "RoomDescriptorList");
+	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST_PTR] = lua_ctypeid(L, "RoomDescriptorListPtr");
+	
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");
 	g_LuaEngine->_unloadModFuncRef->_ref = luaL_ref(state, LUA_REGISTRYINDEX);

@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_PathfinderEvadeTarget)
 {
 	NPCAI_Pathfinder* pathfinder = lua::GetLuabridgeUserdata<NPCAI_Pathfinder*>(L, 1, lua::Metatables::PATHFINDER, "Pathfinder");
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	const bool ignoreEffects = lua::luaL_checkboolean(L, 3);
+	const bool ignoreEffects = lua::luaL_optboolean(L, 3, false);
 	pathfinder->EvadeTarget(pos, ignoreEffects);
 	return 0;
 }
@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_PathfinderFindGridPath)
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float speed = (float)luaL_checknumber(L, 3);
 	const int pathmarker = (int)luaL_checkinteger(L, 4);
-	const bool directPath = lua::luaL_checkboolean(L, 5);
+	const bool directPath = lua::luaL_optboolean(L, 5, false);
 	pathfinder->FindGridPath(pos, speed, pathmarker, directPath);
 	return 0;
 }
@@ -61,7 +61,7 @@ LUA_FUNCTION(Lua_PathfinderHasPathToPos)
 {
 	NPCAI_Pathfinder* pathfinder = lua::GetLuabridgeUserdata<NPCAI_Pathfinder*>(L, 1, lua::Metatables::PATHFINDER, "Pathfinder");;
 	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	const bool ignorePoop = lua::luaL_checkboolean(L, 3);
+	const bool ignorePoop = lua::luaL_optboolean(L, 3, false);
 	lua_pushboolean(L, pathfinder->HasPathToPos(pos, ignorePoop));
 	return 1;
 }

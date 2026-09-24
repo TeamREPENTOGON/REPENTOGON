@@ -405,10 +405,7 @@ LUA_FUNCTION(lua_GameIsErased) {
 LUA_FUNCTION(Lua_GameGetCurrentColorModifier)
 {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* color = game->GetCurrentColorModifier();
-	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, color, sizeof(ColorModState));
+	LuaColorModifier::Push(L, *game->GetCurrentColorModifier());
 
 	return 1;
 }
@@ -416,10 +413,7 @@ LUA_FUNCTION(Lua_GameGetCurrentColorModifier)
 LUA_FUNCTION(Lua_GameGetTargetColorModifier)
 {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* color = game->GetTargetColorModifier();
-	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, color, sizeof(ColorModState));
+	LuaColorModifier::Push(L, *game->GetTargetColorModifier());
 
 	return 1;
 }
@@ -427,10 +421,7 @@ LUA_FUNCTION(Lua_GameGetTargetColorModifier)
 LUA_FUNCTION(Lua_GameGetLerpColorModifier)
 {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* color = game->GetLerpColorModifier();
-	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, color, sizeof(ColorModState));
+	LuaColorModifier::Push(L, *game->GetLerpColorModifier());
 
 	return 1;
 }
@@ -438,7 +429,7 @@ LUA_FUNCTION(Lua_GameGetLerpColorModifier)
 LUA_FUNCTION(Lua_GameSetColorModifier)
 {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	ColorModState* pColor = lua::GetRawUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState* pColor = LuaColorModifier::Get(L, 2);
 	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
@@ -619,11 +610,19 @@ LUA_FUNCTION(Lua_SetDifficulty) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetRoom) {
+	Game* game = LuaGame::Get(L, 1);
+
+	LuaRoom::PushPtr(L, game->_room);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetRoom", Lua_GetRoom },
 		{ "Fadein", Lua_GameFadein },
 		{ "Fadeout", Lua_GameFadeout },
 		{ "BombDamage", Lua_GameBombDamage },

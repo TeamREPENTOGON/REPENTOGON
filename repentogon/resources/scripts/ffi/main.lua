@@ -40,6 +40,10 @@ ffichecks.checktype = function(index, val, typ, level)
 	end
 end
 
+ffichecks.argerror = function(index, err, level)
+	error(string.format("bad argument #%d to '%s' (%s)", index, debug_getinfo(level or 2).name, err), (level or 2) +1)
+end
+
 ffichecks.istype = function(var, typ)
 	return type(var) == typ
 end
@@ -169,6 +173,19 @@ pcall(require("ffi.GridEntity.GridEntityTNT"))
 pcall(require("ffi.GridEntity.GridEntityTrapDoor"))
 pcall(require("ffi.GridEntity.GridEntityWall"))
 pcall(require("ffi.GridEntity.GridEntityWeb"))
+pcall(require("ffi.Camera"))
+pcall(require("ffi.RailManager"))
+pcall(require("ffi.ColorModifier"))
+pcall(require("ffi.Room.LRoomAreaDesc"))
+pcall(require("ffi.Room.LRoomTileDesc"))
+pcall(require("ffi.Backdrop"))
+pcall(require("ffi.FXParams"))
+pcall(require("ffi.FXLayers"))
+pcall(require("ffi.Room.RoomConfigEntry"))
+pcall(require("ffi.Room.RoomConfigSpawn"))
+pcall(require("ffi.Room.RoomConfigRoom"))
+pcall(require("ffi.Room.RoomDescriptor"))
+pcall(require("ffi.Room.Room"))
 -- pcall(require("ffi.Input"))
 
 

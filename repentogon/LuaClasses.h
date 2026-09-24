@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -570,40 +570,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "RoomConfigRoom";
         using Type = RoomConfig_Room;
-        static constexpr lua::Metatables MT = lua::Metatables::ROOM_CONFIG_ROOM;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ROOM_CONFIG_ROOM;
-    };
-
-    struct LuaSpawn
-    {
-        static constexpr const char* Name = "Spawn";
-        using Type = RoomSpawn;
-        static constexpr lua::Metatables MT = lua::Metatables::SPAWN;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_SPAWN;
-    };
-
-    struct LuaRoomConfigSpawns
-    {
-        static constexpr const char* Name = "RoomConfigSpawns";
-        using Type = LuaArrayProxy<RoomSpawn>;
-        static constexpr lua::Metatables MT = lua::Metatables::ROOM_CONFIG_SPAWNS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ROOM_CONFIG_SPAWNS;
-    };
-
-    struct LuaEntry
-    {
-        static constexpr const char* Name = "Entry";
-        using Type = RoomEntry;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTRY;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTRY;
-    };
-
-    struct LuaRoomConfigEntries
-    {
-        static constexpr const char* Name = "RoomConfigEntries";
-        using Type = LuaArrayProxy<RoomEntry>;
-        static constexpr lua::Metatables MT = lua::Metatables::ROOM_CONFIG_ENTRIES;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ROOM_CONFIG_ENTRIES;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ROOM_CONFIG_ROOM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ROOM_CONFIG_ROOM_PTR;
     };
 
     struct LuaSeeds
@@ -634,24 +602,24 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Room";
         using Type = Room;
-        static constexpr lua::Metatables MT = lua::Metatables::ROOM;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ROOM;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ROOM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ROOM_PTR;
     };
 
     struct LuaRoomDescriptor
     {
         static constexpr const char* Name = "RoomDescriptor";
         using Type = RoomDescriptor;
-        static constexpr lua::Metatables MT = lua::Metatables::ROOM_DESCRIPTOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ROOM_DESCRIPTOR;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ROOM_DESCRIPTOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ROOM_DESCRIPTOR_PTR;
     };
 
     struct LuaRoomDescriptorList
     {
-        static constexpr const char* Name = "RoomDescriptor";
+        static constexpr const char* Name = "RoomDescriptorList";
         using Type = LuaArrayProxy<RoomDescriptor>;
-        static constexpr lua::Metatables MT = lua::Metatables::ARRAY_PROXY_ROOM_DESCRIPTOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ARRAY_PROXY_ROOM_DESCRIPTOR;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST_PTR;
     };
 
     struct LuaItemPool
@@ -1012,6 +980,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::BLEND_MODE;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::BLEND_MODE_PTR;
     };
+
+    struct LuaColorModifier
+    {
+        static constexpr const char* Name = "ColorModifier";
+        using Type = ColorModState;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR_MODIFIER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_MODIFIER_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1032,17 +1008,13 @@ using LuaItem = CDataType<LuaTraits::LuaItem>;
 using LuaCard = LuabridgeType<LuaTraits::LuaCard>;
 using LuaPillEffect = LuabridgeType<LuaTraits::LuaPillEffect>;
 using LuaCostume = CDataType<LuaTraits::LuaCostume>;
-using LuaRoomConfigRoom = LuabridgeType<LuaTraits::LuaRoomConfigRoom>;
-using LuaSpawn = LuabridgeType<LuaTraits::LuaSpawn>;
-using LuaRoomConfigSpawns = LuabridgeType<LuaTraits::LuaRoomConfigSpawns>;
-using LuaEntry = LuabridgeType<LuaTraits::LuaEntry>;
-using LuaRoomConfigEntries = LuabridgeType<LuaTraits::LuaRoomConfigEntries>;
+using LuaRoomConfigRoom = CDataType<LuaTraits::LuaRoomConfigRoom>;
 using LuaSeeds = LuabridgeType<LuaTraits::LuaSeeds>;
 using LuaGame = LuabridgeType<LuaTraits::LuaGame>;
 using LuaLevel = LuabridgeType<LuaTraits::LuaLevel>;
-using LuaRoom = LuabridgeType<LuaTraits::LuaRoom>;
-using LuaRoomDescriptor = LuabridgeType<LuaTraits::LuaRoomDescriptor>;
-using LuaRoomDescriptorList = LuabridgeType<LuaTraits::LuaRoomDescriptorList>;
+using LuaRoom = CDataType<LuaTraits::LuaRoom>;
+using LuaRoomDescriptor = CDataType<LuaTraits::LuaRoomDescriptor>;
+using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;
 using LuaItemPool = LuabridgeType<LuaTraits::LuaItemPool>;
 using LuaHUD = LuabridgeType<LuaTraits::LuaHUD>;
 using LuaEntity = LuabridgeType<LuaTraits::LuaEntity>;
@@ -1137,6 +1109,7 @@ using LuaGridEntityStairs = CDataType<LuaTraits::LuaGridEntityStairs>;
 using LuaGridEntityGravity = CDataType<LuaTraits::LuaGridEntityGravity>;
 using LuaGridEntityStatue = CDataType<LuaTraits::LuaGridEntityStatue>;
 using LuaGridEntityTeleporter = CDataType<LuaTraits::LuaGridEntityTeleporter>;
+using LuaColorModifier = CDataType<LuaTraits::LuaColorModifier>;
 
 struct LuaLevelGeneratorRoom
 {

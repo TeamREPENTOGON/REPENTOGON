@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 int ambushWaves = 3;
 int bossAmbushWaves = 2;
@@ -164,7 +165,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 	} while (spawnCount == 0 && i < 10);
 
 	if (config && i != 10) {
-		lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::ROOM_CONFIG_ROOM);
+		LuaRoomConfigRoom::PushPtr(L, config);
 	}
 	else {
 		lua_pushnil(L);
@@ -234,7 +235,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 
 	for (unsigned int i = 0; i < configs.size(); ++i) {
 		lua_pushinteger(L, i + 1);
-		lua::luabridge::UserdataPtr::push(L, std::get<0>(configs[i]), lua::Metatables::ROOM_CONFIG_ROOM);
+		LuaRoomConfigRoom::PushPtr(L, std::get<0>(configs[i]));
 		lua_rawset(L, -3);
 	}
 
