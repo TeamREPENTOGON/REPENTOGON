@@ -410,12 +410,8 @@ LUA_FUNCTION(Lua_RoomMamaMegaExplosion) {
 	}
 	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 3);
 
-	if (player) {
-		room->MamaMegaExplosion(&position, player);
-	}
-	else {
-		room->MamaMegaExplosion(&position);
-	}
+	// function handles nullptr player
+	room->MamaMegaExplosion(&position, player);
 
 	return 0;
 }
