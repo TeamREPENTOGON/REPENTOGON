@@ -404,7 +404,7 @@ LUA_FUNCTION(Lua_LevelGetDevilAngelRoomRNG) {
 
 LUA_FUNCTION(Lua_LevelQueryRoomTypeIndex) {
 	int roomType = luaL_checkinteger(L, 2);
-	bool visited = lua::luaL_checkboolean(L, 3);
+	bool visited = lua::luaL_optboolean(L, 3, false);
 	RNG* rng = LuaRNG::Get(L, 4);
 	bool ignoreGroup = lua::luaL_optboolean(L, 5, false);
 
