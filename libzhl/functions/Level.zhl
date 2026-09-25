@@ -94,6 +94,9 @@ static int Level::GetStageID();
 "558bec568bf18b86????????83f8fc":
 __thiscall void Level::GetEnterPosition(Vector* buffer);
 
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????8bf98b45":
+__thiscall int Level::QueryRoomTypeIndex(int roomType, bool visited, RNG* rng, bool ignoreGroup);
+
 struct Level depends (Vector) {
 	uint32_t _stage : 0x0;
 	uint32_t _stageType : 0x4;

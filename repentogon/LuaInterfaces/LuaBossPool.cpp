@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_BossPoolGetPool) {
 	const int stbType = (int)luaL_checkinteger(L, 1);
@@ -69,7 +70,7 @@ LUA_FUNCTION(Lua_PoolGetTotalWeight) {
 
 LUA_FUNCTION(Lua_PoolGetRNG) {
 	auto* pool = *lua::GetRawUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
-	lua::luabridge::UserdataPtr::push(L, &pool->_rng, lua::GetMetatableKey(lua::Metatables::RNG));
+	LuaRNG::PushPtr(L, &pool->_rng);
 	return 1;
 }
 

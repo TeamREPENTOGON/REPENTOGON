@@ -360,7 +360,7 @@ LUA_FUNCTION(Lua_GetRandomCollectibleOwner)
 	Entity_Player* player = PlayerManagerQuery::Collectible(collectibleType).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
 	if (player) {
 		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-		lua::luabridge::UserdataPtr::push(L, player->GetCollectibleRNG(collectibleType), lua::GetMetatableKey(lua::Metatables::RNG));
+		LuaRNG::PushPtr(L, player->GetCollectibleRNG(collectibleType));
 	} else {
 		lua_pushnil(L);
 		lua_pushnil(L);
@@ -377,7 +377,7 @@ LUA_FUNCTION(Lua_GetRandomTrinketOwner)
 	Entity_Player* player = PlayerManagerQuery::Trinket(trinketType).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
 	if (player) {
 		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-		lua::luabridge::UserdataPtr::push(L, player->GetTrinketRNG(trinketType), lua::GetMetatableKey(lua::Metatables::RNG));
+		LuaRNG::PushPtr(L, player->GetTrinketRNG(trinketType));
 	} else {
 		lua_pushnil(L);
 		lua_pushnil(L);

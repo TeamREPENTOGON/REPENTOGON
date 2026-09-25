@@ -1204,12 +1204,20 @@ LUA_FUNCTION(Lua_EntityTakeDamage)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityGetDropRNG)
+{
+	Entity* ent = LuaEntity::Get(L, 1);
+	LuaRNG::PushPtr(L, &ent->_dropRNG);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetDropRNG", Lua_EntityGetDropRNG },
 		{ "AddBurn", Lua_EntityAddBurn },
 		{ "AddCharmed", Lua_EntityAddCharmed },
 		{ "AddConfusion", Lua_EntityAddConfusion },

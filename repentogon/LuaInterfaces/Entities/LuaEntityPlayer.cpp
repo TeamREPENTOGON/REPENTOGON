@@ -2341,7 +2341,7 @@ LUA_FUNCTION(Lua_EntityPlayer_CheckFamiliarEx) {
 	Entity_Player* plr = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int variant = (int)luaL_checkinteger(L, 2);
 	int targetCount = (int)luaL_checkinteger(L, 3);
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, lua::metatables::RngMT);
+	RNG* rng = LuaRNG::Get(L, 4);
 	ItemConfig_Item* configPtr = LuaItem::GetOpt(L, 5);
 	int subtype = (int)luaL_optinteger(L, 6, -1);
 
@@ -3914,7 +3914,7 @@ LUA_FUNCTION(Lua_PlayerCheckFamiliar) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	unsigned int familiarVariant = (unsigned int)luaL_checkinteger(L, 2);
 	unsigned int targetCount = (unsigned int)luaL_checkinteger(L, 3);
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+	RNG* rng = LuaRNG::Get(L, 4);
 	ItemConfig_Item* item = nullptr;
 	if (lua_type(L, 5) == LUA_TCDATA) {
 		item = lua::GetCData<ItemConfig_Item*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::ITEM], "Item");
@@ -4017,12 +4017,49 @@ LUA_FUNCTION(Lua_PlayerGetBombFlags) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetCardRNG) {
+	Entity_Player* player = LuaEntityPlayer::Get(L, 1);
+	int id = luaL_checkinteger(L, 2);
+
+	LuaRNG::PushPtr(L, player->GetCardRNG(id));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCollectibleRNG) {
+	Entity_Player* player = LuaEntityPlayer::Get(L, 1);
+	int id = luaL_checkinteger(L, 2);
+
+	LuaRNG::PushPtr(L, player->GetCollectibleRNG(id));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetPillRNG) {
+	Entity_Player* player = LuaEntityPlayer::Get(L, 1);
+	int id = luaL_checkinteger(L, 2);
+
+	LuaRNG::PushPtr(L, player->GetPillRNG(id));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetTrinketRNG) {
+	Entity_Player* player = LuaEntityPlayer::Get(L, 1);
+	int id = luaL_checkinteger(L, 2);
+
+	LuaRNG::PushPtr(L, player->GetTrinketRNG(id));
+	return 1;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetCardRNG", Lua_PlayerGetCardRNG},
+		{ "GetCollectibleRNG", Lua_PlayerGetCollectibleRNG},
+		{ "GetPillRNG", Lua_PlayerGetPillRNG},
+		{ "GetTrinketRNG", Lua_PlayerGetTrinketRNG},
 		{ "GetBombFlags", Lua_PlayerGetBombFlags },
 		{ "AnimatePickup", Lua_PlayerAnimatePickup },
 		{ "GetEffects", Lua_PlayerGetEffects },

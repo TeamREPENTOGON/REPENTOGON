@@ -8,7 +8,7 @@ ffi.cdef[[
     };
     typedef struct RNG* RNGPtr;
 
-    const uint32_t* RNG_GetShiftsTable();
+    const uint32_t* L_RNG_GetShiftsTable();
 ]]
 
 local MAX_SHIFT_IDX = 80
@@ -19,6 +19,7 @@ local RNG_INVALID_SHIFT_IDX_ERR_STR = "Invalid RNG ShiftIdx (must be between 0 a
 RNG_INVALID_SHIFT_IDX_ERR_STR = RNG_INVALID_SHIFT_IDX_ERR_STR:format(MAX_SHIFT_IDX)
 
 local ffi = ffi
+local repentogon = ffidll
 local sin = math.sin
 local cos = math.cos
 
@@ -34,7 +35,7 @@ local INT_TO_RAND_FLOAT = 2.3283061589829401e-10
 -- math.pi gives widely different digits after `3.14`.
 local PI = 3.140000104904175
 
-local s_Shifts = ffi.cast("const uint32_t(*)[3]", ffidll.RNG_GetShiftsTable())
+local s_Shifts = ffi.cast("const uint32_t(*)[3]", repentogon.L_RNG_GetShiftsTable())
 
 local function PerformSeedShift(self)
     local newSeed = self._seed
@@ -257,7 +258,7 @@ setmetatable(RngMT, { __index = function() end })
 RngMT.__index = RngMT
 
 local RngT = ffi.metatype("struct RNG", RngMT)
-RNGF = setmetatable({}, {
+RNG = setmetatable({}, {
     __index = RngMT,
     __call = function(_, seed, shiftIdx)
         if seed == nil then

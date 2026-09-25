@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_LootListEntryGetType) {
 	LootListEntry* entry = *lua::GetRawUserdata<LootListEntry**>(L, 1, lua::metatables::LootListEntryMT);
@@ -34,7 +35,7 @@ LUA_FUNCTION(Lua_LootListEntryGetRNG) {
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, rng, lua::Metatables::RNG);
+		LuaRNG::PushPtr(L, rng);
 	}
 
 	return 1;

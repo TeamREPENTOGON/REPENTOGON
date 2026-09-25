@@ -502,8 +502,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "RNG";
         using Type = RNG;
-        static constexpr lua::Metatables MT = lua::Metatables::RNG;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_RNG;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::RNG;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::RNG_PTR;
     };
 
     struct LuaMusicManager
@@ -1000,7 +1000,7 @@ using LuaColor = CDataType<LuaTraits::LuaColor>;
 using LuaSprite = CDataType<LuaTraits::LuaSprite>;
 using LuaFont = LuabridgeType<LuaTraits::LuaFont>;
 using LuaFontRenderSettings = LuabridgeType<LuaTraits::LuaFontRenderSettings>;
-using LuaRNG = LuabridgeType<LuaTraits::LuaRNG>;
+using LuaRNG = CDataType<LuaTraits::LuaRNG>;
 using LuaMusicManager = LuabridgeType<LuaTraits::LuaMusicManager>;
 using LuaSFXManager = LuabridgeType<LuaTraits::LuaSFXManager>;
 using LuaItemConfig = LuabridgeType<LuaTraits::LuaItemConfig>;

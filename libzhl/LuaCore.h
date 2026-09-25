@@ -694,6 +694,8 @@ namespace lua {
             ROOM_DESCRIPTOR_PTR,
             ROOM_DESCRIPTOR_LIST,
             ROOM_DESCRIPTOR_LIST_PTR,
+            RNG,
+            RNG_PTR,
             MAX_CDATA
         };
 

@@ -363,8 +363,7 @@ LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
 }
 
 LUA_FUNCTION(Lua_LevelGetGenerationRNG) {
-	lua::luabridge::UserdataPtr::push(L, &g_Game->_generationRNG, lua::Metatables::RNG);
-
+	LuaRNG::PushPtr(L, &g_Game->_generationRNG);
 	return 1;
 }
 
@@ -397,12 +396,30 @@ LUA_FUNCTION(Lua_LevelGetRoomByIdx) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LevelGetDevilAngelRoomRNG) {
+	int idx = luaL_checkinteger(L, 2);
+	LuaRNG::PushPtr(L, &g_Game->_devilAngelRoomRNG);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LevelQueryRoomTypeIndex) {
+	int roomType = luaL_checkinteger(L, 2);
+	bool visited = lua::luaL_checkboolean(L, 3);
+	RNG* rng = LuaRNG::Get(L, 4);
+	bool ignoreGroup = lua::luaL_optboolean(L, 5, false);
+
+	lua_pushinteger(L, ((Level*)g_Game)->QueryRoomTypeIndex(roomType, visited, rng, ignoreGroup));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
-	luaL_Reg functions[] = {
+	luaL_Reg functions[] = {	
+		{ "QueryRoomTypeIndex", Lua_LevelQueryRoomTypeIndex },
+		{ "GetDevilAngelRoomRNG", Lua_LevelGetDevilAngelRoomRNG },
 		{ "GetCurrentRoomDesc", Lua_LevelGetCurrentRoomDesc },
 		{ "GetRooms", Lua_LevelGetRooms },
 		{ "GetLastRoomDesc", Lua_LevelGetLastRoomDesc },

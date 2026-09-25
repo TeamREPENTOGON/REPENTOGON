@@ -491,13 +491,6 @@ function META:GetRoomByIdx(idx, dim)
 	return Level_GetRoomByIdx(self, idx, dim or -1)
 end
 
--- int Level:QueryRoomTypeIndex(RoomType RoomType, boolean Visited, RNG rng, boolean IgnoreGroup = false)
--- * IgnoreGroup: If set to true, includes rooms that do not have the same group ID as the current room (currently unused)
-local Level_QueryRoomTypeIndex = META0.QueryRoomTypeIndex
-function META:QueryRoomTypeIndex(roomType, visited, rng, ignoreGroup)
-	return Level_QueryRoomTypeIndex(self, roomType, visited, rng, ignoreGroup)
-end
-
 -- void Level:ChangeRoom(int RoomIndex, int Dimension = -1)
 local Level_ChangeRoom = META0.ChangeRoom
 function META:ChangeRoom(idx, dim)

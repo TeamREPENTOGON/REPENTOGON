@@ -291,7 +291,7 @@ LUA_FUNCTION(Lua_SetLilDelirium) {
 }
 
 LUA_FUNCTION(Lua_GetRandomWisp) {
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 1, lua::Metatables::RNG, "RNG");
+	RNG* rng = LuaRNG::Get(L, 1);
 	lua_pushinteger(L, Entity_Familiar::GetRandomWisp(*rng));
 	return 1;
 }

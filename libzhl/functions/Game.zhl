@@ -293,6 +293,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	uint32_t _nbRooms : 0x182cc;
 	uint32_t _startingRoomIdx : 0x182d0;
 	RNG _generationRNG : 0x182d4;
+	RNG _devilAngelRoomRNG : 0x182e4;
 	Room* _room : 0x18300;
 	uint32_t _currentRoomIdx : 0x18304;
 	uint32_t _lastRoomIdx : 0x18308;

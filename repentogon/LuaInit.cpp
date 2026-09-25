@@ -333,6 +333,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_PTR] = lua_ctypeid(L, "RoomDescriptorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST] = lua_ctypeid(L, "RoomDescriptorList");
 	lua::ffi::CData[lua::ffi::CDataID::ROOM_DESCRIPTOR_LIST_PTR] = lua_ctypeid(L, "RoomDescriptorListPtr");
+	lua::ffi::CData[lua::ffi::CDataID::RNG] = lua_ctypeid(L, "RNG");
+	lua::ffi::CData[lua::ffi::CDataID::RNG_PTR] = lua_ctypeid(L, "RNGPtr");
 	
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

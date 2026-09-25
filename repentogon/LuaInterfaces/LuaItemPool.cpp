@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
+#include "../LuaClasses.h"
 #include "../Patches/ItemPoolManager.h"
 
 static inline void print_console_warning(const std::string& warning)
@@ -138,7 +138,7 @@ inline int GetChaosPoolEx(ItemPool* itemPool, RNG* rng, std::unordered_map<int, 
 
 LUA_FUNCTION(Lua_ItemPoolGetRandomPool) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	RNG* rng = LuaRNG::Get(L, 2);
 	bool advancedSearch = lua::luaL_optboolean(L, 3, false);
 
 	EnsureValidSeed(rng->_seed);
@@ -178,7 +178,7 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 
 	RNG* rng = nullptr;
 	if (!Lua_NotPassedOrNil(L, 4)) {
-		rng = lua::GetLuabridgeUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+		rng = LuaRNG::Get(L, 4);
 	}
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 5, 0);
 
@@ -286,7 +286,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+	RNG* rng = LuaRNG::Get(L, 3);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
 
@@ -325,7 +325,7 @@ LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
 LUA_FUNCTION(Lua_ItemPoolTryRosaryMorph) {
 	ItemPool* itemPool = lua::GetLuabridgeUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetLuabridgeUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+	RNG* rng = LuaRNG::Get(L, 3);
 
 	auto* pool = ItemPoolManager::GetItemPool(poolType);
 
