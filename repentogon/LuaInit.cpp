@@ -24,6 +24,7 @@ extern "C" int luaopen_utf8(lua_State* L);
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 
 int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
+int LuaKeys::clearEntityData = LUA_NOREF;
 
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);
@@ -361,6 +362,17 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
     lua_getglobal(state, "_RunCallbackWithTwoParams");
     LuaKeys::runCallbackWithTwoParams = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	lua_getglobal(state, "_ClearEntityData");
+	LuaKeys::clearEntityData = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	// Override entity:GetData
+	// TODO: When we jit Entity we can just call the _GetEntityData global directly
+	lua::PushMetatable(_state, lua::Metatables::ENTITY);
+	lua_pushstring(_state, "GetData");
+	lua_getglobal(_state, "_GetEntityData");
+	lua_rawset(_state, -3);
+	lua_pop(_state, 1);
 
 	NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");

@@ -2682,6 +2682,26 @@ function RegisterMod(name, ver)
 end
 
 
+-- Luaside reimplementation of entity:GetData()
+-- TODO: Right now, we overwrite GetData with _GetEntityData in LuaInit.cpp. When we jit Entity, remove that.
+local _EntityData = {}
+
+function _GetEntityData(entity)
+	local hash = GetPtrHash(entity)
+	if not _EntityData[hash] then
+		_EntityData[hash] = {}
+	end
+	return _EntityData[hash]
+end
+rawset(Isaac, "GetEntityData", _GetEntityData)
+
+function _ClearEntityData(entity)
+	local hash = GetPtrHash(entity)
+	_EntityData[hash] = nil
+end
+rawset(Isaac, "ClearEntityData", _ClearEntityData)
+
+
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
 RoomConfigHolder = RoomConfig  -- Backwards compatability
 

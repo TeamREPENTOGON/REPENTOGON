@@ -2,4 +2,5 @@
 
 namespace LuaKeys {
     extern int runCallbackWithTwoParams;
+    extern int clearEntityData;
 }
