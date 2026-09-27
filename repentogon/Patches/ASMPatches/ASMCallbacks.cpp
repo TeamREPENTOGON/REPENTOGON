@@ -2409,7 +2409,6 @@ static RoomConfig_Room* __stdcall RunWaveRoomCallback(RoomConfig_Room* room, boo
 			.call(1);
 
 		if (!result && lua_isuserdata(L, -1)) {
-			g_Game->GetConsole()->Print("HI\n", 0xFFFFFFFF, 60);
 			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
 
 			if (!opt.has_value()) {
