@@ -38,11 +38,11 @@ extern "C" {
 	}
 
 	__declspec(dllexport) bool L_Room_DestroyGrid(Room* room, int index, bool immediate) {
-		return room->DestroyGrid(index, immediate);
+		return room->DestroyGrid(index, 0, immediate);
 	}
 
 	__declspec(dllexport) bool L_Room_DestroyGridWithSource(Room* room, int index, bool immediate, EntityRef* source) {
-		return room->DestroyGrid(index, immediate, source);
+		return room->DestroyGrid(index, 0, immediate, source);
 	}
 
 	//TODO: we can reimplement this in lua once RNG, Game, SFXManager are moved over

@@ -213,10 +213,10 @@ __thiscall bool Room::DamageGrid(unsigned int index, float damage);
 __thiscall bool Room::DamageGrid(unsigned int index, float damage, EntityRef* source);
 
 "558bec83ec2cf30f100d????????8bc1":
-__thiscall bool Room::DestroyGrid(unsigned int index, bool immediate);
+__thiscall bool Room::DestroyGrid(unsigned int index, int damage, bool immediate);
 
 "558bec8bc18b4d??81f9bf01000077??8b4c????85c974??807d??00":
-__thiscall bool Room::DestroyGrid(unsigned int index, bool immediate, EntityRef* source);
+__thiscall bool Room::DestroyGrid(unsigned int index, int damage, bool immediate, EntityRef* source);
 
 "8b0d????????6affffb1????????e8????????8b48??a1????????3b88????????0f94c0":
 static cleanup bool Room::IsCurrentRoomLastBoss();
