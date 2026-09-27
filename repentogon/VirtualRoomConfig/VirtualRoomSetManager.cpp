@@ -4,6 +4,7 @@
 #include "../RoomConfigUtility.h"
 #include "../MiscFunctions.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 #include "writer.h" // rapidjson
 #include "stringbuffer.h" // rapidjson
 #include <map>
@@ -502,7 +503,7 @@ static int build_add_lua_rooms_out_table(lua_State* L, const _VirtualRoomSet& vi
 			assert(set_it < virtualSet.size());
 			RoomConfig_Room* room = virtualSet[set_it];
 			set_it++;
-			lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+			LuaRoomConfigRoom::PushPtr(L, room);
 		}
 
 		lua_rawseti(L, outTable_index, lua_it);
@@ -603,7 +604,7 @@ static int build_add_stb_rooms_out_table(lua_State* L, const _VirtualRoomSet& vi
 	{
 		size_t relativeIt = (i - placedRooms_begin);
 		RoomConfig_Room* room = virtualSet[i];
-		lua::luabridge::UserdataPtr::push(L, room, lua::GetMetatableKey(lua::Metatables::ROOM_CONFIG_ROOM));
+		LuaRoomConfigRoom::PushPtr(L, room);
 		lua_rawseti(L, outTable_index, relativeIt + 1);
 	}
 

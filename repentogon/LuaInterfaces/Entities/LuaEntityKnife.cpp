@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 #include "../../Patches/ASMPatches/ASMSplitTears.h"
 #include "../../Patches/EntityPlus.h"
 
@@ -161,7 +162,7 @@ LUA_FUNCTION(Lua_KnifeSetTearFlags) {
 
 LUA_FUNCTION(Lua_InitHomingPath) {
 	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Vector* direction = lua::GetLuabridgeUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* direction = LuaVector::Get(L, 1);
 	Entity* source = knife;
 	if (!lua_isnoneornil(L, 3)) {
 		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");

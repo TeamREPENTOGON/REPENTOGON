@@ -415,26 +415,14 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Vector";
         using Type = Vector;
-        static constexpr lua::Metatables MT = lua::Metatables::VECTOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_VECTOR;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::VECTOR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::VECTOR_PTR;
-    };
-
-    struct LuaVectorList
-    {
-        static constexpr const char* Name = "VectorList";
-        using Type = std::vector<Vector>;
-        static constexpr lua::Metatables MT = lua::Metatables::VECTOR_LIST;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_VECTOR_LIST;
     };
 
     struct LuaPosVel
     {
         static constexpr const char* Name = "PosVel";
         using Type = PosVel;
-        static constexpr lua::Metatables MT = lua::Metatables::POS_VEL;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_POS_VEL;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::POS_VEL;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::POS_VEL_PTR;
     };
@@ -443,8 +431,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "BitSet128";
         using Type = BitSet128;
-        static constexpr lua::Metatables MT = lua::Metatables::BITSET_128;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_BITSET_128;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::BITSET_128;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::BITSET_128_PTR;
     };
@@ -453,8 +439,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "KColor";
         using Type = KColor;
-        static constexpr lua::Metatables MT = lua::Metatables::KCOLOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_KCOLOR;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::KCOLOR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::KCOLOR_PTR;
     };
@@ -463,8 +447,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Color";
         using Type = ColorMod;
-        static constexpr lua::Metatables MT = lua::Metatables::COLOR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_COLOR;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR;
         static constexpr lua::ffi::CDataID CONST_C_DATA_ID = lua::ffi::CDataID::CONST_COLOR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_PTR;
@@ -474,11 +456,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Sprite";
         using Type = ANM2;
-        static constexpr lua::Metatables MT = lua::Metatables::SPRITE;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_SPRITE;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::SPRITE;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::SPRITE_PTR;
-        inline static void**& UserdataValueVftable = __ptr_UserdataValue_ANM2_vftable;
     };
 
     struct LuaFont
@@ -560,8 +539,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Costume";
         using Type = ItemConfig_Costume;
-        static constexpr lua::Metatables MT = lua::Metatables::COSTUME;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_COSTUME;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COSTUME;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COSTUME_PTR;
     };
@@ -765,8 +742,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "TearParams";
         using Type = TearParams;
-        static constexpr lua::Metatables MT = lua::Metatables::TEAR_PARAMS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_TEAR_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::TEAR_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::TEAR_PARAMS_PTR;
     };
@@ -775,34 +750,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "ProjectileParams";
         using Type = ProjectileParams;
-        static constexpr lua::Metatables MT = lua::Metatables::PROJECTILE_PARAMS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_PROJECTILE_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::PROJECTILE_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::PROJECTILE_PARAMS_PTR;
-    };
-
-    struct LuaTemporaryEffects
-    {
-        static constexpr const char* Name = "TemporaryEffects";
-        using Type = TemporaryEffects;
-        static constexpr lua::Metatables MT = lua::Metatables::_TEMPORARY_EFFECTS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::_CONST_TEMPORARY_EFFECTS;
-    };
-
-    struct LuaTemporaryEffect
-    {
-        static constexpr const char* Name = "TemporaryEffect";
-        using Type = TemporaryEffect;
-        static constexpr lua::Metatables MT = lua::Metatables::TEMPORARY_EFFECT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_TEMPORARY_EFFECT;
-    };
-
-    struct LuaEffectList
-    {
-        static constexpr const char* Name = "EffectList";
-        using Type = std::vector<TemporaryEffect>;
-        static constexpr lua::Metatables MT = lua::Metatables::EFFECT_LIST;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_EFFECT_LIST;
     };
 
     struct LuaActiveItemDesc
@@ -811,14 +760,6 @@ namespace LuaTraits
         using Type = ActiveItemDesc;
         static constexpr lua::Metatables MT = lua::Metatables::ACTIVE_ITEM_DESC;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ACTIVE_ITEM_DESC;
-    };
-
-    struct LuaQueueItemData
-    {
-        static constexpr const char* Name = "QueueItemData";
-        using Type = QueueItemData;
-        static constexpr lua::Metatables MT = lua::Metatables::QUEUE_ITEM_DATA;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_QUEUE_ITEM_DATA;
     };
 
     struct LuaGridEntity
@@ -992,7 +933,6 @@ namespace LuaTraits
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
 using LuaVector = CDataType<LuaTraits::LuaVector>;
-using LuaVectorList = LuabridgeType<LuaTraits::LuaVectorList>;
 using LuaPosVel = CDataType<LuaTraits::LuaPosVel>;
 using LuaBitSet128 = CDataType<LuaTraits::LuaBitSet128>;
 using LuaKColor = CDataType<LuaTraits::LuaKColor>;
@@ -1034,11 +974,7 @@ using LuaEntityList = LuabridgeType<LuaTraits::LuaEntityList>;
 using LuaPathfinder = LuabridgeType<LuaTraits::LuaPathfinder>;
 using LuaTearParams = CDataType<LuaTraits::LuaTearParams>;
 using LuaProjectileParams = CDataType<LuaTraits::LuaProjectileParams>;
-using LuaTemporaryEffects = LuabridgeType<LuaTraits::LuaTemporaryEffects>;
-using LuaTemporaryEffect = LuabridgeType<LuaTraits::LuaTemporaryEffect>;
-using LuaEffectList = LuabridgeType<LuaTraits::LuaEffectList>;
 using LuaActiveItemDesc = LuabridgeType<LuaTraits::LuaActiveItemDesc>;
-using LuaQueueItemData = LuabridgeType<LuaTraits::LuaQueueItemData>;
 using LuaGridEntity = CDataType<LuaTraits::LuaGridEntity>;
 using LuaGridEntityRock = CDataType<LuaTraits::LuaGridEntityRock>;
 using LuaGridEntityPit = CDataType<LuaTraits::LuaGridEntityPit>;

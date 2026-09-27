@@ -250,7 +250,7 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
 	const bool allowNoNeighbors = lua::luaL_optboolean(L, 8, false);
 	RoomDescriptor* newRoom = TryPlaceRoom(roomConfig, coords.x, coords.y, dimension, seed, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 	if (newRoom) {
-		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+		LuaRoomDescriptor::PushPtr(L, newRoom);
 	} else {
 		lua_pushnil(L);
 	}
@@ -275,7 +275,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
 	}
 
-	RoomDescriptor* roomDescToConnect = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, stackIdx++, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* roomDescToConnect = LuaRoomDescriptor::Get(L, stackIdx++);
 	const int doorSlot = (int)luaL_checkinteger(L, stackIdx++);
 	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
 	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
@@ -286,7 +286,7 @@ LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
 
 LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
 	RoomConfig_Room* roomConfigToPlace = LuaRoomConfigRoom::Get(L, 2);
-	RoomDescriptor* roomDescToConnect = lua::GetLuabridgeUserdata<RoomDescriptor*>(L, 3, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor* roomDescToConnect = LuaRoomDescriptor::Get(L, 3);
 	if (!roomDescToConnect || !roomDescToConnect->Data) {
 		lua_pushboolean(L, false);
 		return 1;
@@ -305,7 +305,7 @@ LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
 	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 7, false);
 	RoomDescriptor* newRoom = TryPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors);
 	if (newRoom) {
-		lua::luabridge::UserdataPtr::push(L, newRoom, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+		LuaRoomDescriptor::PushPtr(L, newRoom);
 	} else {
 		lua_pushnil(L);
 	}
@@ -355,7 +355,7 @@ LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
 
 	lua_newtable(L);
 	for (const auto& [doorSlot, neighborDesc] : neighbors) {
-		lua::luabridge::UserdataPtr::push(L, neighborDesc, lua::GetMetatableKey(lua::Metatables::ROOM_DESCRIPTOR));
+		LuaRoomDescriptor::PushPtr(L, neighborDesc);
 		lua_rawseti(L, -2, doorSlot);
 	}
 

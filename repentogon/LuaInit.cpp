@@ -156,7 +156,9 @@ static void RegisterMetatables(lua_State* L) {
 						lua_pop(L, 1);
 					}
 
-					lua::RegisterMetatable(lua::GetMetatableIdxFromName(type), addr);
+					if(lua::GetMetatableIdxFromName(type) != lua::Metatables::METATABLES_MAX) {
+						lua::RegisterMetatable(lua::GetMetatableIdxFromName(type), addr);
+					} 
 					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
 				}
 

@@ -296,8 +296,7 @@ LUA_FUNCTION(lua_Entity_GetPosVel) {
 
 	PosVel posVel = PosVel(*pos, *vel);
 
-	lua::luabridge::UserdataValue<PosVel>::push(L, lua::GetMetatableKey(lua::Metatables::POS_VEL), posVel);
-
+	LuaPosVel::Push(L, posVel);
 	return 1;
 }
 

@@ -144,7 +144,7 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionRadius)
 LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionRadiusMultiplier)
 {
 	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), entity->collisionRadiusMulti);
+	LuaVector::Push(L, entity->collisionRadiusMulti);
 	return 1;
 }
 
@@ -315,7 +315,7 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetShieldStrength)
 LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryOffset)
 {
 	EntityConfig_Entity* entity = *lua::GetRawUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), entity->bestiaryOffset);
+	LuaVector::Push(L, entity->bestiaryOffset);
 	return 1;
 }
 
