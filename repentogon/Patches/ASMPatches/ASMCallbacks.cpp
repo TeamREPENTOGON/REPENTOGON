@@ -2391,6 +2391,66 @@ void ASMPatchPostBackwardsRoomRestore()
 	patch_post_backwards_treasure_restore("4883ea0c", "Level::place_rooms_backwards (Post Treasure Room Restore)", "MC_POST_BACKWARDS_ROOM_RESTORE");
 }
 
+static RoomConfig_Room* __stdcall RunWaveRoomCallback(RoomConfig_Room* room, bool isGreed) {
+	const int callbackid = isGreed ? 1059 : 1058;
+	const char* callbackName = isGreed ? "MC_PRE_SELECT_GREED_WAVE" : "MC_PRE_SELECT_AMBUSH_WAVE";
+
+	uint32_t seed = isGreed ? g_Game->_greedWaveSeed[std::clamp(g_Game->_greedModeWave, 0u, 11u)] : g_Game->GetAmbush()->rng._seed;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(room, lua::Metatables::ROOM_CONFIG_ROOM)
+			.push(seed)
+			.call(1);
+
+		if (!result && lua_isuserdata(L, -1)) {
+			g_Game->GetConsole()->Print("HI\n", 0xFFFFFFFF, 60);
+			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
+
+			if (!opt.has_value()) {
+				KAGE::_LogMessage(2, "Invalid userdata returned in %s\n", callbackName);
+			} else {
+				RoomConfig_Room* newRoom = *opt;
+
+				if (newRoom == room) {
+					return room;
+				}
+
+				if (newRoom->Shape != room->Shape) {
+					KAGE::_LogMessage(2, "%s: Shape mismatch. Original = %d, override = %d\n", callbackName, room->Shape, newRoom->Shape);
+					return room;
+				}
+
+				return newRoom;
+			}
+		}
+	}
+
+	return room;
+}
+
+static void ASMPatchSpawnWave(const char* name, bool isGreed, const char* def) {
+	void* addr = sASMDefinitionHolder->GetDefinition(def);
+
+	printf("[REPENTOGON] Patching %s for RoomConfig_Room selection @ %p\n", name, addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(isGreed)
+		.Push(ASMPatch::Registers::EAX)
+		.AddInternalCall(RunWaveRoomCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void ASMCallbacks::detail::ApplyPatches()
 {
 	Patch_GameUpdate_MainUpdate();
@@ -2401,4 +2461,6 @@ void ASMCallbacks::detail::ApplyPatches()
 	ASMPatchRenderCustomCharacterMenu_Custom();
 	ASMPatchRenderCustomCharacterMenu_Default();
 	ASMPatchCharacterMenuPreSelectCharacter();
+	ASMPatchSpawnWave("Ambush:SpawnWave", false, &AsmDefinitions::Ambush_SpawnWave_PostGetRandomRoom);
+	ASMPatchSpawnWave("Room:SpawnGreedModeWave", true, &AsmDefinitions::Room_SpawnGreedModeWave_PostGetRandomRoom);
 }
