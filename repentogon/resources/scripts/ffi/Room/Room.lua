@@ -203,7 +203,7 @@ RoomMT = {
         ffichecks.checkinteger(1, index)
         ffichecks.checkboolean(2, immediate)
 
-        return repentogon.L_Room_DestroyGrid(self, index, damage)
+        return repentogon.L_Room_DestroyGrid(self, index, immediate)
     end,
     DestroyGridWithSource = function(self, index, immediate, source)
         ffichecks.checkinteger(1, index)
