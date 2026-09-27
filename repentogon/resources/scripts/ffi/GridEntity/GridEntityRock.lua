@@ -24,6 +24,7 @@ ffi.cdef[[
     void L_GridEntityRock_RegisterRocksDestroyed(struct GridEntityRock*, int);
     void L_GridEntityRock_Render(struct GridEntityRock*, struct Vector);
     void L_GridEntityRock_RenderTop(struct GridEntityRock*, struct Vector);
+    void L_GridEntityRock_SetBigRockFrame(struct GridEntityRock*, int);
     void L_GridEntityRock_SpawnDrops(struct Vector, int, int, unsigned int, bool, int);
     void L_GridEntityRock_Update(struct GridEntityRock*);
     void L_GridEntityRock_UpdateCollision(struct GridEntityRock*);  
@@ -77,6 +78,10 @@ GridEntityRockMT = {
     RenderTop = function(self, offset)
         ffichecks.checkcdata(1, offset, "Vector")
         repentogon.L_GridEntityRock_RenderTop(self, offset)
+    end,
+    SetBigRockFrame = function(self, frame)
+        ffichecks.checkinteger(1, frame)
+        repentogon.L_GridEntityRock_SetBigRockFrame(self, frame)
     end,
     TrySpawnLadder = function(self)
         repentogon.L_GridEntityRock_TrySpawnLadder(self)
