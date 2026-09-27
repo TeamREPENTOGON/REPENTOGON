@@ -493,14 +493,6 @@ namespace LuaTraits
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_MUSIC_MANAGER;
     };
 
-    struct LuaSFXManager
-    {
-        static constexpr const char* Name = "SFXManager";
-        using Type = SoundEffects;
-        static constexpr lua::Metatables MT = lua::Metatables::SFX_MANAGER;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_SFX_MANAGER;
-    };
-
     struct LuaItemConfig
     {
         static constexpr const char* Name = "ItemConfig";
@@ -942,7 +934,6 @@ using LuaFont = LuabridgeType<LuaTraits::LuaFont>;
 using LuaFontRenderSettings = LuabridgeType<LuaTraits::LuaFontRenderSettings>;
 using LuaRNG = CDataType<LuaTraits::LuaRNG>;
 using LuaMusicManager = LuabridgeType<LuaTraits::LuaMusicManager>;
-using LuaSFXManager = LuabridgeType<LuaTraits::LuaSFXManager>;
 using LuaItemConfig = LuabridgeType<LuaTraits::LuaItemConfig>;
 using LuaItem = CDataType<LuaTraits::LuaItem>;
 using LuaCard = LuabridgeType<LuaTraits::LuaCard>;

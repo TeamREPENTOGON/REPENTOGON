@@ -10,6 +10,29 @@ __thiscall void SoundEffects::LoadConfig(char* filename, bool ismod);
 "558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bf18975":
 __thiscall void SoundEffect::Load();
 
+"558bec53568b75??5785f60f88????????8b39":
+__thiscall void SoundEffects::AdjustPitch(int id, float pitch);
+
+"558bec5153568b75??8bc18945":
+__thiscall void SoundEffects::AdjustVolume(int id, float volume);
+
+"558bec56578b7d??85ff":
+__thiscall float SoundEffects::GetAmbientSoundVolume(int id);
+
+"558bec515356578b7d??8bc1":
+__thiscall bool SoundEffects::IsPlaying(int id);
+
+"558bec5356578b7d??8bd985ff":
+__thiscall void SoundEffects::Preload(int id);
+
+"558bec51f30f1005????????0f2f45":
+__thiscall void SoundEffects::SetAmbientSound(int id, float volume, float pitch);
+
+"558bec53568b75??5785f60f88????????8b19":
+__thiscall void SoundEffects::Stop(int id);
+
+"558bec83ec0c8bc1538945":
+__thiscall void SoundEffects::StopLoopingSounds();
 
 struct SoundEffect{
     unsigned int _id : 0x0;

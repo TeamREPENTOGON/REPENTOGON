@@ -286,7 +286,7 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 	}
 }
 
-HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan) -> void) {
+HOOK_METHOD(SoundEffects, Play, (int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan) -> void) {
 	const int callbackid = 1030;
 	if (!CallbackState.test(callbackid - 1000)) {
 		super(ID, Volume, FrameDelay, Loop, Pitch, Pan);

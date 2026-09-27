@@ -93,6 +93,7 @@ namespace lua {
 		_metatable_idx_from_name["ItemConfigList"] = Metatables::ITEM_CONFIG_LIST;
 		_metatable_idx_from_name["EntityKnife"] = Metatables::ENTITY_KNIFE;
 		_metatable_idx_from_name["Level"] = Metatables::LEVEL;
+		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
 		_metatable_idx_from_name["PillConfigList"] = Metatables::PILL_CONFIG_LIST;
 		_metatable_idx_from_name["EntityEffect"] = Metatables::ENTITY_EFFECT;
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
@@ -112,7 +113,6 @@ namespace lua {
 		_metatable_idx_from_name["PathFinder"] = Metatables::PATHFINDER;
 		_metatable_idx_from_name["Card"] = Metatables::CARD;
 		_metatable_idx_from_name["EntityLaser"] = Metatables::ENTITY_LASER;
-		_metatable_idx_from_name["SFXManager"] = Metatables::SFX_MANAGER;
 		_metatable_idx_from_name["CardConfigList"] = Metatables::CARD_CONFIG_LIST;
 
 		_metatable_idx_from_name["const PillEffect"] = Metatables::CONST_PILL_EFFECT;
@@ -146,7 +146,6 @@ namespace lua {
 		_metatable_idx_from_name["const PathFinder"] = Metatables::CONST_PATHFINDER;
 		_metatable_idx_from_name["const Card"] = Metatables::CONST_CARD;
 		_metatable_idx_from_name["const EntityLaser"] = Metatables::CONST_ENTITY_LASER;
-		_metatable_idx_from_name["const SFXManager"] = Metatables::CONST_SFX_MANAGER;
 		_metatable_idx_from_name["const CardConfigList"] = Metatables::CONST_CARD_CONFIG_LIST;
 	}
 

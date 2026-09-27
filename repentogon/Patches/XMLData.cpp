@@ -2140,7 +2140,7 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
+HOOK_METHOD(SoundEffects, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));

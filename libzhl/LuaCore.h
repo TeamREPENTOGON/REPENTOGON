@@ -42,7 +42,6 @@ namespace lua {
         PATHFINDER,
         CARD,
         ENTITY_LASER,
-        SFX_MANAGER,
         CARD_CONFIG_LIST,
         BEGIN_CONST,
         CONST_PILL_EFFECT,
@@ -76,7 +75,6 @@ namespace lua {
         CONST_PATHFINDER,
         CONST_CARD,
         CONST_ENTITY_LASER,
-        CONST_SFX_MANAGER,
         CONST_CARD_CONFIG_LIST,
 
         METATABLES_MAX
@@ -84,7 +82,6 @@ namespace lua {
 
     namespace GlobalClasses
     {
-      extern LIBZHL_API const char* Input;
       extern LIBZHL_API const char* Isaac;
       extern LIBZHL_API const char* HUD;
       extern LIBZHL_API const char* Options;
@@ -183,7 +180,7 @@ namespace lua {
         extern LIBZHL_API const char* ScoreSheetMT;
         extern LIBZHL_API const char* ShapeMT;
         extern LIBZHL_API const char* SpecialSeedsMenuMT;
-        extern LIBZHL_API const char* StageTransitionMT;
+        extern LIBZHL_API const char* StageTransitionMT; 
         extern LIBZHL_API const char* StatsMenuMT;
         extern LIBZHL_API const char* TitleMenuMT;
         extern LIBZHL_API const char* WeaponMT;

@@ -186,8 +186,8 @@ pcall(require("ffi.Room.RoomConfigSpawn"))
 pcall(require("ffi.Room.RoomConfigRoom"))
 pcall(require("ffi.Room.RoomDescriptor"))
 pcall(require("ffi.Room.Room"))
--- pcall(require("ffi.Input"))
-
+pcall(require("ffi.Input"))
+pcall(require("ffi.SFXManager"))
 
 ffi = nil
 ffidll = nil

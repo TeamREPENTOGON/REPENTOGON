@@ -168,26 +168,6 @@ rawset(Isaac, "RunCallback", function(callbackID, ...) return RunCallback(callba
 REPENTANCE = true
 REPENTANCE_PLUS = true
 
--- Vector.Zero
-rawset(Vector, "Zero", Vector(0,0))
-
--- Vector.One
-rawset(Vector, "One", Vector(1,1))
-
--- Color.Default
-rawset(Color, "Default", Color(1,1,1,1,0,0,0))
-
--- KColor presets
-rawset(KColor, "Black", KColor(0, 0, 0, 1))
-rawset(KColor, "Red", KColor(1, 0, 0, 1))
-rawset(KColor, "Green", KColor(0, 1, 0, 1))
-rawset(KColor, "Blue", KColor(0, 0, 1, 1))
-rawset(KColor, "Yellow", KColor(1, 1, 0, 1))
-rawset(KColor, "Cyan", KColor(0, 1, 1, 1))
-rawset(KColor, "Magenta", KColor(1, 0, 1, 1))
-rawset(KColor, "White", KColor(1, 1, 1, 1))
-rawset(KColor, "Transparent", KColor(0, 0, 0, 0))
-
 ------------------------------------------------------------
 -- Compatibility wrappers begin here
 
@@ -300,17 +280,6 @@ end
 local ItemPool_GetPillEffect = META0.GetPillEffect
 function META:GetPillEffect(pillColor, player)
 	return ItemPool_GetPillEffect(self, pillColor, player)
-end
-
-EndClass()
-
----------------------------------------------------------
-BeginClass(SFXManager)
-
--- void SFXManager:Play(SoundEffect ID, float Volume = 1, int FrameDelay = 2, boolean Loop = false, float Pitch = 1, float Pan = 0)
-local SFXManager_Play = META0.Play
-function META:Play(sound, volume, frameDelay, loop, pitch, pan)
-	SFXManager_Play(self, sound, volume or 1, frameDelay or 2, loop, pitch or 1, pan or 0)
 end
 
 EndClass()
