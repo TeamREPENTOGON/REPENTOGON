@@ -28,6 +28,9 @@ __thiscall void GridEntity_Rock::update_collision();
 "558bec83ec34a1????????33c58945??f30f7e05":
 __thiscall void GridEntity_Rock::PostInit();
 
+"558bec6aff68????????64a1????????5081eca8000000a1????????33c58945??5657":
+__thiscall void GridEntity_Rock::Update();
+
 struct GridEntity_Rock depends (Vector) : public GridEntity { 
 
 	std_string _anim : 0x154;
@@ -36,9 +39,7 @@ struct GridEntity_Rock depends (Vector) : public GridEntity {
 	__vtable {
 		skip; // Free
 		skip; // PostInit
-		
-		"558bec6aff68????????64a1????????5081eca8000000a1????????33c58945??5657":
-		void Update();
+		skip; // Update
 		
 		override
 		"558bec83e4f881ecd4000000":
