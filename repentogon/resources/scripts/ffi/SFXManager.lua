@@ -13,6 +13,12 @@ void L_SFXManager_StopLoopingSounds();
 
 local repentogon = ffidll
 
+-- We *explicitly* set reentrant functions whose calls shouldn't be traced.
+-- The auto blacklist in LuaJIT can't catch functions that reenter while they're still interpreted.
+-- Since functions like SetAmbientSound aren't used much, they aren't caught in time before the calls compile!
+-- The Lua surrounding them still compiles, just not the call to C itself, so it's still faster than Luabridge and the interpreter.
+ffi.reentrant(repentogon.L_SFXManager_SetAmbientSound)
+
 local SFXManagerMT
 SFXManagerMT = {
 	__type = "SFXManager",
