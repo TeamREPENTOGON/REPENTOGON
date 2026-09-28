@@ -665,7 +665,7 @@ __thiscall void Entity_Player::RenderTop(Vector* position);
 __thiscall Entity* Entity_Player::ThrowBlueSpider(Vector* position, Vector* target);
 
 "558bec83e4f883ec1c8b45??535657f30f10008bfa":
-static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(Entity_Familiar* buffer, Vector* position, int subtype, Vector* target);
+static __x86_64 Entity_Familiar* Entity_Player::ThrowFriendlyDip(int subtype, Vector* position, Entity_Player* player, Vector* target);
 
 "558bec568bf1e8????????8b45??8b4d":
 __thiscall void Entity_Player::QueueItem(ItemConfig_Item* item, int charge, int flags, int varData, int unk);

@@ -866,12 +866,6 @@ function META:AddMinisaac(pos, playAnim)
 	return Entity_Player_AddMinisaac(self, pos, playAnim ~= false)
 end
 
--- EntityFamiliar EntityPlayer:ThrowFriendlyDip(int Subtype, Vector Position, Vector Target = Vector.Zero)
-local Entity_Player_ThrowFriendlyDip = META0.ThrowFriendlyDip
-function META:ThrowFriendlyDip(subtype, pos, target)
-	return Entity_Player_ThrowFriendlyDip(self, subtype, pos, target)
-end
-
 -- void EntityPlayer:TriggerBookOfVirtues(CollectibleType Type = CollectibleType.COLLECTIBLE_NULL, int Charge = 0)
 local Entity_Player_TriggerBookOfVirtues = META0.TriggerBookOfVirtues
 function META:TriggerBookOfVirtues(id, charge)
