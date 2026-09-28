@@ -128,6 +128,7 @@ end
 
 
 pcall(require, "ffi.Vector")
+pcall(require, "ffi.VectorList")
 pcall(require, "ffi.GridEntityDesc")
 pcall(require, "ffi.KColor")
 pcall(require, "ffi.Color")

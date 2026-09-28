@@ -310,12 +310,28 @@ LUA_FUNCTION(Lua_LaserSetTearFlags) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserGetSamples)
+{
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua::ffi::pushCdataPtr(L, &laser->_homingLaser._samples, lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR]);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserGetNonOptimizedSamples)
+{
+	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua::ffi::pushCdataPtr(L, &laser->_homingLaser._nonOptimizedSamples, lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR]);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	
 	luaL_Reg functions[] = {
+		{ "GetSamples", Lua_EntityLaserGetSamples },
+		{ "GetNonOptimizedSamples", Lua_EntityLaserGetNonOptimizedSamples },
 		{ "GetEndPoint", Lua_EntityLaserGetEndPoint},
 		{ "GetDisableFollowParent", Lua_EntityLaserGetDisableFollowParent },
 		{ "SetDisableFollowParent", Lua_EntityLaserSetDisableFollowParent },

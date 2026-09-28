@@ -627,6 +627,8 @@ namespace lua {
             ROOM_DESCRIPTOR_LIST_PTR,
             RNG,
             RNG_PTR,
+            VECTOR_LIST,
+            VECTOR_LIST_PTR,
             MAX_CDATA
         };
 
