@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_Entity_SetPosition) {
 
 LUA_FUNCTION(Lua_Entity_GetPositionOffset) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_posOffset);
+	lua::ffi::pushCdataPtr(L, &ent->_posOffset, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
 	return 1;
 }
 
@@ -88,7 +88,7 @@ LUA_FUNCTION(Lua_Entity_SetSizeMulti) {
 
 LUA_FUNCTION(Lua_Entity_GetSpriteOffset) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_sprite._offset);
+	lua::ffi::pushCdataPtr(L, &ent->_sprite._offset, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
 	return 1;
 }
 
@@ -102,7 +102,7 @@ LUA_FUNCTION(Lua_Entity_SetSpriteOffset) {
 
 LUA_FUNCTION(Lua_Entity_GetSpriteScale) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_sprite._scale);
+	lua::ffi::pushCdataPtr(L, &ent->_sprite._scale, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
 	return 1;
 }
 
@@ -116,7 +116,7 @@ LUA_FUNCTION(Lua_Entity_SetSpriteScale) {
 
 LUA_FUNCTION(Lua_Entity_GetTargetPosition) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], ent->_targetPos);
+	lua::ffi::pushCdataPtr(L, &ent->_targetPos, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
 	return 1;
 }
 
