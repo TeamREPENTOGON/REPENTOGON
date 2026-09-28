@@ -166,7 +166,7 @@ RoomMT = {
     end,
     CanSpawnObstacleAtPosition = function(self, gridIndex, force)
         ffichecks.checkinteger(1, gridIndex)
-        ffichecks.checkboolean(2, force)
+        force = ffichecks.optboolean(force, false)
         return repentogon.L_Room_CanSpawnObstacleAtPosition(self, gridIndex, force)
     end,
     ClearBossHazards = function(self, ignoreNPCs, source)
