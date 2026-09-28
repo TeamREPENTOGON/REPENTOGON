@@ -68,13 +68,11 @@ extern "C" {
 	}
 
 	__declspec(dllexport) bool L_Sprite_IsFinished(ANM2* sprite, const char* name) {
-		std::string nameStr = name;
-		return sprite->IsFinished(nameStr);
+		return sprite->IsFinished(name);
 	}
 
 	__declspec(dllexport) bool L_Sprite_IsOverlayFinished(ANM2* sprite, const char* name) {
-		std::string nameStr = name;
-		return sprite->IsOverlayFinished(nameStr);
+		return sprite->IsOverlayFinished(name);
 	}
 
 	__declspec(dllexport) void L_Sprite_Load(ANM2* sprite, const char* path, bool loadGraphics) {
@@ -91,8 +89,7 @@ extern "C" {
 	}
 	
 	__declspec(dllexport) void L_Sprite_PlayOverlay(ANM2* sprite, const char* name, bool force) {
-		std::string nameStr = name;
-		sprite->PlayOverlay(nameStr, force);
+		sprite->PlayOverlay(name, force);
 	}
 	
 	__declspec(dllexport) void L_Sprite_PlayRandom(ANM2* sprite, unsigned int seed) {
