@@ -107,6 +107,10 @@ __thiscall void Entity_NPC::MinecartBreak();
 
 "558becf30f100d????????538b5d":
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
+
+"558bec83ec48a1????????33c58945??535657":
+__thiscall void Entity_NPC::MakeChampion(uint32_t seed, int championColor, bool init);
+
 */
 
 struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
