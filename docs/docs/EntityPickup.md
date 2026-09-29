@@ -168,6 +168,13 @@ ___
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
+### ShouldIgnoreModifiers () {: aria-label='Functions' }
+[ ](#){: .static .tooltip .badge }
+#### static boolean ShouldIgnoreModifiers ( ) {: .copyable aria-label='Functions' }
+Returns whether or not global modifiers (ex. Glitched Crown) should be ignored.
+Only returns a meaningful value when spawning or morphing a pickup.
+
+___
 ### TriggerTheresOptionsPickup () {: aria-label='Functions' }
 #### void TriggerTheresOptionsPickup ( ) {: .copyable aria-label='Functions' }
 Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
