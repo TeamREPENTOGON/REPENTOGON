@@ -384,6 +384,11 @@ namespace lua {
 			m_p = p;
 		}
 
+		const void* UserdataPtr::GetVTable() {
+			UserdataPtr ud(nullptr);
+			return *reinterpret_cast<void* const*>(&ud);
+		}
+
 		static void* sUserdataCacheToken = nullptr;
 
 		void UserdataPtr::push(lua_State* L, void* const p, void const* const key) {

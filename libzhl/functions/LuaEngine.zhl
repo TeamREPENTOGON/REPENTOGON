@@ -154,8 +154,14 @@ static __stdcall void LuaEngine::PostTearRender(Entity_Tear* tear, Vector * offs
 "558bec6aff68????????64a1????????5083ec24535657a1????????33c5508d45??64a3????????8965??a1":
 static __stdcall bool LuaEngine::PreSpawnCleanAward(RNG* rng, Vector *spawnPosition);
 
+"558bec83ec085356578b3d":
+static __stdcall void LuaEngine::main_func();
+
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
+
+"68d8b9f0ff??c700(????????)89??04ff":
+reference void* UserdataPtr_vftable;
 
 struct LuaEngine depends (RunCallbackRegistry, Entity_Player, Vector, GridEntity) {
 	{{

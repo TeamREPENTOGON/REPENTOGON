@@ -10,8 +10,8 @@ local s_modules = {}
 
 local debug_getinfo = debug.getinfo
 
-collectgarbage("setpause", 100)
-collectgarbage("setstepmul", 25)
+collectgarbage("setpause", 125)
+collectgarbage("setstepmul", 200)
 jit.opt.start('maxtrace=8000', 'maxmcode=8192')
 require("compat53.init")
 

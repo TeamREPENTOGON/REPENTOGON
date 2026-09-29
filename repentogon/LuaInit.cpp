@@ -226,6 +226,24 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
 }
 
+// Luabridge's UserdataPtrs have finalizers. They do not need finalizers. They are just pointers.
+// Goodbye.
+static void RegisterTrivialUserdata() {
+	luaJIT_setudnofin(__ptr_UserdataPtr_vftable);
+	luaJIT_setudnofin(lua::luabridge::UserdataPtr::GetVTable());
+}
+
+static size_t luaArenaSize = 0;
+static size_t forceCollectAt = 0;
+static int forceCollectPercentage = 80;
+
+HOOK_GLOBAL(mi_reserve_os_memory_ex, (unsigned int size, bool commit, bool allowLarge, bool exclusive, int* arenaId) -> int, __cdecl) {
+	const int result = super(size, commit, allowLarge, exclusive, arenaId);
+	if (result == 0)
+		luaArenaSize = size;
+	return result;
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	const char* C_BINDINGS_NAME = "_CBindings";
 	const char* LUA_BINDINGS_NAME = "_LuaBindings";
@@ -233,6 +251,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	lua_State* L = g_LuaEngine->_state;
 	luaJIT_setapifatal([](const char* msg) { ZHL::Log("[ERROR] %s", msg); });
+	RegisterTrivialUserdata();
+	forceCollectAt = luaArenaSize / 100 * forceCollectPercentage;
+	if (luaArenaSize)
+		ZHL::Log("[REPENTOGON] Armed Lua heap emergency collection at %u of %u MB\n", forceCollectAt >> 20, luaArenaSize >> 20);
 
 	luaL_requiref(L, "debug", luaopen_debug, 1);
 	lua_pop(L, 1);
@@ -539,4 +561,29 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath) -> void) {
 	REPENTOGON::UpdateProgressDisplay("Do RoomConfig::LoadStages");
 	super(xmlpath);
 	ZHL::SetExceptionHandlerEnabled(true);
+}
+
+// In typical Nicalis fashion, it turns out the game does its own GC stepping and it is WORSE than just letting Lua do its thing.
+// We'll reuse the loop, but only to do an *emergency* collection near the end of the Lua arena size instead of small ones constantly.
+HOOK_STATIC(LuaEngine, main_func, () -> void, __stdcall) {
+	if (!forceCollectAt)
+		return;
+
+	lua_State* L = g_LuaEngine->_state;
+	const size_t before = (size_t)lua_gc(L, LUA_GCCOUNT, 0) << 10;
+	if (before < forceCollectAt)
+		return;
+
+	lua_gc(L, LUA_GCCOLLECT, 0);
+	const size_t after = (size_t)lua_gc(L, LUA_GCCOUNT, 0) << 10;
+	forceCollectAt = (std::max)(luaArenaSize / 100 * forceCollectPercentage, after + (luaArenaSize - after) / 2);
+	ZHL::Log("[REPENTOGON] EMERGENCY GC COLLECTION! THIS SHOULD NEVER HAPPEN!!!!! Heap went from %u to %u MB after collection.\n", before >> 20, after >> 20);
+}
+
+// Since we're now using the native GC algorithm, we now need to run a forced collection when a run starts, to give the incremental GC an adequate baseline.
+// Without this, a new run will balloon, hitch, force a massive atomic, and *then* run smoothly. Not ideal. 
+// We run this after every mod has loaded in POST_GAME_STARTED which should be representative of a good baseline.
+HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
+	super(state);
+	lua_gc(g_LuaEngine->_state, LUA_GCCOLLECT, 0);
 }

@@ -499,6 +499,7 @@ namespace lua {
             static void push(lua_State* L, void* const p, void const* const key);
             static void push(lua_State* L, void* const p, const char* meta);
             static void push(lua_State* L, void* const p, lua::Metatables mt);
+            static const void* GetVTable();
         };
     }
 
