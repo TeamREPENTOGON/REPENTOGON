@@ -350,6 +350,11 @@ LUA_FUNCTION(Lua_PickupCanJeraDuplicate) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PickupIgnoreModifiers) {
+	lua_pushboolean(L, Entity_Pickup::ShouldIgnoreModifiers());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -398,4 +403,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity);
 	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "SetupCollectibleGraphics", Lua_PickupSetupCollectibleGraphics);
+	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "ShouldIgnoreModifiers", Lua_PickupIgnoreModifiers);
 }
