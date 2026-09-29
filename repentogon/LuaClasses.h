@@ -485,14 +485,6 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::RNG_PTR;
     };
 
-    struct LuaMusicManager
-    {
-        static constexpr const char* Name = "MusicManager";
-        using Type = Music;
-        static constexpr lua::Metatables MT = lua::Metatables::MUSIC_MANAGER;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_MUSIC_MANAGER;
-    };
-
     struct LuaItemConfig
     {
         static constexpr const char* Name = "ItemConfig";
@@ -505,8 +497,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Item";
         using Type = ItemConfig_Item;
-        static constexpr lua::Metatables MT = lua::Metatables::ITEM;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ITEM;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ITEM;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ITEM_PTR;
     };
@@ -933,7 +923,6 @@ using LuaSprite = CDataType<LuaTraits::LuaSprite>;
 using LuaFont = LuabridgeType<LuaTraits::LuaFont>;
 using LuaFontRenderSettings = LuabridgeType<LuaTraits::LuaFontRenderSettings>;
 using LuaRNG = CDataType<LuaTraits::LuaRNG>;
-using LuaMusicManager = LuabridgeType<LuaTraits::LuaMusicManager>;
 using LuaItemConfig = LuabridgeType<LuaTraits::LuaItemConfig>;
 using LuaItem = CDataType<LuaTraits::LuaItem>;
 using LuaCard = LuabridgeType<LuaTraits::LuaCard>;

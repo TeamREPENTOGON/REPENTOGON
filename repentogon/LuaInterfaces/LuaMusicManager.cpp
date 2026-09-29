@@ -1,64 +1,77 @@
-#include "HookSystem.h"
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
+#include "HookSystem.h"
 
 
-
-LUA_FUNCTION(Lua_MusicManager_Play) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	int max;
-
-	if (!music->ValidateMusicID(musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
-	}
-
-	float volume = (float)luaL_optnumber(L, 3, -1);
-	music->Play(musicId, volume);
-	return 0;
+MOD_EXPORT void L_MusicManager_Crossfade(unsigned int id, float fadeRate) {
+	g_Manager->_musicmanager.Crossfade(id, fadeRate);
 }
 
-LUA_FUNCTION(Lua_MusicManager_Crossfade) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	int max;
-
-	if (!music->ValidateMusicID(musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
-	}
-
-	float faderate = (float)luaL_optnumber(L, 3, 0.08);
-	music->Crossfade(musicId, faderate);
-	return 0;
+MOD_EXPORT void L_MusicManager_Disable() {
+	g_Manager->_musicmanager._enabled = false;
 }
 
-LUA_FUNCTION(Lua_MusicManager_Fadein) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	unsigned int musicId = (unsigned int)luaL_checkinteger(L, 2);
-	int max;
-
-	if (!music->ValidateMusicID(musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
-	}
-
-	float volume = (float)luaL_optnumber(L, 3, 1);
-	float faderate = (float)luaL_optnumber(L, 4, 0.08);
-	music->Fadein(musicId, volume, faderate);
-	return 0;
+MOD_EXPORT void L_MusicManager_DisableLayer(unsigned int id) {
+	g_Manager->_musicmanager.DisableLayer(id);
 }
 
-LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	int duration = (int)luaL_optinteger(L, 3, 140);
-	if (duration <= 0)
-		return luaL_argerror(L, 3, "Duration must be greater than zero!");
-	music->PlayJingle(musicId, 140, false);
+MOD_EXPORT void L_MusicManager_Enable() {
+	g_Manager->_musicmanager._enabled = true;
+}
+
+MOD_EXPORT void L_MusicManager_EnableLayer(unsigned int id, bool instant) {
+	g_Manager->_musicmanager.EnableLayer(id, instant);
+}
+
+MOD_EXPORT void L_MusicManager_Fadein(unsigned int id, float volume, float fadeRate) {
+	g_Manager->_musicmanager.Fadein(id, volume, fadeRate);
+}
+
+MOD_EXPORT void L_MusicManager_Fadeout(float fadeRate) {
+	g_Manager->_musicmanager.Fadeout(fadeRate);
+}
+
+MOD_EXPORT int L_MusicManager_GetCurrentJingleID() {
+	std::uint16_t ret = g_Manager->_musicmanager._jingleId;
+	return g_Manager->_musicmanager._jingleCountdownMaybe < 1 ? 0 : ret;
+}
+
+MOD_EXPORT int L_MusicManager_GetCurrentMusicID() {
+	return g_Manager->_musicmanager._currentId;
+}
+
+MOD_EXPORT int L_MusicManager_GetQueuedMusicID() {
+	return g_Manager->_musicmanager._queuedId;
+}
+
+MOD_EXPORT float L_MusicManager_GetCurrentPitch() {
+	return g_Manager->_musicmanager._pitch;
+}
+
+MOD_EXPORT bool L_MusicManager_IsEnabled() {
+	return g_Manager->_musicmanager._enabled;
+}
+
+MOD_EXPORT bool L_MusicManager_IsLayerEnabled(unsigned int id) {
+	return g_Manager->_musicmanager.IsLayerEnabled(id);
+}
+
+MOD_EXPORT void L_MusicManager_Pause() {
+	g_Manager->_musicmanager.Pause();
+}
+
+MOD_EXPORT void L_MusicManager_PitchSlide(float targetPitch) {
+	g_Manager->_musicmanager._targetPitch = targetPitch;
+}
+
+MOD_EXPORT void L_MusicManager_Play(unsigned int id, float volume) {
+	g_Manager->_musicmanager.Play(id, volume);
+}
+
+MOD_EXPORT void L_MusicManager_PlayJingle(unsigned int id, int duration) {
+	g_Manager->_musicmanager.PlayJingle(id, 140, false);
 
 	//duration was inlined and (at least most) calls to the func had it stripped from the args, just set it ourselves
-	music->_jingleCountdownMaybe = duration;
-
-	return 0;
+	g_Manager->_musicmanager._jingleCountdownMaybe = duration;
 }
 
 // stuff the jingle id into unused bytes
@@ -69,48 +82,39 @@ HOOK_METHOD_PRIORITY(Music, PlayJingle, 1, (int musicId, int unusedInt, bool unu
 	this->_jingleId = (std::uint16_t)musicId;
 }
 
-LUA_FUNCTION(Lua_MusicManager_GetCurrentJingleID) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	std::uint16_t ret = music->_jingleId;
-	lua_pushinteger(L, music->_jingleCountdownMaybe < 1 ? 0 : ret);
-
-	return 1;
+MOD_EXPORT void L_MusicManager_Queue(unsigned int id) {
+	g_Manager->_musicmanager._queuedId = id;
 }
 
-LUA_FUNCTION(Lua_MusicManager_StopJingle) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+MOD_EXPORT void L_MusicManager_ResetPitch() {
+	g_Manager->_musicmanager._pitch = 1.0f;
+	g_Manager->_musicmanager._targetPitch = 1.0f;
+}
+
+MOD_EXPORT void L_MusicManager_Resume() {
+	g_Manager->_musicmanager.Resume();
+}
+
+MOD_EXPORT void L_MusicManager_SetCurrentPitch(float pitch) {
+	g_Manager->_musicmanager._pitch = pitch;
+}
+
+MOD_EXPORT void L_MusicManager_StopJingle() {
 	// magic offset is music->_jingleStream.playing
-	if (music->_jingleCountdownMaybe > 0 || *(bool*)((char*)music + 0x354) == true)
-		music->StopJingle();
-
-	return 0;
+	if (g_Manager->_musicmanager._jingleCountdownMaybe > 0 || *(bool*)((char*)&g_Manager->_musicmanager + 0x354) == true) {
+		g_Manager->_musicmanager.StopJingle();
+	}
 }
 
-LUA_FUNCTION(Lua_MusicManager_GetCurrentPitch) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	lua_pushnumber(L, music->_pitch);
-	return 1;
+MOD_EXPORT void L_MusicManager_UpdateVolume() {
+	g_Manager->_musicmanager.UpdateVolume();
 }
 
-LUA_FUNCTION(Lua_MusicManager_SetCurrentPitch) {
-	Music* music = lua::GetLuabridgeUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	music->_pitch = (float)luaL_checknumber(L, 2);
-	return 0;
+MOD_EXPORT bool L_MusicManager_ValidateMusicID(int id, int* max) {
+	*max = g_Manager->_musicmanager._entries.size();
+	return id >= 0 && id < *max;
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua::LuaStackProtector protector(_state);
-
-	// Fix existing functions
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Play", Lua_MusicManager_Play);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Crossfade", Lua_MusicManager_Crossfade);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Fadein", Lua_MusicManager_Fadein);
-
-	// New Functions
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "StopJingle", Lua_MusicManager_StopJingle);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "GetCurrentJingleID", Lua_MusicManager_GetCurrentJingleID);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "GetCurrentPitch", Lua_MusicManager_GetCurrentPitch);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "SetCurrentPitch", Lua_MusicManager_SetCurrentPitch);
+MOD_EXPORT void L_MusicManager_VolumeSlide(float targetVolume, float fadeRate) {
+	g_Manager->_musicmanager.VolumeSlide(targetVolume, fadeRate);
 }

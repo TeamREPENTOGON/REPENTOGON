@@ -89,7 +89,6 @@ namespace lua {
 		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
 		_metatable_idx_from_name["EntityBomb"] = Metatables::ENTITY_BOMB;
 		_metatable_idx_from_name["Config"] = Metatables::CONFIG;
-		_metatable_idx_from_name["MusicManager"] = Metatables::MUSIC_MANAGER;
 		_metatable_idx_from_name["ItemConfigList"] = Metatables::ITEM_CONFIG_LIST;
 		_metatable_idx_from_name["EntityKnife"] = Metatables::ENTITY_KNIFE;
 		_metatable_idx_from_name["Level"] = Metatables::LEVEL;
@@ -102,13 +101,11 @@ namespace lua {
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
 		_metatable_idx_from_name["EntityList"] = Metatables::ENTITY_LIST;
 		_metatable_idx_from_name["Game"] = Metatables::GAME;
-		_metatable_idx_from_name["GridEntityRock"] = Metatables::GRID_ENTITY_ROCK;
 		_metatable_idx_from_name["EntityNPC"] = Metatables::ENTITY_NPC;
 		_metatable_idx_from_name["EntityProjectile"] = Metatables::ENTITY_PROJECTILE;
 		_metatable_idx_from_name["EntityFamiliar"] = Metatables::ENTITY_FAMILIAR;
 		_metatable_idx_from_name["intValues"] = Metatables::INT_VALUES;
 		_metatable_idx_from_name["ItemPool"] = Metatables::ITEM_POOL;
-		_metatable_idx_from_name["Item"] = Metatables::ITEM;
 		_metatable_idx_from_name["EntityPtr"] = Metatables::ENTITY_PTR;
 		_metatable_idx_from_name["PathFinder"] = Metatables::PATHFINDER;
 		_metatable_idx_from_name["Card"] = Metatables::CARD;
@@ -123,7 +120,6 @@ namespace lua {
 		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
 		_metatable_idx_from_name["const EntityBomb"] = Metatables::CONST_ENTITY_BOMB;
 		_metatable_idx_from_name["const Config"] = Metatables::CONST_CONFIG;
-		_metatable_idx_from_name["const MusicManager"] = Metatables::CONST_MUSIC_MANAGER;
 		_metatable_idx_from_name["const ItemConfigList"] = Metatables::CONST_ITEM_CONFIG_LIST;
 		_metatable_idx_from_name["const EntityKnife"] = Metatables::CONST_ENTITY_KNIFE;
 		_metatable_idx_from_name["const Level"] = Metatables::CONST_LEVEL;
@@ -135,13 +131,11 @@ namespace lua {
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
 		_metatable_idx_from_name["const EntityList"] = Metatables::CONST_ENTITY_LIST;
 		_metatable_idx_from_name["const Game"] = Metatables::CONST_GAME;
-		_metatable_idx_from_name["const GridEntityRock"] = Metatables::CONST_GRID_ENTITY_ROCK;
 		_metatable_idx_from_name["const EntityNPC"] = Metatables::CONST_ENTITY_NPC;
 		_metatable_idx_from_name["const EntityProjectile"] = Metatables::CONST_ENTITY_PROJECTILE;
 		_metatable_idx_from_name["const EntityFamiliar"] = Metatables::CONST_ENTITY_FAMILIAR;
 		_metatable_idx_from_name["const intValues"] = Metatables::CONST_INT_VALUES;
 		_metatable_idx_from_name["const ItemPool"] = Metatables::CONST_ITEM_POOL;
-		_metatable_idx_from_name["const Item"] = Metatables::CONST_ITEM;
 		_metatable_idx_from_name["const EntityPtr"] = Metatables::CONST_ENTITY_PTR;
 		_metatable_idx_from_name["const PathFinder"] = Metatables::CONST_PATHFINDER;
 		_metatable_idx_from_name["const Card"] = Metatables::CONST_CARD;

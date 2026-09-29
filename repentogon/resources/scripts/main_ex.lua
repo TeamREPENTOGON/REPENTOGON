@@ -2670,6 +2670,14 @@ function SFXManager()
 	return sfxManagerInstance
 end
 
+local musicManagerInstance
+local oldMusicManager = MusicManager
+function MusicManager()
+	if not musicManagerInstance then
+		musicManagerInstance = oldMusicManager()
+	end
+	return musicManagerInstance
+end
 
 local oldregmod = RegisterMod
 

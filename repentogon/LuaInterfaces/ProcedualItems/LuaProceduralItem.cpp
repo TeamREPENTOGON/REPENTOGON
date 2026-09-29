@@ -1,17 +1,19 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 LUA_FUNCTION(Lua_PIGetItem) {
 	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
-	lua::luabridge::UserdataPtr::push(L, pi->item, lua::Metatables::CONST_ITEM);
+	
+	LuaItem::PushPtr(L, pi->item);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIGetTargetItem) {
 	ProceduralItem* pi = *lua::GetRawUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	if (pi->targetItem) {
-		lua::luabridge::UserdataPtr::push(L, pi->targetItem, lua::Metatables::CONST_ITEM);
+		LuaItem::PushPtr(L, pi->targetItem);
 	}
 	else {
 		lua_pushnil(L);
