@@ -6712,7 +6712,7 @@ HOOK_METHOD(Entity_NPC, MakeChampion, (uint32_t seed, int championColor, bool in
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(preCallbackId)
+		lua::LuaCaller(L).push(postCallbackId)
 			.push(this->GetType())
 			.push(this, lua::Metatables::ENTITY_NPC)
 			.push(championColor)
