@@ -97,6 +97,10 @@ __thiscall void Entity_NPC::Hornfel_UpdateFrame();
 "558bec6aff68????????64a1????????5081ec2c010000":
 static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
 
+"558bec83ec48a1????????33c58945??535657":
+__thiscall void Entity_NPC::MakeChampion(uint32_t seed, int championColor, bool init);
+
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":
@@ -107,9 +111,6 @@ __thiscall void Entity_NPC::MinecartBreak();
 
 "558becf30f100d????????538b5d":
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
-
-"558bec83ec48a1????????33c58945??535657":
-__thiscall void Entity_NPC::MakeChampion(uint32_t seed, int championColor, bool init);
 
 */
 
@@ -148,6 +149,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod) : public Entity {
 	uint32_t _deliriumCycleID : 0xbe0;
 	bool _isBoss : 0xc3d;
 	float _shieldStrength : 0xc40;
+	int _championColorIdx : 0xc64;
 	uint16_t _championRegenTimer : 0xc74;
 	int _bosscoloridx : 0xc78;
 	ColorMod _dirtColor : 0xcac;

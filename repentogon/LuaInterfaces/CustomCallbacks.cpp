@@ -6677,6 +6677,50 @@ HOOK_METHOD(Entity_Player, ShuffleCostumes, (unsigned int seed) -> void) {
 	}
 }
 
+// MC_PRE/POST_MAKE_CHAMPION (1496/1947)
+HOOK_METHOD(Entity_NPC, MakeChampion, (uint32_t seed, int championColor, bool init) -> void) {
+	const int preCallbackId = 1496;
+	
+	if (CallbackState.test(preCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetType())
+			.push(this, lua::Metatables::ENTITY_NPC)
+			.push(championColor)
+			.push(seed)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1) && lua_toboolean(L, -1) == false) {
+				return;
+			}
+			else if (lua_isinteger(L, -1)) {
+				championColor = (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+
+	super(seed, championColor, init);
+
+	const int postCallbackId = 1497;
+
+	if (CallbackState.test(postCallbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(preCallbackId)
+			.push(this->GetType())
+			.push(this, lua::Metatables::ENTITY_NPC)
+			.push(championColor)
+			.push(seed)
+			.call(0);
+	}
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();

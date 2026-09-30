@@ -398,6 +398,8 @@ ModCallbacks.MC_POST_OPEN_CHEST = 1492
 ModCallbacks.MC_GET_BOSS_THEMATIC_ITEM = 1493
 ModCallbacks.MC_PRE_SHUFFLE_COSTUMES = 1494
 ModCallbacks.MC_POST_SHUFFLE_COSTUMES = 1495
+ModCallbacks.MC_PRE_MAKE_CHAMPION = 1496
+ModCallbacks.MC_POST_MAKE_CHAMPION = 1497
 
 --Repentance+ Enums (🐱 catin: https://github.com/epfly6/RepentanceAPIIssueTracker/issues/597)
 EffectVariant.MEGA_BEAN_EXPLOSION = 202
