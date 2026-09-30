@@ -83,17 +83,9 @@ namespace lua {
 
     namespace metatables
     {
-        extern LIBZHL_API const char* AmbushMT;
-        extern LIBZHL_API const char* AnimationDataMT;
-        extern LIBZHL_API const char* AnimationFrameMT;
-        extern LIBZHL_API const char* AnimationLayerMT;
-        extern LIBZHL_API const char* AnimationStateMT;
-        extern LIBZHL_API const char* BackdropMT;
         extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* BestiaryMenuMT;
-        extern LIBZHL_API const char* BlendModeMT;
         extern LIBZHL_API const char* BossPoolMT;
-        extern LIBZHL_API const char* CameraMT;
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* ChallengeMenuMT;
         extern LIBZHL_API const char* ChallengeParamMT;
@@ -118,19 +110,6 @@ namespace lua {
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
-        extern LIBZHL_API const char* FXLayersMT;
-        extern LIBZHL_API const char* FXParamsMT;
-        extern LIBZHL_API const char* GridDecorationMT;
-        extern LIBZHL_API const char* GridFireMT;
-        extern LIBZHL_API const char* GridGravityMT;
-        extern LIBZHL_API const char* GridLockMT;
-        extern LIBZHL_API const char* GridStairsMT;
-        extern LIBZHL_API const char* GridStatueMT;
-        extern LIBZHL_API const char* GridTeleporterMT;
-        extern LIBZHL_API const char* GridTNT_MT;
-        extern LIBZHL_API const char* GridTrapDoorMT;
-        extern LIBZHL_API const char* GridWallMT;
-        extern LIBZHL_API const char* GridWebMT;
         extern LIBZHL_API const char* HistoryMT;
         extern LIBZHL_API const char* HistoryItemMT;
         extern LIBZHL_API const char* HistoryHUDMT;
@@ -139,19 +118,15 @@ namespace lua {
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* KeyConfigMenuMT;
-        extern LIBZHL_API const char* LayerStateMT;
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
-        extern LIBZHL_API const char* LRoomAreaDescMT;
-        extern LIBZHL_API const char* LRoomTileDescMT;
         extern LIBZHL_API const char* MainMenuMT;
         extern LIBZHL_API const char* MenuManagerMT;
         extern LIBZHL_API const char* MinimapMT;
         extern LIBZHL_API const char* ModsMenuMT;
         extern LIBZHL_API const char* MultiShotParamsMT;
         extern LIBZHL_API const char* NightmareSceneMT;
-        extern LIBZHL_API const char* NullFrameMT;
         extern LIBZHL_API const char* OptionsMenuMT;
         extern LIBZHL_API const char* PauseMenuMT;
         extern LIBZHL_API const char* PersistentGameDataMT;
@@ -163,8 +138,6 @@ namespace lua {
         extern LIBZHL_API const char* ProceduralEffectMT;
         extern LIBZHL_API const char* ProceduralItemMT;
         extern LIBZHL_API const char* ProceduralItemManagerMT;
-        extern LIBZHL_API const char* RngMT;
-        extern LIBZHL_API const char* RoomMT;
         extern LIBZHL_API const char* RoomConfigSetMT;
         extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;

@@ -715,21 +715,16 @@ namespace lua {
 
 	namespace GlobalClasses
 	{
-		const char* Input = "Input";
 		const char* Isaac = "Isaac";
 		const char* HUD = "HUD";
 		const char* Options = "Options";
 	}
 
 	namespace metatables
-	{
-		const char* AmbushMT = "Ambush";
-		const char* BackdropMT = "Backdrop";
+	{;
 		const char* BeamMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
-		const char* BlendModeMT = "BlendMode";
 		const char* BossPoolMT = "BossPool";
-		const char* CameraMT = "Camera";
 		const char* CapsuleMT = "Capsule";
 		const char* ChallengeMenuMT = "ChallengeMenu";
 		const char* ChallengeParamMT = "ChallengeParam";
@@ -754,19 +749,6 @@ namespace lua {
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* DeliriumMetatable = "DeliriumMT";
-		const char* FXLayersMT = "FXLayers";
-		const char* FXParamsMT = "FXParams";
-		const char* GridDecorationMT = "GridEntityDecoration";
-		const char* GridFireMT = "GridEntityFire";
-		const char* GridGravityMT = "GridEntityGravity";
-		const char* GridLockMT = "GridEntityLock";
-		const char* GridStairsMT = "GridEntityStairs";
-		const char* GridStatueMT = "GridEntityStatue";
-		const char* GridTeleporterMT = "GridEntityTeleporter";
-		const char* GridTNT_MT = "GridEntityTNT";
-		const char* GridTrapDoorMT = "GridEntityTrapDoor";
-		const char* GridWallMT = "GridEntityWall";
-		const char* GridWebMT = "GridEntityWeb";
 		const char* HistoryMT = "History";
 		const char* HistoryItemMT = "HistoryItem";
 		const char* HistoryHUDMT = "HistoryHUD";
@@ -778,8 +760,6 @@ namespace lua {
 		const char* LevelGeneratorMT = "LevelGenerator";
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
-		const char* LRoomAreaDescMT = "LRoomAreaDesc";
-		const char* LRoomTileDescMT = "LRoomTileDesc";
 		const char* MainMenuMT = "MainMenu";
 		const char* MenuManagerMT = "MenuManager";
 		const char* MinimapMT = "Minimap";
@@ -797,8 +777,6 @@ namespace lua {
 		const char* ProceduralEffectMT = "ProceduralEffect";
 		const char* ProceduralItemMT = "ProceduralItem";
 		const char* ProceduralItemManagerMT = "ProceduralItemManager";
-		const char* RngMT = "RNG";
-		const char* RoomMT = "Room";
 		const char* RoomConfigSetMT = "RoomConfigSet";
 		const char* RoomConfigStageMT = "RoomConfigStage";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";

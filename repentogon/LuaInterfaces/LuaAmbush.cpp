@@ -1,119 +1,27 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-#include "../LuaClasses.h"
 
 int ambushWaves = 3;
 int bossAmbushWaves = 2;
 
-/*LUA_FUNCTION(Lua_GetAmbush) {
-	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Ambush** ud = (Ambush**)lua_newuserdata(L, sizeof(Ambush*));
-	*ud = game->GetAmbush();
-	luaL_setmetatable(L, lua::metatables::AmbushMT);
-	return 1;
-}
-*/
-
-LUA_FUNCTION(Lua_AmbushStartChallenge)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	ambush->StartChallenge();
-	return 0;
+MOD_EXPORT int L_Ambush_GetCurrentWave() {
+	return g_Game->_ambush.currentWave;
 }
 
-LUA_FUNCTION(Lua_AmbushSpawnBossrushWave)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	ambush->SpawnBossrushWave();
-	return 0;
+MOD_EXPORT int L_Ambush_GetMaxBossChallengeWaves() {
+	return bossAmbushWaves;
 }
 
-LUA_FUNCTION(Lua_AmbushSpawnWave)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	ambush->SpawnWave();
-	return 0;
+MOD_EXPORT int L_Ambush_GetMaxBossrushWaves() {
+	return g_Game->_ambush.maxBossWaves;
 }
 
-LUA_FUNCTION(Lua_GetMaxBossrushWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	lua_pushinteger(L, *ambush->GetMaxBossrushWaves());
-	return 1;
+MOD_EXPORT int L_Ambush_GetMaxChallengeWaves() {
+	return ambushWaves;
 }
 
-LUA_FUNCTION(Lua_SetMaxBossrushWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	int amount = (int)luaL_checkinteger(L, 1);
-	if (amount > 25) amount = 25;
-
-	*ambush->GetMaxBossrushWaves() = amount;
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetMaxChallengeWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	lua_pushinteger(L, ambushWaves);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetMaxChallengeWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	int amount = (int)luaL_checkinteger(L, 1);
-
-	ambushWaves = amount;
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetMaxBossChallengeWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	lua_pushinteger(L, bossAmbushWaves);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetMaxBossChallengeWaves)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	int amount = (int)luaL_checkinteger(L, 1);
-
-	bossAmbushWaves = amount;
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetCurrentWave)
-{
-	Ambush* ambush = g_Game->GetAmbush();
-	lua_pushinteger(L, *ambush->GetCurrentWave());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Ambush_IsActive) {
-	Ambush* ambush = g_Game->GetAmbush();
-	// lua_pushboolean(L, ambush->isActive);
-	return 1;
-}
-
-static int AmbushDifficulty[4] = { 1, 5, 10, 15 };
-
-#undef min
-#undef max
-
-void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* subtype) {
+void SetupAmbushData(Ambush* ambush, RNG* rng, int* index, int* subtype) {
 	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
 	RoomConfig_Room* config = descriptor->Data;
-
-	if (config->Type != 11) {
-		luaL_error(L, "Cannot get Ambush wave information outside of a (boss) challenge room");
-	}
 
 	memcpy(rng, &ambush->rng, sizeof(*rng));
 
@@ -134,14 +42,19 @@ void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* su
 	*index = std::min(*index, 3);
 }
 
-LUA_FUNCTION(Lua_Ambush_GetNextWave) {
-	Ambush* ambush = g_Game->GetAmbush();
+static int AmbushDifficulty[4] = { 1, 5, 10, 15 };
+
+#undef min
+#undef max
+
+MOD_EXPORT RoomConfig_Room* L_Ambush_GetNextWave() {
+	Ambush* ambush = &g_Game->_ambush;
 	RoomConfig_Room* currentRoom = g_Game->_room->_descriptor->Data;
 	RNG rng;
 	int index;
 	int subtype;
 
-	SetupAmbushData(L, ambush, &rng, &index, &subtype);
+	SetupAmbushData(ambush, &rng, &index, &subtype);
 
 	int spawnCount = 0;
 	RoomConfig_Room* config = nullptr;
@@ -156,8 +69,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 			AmbushDifficulty[index] /* ebp - 60 */, &requiredDoors/* ebp - 4C */, subtype /* ebp - 64 */, -1);
 
 		if (!config) {
-			lua_pushnil(L);
-			return 1;
+			return nullptr;
 		}
 
 		spawnCount = config->SpawnCount;
@@ -165,17 +77,19 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 	} while (spawnCount == 0 && i < 10);
 
 	if (config && i != 10) {
-		LuaRoomConfigRoom::PushPtr(L, config);
+		return config;
 	}
 	else {
-		lua_pushnil(L);
+		return nullptr;
 	}
-
-	return 1;
 }
 
-LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
-	Ambush* ambush = g_Game->GetAmbush();
+MOD_EXPORT int L_Ambush_GetRemainingWaves() {
+	return std::max(ambushWaves - g_Game->_ambush.currentWave, 0);
+}
+
+MOD_EXPORT int L_Ambush_GetNextWaves(RoomConfig_Room** out, int maxCount) {
+	Ambush* ambush = &g_Game->_ambush;
 	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
 	RoomConfig_Room* currentRoom = descriptor->Data;
 
@@ -184,47 +98,34 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 	int subtype;
 	unsigned int doors = 0;
 
-	SetupAmbushData(L, ambush, &rng, &index, &subtype);
+	SetupAmbushData(ambush, &rng, &index, &subtype);
 
 	std::vector<std::tuple<RoomConfig_Room*, float, float>> configs;
-	lua_newtable(L);
-	int limit = ambushWaves;
-	if (currentRoom->Subtype == 1) {
-		limit = ambush->maxBossWaves;
-	}
-
 	for (int i = ambush->currentWave; i < ambushWaves; ++i) {
 		int spawnCount = 0;
 		int j = 0;
 		do {
 			rng.Next();
-
-			int stage = g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+			int stage = g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, -1);	
 			// Draw the room a first time without reducing its weight.
 			// We need to determine what its current weight is in order to reduce it during 
 			// a second draw. 
 			RoomConfig_Room* config = g_Game->GetRoomConfig()->GetRandomRoom(rng._seed, false, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
 			if (!config) {
-				return 1;
+				return 0;
 			}
-
 			float weight = config->Weight;
 			float initial = config->InitialWeight;
 			config = g_Game->GetRoomConfig()->GetRandomRoom(rng._seed, true, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
-
 			spawnCount = config->SpawnCount;
 			if (spawnCount != 0) {
 				configs.push_back(std::make_tuple(config, initial, weight));
-
-				for (int k = 0; k < 3 * spawnCount; ++k) {
+				for (int k = 0; k < 3 * spawnCount; ++k)	
 					// One call for PickEntry, one for FixEntry, one for SpawnWrapper.
 					rng.Next();
-				}
 			}
-
 			++j;
 		} while (spawnCount == 0 && j < 10);
-
 		index = std::min(index + 1, 3);
 	}
 
@@ -233,40 +134,32 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 		config->Weight = weight;
 	}
 
-	for (unsigned int i = 0; i < configs.size(); ++i) {
-		lua_pushinteger(L, i + 1);
-		LuaRoomConfigRoom::PushPtr(L, std::get<0>(configs[i]));
-		lua_rawset(L, -3);
-	}
-
-	return 1;
+	int count = std::min((int)configs.size(), maxCount);
+	for (int i = 0; i < count; ++i)
+		out[i] = std::get<0>(configs[i]);
+	return count;
 }
 
-static void RegisterAmbush(lua_State* L) {
-	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetAmbush", Lua_GetAmbush);
-	lua_newtable(L);
-	lua::TableAssoc(L, "StartChallenge", Lua_AmbushStartChallenge);
-	lua::TableAssoc(L, "SpawnBossrushWave", Lua_AmbushSpawnBossrushWave);
-	lua::TableAssoc(L, "SpawnWave", Lua_AmbushSpawnWave );
-		//{ "GetNumBossesPerWave", Lua_GetNumBossesPerWave );
-		//{ "SetNumBossesPerWave", Lua_SetNumBossesPerWave );
-		lua::TableAssoc(L, "GetMaxBossrushWaves", Lua_GetMaxBossrushWaves );
-		lua::TableAssoc(L, "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves );
-		lua::TableAssoc(L, "GetMaxChallengeWaves", Lua_GetMaxChallengeWaves );
-		lua::TableAssoc(L, "SetMaxChallengeWaves", Lua_SetMaxChallengeWaves );
-		lua::TableAssoc(L, "GetMaxBossChallengeWaves", Lua_GetMaxBossChallengeWaves);
-		lua::TableAssoc(L, "SetMaxBossChallengeWaves", Lua_SetMaxBossChallengeWaves);
-		lua::TableAssoc(L, "GetCurrentWave", Lua_GetCurrentWave );
-		// { "IsActive", Lua_Ambush_IsActive );
-			lua::TableAssoc(L, "GetNextWave", Lua_Ambush_GetNextWave );
-			lua::TableAssoc(L, "GetNextWaves", Lua_Ambush_GetNextWaves );
-
-	lua_setglobal(L, "Ambush");
+MOD_EXPORT void L_Ambush_SetMaxBossChallengeWaves(int waves) {
+	bossAmbushWaves = waves;
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+MOD_EXPORT void L_Ambush_SetMaxBossrushWaves(int waves) {
+	g_Game->_ambush.maxBossWaves = waves;
+}
 
-	lua::LuaStackProtector protector(_state);
-	RegisterAmbush(_state);
+MOD_EXPORT void L_Ambush_SetMaxChallengeWaves(int waves) {
+	ambushWaves = waves;
+}
+
+MOD_EXPORT void L_Ambush_SpawnBossrushWave() {
+	g_Game->_ambush.SpawnBossrushWave();
+}
+
+MOD_EXPORT void L_Ambush_SpawnWave() {
+	g_Game->_ambush.SpawnWave();
+}
+
+MOD_EXPORT void L_Ambush_StartChallenge() {
+	g_Game->_ambush.StartChallenge();
 }

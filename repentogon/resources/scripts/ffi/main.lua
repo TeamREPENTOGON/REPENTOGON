@@ -129,7 +129,7 @@ end
 local function loadmodule(name)
 	local ok, err = pcall(require, name)
 	if not ok then
-		Isaac.ConsoleOutput(string.format("[ERROR] Failed to load %s: %s\n", name, tostring(err)))
+		Isaac.DebugString(string.format("[ERROR] Failed to load %s: %s\n", name, tostring(err)))
 	end
 end
 
@@ -196,6 +196,7 @@ loadmodule("ffi.Room.Room")
 loadmodule("ffi.Input")
 loadmodule("ffi.SFXManager")
 loadmodule("ffi.MusicManager")
+loadmodule("ffi.Ambush")
 
 ffi = nil
 ffidll = nil
