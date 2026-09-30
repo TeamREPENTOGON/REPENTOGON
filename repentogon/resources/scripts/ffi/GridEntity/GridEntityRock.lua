@@ -37,7 +37,7 @@ local GridEntityRockMT
 GridEntityRockMT = {
     __type = "GridEntityRock",
     Destroy = function(self, immediate)
-        ffichecks.checkboolean(1, immediate)
+        immediate = ffichecks.optboolean(1, false)
         return repentogon.L_GridEntityRock_Destroy(self, immediate, EntityRef())
     end,
     DestroyWithSource = function(self, immediate, source)
