@@ -1,123 +1,43 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_BestiaryMenu_GetBestiaryMenuSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	ANM2* anm2 = menu->GetBestiaryMenuSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_BestiaryMenu_GetBestiaryMenuSprite() {
+	return &g_MenuManager->_menuBestiary.BestiaryMenuSprite;
 }
 
-LUA_FUNCTION(Lua_BestiaryMenu_GetDeathScreenSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	ANM2* anm2 = menu->GetDeathScreenSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_BestiaryMenu_GetDeathScreenSprite() {
+	return &g_MenuManager->_menuBestiary.DeathScreenSprite;
 }
 
-LUA_FUNCTION(Lua_BestiaryMenu_GetEnemySprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	ANM2* anm2 = menu->GetEnemySprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_BestiaryMenu_GetEnemySprite() {
+	return &g_MenuManager->_menuBestiary.EnemySprite;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetSelectedPage)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	lua_pushinteger(L, menu->CurrentPage);
-
-	return 1;
+MOD_EXPORT int L_BestiaryMenu_GetNumBossPages() {
+	return ((g_MenuManager->_menuBestiary.unk2 - g_MenuManager->_menuBestiary.unk1) >> 2) / 4;
 }
 
-LUA_FUNCTION(Lua_MainMenu_SetSelectedPage)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->CurrentPage = (int)luaL_checkinteger(L, 1);
-	menu->LoadPreview();
-
-	return 0;
+MOD_EXPORT int L_BestiaryMenu_GetNumMonsterPages() {
+	return g_MenuManager->_menuBestiary.LastEnemyPageID;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	lua_pushinteger(L, menu->SelectedElement);
-
-	return 1;
+MOD_EXPORT int L_BestiaryMenu_GetNumPages() {
+	return (((g_MenuManager->_menuBestiary.unk2 - g_MenuManager->_menuBestiary.unk1) >> 2) / 4) + g_MenuManager->_menuBestiary.LastEnemyPageID;
 }
 
-LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
-	menu->LoadPreview();
-
-	return 0;
+MOD_EXPORT int L_BestiaryMenu_GetSelectedPage() {
+	return g_MenuManager->_menuBestiary.CurrentPage;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetLastEnemyPageID)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	lua_pushinteger(L, menu->LastEnemyPageID);
-
-	return 1;
+MOD_EXPORT int L_BestiaryMenu_GetSelectedElement() {
+	return g_MenuManager->_menuBestiary.SelectedElement;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetNumBossPages)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	int numBossPages = ((menu->unk2 - menu->unk1) >> 2) / 4;
-	lua_pushinteger(L, numBossPages);
-
-	return 1;
-}
-LUA_FUNCTION(Lua_MainMenu_GetNumPages)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
-	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	int numBossPages = ((menu->unk2 - menu->unk1) >> 2) / 4;
-	lua_pushinteger(L, menu->LastEnemyPageID + numBossPages);
-
-	return 1;
+MOD_EXPORT void L_BestiaryMenu_SetSelectedPage(int page) {
+	g_MenuManager->_menuBestiary.CurrentPage = page;
+	g_MenuManager->_menuBestiary.LoadPreview();
 }
 
-static void RegisterBestiaryMenu(lua_State* L)
-{
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetBestiaryMenuSprite", Lua_BestiaryMenu_GetBestiaryMenuSprite); 
-	lua::TableAssoc(L, "GetDeathScreenSprite", Lua_BestiaryMenu_GetDeathScreenSprite);
-	lua::TableAssoc(L, "GetEnemySprite", Lua_BestiaryMenu_GetEnemySprite);
-	lua::TableAssoc(L, "GetSelectedPage", Lua_MainMenu_GetSelectedPage);
-	lua::TableAssoc(L, "SetSelectedPage", Lua_MainMenu_SetSelectedPage);
-	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
-	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
-	lua::TableAssoc(L, "GetNumMonsterPages", Lua_MainMenu_GetLastEnemyPageID);
-	lua::TableAssoc(L, "GetNumBossPages", Lua_MainMenu_GetNumBossPages);
-	lua::TableAssoc(L, "GetNumPages", Lua_MainMenu_GetNumPages);
-	lua_setglobal(L, lua::metatables::BestiaryMenuMT);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterBestiaryMenu(state);
+MOD_EXPORT void L_BestiaryMenu_SetSelectedElement(int element) {
+	g_MenuManager->_menuBestiary.SelectedElement = element;
+	g_MenuManager->_menuBestiary.LoadPreview();
 }

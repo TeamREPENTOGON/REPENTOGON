@@ -1,244 +1,185 @@
-#include "HookSystem.h"
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
 #include "../../Patches/XMLPlayerExtras.h"
 
-LUA_FUNCTION(lua_CharMenu_GetBigCharPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetBigCharPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT int L_CharacterMenu_GetActiveStatus() {
+	return g_MenuManager->_menuCharacter.Status;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetDifficultyOverlaySprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetDifficultyOverlaySprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_CharacterMenu_GetBigCharPageSprite() {
+	return &g_MenuManager->_menuCharacter._BigCharPageSprite;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetGreedDecoSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetGreedDecoSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_CharacterMenu_GetBGSprite() {
+	return &g_MenuManager->_menuCharacter._CharacterMenuBGSprite;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetBGSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetBGSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetDifficultyPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetDifficultyPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetSeedPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetSeedPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetWinStreakPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetWinStreakPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetEastereggPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetEastereggPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetSeedUnlockPageSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetSeedUnlockPageSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetCharacterPortraitSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetCharacterPortraitSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetSeedEntrySprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetSeedEntrySprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetPageSwapWidgetSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetPageSwapWidgetSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetTaintedBGDecoSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = menu->GetTaintedBGDecoSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetCompletionMarksSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	ANM2* anm2 = &menu->GetCompletionWidget()->anm2;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetNumCharacters)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushinteger(L, menu->_numCharacters);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterMenu)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushinteger(L, menu->_characterMenuShown);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterMenu)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const int page = (int)luaL_checkinteger(L, 1);
-	const bool updateGraphics = lua::luaL_optboolean(L, 2, false);
-
-	if (page == 0 || page == 1) {
-		if (updateGraphics) {
-			menu->ChangeCharacterPage(page);
-		} else {
-			// Legacy behaviour of this function that doesn't actually visually change the menu.
-			menu->_characterMenuShown = page;
+// Given a PlayerType, finds the corresponding CharacterMenu character ID, if any.
+// I don't think the game maintains a map in this direction.
+int GetCharacterMenuIDFromPlayerType(const int playerType) {
+	if (playerType >= NUM_PLAYER_TYPES) {
+		for (uint32_t i = 0; i < g_ModCharacterMap.size(); i++) {
+			if (playerType == g_ModCharacterMap[i].normal || playerType == g_ModCharacterMap[i].tainted) {
+				return i + 18;
+			}
 		}
 	}
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_CharMenu_SwapCharacterMenu)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const bool force = lua::luaL_optboolean(L, 1, false);
-
-	if (menu->_PageSwapWidgetSprite._color._tint[3] != 0.0f || force) {
-		menu->DoPageSwap();
+	else if (playerType >= 0) {
+		for (uint32_t i = 1; i < 36; i++) {
+			if (i != 18 && playerType == __ptr_g_MenuCharacterEntries[i].playerType) {
+				return i % 18;
+			}
+		}
 	}
-
-	return 0;
+	return -1;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetIsCharacterUnlocked)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushboolean(L, menu->IsCharacterUnlocked);
+MOD_EXPORT int L_CharacterMenu_GetCharacterMenuIDFromPlayerType(int playerType) {
+	const int charID = GetCharacterMenuIDFromPlayerType(playerType);
 
-	return 1;
+	if (charID > 0) {
+		return charID;
+	}
+	else {
+		return -1;
+	}
+};
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetCharacterPortraitSprite() {
+	return &g_MenuManager->_menuCharacter._CharacterPortraitsSprite;
 }
 
-LUA_FUNCTION(lua_CharMenu_SetIsCharacterUnlocked)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->IsCharacterUnlocked = lua::luaL_checkboolean(L, 1);
-
-	return 0;
+MOD_EXPORT float L_CharacterMenu_GetCharacterWheelDepth() {
+	return g_MenuManager->_menuCharacter._characterWheelDepth;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetDifficulty)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushinteger(L, menu->Difficulty);
-
-	return 1;
+MOD_EXPORT float L_CharacterMenu_GetCharacterWheelWidth() {
+	return g_MenuManager->_menuCharacter._characterWheelWidth;
 }
 
-LUA_FUNCTION(lua_CharMenu_SetDifficulty)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->Difficulty = (int)luaL_checkinteger(L, 1);
-
-	return 0;
+MOD_EXPORT ANM2* L_CharacterMenu_GetCompletionMarksSprite() {
+	return &g_MenuManager->_menuCharacter._completionWidget.anm2;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterID)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushinteger(L, menu->SelectedCharacterID);
+MOD_EXPORT int L_CharacterMenu_GetDifficulty() {
+	return g_MenuManager->_menuCharacter.Difficulty;
+}
 
-	return 1;
+MOD_EXPORT ANM2* L_CharacterMenu_GetDifficultyOverlaySprite() {
+	return &g_MenuManager->_menuCharacter._DifficultyOverlaySprite;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetDifficultyPageSprite() {
+	return &g_MenuManager->_menuCharacter._DifficultyPageSprite;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetEasterEggPageSprite() {
+	return &g_MenuManager->_menuCharacter._EastereggPageSprite;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetGreedDecoSprite() {
+	return &g_MenuManager->_menuCharacter._GreedDecoOverlaySprite;
+}
+
+MOD_EXPORT bool L_CharacterMenu_GetIsCharacterUnlocked() {
+	return g_MenuManager->_menuCharacter.IsCharacterUnlocked;
+}
+
+MOD_EXPORT int L_CharacterMenu_GetNumCharacters() {
+	return g_MenuManager->_menuCharacter._numCharacters;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetPageSwapWidgetSprite() {
+	return &g_MenuManager->_menuCharacter._PageSwapWidgetSprite;
+}
+
+MOD_EXPORT int L_CharacterMenu_GetPlayerTypeFromCharacterMenuID(int characterMenuID, bool tainted) {
+	const int playerType = Menu_Character::GetPlayerTypeFromMenuID(characterMenuID, tainted);
+
+	if (playerType < 0) {
+		return -1;
+	}
+	else {
+		return playerType;
+	}
+}
+
+MOD_EXPORT float L_CharacterMenu_GetScrollSpeed() {
+	return g_MenuManager->_menuCharacter._scrollSpeed;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetSeedEntrySprite() {
+	return &g_MenuManager->_menuCharacter._SeedEntrySprite;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetSeedPageSprite() {
+	return &g_MenuManager->_menuCharacter._SeedPageSprite;
+}
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetSeedUnlockPageSprite() {
+	return &g_MenuManager->_menuCharacter._SeedUnlockPageSprite;
+}
+
+MOD_EXPORT int L_CharacterMenu_GetSelectedCharacterMenu() {
+	return g_MenuManager->_menuCharacter._characterMenuShown;
+};
+
+MOD_EXPORT int L_CharacterMenu_GetSelectedCharacterID() {
+	return g_MenuManager->_menuCharacter.SelectedCharacterID;
+};
+
+MOD_EXPORT int L_CharacterMenu_GetSelectedCharacterPlayerType() {
+	const int playerType = g_MenuManager->_menuCharacter.GetSelectedPlayerType();
+
+	if (playerType < 0) {
+		return -1;
+	}
+	else {
+		return playerType;
+	}
+};
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetTaintedBGDecoSprite() {
+	return &g_MenuManager->_menuCharacter._TaintedMenuBGDecoSprite;
+};
+
+MOD_EXPORT ANM2* L_CharacterMenu_GetWinStreakPageSprite() {
+	return &g_MenuManager->_menuCharacter._WinStreakPageSprite;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetActiveStatus(int status) {
+	g_MenuManager->_menuCharacter.Status = status;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetCharacterWheelDepth(float value) {
+	g_MenuManager->_menuCharacter._characterWheelDepth = value;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetCharacterWheelWidth(float value) {
+	g_MenuManager->_menuCharacter._characterWheelWidth = value;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetDifficulty(int difficulty) {
+	g_MenuManager->_menuCharacter.Difficulty = difficulty;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetIsCharacterUnlocked(bool isUnlocked) {
+	g_MenuManager->_menuCharacter.IsCharacterUnlocked = isUnlocked;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetScrollSpeed(float speed) {
+	g_MenuManager->_menuCharacter._scrollSpeed = speed;
+};
+
+MOD_EXPORT void L_CharacterMenu_SetSelectedCharacterMenu(int menu, bool updateGraphics) {
+	if (menu == 0 || menu == 1) {
+		if (updateGraphics) {
+			g_MenuManager->_menuCharacter.ChangeCharacterPage(menu);
+		}
+		else {
+			// Legacy behaviour of this function that doesn't actually visually change the menu.
+			g_MenuManager->_menuCharacter._characterMenuShown = menu;
+		}
+	}
 }
 
 // Given a CharacterMenu character ID, returns the "index" of that character in the wheel.
@@ -271,220 +212,30 @@ int GetCharacterMenuIndexFromID(const int targetCharID) {
 	return -1;
 }
 
-LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterID)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const int charID = (int)luaL_checkinteger(L, 1);
-	const bool updateWheel = lua::luaL_optboolean(L, 2, false);
-	const bool skipRotation = lua::luaL_optboolean(L, 3, false);
-
+MOD_EXPORT void L_CharacterMenu_SetSelectedCharacterID(int charID, bool updateWheel, bool skipRotation) {
 	if (charID >= 0 && charID < (int)g_ModCharacterMap.size() + 18) {
 		if (!updateWheel) {
 			// Silly legacy behaviour of this function that does no validation whatsoever nor updates the menu.
-			menu->SelectedCharacterID = charID;
-		} else {
+			g_MenuManager->_menuCharacter.SelectedCharacterID = charID;
+		}
+		else {
 			const int idx = GetCharacterMenuIndexFromID(charID);
 			if (idx >= 0) {
-				menu->SelectedCharacterID = charID;
-				menu->_numCharacters_MINUS_SelectedEntry = (idx == 0) ? 0 : (menu->_numCharacters - idx);
+				g_MenuManager->_menuCharacter.SelectedCharacterID = charID;
+				g_MenuManager->_menuCharacter._numCharacters_MINUS_SelectedEntry = (idx == 0) ? 0 : (g_MenuManager->_menuCharacter._numCharacters - idx);
 				if (skipRotation) {
-					menu->_horizontalScrollPosition = (menu->_numCharacters_MINUS_SelectedEntry * 360.0f) / menu->_numCharacters;
+					g_MenuManager->_menuCharacter._horizontalScrollPosition = (g_MenuManager->_menuCharacter._numCharacters_MINUS_SelectedEntry * 360.0f) / g_MenuManager->_menuCharacter._numCharacters;
 				}
-				if (menu->SelectedCharacterID < 18) {
-					menu->_BigCharPageSprite.Play(__ptr_g_MenuCharacterEntries[menu->SelectedCharacterID + menu->_characterMenuShown * 18].animationName, false);
+				if (g_MenuManager->_menuCharacter.SelectedCharacterID < 18) {
+					g_MenuManager->_menuCharacter._BigCharPageSprite.Play(__ptr_g_MenuCharacterEntries[g_MenuManager->_menuCharacter.SelectedCharacterID + g_MenuManager->_menuCharacter._characterMenuShown * 18].animationName, false);
 				}
 			}
 		}
 	}
-
-	return 0;
 }
 
-LUA_FUNCTION(lua_CharMenu_GetPlayerTypeFromCharacterMenuID)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const int charID = (int)luaL_checkinteger(L, 1);
-	const bool taintedMenu = lua::luaL_optboolean(L, 2, menu->GetSelectedCharacterMenu() == 1);
-	const int playerType = Menu_Character::GetPlayerTypeFromMenuID(charID, taintedMenu);
-
-	if (playerType < 0) {
-		lua_pushnil(L);
-	} else {
-		lua_pushinteger(L, playerType);
+MOD_EXPORT void L_CharacterMenu_SwapCharacterMenu(bool force) {
+	if (g_MenuManager->_menuCharacter._PageSwapWidgetSprite._color._tint[3] != 0.0f || force) {
+		g_MenuManager->_menuCharacter.DoPageSwap();
 	}
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterPlayerType)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const int playerType = menu->GetSelectedPlayerType();
-
-	if (playerType < 0) {
-		lua_pushnil(L);
-	} else {
-		lua_pushinteger(L, playerType);
-	}
-
-	return 1;
-}
-
-// Given a PlayerType, finds the corresponding CharacterMenu character ID, if any.
-// I don't think the game maintains a map in this direction.
-int GetCharacterMenuIDFromPlayerType(const int playerType) {
-	if (playerType >= NUM_PLAYER_TYPES) {
-		for (uint32_t i = 0; i < g_ModCharacterMap.size(); i++) {
-			if (playerType == g_ModCharacterMap[i].normal || playerType == g_ModCharacterMap[i].tainted) {
-				return i + 18;
-			}
-		}
-	} else if (playerType >= 0) {
-		for (uint32_t i = 1; i < 36; i++) {
-			if (i != 18 && playerType == __ptr_g_MenuCharacterEntries[i].playerType) {
-				return i % 18;
-			}
-		}
-	}
-	return -1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetCharacterMenuIDFromPlayerType) {
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-
-	const int playerType = (int)luaL_checkinteger(L, 1);
-	const int charID = GetCharacterMenuIDFromPlayerType(playerType);
-
-	if (charID > 0) {
-		lua_pushinteger(L, charID);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetCharacterWheelDepth)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushnumber(L, menu->_characterWheelDepth);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_SetCharacterWheelDepth)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->_characterWheelDepth = (float)luaL_checknumber(L, 1);
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetScrollSpeed)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushnumber(L, menu->_scrollSpeed);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_SetScrollSpeed)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->_scrollSpeed = (float)luaL_checknumber(L, 1);
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_CharMenu_GetCharacterWheelWidth)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushnumber(L, menu->_characterWheelWidth);
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_CharMenu_SetCharacterWheelWidth)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->_characterWheelWidth = (float)luaL_checknumber(L, 1);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_CharMenu_GetActiveStatus) {
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	lua_pushinteger(L, menu->Status);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_CharMenu_SetActiveStatus) {
-	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
-	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->Status = (int)luaL_checkinteger(L, 1);
-	return 0;
-}
-
-static void RegisterStatsMenuGame(lua_State* L)
-{
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetBigCharPageSprite", lua_CharMenu_GetBigCharPageSprite);
-	lua::TableAssoc(L, "GetDifficultyOverlaySprite", lua_CharMenu_GetDifficultyOverlaySprite);
-	lua::TableAssoc(L, "GetGreedDecoSprite", lua_CharMenu_GetGreedDecoSprite);
-	lua::TableAssoc(L, "GetBGSprite", lua_CharMenu_GetBGSprite);
-	lua::TableAssoc(L, "GetDifficultyPageSprite", lua_CharMenu_GetDifficultyPageSprite);
-	lua::TableAssoc(L, "GetSeedPageSprite", lua_CharMenu_GetSeedPageSprite);
-	lua::TableAssoc(L, "GetWinStreakPageSprite", lua_CharMenu_GetWinStreakPageSprite);
-	lua::TableAssoc(L, "GetEasterEggPageSprite", lua_CharMenu_GetEastereggPageSprite);
-	lua::TableAssoc(L, "GetEastereggPageSprite", lua_CharMenu_GetEastereggPageSprite); //deprecated
-	lua::TableAssoc(L, "GetSeedUnlockPageSprite", lua_CharMenu_GetSeedUnlockPageSprite);
-	lua::TableAssoc(L, "GetSeedUnlockPageSprite", lua_CharMenu_GetSeedUnlockPageSprite);
-	lua::TableAssoc(L, "GetCharacterPortraitSprite", lua_CharMenu_GetCharacterPortraitSprite);
-	lua::TableAssoc(L, "GetSeedEntrySprite", lua_CharMenu_GetSeedEntrySprite);
-	lua::TableAssoc(L, "GetPageSwapWidgetSprite", lua_CharMenu_GetPageSwapWidgetSprite);
-	lua::TableAssoc(L, "GetTaintedBGDecoSprite", lua_CharMenu_GetTaintedBGDecoSprite);
-	lua::TableAssoc(L, "GetCompletionMarksSprite", lua_CharMenu_GetCompletionMarksSprite);
-	lua::TableAssoc(L, "GetNumCharacters", lua_CharMenu_GetNumCharacters);
-	lua::TableAssoc(L, "GetSelectedCharacterMenu", lua_CharMenu_GetSelectedCharacterMenu);
-	lua::TableAssoc(L, "SetSelectedCharacterMenu", lua_CharMenu_SetSelectedCharacterMenu);
-	lua::TableAssoc(L, "SwapCharacterMenu", lua_CharMenu_SwapCharacterMenu);
-	lua::TableAssoc(L, "GetIsCharacterUnlocked", lua_CharMenu_GetIsCharacterUnlocked);
-	lua::TableAssoc(L, "SetIsCharacterUnlocked", lua_CharMenu_SetIsCharacterUnlocked);
-	lua::TableAssoc(L, "GetDifficulty", lua_CharMenu_GetDifficulty);
-	lua::TableAssoc(L, "SetDifficulty", lua_CharMenu_SetDifficulty);
-	lua::TableAssoc(L, "GetSelectedCharacterID", lua_CharMenu_GetSelectedCharacterID);
-	lua::TableAssoc(L, "SetSelectedCharacterID", lua_CharMenu_SetSelectedCharacterID);
-	lua::TableAssoc(L, "GetSelectedCharacterPlayerType", lua_CharMenu_GetSelectedCharacterPlayerType);
-	lua::TableAssoc(L, "GetPlayerTypeFromCharacterMenuID", lua_CharMenu_GetPlayerTypeFromCharacterMenuID);
-	lua::TableAssoc(L, "GetCharacterMenuIDFromPlayerType", lua_CharMenu_GetCharacterMenuIDFromPlayerType);
-	lua::TableAssoc(L, "GetCharacterWheelDepth", lua_CharMenu_GetCharacterWheelDepth);
-	lua::TableAssoc(L, "SetCharacterWheelDepth", lua_CharMenu_SetCharacterWheelDepth);
-	lua::TableAssoc(L, "GetScrollSpeed", lua_CharMenu_GetScrollSpeed);
-	lua::TableAssoc(L, "SetScrollSpeed", lua_CharMenu_SetScrollSpeed);
-	lua::TableAssoc(L, "GetCharacterWheelWidth", lua_CharMenu_GetCharacterWheelWidth);
-	lua::TableAssoc(L, "SetCharacterWheelWidth", lua_CharMenu_SetCharacterWheelWidth);
-	lua::TableAssoc(L, "GetActiveStatus", Lua_CharMenu_GetActiveStatus);
-	lua::TableAssoc(L, "SetActiveStatus", Lua_CharMenu_SetActiveStatus);
-	lua_setglobal(L, lua::metatables::CharacterMenuMT);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, ()->void)
-{
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterStatsMenuGame(state);
 }

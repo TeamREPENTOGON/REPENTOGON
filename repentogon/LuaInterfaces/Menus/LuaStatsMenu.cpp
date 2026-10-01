@@ -1,190 +1,65 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_StatsMenu_GetStatsMenuSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_StatsMenuSprite;
-	LuaSprite::PushPtr(L, anm2);
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuSprite() {
+	return &g_MenuManager->_menuStats._achievementsSprite;
+};
 
-	return 1;
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuCursorLeftSprite() {
+	return &g_MenuManager->_menuStats._cursorLeftSprite;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuCursorRightSprite() {
+	return &g_MenuManager->_menuStats._cursorRightSprite;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite1() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite1;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite2() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite2;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite3() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite3;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite4() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite4;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite5() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite5;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite6() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite6;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite7() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite7;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite8() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite8;
+};
+
+MOD_EXPORT ANM2* L_StatsMenu_GetSecretsMenuMiniSprite9() {
+	return &g_MenuManager->_menuStats._achievementMiniSprite9;
+};
+
+MOD_EXPORT int L_StatsMenu_GetSelectedElement() {
+	return g_MenuManager->_menuStats._statsMenuCurrentSelection;
 }
 
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementsSprite;
-	LuaSprite::PushPtr(L, anm2);
+MOD_EXPORT ANM2* L_StatsMenu_GetStatsMenuSprite() {
+	return &g_MenuManager->_menuStats._StatsMenuSprite;
+};
 
-	return 1;
-}
+MOD_EXPORT bool L_StatsMenu_IsSecretsMenuVisible() {
+	return g_MenuManager->_menuStats._isAchievementScreenVisible;
+};
 
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite1)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite1;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite2)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite2;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite3)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite3;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite4)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite4;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite5)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite5;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite6)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite6;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite7)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite7;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite8)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite8;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite9)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_achievementMiniSprite9;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorLeftSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_cursorLeftSprite;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorRightSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	ANM2* anm2 = &menuStats->_cursorRightSprite;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_IsSecretsMenuVisible)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	lua_pushboolean(L, menuStats->_isAchievementScreenVisible == 1);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_GetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	lua_pushinteger(L, menuStats->_statsMenuCurrentSelection);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_StatsMenu_SetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
-	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
-	menuStats->_statsMenuCurrentSelection= (int)luaL_checkinteger(L, 1);
-
-	return 0;
-}
-
-static void RegisterStatsMenuGame(lua_State* L)
-{
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetStatsMenuSprite", Lua_StatsMenu_GetStatsMenuSprite);
-	lua::TableAssoc(L, "GetSecretsMenuSprite", Lua_StatsMenu_GetSecretsMenuSprite);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite1", Lua_StatsMenu_GetSecretsMenuMiniSprite1);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite2", Lua_StatsMenu_GetSecretsMenuMiniSprite2);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite3", Lua_StatsMenu_GetSecretsMenuMiniSprite3);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite4", Lua_StatsMenu_GetSecretsMenuMiniSprite4);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite5", Lua_StatsMenu_GetSecretsMenuMiniSprite5);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite6", Lua_StatsMenu_GetSecretsMenuMiniSprite6);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite7", Lua_StatsMenu_GetSecretsMenuMiniSprite7);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite8", Lua_StatsMenu_GetSecretsMenuMiniSprite8);
-	lua::TableAssoc(L, "GetSecretsMenuMiniSprite9", Lua_StatsMenu_GetSecretsMenuMiniSprite9);
-	lua::TableAssoc(L, "GetSecretsMenuCursorLeftSprite", Lua_StatsMenu_GetSecretsMenuCursorLeftSprite);
-	lua::TableAssoc(L, "GetSecretsMenuCursorRightSprite", Lua_StatsMenu_GetSecretsMenuCursorRightSprite);
-	lua::TableAssoc(L, "IsSecretsMenuVisible", Lua_StatsMenu_IsSecretsMenuVisible);
-	lua::TableAssoc(L, "GetSelectedElement", Lua_StatsMenu_GetSelectedElement);
-	lua::TableAssoc(L, "SetSelectedElement", Lua_StatsMenu_SetSelectedElement);
-	lua_setglobal(L, lua::metatables::StatsMenuMT);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterStatsMenuGame(state);
+MOD_EXPORT void L_StatsMenu_SetSelectedElement(int element) {
+	g_MenuManager->_menuStats._statsMenuCurrentSelection = element;
 }

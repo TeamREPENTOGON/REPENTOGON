@@ -1,131 +1,45 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	ANM2* anm2 = &menu->_DailyRunSprite;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_DailyChallengeMenu_GetSprite() {
+	return &g_MenuManager->_menuDailyChallenge._DailyRunSprite;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetLeaderboardSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	ANM2* anm2 = &menu->_leaderboard._leaderboardMenuSprite;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_DailyChallengeMenu_GetLeaderboardSprite() {
+	return &g_MenuManager->_menuDailyChallenge._leaderboard._leaderboardMenuSprite;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetLeaderboardScoreMenuSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	ANM2* anm2 = &menu->_leaderboard._scoreMenuSprite;
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_DailyChallengeMenu_GetLeaderboardScoreMenuSprite() {
+	return &g_MenuManager->_menuDailyChallenge._leaderboard._scoreMenuSprite;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushinteger(L, menu->SelectedElement);
-
-	return 1;
+MOD_EXPORT int L_DailyChallengeMenu_GetSelectedElement() {
+	return g_MenuManager->_menuDailyChallenge.SelectedElement;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_SetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
-
-	return 0;
+MOD_EXPORT int L_DailyChallengeMenu_GetState() {
+	return g_MenuManager->_menuDailyChallenge.State;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_IsLeaderboardVisible)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushboolean(L, menu->_leaderboard._displayState > 0);
-
-	return 1;
+MOD_EXPORT int L_DailyChallengeMenu_GetTimeLeftHours() {
+	return g_MenuManager->_menuDailyChallenge._timeHoursLeft;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetTimeLeftHours)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushinteger(L, menu->_timeHoursLeft);
-
-	return 1;
+MOD_EXPORT int L_DailyChallengeMenu_GetTimeLeftMinutes() {
+	return g_MenuManager->_menuDailyChallenge._timeMinutesLeft;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetTimeLeftMinutes)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushinteger(L, menu->_timeMinutesLeft);
-
-	return 1;
+MOD_EXPORT int L_DailyChallengeMenu_GetTimeLeftSeconds() {
+	return g_MenuManager->_menuDailyChallenge._timeSecondsLeft;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetTimeLeftSeconds)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushinteger(L, menu->_timeSecondsLeft);
-
-	return 1;
+MOD_EXPORT bool L_DailyChallengeMenu_IsLeaderboardVisible() {
+	return g_MenuManager->_menuDailyChallenge._leaderboard._displayState > 0;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_GetState)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	lua_pushinteger(L, menu->State);
-
-	return 1;
+MOD_EXPORT void L_DailyChallengeMenu_SetSelectedElement(int element) {
+	g_MenuManager->_menuDailyChallenge.SelectedElement = element;
 }
 
-LUA_FUNCTION(Lua_DailyChallengeMenu_SetState)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
-	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	menu->State = (int)luaL_checkinteger(L, 1);
-
-	return 0;
-}
-
-static void RegisterDailyChallengeMenuGame(lua_State* L)
-{
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetSprite", Lua_DailyChallengeMenu_GetSprite);
-	lua::TableAssoc(L, "GetLeaderboardSprite", Lua_DailyChallengeMenu_GetLeaderboardSprite);
-	lua::TableAssoc(L, "GetLeaderboardScoreMenuSprite", Lua_DailyChallengeMenu_GetLeaderboardScoreMenuSprite);
-	lua::TableAssoc(L, "GetSelectedElement", Lua_DailyChallengeMenu_GetSelectedElement);
-	lua::TableAssoc(L, "SetSelectedElement", Lua_DailyChallengeMenu_SetSelectedElement);
-	lua::TableAssoc(L, "IsLeaderboardVisible", Lua_DailyChallengeMenu_IsLeaderboardVisible);
-	lua::TableAssoc(L, "GetTimeLeftHours", Lua_DailyChallengeMenu_GetTimeLeftHours);
-	lua::TableAssoc(L, "GetTimeLeftMinutes", Lua_DailyChallengeMenu_GetTimeLeftMinutes);
-	lua::TableAssoc(L, "GetTimeLeftSeconds", Lua_DailyChallengeMenu_GetTimeLeftSeconds);
-	lua::TableAssoc(L, "GetState", Lua_DailyChallengeMenu_GetState);
-	lua::TableAssoc(L, "SetState", Lua_DailyChallengeMenu_SetState);
-
-	lua_setglobal(L, lua::metatables::DailyChallengeMenuMT);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterDailyChallengeMenuGame(state);
+MOD_EXPORT void L_DailyChallengeMenu_SetState(int state) {
+	g_MenuManager->_menuDailyChallenge.State = state;
 }

@@ -1,59 +1,17 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_MainMenu_GetGameMenuSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
-	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	ANM2* anm2 = menuGame->GetGameMenuSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_MainMenu_GetGameMenuSprite() {
+	return &g_MenuManager->_menuGame.GameMenuSprite;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetContinueWidgetSprite)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
-	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
-	LuaSprite::PushPtr(L, anm2);
-
-	return 1;
+MOD_EXPORT ANM2* L_MainMenu_GetContinueWidgetSprite() {
+	return &g_MenuManager->_menuGame.ContinueWidgetSprite;
 }
 
-LUA_FUNCTION(Lua_MainMenu_GetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
-	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	lua_pushinteger(L, menuGame->SelectedElement);
-
-	return 1;
+MOD_EXPORT int L_MainMenu_GetSelectedElement() {
+	return g_MenuManager->_menuGame.SelectedElement;
 }
 
-LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
-{
-	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
-	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	menuGame->SelectedElement = (int)luaL_checkinteger(L, 1);
-
-	return 0;
-}
-
-static void RegisterMainMenuGame(lua_State* L)
-{
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetGameMenuSprite", Lua_MainMenu_GetGameMenuSprite);
-	lua::TableAssoc(L, "GetContinueWidgetSprite", Lua_MainMenu_GetContinueWidgetSprite);
-	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
-	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
-	lua_setglobal(L, lua::metatables::MainMenuMT);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterMainMenuGame(state);
+MOD_EXPORT void L_MainMenu_SetSelectedElement(int element) {
+	g_MenuManager->_menuGame.SelectedElement = element;
 }
