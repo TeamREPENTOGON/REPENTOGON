@@ -7,9 +7,9 @@
 #include "SigScan.h"
 #include "Anm2Extras.h"
 
-#include "../repentogon/Utils/ANM2Utils.hpp"
-#include "../repentogon/Utils/ShaderUtils.hpp"
-#include "../repentogon/Utils/ImageUtils.hpp"
+#include "../repentogon/Utils/ANM2Utils.h"
+#include "../repentogon/Utils/ShaderUtils.h"
+#include "../repentogon/Utils/ImageUtils.h"
 #include "../MiscFunctions.h"
 #include "ExtraRenderSteps.h"
 #include "../ShaderLoader.h"

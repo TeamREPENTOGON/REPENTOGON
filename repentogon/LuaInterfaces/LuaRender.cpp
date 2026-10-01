@@ -16,8 +16,8 @@
 #include "LuaCore.h"
 #include "LuaRender.h"
 #include "../ShaderLoader.h"
-#include "../Utils/ImageUtils.hpp"
-#include "../Utils/ShaderUtils.hpp"
+#include "../Utils/ImageUtils.h"
+#include "../Utils/ShaderUtils.h"
 #include "../LuaClasses.h"
 
 using LuaRender::LuaImage;

@@ -535,6 +535,12 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = {
 		["RoomConfigRoom"] = true,
 	},
+	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = {
+		["Room"] = true,
+	},
+	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = {
+		["Room"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -2468,6 +2474,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_RENDER_PLAYER_BODY] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM] = RunAdditiveSecondArgCallback,
+	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_INVENTORY] = RunAdditiveSecondArgCallbackWithBreak,
 	[ModCallbacks.MC_POST_PLAYERHUD_RENDER_INVENTORY] = RunNoReturnCallback,
 	[ModCallbacks.MC_PRE_PLAYERHUD_RENDER_POOP_SPELL_QUEUE] = RunAdditiveSecondArgCallbackWithBreak,

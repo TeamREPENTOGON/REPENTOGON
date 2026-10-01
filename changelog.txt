@@ -1,3 +1,9 @@
+v1.1.x -
+Added:
+* EntityPickup:
+	- ShouldIgnoreModifiers()
+/newline/
+/versionseparator/
 v1.1.3 -
 Added:
 * ModCallbacks:
@@ -18,12 +24,11 @@ Added:
 	- GetModChallengeCompletionData(string modid, string challengename)
 		Similar to the above but for getting an arbitrary challenge clear state.
 	- SetChallengeCompletion(int challengeID, bool completed)
+	- GetBabyIdByName(string CoopBabyName)
 * Game:
 	- AddErasedEnemy(Entity)
 	- AddErasedEnemy(int Type, int Variant)
 	- RemoveErasedEnemy(int Type, int Variant = -1)
-* EntityConfig:
-	- GetBabyIdByName(string CoopBabyName)
 * MenuManager:
 	- GetSeeds
 * EntityPlayer:
