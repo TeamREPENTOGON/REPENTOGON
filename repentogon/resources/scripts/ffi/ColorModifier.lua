@@ -48,8 +48,11 @@ ColorModifierMT = {
         end
 	end,	
     __eq = function(self, second)
-         ffichecks.checkcdata(1, second, "ColorModifier")
-        return self.R  == second.R and  self.G == second.G and  self.B == second.B and self.A == second.A and self.Brightness == second.Brightness and self.Contrast == second.Contrast
+        if not (lffi.istype("struct ColorModifier", self) and lffi.istype("struct ColorModifier", second)) then
+            return false
+        end
+        ffichecks.checkcdata(1, second, "ColorModifier")
+        return self.R == second.R and self.G == second.G and self.B == second.B and self.A == second.A and self.Brightness == second.Brightness and self.Contrast == second.Contrast
     end,
 }
 

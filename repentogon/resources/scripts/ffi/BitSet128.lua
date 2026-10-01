@@ -55,6 +55,9 @@ BitSet128MT = {
         return BitSet128(a, b)
     end,
     __eq = function(self, second)
+        if not (lffi.istype("struct BitSet128", self) and lffi.istype("struct BitSet128", second)) then
+            return false
+        end
         local sl, sh = bsNorm(self, 1)
         local ol, oh = bsNorm(second, 2)
         return (sl == ol and sh == oh)
