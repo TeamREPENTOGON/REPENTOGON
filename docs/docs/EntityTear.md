@@ -87,11 +87,11 @@ Should be set on [MC_POST_TEAR_INIT](https://wofsauge.github.io/IsaacDocs/rep/en
 ___
 ### SetMultidimensionalTouched () {: aria-label='Functions' }
 #### void SetMultidimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
-Sets if the tear was created through the Angelic Prism effect.
+Sets if the tear was converted through touching Multidimensional Baby. If `true`, it will not get converted by the familiar again.
 
 ___
 ### SetPrismTouched () {: aria-label='Functions' }
 #### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
-Sets if the tear was created through the Angelic Prism effect.
+Sets if the tear was converted through the Angelic Prism effect. If `true`, it will not get converted by the familiar again.
 
 ___
