@@ -59,10 +59,11 @@ LayerStateMT = {
         return ffi.getprivate(self, "BlendMode")
     end,
     GetColor = function(self)
-        return ffi.getprivate(self, "Color")
+        return ffi.new("struct Color", ffi.getprivate(self, "Color"))
     end,
     GetCropOffset = function(self)
-        return ffi.getprivate(self, "CropOffset")
+        local v = ffi.getprivate(self, "CropOffset")
+        return Vector(v.X, v.Y)
     end,
     GetDefaultSpritesheetPath = function(self)
         return ffi.string(repentogon.L_LayerState_GetDefaultSpritesheetPath(self))
@@ -80,7 +81,8 @@ LayerStateMT = {
         return ffi.string(repentogon.L_LayerState_GetName(self))
     end,
     GetPos = function(self)
-        return ffi.getprivate(self, "Pos")
+        local v = ffi.getprivate(self, "Pos")
+        return Vector(v.X, v.Y)
     end,
     GetRenderFlags = function(self)
         return ffi.getprivate(self, "RenderFlags")
@@ -89,7 +91,8 @@ LayerStateMT = {
         return ffi.getprivate(self, "Rotation")
     end,
     GetSize = function(self)
-        return ffi.getprivate(self, "Size")
+        local v = ffi.getprivate(self, "Size")
+        return Vector(v.X, v.Y)
     end,
     GetSpritesheet = function(self)
         local sheet = ffi.getprivate(self, "Spritesheet")

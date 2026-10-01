@@ -332,7 +332,7 @@ RoomMT = {
         return cfuncs.GetEntities(self)
     end,
     GetFloorColor = function(self)
-        return ffi.getprivate(self, "FloorColor")
+        return ffi.new("struct Color", ffi.getprivate(self, "FloorColor"))
     end,
     GetFrameCount = function(self)
         return repentogon.L_Room_GetFrameCount(self)
@@ -537,10 +537,10 @@ RoomMT = {
         return ffi.getprivate(self, "WaterAmount")
     end,
     GetWaterColor = function(self)
-        return ffi.getprivate(self, "WaterColor")
+        return ffi.new("struct KColor", ffi.getprivate(self, "WaterColor"))
     end,
     GetWaterColorMultiplier = function(self)
-        return ffi.getprivate(self, "WaterColorMultiplier")
+        return ffi.new("struct KColor", ffi.getprivate(self, "WaterColorMultiplier"))
     end,
     GetWaterCurrent = function()
         return ffi.getprivate(self, "GetWaterCurrent")
