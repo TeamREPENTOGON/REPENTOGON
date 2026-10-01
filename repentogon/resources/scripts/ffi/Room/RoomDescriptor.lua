@@ -168,7 +168,7 @@ RoomDescriptorMT = {
     end,
     SetTaintedKeeperCoinSpawns = function(self, num)
         ffichecks.checkinteger(1, num)
-        ffi.setprivate(self, "TaintedKeeprCoinSpawns", num)
+        ffi.setprivate(self, "TaintedKeeperCoinSpawns", num)
     end,
 }
 
