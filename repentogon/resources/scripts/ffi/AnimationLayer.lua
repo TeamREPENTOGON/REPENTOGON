@@ -31,7 +31,7 @@ AnimationLayerMT = {
     GetFrame = function(self, frame)
         if ffi.getprivate(self, "FrameCount") == 0 then return nil end
 
-        ffichecks.checkinteger(1, frame)
+        ffichecks.checknumber(1, frame)
         if frame < 0 then frame = 0 end
 
         local animationFrame = FindAnimationFrame(self, frame)
