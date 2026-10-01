@@ -8,7 +8,8 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void L_Sprite_Delete(ANM2* self) {
-		delete self;
+		self->destructor();
+		::operator delete(self);
 	}
 
 	__declspec(dllexport) ANM2* L_Sprite_Copy(ANM2* self) {
