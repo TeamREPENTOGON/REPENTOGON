@@ -240,6 +240,7 @@ loadmodule("PersistentGameData")
 loadmodule("DailyChallenge")
 loadmodule("Capsule")
 loadmodule("Shape")
+loadmodule("DebugRenderer")
 
 ffi = nil
 ffidll = nil
