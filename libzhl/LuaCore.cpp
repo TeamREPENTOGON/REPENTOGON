@@ -749,7 +749,6 @@ namespace lua {
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* MultiShotParamsMT = "MultiShotParams";
-		const char* PersistentGameDataMT = "PersistentGameData";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
 		const char* PocketItemMT = "PocketItem";

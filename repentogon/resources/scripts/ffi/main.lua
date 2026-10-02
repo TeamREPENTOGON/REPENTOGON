@@ -222,6 +222,7 @@ loadmodule("StageTransition")
 loadmodule("NightmareScene")
 loadmodule("ItemOverlay")
 loadmodule("Console")
+loadmodule("PersistentGameData")
 
 ffi = nil
 ffidll = nil

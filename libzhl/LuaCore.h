@@ -110,7 +110,6 @@ namespace lua {
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
         extern LIBZHL_API const char* MultiShotParamsMT;
-        extern LIBZHL_API const char* PersistentGameDataMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* PocketItemMT;
