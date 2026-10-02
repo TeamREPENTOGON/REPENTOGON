@@ -3,13 +3,13 @@ struct BitSet128 { uint64_t L; uint64_t H; };
 typedef struct BitSet128* BitSet128Ptr;
 ]]
 local repentogon = ffidll
-local lffi = ffi
+local ffi = ffi
 
-local U64_ONE = lffi.new("uint64_t", 1)
+local U64_ONE = ffi.new("uint64_t", 1)
 
 local function bsNorm(op, idx)
 	if type(op) == "number" then
-		return lffi.new("uint64_t", op), lffi.new("uint64_t", 0)
+		return ffi.new("uint64_t", op), ffi.new("uint64_t", 0)
 	end
 	ffichecks.checkcdata(idx, op, "BitSet128")
 	return op.L, op.H
@@ -55,7 +55,7 @@ BitSet128MT = {
         return BitSet128(a, b)
     end,
     __eq = function(self, second)
-        if not (lffi.istype("struct BitSet128", self) and lffi.istype("struct BitSet128", second)) then
+        if not (ffi.istype("struct BitSet128", self) and ffi.istype("struct BitSet128", second)) then
             return false
         end
         local sl, sh = bsNorm(self, 1)
@@ -99,7 +99,16 @@ BitSet128MT = {
 }
 
 setmetatable(BitSet128MT, { __index = function() end })
-BitSet128MT.__index = BitSet128MT
+BitSet128MT.__index = function(self, key)
+    if key == "l" then return self.L end
+    if key == "h" then return self.H end
+    return BitSet128MT[key]
+end
+BitSet128MT.__newindex = function(self, key, value)
+    if key == "l" then self.L = value
+    elseif key == "h" then self.H = value
+    else error(string.format("cannot set field '%s' of BitSet128", tostring(key)), 2) end
+end
 
 local BitSet128T = ffi.metatype("struct BitSet128", BitSet128MT)
 

@@ -91,7 +91,7 @@ ffi.cdef [[
     int L_Room_GetItemPool(struct Room*, unsigned int, bool);
     void L_Room_GetLaserTarget(struct Room*, struct Vector*, struct Vector*, struct Vector*);
     float L_Room_GetLightingAlpha(struct Room*);
-    float L_Room_GetLightningIntensity();
+    float L_Room_GetLightningIntensity(struct Room*);
     void L_Room_GetLRoomAreaDesc(struct Room*, struct LRoomAreaDesc*);
     void L_Room_GetLRoomTileDesc(struct Room*, struct LRoomTileDesc*);
     int L_Room_GetRail(struct Room*, int);
@@ -170,7 +170,7 @@ RoomMT = {
         return repentogon.L_Room_CanSpawnObstacleAtPosition(self, gridIndex, force)
     end,
     ClearBossHazards = function(self, ignoreNPCs, source)
-        ignoreNPCs = ffichecks.optboolean(ignoreNPCs, false);
+        ignoreNPCs = ffichecks.optboolean(ignoreNPCs, true);
         source = ffichecks.optcdata(source, nil);
         return repentogon.L_Room_ClearBossHazards(self, ignoreNPCs, source)
     end,
@@ -212,7 +212,7 @@ RoomMT = {
 
         return repentogon.L_Room_DestroyGridWithSource(self, index, immediate, source)
     end,
-    DoLightningStrike = function(seed)
+    DoLightningStrike = function(self, seed)
         seed = ffichecks.optnumber(seed, math.random(0, 4294967295))
         repentogon.L_Room_DoLightningStrike(self, seed)
     end,
@@ -435,7 +435,7 @@ RoomMT = {
         return repentogon.L_Room_GetLightingAlpha(self)
     end,
     GetLightningIntensity = function(self)
-        return repentogon.L_Room_GetLightningIntensity();
+        return repentogon.L_Room_GetLightningIntensity(self)
     end,
     GetLRoomAreaDesc = function(self)
         local out = ffi.new("struct LRoomAreaDesc")
@@ -507,10 +507,11 @@ RoomMT = {
         noDecrease = ffichecks.optboolean(noDecrease, false)
         return repentogon.L_Room_GetSeededCollectible(self, seed, noDecrease)
     end,
-    GetShopItemPrice = function(entityVariant, entitySubType, shopItemID)
+    GetShopItemPrice = function(self, entityVariant, entitySubType, shopItemID)
         ffichecks.checkinteger(1, entityVariant)
         ffichecks.checkinteger(2, entitySubType)
         ffichecks.checkinteger(3, shopItemID)
+        return repentogon.L_Room_GetShopItemPrice(self, entityVariant, entitySubType, shopItemID)
     end,
     GetShopLevel = function(self)
         return ffi.getprivate(self, "ShopLevel")
@@ -542,8 +543,9 @@ RoomMT = {
     GetWaterColorMultiplier = function(self)
         return ffi.new("struct KColor", ffi.getprivate(self, "WaterColorMultiplier"))
     end,
-    GetWaterCurrent = function()
-        return ffi.getprivate(self, "GetWaterCurrent")
+    GetWaterCurrent = function(self)
+        local v = ffi.getprivate(self, "WaterCurrent")
+        return Vector(v.X, v.Y)
     end,
     HasCurseMist = function(self)   
         return (ffi.getprivate(self, "RoomDescriptor").Flags >> 13) & 1 ~= 0
@@ -608,7 +610,7 @@ RoomMT = {
     end,
     IsPersistentRoomEntity = function(self, entityType, entityVariant)
         ffichecks.checkinteger(1, entityType)
-        ffichecks.checkinteger(2, entityVariant)
+        entityVariant = ffichecks.optnumber(entityVariant, 0)
         return repentogon.L_Room_IsPersistentRoomEntity(self, entityType, entityVariant)
     end,
     IsPositionInRoom = function(self, pos, margin)

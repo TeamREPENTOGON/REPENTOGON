@@ -31,6 +31,7 @@ struct ItemConfigItem
     uint64_t Tags;
     int Quality;
     int CraftingQuality;
+    int InitCharge;
 };
 
 typedef struct ItemConfigItem* ItemConfigItemPtr;
@@ -54,7 +55,7 @@ void L_ItemConfigItem_RemoveCustomCacheTag(struct ItemConfigItem*, const char*);
 //void L_ItemConfigItem_SetTags(struct ItemConfigItem* item, uint64_t tags);
 ]]
 
-local lffi = ffi
+local ffi = ffi
 local repentogon = ffidll
 
 
@@ -76,7 +77,7 @@ ItemConfigItemMT = {
 
     __index = function(self, key)
         if getkeys[key] ~= nil then
-            return lffi.string(getkeys[key](self))
+            return ffi.string(getkeys[key](self))
         end
         return ItemConfigItemMT[key]
     end,
@@ -101,10 +102,10 @@ ItemConfigItemMT = {
         local n = repentogon.L_ItemConfigItem_GetCustomCacheTags(self, nil)
         local t = {}
         if n > 0 then
-            local arr = lffi.new("const char*[?]", n)
+            local arr = ffi.new("const char*[?]", n)
             repentogon.L_ItemConfigItem_GetCustomCacheTags(self, arr)
             for i = 0, n - 1 do
-                t[i + 1] = lffi.string(arr[i])
+                t[i + 1] = ffi.string(arr[i])
             end
         end
         return t
@@ -113,10 +114,10 @@ ItemConfigItemMT = {
         local n = repentogon.L_ItemConfigItem_GetCustomTags(self, nil)
         local t = {}
         if n > 0 then
-            local arr = lffi.new("const char*[?]", n)
+            local arr = ffi.new("const char*[?]", n)
             repentogon.L_ItemConfigItem_GetCustomTags(self, arr)
             for i = 0, n - 1 do
-                t[i + 1] = lffi.string(arr[i])
+                t[i + 1] = ffi.string(arr[i])
             end
         end
         return t

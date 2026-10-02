@@ -26,6 +26,8 @@ ffi.cdef[[
     void L_GridEntityRock_RenderTop(struct GridEntityRock*, struct Vector);
     void L_GridEntityRock_SetBigRockFrame(struct GridEntityRock*, int);
     void L_GridEntityRock_SpawnDrops(struct Vector, int, int, unsigned int, bool, int);
+    void L_GridEntityRock_TrySpawnLadder(struct GridEntityRock*);
+    void L_GridEntityRock_TrySpawnWorms(struct GridEntityRock*);
     void L_GridEntityRock_Update(struct GridEntityRock*);
     void L_GridEntityRock_UpdateCollision(struct GridEntityRock*);  
     void L_GridEntityRock_UpdateNeighbors(struct GridEntityRock*);
@@ -61,14 +63,14 @@ GridEntityRockMT = {
     end,
     PlayBreakSound = function(self, gridType, backdrop)
         ffichecks.checkinteger(1, gridType)
-        ffichecks.checkinteger(2, backdrop)
+        backdrop = ffichecks.optnumber(backdrop, 0)
         repentogon.L_GridEntityRock_PlayBreakSound(self, gridType, backdrop)
     end,
     PostInit = function(self)
         repentogon.L_GridEntityRock_PostInit(self)
     end,
-    RegisterRocksDestroyed = function(self, gridType)
-        repentogon.ffichecks.checkinteger(1, gridType)
+    RegisterRockDestroyed = function(self, gridType)
+        ffichecks.checkinteger(1, gridType)
         repentogon.L_GridEntityRock_RegisterRocksDestroyed(self, gridType)
     end,
     Render = function(self, offset)

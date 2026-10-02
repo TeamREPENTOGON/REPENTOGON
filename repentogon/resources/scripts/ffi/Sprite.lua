@@ -49,6 +49,7 @@ bool L_Sprite_HasCustomShaderWithPath(struct Sprite*, const char*, bool);
 bool L_Sprite_IsFinished(struct Sprite*, const char*);
 bool L_Sprite_IsOverlayFinished(struct Sprite*, const char*);
 void L_Sprite_Load(struct Sprite*, const char*, bool);
+void L_Sprite_LoadRGON(struct Sprite*, const char*, bool);
 void L_Sprite_LoadGraphics(struct Sprite*);
 void L_Sprite_Play(struct Sprite*, const char*, bool);
 void L_Sprite_PlayOverlay(struct Sprite*, const char*, bool);
@@ -282,6 +283,11 @@ SpriteMT = {
         loadGraphics = ffichecks.optboolean(loadGraphics, true)
         repentogon.L_Sprite_Load(self, path, loadGraphics)
     end,
+    LoadRGON = function(self, path, loadGraphics)
+        ffichecks.checkstring(1, path)
+        ffichecks.checkboolean(2, loadGraphics)
+        repentogon.L_Sprite_LoadRGON(self, path, loadGraphics)
+    end,
     LoadGraphics = function(self)
         repentogon.L_Sprite_LoadGraphics(self)
     end,
@@ -322,10 +328,11 @@ SpriteMT = {
         ffichecks.checkinteger(1, layerId)
         ffichecks.checkstring(2, filename)
         loadGraphics = ffichecks.optboolean(loadGraphics, false)
-        repentogon.L_Sprite_ReplaceSpritesheet(self, layerId, filename)
-        if loadGraphics then
+        local successful = repentogon.L_Sprite_ReplaceSpritesheet(self, layerId, filename)
+        if successful and loadGraphics then
             repentogon.L_Sprite_LoadGraphics(self)
         end
+        return successful
     end,
     Reset = function(self) 
         repentogon.L_Sprite_Reset(self)
@@ -407,8 +414,12 @@ SpriteMT = {
         ffi.setprivate(layer, "Spritesheet", spritesheet)
         return true
     end,
-    Stop = function(self)
+    Stop = function(self, stopOverlay)
+        stopOverlay = ffichecks.optboolean(stopOverlay, true)
         ffi.getprivate(self, "AnimState").IsPlaying = false
+        if stopOverlay then
+            ffi.getprivate(self, "OverlayAnimState").IsPlaying = false
+        end
     end,
     StopOverlay = function(self)
         ffi.getprivate(self, "OverlayAnimState").IsPlaying = false

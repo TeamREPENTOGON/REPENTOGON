@@ -18,7 +18,7 @@ const char* L_ItemConfigCostume_GetAnm2Path(struct ItemConfigCostume*);
 void L_ItemConfigCostume_SetAnm2Path(struct ItemConfigCostume*, const char*);
 ]]
 
-local lffi = ffi
+local ffi = ffi
 local repentogon = ffidll
 
 
@@ -28,7 +28,7 @@ ItemConfigCostumeMT = {
 
     __index = function(self, key)
         if key == "Anm2Path" then
-            return lffi.string(repentogon.L_ItemConfigCostume_GetAnm2Path(self))
+            return ffi.string(repentogon.L_ItemConfigCostume_GetAnm2Path(self))
         end
         return ItemConfigCostumeMT[key]
     end,

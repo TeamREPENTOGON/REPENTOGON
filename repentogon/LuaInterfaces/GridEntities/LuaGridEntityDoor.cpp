@@ -59,6 +59,10 @@ extern "C" {
 		door->SetRoomTypes(currentRoomType, targetRoomType);
 	}
 
+		__declspec(dllexport) void L_GridEntityDoor_SpawnDust(GridEntity_Door* door) {
+		door->SpawnDust();
+	}
+
 	__declspec(dllexport) void L_GridEntityDoor_Update(GridEntity_Door* door) {
 		door->Update();
 	}

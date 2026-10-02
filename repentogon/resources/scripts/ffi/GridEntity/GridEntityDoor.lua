@@ -12,6 +12,7 @@ ffi.cdef[[
         int CurrentRoomType;
         int TargetRoomType;
         int Direction;
+        private struct Sprite UnknownSprite;
         struct Sprite ExtraSprite;
         bool ExtraVisible;
         bool Busted;
@@ -38,6 +39,7 @@ ffi.cdef[[
     bool L_GridEntityDoor_IsLocked(struct GridEntityDoor*);
     bool L_GridEntityDoor_IsTargetRoomArcade(struct GridEntityDoor*);
     void L_GridEntityDoor_Open(struct GridEntityDoor*);
+    void L_GridEntityDoor_SpawnDust(struct GridEntityDoor*);
     void L_GridEntityDoor_PlayAnimation(struct GridEntityDoor*);
     void L_GridEntityDoor_Render(struct GridEntityDoor*, struct Vector);
     void L_GridEntityDoor_SetLocked(struct GridEntityDoor*, bool);
@@ -93,6 +95,9 @@ GridEntityDoorMT = {
     end,
     IsTargetRoomArcade = function(self)
         return repentogon.L_GridEntityDoor_IsTargetRoomArcade(self)
+    end,
+    SpawnDust = function(self)
+        repentogon.L_GridEntityDoor_SpawnDust(self)
     end,
     Open = function(self)
         repentogon.L_GridEntityDoor_Open(self)

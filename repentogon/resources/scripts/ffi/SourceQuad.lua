@@ -81,7 +81,7 @@ SourceQuad = setmetatable({
         )
         return sq
     end, 
-    NewFromRectangle = function(TopLeft, Width, Height)
+    NewFromRectangle = function(TopLeft, Width, Height, UV)
         ffichecks.checkcdata(1, TopLeft, "Vector")
         ffichecks.checknumber(2, Width)
         ffichecks.checknumber(3, Height)

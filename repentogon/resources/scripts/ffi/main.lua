@@ -1,7 +1,7 @@
 -- Aw yeah, this is happening!
 ffidll = ffi.load("zhlREPENTOGON")
 ffichecks = {}
-local lffi = ffi
+local ffi = ffi
 
 local debug_getinfo = debug.getinfo
 
@@ -11,12 +11,12 @@ local function resolveCtype(ctype)
 	local cached = ctypeCache[ctype]
 	if cached then return cached end
 	local resolved
-	local ok, r = pcall(lffi.typeof, ctype)
+	local ok, r = pcall(ffi.typeof, ctype)
 	if ok then
 		resolved = r
 	else
 		for _, pre in ipairs({ "struct ", "union ", "enum " }) do
-			local ok2, r2 = pcall(lffi.typeof, pre .. ctype)
+			local ok2, r2 = pcall(ffi.typeof, pre .. ctype)
 			if ok2 then resolved = r2; break end
 		end
 	end
@@ -27,7 +27,7 @@ end
 ffichecks.gettype = function(var)
 	local t = type(var)
 	if t == "cdata" or t == "userdata" then
-		local ok, ct = pcall(lffi.typeof, var)
+		local ok, ct = pcall(ffi.typeof, var)
 		if ok and ct then t = tostring(ct) end
 	end
 	return t
@@ -57,13 +57,13 @@ ffichecks.istable = function(var) return ffichecks.istype(var, "table") end
 ffichecks.iscdata = function(var, ctype)
 	if not var then return false end
 	local ct = resolveCtype(ctype)
-	if ct and lffi.istype(ct, var) then
+	if ct and ffi.istype(ct, var) then
 		return true
 	end
 	-- Also accept a pointer to the target type (reference cdata).
 	if type(var) == "cdata" then
 		local ptr = resolveCtype(ctype .. "*")
-		if ptr and lffi.istype(ptr, var) then
+		if ptr and ffi.istype(ptr, var) then
 			return true
 		end
 	end
@@ -128,7 +128,7 @@ end
 
 ffichecks.vectorsize = function(first, last, elemSize)
 	if first == nil then return 0 end
-	return tonumber(lffi.cast("const char*", last) - lffi.cast("const char*", first)) // elemSize
+	return tonumber(ffi.cast("const char*", last) - ffi.cast("const char*", first)) // elemSize
 end
 ffichecks.vectortotable = function(first, last, elemSize)
 	local result = {}
