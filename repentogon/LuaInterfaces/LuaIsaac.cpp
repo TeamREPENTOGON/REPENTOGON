@@ -627,7 +627,7 @@ LUA_FUNCTION(Lua_IsaacFindInCapsule)
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	Capsule* capsule = lua::GetRawUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Capsule* capsule = LuaCapsule::Get(L, 1);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
 
 	lua_newtable(L);

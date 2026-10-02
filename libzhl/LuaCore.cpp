@@ -724,7 +724,6 @@ namespace lua {
 	{;
 		const char* BeamMT = "Beam";
 		const char* BossPoolMT = "BossPool";
-		const char* CapsuleMT = "Capsule";
 		const char* GenericPromptMT = "GenericPrompt";
 		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* DebugRendererMT = "DebugRenderer";

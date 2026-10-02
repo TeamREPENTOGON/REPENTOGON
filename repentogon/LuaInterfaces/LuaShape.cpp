@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 LUA_FUNCTION(Lua_EntityGetDebugShape) {
 	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -26,7 +27,7 @@ LUA_FUNCTION(Lua_ShapeSetTimeout) {
 
 LUA_FUNCTION(Lua_ShapeCapsule) {
 	Shape* shape = *lua::GetRawUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
-	Capsule* cap1 = lua::GetRawUserdata<Capsule*>(L, 2, lua::metatables::CapsuleMT);
+	Capsule* cap1 = LuaCapsule::Get(L, 2);
 	shape->Capsula(cap1);
 	return 0;
 }

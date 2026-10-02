@@ -238,5 +238,7 @@ loadmodule("ItemOverlay")
 loadmodule("Console")
 loadmodule("PersistentGameData")
 loadmodule("DailyChallenge")
+loadmodule("Capsule")
+
 ffi = nil
 ffidll = nil

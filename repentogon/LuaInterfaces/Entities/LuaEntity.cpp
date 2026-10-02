@@ -1210,12 +1210,33 @@ LUA_FUNCTION(Lua_EntityGetDropRNG)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityGetNullCapsule) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	const char* str = luaL_checkstring(L, 2);
+	Capsule res = ent->GetNullCapsule(str);
+
+	LuaCapsule::Push(L, res);
+	return 1;
+};
+
+LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* optOffset = LuaVector::GetOpt(L, 2);
+	Vector offsetVec = optOffset ? *optOffset : Vector(0, 0);
+
+	LuaCapsule::Push(L, ent->GetCollisionCapsule(&offsetVec));
+	return 1;
+};
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetNullCapsule", Lua_EntityGetNullCapsule },
+		{ "GetCollisionCapsule", Lua_EntityGetCollisionCapsule },
 		{ "GetDropRNG", Lua_EntityGetDropRNG },
 		{ "AddBurn", Lua_EntityAddBurn },
 		{ "AddCharmed", Lua_EntityAddCharmed },
