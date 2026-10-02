@@ -3691,17 +3691,14 @@ LUA_FUNCTION(Lua_PlayerHasCamoEffect) {
 
 LUA_FUNCTION(Lua_PlayerGetFriendBallEnemy) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	EntityDesc* ud = (EntityDesc*)lua_newuserdata(L, sizeof(EntityDesc));
-
-	*ud = player->_friendBallEnemy;
-	luaL_setmetatable(L, lua::metatables::EntityDescMT);
+	LuaEntityDesc::Push(L, player->_friendBallEnemy);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetFriendBallEnemy) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->_friendBallEnemy = *lua::GetRawUserdata<EntityDesc*>(L, 2, lua::metatables::EntityDescMT);
+	player->_friendBallEnemy = *LuaEntityDesc::Get(L, 2);
 
 	return 0;
 }

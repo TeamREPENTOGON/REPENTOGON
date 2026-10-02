@@ -215,6 +215,7 @@ loadmodule("ffi.Menus.SaveMenu")
 loadmodule("ffi.Menus.SpecialSeedsMenu")
 loadmodule("ffi.Menus.StatsMenu")
 loadmodule("ffi.Menus.TitleMenu")
+loadmodule("ffi.EntityDesc")
 
 ffi = nil
 ffidll = nil

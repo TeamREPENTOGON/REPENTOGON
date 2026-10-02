@@ -775,7 +775,6 @@ namespace lua {
 		const char* LootListMT = "LootList";
 		const char* LootListEntryMT = "LootListEntry";
 		const char* MinimapConfigMT = "MinimapConfig";
-		const char* EntityDescMT = "EntityDesc";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

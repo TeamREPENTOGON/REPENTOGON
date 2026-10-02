@@ -911,6 +911,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR_MODIFIER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_MODIFIER_PTR;
     };
+
+    struct LuaEntityDesc
+    {
+        static constexpr const char* Name = "EntityDesc";
+        using Type = EntityDesc;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_DESC;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_DESC_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1026,6 +1034,7 @@ using LuaGridEntityGravity = CDataType<LuaTraits::LuaGridEntityGravity>;
 using LuaGridEntityStatue = CDataType<LuaTraits::LuaGridEntityStatue>;
 using LuaGridEntityTeleporter = CDataType<LuaTraits::LuaGridEntityTeleporter>;
 using LuaColorModifier = CDataType<LuaTraits::LuaColorModifier>;
+using LuaEntityDesc = CDataType<LuaTraits::LuaEntityDesc>;
 
 struct LuaLevelGeneratorRoom
 {
