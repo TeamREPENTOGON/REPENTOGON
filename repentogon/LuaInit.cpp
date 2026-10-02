@@ -364,6 +364,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR] = lua_ctypeid(L, "VectorListPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC] = lua_ctypeid(L, "EntityDesc");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC_PTR] = lua_ctypeid(L, "EntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM] = lua_ctypeid(L, "ChallengeParam");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM_PTR] = lua_ctypeid(L, "ChallengeParamPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

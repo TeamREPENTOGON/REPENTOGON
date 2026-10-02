@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../LuaClasses.h"
 
 /*LUA_FUNCTION(Lua_GetDailyChallenge) {
 	Manager* manager = g_Manager;
@@ -14,9 +15,7 @@
 LUA_FUNCTION(Lua_DailyChallengeGetChallengeParams)
 {
 	DailyChallenge* dailyChallenge = g_Manager->GetDailyChallenge();
-	ChallengeParam** ud = (ChallengeParam**)lua_newuserdata(L, sizeof(ChallengeParam*));
-	*ud = dailyChallenge->GetChallengeParams();
-	luaL_setmetatable(L, lua::metatables::ChallengeParamMT);
+	LuaChallengeParam::PushPtr(L, dailyChallenge->GetChallengeParams());
 	return 1;
 }
 

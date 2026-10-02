@@ -86,7 +86,6 @@ namespace lua {
         extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* BossPoolMT;
         extern LIBZHL_API const char* CapsuleMT;
-        extern LIBZHL_API const char* ChallengeParamMT;
         extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* DailyChallengeMT;
@@ -569,6 +568,8 @@ namespace lua {
             VECTOR_LIST_PTR,
             ENTITY_DESC,
             ENTITY_DESC_PTR,
+            CHALLENGE_PARAM,
+            CHALLENGE_PARAM_PTR,
             MAX_CDATA
         };
 
