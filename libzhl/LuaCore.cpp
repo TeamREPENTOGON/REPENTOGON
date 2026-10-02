@@ -765,7 +765,6 @@ namespace lua {
 		const char* RoomConfigStageMT = "RoomConfigStage";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
-		const char* RoomTransitionMT = "RoomTransition";
 		const char* ScoreSheetMT = "ScoreSheet";
 		const char* ShapeMT = "Shape";
 		const char* StageTransitionMT = "StageTransition";

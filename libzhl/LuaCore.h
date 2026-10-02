@@ -126,7 +126,6 @@ namespace lua {
         extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* RoomTransitionMT;
         extern LIBZHL_API const char* ScoreSheetMT;
         extern LIBZHL_API const char* ShapeMT;
         extern LIBZHL_API const char* StageTransitionMT; 
