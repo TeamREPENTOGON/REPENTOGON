@@ -43,13 +43,7 @@ local ffi = ffi
 local repentogon = ffidll
 
 local function VectorToTable(vec)
-    local result = {}
-    local first = vec.First
-    if first == nil then return result end
-    for i = 0, tonumber(vec.Last - first) - 1 do
-        result[i + 1] = first[i]
-    end
-    return result
+    return ffichecks.vectortotable(vec.First, vec.Last, ffi.sizeof("int"))
 end
 
 local ChallengeParamMT

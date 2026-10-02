@@ -126,6 +126,18 @@ ffichecks.wrap = function(ptr, ctype)
     return o
 end
 
+ffichecks.vectorsize = function(first, last, elemSize)
+	if first == nil then return 0 end
+	return tonumber(lffi.cast("const char*", last) - lffi.cast("const char*", first)) // elemSize
+end
+ffichecks.vectortotable = function(first, last, elemSize)
+	local result = {}
+	for i = 0, ffichecks.vectorsize(first, last, elemSize) - 1 do
+		result[i + 1] = first[i]
+	end
+	return result
+end
+
 local function loadmodule(name)
 	local ok, err = pcall(require, "ffi." .. name)
 	if not ok then

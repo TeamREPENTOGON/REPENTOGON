@@ -40,7 +40,7 @@ local repentogon = ffidll
 local EffectListMT; EffectListMT = { __type = "EffectList" }
 
 local function el_size(self)
-    return tonumber(ffi.getprivate(self, "_last") - ffi.getprivate(self, "_begin"))
+    return ffichecks.vectorsize(ffi.getprivate(self, "_begin"), ffi.getprivate(self, "_last"), ffi.sizeof("struct TemporaryEffect"))
 end
 
 EffectListMT.__len = function(self) return el_size(self) end

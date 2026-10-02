@@ -12,9 +12,7 @@ local ffi = ffi
 local VectorListMT; VectorListMT = { __type = "VectorList" }
 
 local function el_size(self)
-    local first = ffi.cast("const char*", ffi.getprivate(self, "_first"))
-    local last = ffi.cast("const char*", ffi.getprivate(self, "_last"))
-    return tonumber(last - first) // ffi.sizeof("struct Vector")
+    return ffichecks.vectorsize(ffi.getprivate(self, "_first"), ffi.getprivate(self, "_last"), ffi.sizeof("struct Vector"))
 end
 
 VectorListMT.__len = function(self) return el_size(self) end
