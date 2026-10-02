@@ -221,6 +221,7 @@ loadmodule("HUD.Minimap")
 loadmodule("StageTransition")
 loadmodule("NightmareScene")
 loadmodule("ItemOverlay")
+loadmodule("Console")
 
 ffi = nil
 ffidll = nil
