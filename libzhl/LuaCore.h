@@ -107,7 +107,6 @@ namespace lua {
         extern LIBZHL_API const char* HistoryHUDItemMT;
         extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;

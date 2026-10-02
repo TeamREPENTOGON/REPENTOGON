@@ -220,5 +220,7 @@ loadmodule("EntityDesc")
 loadmodule("HUD.Minimap")
 loadmodule("StageTransition")
 loadmodule("NightmareScene")
+loadmodule("ItemOverlay")
+
 ffi = nil
 ffidll = nil
