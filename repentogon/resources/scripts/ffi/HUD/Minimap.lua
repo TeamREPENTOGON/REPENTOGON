@@ -6,7 +6,7 @@ ffi.cdef[[
         struct Sprite IconsSprite : 0x500;
         int ShakeDuration : 0x61c;
         struct Vector ShakeOffset : 0x620;
-    };
+    } : 0x628;
 
     struct Minimap* L_Minimap_Get();
     void L_Minimap_GetDisplayedSize(struct Vector*);
@@ -14,7 +14,6 @@ ffi.cdef[[
 ]]
 
 local repentogon = ffidll
-local lffi = ffi
 
 local MinimapMT
 MinimapMT = {

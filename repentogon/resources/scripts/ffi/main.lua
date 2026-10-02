@@ -218,6 +218,7 @@ loadmodule("Menus.StatsMenu")
 loadmodule("Menus.TitleMenu")
 loadmodule("EntityDesc")
 loadmodule("HUD.Minimap")
+loadmodule("StageTransition")
 
 ffi = nil
 ffidll = nil
