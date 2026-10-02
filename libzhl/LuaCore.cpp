@@ -750,7 +750,6 @@ namespace lua {
 		const char* LevelGeneratorMT = "LevelGenerator";
 		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
-		const char* MinimapMT = "Minimap";
 		const char* MultiShotParamsMT = "MultiShotParams";
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* PersistentGameDataMT = "PersistentGameData";
