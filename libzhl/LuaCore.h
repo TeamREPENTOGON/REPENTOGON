@@ -88,7 +88,6 @@ namespace lua {
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* DebugRendererMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* ColorParamsMT;

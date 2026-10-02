@@ -237,6 +237,6 @@ loadmodule("NightmareScene")
 loadmodule("ItemOverlay")
 loadmodule("Console")
 loadmodule("PersistentGameData")
-
+loadmodule("DailyChallenge")
 ffi = nil
 ffidll = nil
