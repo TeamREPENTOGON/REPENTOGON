@@ -1228,6 +1228,13 @@ LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	return 1;
 };
 
+LUA_FUNCTION(Lua_EntityGetDebugShape) {
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	bool unk = lua::luaL_checkboolean(L, 2);
+
+	LuaShape::PushPtr(L, g_Game->GetDebugRenderer()->Get(ent->GetIndex(), unk));
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -1235,6 +1242,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetDebugShape", Lua_EntityGetDebugShape },
 		{ "GetNullCapsule", Lua_EntityGetNullCapsule },
 		{ "GetCollisionCapsule", Lua_EntityGetCollisionCapsule },
 		{ "GetDropRNG", Lua_EntityGetDropRNG },

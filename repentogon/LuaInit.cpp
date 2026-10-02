@@ -368,6 +368,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM_PTR] = lua_ctypeid(L, "ChallengeParamPtr");
 	lua::ffi::CData[lua::ffi::CDataID::CAPSULE] = lua_ctypeid(L, "Capsule");
 	lua::ffi::CData[lua::ffi::CDataID::CAPSULE_PTR] = lua_ctypeid(L, "CapsulePtr");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE] = lua_ctypeid(L, "Shape");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE_PTR] = lua_ctypeid(L, "ShapePtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

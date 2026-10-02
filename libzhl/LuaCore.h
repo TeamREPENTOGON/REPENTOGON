@@ -118,7 +118,6 @@ namespace lua {
         extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* ShapeMT;
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* WeightedOutcomePickerMT;
         extern LIBZHL_API const char* CostumeSpriteDescMT;
@@ -570,6 +569,8 @@ namespace lua {
             CHALLENGE_PARAM_PTR,
             CAPSULE,
             CAPSULE_PTR,
+            SHAPE,
+            SHAPE_PTR,
             MAX_CDATA
         };
 

@@ -239,6 +239,7 @@ loadmodule("Console")
 loadmodule("PersistentGameData")
 loadmodule("DailyChallenge")
 loadmodule("Capsule")
+loadmodule("Shape")
 
 ffi = nil
 ffidll = nil

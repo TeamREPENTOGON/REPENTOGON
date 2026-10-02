@@ -935,6 +935,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::CAPSULE;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::CAPSULE_PTR;
     };
+
+    struct LuaShape
+    {
+        static constexpr const char* Name = "Shape";
+        using Type = Shape;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::SHAPE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::SHAPE_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1053,6 +1061,8 @@ using LuaColorModifier = CDataType<LuaTraits::LuaColorModifier>;
 using LuaEntityDesc = CDataType<LuaTraits::LuaEntityDesc>;
 using LuaChallengeParam = CDataType<LuaTraits::LuaChallengeParam>;
 using LuaCapsule = CDataType<LuaTraits::LuaCapsule>;
+using LuaShape = CDataType<LuaTraits::LuaShape>;
+
 
 struct LuaLevelGeneratorRoom
 {
