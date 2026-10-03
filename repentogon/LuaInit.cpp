@@ -364,6 +364,14 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR] = lua_ctypeid(L, "VectorListPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC] = lua_ctypeid(L, "EntityDesc");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DESC_PTR] = lua_ctypeid(L, "EntityDescPtr");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM] = lua_ctypeid(L, "ChallengeParam");
+	lua::ffi::CData[lua::ffi::CDataID::CHALLENGE_PARAM_PTR] = lua_ctypeid(L, "ChallengeParamPtr");
+	lua::ffi::CData[lua::ffi::CDataID::CAPSULE] = lua_ctypeid(L, "Capsule");
+	lua::ffi::CData[lua::ffi::CDataID::CAPSULE_PTR] = lua_ctypeid(L, "CapsulePtr");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE] = lua_ctypeid(L, "Shape");
+	lua::ffi::CData[lua::ffi::CDataID::SHAPE_PTR] = lua_ctypeid(L, "ShapePtr");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS] = lua_ctypeid(L, "ColorParams");
+	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS_PTR] = lua_ctypeid(L, "ColorParamsPtr");
         lua::ffi::CData[lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER] = lua_ctypeid(L, "WeightedOutcomePicker");
         lua::ffi::CData[lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR] = lua_ctypeid(L, "WeightedOutcomePickerPtr");
 

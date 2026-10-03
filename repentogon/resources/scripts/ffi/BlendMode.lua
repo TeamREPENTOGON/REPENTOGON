@@ -21,15 +21,15 @@ local blendModes = {
     {4, 7, 4, 7, 0}
 }
 
-local function checkValidBlendFactor(factor)
-    if factor < 0 and factor > 14 then
-        error("Invalid blend factor")
+local function checkValidBlendFactor(idx, factor)
+    if factor < 0 or factor >= 10 then
+        ffichecks.argerror(idx, "Invalid blend factor", 3)
     end
 end
 
-local function checkValidBlendEquation(factor)
-    if factor < 0 and factor > 4 then
-        error("Invalid blend equation")
+local function checkValidBlendEquation(idx, equation)
+    if equation < 0 or equation >= 5 then
+        ffichecks.argerror(idx, "Invalid equation", 3)
     end
 end
 
@@ -37,29 +37,38 @@ end
 local BlendModeMT
 BlendModeMT = {
     __type = "BlendMode",
-    SetMode = function(self, blendType)
-        local mode = {}
-        if ffichecks.istable(1, blendType) then
-            for i, v in pairs(blendType) do
-                if i < 5 then
-                    checkValidBlendFactor(v)
-                else
-                    checkValidBlendEquation(v)
-                end
-             table.insert(mode, v)
-            end
+    SetMode = function(self, ...)
+        local first = ...
+        local parts
+        if select("#", ...) > 1 then
+            parts = { ... }
+        elseif type(first) == "table" then
+            parts = first
         else
-            ffichecks.checkinteger(1, blendType)
-            if blendType >= 0 and blendType < 5 then
-                mode = blendModes[blendType + 1]
+            ffichecks.checknumber(1, first)
+            local preset = blendModes[math.floor(first) + 1]
+            if preset then
+                self.RGBSourceFactor, self.RGBDestFactor = preset[1], preset[2]
+                self.AlphaSourceFactor, self.AlphaDestFactor = preset[3], preset[4]
+                self.Equation = preset[5]
             end
+            return
         end
 
-        self.RGBSourceFactor = mode[1]
-        self.RGBDestFactor = mode[2]
-        self.AlphaSourceFactor = mode[3]
-        self.AlphaDestFactor = mode[4]
-        self.Equation = mode[5]
+        local rgbSrc = ffichecks.optnumber(parts[1], self.RGBSourceFactor)
+        local rgbDst = ffichecks.optnumber(parts[2], self.RGBDestFactor)
+        local alphaSrc = ffichecks.optnumber(parts[3], self.AlphaSourceFactor)
+        local alphaDst = ffichecks.optnumber(parts[4], self.AlphaDestFactor)
+        local equation = ffichecks.optnumber(parts[5], self.Equation)
+        checkValidBlendFactor(1, rgbSrc)
+        checkValidBlendFactor(2, rgbDst)
+        checkValidBlendFactor(3, alphaSrc)
+        checkValidBlendFactor(4, alphaDst)
+        checkValidBlendEquation(5, equation)
+
+        self.RGBSourceFactor, self.RGBDestFactor = rgbSrc, rgbDst
+        self.AlphaSourceFactor, self.AlphaDestFactor = alphaSrc, alphaDst
+        self.Equation = equation
     end,
 }
 
@@ -81,19 +90,19 @@ end
 
 BlendModeMT.__newindex = function(self, key, value)
     if key == "Flag1" then
-        checkValidBlendFactor(value)
+        checkValidBlendFactor(1, value)
         self.RGBSourceFactor = value
     end
     if key == "Flag2" then
-        checkValidBlendFactor(value)
+        checkValidBlendFactor(1, value)
         self.RGBDestFactor = value
     end
     if key == "Flag3" then
-        checkValidBlendFactor(value)
+        checkValidBlendFactor(1, value)
         self.AlphaSourceFactor = value
     end
     if key == "Flag4" then
-        checkValidBlendFactor(value)
+        checkValidBlendFactor(1, value)
         self.AlphaDestFactor = value
     end
 end
@@ -107,18 +116,19 @@ BlendMode = setmetatable({
         dstAlpha = ffichecks.optnumber(dstAlpha, 0)
         equation = ffichecks.optnumber(equation, 0)
 
-        checkValidBlendFactor(srcRGB)
-        checkValidBlendFactor(dstRGB)
-        checkValidBlendFactor(srcAlpha)
-        checkValidBlendFactor(dstAlpha)
-        checkValidBlendEquation(equation)
+        checkValidBlendFactor(1, srcRGB)
+        checkValidBlendFactor(2, dstRGB)
+        checkValidBlendFactor(3, srcAlpha)
+        checkValidBlendFactor(4, dstAlpha)
+        checkValidBlendEquation(5, equation)
 
         return BlendModeT(equation, srcRGB, dstRGB, srcAlpha, dstAlpha)
     end,
     NewFromType = function(blendType) 
         ffichecks.checknumber(1, blendType)
         
-        if type < 0 or type > 4 then
+        blendType = math.floor(blendType)
+        if blendType < 0 or blendType > 4 then
             error(string.format("bad argument #1 to '%s' (Invalid blend type %d)", debug_getinfo(2).name, blendType), 3)
         end
     

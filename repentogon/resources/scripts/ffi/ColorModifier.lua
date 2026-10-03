@@ -48,7 +48,7 @@ ColorModifierMT = {
         end
 	end,	
     __eq = function(self, second)
-        if not (lffi.istype("struct ColorModifier", self) and lffi.istype("struct ColorModifier", second)) then
+        if not (ffi.istype("struct ColorModifier", self) and ffi.istype("struct ColorModifier", second)) then
             return false
         end
         ffichecks.checkcdata(1, second, "ColorModifier")

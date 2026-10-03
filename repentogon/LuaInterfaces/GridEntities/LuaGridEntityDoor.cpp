@@ -51,12 +51,23 @@ extern "C" {
 		door->Render(offset);
 	}
 
+	__declspec(dllexport) void L_GridEntityDoor_SetExtraSprite(GridEntity_Door* door, ANM2* sprite) {
+		if (&door->_extraSprite == sprite)
+			return;
+		door->_extraSprite.destructor();
+		door->_extraSprite.construct_from_copy(sprite);
+	}
+	
 	__declspec(dllexport) void L_GridEntityDoor_SetLocked(GridEntity_Door* door, bool locked) {
 		door->SetLocked(locked);
 	}
 
 	__declspec(dllexport) void L_GridEntityDoor_SetRoomTypes(GridEntity_Door* door, int currentRoomType, int targetRoomType) {
 		door->SetRoomTypes(currentRoomType, targetRoomType);
+	}
+
+		__declspec(dllexport) void L_GridEntityDoor_SpawnDust(GridEntity_Door* door) {
+		door->SpawnDust();
 	}
 
 	__declspec(dllexport) void L_GridEntityDoor_Update(GridEntity_Door* door) {

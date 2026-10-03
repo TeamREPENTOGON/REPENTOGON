@@ -364,7 +364,7 @@ extern "C" {
 	}
 
 	//ditto
-	__declspec(dllexport) void L_Room_ColorModifierUpdate(Room* room, bool process, bool lerp, bool rate) {
+	__declspec(dllexport) void L_Room_UpdateColorModifier(Room* room, bool process, bool lerp, float rate) {
 		ColorModState pColor;
 		if (process) {
 			pColor = room->ComputeColorModifier();

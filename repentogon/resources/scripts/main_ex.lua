@@ -2569,9 +2569,262 @@ rawset(Isaac, "RunCallbackOverIterator", function(callbackID, callbackIterator, 
 	end
 end)
 
+-- !!!!! WARNING - HIGHLY CURSED !!!!!
+-- Normally, every instance of a callback runs in a single xpcall. To LuaJIT this is *one function*.
+-- If a single mod in the callback causes a trace abort, the *entire callback stack* does not compile. Not ideal!
+-- Instead, unroll callback loops such that each instance of a callback gets its own xpcall. 
+-- Our LuaJIT fork has been changed to stitch around xpcalls, so this results in the rest of the callbacks tracing.
+-- These are cached so future runs will just use the pregenenerated runner.
+local function nonNil(code) return "if r ~= nil then " .. code .. " end" end
+local MergeIntoCombined = "if combinedRet then for k_, v_ in pairs(r) do combinedRet[k_] = v_ end else combinedRet = r end"
+local function isMetatype(expr, mtType)
+	return string.format('%s and (type(%s) == "userdata" or type(%s) == "cdata") and GetMetatableType(%s) == "%s"',
+		expr, expr, expr, expr, mtType)
+end
+
+local GeneratedCallbackRunLogic = {
+	[DefaultRunCallbackLogic] = { body = nonNil("return r") },
+	[RunFalseBreakCallbackLogic] = { body = nonNil("if r == false then return r end") },
+	[RunNoReturnCallback] = { body = "" },
+	[RunAdditiveFirstArgCallback] = { minArgs = 1, body = nonNil("a1 = r"), post = "return a1" },
+	[RunAdditiveSecondArgCallback] = { minArgs = 2, body = nonNil("a2 = r"), post = "return a2" },
+	[RunAdditiveThirdArgCallback] = { minArgs = 3, body = nonNil("a3 = r"), post = "return a3" },
+	[RunAdditiveFourthArgCallback] = { minArgs = 4, body = nonNil("a4 = r"), post = "return a4" },
+	[RunAdditiveSecondArgCallbackWithBreak] = { minArgs = 2, post = "return a2",
+		body = nonNil('if type(r) == "boolean" then if r == false then return r end else a2 = r end') },
+	[RunAdditiveThirdArgCallbackWithBreak] = { minArgs = 3, post = "return a3",
+		body = nonNil('if type(r) == "boolean" then if r == false then return r end else a3 = r end') },
+	[RunPreRenderCallback] = { minArgs = 2, post = "return a2",
+		body = nonNil('if type(r) == "boolean" and r == false then return false elseif r.X and r.Y then a2 = a2 + r end') },
+
+	[RunPreAddCardPillCallback] = { minArgs = 2, post = "return a2",
+		body = 'if type(r) == "boolean" and r == false then return false elseif type(r) == "number" and r > 0 then a2 = r end' },
+	[RunGetMultiShotParamsCallback] = { minArgs = 2, post = "return a2",
+		body = "if IsValidMultiShotParams(r) then a2 = r end" },
+	[RunEntityTakeDmgCallback] = { fixedArgs = 6, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.Damage and type(r.Damage) == "number" then a2 = r.Damage end
+				if r.DamageFlags and type(r.DamageFlags) == "number" and math.tointeger(r.DamageFlags) then a3 = r.DamageFlags end
+				if r.DamageCountdown and type(r.DamageCountdown) == "number" then a5 = r.DamageCountdown end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunAccumulateReturnTableCallback] = { pre = "local retTable", post = "return retTable",
+		body = nonNil([[
+			if type(r) == "boolean" then
+				return r
+			elseif type(r) == "table" then
+				if retTable then for k_, v_ in pairs(r) do retTable[k_] = v_ end else retTable = r end
+			end]]) },
+	[RunPreAddCollectibleCallback] = { minArgs = 5, pre = "local retType, retTable", post = "return retTable or retType",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "number" then
+				retType = r
+				a1 = r
+				if retTable then retTable.Type = r end
+			elseif type(r) == "table" then
+				a1 = r[1] or a1
+				a2 = r[2] or a2
+				if r[3] ~= nil then a3 = r[3] end
+				a4 = r[4] or a4
+				a5 = r[5] or a5
+				if retTable then
+					for k_, v_ in pairs(r) do retTable[k_] = v_ end
+				else
+					retTable = r
+					retTable[1] = retTable[1] or a1
+				end
+			end]]) },
+	[RunPreAddTrinketCallback] = { minArgs = 3, pre = "local retType, retTable", post = "return retTable or retType",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "number" then
+				retType = r
+				a2 = r
+				if retTable then retTable.Type = r end
+			elseif type(r) == "table" then
+				a2 = r[1] or a2
+				if r[2] ~= nil then a3 = r[2] end
+				if retTable then
+					for k_, v_ in pairs(r) do retTable[k_] = v_ end
+				else
+					retTable = r
+					retTable[1] = retTable[1] or a2
+				end
+			end]]) },
+	[RunTriggerPlayerDeathCallback] = { minArgs = 1, post = "return true",
+		body = [[
+			if not a1:IsDead() or not a1:Exists() then return end
+			if r == false then return false end]] },
+	[RunPostPickupSelectionCallback] = { minArgs = 3, pre = "local recentRet", post = "return recentRet",
+		body = [[
+			if type(r) == "table" then
+				if not r[3] then return r end
+				if (math.type(r[1]) == "integer" and math.type(r[2]) == "integer") then
+					recentRet = {r[1], r[2]}
+					a2 = r[1]
+					a3 = r[2]
+				end
+			end]] },
+	[RunTryAddToBagOfCraftingCallback] = { fixedArgs = 3, post = "return a3",
+		body = [[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				a3 = {}
+				for i_ = 1, 8 do
+					if not r[i_] or r[i_] <= BagOfCraftingPickup.BOC_NONE or r[i_] > BagOfCraftingPickup.BOC_POOP then
+						break
+					else
+						table.insert(a3, r[i_])
+					end
+				end
+			end]] },
+	[RunPreApplyTearflagEffectsCallback] = { fixedArgs = 5, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.Damage and type(r.Damage) == "number" then a5 = r.Damage end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a3 = r.TearFlags end
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a2 = r.Position end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreStatusEffectApplyCallback] = { fixedArgs = 7, pre = "local recentRet", post = "return recentRet",
+		body = [[
+			if type(r) == "boolean" then
+				if r == false then return false end
+			elseif type(r) == "table" then
+				local check_ = preStatusApplyReturnTableTypes[a1]
+				if check_ then
+					local err_ = check_(r)
+					if err_ then
+						logError(id, cb.Mod.Name, err_)
+					else
+						if r[1] ~= nil then a4 = r[1] end
+						if r[2] ~= nil then a5 = r[2] end
+						if r[3] ~= nil then a6 = r[3] end
+						if r[4] ~= nil then a7 = r[4] end
+						recentRet = { a4, a5, a6, a7 }
+					end
+				else
+					logError(id, cb.Mod.Name, "bad return type (table not expected for status)")
+				end
+			elseif type(r) == "number" then
+				if type(recentRet) == "table" then recentRet[1] = r else recentRet = r end
+				a4 = r
+			end]] },
+	[RunPreBombDamageCallback] = { fixedArgs = 8, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a1 = r.Position end
+				if r.Damage and type(r.Damage) == "number" then a2 = r.Damage end
+				if r.Radius and type(r.Radius) == "number" then a3 = r.Radius end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a6 = r.TearFlags end
+				if r.DamageFlags and type(r.DamageFlags) == "number" and math.tointeger(r.DamageFlags) then a7 = r.DamageFlags end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreBombTearFlagEffectsCallback] = { fixedArgs = 5, pre = "local combinedRet", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if ]] .. isMetatype("r.Position", "Vector") .. [[ then a1 = r.Position end
+				if r.Radius and type(r.Radius) == "number" then a2 = r.Radius end
+				if r.RadiusMult and type(r.RadiusMult) == "number" then a5 = r.RadiusMult end
+				if ]] .. isMetatype("r.TearFlags", "BitSet128") .. [[ then a3 = r.TearFlags end
+				]] .. MergeIntoCombined .. [[
+			end]]) },
+	[RunPreHistoryHudRenderCallback] = {
+		pre = "local combinedRet = { HideCollectibles = {}, HideTrinkets = {} }", post = "return combinedRet",
+		body = nonNil([[
+			if type(r) == "boolean" and r == false then
+				return false
+			elseif type(r) == "table" then
+				if r.HideCollectibles and type(r.HideCollectibles) == "table" then
+					for _, v_ in pairs(r.HideCollectibles) do combinedRet.HideCollectibles[v_] = true end
+				end
+				if r.HideTrinkets and type(r.HideTrinkets) == "table" then
+					for _, v_ in pairs(r.HideTrinkets) do combinedRet.HideTrinkets[v_] = true end
+				end
+			end]]) },
+}
+
+local Runners = {}
+
+local function BuildRunner(callbackID, list, numArgs, template)
+	local n = template.fixedArgs or math.max(numArgs, template.minArgs or 0)
+	local args = {}
+	for i = 1, n do args[i] = "a" .. i end
+	args = table.concat(args, ", ")
+	local passArgs = n > 0 and (", " .. args) or ""
+
+	local src = {
+		"local xpcall, handler, logError, typeCheckCallback, type, C, id, GetMetatableType, IsValidMultiShotParams, preStatusApplyReturnTableTypes = ...\n",
+		"return function(", args, ")\n\tlocal cb, ok, r\n",
+		template.pre and ("\t" .. template.pre .. "\n") or "",
+	}
+
+	for i = 1, #list do
+		src[#src + 1] = string.format([[
+	cb = C[%d]
+	if not cb.Removed then
+		ok, r = xpcall(cb.Function, handler, cb.Mod%s)
+		if not ok then
+			logError(id, cb.Mod.Name, r)
+			r = nil
+		elseif r ~= nil and typeCheckCallback(cb, id, r%s) then
+			r = nil
+		end
+		%s
+	end
+]], i, passArgs, passArgs, template.body)
+	end
+	if template.post then
+		src[#src + 1] = "\t" .. template.post .. "\n"
+	end
+	src[#src + 1] = "end\n"
+
+	
+	local chunk = load(table.concat(src), "=[RunCallback " .. tostring(callbackIDToName[callbackID] or callbackID) .. "]")
+	return chunk and chunk(xpcall, callbackErrorHandler, logError, typeCheckCallback, type, list, callbackID,
+		GetMetatableType, IsValidMultiShotParams, preStatusApplyReturnTableTypes) or false
+end
+
+local function GetRunner(callbackID, list, numArgs)
+	local runners = list[Runners]
+	if runners then
+		local run = runners[numArgs]
+		if run ~= nil then
+			return run
+		end
+	else
+		runners = {}
+		list[Runners] = runners
+	end
+	local template = GeneratedCallbackRunLogic[CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic]
+	local run = template and BuildRunner(callbackID, list, numArgs, template) or false
+	runners[numArgs] = run
+	return run
+end
+
 function _RunCallback(callbackID, param, ...)
-	local n, a1, a2, a3, a4 = select('#', ...), ...
 	local list = GetCallbackList(callbackID, param)
+	if list then
+		local run = GetRunner(callbackID, list, select('#', ...))
+		if run then
+			return run(...)
+		end
+	end
+
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 	if n == 0 then
 		return RunCallbacksOverList(callbackID, list)
 	elseif n == 1 then
@@ -2607,8 +2860,15 @@ function Isaac.RunCallback(callbackID, ...)
 end
 
 function _RunCallbackWithTwoParams(callbackID, param1, param2, ...)
-	local n, a1, a2, a3, a4 = select('#', ...), ...
 	local list = GetCallbackList(callbackID, param1, param2)
+	if list then
+		local run = GetRunner(callbackID, list, select('#', ...))
+		if run then
+			return run(...)
+		end
+	end
+
+	local n, a1, a2, a3, a4 = select('#', ...), ...
 	if n == 0 then
 		return RunCallbacksOverList(callbackID, list)
 	elseif n == 1 then

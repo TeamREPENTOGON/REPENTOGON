@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "../Patches/Anm2Extras.h"
+#include "../MiscFunctions.h"
 
 extern "C" {
 
@@ -81,6 +82,10 @@ extern "C" {
 		sprite->Load(pathStr, loadGraphics);
 	}
 
+	__declspec(dllexport) void L_Sprite_LoadRGON(ANM2* sprite, const char* path, bool loadGraphics) {
+		sprite->Load(REPENTOGON::GetRGONGfxAbsolutePath(path), loadGraphics);
+	}
+
 	__declspec(dllexport) void L_Sprite_LoadGraphics(ANM2* sprite) {
 		sprite->LoadGraphics(false);
 	}
@@ -139,8 +144,8 @@ extern "C" {
 		sprite->SetLayerFrame(id, frame);
 	}
 
-	__declspec(dllexport) void L_Sprite_SetOverlayAnimation(ANM2* sprite, const char* anim, bool reset) {
-		sprite->SetOverlayAnimation(anim, reset);
+	__declspec(dllexport) bool L_Sprite_SetOverlayAnimation(ANM2* sprite, const char* anim, bool reset) {
+		return sprite->SetOverlayAnimation(anim, reset);
 	}
 
 	__declspec(dllexport) void L_Sprite_SetOverlayFrameWithAnim(ANM2* sprite, const char* anim, int frame) {

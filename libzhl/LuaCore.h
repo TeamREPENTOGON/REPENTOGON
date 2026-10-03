@@ -85,15 +85,9 @@ namespace lua {
     {
         extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* BossPoolMT;
-        extern LIBZHL_API const char* CapsuleMT;
-        extern LIBZHL_API const char* ChallengeParamMT;
-        extern LIBZHL_API const char* ConsoleMT;
         extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* DailyChallengeMT;
-        extern LIBZHL_API const char* DebugRendererMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* ColorParamsMT;
         extern LIBZHL_API const char* EntityConfigMT;
         extern LIBZHL_API const char* EntityConfigEntityMT;
         extern LIBZHL_API const char* EntityConfigPlayerMT;
@@ -107,14 +101,10 @@ namespace lua {
         extern LIBZHL_API const char* HistoryHUDItemMT;
         extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
-        extern LIBZHL_API const char* MinimapMT;
         extern LIBZHL_API const char* MultiShotParamsMT;
-        extern LIBZHL_API const char* NightmareSceneMT;
-        extern LIBZHL_API const char* PersistentGameDataMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* PocketItemMT;
@@ -126,10 +116,6 @@ namespace lua {
         extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* RoomTransitionMT;
-        extern LIBZHL_API const char* ScoreSheetMT;
-        extern LIBZHL_API const char* ShapeMT;
-        extern LIBZHL_API const char* StageTransitionMT; 
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* WeightedOutcomePickerMT;
         extern LIBZHL_API const char* CostumeSpriteDescMT;
@@ -577,6 +563,14 @@ namespace lua {
             VECTOR_LIST_PTR,
             ENTITY_DESC,
             ENTITY_DESC_PTR,
+            CHALLENGE_PARAM,
+            CHALLENGE_PARAM_PTR,
+            CAPSULE,
+            CAPSULE_PTR,
+            SHAPE,
+            SHAPE_PTR,
+            COLOR_PARAMS,
+            COLOR_PARAMS_PTR,
             WEIGHTED_OUTCOME_PICKER,
             WEIGHTED_OUTCOME_PICKER_PTR,
             MAX_CDATA

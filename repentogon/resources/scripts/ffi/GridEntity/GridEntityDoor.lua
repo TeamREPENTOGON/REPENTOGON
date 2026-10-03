@@ -12,7 +12,7 @@ ffi.cdef[[
         int CurrentRoomType;
         int TargetRoomType;
         int Direction;
-        struct Sprite ExtraSprite;
+        private struct Sprite _ExtraSprite;
         bool ExtraVisible;
         bool Busted;
         private bool CanOpenChallengeRoom;
@@ -38,8 +38,10 @@ ffi.cdef[[
     bool L_GridEntityDoor_IsLocked(struct GridEntityDoor*);
     bool L_GridEntityDoor_IsTargetRoomArcade(struct GridEntityDoor*);
     void L_GridEntityDoor_Open(struct GridEntityDoor*);
+    void L_GridEntityDoor_SpawnDust(struct GridEntityDoor*);
     void L_GridEntityDoor_PlayAnimation(struct GridEntityDoor*);
     void L_GridEntityDoor_Render(struct GridEntityDoor*, struct Vector);
+    void L_GridEntityDoor_SetExtraSprite(struct GridEntityDoor*, struct Sprite*);
     void L_GridEntityDoor_SetLocked(struct GridEntityDoor*, bool);
     void L_GridEntityDoor_SetRoomTypes(struct GridEntityDoor*, int, int);
     void L_GridEntityDoor_Update(struct GridEntityDoor*);
@@ -67,7 +69,7 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Close(self, force)
     end,
     GetExtraSprite = function(self)
-        return self.ExtraSprite
+        return ffi.getprivate(self, "_ExtraSprite")
     end,
     GetSpriteOffset = function(self)
         return ffi.getprivate(self, "Sprite").Offset
@@ -93,6 +95,9 @@ GridEntityDoorMT = {
     end,
     IsTargetRoomArcade = function(self)
         return repentogon.L_GridEntityDoor_IsTargetRoomArcade(self)
+    end,
+    SpawnDust = function(self)
+        repentogon.L_GridEntityDoor_SpawnDust(self)
     end,
     Open = function(self)
         repentogon.L_GridEntityDoor_Open(self)
@@ -128,6 +133,9 @@ local baseIndex = getmetatable(GridEntity).__class.__index
 local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityDoorMT.__index = function(self, key)
+    if key == "ExtraSprite" then
+        return ffi.getprivate(self, "_ExtraSprite")
+    end
     if key == "CloseAnimation" then
         return ffi.string(repentogon.L_GridEntityDoor_GetCloseAnimation(self))
     end 
@@ -147,6 +155,11 @@ GridEntityDoorMT.__index = function(self, key)
 end
 
 GridEntityDoorMT.__newindex = function(self, key, value)
+    if key == "ExtraSprite" then
+        ffichecks.checkcdata(1, value, "Sprite")
+        repentogon.L_GridEntityDoor_SetExtraSprite(self, value)
+        return
+    end
     baseNewindex(self, key, value)
 end
 

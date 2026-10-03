@@ -1,129 +1,13 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "../../LuaClasses.h"
-#include "HookSystem.h"
 
-/*LUA_FUNCTION(Lua_GameGetMinimap)
-{
-	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Minimap** toLua = (Minimap**)lua_newuserdata(L, sizeof(Minimap*));
-	*toLua = game->GetMinimap();
-	luaL_setmetatable(L, lua::metatables::MinimapMT);
-	return 1;
-}
-*/
-
-LUA_FUNCTION(Lua_MinimapGetState)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	lua_pushinteger(L, minimap->_state);
-	return 1;
+MOD_EXPORT Minimap* L_Minimap_Get() { 
+	return &g_Game->_minimap; 
 }
 
-LUA_FUNCTION(Lua_MinimapSetState)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_state = (int)luaL_checkinteger(L, 1);
-	return 0;
+MOD_EXPORT void L_Minimap_GetDisplayedSize(Vector* out) {
+	g_Game->_minimap.GetDisplayedSize(*out);
 }
 
-LUA_FUNCTION(Lua_MinimapGetHoldTime)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	lua_pushinteger(L, minimap->_holdTime);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapSetHoldTime)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_holdTime = (int)luaL_checkinteger(L, 1);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	Vector buffer;
-	buffer = *minimap->GetDisplayedSize(buffer);
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], buffer);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapGetItemIconsSprite)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	LuaSprite::PushPtr(L, &minimap->_itemIconsSprite);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapGetIconsSprite)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	LuaSprite::PushPtr(L, &minimap->_iconsSprite);;
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapGetShakeDuration)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	lua_pushinteger(L, minimap->_shakeDuration);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapSetShakeDuration)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_shakeDuration = (int)luaL_checkinteger(L, 1);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MinimapGetShakeOffset)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], minimap->_shakeOffset);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MinimapSetShakeOffset)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	minimap->_shakeOffset = *lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MinimapRefresh)
-{
-	Minimap* minimap = g_Game->GetMinimap();
-	minimap->Refresh();
-	return 0;
-}
-
-static void RegisterMinimap(lua_State* L) {
-	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
-	lua_newtable(L);
-	//luaL_Reg functions[] = {
-	lua::TableAssoc(L, "GetState", Lua_MinimapGetState);
-	lua::TableAssoc(L, "SetState", Lua_MinimapSetState);
-	lua::TableAssoc(L, "GetHoldTime", Lua_MinimapGetHoldTime);
-	lua::TableAssoc(L, "SetHoldTime", Lua_MinimapSetHoldTime);
-	lua::TableAssoc(L, "GetDisplayedSize", Lua_MinimapGetDisplayedSize);
-	lua::TableAssoc(L, "GetItemIconsSprite", Lua_MinimapGetItemIconsSprite);
-	lua::TableAssoc(L, "GetIconsSprite", Lua_MinimapGetIconsSprite);
-	lua::TableAssoc(L, "GetShakeDuration", Lua_MinimapGetShakeDuration);
-	lua::TableAssoc(L, "SetShakeDuration", Lua_MinimapSetShakeDuration);
-	lua::TableAssoc(L, "GetShakeOffset", Lua_MinimapGetShakeOffset);
-	lua::TableAssoc(L, "SetShakeOffset", Lua_MinimapSetShakeOffset);
-	lua::TableAssoc(L, "Refresh", Lua_MinimapRefresh);
-	//};
-	lua_setglobal(L, "Minimap");
-	//lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-	RegisterMinimap(_state);
+MOD_EXPORT void L_Minimap_Refresh() {
+	g_Game->_minimap.Refresh();
 }

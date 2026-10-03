@@ -101,7 +101,7 @@ MusicManagerMT = {
     Play = function(self, id, volume)
         ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
-        volume = ffichecks.optnumber(volume, 1)
+        volume = ffichecks.optnumber(volume, -1)
         repentogon.L_MusicManager_Play(id, volume)
     end,
     PlayJingle = function(self, id, duration)

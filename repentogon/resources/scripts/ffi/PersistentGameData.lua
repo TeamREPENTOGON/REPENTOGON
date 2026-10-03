@@ -1,0 +1,118 @@
+ffi.cdef [[
+    struct PersistentGameData {
+        private bool ItemsCollection[733] : 0xae8;
+        private bool Bosses[104] : 0xe07;
+    } : 0xf90;
+
+    struct PersistentGameData* L_PersistentGameData_Get();
+    bool L_PersistentGameData_AddBestiaryKill(struct PersistentGameData*, int, int);
+    void L_PersistentGameData_AddBossKilled(struct PersistentGameData*, int);
+    int L_PersistentGameData_GetBestiaryDeathCount(struct PersistentGameData*, int, int);
+    int L_PersistentGameData_GetBestiaryEncounterCount(struct PersistentGameData*, int, int);
+    int L_PersistentGameData_GetBestiaryKillCount(struct PersistentGameData*, int, int);
+    int L_PersistentGameData_GetEventCounter(struct PersistentGameData*, int);
+    void L_PersistentGameData_IncreaseEventCounter(struct PersistentGameData*, int, int);
+    bool L_PersistentGameData_IsChallengeCompleted(struct PersistentGameData*, int);
+    bool L_PersistentGameData_TryUnlock(struct PersistentGameData*, int, bool);
+    bool L_PersistentGameData_Unlock(struct PersistentGameData*, int, bool);
+    bool L_PersistentGameData_Unlocked(struct PersistentGameData*, int);
+]]
+local repentogon = ffidll
+local ffi = ffi
+
+rawset(Isaac, "GetPersistentGameData", function()
+    return repentogon.L_PersistentGameData_Get()
+end)
+
+local function CheckBossID(arg, id)
+    if id > 103 or id < 1 then
+        ffichecks.argerror(arg, string.format("expected BossType between 1 and 103 inclusive, got %d", id), 3)
+    end
+end
+
+local function CheckEventCounter(arg, counter)
+    if counter >= EventCounter.NUM_EVENT_COUNTERS then
+        ffichecks.argerror(arg, string.format("EventCounter cannot be higher than %d", EventCounter.NUM_EVENT_COUNTERS), 3)
+    end
+end
+
+local PersistentGameDataMT
+PersistentGameDataMT = {
+    __type = "PersistentGameData",
+    AddBestiaryKill = function(self, entType, variant)
+        ffichecks.checkinteger(1, entType)
+        variant = ffichecks.optnumber(variant, 0)
+        return repentogon.L_PersistentGameData_AddBestiaryKill(self, entType, variant)
+    end,
+    AddBossKilled = function(self, boss)
+        ffichecks.checkinteger(1, boss)
+        CheckBossID(1, boss)
+        repentogon.L_PersistentGameData_AddBossKilled(self, boss)
+    end,
+    GetBestiaryDeathCount = function(self, entType, variant)
+        ffichecks.checkinteger(1, entType)
+        ffichecks.checkinteger(2, variant)
+        return repentogon.L_PersistentGameData_GetBestiaryDeathCount(self, entType, variant)
+    end,
+    GetBestiaryEncounterCount = function(self, entType, variant)
+        ffichecks.checkinteger(1, entType)
+        ffichecks.checkinteger(2, variant)
+        return repentogon.L_PersistentGameData_GetBestiaryEncounterCount(self, entType, variant)
+    end,
+    GetBestiaryKillCount = function(self, entType, variant)
+        ffichecks.checkinteger(1, entType)
+        ffichecks.checkinteger(2, variant)
+        return repentogon.L_PersistentGameData_GetBestiaryKillCount(self, entType, variant)
+    end,
+    GetEventCounter = function(self, counter)
+        ffichecks.checkinteger(1, counter)
+        CheckEventCounter(1, counter)
+        return repentogon.L_PersistentGameData_GetEventCounter(self, counter)
+    end,
+    IncreaseEventCounter = function(self, counter, count)
+        ffichecks.checkinteger(1, counter)
+        ffichecks.checkinteger(2, count)
+        CheckEventCounter(1, counter)
+        repentogon.L_PersistentGameData_IncreaseEventCounter(self, counter, count)
+    end,
+    IsBossKilled = function(self, boss)
+        ffichecks.checkinteger(1, boss)
+        CheckBossID(1, boss)
+        return ffi.getprivate(self, "Bosses")[boss]
+    end,
+    IsChallengeCompleted = function(self, challenge)
+        ffichecks.checkinteger(1, challenge)
+        return repentogon.L_PersistentGameData_IsChallengeCompleted(self, challenge)
+    end,
+    IsItemInCollection = function(self, item)
+        ffichecks.checkinteger(1, item)
+        if item >= CollectibleType.NUM_COLLECTIBLES then
+            ffichecks.argerror(1, string.format("CollectibleType cannot be higher than %d", CollectibleType.NUM_COLLECTIBLES - 1))
+        end
+        return ffi.getprivate(self, "ItemsCollection")[item]
+    end,
+    TryUnlock = function(self, unlock, blockPaperPopup)
+        ffichecks.checkinteger(1, unlock)
+        blockPaperPopup = ffichecks.optboolean(blockPaperPopup, false)
+        return repentogon.L_PersistentGameData_TryUnlock(self, unlock, blockPaperPopup)
+    end,
+    Unlock = function(self, unlock, blockPaperPopup)
+        ffichecks.checkinteger(1, unlock)
+        blockPaperPopup = ffichecks.optboolean(blockPaperPopup, false)
+        return repentogon.L_PersistentGameData_Unlock(self, unlock, blockPaperPopup)
+    end,
+    Unlocked = function(self, unlock)
+        ffichecks.checkinteger(1, unlock)
+        return repentogon.L_PersistentGameData_Unlocked(self, unlock)
+    end,
+}
+
+setmetatable(PersistentGameDataMT, { __index = function() end })
+PersistentGameDataMT.__index = PersistentGameDataMT
+
+local PersistentGameDataT = ffi.metatype("struct PersistentGameData", PersistentGameDataMT)
+
+PersistentGameData = setmetatable({}, {
+    __class = PersistentGameDataMT,
+})
+

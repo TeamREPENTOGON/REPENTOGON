@@ -53,7 +53,6 @@ static void RegisterLootListEntry(lua_State* L) {
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::LootListEntryMT, lua::metatables::LootListEntryMT, functions);
-	//lua_register(L, lua::metatables::CapsuleMT, Lua_CapsuleConstructor);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

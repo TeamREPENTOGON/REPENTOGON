@@ -920,12 +920,45 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_DESC_PTR;
     };
 
+<<<<<<< HEAD
     struct LuaWeightedOutcomePicker
     {
         static constexpr const char* Name = "WeightedOutcomePicker";
         using type = WeightedOutcomePicker;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR;
+=======
+    struct LuaChallengeParam
+    {
+        static constexpr const char* Name = "ChallengeParam";
+        using Type = ChallengeParam;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::CHALLENGE_PARAM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::CHALLENGE_PARAM_PTR;
+    };
+
+    struct LuaCapsule
+    {
+        static constexpr const char* Name = "Capsule";
+        using Type = Capsule;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::CAPSULE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::CAPSULE_PTR;
+    };
+
+    struct LuaShape
+    {
+        static constexpr const char* Name = "Shape";
+        using Type = Shape;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::SHAPE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::SHAPE_PTR;
+    };
+
+    struct LuaColorParams
+    {
+        static constexpr const char* Name = "ColorParams";
+        using Type = ColorParams;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR_PARAMS;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_PARAMS_PTR;
+>>>>>>> 18b93d2006b5f92dd6b132323b96db71a29ad199
     };
 }
 
@@ -1043,6 +1076,10 @@ using LuaGridEntityStatue = CDataType<LuaTraits::LuaGridEntityStatue>;
 using LuaGridEntityTeleporter = CDataType<LuaTraits::LuaGridEntityTeleporter>;
 using LuaColorModifier = CDataType<LuaTraits::LuaColorModifier>;
 using LuaEntityDesc = CDataType<LuaTraits::LuaEntityDesc>;
+using LuaChallengeParam = CDataType<LuaTraits::LuaChallengeParam>;
+using LuaCapsule = CDataType<LuaTraits::LuaCapsule>;
+using LuaShape = CDataType<LuaTraits::LuaShape>;
+using LuaColorParams = CDataType<LuaTraits::LuaColorParams>;
 using LuaWeightedOutcomePicker = CDataType<LuaTraits::LuaWeightedOutcomePicker>;
 
 struct LuaLevelGeneratorRoom

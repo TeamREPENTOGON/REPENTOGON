@@ -4,7 +4,7 @@ typedef struct Vector* VectorPtr;
 ]]
 
 local repentogon = ffidll
-local lffi = ffi
+local ffi = ffi
 
 local function DistanceSquared(self, second)
 	ffichecks.checkcdata(1, second, "Vector")
@@ -136,6 +136,7 @@ VectorMT = {
         
         self.X = self.X * it + m2.X * t
         self.Y = self.Y * it + m2.Y * t
+        return self
     end,
     Normalize = function(self)
         local length = math.sqrt(self.X * self.X + self.Y * self.Y)
