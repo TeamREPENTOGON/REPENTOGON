@@ -241,6 +241,7 @@ loadmodule("DailyChallenge")
 loadmodule("Capsule")
 loadmodule("Shape")
 loadmodule("DebugRenderer")
+loadmodule("ColorParams")
 
 ffi = nil
 ffidll = nil

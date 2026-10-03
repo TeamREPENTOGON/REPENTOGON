@@ -727,7 +727,6 @@ namespace lua {
 		const char* GenericPromptMT = "GenericPrompt";
 		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
-		const char* ColorParamsMT = "ColorParams";
 		const char* EntityConfigMT = "EntityConfig";
 		const char* EntityConfigEntityMT = "EntityConfigEntity";
 		const char* EntityConfigPlayerMT = "EntityConfigPlayer";

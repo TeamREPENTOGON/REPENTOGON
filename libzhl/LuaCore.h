@@ -88,7 +88,6 @@ namespace lua {
         extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* ColorParamsMT;
         extern LIBZHL_API const char* EntityConfigMT;
         extern LIBZHL_API const char* EntityConfigEntityMT;
         extern LIBZHL_API const char* EntityConfigPlayerMT;
@@ -570,6 +569,8 @@ namespace lua {
             CAPSULE_PTR,
             SHAPE,
             SHAPE_PTR,
+            COLOR_PARAMS,
+            COLOR_PARAMS_PTR,
             MAX_CDATA
         };
 
