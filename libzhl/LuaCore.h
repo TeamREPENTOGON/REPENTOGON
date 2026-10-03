@@ -104,7 +104,6 @@ namespace lua {
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorEntryMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
-        extern LIBZHL_API const char* MultiShotParamsMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* PocketItemMT;
@@ -570,6 +569,8 @@ namespace lua {
             COLOR_PARAMS_PTR,
             LOOT_LIST,
             LOOT_LIST_PTR,
+            MULTI_SHOT_PARAMS,
+            MULTI_SHOT_PARAMS_PTR,
             WEIGHTED_OUTCOME_PICKER,
             WEIGHTED_OUTCOME_PICKER_PTR,
             MAX_CDATA

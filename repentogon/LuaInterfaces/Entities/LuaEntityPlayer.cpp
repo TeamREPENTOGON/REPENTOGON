@@ -544,6 +544,15 @@ LUA_FUNCTION(Lua_IsTrinketBlocked) {
     return 1;
 }
 
+LUA_FUNCTION(Lua_GetMultiShotParams) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int weaponType = (int)luaL_optinteger(L, 2, 1);
+
+	Weapon_MultiShotParams params;
+	LuaMultiShotParams::Push(L, *player->GetMultiShotParams(&params, (WeaponType)weaponType));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GetMultiShotPositionVelocity)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -552,7 +561,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity)
 	Vector* shotDirection = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
-	Weapon_MultiShotParams* multiShotParams = lua::GetRawUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
+	Weapon_MultiShotParams* multiShotParams = LuaMultiShotParams::Get(L, 6);
 	if (multiShotParams->numTears < loopIndex) {
 		return luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
@@ -4106,6 +4115,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasCollectible", Lua_HasCollectible },
 		{ "GetCollectibleNum", Lua_GetCollectibleNum },
 		{ "AddCollectible", Lua_AddCollectible },
+		{ "GetMultiShotParams", Lua_GetMultiShotParams },
 		{ "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity },
 		{ "InitTwin", Lua_InitTwin },
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },

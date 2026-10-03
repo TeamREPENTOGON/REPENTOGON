@@ -244,6 +244,7 @@ loadmodule("DebugRenderer")
 loadmodule("ColorParams")
 loadmodule("LootListEntry")
 loadmodule("LootList")
+loadmodule("MultiShotParams")
 loadmodule("WeightedOutcomePicker")
 
 ffi = nil

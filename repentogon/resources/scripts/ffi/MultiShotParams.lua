@@ -1,0 +1,128 @@
+ffi.cdef [[
+    struct MultiShotParams {
+        private int16_t NumTears : 0x0;
+        private int16_t NumLanesPerEye : 0x2;
+        private float SpreadAngleTears : 0x4;
+        private float SpreadAngleLaser : 0x8;
+        private float SpreadAngleTechX : 0xc;
+        private float SpreadAngleKnife : 0x10;
+        private int NumEyesActive : 0x14;
+        private float MultiEyeAngle : 0x18;
+        private bool CrossEyed : 0x1c;
+        private bool ShootingBackwards : 0x1d;
+        private bool ShootingSideways : 0x1e;
+        private int16_t NumRandomDirTears : 0x20;
+    } : 0x24;
+    typedef struct MultiShotParams* MultiShotParamsPtr;
+]]
+
+local ffi = ffi
+
+local spreadAngleFields = {
+    [1] = "SpreadAngleTears",  -- WEAPON_TEARS
+    [5] = "SpreadAngleTears",  -- WEAPON_BOMBS
+    [2] = "SpreadAngleLaser",  -- WEAPON_BRIMSTONE
+    [3] = "SpreadAngleLaser",  -- WEAPON_LASER
+    [4] = "SpreadAngleKnife",  -- WEAPON_KNIFE
+    [9] = "SpreadAngleTechX",  -- WEAPON_TECH_X
+    [14] = "SpreadAngleTechX", -- WEAPON_FETUS (C Section)
+    [10] = "SpreadAngleKnife", -- WEAPON_BONE
+    [11] = "SpreadAngleKnife", -- WEAPON_NOTCHED_AXE
+}
+local spreadAngleScale = { [10] = 3, [11] = 3 }
+
+local MultiShotParamsMT
+MultiShotParamsMT = {
+    __type = "MultiShotParams",
+    GetMultiEyeAngle = function(self)
+        return ffi.getprivate(self, "MultiEyeAngle")
+    end,
+    GetNumEyesActive = function(self)
+        return ffi.getprivate(self, "NumEyesActive")
+    end,
+    GetNumLanesPerEye = function(self)
+        return ffi.getprivate(self, "NumLanesPerEye")
+    end,
+    GetNumRandomDirTears = function(self)
+        return ffi.getprivate(self, "NumRandomDirTears")
+    end,
+    GetNumTears = function(self)
+        return ffi.getprivate(self, "NumTears")
+    end,
+    GetSpreadAngle = function(self, weaponType)
+        ffichecks.checkinteger(1, weaponType)
+        local field = SpreadAngleFields[weaponType]
+        if field then
+            return ffi.getprivate(self, field) * (spreadAngleScale[weaponType] or 1)
+        end
+        if weaponType >= 1 and weaponType <= 15 then
+            return 0
+        end
+        error("WeaponTypes bigger than 15 are not supported!", 2)
+    end,
+    IsCrossEyed = function(self)
+        return ffi.getprivate(self, "CrossEyed")
+    end,
+    IsShootingBackwards = function(self)
+        return ffi.getprivate(self, "ShootingBackwards")
+    end,
+    IsShootingSideways = function(self)
+        return ffi.getprivate(self, "ShootingSideways")
+    end,
+    SetIsCrossEyed = function(self, value)
+        ffichecks.checkboolean(1, value)
+        ffi.setprivate(self, "CrossEyed", value)
+    end,
+    SetIsShootingBackwards = function(self, value)
+        ffichecks.checkboolean(1, value)
+        ffi.setprivate(self, "ShootingBackwards", value)
+    end,
+    SetIsShootingSideways = function(self, value)
+        ffichecks.checkboolean(1, value)
+        ffi.setprivate(self, "ShootingSideways", value)
+    end,
+    SetMultiEyeAngle = function(self, angle)
+        ffichecks.checknumber(1, angle)
+        ffi.setprivate(self, "MultiEyeAngle", angle)
+    end,
+    SetNumEyesActive = function(self, count)
+        ffichecks.checkinteger(1, count)
+        ffi.setprivate(self, "NumEyesActive", count)
+    end,
+    SetNumLanesPerEye = function(self, count)
+        ffichecks.checkinteger(1, count)
+        ffi.setprivate(self, "NumLanesPerEye", count)
+    end,
+    SetNumRandomDirTears = function(self, count)
+        ffichecks.checkinteger(1, count)
+        ffi.setprivate(self, "NumRandomDirTears", count)
+    end,
+    SetNumTears = function(self, count)
+        ffichecks.checkinteger(1, count)
+        ffi.setprivate(self, "NumTears", count)
+    end,
+    SetSpreadAngle = function(self, weaponType, angle)
+        ffichecks.checkinteger(1, weaponType)
+        ffichecks.checknumber(2, angle)
+        local field = SpreadAngleFields[weaponType]
+        if not field then
+            if weaponType >= 1 and weaponType <= 15 then
+                error("The given WeaponType can't change its spread angle!", 2)
+            end
+            error("A WeaponType bigger than 15 is not supported!", 2)
+        end
+        ffi.setprivate(self, field, angle / (spreadAngleScale[weaponType] or 1))
+        if ffi.getprivate(self, "NumLanesPerEye") < 2 then
+            ffi.setprivate(self, "NumLanesPerEye", 2)
+        end
+    end,
+}
+
+setmetatable(MultiShotParamsMT, { __index = function() end })
+MultiShotParamsMT.__index = MultiShotParamsMT
+
+ffi.metatype("struct MultiShotParams", MultiShotParamsMT)
+
+MultiShotParams = setmetatable({}, {
+    __class = MultiShotParamsMT,
+})

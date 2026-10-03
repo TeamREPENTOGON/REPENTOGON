@@ -967,6 +967,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR;
     };
+    
+    struct LuaMultiShotParams
+    {
+        static constexpr const char* Name = "MultiShotParams";
+        using Type = Weapon_MultiShotParams;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::MULTI_SHOT_PARAMS;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::MULTI_SHOT_PARAMS_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1069,7 +1077,7 @@ using LuaBossPool = LuaUserdataPtr<BossPool_Pool, lua::metatables::BossPoolMT>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
 using LuaWeapon = LuaUserdataPtr<Weapon, lua::metatables::WeaponMT, WeaponData>;
-using LuaMultiShotParams = LuaUserdataValue<Weapon_MultiShotParams, lua::metatables::MultiShotParamsMT>;
+using LuaMultiShotParams = CDataType<LuaTraits::LuaMultiShotParams>;
 using LuaLootList = CDataType<LuaTraits::LuaLootList>;
 using LuaGridEntityDecoration = CDataType<LuaTraits::LuaGridEntityDecoration>;
 using LuaGridEntityWeb = CDataType<LuaTraits::LuaGridEntityWeb>;
