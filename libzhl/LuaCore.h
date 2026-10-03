@@ -577,6 +577,8 @@ namespace lua {
             VECTOR_LIST_PTR,
             ENTITY_DESC,
             ENTITY_DESC_PTR,
+            WEIGHTED_OUTCOME_PICKER,
+            WEIGHTED_OUTCOME_PICKER_PTR,
             MAX_CDATA
         };
 

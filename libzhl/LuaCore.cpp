@@ -770,7 +770,6 @@ namespace lua {
 		const char* ShapeMT = "Shape";
 		const char* StageTransitionMT = "StageTransition";
 		const char* WeaponMT = "Weapon";
-		const char* WeightedOutcomePickerMT = "WeightedOutcomePicker";
 		const char* CostumeSpriteDescMT = "CostumeSpriteDesc";
 		const char* LootListMT = "LootList";
 		const char* LootListEntryMT = "LootListEntry";

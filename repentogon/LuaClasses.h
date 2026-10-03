@@ -919,6 +919,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_DESC;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_DESC_PTR;
     };
+
+    struct LuaWeightedOutcomePicker
+    {
+        static constexpr const char* Name = "WeightedOutcomePicker";
+        using type = WeightedOutcomePicker;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1035,6 +1043,7 @@ using LuaGridEntityStatue = CDataType<LuaTraits::LuaGridEntityStatue>;
 using LuaGridEntityTeleporter = CDataType<LuaTraits::LuaGridEntityTeleporter>;
 using LuaColorModifier = CDataType<LuaTraits::LuaColorModifier>;
 using LuaEntityDesc = CDataType<LuaTraits::LuaEntityDesc>;
+using LuaWeightedOutcomePicker = CDataType<LuaTraits::LuaWeightedOutcomePicker>;
 
 struct LuaLevelGeneratorRoom
 {

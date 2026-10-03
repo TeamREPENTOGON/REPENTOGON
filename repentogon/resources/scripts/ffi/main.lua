@@ -216,6 +216,7 @@ loadmodule("ffi.Menus.SpecialSeedsMenu")
 loadmodule("ffi.Menus.StatsMenu")
 loadmodule("ffi.Menus.TitleMenu")
 loadmodule("ffi.EntityDesc")
+loadmodule("ffi.WeightedOutcomePicker")
 
 ffi = nil
 ffidll = nil
