@@ -51,6 +51,13 @@ extern "C" {
 		door->Render(offset);
 	}
 
+	__declspec(dllexport) void L_GridEntityDoor_SetExtraSprite(GridEntity_Door* door, ANM2* sprite) {
+		if (&door->_extraSprite == sprite)
+			return;
+		door->_extraSprite.destructor();
+		door->_extraSprite.construct_from_copy(sprite);
+	}
+	
 	__declspec(dllexport) void L_GridEntityDoor_SetLocked(GridEntity_Door* door, bool locked) {
 		door->SetLocked(locked);
 	}

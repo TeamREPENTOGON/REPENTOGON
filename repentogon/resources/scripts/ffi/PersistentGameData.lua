@@ -20,9 +20,9 @@ ffi.cdef [[
 local repentogon = ffidll
 local ffi = ffi
 
-Isaac.GetPersistentGameData = function()
+rawset(Isaac, "GetPersistentGameData", function()
     return repentogon.L_PersistentGameData_Get()
-end
+end)
 
 local function CheckBossID(arg, id)
     if id > 103 or id < 1 then
