@@ -378,6 +378,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
     lua::ffi::CData[lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR] = lua_ctypeid(L, "WeightedOutcomePickerPtr");
 	lua::ffi::CData[lua::ffi::CDataID::MULTI_SHOT_PARAMS] = lua_ctypeid(L, "MultiShotParams");
 	lua::ffi::CData[lua::ffi::CDataID::MULTI_SHOT_PARAMS_PTR] = lua_ctypeid(L, "MultiShotParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY] = lua_ctypeid(L, "History");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_PTR] = lua_ctypeid(L, "HistoryPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM] = lua_ctypeid(L, "HistoryItem");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM_PTR] = lua_ctypeid(L, "HistoryItemPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

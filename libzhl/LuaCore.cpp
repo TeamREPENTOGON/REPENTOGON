@@ -734,8 +734,6 @@ namespace lua {
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* DeliriumMetatable = "DeliriumMT";
-		const char* HistoryMT = "History";
-		const char* HistoryItemMT = "HistoryItem";
 		const char* HistoryHUDMT = "HistoryHUD";
 		const char* HistoryHUDItemMT = "HistoryHUDItem";
 		const char* HUDMessageMT = "HUDMessage";

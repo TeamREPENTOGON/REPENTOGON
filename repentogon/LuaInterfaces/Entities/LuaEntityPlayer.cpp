@@ -4055,6 +4055,11 @@ LUA_FUNCTION(Lua_PlayerGetTrinketRNG) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetHistory) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	LuaHistory::PushPtr(L, player->GetHistory());
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -4062,6 +4067,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetHistory", Lua_PlayerGetHistory },
 		{ "GetCardRNG", Lua_PlayerGetCardRNG},
 		{ "GetCollectibleRNG", Lua_PlayerGetCollectibleRNG},
 		{ "GetPillRNG", Lua_PlayerGetPillRNG},

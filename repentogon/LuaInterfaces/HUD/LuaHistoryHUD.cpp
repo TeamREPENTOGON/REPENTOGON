@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 // Struct that pairs HistoryHUD_Item with its index information for use as userdata values.
 struct HistoryHUD_Item_Ex {
@@ -170,9 +171,7 @@ LUA_FUNCTION(Lua_HistoryHUDItem_GetTime) {
 
 LUA_FUNCTION(Lua_HistoryHUDItem_GetHistoryItem) {
 	HistoryHUD_Item_Ex* historyItem = lua::GetRawUserdata<HistoryHUD_Item_Ex*>(L, 1, lua::metatables::HistoryHUDItemMT);
-	History_HistoryItem* ud = (History_HistoryItem*)lua_newuserdata(L, sizeof(History_HistoryItem));
-	*ud = historyItem->hudItem._historyItem;
-	luaL_setmetatable(L, lua::metatables::HistoryItemMT);
+	LuaHistoryItem::Push(L, historyItem->hudItem._historyItem);
 	return 1;
 }
 

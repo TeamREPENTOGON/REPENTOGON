@@ -975,6 +975,22 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::MULTI_SHOT_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::MULTI_SHOT_PARAMS_PTR;
     };
+
+    struct LuaHistory
+    {
+        static constexpr const char* Name = "History";
+        using Type = History;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HISTORY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HISTORY_PTR;
+    };
+
+    struct LuaHistoryItem
+    {
+        static constexpr const char* Name = "HistoryItem";
+        using Type = History_HistoryItem;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HISTORY_ITEM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HISTORY_ITEM_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1096,6 +1112,8 @@ using LuaCapsule = CDataType<LuaTraits::LuaCapsule>;
 using LuaShape = CDataType<LuaTraits::LuaShape>;
 using LuaColorParams = CDataType<LuaTraits::LuaColorParams>;
 using LuaWeightedOutcomePicker = CDataType<LuaTraits::LuaWeightedOutcomePicker>;
+using LuaHistory = CDataType<LuaTraits::LuaHistory>;
+using LuaHistoryItem = CDataType<LuaTraits::LuaHistoryItem>;
 
 struct LuaLevelGeneratorRoom
 {

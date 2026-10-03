@@ -95,8 +95,6 @@ namespace lua {
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
-        extern LIBZHL_API const char* HistoryMT;
-        extern LIBZHL_API const char* HistoryItemMT;
         extern LIBZHL_API const char* HistoryHUDMT;
         extern LIBZHL_API const char* HistoryHUDItemMT;
         extern LIBZHL_API const char* HUDMessageMT;
@@ -573,6 +571,10 @@ namespace lua {
             MULTI_SHOT_PARAMS_PTR,
             WEIGHTED_OUTCOME_PICKER,
             WEIGHTED_OUTCOME_PICKER_PTR,
+            HISTORY,
+            HISTORY_PTR,
+            HISTORY_ITEM,
+            HISTORY_ITEM_PTR,
             MAX_CDATA
         };
 
