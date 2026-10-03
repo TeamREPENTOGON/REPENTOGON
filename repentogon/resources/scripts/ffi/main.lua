@@ -242,7 +242,7 @@ loadmodule("Capsule")
 loadmodule("Shape")
 loadmodule("DebugRenderer")
 loadmodule("ColorParams")
-loadmodule("ffi.WeightedOutcomePicker")
+loadmodule("WeightedOutcomePicker")
 
 ffi = nil
 ffidll = nil

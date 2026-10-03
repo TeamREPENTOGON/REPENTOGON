@@ -920,14 +920,6 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_DESC_PTR;
     };
 
-<<<<<<< HEAD
-    struct LuaWeightedOutcomePicker
-    {
-        static constexpr const char* Name = "WeightedOutcomePicker";
-        using type = WeightedOutcomePicker;
-        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER;
-        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR;
-=======
     struct LuaChallengeParam
     {
         static constexpr const char* Name = "ChallengeParam";
@@ -958,7 +950,14 @@ namespace LuaTraits
         using Type = ColorParams;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_PARAMS_PTR;
->>>>>>> 18b93d2006b5f92dd6b132323b96db71a29ad199
+    };
+
+    struct LuaWeightedOutcomePicker
+    {
+        static constexpr const char* Name = "WeightedOutcomePicker";
+        using type = WeightedOutcomePicker;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEIGHTED_OUTCOME_PICKER_PTR;
     };
 }
 
