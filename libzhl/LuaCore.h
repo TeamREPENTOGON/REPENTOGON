@@ -119,8 +119,6 @@ namespace lua {
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* WeightedOutcomePickerMT;
         extern LIBZHL_API const char* CostumeSpriteDescMT;
-        extern LIBZHL_API const char* LootListMT;
-        extern LIBZHL_API const char* LootListEntryMT;
         extern LIBZHL_API const char* MinimapConfigMT;
     }
 
@@ -571,6 +569,8 @@ namespace lua {
             SHAPE_PTR,
             COLOR_PARAMS,
             COLOR_PARAMS_PTR,
+            LOOT_LIST,
+            LOOT_LIST_PTR,
             MAX_CDATA
         };
 

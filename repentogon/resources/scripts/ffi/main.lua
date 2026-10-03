@@ -242,6 +242,8 @@ loadmodule("Capsule")
 loadmodule("Shape")
 loadmodule("DebugRenderer")
 loadmodule("ColorParams")
+loadmodule("LootListEntry")
+loadmodule("LootList")
 
 ffi = nil
 ffidll = nil

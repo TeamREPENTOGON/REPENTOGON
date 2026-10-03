@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../LuaClasses.h"
 
 
 LUA_FUNCTION(Lua_EffectGetParentOffset) {
@@ -55,7 +56,7 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 }
 
 LUA_FUNCTION(Lua_EffectCreateLootPreview) {
-	LootList* loot = lua::GetRawUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	LootList* loot = LuaLootList::Get(L, 1);
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity_Pickup* owner = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Effect* eff = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 4, lua::Metatables::ENTITY_EFFECT, "EntityEffect");

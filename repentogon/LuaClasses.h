@@ -951,6 +951,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COLOR_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COLOR_PARAMS_PTR;
     };
+
+    struct LuaLootList
+    {
+        static constexpr const char* Name = "LootList";
+        using Type = LootList;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LOOT_LIST;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LOOT_LIST_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1054,7 +1062,7 @@ using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlot
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
 using LuaWeapon = LuaUserdataPtr<Weapon, lua::metatables::WeaponMT, WeaponData>;
 using LuaMultiShotParams = LuaUserdataValue<Weapon_MultiShotParams, lua::metatables::MultiShotParamsMT>;
-using LuaLootList = LuaUserdataValue<LootList, lua::metatables::LootListMT>;
+using LuaLootList = CDataType<LuaTraits::LuaLootList>;
 using LuaGridEntityDecoration = CDataType<LuaTraits::LuaGridEntityDecoration>;
 using LuaGridEntityWeb = CDataType<LuaTraits::LuaGridEntityWeb>;
 using LuaGridEntityLock = CDataType<LuaTraits::LuaGridEntityLock>;

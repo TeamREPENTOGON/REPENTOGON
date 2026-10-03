@@ -498,12 +498,32 @@ LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetFireplaceLoot) {
+	Entity_NPC* npc = LuaEntityNPC::Get(L, 1);
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList list = npc->fireplace_get_loot(shouldAdvance);
+	new (LuaLootList::Place(L)) LootList(std::move(list));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_GetShopkeeperLoot) {
+	Entity_NPC* npc = LuaEntityNPC::Get(L, 1);
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList list = npc->shopkeeper_get_loot(shouldAdvance);
+	new (LuaLootList::Place(L)) LootList(std::move(list));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetFireplaceLoot", Lua_EntityNPC_GetFireplaceLoot },
+		{ "GetShopkeeperLoot", Lua_EntityNPC_GetShopkeeperLoot },
 		{ "CalcTargetPosition", Lua_EntityNPC_CalcTargetPosition },
 		{ "CanBeDamagedFromVelocity", Lua_EntityNPC_CanBeDamagedFromVelocity },
 		{ "FireBossProjectiles", Lua_EntityNPC_FireBossProjectiles },

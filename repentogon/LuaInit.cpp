@@ -372,6 +372,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::SHAPE_PTR] = lua_ctypeid(L, "ShapePtr");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS] = lua_ctypeid(L, "ColorParams");
 	lua::ffi::CData[lua::ffi::CDataID::COLOR_PARAMS_PTR] = lua_ctypeid(L, "ColorParamsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LOOT_LIST] = lua_ctypeid(L, "LootList");
+	lua::ffi::CData[lua::ffi::CDataID::LOOT_LIST_PTR] = lua_ctypeid(L, "LootListPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

@@ -353,6 +353,15 @@ LUA_FUNCTION(Lua_PickupIgnoreModifiers) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PickupGetLootList) {
+	Entity_Pickup* pickup = LuaEntityPickup::Get(L, 1);
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList list = pickup->GetLootList(shouldAdvance, nullptr);
+	new (LuaLootList::Place(L)) LootList(std::move(list));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -360,6 +369,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "AddCollectibleCycle", Lua_PickupAddCycleCollectible },
+		{ "GetLootList", Lua_PickupGetLootList },
 		{ "CanReroll", Lua_PickupCanReroll },
 		{ "IsBlind", Lua_PickupIsBlind },
 		{ "SetAlternatePedestal", Lua_PickupSetAlternatePedestal },
