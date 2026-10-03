@@ -212,8 +212,19 @@ end
 ----------------------------------------------------------------------------------------------------
 
 
+local function GetCDataType(ret)
+	return ret.__type
+end
+
 -- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
+
+	-- Stick FFI stuff here, for now. Soon we can remove this whole function!
+	if getmetatable(ret) == "ffi" then
+		local ok, typ = pcall(GetCDataType, ret)
+		return ok and typ or nil
+	end
+
 	-- TODO directly pcall in here?
 
 	-- Vector will CRASH THE GAME through a pcall if we try getting __name or __type from it, and getmetatable doesn't work on it.
@@ -536,10 +547,10 @@ local typecheckFunctions = {
 		["RoomConfigRoom"] = true,
 	},
 	[ModCallbacks.MC_PRE_SELECT_AMBUSH_WAVE] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
 	[ModCallbacks.MC_PRE_SELECT_GREED_WAVE] = {
-		["Room"] = true,
+		["RoomConfigRoom"] = true,
 	},
 }
 
@@ -978,7 +989,7 @@ end
 
 -- Support to apply a conversion function to the params for certain callbacks (ie, for stuff like tables/userdata).
 local function ConvertItemConfigItemParam(param)
-	if param and (type(param) == "userdata" or type(param) == "cdata") and GetMetatableType(param) == "Item" then
+	if param and (type(param) == "userdata" or type(param) == "cdata") and GetMetatableType(param) == "ItemConfigItem" then
 		return GetPtrHash(param)
 	end
 	return param

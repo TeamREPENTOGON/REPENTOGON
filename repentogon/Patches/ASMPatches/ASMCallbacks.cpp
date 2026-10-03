@@ -2431,7 +2431,7 @@ static RoomConfig_Room* __stdcall RunWaveRoomCallback(RoomConfig_Room* room, boo
 			.push(seed)
 			.call(1);
 
-		if (!result && lua_isuserdata(L, -1)) {
+		if (!result && LuaRoomConfigRoom::IsUnderlyingType(L, -1)) {
 			auto opt = LuaRoomConfigRoom::TryGet(L, -1);
 
 			if (opt.is_err()) {
