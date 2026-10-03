@@ -991,6 +991,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HISTORY_ITEM;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HISTORY_ITEM_PTR;
     };
+
+    struct LuaPocketItem
+    {
+        static constexpr const char* Name = "PocketItem";
+        using Type = PocketItem;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::POCKET_ITEM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::POCKET_ITEM_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1114,6 +1122,7 @@ using LuaColorParams = CDataType<LuaTraits::LuaColorParams>;
 using LuaWeightedOutcomePicker = CDataType<LuaTraits::LuaWeightedOutcomePicker>;
 using LuaHistory = CDataType<LuaTraits::LuaHistory>;
 using LuaHistoryItem = CDataType<LuaTraits::LuaHistoryItem>;
+using LuaPocketItem = CDataType<LuaTraits::LuaPocketItem>;
 
 struct LuaLevelGeneratorRoom
 {

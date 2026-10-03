@@ -382,6 +382,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_PTR] = lua_ctypeid(L, "HistoryPtr");
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM] = lua_ctypeid(L, "HistoryItem");
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM_PTR] = lua_ctypeid(L, "HistoryItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM] = lua_ctypeid(L, "PocketItem");
+	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM_PTR] = lua_ctypeid(L, "PocketItemPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

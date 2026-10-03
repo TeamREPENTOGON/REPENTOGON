@@ -743,7 +743,6 @@ namespace lua {
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
-		const char* PocketItemMT = "PocketItem";
 		const char* PointMT = "Point";
 		const char* ProceduralEffectMT = "ProceduralEffect";
 		const char* ProceduralItemMT = "ProceduralItem";

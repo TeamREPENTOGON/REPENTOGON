@@ -4061,12 +4061,20 @@ LUA_FUNCTION(Lua_PlayerGetHistory) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPocketItem) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slotID = (int)luaL_checkinteger(L, 2);
+	LuaPocketItem::PushPtr(L, player->GetPocketItem(slotID));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetPocketItem", Lua_PlayerGetPocketItem },
 		{ "GetHistory", Lua_PlayerGetHistory },
 		{ "GetCardRNG", Lua_PlayerGetCardRNG},
 		{ "GetCollectibleRNG", Lua_PlayerGetCollectibleRNG},

@@ -247,6 +247,7 @@ loadmodule("LootList")
 loadmodule("WeightedOutcomePicker")
 loadmodule("MultiShotParams")
 loadmodule("History")
+loadmodule("PocketItem")
 
 ffi = nil
 ffidll = nil
