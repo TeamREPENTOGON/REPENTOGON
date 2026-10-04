@@ -172,8 +172,7 @@ HUDMT = {
 }
 
 setmetatable(HUDMT, {
-    __index = function() end,
-    __call = function(t, _, k) return t[k] end,
+    __index = function() end
 })
 HUDMT.__index = HUDMT
 

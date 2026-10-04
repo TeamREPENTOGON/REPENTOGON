@@ -145,6 +145,13 @@ local function loadmodule(name)
 	end
 end
 
+local metatypes = {}
+local ffi_metatype = lffi.metatype
+lffi.metatype = function(ct, mt)
+	metatypes[#metatypes + 1] = mt
+	return ffi_metatype(ct, mt)
+end
+
 loadmodule("Vector")
 loadmodule("VectorList")
 loadmodule("GridEntityDesc")
@@ -267,6 +274,24 @@ loadmodule("HUD.HUDMessage")
 loadmodule("HUD.HistoryHUD")
 loadmodule("HUD.MinimapConfig")
 loadmodule("HUD.HUD")
+
+lffi.metatype = ffi_metatype
+
+-- Thank you APIOverride, very cool!
+local function IndexCall(t, _, k)
+	return t[k]
+end
+for _, mt in ipairs(metatypes) do
+	local index = rawget(mt, "__index")
+	if type(index) == "table" then
+		local meta = getmetatable(index)
+		if meta == nil then
+			setmetatable(index, { __call = IndexCall })
+		elseif rawget(meta, "__call") == nil then
+			meta.__call = IndexCall
+		end
+	end
+end
 
 ffi = nil
 ffidll = nil

@@ -150,8 +150,7 @@ TemporaryEffectsMT = {
 }
 
 setmetatable(TemporaryEffectsMT, {
-    __index = function() end,
-    __call = function(t, _, k) return t[k] end, -- Thank you APIOverride, very cool!
+    __index = function() end
 })
 TemporaryEffectsMT.__index = TemporaryEffectsMT
 

@@ -61,8 +61,7 @@ SourceQuadMT = {
 }
 
 setmetatable(SourceQuadMT, {
-    __index = getmetatable(DestinationQuad).__class,
-    __call  = function(t, _, k) return t[k] end,
+    __index = getmetatable(DestinationQuad).__class
 })
 
 SourceQuadMT.__index = SourceQuadMT
