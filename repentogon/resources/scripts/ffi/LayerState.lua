@@ -130,13 +130,13 @@ LayerStateMT = {
         ffi.setprivate(self, "CropOffset", offset)
     end,
     SetCustomChampionShader = function(self, path)
-        ffichecks.checkstring(1, path)
+        path = ffichecks.checkstring(1, path)
         if not repentogon.L_LayerState_SetCustomShader(self, path, true) then 
             error("Failed to load shader: " .. path)
         end
     end,
     SetCustomShader = function(self, path)
-        ffichecks.checkstring(1, path)
+        path = ffichecks.checkstring(1, path)
         if not repentogon.L_LayerState_SetCustomShader(self, path, false) then 
             error("Failed to load shader: " .. path)
         end

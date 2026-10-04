@@ -88,11 +88,11 @@ ItemConfigItemMT = {
 
     -- Some of these were trivial reimplementations, so I didn't bother with sigs or functions for them on the C side.
     AddCustomCacheTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         repentogon.L_ItemConfigItem_AddCustomCacheTag(self, tag)
     end,
     AddCustomTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         repentogon.L_ItemConfigItem_AddCustomTag(self, tag)
     end,
     GetCustomCacheTags = function(self)
@@ -120,11 +120,11 @@ ItemConfigItemMT = {
         return t
     end,
     HasCustomCacheTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         return repentogon.L_ItemConfigItem_HasCustomCacheTag(self, tag)
     end,
     HasCustomTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         return repentogon.L_ItemConfigItem_HasCustomTag(self, tag)
     end,
     HasTags = function(self, tags)
@@ -157,11 +157,11 @@ ItemConfigItemMT = {
         return false
     end,
     RemoveCustomCacheTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         repentogon.L_ItemConfigItem_RemoveCustomCacheTag(self, tag)
     end,
     RemoveCustomTag = function(self, tag)
-        ffichecks.checkstring(2, tag)
+        tag = ffichecks.checkstring(2, tag)
         repentogon.L_ItemConfigItem_RemoveCustomTag(self, tag)
     end,
 }

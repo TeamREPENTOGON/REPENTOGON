@@ -72,7 +72,11 @@ end
 
 ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, val, "number", (level or 2)+1) end
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
-ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
+ffichecks.checkstring = function(index, val, level)
+	if type(val) == "number" then return tostring(val) end
+	ffichecks.checktype(index, val, "string", (level or 2)+1)
+	return val
+end
 ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
 ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
 ffichecks.checkinteger = function(index, val, level) 

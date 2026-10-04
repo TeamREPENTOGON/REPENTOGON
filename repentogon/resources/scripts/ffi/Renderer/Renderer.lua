@@ -43,7 +43,7 @@ Renderer = {
     CreateImage = function(width, height, name)
         ffichecks.checkinteger(1, width)
         ffichecks.checkinteger(2, height)
-        ffichecks.checkstring(3, name)
+        name = ffichecks.checkstring(3, name)
         local image = ImageT()
         if not repentogon.L_Renderer_CreateImage(width, height, name, image) then
             error("Unable to create Image", 2)
@@ -69,7 +69,7 @@ Renderer = {
         return repentogon.L_Renderer_GetShaderByType(shaderType)
     end,
     LoadImage = function(path)
-        ffichecks.checkstring(1, path)
+        path = ffichecks.checkstring(1, path)
         local image = ImageT()
         if not repentogon.L_Renderer_LoadImage(path, image) then
             ffichecks.argerror(1, string.format("Image %s does not exist", path))
@@ -77,7 +77,7 @@ Renderer = {
         return image
     end,
     LoadShader = function(path, descriptor)
-        ffichecks.checkstring(1, path)
+        path = ffichecks.checkstring(1, path)
         ffichecks.checktable(2, descriptor)
 
         local count = #descriptor

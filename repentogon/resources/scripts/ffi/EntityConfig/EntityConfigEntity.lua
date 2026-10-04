@@ -167,7 +167,7 @@ EntityConfigEntityMT = {
         return ffi.getprivate(self, "Variant")
     end,
     HasCustomTag = function(self, tag)
-        ffichecks.checkstring(1, tag)
+        tag = ffichecks.checkstring(1, tag)
         return repentogon.L_EntityConfigEntity_HasCustomTag(self, tag)
     end,
     HasEntityTags = function(self, tags)

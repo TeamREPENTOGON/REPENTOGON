@@ -24,7 +24,7 @@ local ALIGN_TOP_CENTER = 1
 local ALIGN_TOP_RIGHT = 2
 
 local function DrawStringScaled(self, str, x, y, scaleX, scaleY, color, boxWidth, center)
-    ffichecks.checkstring(1, str, 3)
+    str = ffichecks.checkstring(1, str, 3)
     ffichecks.checknumber(2, x, 3)
     ffichecks.checknumber(3, y, 3)
     ffichecks.checknumber(4, scaleX, 3)
@@ -49,7 +49,7 @@ local function DrawStringScaled(self, str, x, y, scaleX, scaleY, color, boxWidth
 end
 
 local function GetStringWidth(self, str)
-    ffichecks.checkstring(1, str)
+    str = ffichecks.checkstring(1, str)
     return repentogon.L_Font_GetStringWidth(self, str)
 end
 
@@ -64,7 +64,7 @@ FontMT = {
             DrawStringScaled(self, str, x, y, 1, 1, param4, param5, param6)
             return
         end
-        ffichecks.checkstring(1, str)
+        str = ffichecks.checkstring(1, str)
         ffichecks.checknumber(2, x)
         ffichecks.checknumber(3, y)
         ffichecks.checknumber(4, param4)
@@ -86,7 +86,7 @@ FontMT = {
         return ffi.getprivate(self, "BaselineHeight")
     end,
     GetCharacterWidth = function(self, character)
-        ffichecks.checkstring(1, character)
+        character = ffichecks.checkstring(1, character)
         -- Vanilla passes the first byte as a (signed) char
         local byte = string.byte(character, 1) or 0
         if byte > 127 then
@@ -103,7 +103,7 @@ FontMT = {
         return ffi.getprivate(self, "Loaded")
     end,
     Load = function(self, path)
-        ffichecks.checkstring(1, path)
+        path = ffichecks.checkstring(1, path)
         repentogon.L_Font_Load(self, path)
     end,
     SetMissingCharacter = function(self, character)

@@ -122,7 +122,7 @@ SeedsMT = {
         ffi.getprivate(self, "StageSeeds")[stage] = seed
     end,
     SetStartSeed = function(self, seed)
-        ffichecks.checkstring(1, seed)
+        seed = ffichecks.checkstring(1, seed)
         repentogon.L_Seeds_SetStartSeed(self, seed)
     end,
 }
@@ -137,18 +137,18 @@ Seeds = setmetatable({
         return repentogon.L_Seeds_CountUnlockedSeedEffects()
     end,
     GetSeedEffect = function(seed)
-        ffichecks.checkstring(1, seed)
+        seed = ffichecks.checkstring(1, seed)
         return repentogon.L_Seeds_GetSeedEffect(seed)
     end,
     InitSeedInfo = function()
         repentogon.L_Seeds_InitSeedInfo()
     end,
     IsSpecialSeed = function(seed)
-        ffichecks.checkstring(1, seed)
+        seed = ffichecks.checkstring(1, seed)
         return repentogon.L_Seeds_GetSeedEffect(seed) ~= 0
     end,
     IsStringValidSeed = function(seed)
-        ffichecks.checkstring(1, seed)
+        seed = ffichecks.checkstring(1, seed)
         return repentogon.L_Seeds_String2Seed(seed) ~= 0
     end,
     Seed2String = function(seed)
@@ -156,7 +156,7 @@ Seeds = setmetatable({
         return Seed2String(seed)
     end,
     String2Seed = function(seed)
-        ffichecks.checkstring(1, seed)
+        seed = ffichecks.checkstring(1, seed)
         return repentogon.L_Seeds_String2Seed(seed)
     end,
 }, {

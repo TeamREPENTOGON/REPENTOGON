@@ -104,7 +104,7 @@ RoomConfig = {
     end,
     LoadStb = function(stage, mode, filename)
         CheckStageAndMode(stage, mode)
-        ffichecks.checkstring(3, filename)
+        filename = ffichecks.checkstring(3, filename)
         return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):LoadStb(filename)
     end,
 }

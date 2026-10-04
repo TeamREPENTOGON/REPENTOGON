@@ -39,23 +39,23 @@ Console = {
         repentogon.L_Console_PopHistory(amount)
     end,
     PrintError = function(err)
-        ffichecks.checkstring(1, err)
+        err = ffichecks.checkstring(1, err)
         repentogon.L_Console_PrintError(err)
     end,
     PrintWarning = function(text)
-        ffichecks.checkstring(1, text)
+        text = ffichecks.checkstring(1, text)
         repentogon.L_Console_PrintWarning(text)
     end,
     RegisterCommand = function(name, desc, helpText, showOnMenu, autocompleteType)
-        ffichecks.checkstring(1, name)
-        ffichecks.checkstring(2, desc)
-        ffichecks.checkstring(3, helpText)
+        name = ffichecks.checkstring(1, name)
+        desc = ffichecks.checkstring(2, desc)
+        helpText = ffichecks.checkstring(3, helpText)
         showOnMenu = ffichecks.optboolean(showOnMenu, false)
         autocompleteType = ffichecks.optnumber(autocompleteType, 0)
         repentogon.L_Console_RegisterCommand(name, desc, helpText, showOnMenu, autocompleteType)
     end,
     RegisterMacro = function(name, commands)
-        ffichecks.checkstring(1, name)
+        name = ffichecks.checkstring(1, name)
         if type(commands) ~= "table" then
             ffichecks.argerror(2, "Expected a table of strings, got " .. type(commands))
         end
@@ -64,7 +64,7 @@ Console = {
         for i = 1, #commands do
             local cmd = commands[i]
             if cmd == nil then break end
-            ffichecks.checkstring(2, cmd)
+            cmd = ffichecks.checkstring(2, cmd)
             strings[i] = cmd
         end
 

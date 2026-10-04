@@ -34,15 +34,15 @@ HUDMessageMT = {
         return ffi.getprivate(self, "Showing")
     end,
     SetMainText = function(self, text)
-        ffichecks.checkstring(1, text)
+        text = ffichecks.checkstring(1, text)
         repentogon.L_HUDMessage_SetMainText(self, text)
     end,
     SetSubText = function(self, text)
-        ffichecks.checkstring(1, text)
+        text = ffichecks.checkstring(1, text)
         repentogon.L_HUDMessage_SetSubText(self, text)
     end,
     Show = function(self, text, subtext, sticky, curseDisplay)
-        ffichecks.checkstring(1, text)
+        text = ffichecks.checkstring(1, text)
         repentogon.L_HUDMessage_Show(self, text, ffichecks.optstring(subtext, ""),
             ffichecks.optboolean(sticky, false), ffichecks.optboolean(curseDisplay, false))
     end,

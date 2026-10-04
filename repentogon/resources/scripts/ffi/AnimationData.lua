@@ -79,7 +79,7 @@ AnimationDataMT = {
         return ffi.getprivate(self, "Loop")
     end,
     IsEventTriggered = function(self, name)
-        ffichecks.checkstring(1, name)
+        name = ffichecks.checkstring(1, name)
         return repentogon.L_AnimationData_IsEventTriggered(self, name)
     end,
 }

@@ -82,11 +82,11 @@ RoomConfigStageMT = {
         ffi.setprivate(self, "Backdrop", ToInteger(backdrop))
     end,
     SetBossSpot = function(self, value)
-        ffichecks.checkstring(1, value)
+        value = ffichecks.checkstring(1, value)
         repentogon.L_RoomConfigStage_SetBossSpot(self, value)
     end,
     SetDisplayName = function(self, value)
-        ffichecks.checkstring(1, value)
+        value = ffichecks.checkstring(1, value)
         repentogon.L_RoomConfigStage_SetDisplayName(self, value)
     end,
     SetMusic = function(self, music)
@@ -98,15 +98,15 @@ RoomConfigStageMT = {
         ffi.setprivate(self, "Music", music)
     end,
     SetPlayerSpot = function(self, value)
-        ffichecks.checkstring(1, value)
+        value = ffichecks.checkstring(1, value)
         repentogon.L_RoomConfigStage_SetPlayerSpot(self, value)
     end,
     SetSuffix = function(self, value)
-        ffichecks.checkstring(1, value)
+        value = ffichecks.checkstring(1, value)
         repentogon.L_RoomConfigStage_SetSuffix(self, value)
     end,
     SetXMLName = function(self, value)
-        ffichecks.checkstring(1, value)
+        value = ffichecks.checkstring(1, value)
         repentogon.L_RoomConfigStage_SetXMLName(self, value)
     end,
 }

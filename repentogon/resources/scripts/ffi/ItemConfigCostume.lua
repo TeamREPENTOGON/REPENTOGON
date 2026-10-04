@@ -34,7 +34,7 @@ ItemConfigCostumeMT = {
 
     __newindex = function(self, key, value)
         if key == "Anm2Path" then
-            ffichecks.checkstring(3, value)
+            value = ffichecks.checkstring(3, value)
             repentogon.L_ItemConfigCostume_SetAnm2Path(self, value)
             return
         end

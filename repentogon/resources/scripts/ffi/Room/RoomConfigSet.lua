@@ -367,7 +367,7 @@ RoomConfigSetMT = {
         return nil
     end,
     LoadStb = function(self, filename)
-        ffichecks.checkstring(1, filename)
+        filename = ffichecks.checkstring(1, filename)
         return AddStbRooms(ffi.getprivate(self, "SetID"), filename)
     end,
 }

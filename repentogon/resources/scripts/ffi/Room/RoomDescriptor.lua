@@ -222,7 +222,7 @@ local RoomDescriptorT = ffi.metatype("struct RoomDescriptor", RoomDescriptorMT)
 
 RoomDescriptor = setmetatable({
     CreateGroup = function(groupName)
-        ffichecks.checkstring(1, groupName)
+        groupName = ffichecks.checkstring(1, groupName)
     end,
 }, {
     __class = RoomDescriptorMT,
