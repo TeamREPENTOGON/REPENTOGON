@@ -304,6 +304,8 @@ loadmodule("Renderer.Transformer")
 loadmodule("Renderer.SurfaceRenderController")
 loadmodule("Renderer.Renderer")
 loadmodule("Seeds")
+loadmodule("Font.FontRenderSettings")
+loadmodule("Font.Font")
 
 lffi.metatype = ffi_metatype
 

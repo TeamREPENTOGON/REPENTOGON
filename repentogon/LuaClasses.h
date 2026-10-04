@@ -471,17 +471,16 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Font";
         using Type = Font;
-        static constexpr lua::Metatables MT = lua::Metatables::FONT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_FONT;
-        // Needs custom value vftable
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::FONT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::FONT_PTR;
     };
 
     struct LuaFontRenderSettings
     {
         static constexpr const char* Name = "FontRenderSettings";
         using Type = FontSettings;
-        static constexpr lua::Metatables MT = lua::Metatables::FONTRENDERSETTINGS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_FONTRENDERSETTINGS;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::FONT_RENDER_SETTINGS;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::FONT_RENDER_SETTINGS_PTR;
     };
 
     struct LuaRNG
@@ -1135,8 +1134,8 @@ using LuaBitSet128 = CDataType<LuaTraits::LuaBitSet128>;
 using LuaKColor = CDataType<LuaTraits::LuaKColor>;
 using LuaColor = CDataType<LuaTraits::LuaColor>;
 using LuaSprite = CDataType<LuaTraits::LuaSprite>;
-using LuaFont = LuabridgeType<LuaTraits::LuaFont>;
-using LuaFontRenderSettings = LuabridgeType<LuaTraits::LuaFontRenderSettings>;
+using LuaFont = CDataType<LuaTraits::LuaFont>;
+using LuaFontRenderSettings = CDataType<LuaTraits::LuaFontRenderSettings>;
 using LuaRNG = CDataType<LuaTraits::LuaRNG>;
 using LuaItemConfig = LuabridgeType<LuaTraits::LuaItemConfig>;
 using LuaItem = CDataType<LuaTraits::LuaItem>;

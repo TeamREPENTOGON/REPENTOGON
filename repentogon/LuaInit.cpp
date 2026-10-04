@@ -418,6 +418,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY_PTR] = lua_ctypeid(L, "EntityConfigBabyPtr");
 	lua::ffi::CData[lua::ffi::CDataID::SEEDS] = lua_ctypeid(L, "Seeds");
 	lua::ffi::CData[lua::ffi::CDataID::SEEDS_PTR] = lua_ctypeid(L, "SeedsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::FONT] = lua_ctypeid(L, "Font");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_PTR] = lua_ctypeid(L, "FontPtr");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS] = lua_ctypeid(L, "FontRenderSettings");
+	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS_PTR] = lua_ctypeid(L, "FontRenderSettingsPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

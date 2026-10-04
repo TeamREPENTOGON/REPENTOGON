@@ -94,8 +94,6 @@ namespace lua {
 		_metatable_idx_from_name["PillConfigList"] = Metatables::PILL_CONFIG_LIST;
 		_metatable_idx_from_name["EntityEffect"] = Metatables::ENTITY_EFFECT;
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
-		_metatable_idx_from_name["Font"] = Metatables::FONT;
-		_metatable_idx_from_name["FontRenderSettings"] = Metatables::FONTRENDERSETTINGS;
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
 		_metatable_idx_from_name["EntityList"] = Metatables::ENTITY_LIST;
 		_metatable_idx_from_name["Game"] = Metatables::GAME;
@@ -122,8 +120,6 @@ namespace lua {
 		_metatable_idx_from_name["const PillConfigList"] = Metatables::CONST_PILL_CONFIG_LIST;
 		_metatable_idx_from_name["const EntityEffect"] = Metatables::CONST_ENTITY_EFFECT;
 		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
-		_metatable_idx_from_name["const Font"] = Metatables::CONST_FONT;
-		_metatable_idx_from_name["const FontRenderSettings"] = Metatables::CONST_FONTRENDERSETTINGS;
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
 		_metatable_idx_from_name["const EntityList"] = Metatables::CONST_ENTITY_LIST;
 		_metatable_idx_from_name["const Game"] = Metatables::CONST_GAME;

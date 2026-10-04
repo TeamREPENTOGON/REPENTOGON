@@ -23,8 +23,6 @@ namespace lua {
         PILL_CONFIG_LIST,
         ENTITY_EFFECT,
         ENTITY_PLAYER,
-        FONT,
-        FONTRENDERSETTINGS,
         ENTITY_PICKUP,
         ENTITY_LIST,
         GAME,
@@ -51,8 +49,6 @@ namespace lua {
         CONST_PILL_CONFIG_LIST,
         CONST_ENTITY_EFFECT,
         CONST_ENTITY_PLAYER,
-        CONST_FONT,
-        CONST_FONTRENDERSETTINGS,
         CONST_ENTITY_PICKUP,
         CONST_ENTITY_LIST,
         CONST_GAME,
@@ -576,6 +572,10 @@ namespace lua {
             ENTITY_CONFIG_BABY_PTR,
             SEEDS,
             SEEDS_PTR,
+            FONT,
+            FONT_PTR,
+            FONT_RENDER_SETTINGS,
+            FONT_RENDER_SETTINGS_PTR,
             MAX_CDATA
         };
 

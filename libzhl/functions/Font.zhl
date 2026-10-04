@@ -7,6 +7,18 @@ __thiscall void Font::DrawString(const char* str, Vector pos, Vector scale, KCol
 "558bec6affff75":
 __thiscall int Font::GetStringWidth(const char* str);
 
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??c60700":
+__thiscall void Font::constructor();
+
+"558bec6aff68????????64a1????????50535657a1????????33c5508d45??64a3????????8bd98b43":
+__thiscall void Font::Unload();
+
+"558bec83ec0c568bf1803e00":
+__thiscall int Font::GetCharacterWidth(int c);
+
+"558bec83ec0c5356578b7d??8d45":
+__thiscall void Font::SetMissingCharacter(int c);
+
 
 //most of the variables are parsed from .fnt binary (https://www.angelcode.com/products/bmfont/doc/file_format.html)
 struct Font {
