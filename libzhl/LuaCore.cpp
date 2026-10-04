@@ -722,7 +722,6 @@ namespace lua {
 
 	namespace metatables
 	{;
-		const char* BeamMT = "Beam";
 		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntityConfigMT = "EntityConfig";
@@ -738,7 +737,6 @@ namespace lua {
 		const char* ImGuiMT = "ImGui";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
-		const char* PointMT = "Point";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 		const char* WeaponMT = "Weapon";

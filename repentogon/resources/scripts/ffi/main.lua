@@ -260,6 +260,7 @@ loadmodule("LevelGenerator.LevelGenerator")
 loadmodule("BossPool")
 loadmodule("CostumeSpriteDesc")
 loadmodule("GenericPrompt")
+loadmodule("BeamRenderer")
 
 ffi = nil
 ffidll = nil

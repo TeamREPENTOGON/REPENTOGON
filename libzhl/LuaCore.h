@@ -83,7 +83,6 @@ namespace lua {
 
     namespace metatables
     {
-        extern LIBZHL_API const char* BeamMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntityConfigMT;
@@ -99,7 +98,6 @@ namespace lua {
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
-        extern LIBZHL_API const char* PointMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
         extern LIBZHL_API const char* WeaponMT;
