@@ -300,6 +300,9 @@ loadmodule("EntityConfig.EntityConfigPlayer")
 loadmodule("EntityConfig.EntityConfigBaby")
 loadmodule("EntityConfig.EntityConfig")
 loadmodule("ImGui")
+loadmodule("Renderer.Transformer")
+loadmodule("Renderer.SurfaceRenderController")
+loadmodule("Renderer.Renderer")
 
 lffi.metatype = ffi_metatype
 

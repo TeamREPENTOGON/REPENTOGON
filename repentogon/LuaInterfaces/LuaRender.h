@@ -29,8 +29,6 @@ namespace LuaRender {
 		bool _valid;
 	};
 
-	LuaTransformer* GetTransformer(lua_State* L, int idx = 1);
-
 	constexpr static const char* TransformerMT = "Transformer";
 	constexpr static const char* QuadMT = "Quad";
 

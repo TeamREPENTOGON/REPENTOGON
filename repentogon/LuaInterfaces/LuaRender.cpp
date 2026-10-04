@@ -21,188 +21,12 @@
 #include "../LuaClasses.h"
 
 using LuaRender::LuaImage;
-using LuaRender::LuaTransformer;
-using LuaRender::Transformation;
 
 LuaRender::ContextQueue LuaRender::RenderContextQueue;
 LuaRender::RenderContext LuaRender::ElementsRenderContext;
 LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
 static constexpr bool EnableCustomRendering = false;
-
-// ============================================================================
-// Utils
-
-template <typename Func>
-static void RenderToSurface(KAGE_Graphics_ImageBase& surface, Func&& renderFn)
-{
-	auto& manager = g_KAGE_Graphics_Manager;
-
-	Rendering::PushCurrentRenderTarget();
-	manager.SetCurrentRenderTarget(&surface, false);
-	
-	renderFn();
-
-	manager.Present();
-	Rendering::RestorePreviousRenderTarget();
-}
-
-// ===========================================================================
-// SurfaceRenderController
-
-// Used for functions that only make sense during a Surface render operation
-namespace LuaSurfaceRenderController {
-	struct Userdata {
-		static constexpr char* MT = "SurfaceRenderController";
-		bool valid = true;
-
-		Userdata() = default;
-	};
-	
-	static Userdata* get_userdata(lua_State* L, int idx) {
-		return lua::GetRawUserdata<Userdata*>(L, idx, Userdata::MT);
-	}
-
-	static Userdata* get_valid_surface_render_controller(lua_State* L, int idx) {
-		Userdata* controller = get_userdata(L, idx);
-		if (!controller->valid)
-		{
-			luaL_argerror(L, idx, "This surface render controller has already been applied and cannot be used again");
-		}
-	
-		return controller;
-	}
-
-	LUA_FUNCTION(Lua_Clear)
-	{
-		Userdata* controller = get_valid_surface_render_controller(L, 1);
-		g_KAGE_Graphics_Manager.Clear();
-		// Set Normal BlendMode since Clear sets BlendMode to Constant, which is rarely used.
-		g_KAGE_Graphics_Manager._blendMode = BlendMode();
-		return 0;
-	}
-
-	LUA_FUNCTION(Lua_SetBlendMode)
-	{
-		Userdata* controller = get_valid_surface_render_controller(L, 1);
-		g_KAGE_Graphics_Manager._blendMode = *LuaBlendMode::Get(L, 2);
-		return 0;
-	}
-
-	static Userdata* NewUserdata(lua_State* L)
-	{
-		Userdata* userdata = new (lua_newuserdata(L, sizeof(Userdata))) Userdata;
-		luaL_setmetatable(L, Userdata::MT);
-		return userdata;
-	}
-
-	static void RegisterUserdataClass(lua_State* L) {
-		luaL_Reg functions[] = {
-			{ "Clear", Lua_Clear },
-			{ "SetBlendMode", Lua_SetBlendMode },
-			{ NULL, NULL }
-		};
-		lua::RegisterNewClass(L, Userdata::MT, Userdata::MT, functions);
-	}
-}
-
-// ============================================================================
-// Transformer
-
-LuaTransformer* LuaRender::GetTransformer(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaTransformer*>(L, idx, LuaRender::TransformerMT);
-}
-
-LUA_FUNCTION(lua_Transformer_gc) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	for (Transformation& transformation : transformer->_transformations) {
-		transformation._input.DecrRef();
-	}
-
-	transformer->_output.DecrRef();
-}
-
-LUA_FUNCTION(lua_Transformer_Render) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformer has been applied");
-	}
-	KAGE_SmartPointer_ImageBase* image = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
-	SourceQuad* source = lua::GetCData<SourceQuad*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD], "SourceQuad");
-	DestinationQuad* dest = lua::GetCData<DestinationQuad*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD], "DestinationQuad");
-	KColor mod = *LuaKColor::Get(L, 5);
-
-	Transformation trans;
-	trans._input = *image;
-	trans._source = *source;
-	trans._dest = *dest;
-	trans._color1 = trans._color2 = trans._color3 = trans._color4 = mod;
-
-	transformer->_transformations.push_back(trans);
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_RenderEx) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformed has been applied");
-	}
-	KAGE_SmartPointer_ImageBase* image = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
-	SourceQuad* source = lua::GetCData<SourceQuad*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::SOURCE_QUAD], "SourceQuad");
-	DestinationQuad* dest = lua::GetCData<DestinationQuad*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::DESTINATION_QUAD], "DestinationQuad");
-	KColor mod = *LuaKColor::Get(L, 5);
-	KColor mod2 = *LuaKColor::Get(L, 5);
-	KColor mod3 = *LuaKColor::Get(L, 5);
-	KColor mod4 = *LuaKColor::Get(L, 5);
-
-	Transformation trans;
-	trans._input = *image;
-	trans._source = *source;
-	trans._dest = *dest;
-	trans._color1 = mod;
-	trans._color2 = mod2;
-	trans._color3 = mod3;
-	trans._color4 = mod4;
-
-	transformer->_transformations.push_back(trans);
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_Apply) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	if (!transformer->_valid) {
-		return luaL_error(L, "No operations allowed after a transformer had been applied");
-	}
-
-	RenderToSurface(*transformer->_output.image, [&](){
-		// __ptr_g_KAGE_Graphics_Manager->Clear();
-		for (Transformation& transformation : transformer->_transformations) {
-			KAGE_Graphics_ImageBase* image = transformation._input.image;
-			image->Render(transformation._source, transformation._dest, transformation._color1, transformation._color2, transformation._color3, transformation._color4);
-		}
-	});
-
-	transformer->_valid = false;
-	return 0;
-}
-
-LUA_FUNCTION(lua_Transformer_IsValid) {
-	LuaTransformer* transformer = LuaRender::GetTransformer(L);
-	lua_pushboolean(L, transformer->_valid);
-	return 1;
-}
-
-static void RegisterTransformerClass(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "Render", lua_Transformer_Render },
-		{ "RenderEx", lua_Transformer_RenderEx },
-		{ "Apply", lua_Transformer_Apply },
-		{ "IsValid", lua_Transformer_IsValid },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, LuaRender::TransformerMT, LuaRender::TransformerMT, functions);
-}
 
 // ============================================================================
 // Custom rendering
@@ -2160,137 +1984,6 @@ static void RegisterCustomRenderMetatables(lua_State* L) {
 // ============================================================================
 // Renderer
 
-static void PushImageCData(lua_State* L, const KAGE_SmartPointer_ImageBase& image)
-{
-	auto* dst = lua::ffi::placeCdata<KAGE_SmartPointer_ImageBase>(
-		L, lua::ffi::CData[lua::ffi::CDataID::IMAGE]);
-	new (dst) KAGE_SmartPointer_ImageBase(image);
-}
-
-LUA_FUNCTION(lua_Renderer_LoadImage) {
-	const char* path = luaL_checkstring(L, 1);
-	std::filesystem::path p = path;
-	if (!p.is_relative())
-	{
-		return luaL_error(L, "Image %s does not exist", path);
-	}
-	
-	KAGE_SmartPointer_ImageBase image;
-	Manager::LoadImage(&image, path, __ptr_g_VertexAttributeDescriptor_Position, false);
-
-	if (!image.image) {
-		return luaL_error(L, "Image %s does not exist", path);
-	}
-
-	PushImageCData(L, image);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_CreateImage) {
-	uint32_t width = (uint32_t)luaL_checkinteger(L, 1);
-	uint32_t height = (uint32_t)luaL_checkinteger(L, 2);
-	const char* name = luaL_checkstring(L, 3);
-	KColor color = KColor(0.0, 0.0, 0.0, 0.0);
-
-	// prevent name clashes with real images (since these are added to the cache for some reason, even though they are never loaded)
-	std::string trueName = REPENTOGON::StringFormat("%s.procedural", name);
-	KAGE_SmartPointer_ImageBase pointer = KAGE_Graphics_ImageManager::CreateProceduralImage(width, height, trueName.c_str(), color);
-
-	if (!pointer.image) {
-		return luaL_error(L, "Unable to create Image");
-	}
-
-	PushImageCData(L, pointer);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_RenderToImage);
-
-LUA_FUNCTION(Lua_RenderToImage_ErrorHandler)
-{
-	const char* msg = lua_tostring(L, -1);
-	lua::TracebackTillFunction(L, msg, 2, Lua_Renderer_RenderToImage);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_RenderToImage) {
-	KAGE_SmartPointer_ImageBase* imageBase = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
-
-	auto* image = imageBase->image;
-	if ((image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
-	{
-		return luaL_error(L, "Cannot use a non procedural image as the render target");
-	}
-
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	int renderFnAbs = lua_absindex(L, 2);
-	std::optional<std::string> error = std::nullopt;
-
-	{
-		lua::LuaStackProtector protector(L);
-		auto* renderController = LuaSurfaceRenderController::NewUserdata(L);
-		int renderControllerAbs = lua_absindex(L, -1);
-
-		RenderToSurface(*image, [&]() {
-			auto& graphics = g_KAGE_Graphics_Manager;
-			BlendMode previous_blendMode = graphics._blendMode;
-
-			// push errorHandler
-			lua_pushcfunction(L, Lua_RenderToImage_ErrorHandler);
-			int errorHandlerAbs = lua_absindex(L, -1);
-
-			int numArgs = 0; lua_pushvalue(L, renderFnAbs);
-			numArgs++; lua_pushvalue(L, renderControllerAbs);
-
-			int n = lua_gettop(L) - numArgs - 1; // Expected amount after poping everything (number of params + function)
-			int resultCode = lua_pcall(L, numArgs, 0, errorHandlerAbs);
-			int numResults = lua_gettop(L) - n;
-
-			if (resultCode != LUA_OK)
-			{
-				if (lua_isstring(L, -1))
-				{
-					const char* msg = lua_tostring(L, -1);
-					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\": (%s)", image->_name, msg);
-				}
-				else
-				{
-					error = REPENTOGON::StringFormat("An error occurred while Rendering to Surface \"%s\"", image->_name);
-				}
-			}
-
-			lua_pop(L, numResults + 1); // pop results + errorHandler
-
-			renderController->valid = false;
-			graphics._blendMode = previous_blendMode;
-			});
-
-		lua_pop(L, 1); // pop renderController
-	}
-
-	if (error.has_value())
-	{
-		luaL_error(L, error.value().c_str());
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_Renderer_StartTransformation) {
-	KAGE_SmartPointer_ImageBase* imageBase = lua::GetCData<KAGE_SmartPointer_ImageBase*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::IMAGE], "Image");
-	if ((imageBase->image->_flags & (uint64_t)eImageFlag::PROCEDURAL) == 0)
-	{
-		return luaL_error(L, "Cannot use a non procedural image as the render target");
-	}
-
-	LuaTransformer* transformer = new (lua_newuserdata(L, sizeof(LuaTransformer))) LuaTransformer;
-	transformer->_valid = true;
-	luaL_setmetatable(L, LuaRender::TransformerMT);
-	transformer->_output = *imageBase;
-	return 1;
-}
-
 LUA_FUNCTION(Lua_Renderer_GLShader) {
 	std::string vertexShader(luaL_checkstring(L, 1));
 	std::string fragmentShader(luaL_checkstring(L, 2));
@@ -2311,83 +2004,6 @@ LUA_FUNCTION(Lua_Renderer_GLShader) {
 		luaL_error(L, "Error while creating shader: %s", error);
 	}
 	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_LoadShader)
-{
-	std::string path = luaL_checkstring(L, 1);
-	if (!lua_istable(L, 2))
-	{
-		return luaL_typeerror(L, 2, lua_typename(L, LUA_TTABLE));
-	}
-	
-	int descTbl = lua_absindex(L, 2);
-
-	size_t numAttributes = (size_t)lua_rawlen(L, descTbl);
-	std::vector<KAGE_Graphics_VertexAttributeDescriptor> descriptor;
-	descriptor.reserve(numAttributes + 1); // + 1 for terminator
-
-	// lua table to descriptor
-	for (size_t i = 0; i < numAttributes; i++)
-	{
-		int type = lua_rawgeti(L, descTbl, i + 1);
-		if (!lua_istable(L, -1))
-		{
-			lua_pop(L, 1);
-			return luaL_error(L, "Invalid vertex attribute %d (table expected)", i + 1);
-		}
-
-		lua_rawgeti(L, -1, 1);
-		if (!lua_isstring(L, -1))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid name for vertex attribute %d (string expected)", i + 1);
-		}
-		const char* name = lua_tostring(L, -1);
-		lua_pop(L, 1); // pop name
-
-		lua_rawgeti(L, -1, 2);
-		if (!lua_isinteger(L, -1))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\" (integer expected)", name);
-		}
-		int format = (int)lua_tointeger(L, -1);
-		if (!(1 <= format && format <= 8))
-		{
-			lua_pop(L, 2);
-			return luaL_error(L, "Invalid format for vertex attribute \"%s\"", name);
-		}
-		lua_pop(L, 1); // pop format
-		
-		descriptor.emplace_back(name, format);
-		lua_pop(L, 1); // pop attribute
-	}
-
-	auto& terminator = descriptor.emplace_back();
-
-	auto shader = ShaderLoader::LoadShader(path, descriptor.data());
-	if (shader.is_err())
-	{
-		luaL_error(L, "Unable to load shader \"%s\": %s", path.c_str(), shader.unwrap_err().c_str());
-	}
-
-	lua::ffi::pushCdataPtr(L, shader.unwrap(), lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR]);
-	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetShaderByType)
-{
-	int shaderType = (int)luaL_checkinteger(L, 1);
-
-	if (!(0 <= shaderType && shaderType < ShaderType::SHADER_MAX))
-	{
-		return luaL_argerror(L, 2, "invalid shader type");
-	}
-
-	lua::ffi::pushCdataPtr(L, __ptr_g_AllShaders[shaderType], lua::ffi::CData[lua::ffi::CDataID::SHADER_PTR]);
 	return 1;
 }
 
@@ -2436,24 +2052,6 @@ LUA_FUNCTION(Lua_Renderer_RenderSet) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Renderer_GetPixelationAmount)
-{
-	lua_pushnumber(L, g_ANM2_PixelationAmount);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetClipPaneNormal)
-{
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], g_ANM2_ClipPaneNormal);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Renderer_GetClipPaneThreshold)
-{
-	lua_pushnumber(L, g_ANM2_ClipPaneThreshold);
-	return 1;
-}
-
 // ============================================================================
 // Hooks
 
@@ -2491,109 +2089,53 @@ HOOK_METHOD(KAGE_Graphics_GraphicsBufferObject, Allocate, (uint32_t n) -> void*)
 }
 
 HOOK_METHOD(GridEntity_Rock, Render, (Vector& offset) -> void) {
-	LuaRender::ScopedContext<GridEntity_Rock*> context(this);
-	super(offset);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<GridEntity_Rock*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 HOOK_METHOD(AnimationState, Render, (Vector const& position, Vector const& topLeftClamp, Vector const& bottomRightClamp) -> void) {
-	LuaRender::ScopedContext<AnimationState*> context(this);
-	super(position, topLeftClamp, bottomRightClamp);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<AnimationState*> context(this);
+		super(position, topLeftClamp, bottomRightClamp);
+	}
+	else {
+		super(position, topLeftClamp, bottomRightClamp);
+	}
 }
 
 HOOK_METHOD(AnimationLayer, RenderFrame, (Vector const& position, int unk, Vector const& topLeftClamp, Vector const& bottomRightClamp, ANM2* animation) -> void) {
-	LuaRender::ScopedContext<AnimationLayer*> context(this);
-	super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<AnimationLayer*> context(this);
+		super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	}
+	else {
+		super(position, unk, topLeftClamp, bottomRightClamp, animation);
+	}
 }
 
 HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
-	LuaRender::ScopedContext<Entity_NPC*> context(this);
-	super(offset);
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<Entity_NPC*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
-	LuaRender::ScopedContext<Entity_Player*> context(this);
-	super(offset);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua_State* L = _state;
-	lua::LuaStackProtector protector(L);
-	LuaSurfaceRenderController::RegisterUserdataClass(L);
-	RegisterTransformerClass(L);
-	RegisterCustomRenderMetatables(L);
-
-	lua_newtable(L);
-
-	luaL_Reg renderFunctions[] = {
-		{ "LoadImage", lua_Renderer_LoadImage },
-		{ "CreateImage", Lua_Renderer_CreateImage },
-		{ "RenderToImage", Lua_Renderer_RenderToImage },
-		{ "StartTransformation", lua_Renderer_StartTransformation },
-		// { "GLShader", Lua_Renderer_GLShader },
-		{ "GetShaderByType", Lua_Renderer_GetShaderByType },
-		{ "LoadShader", Lua_Renderer_LoadShader },
-		// { "Vec2", Lua_Renderer_Vec2 },
-		// { "Vec3", Lua_Renderer_Vec3 },
-		// { "Vec4", Lua_Renderer_Vec4 },
-		// { "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
-		// { "Pipeline", Lua_Renderer_Pipeline },
-		// { "VertexDescriptor", Lua_Renderer_VertexDescriptor},
-		// { "RenderSet", Lua_Renderer_RenderSet },
-		{ "GetPixelationAmount", Lua_Renderer_GetPixelationAmount },
-		{ "GetClipPaneNormal", Lua_Renderer_GetClipPaneNormal },
-		{ "GetClipPaneThreshold", Lua_Renderer_GetClipPaneThreshold },
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, renderFunctions, 0);
-
-	// GLSLType table
-	lua_pushstring(L, "GLSLType");
-	lua_newtable(L);
-	lua::TableAssoc(L, "Float", GL::GLSLType::GLSL_FLOAT);
-	lua::TableAssoc(L, "Vec2", GL::GLSLType::GLSL_VEC2);
-	lua::TableAssoc(L, "Vec3", GL::GLSLType::GLSL_VEC3);
-	lua::TableAssoc(L, "Vec4", GL::GLSLType::GLSL_VEC4);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "ShaderType");
-	lua_newtable(L);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET", SHADER_COLOR_OFFSET);
-	lua::TableAssoc(L, "SHADER_PIXELATION", SHADER_PIXELATION);
-	lua::TableAssoc(L, "SHADER_BLOOM", SHADER_BLOOM);
-	lua::TableAssoc(L, "SHADER_COLOR_CORRECTION", SHADER_COLOR_CORRECTION);
-	lua::TableAssoc(L, "SHADER_HQ4X", SHADER_HQ4X);
-	lua::TableAssoc(L, "SHADER_SHOCKWAVE", SHADER_SHOCKWAVE);
-	lua::TableAssoc(L, "SHADER_OLDTV", SHADER_OLDTV);
-	lua::TableAssoc(L, "SHADER_WATER", SHADER_WATER);
-	lua::TableAssoc(L, "SHADER_HALLUCINATION", SHADER_HALLUCINATION);
-	lua::TableAssoc(L, "SHADER_COLOR_MOD", SHADER_COLOR_MOD);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_CHAMPION", SHADER_COLOR_OFFSET_CHAMPION);
-	lua::TableAssoc(L, "SHADER_WATER_V2", SHADER_WATER_V2);
-	lua::TableAssoc(L, "SHADER_BACKGROUND", SHADER_BACKGROUND);
-	lua::TableAssoc(L, "SHADER_WATER_OVERLAY", SHADER_WATER_OVERLAY);
-	lua::TableAssoc(L, "SHADER_UNK", SHADER_UNK);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_DOGMA", SHADER_COLOR_OFFSET_DOGMA);
-	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_GOLD", SHADER_COLOR_OFFSET_GOLD);
-	lua::TableAssoc(L, "SHADER_DIZZY", SHADER_DIZZY);
-	lua::TableAssoc(L, "SHADER_HEAT_WAVE", SHADER_HEAT_WAVE);
-	lua::TableAssoc(L, "SHADER_MIRROR", SHADER_MIRROR);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "VertexAttributeFormat");
-	lua_newtable(L);
-	lua::TableAssoc(L, "FLOAT", (int)eVertexAttributeFormat::FLOAT);
-	lua::TableAssoc(L, "VEC2", (int)eVertexAttributeFormat::VEC_2);
-	lua::TableAssoc(L, "VEC3", (int)eVertexAttributeFormat::VEC_3);
-	lua::TableAssoc(L, "VEC4", (int)eVertexAttributeFormat::VEC_4);
-	lua::TableAssoc(L, "POSITION", (int)eVertexAttributeFormat::POSITION);
-	lua::TableAssoc(L, "COLOR", (int)eVertexAttributeFormat::COLOR);
-	lua::TableAssoc(L, "TEX_COORD", (int)eVertexAttributeFormat::TEX_COORD);
-	lua_rawset(L, -3);
-
-	lua_setglobal(L, "Renderer");
+	if constexpr (EnableCustomRendering) {
+		LuaRender::ScopedContext<Entity_Player*> context(this);
+		super(offset);
+	}
+	else {
+		super(offset);
+	}
 }
 
 // ============================================================================
