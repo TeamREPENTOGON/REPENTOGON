@@ -1,192 +1,34 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-#include "../../LuaClasses.h"
 #include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
 
-/*LUA_FUNCTION(Lua_GameGetRoomConfig) {
-	Game* game = lua::GetRawUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	RoomConfig** ud = (RoomConfig**)lua_newuserdata(L, sizeof(RoomConfig*));
-	*ud = game->GetRoomConfig();
-	luaL_setmetatable(L, lua::metatables::RoomConfigMT);
-	return 1;
-}
-*/
-
-LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
-	int n = lua_gettop(L);
-	if (n < 3) {
-		return luaL_error(L, "Expected three parameters, got %d\n", n);
-	}
-
-	RoomConfig* roomConfig = g_Game->GetRoomConfig();
-	int stage = (int)luaL_checkinteger(L, 1);
-
-	if (stage < 0 || stage >= NUM_STB) {
-		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
-	}
-
-	int type = (int)luaL_checkinteger(L, 2);
-	if (type < 1 || type > 29) {
-		return luaL_error(L, "Type must be between 1 and 29 (both inclusive), got %d\n", type);
-	}
-
-	int variant = (int)luaL_checkinteger(L, 3);
-	int mode = (int)luaL_optinteger(L, 4, -1);
-	if (mode < -2 || mode > 1) {
-		mode = -1;
-	}
-
-	RoomConfig_Room* config = roomConfig->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
-	if (!config) {
-		lua_pushnil(L);
-	}
-	else {
-		LuaRoomConfigRoom::PushPtr(L, config);
-	}
-
-	return 1;
+MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int mode) {
+	return g_Game->GetRoomConfig()->GetRoomByStageTypeAndVariant(stage, type, variant, mode);
 }
 
-LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
-	RoomConfig* roomConfig = g_Game->GetRoomConfig();
-	int seed = (int)luaL_checkinteger(L, 1);
-	bool reduceWeight = lua::luaL_checkboolean(L, 2);
-
-	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage >= STB_UNUSED1 && stage <= STB_ULTRA_GREED) || stage == STB_THE_VOID || stage >= NUM_STB) {
-		return luaL_error(L, "Invalid stage %d\n", stage);
-	}
-
-	int type = (int)luaL_checkinteger(L, 4);
-	if (type < 1 || type > 29) {
-		return luaL_error(L, "Invalid type %d\n", type);
-	}
-
-	int shape = (int)luaL_optinteger(L, 5, 13); //NUM_ROOMSHAPES
-	if (shape < 1 || shape > 13) {
-		return luaL_error(L, "Invalid shape %d\n", shape);
-	}
-
-	int minVariant = (int)luaL_optinteger(L, 6, 0);
-	if (minVariant < 0) {
-		minVariant = 0;
-	}
-
-	int maxVariant = (int)luaL_optinteger(L, 7, -1);
-	if (maxVariant < minVariant && maxVariant >= 0) {
-		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
-	}
-	else if (maxVariant < 0) {
-		maxVariant = -1;
-	}
-
-	int minDifficulty = (int)luaL_optinteger(L, 8, 0);
-	if (minDifficulty < 0) {
-		minDifficulty = 0;
-	}
-
-	int maxDifficulty = (int)luaL_optinteger(L, 9, 10);
-	if (maxDifficulty < minDifficulty) {
-		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
-	}
-
-	int doors = (int)luaL_optinteger(L, 10, 0);
-	if (doors < 0) {
-		return luaL_error(L, "Invalid door mask %d\n", doors);
-	}
-
-	int subtype = (int)luaL_optinteger(L, 11, -1);
-	if (subtype < -1) {
-		return luaL_error(L, "Invalid subtype %d\n", subtype);
-	}
-	int mode = (int)luaL_optinteger(L, 12, -1);
-	if (mode < -1 || mode > 1) {
-		return luaL_error(L, "Invalid mode %d\n", mode);
-	}
-
-
-	RoomConfig_Room* config = roomConfig->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
-	LuaRoomConfigRoom::PushPtr(L, config);
-	return 1;
+MOD_EXPORT RoomConfig_Room* L_RoomConfig_GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int type, int shape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int doors, int subtype, int mode) {
+	return g_Game->GetRoomConfig()->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, &doors, subtype, mode);
 }
 
-LUA_FUNCTION(Lua_RoomConfig_GetStage) {
-	RoomConfig* roomConfig = g_Game->GetRoomConfig();
-	int stage = (int)luaL_checkinteger(L, 1);
-
-	if (stage < 0 || stage > 36) {
-		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
-	}
-
-	RoomConfig_Stage* configStage = &roomConfig->_stages[stage];
-
-	RoomConfig_Stage** ud = (RoomConfig_Stage**)lua_newuserdata(L, sizeof(RoomConfig_Stage*));
-	*ud = configStage;
-	luaL_setmetatable(L, lua::metatables::RoomConfigStageMT);
-	return 1;
+MOD_EXPORT RoomConfig_Stage* L_RoomConfig_GetStage(int stage) {
+	return &g_Game->GetRoomConfig()->_stages[stage];
 }
 
-LUA_FUNCTION(Lua_RoomConfig_AddRooms)
-{
-	uint32_t stageId = (uint32_t)luaL_checkinteger(L, 1);
-	int mode = (int)luaL_checkinteger(L, 2);
-
-	if (0 > stageId || stageId >= NUM_STB)
-	{
-		return luaL_argerror(L, 1, REPENTOGON::StringFormat("invalid stage %d", stageId).c_str());
+MOD_EXPORT unsigned int L_RoomConfig_GetVanillaSetID(uint32_t stage, int mode) {
+	if (mode == -1) {
+		mode = g_Game->IsGreedMode() ? 1 : 0;
 	}
-
-	if (-1 > mode || mode > 1)
-	{
-		return luaL_argerror(L, 2, REPENTOGON::StringFormat("invalid mode %d", stageId).c_str());
-	}
-
-	if (!lua_istable(L, 3))
-	{
-		return luaL_argerror(L, 3, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 3, "table").c_str());
-	}
-
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
-	int returnParameters = VirtualRoomSetManager::detail::Lua_AddLuaRooms(L, virtualSet, 3);
-	return returnParameters;
+	return VirtualRoomSetManager::detail::GetId(VirtualRoomSetManager::GetVanillaSet(stage, mode));
 }
 
-LUA_FUNCTION(Lua_RoomConfig_LoadStb)
-{
-	uint32_t stageId = (uint32_t)luaL_checkinteger(L, 1);
-	int mode = (int)luaL_checkinteger(L, 2);
-
-	if (0 > stageId || stageId >= NUM_STB) {
-		return luaL_argerror(L, 1, REPENTOGON::StringFormat("invalid stage %d", stageId).c_str());
-	}
-
-	if (-1 > mode || mode > 1) {
-		return luaL_argerror(L, 2, REPENTOGON::StringFormat("invalid mode %d", stageId).c_str());
-	}
-
-	const char* filename = luaL_checkstring(L, 3);
-
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
-	int returnParameters = VirtualRoomSetManager::detail::Lua_AddStbRooms(L, virtualSet, filename);
-	return returnParameters;
+MOD_EXPORT bool L_RoomConfig_HasShapeSlot(int shape, unsigned int slot) {
+	return LevelGenerator::has_shape_slot(shape, slot, false);
 }
 
-static void RegisterRoomConfig(lua_State* L) {
-	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
-	lua_newtable(L);
-	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
-	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
-	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
-	lua::TableAssoc(L, "AddRooms", Lua_RoomConfig_AddRooms);
-	lua::TableAssoc(L, "LoadStb", Lua_RoomConfig_LoadStb);
-	lua_setglobal(L, "RoomConfig");
+MOD_EXPORT int L_RoomConfig_GetDoorFromPosition(int16_t x, int16_t y, int shape) {
+	return RoomConfig::get_door_from_position(x, y, shape);
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-	RegisterRoomConfig(_state);
+MOD_EXPORT void L_RoomConfig_Log(const char* message) {
+	ZHL::Log("%s", message);
 }

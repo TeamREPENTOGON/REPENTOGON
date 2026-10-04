@@ -1,114 +1,121 @@
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "HookSystem.h"
-#include "../../LuaClasses.h"
+#include "../../RoomConfigUtility.h"
 #include "../../VirtualRoomConfig/VirtualRoomSetManager.h"
-#include "LuaRoomConfigSet.h"
 
-LuaRoomConfigSet::Userdata::Userdata(RoomConfig_Stage& stage, int mode)
-	: vanillaSet(&stage._rooms[mode]),
-	  virtualSet(VirtualRoomSetManager::GetVanillaSet(stage._id, mode))
-{}
+struct LuaRoomEntryDesc {
+	int type;
+	uint32_t variant;
+	int subtype;
+	float weight;
+};
 
-LUA_FUNCTION(Lua_RoomConfigSetGetRoom)
-{
-	LuaRoomConfigSet::Userdata* ud = LuaRoomConfigSet::GetUserdata(L, 1);
-	int idx = (int)lua_tointeger(L, 2);
+struct LuaRoomSpawnDesc {
+	int16_t x;
+	int16_t y;
+	uint32_t entryCount;
+	LuaRoomEntryDesc* entries;
+};
 
-	if (idx < 0)
-	{
-		lua_pushnil(L);
-		return 1;
-	}
+struct LuaRoomDesc {
+	int type;
+	uint32_t variant;
+	int subtype;
+	int difficulty;
+	const char* name;
+	float weight;
+	int shape;
+	uint32_t doors;
+	uint32_t spawnCount;
+	LuaRoomSpawnDesc* spawns;
+};
 
-	if (ud->IsVanilla())
-	{
-		size_t vanillaCount = ud->vanillaSet->_count;
-		if ((size_t)idx < vanillaCount)
-		{
-			LuaRoomConfigRoom::PushPtr(L, &ud->vanillaSet->_configs[idx]);
-			return 1;
+MOD_EXPORT unsigned int L_RoomConfigSet_GetVirtualSize(unsigned int id) {
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	return virtualSet.size();
+}
+
+MOD_EXPORT RoomConfig_Room* L_RoomConfigSet_GetVirtualRoom(unsigned int id, unsigned int index) {
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	return virtualSet[index];
+}
+
+MOD_EXPORT unsigned int L_RoomConfigSet_BeginAddRooms(unsigned int id) {
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	return VirtualRoomSetManager::detail::BeginAddRooms(virtualSet);
+}
+
+MOD_EXPORT RoomConfig_Room* L_RoomConfigSet_AddRoom(unsigned int id, const LuaRoomDesc* desc) {
+	RoomConfig_Room room;
+
+	room.Type = desc->type;
+	room.originalVariant = desc->variant;
+	room.Variant = room.originalVariant;
+	room.Subtype = desc->subtype;
+	room.Difficulty = desc->difficulty;
+	room.Name = desc->name;
+	room.Weight = desc->weight;
+	room.InitialWeight = room.Weight;
+
+	room.Shape = desc->shape;
+	auto& shapeDimensions = RoomConfigUtility::GetShapeDimensions(room.Shape);
+	room.Width = shapeDimensions.first;
+	room.Height = shapeDimensions.second;
+
+	room.Flags = 0;
+	room.SpawnCount = 0;
+	room.Spawns = nullptr;
+	room.Doors |= desc->doors;
+
+	std::vector<RoomSpawn> roomSpawns;
+	roomSpawns.reserve(desc->spawnCount);
+
+	for (uint32_t i = 0; i < desc->spawnCount; i++) {
+		const LuaRoomSpawnDesc& spawnDesc = desc->spawns[i];
+		RoomSpawn roomSpawn;
+		roomSpawn.X = spawnDesc.x;
+		roomSpawn.Y = spawnDesc.y;
+		roomSpawn.Entries = nullptr;
+		roomSpawn.CountEntries = 0;
+
+		if (spawnDesc.entryCount > 0) {
+			roomSpawn.CountEntries = (uint8_t)spawnDesc.entryCount;
+			roomSpawn.Entries = new RoomEntry[roomSpawn.CountEntries];
+
+			for (size_t j = 0; j < roomSpawn.CountEntries; j++) {
+				const LuaRoomEntryDesc& entryDesc = spawnDesc.entries[j];
+				RoomEntry& spawnEntry = roomSpawn.Entries[j];
+				spawnEntry.type = entryDesc.type;
+				spawnEntry.variant = entryDesc.variant;
+				spawnEntry.subtype = entryDesc.subtype;
+				spawnEntry.weight = entryDesc.weight;
+				RoomConfigUtility::FinalizeSpawnEntryInsertion(room, roomSpawn, spawnEntry);
+			}
 		}
 
-		idx -= vanillaCount;
-	}
-	
-	if ((size_t)idx < ud->virtualSet.size())
-	{
-		LuaRoomConfigRoom::PushPtr(L, ud->virtualSet[idx]);
-		return 1;
+		roomSpawns.emplace_back(std::move(roomSpawn));
 	}
 
-	lua_pushnil(L);
-	return 1;
-}
+	if (!roomSpawns.empty()) {
+		room.SpawnCount = (uint16_t)roomSpawns.size();
+		room.Spawns = new RoomSpawn[room.SpawnCount];
 
-LUA_FUNCTION(Lua_RoomConfigSetGetSize)
-{
-	LuaRoomConfigSet::Userdata* ud = LuaRoomConfigSet::GetUserdata(L, 1);
-	size_t vanillaSize = ud->IsVanilla() ? ud->vanillaSet->_count : 0;
-	lua_pushinteger(L, ud->virtualSet.size() + vanillaSize);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_RoomConfigSetAddRooms)
-{
-	LuaRoomConfigSet::Userdata* ud = LuaRoomConfigSet::GetUserdata(L, 1);
-	if (!lua_istable(L, 2))
-	{
-		return luaL_argerror(L, 2, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 2, "table").c_str());
+		for (size_t i = 0; i < room.SpawnCount; i++) {
+			room.Spawns[i] = std::move(roomSpawns[i]);
+		}
 	}
 
-	int returnParameters = VirtualRoomSetManager::detail::Lua_AddLuaRooms(L, ud->virtualSet, 2);
-	return returnParameters;
+	RoomConfigUtility::AssertRoomValidity(room);
+
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	return VirtualRoomSetManager::detail::AddRoom(virtualSet, room);
 }
 
-LUA_FUNCTION(Lua_RoomConfigSetLoadStb) {
-	LuaRoomConfigSet::Userdata* ud = LuaRoomConfigSet::GetUserdata(L, 1);
-	const char* filename = luaL_checkstring(L, 2);
-	int returnParameters = VirtualRoomSetManager::detail::Lua_AddStbRooms(L, ud->virtualSet, filename);
-	return returnParameters;
+MOD_EXPORT void L_RoomConfigSet_EndAddRooms(unsigned int id, unsigned int begin) {
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	VirtualRoomSetManager::detail::EndAddRooms(virtualSet, begin);
 }
 
-static void RegisterRoomConfigSet(lua_State* L) {
-	luaL_newmetatable(L, lua::metatables::RoomConfigSetMT);
-	lua_pushstring(L, "__index");
-	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__newindex");
-	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__name");
-	lua_pushstring(L, "RoomConfigSet");
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__propget");
-	lua_newtable(L);
-
-	lua_pushstring(L, "Size");
-	lua_pushcfunction(L, Lua_RoomConfigSetGetSize);
-	lua_rawset(L, -3);
-
-	lua_rawset(L, -3);
-
-	luaL_Reg functions[] = {
-		{ "Get", Lua_RoomConfigSetGetRoom },
-		{ "__len", Lua_RoomConfigSetGetSize },
-		{ "AddRooms", Lua_RoomConfigSetAddRooms },
-		{ "LoadStb", Lua_RoomConfigSetLoadStb },
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
-
-	lua_pop(L, 1);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-	RegisterRoomConfigSet(_state);
+MOD_EXPORT unsigned int L_RoomConfigSet_AddStbRooms(unsigned int id, const char* fileName) {
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::detail::FromId(id);
+	return VirtualRoomSetManager::detail::AddStbRooms(virtualSet, fileName);
 }

@@ -51,14 +51,14 @@ MultiShotParamsMT = {
     end,
     GetSpreadAngle = function(self, weaponType)
         ffichecks.checkinteger(1, weaponType)
-        local field = SpreadAngleFields[weaponType]
+        local field = spreadAngleFields[weaponType]
         if field then
             return ffi.getprivate(self, field) * (spreadAngleScale[weaponType] or 1)
         end
         if weaponType >= 1 and weaponType <= 15 then
             return 0
         end
-        error("WeaponTypes bigger than 15 are not supported!", 2)
+        ffichecks.argerror(1, "WeaponTypes bigger than 15 are not supported")
     end,
     IsCrossEyed = function(self)
         return ffi.getprivate(self, "CrossEyed")
@@ -104,12 +104,12 @@ MultiShotParamsMT = {
     SetSpreadAngle = function(self, weaponType, angle)
         ffichecks.checkinteger(1, weaponType)
         ffichecks.checknumber(2, angle)
-        local field = SpreadAngleFields[weaponType]
+        local field = spreadAngleFields[weaponType]
         if not field then
             if weaponType >= 1 and weaponType <= 15 then
-                error("The given WeaponType can't change its spread angle!", 2)
+                ffichecks.argerror(1, "the given WeaponType can't change its spread angle")
             end
-            error("A WeaponType bigger than 15 is not supported!", 2)
+            ffichecks.argerror(1, "WeaponTypes bigger than 15 are not supported")
         end
         ffi.setprivate(self, field, angle / (spreadAngleScale[weaponType] or 1))
         if ffi.getprivate(self, "NumLanesPerEye") < 2 then

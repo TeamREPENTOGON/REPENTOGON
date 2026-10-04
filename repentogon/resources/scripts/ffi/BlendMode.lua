@@ -10,7 +10,6 @@ ffi.cdef [[
 
 local ffi = ffi
 local repentogon = ffidll
-local debug_getinfo = debug.getinfo
 
 -- We load before enums, forgive the magic numbers
 local blendModes = {
@@ -129,7 +128,7 @@ BlendMode = setmetatable({
         
         blendType = math.floor(blendType)
         if blendType < 0 or blendType > 4 then
-            error(string.format("bad argument #1 to '%s' (Invalid blend type %d)", debug_getinfo(2).name, blendType), 3)
+            ffichecks.argerror(1, string.format("invalid blend type %d", blendType))
         end
     
         local mode = blendModes[blendType + 1]

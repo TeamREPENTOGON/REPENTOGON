@@ -747,8 +747,6 @@ namespace lua {
 		const char* ProceduralEffectMT = "ProceduralEffect";
 		const char* ProceduralItemMT = "ProceduralItem";
 		const char* ProceduralItemManagerMT = "ProceduralItemManager";
-		const char* RoomConfigSetMT = "RoomConfigSet";
-		const char* RoomConfigStageMT = "RoomConfigStage";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 		const char* WeaponMT = "Weapon";
