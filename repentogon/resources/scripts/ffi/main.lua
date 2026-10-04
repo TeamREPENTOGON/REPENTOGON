@@ -317,6 +317,7 @@ loadmodule("ItemConfig.ItemConfigList")
 loadmodule("ItemConfig.CardConfigList")
 loadmodule("ItemConfig.PillConfigList")
 loadmodule("ItemConfig.ItemConfig")
+loadmodule("PlayerManager")
 
 lffi.metatype = ffi_metatype
 

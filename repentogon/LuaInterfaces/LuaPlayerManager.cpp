@@ -137,286 +137,104 @@ private:
 	std::optional<uint32_t> _playerType = std::nullopt;
 };
 
-LUA_FUNCTION(Lua_FirstCollectibleOwner)
-{
-	int collectible = (int)luaL_checkinteger(L, 1);
-	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+MOD_EXPORT Entity_Player* L_PlayerManager_FirstCollectibleOwner(int collectible, bool lazSharedGlobalTag) {
+	return PlayerManagerQuery::Collectible(collectible).SetLazSharedGlobalTag(lazSharedGlobalTag).GetFirstOwner();
+}
 
-	Entity_Player* player = PlayerManagerQuery::Collectible(collectible).SetLazSharedGlobalTag(lazSharedGlobalTag).GetFirstOwner();
-	if (!player) {
-		lua_pushnil(L);
-	} else {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	}
+MOD_EXPORT bool L_PlayerManager_AnyoneHasCollectible(int collectible, bool ignoreModifiers) {
+	return PlayerManagerQuery::Collectible(collectible).SetIgnoreModifiers(ignoreModifiers).AnyoneHasItem();
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_SpawnCoPlayer2(int playerType) {
+	return g_Game->GetPlayerManager()->SpawnCoPlayer2(playerType);
+}
+
+MOD_EXPORT bool L_PlayerManager_IsCoopPlay() {
+	return g_Game->GetPlayerManager()->IsCoopPlay();
+}
+
+MOD_EXPORT int L_PlayerManager_GetNumCollectibles(int collectible, bool ignoreModifiers) {
+	return PlayerManagerQuery::Collectible(collectible).SetIgnoreModifiers(ignoreModifiers).GetTotalCount();
+}
+
+MOD_EXPORT int L_PlayerManager_GetTotalTrinketMultiplier(int trinket) {
+	return PlayerManagerQuery::Trinket(trinket).GetTotalCount();
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_FirstTrinketOwner(int trinket, bool lazSharedGlobalTag) {
+	return PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(lazSharedGlobalTag).GetFirstOwner();
+}
+
+MOD_EXPORT void L_PlayerManager_TriggerRoomClear() {
+	g_Game->GetPlayerManager()->TriggerRoomClear();
+}
+
+MOD_EXPORT bool L_PlayerManager_AnyoneHasTrinket(int trinket, bool ignoreModifiers) {
+	return PlayerManagerQuery::Trinket(trinket).SetIgnoreModifiers(ignoreModifiers).AnyoneHasItem();
+}
+
+MOD_EXPORT int L_PlayerManager_GetPlayerCount() {
+	return (int)g_Game->GetPlayerManager()->_playerList.size();
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_GetPlayerAt(int index) {
+	return g_Game->GetPlayerManager()->_playerList[index];
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_GetEsauJrState(int index) {
+	return g_Game->GetPlayerManager()->_esauJrState[index];
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_FirstPlayerByType(unsigned int playerType) {
+	return g_Game->GetPlayerManager()->FirstPlayerByType(playerType);
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_FirstBirthrightOwner() {
+	return PlayerManagerQuery::Collectible(COLLECTIBLE_BIRTHRIGHT).SetLazSharedGlobalTag(false).GetFirstOwner();
+}
+
+MOD_EXPORT bool L_PlayerManager_AnyPlayerTypeHasBirthright(unsigned int playerType) {
+	return PlayerManagerQuery::Collectible(COLLECTIBLE_BIRTHRIGHT).SetLazSharedGlobalTag(false).SetPlayerType(playerType).AnyoneHasItem();
+}
+
+MOD_EXPORT bool L_PlayerManager_AnyPlayerTypeHasTrinket(unsigned int playerType, int trinket, bool ignoreModifiers) {
+	return PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(false).SetIgnoreModifiers(ignoreModifiers).SetPlayerType(playerType).AnyoneHasItem();
+}
+
+MOD_EXPORT bool L_PlayerManager_AnyPlayerTypeHasCollectible(unsigned int playerType, int collectible, bool ignoreModifiers) {
+	return PlayerManagerQuery::Collectible(collectible).SetLazSharedGlobalTag(false).SetIgnoreModifiers(ignoreModifiers).SetPlayerType(playerType).AnyoneHasItem();
+}
+
+MOD_EXPORT void L_PlayerManager_SpawnSelectedBaby(int babyType, int controllerIndex) {
+	g_Game->GetPlayerManager()->spawn_selected_baby(babyType, controllerIndex);
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_GetRandomCollectibleOwner(int collectible, unsigned int seed, RNG** rng) {
+	Entity_Player* player = PlayerManagerQuery::Collectible((CollectibleType)collectible).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
+	*rng = player ? player->GetCollectibleRNG((CollectibleType)collectible) : nullptr;
+	return player;
+}
+
+MOD_EXPORT Entity_Player* L_PlayerManager_GetRandomTrinketOwner(int trinket, unsigned int seed, RNG** rng) {
+	Entity_Player* player = PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
+	*rng = player ? player->GetTrinketRNG((TrinketType)trinket) : nullptr;
+	return player;
+}
+
+LUA_FUNCTION(Lua_PlayerManager_PushPlayer) {
+	LuaEntityPlayer::PushPtr(L, (Entity_Player*)(uintptr_t)luaL_checknumber(L, 1));
 	return 1;
 }
 
-
-LUA_FUNCTION(Lua_AnyoneHasCollectible)
-{
-	int collectible = (int)luaL_checkinteger(L, 1);
-	bool ignoreModifiers = lua::luaL_optboolean(L, 2, false);
-	lua_pushboolean(L, PlayerManagerQuery::Collectible(collectible).SetIgnoreModifiers(ignoreModifiers).AnyoneHasItem());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpawnCoPlayer2)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	int playerType = (int)luaL_checkinteger(L, 1);
-
-	Entity_Player* player = playerManager->SpawnCoPlayer2(playerType);
-	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PlayerManagerIsCoopPlay)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-
-	bool result = playerManager->IsCoopPlay();
-	lua_pushboolean(L, result);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
-{
-	int collectibleID = (int)luaL_checkinteger(L, 1);
-	bool ignoreModifiers = lua::luaL_optboolean(L, 2, false);
-	lua_pushinteger(L, PlayerManagerQuery::Collectible(collectibleID).SetIgnoreModifiers(ignoreModifiers).GetTotalCount());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
-{
-	int trinketID = (int)luaL_checkinteger(L, 1);
-	lua_pushinteger(L, PlayerManagerQuery::Trinket(trinketID).GetTotalCount());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FirstTrinketOwner)
-{
-	const int trinket = (int)luaL_checkinteger(L, 1);
-
-	// Sorry for this weird backwards compatability thing, I want to pretend that the old rng param never existed.
-	// Everything below should work as expected. I even wrote unit tests!!
-	// - FirstTrinketOwner(t, nil, bool) <- backwards compat
-	// - FirstTrinketOwner(t, rng, bool) <- backwards compat
-	// - FirstTrinketOwner(t, bool) <- new!
-	// - FirstTrinketOwner(t) <- still fine
-
-	bool legacySignature = lua_type(L, 2) == LUA_TNIL
-		|| (LuaRNG::IsUnderlyingType(L, 2) && LuaRNG::TryGet(L, 2).is_ok());
-	bool lazSharedGlobalIdx = legacySignature ? 3 : 2;
-	bool lazSharedGlobalTag = lua::luaL_optboolean(L, lazSharedGlobalIdx, true);
-
-	Entity_Player* firstTrinketOwner = PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(lazSharedGlobalTag).GetFirstOwner();
-	if (firstTrinketOwner) {
-		lua::luabridge::UserdataPtr::push(L, firstTrinketOwner, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_TriggerRoomClear)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	playerManager->TriggerRoomClear();
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_AnyoneHasTrinket)
-{
-	const int trinket = (int)luaL_checkinteger(L, 1);
-	bool ignoreModifiers = lua::luaL_optboolean(L, 2, false);
-	lua_pushboolean(L, PlayerManagerQuery::Trinket(trinket).SetIgnoreModifiers(ignoreModifiers).AnyoneHasItem());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GetPlayers) {
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-
-	std::vector<Entity_Player*>& players = playerManager->_playerList;
-
-	lua_newtable(L);
-
-	for (size_t i = 0; i < players.size(); i++) {
-		lua_pushinteger(L, i + 1);
-		lua::luabridge::UserdataPtr::push(L, players[i], lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-		lua_rawset(L, -3);
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GetEsauJrState) {
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	const int index = (int)luaL_optinteger(L, 1, 0);
-
-	if (index < 0 || index > 3) {
-		return luaL_error(L, "Invalid index %d", index);
-	}
-
-	Entity_Player* player = playerManager->_esauJrState[index];
-	if (!player) {
-		lua_pushnil(L);
-	}
-	else {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FirstPlayerByType)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
-	
-	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_AnyoneIsPlayerType)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
-
-	lua_pushboolean(L, player ? true : false);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FirstBirthrightOwner)
-{
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	Entity_Player* player = PlayerManagerQuery::Collectible(COLLECTIBLE_BIRTHRIGHT).SetLazSharedGlobalTag(false).GetFirstOwner();
-	if (player) {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_AnyPlayerTypeHasBirthright)
-{
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	lua_pushboolean(L, PlayerManagerQuery::Collectible(COLLECTIBLE_BIRTHRIGHT).SetLazSharedGlobalTag(false).SetPlayerType(playerType).AnyoneHasItem());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_AnyPlayerTypeHasTrinket)
-{
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	int trinket = (int)luaL_checkinteger(L, 2);
-	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
-
-	lua_pushboolean(L, PlayerManagerQuery::Trinket(trinket).SetLazSharedGlobalTag(false).SetIgnoreModifiers(ignoreModifiers).SetPlayerType(playerType).AnyoneHasItem());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_AnyPlayerTypeHasCollectible)
-{
-	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
-	int collectible = (int)luaL_checkinteger(L, 2);
-	bool ignoreModifiers = lua::luaL_optboolean(L, 3, false);
-
-	lua_pushboolean(L, PlayerManagerQuery::Collectible(collectible).SetLazSharedGlobalTag(false).SetIgnoreModifiers(ignoreModifiers).SetPlayerType(playerType).AnyoneHasItem());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SpawnSelectedBaby) 
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
-	const int babyType = (int)luaL_checkinteger(L, 1);
-	const int controllerIndex = (int)luaL_checkinteger(L, 2);
-
-	playerManager->spawn_selected_baby(babyType, controllerIndex);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RemoveCoPlayer)
-{
-	PlayerManager* playerManager = g_Game->GetPlayerManager();
+LUA_FUNCTION(Lua_PlayerManager_RemoveCoPlayer) {
 	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
-
-	playerManager->RemoveCoPlayer(player, false);
+	g_Game->GetPlayerManager()->RemoveCoPlayer(player, false);
 	return 0;
-}
-
-LUA_FUNCTION(Lua_GetRandomCollectibleOwner)
-{
-	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 1);
-	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
-
-	Entity_Player* player = PlayerManagerQuery::Collectible(collectibleType).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
-	if (player) {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-		LuaRNG::PushPtr(L, player->GetCollectibleRNG(collectibleType));
-	} else {
-		lua_pushnil(L);
-		lua_pushnil(L);
-	}
-	return 2;
-
-}
-
-LUA_FUNCTION(Lua_GetRandomTrinketOwner)
-{
-	TrinketType trinketType = (TrinketType)luaL_checkinteger(L, 1);
-	uint32_t seed = (uint32_t)luaL_checkinteger(L, 2);
-
-	Entity_Player* player = PlayerManagerQuery::Trinket(trinketType).SetLazSharedGlobalTag(false).GetRandomOwner(seed);
-	if (player) {
-		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-		LuaRNG::PushPtr(L, player->GetTrinketRNG(trinketType));
-	} else {
-		lua_pushnil(L);
-		lua_pushnil(L);
-	}
-	return 2;
-
-}
-
-
-static void RegisterPlayerManager(lua_State* L) {
-	lua_newtable(L);
-		lua::TableAssoc(L, "FirstCollectibleOwner", Lua_FirstCollectibleOwner );
-		lua::TableAssoc(L, "AnyoneHasCollectible", Lua_AnyoneHasCollectible);
-		lua::TableAssoc(L, "SpawnCoPlayer2", Lua_SpawnCoPlayer2 );
-		lua::TableAssoc(L, "IsCoopPlay", Lua_PlayerManagerIsCoopPlay);
-		lua::TableAssoc(L, "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles);
-		lua::TableAssoc(L, "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier);
-		lua::TableAssoc(L, "FirstTrinketOwner", Lua_FirstTrinketOwner );
-		lua::TableAssoc(L, "TriggerRoomClear", Lua_TriggerRoomClear );
-		lua::TableAssoc(L, "AnyoneHasTrinket", Lua_AnyoneHasTrinket);
-		lua::TableAssoc(L, "GetPlayers", Lua_GetPlayers);
-		lua::TableAssoc(L, "GetEsauJrState", Lua_GetEsauJrState);
-		lua::TableAssoc(L, "FirstPlayerByType", Lua_FirstPlayerByType);
-		lua::TableAssoc(L, "AnyoneIsPlayerType", Lua_AnyoneIsPlayerType);
-		lua::TableAssoc(L, "FirstBirthrightOwner", Lua_FirstBirthrightOwner);
-		lua::TableAssoc(L, "AnyPlayerTypeHasBirthright", Lua_AnyPlayerTypeHasBirthright);
-		lua::TableAssoc(L, "AnyPlayerTypeHasTrinket", Lua_AnyPlayerTypeHasTrinket);
-		lua::TableAssoc(L, "AnyPlayerTypeHasCollectible", Lua_AnyPlayerTypeHasCollectible);
-		lua::TableAssoc(L, "SpawnSelectedBaby", Lua_SpawnSelectedBaby);
-		lua::TableAssoc(L, "RemoveCoPlayer", Lua_RemoveCoPlayer);
-		lua::TableAssoc(L, "GetRandomCollectibleOwner", Lua_GetRandomCollectibleOwner);
-		lua::TableAssoc(L, "GetRandomTrinketOwner", Lua_GetRandomTrinketOwner);
-
-		lua_setglobal(L, "PlayerManager");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	lua_register(_state, "__Lua_PlayerManager_PushPlayer", Lua_PlayerManager_PushPlayer);
+	lua_register(_state, "__Lua_PlayerManager_RemoveCoPlayer", Lua_PlayerManager_RemoveCoPlayer);
 
-	lua::LuaStackProtector protector(_state);
-	RegisterPlayerManager(_state);
+	super();
 }
