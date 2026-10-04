@@ -84,7 +84,6 @@ namespace lua {
     namespace metatables
     {
         extern LIBZHL_API const char* BeamMT;
-        extern LIBZHL_API const char* BossPoolMT;
         extern LIBZHL_API const char* GenericPromptMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
@@ -574,6 +573,8 @@ namespace lua {
             LEVEL_GENERATOR_ROOM_PTR,
             LEVEL_GENERATOR_ENTRY,
             LEVEL_GENERATOR_ENTRY_PTR,
+            BOSS_POOL,
+            BOSS_POOL_PTR,
             MAX_CDATA
         };
 

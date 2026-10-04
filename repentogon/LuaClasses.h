@@ -1023,6 +1023,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR;
     };
+
+    struct LuaBossPool
+    {
+        static constexpr const char* Name = "BossPool";
+        using Type = BossPool_Pool;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::BOSS_POOL;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::BOSS_POOL_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1111,7 +1119,7 @@ struct WeaponData {
 // RGON Classes
 
 using LuaHistoryHUD = LuaUserdataPtr<HistoryHUD, lua::metatables::HistoryHUDMT>;
-using LuaBossPool = LuaUserdataPtr<BossPool_Pool, lua::metatables::BossPoolMT>;
+using LuaBossPool = CDataType<LuaTraits::LuaBossPool>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
 using LuaWeapon = LuaUserdataPtr<Weapon, lua::metatables::WeaponMT, WeaponData>;

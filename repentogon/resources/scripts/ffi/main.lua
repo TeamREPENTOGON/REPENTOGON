@@ -257,6 +257,7 @@ loadmodule("ProceduralItems.ProceduralItemManager")
 loadmodule("LevelGenerator.LevelGeneratorRoom")
 loadmodule("LevelGenerator.LevelGeneratorEntry")
 loadmodule("LevelGenerator.LevelGenerator")
+loadmodule("BossPool")
 
 ffi = nil
 ffidll = nil
