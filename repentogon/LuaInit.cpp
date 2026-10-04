@@ -392,6 +392,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR] = lua_ctypeid(L, "LevelGeneratorEntryPtr");
 	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL] = lua_ctypeid(L, "BossPool");
 	lua::ffi::CData[lua::ffi::CDataID::BOSS_POOL_PTR] = lua_ctypeid(L, "BossPoolPtr");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC] = lua_ctypeid(L, "CostumeSpriteDesc");
+	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC_PTR] = lua_ctypeid(L, "CostumeSpriteDescPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

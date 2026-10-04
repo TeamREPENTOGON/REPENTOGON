@@ -4068,12 +4068,26 @@ LUA_FUNCTION(Lua_PlayerGetPocketItem) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	lua_newtable(L);
+	int idx = 1;
+	for (CostumeSpriteDesc& spriteDesc : player->_costumeSpriteDescs) {
+		LuaCostumeSpriteDesc::PushPtr(L, &spriteDesc);
+		lua_rawseti(L, -2, idx);
+		idx++;
+	}
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetCostumeSpriteDescs", Lua_PlayerGetCostumeSpriteDescs },
 		{ "GetPocketItem", Lua_PlayerGetPocketItem },
 		{ "GetHistory", Lua_PlayerGetHistory },
 		{ "GetCardRNG", Lua_PlayerGetCardRNG},

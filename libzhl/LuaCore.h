@@ -104,7 +104,6 @@ namespace lua {
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
         extern LIBZHL_API const char* WeaponMT;
-        extern LIBZHL_API const char* CostumeSpriteDescMT;
         extern LIBZHL_API const char* MinimapConfigMT;
     }
 
@@ -575,6 +574,8 @@ namespace lua {
             LEVEL_GENERATOR_ENTRY_PTR,
             BOSS_POOL,
             BOSS_POOL_PTR,
+            COSTUME_SPRITE_DESC,
+            COSTUME_SPRITE_DESC_PTR,
             MAX_CDATA
         };
 

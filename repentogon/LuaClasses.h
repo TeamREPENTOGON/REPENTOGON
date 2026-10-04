@@ -1031,6 +1031,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::BOSS_POOL;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::BOSS_POOL_PTR;
     };
+
+    struct LuaCostumeSpriteDesc
+    {
+        static constexpr const char* Name = "CostumeSpriteDesc";
+        using Type = CostumeSpriteDesc;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COSTUME_SPRITE_DESC;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COSTUME_SPRITE_DESC_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1148,3 +1156,4 @@ using LuaPocketItem = CDataType<LuaTraits::LuaPocketItem>;
 using LuaLevelGenerator = CDataType<LuaTraits::LuaLevelGenerator>;
 using LuaLevelGeneratorRoom = CDataType<LuaTraits::LuaLevelGeneratorRoom>;
 using LuaLevelGeneratorEntry = CDataType<LuaTraits::LuaLevelGeneratorEntry>;
+using LuaCostumeSpriteDesc = CDataType<LuaTraits::LuaCostumeSpriteDesc>;
