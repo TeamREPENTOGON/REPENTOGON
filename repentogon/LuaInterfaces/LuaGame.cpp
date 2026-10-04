@@ -615,11 +615,19 @@ LUA_FUNCTION(Lua_GetRoom) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetHUD) {
+	Game* game = LuaGame::Get(L, 1);
+
+	LuaHUD::PushPtr(L, game->GetHUD());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetHUD", Lua_GetHUD },
 		{ "GetRoom", Lua_GetRoom },
 		{ "Fadein", Lua_GameFadein },
 		{ "Fadeout", Lua_GameFadeout },

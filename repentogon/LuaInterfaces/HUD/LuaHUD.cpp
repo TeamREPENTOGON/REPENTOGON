@@ -2,279 +2,127 @@
 #include "LuaCore.h"
 #include "../../LuaClasses.h"
 #include "HookSystem.h"
+#include <list>
 
+MOD_EXPORT void L_HUD_AssignPlayerHUDs(HUD* hud) {
+	hud->AssignPlayerHUDs();
+}
+
+MOD_EXPORT void L_HUD_Update(HUD* hud) {
+	hud->Update();
+}
+
+MOD_EXPORT void L_HUD_PostUpdate(HUD* hud) {
+	hud->PostUpdate();
+}
+
+MOD_EXPORT void L_HUD_Render(HUD* hud) {
+	hud->Render();
+}
+
+MOD_EXPORT void L_HUD_ShowFortuneText(HUD* hud, const char** lines, int count) {
+	std::list<std::string> text;
+	for (int i = 0; i < count; i++) {
+		text.push_back(lines[i]);
+	}
+	hud->ShowFortuneText((int**)&text);
+}
+
+MOD_EXPORT void L_HUD_ShowStackedItemText(HUD* hud, const char* mainString, const char* secondaryString, bool isCurseDisplay, bool stackUpText) {
+	if (stackUpText)
+		hud->ClearStackedItemText();
+	hud->ShowStackedItemTextCustomUTF8(const_cast<char*>(mainString), const_cast<char*>(secondaryString), false, isCurseDisplay);
+}
+
+LUA_FUNCTION(Lua_HUDFlashChargeBar) {
+	HUD* hud = LuaHUD::Get(L, 1);
+	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 2);
+	int slot = (int)luaL_checkinteger(L, 3);
+	hud->FlashChargeBar(player, slot);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_HUDInvalidateActiveItem) {
+	HUD* hud = LuaHUD::Get(L, 1);
+	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 2);
+	int slot = (int)luaL_checkinteger(L, 3);
+	hud->InvalidateActiveItem(player, slot);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_HUDInvalidateCraftingItem) {
+	HUD* hud = LuaHUD::Get(L, 1);
+	hud->InvalidateCraftingItem(LuaEntityPlayer::GetOpt(L, 2));
+	return 0;
+}
 
 LUA_FUNCTION(Lua_HUDFlashRedHearts) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 2, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-
+	HUD* hud = LuaHUD::Get(L, 1);
+	Entity_Player* player = LuaEntityPlayer::Get(L, 2);
 	hud->FlashRedHearts(player);
 	return 0;
 }
 
-LUA_FUNCTION(Lua_HUDGetChargeBarSprite)
-{
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_chargeBarSprite;
-	LuaSprite::PushPtr(L, sprite);
+LUA_FUNCTION(Lua_HUDShowItemTextPlayer) {
+	HUD* hud = LuaHUD::Get(L, 1);
+	Entity_Player* player = LuaEntityPlayer::Get(L, 2);
+	ItemConfig_Item* item = LuaItem::Get(L, 3);
+	bool stackUpText = lua_toboolean(L, 4);
 
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetPickupsHUDSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_pickupHUDSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetHeartsSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_heartsSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetCardsPillsSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_cardsPillsSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetStreakSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-
-	ANM2* sprite = &hud->_messageMain._streakSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetMainMessage) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-
-	HUD_Message** ud = (HUD_Message**)lua_newuserdata(L, sizeof(HUD_Message*));
-	*ud = &hud->_messageMain;
-	luaL_setmetatable(L, lua::metatables::HUDMessageMT);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetStackedMessage) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	const int i = (int)luaL_optinteger(L, 2, 0);
-
-	if (i < 0 || i > 5) {
-		return luaL_error(L, "Invalid HUD message index %d", i);;
-	}
-
-	HUD_Message** ud = (HUD_Message**)lua_newuserdata(L, sizeof(HUD_Message*));
-	*ud = &hud->_messageStack[i];
-	luaL_setmetatable(L, lua::metatables::HUDMessageMT);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetPlayerMessage) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	const int i = (int)luaL_optinteger(L, 2, 0);
-
-	if (i < 0 || i > 3) {
-		return luaL_error(L, "Invalid player HUD message index %d", i);;
-	}
-
-	HUD_Message** ud = (HUD_Message**)lua_newuserdata(L, sizeof(HUD_Message*));
-	*ud = &hud->_messagePlayerHUD[i];
-	luaL_setmetatable(L, lua::metatables::HUDMessageMT);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetFortuneSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_fortuneSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetCoopMenuSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_coopMenuSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetInventorySprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_inventorySprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetCraftingSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_craftingTableSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetPoopSpellSprite) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	ANM2* sprite = &hud->_poopSpellsSprite;
-	LuaSprite::PushPtr(L, sprite);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDGetBossHPBarFill) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	lua_pushnumber(L, hud->_bossHPBarFill);
-
-	return 1;
-}
-LUA_FUNCTION(Lua_HUDSetBossHPBarFill) {
-	HUD* hud = lua::GetLuabridgeUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	hud->_bossHPBarFill = (float)luaL_checknumber(L, 2);
-
+	if (stackUpText)
+		hud->ClearStackedItemText();
+	hud->ShowItemText(player, item);
 	return 0;
 }
 
-LUA_FUNCTION(Lua_HUDMessageGetSprite) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-	LuaSprite::PushPtr(L, &message->_streakSprite);
-	return 1;
+MOD_EXPORT void L_HUDMessage_Show(HUD_Message* message, const char* text, const char* subtext, bool sticky, bool curseDisplay) {
+	message->Show(text, subtext, !sticky, curseDisplay);
 }
 
-LUA_FUNCTION(Lua_HUDMessageIsShowing) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-	lua_pushboolean(L, message->_showing);
-	return 1;
-}
+static std::string HUDMessageText;
 
-LUA_FUNCTION(Lua_HUDMessageHide) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-	message->_showing = false;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_HUDMessageShow) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-	std::string text = luaL_checkstring(L, 2);
-	std::string subtext = luaL_optstring(L, 3, "");
-	bool sticky = lua::luaL_optboolean(L, 4, false);
-	bool curseDisplay = lua::luaL_optboolean(L, 5, false);
-	message->Show(text.c_str(), subtext.c_str(), !sticky, curseDisplay);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_HUDMessageGetText) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-
-	if (message->_text) {
-		int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &message->_text[0], wcslen(message->_text), NULL, 0, NULL, NULL);
-		std::string strText(sizeNeededTitle, 0);
-		WideCharToMultiByte(CP_UTF8, 0, message->_text, wcslen(message->_text), &strText[0], sizeNeededTitle, NULL, NULL);
-
-		lua_pushstring(L, strText.c_str());
-	} else {
-		lua_pushstring(L, "");
+static const char* WideToUTF8(const wchar_t* text) {
+	if (!text) {
+		return "";
 	}
-
-	return 1;
+	int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, text, wcslen(text), NULL, 0, NULL, NULL);
+	HUDMessageText.assign(sizeNeeded, 0);
+	WideCharToMultiByte(CP_UTF8, 0, text, wcslen(text), &HUDMessageText[0], sizeNeeded, NULL, NULL);
+	return HUDMessageText.c_str();
 }
 
-LUA_FUNCTION(Lua_HUDMessageSetText) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-
-	std::string str = luaL_checkstring(L, 2);
+static void SetText(HUD_Message* message, const char* text, bool asSubText) {
+	std::string str = text;
 	const int len = str.length();
 	std::wstring wStr(len, 0);
 	mbstowcs(&wStr[0], str.c_str(), len);
 
-	message->LoadText(wStr.c_str(), false);
+	message->LoadText(wStr.c_str(), asSubText);
 	message->UpdateTextImage();
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_HUDMessageGetSubText) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-
-	if (message->_subtext) {
-		int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &message->_subtext[0], wcslen(message->_subtext), NULL, 0, NULL, NULL);
-		std::string strSubText(sizeNeededTitle, 0);
-		WideCharToMultiByte(CP_UTF8, 0, message->_subtext, wcslen(message->_subtext), &strSubText[0], sizeNeededTitle, NULL, NULL);
-
-		lua_pushstring(L, strSubText.c_str());
-	} else {
-		lua_pushstring(L, "");
-	}
-
-	return 1;
+MOD_EXPORT const char* L_HUDMessage_GetMainText(HUD_Message* message) {
+	return WideToUTF8(message->_text);
 }
 
-LUA_FUNCTION(Lua_HUDMessageSetSubText) {
-	HUD_Message* message = *lua::GetRawUserdata<HUD_Message**>(L, 1, lua::metatables::HUDMessageMT);
-
-	std::string str = luaL_checkstring(L, 2);
-	const int len = str.length();
-	std::wstring wStr(len, 0);
-	mbstowcs(&wStr[0], str.c_str(), len);
-
-	message->LoadText(wStr.c_str(), true);
-	message->UpdateTextImage();
-
-	return 0;
+MOD_EXPORT void L_HUDMessage_SetMainText(HUD_Message* message, const char* text) {
+	SetText(message, text, false);
 }
 
-static void RegisterHUDMessage(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetSprite", Lua_HUDMessageGetSprite },
-		{ "IsShowing", Lua_HUDMessageIsShowing },
-		{ "Hide", Lua_HUDMessageHide },
-		{ "Show", Lua_HUDMessageShow },
-		{ "GetMainText", Lua_HUDMessageGetText },
-		{ "SetMainText", Lua_HUDMessageSetText },
-		{ "GetSubText", Lua_HUDMessageGetSubText },
-		{ "SetSubText", Lua_HUDMessageSetSubText },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::HUDMessageMT, lua::metatables::HUDMessageMT, functions);
+MOD_EXPORT const char* L_HUDMessage_GetSubText(HUD_Message* message) {
+	return WideToUTF8(message->_subtext);
+}
+
+MOD_EXPORT void L_HUDMessage_SetSubText(HUD_Message* message, const char* text) {
+	SetText(message, text, true);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	lua_register(_state, "__Lua_HUD_FlashChargeBar", Lua_HUDFlashChargeBar);
+	lua_register(_state, "__Lua_HUD_InvalidateActiveItem", Lua_HUDInvalidateActiveItem);
+	lua_register(_state, "__Lua_HUD_InvalidateCraftingItem", Lua_HUDInvalidateCraftingItem);
+	lua_register(_state, "__Lua_HUD_FlashRedHearts", Lua_HUDFlashRedHearts);
+	lua_register(_state, "__Lua_HUD_ShowItemTextPlayer", Lua_HUDShowItemTextPlayer);
+
 	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "FlashRedHearts", Lua_HUDFlashRedHearts },
-		{ "GetChargeBarSprite", Lua_HUDGetChargeBarSprite },
-		{ "GetHeartsSprite", Lua_HUDGetHeartsSprite },
-		{ "GetPickupsHUDSprite", Lua_HUDGetPickupsHUDSprite },
-		{ "GetCardsPillsSprite", Lua_HUDGetCardsPillsSprite },
-		{ "GetStreakSprite", Lua_HUDGetStreakSprite },
-		{ "GetMainMessage", Lua_HUDGetMainMessage },
-		{ "GetStackedMessage", Lua_HUDGetStackedMessage },
-		{ "GetCoopPlayerMessage", Lua_HUDGetPlayerMessage },
-		{ "GetFortuneSprite", Lua_HUDGetFortuneSprite },
-		{ "GetCoopMenuSprite", Lua_HUDGetCoopMenuSprite },
-		{ "GetInventorySprite", Lua_HUDGetInventorySprite },
-		{ "GetCraftingSprite", Lua_HUDGetCraftingSprite },
-		{ "GetPoopSpellSprite", Lua_HUDGetPoopSpellSprite },
-		{ "GetBossHPBarFill", Lua_HUDGetBossHPBarFill },
-		{ "SetBossHPBarFill", Lua_HUDSetBossHPBarFill },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::HUD, functions);
-
-	RegisterHUDMessage(_state);
 }

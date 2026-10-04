@@ -38,6 +38,15 @@ __thiscall void HUD::ShowFortuneText(int * * param_1);
 "558bec8b55??85d274??33c0":
 __thiscall void HUD::InvalidateCraftingItem(Entity_Player * player);
 
+"558bec8b55??33c0391174??4081c1e006000083f80872??5dc208008b55??85d2":
+__thiscall void HUD::FlashChargeBar(Entity_Player* player, int activeSlot);
+
+"558bec8b55??33c0391174??4081c1e006000083f80872??5dc208008b55??83fa04":
+__thiscall void HUD::InvalidateActiveItem(Entity_Player* player, int activeSlot);
+
+"558bec83e4f883ec0c53568bc1":
+__thiscall void HUD::AssignPlayerHUDs();
+
 // 0 = Normal
 // 1 = Jacob & Esau
 // 2 = Compact (Used for co-op players, and for P1 if there are >2 players)

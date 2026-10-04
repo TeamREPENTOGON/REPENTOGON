@@ -13,7 +13,6 @@ namespace lua {
         BEGIN_NORMAL,
         PILL_EFFECT,
         ENTITY_TEAR,
-        HUD,
         SEEDS,
         ACTIVE_ITEM_DESC,
         ENTITY,
@@ -43,7 +42,6 @@ namespace lua {
         BEGIN_CONST,
         CONST_PILL_EFFECT,
         CONST_ENTITY_TEAR,
-        CONST_HUD,
         CONST_SEEDS,
         CONST_ACTIVE_ITEM_DESC,
         CONST_ENTITY,
@@ -92,16 +90,10 @@ namespace lua {
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
-        extern LIBZHL_API const char* HistoryHUDMT;
-        extern LIBZHL_API const char* HistoryHUDItemMT;
-        extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* PlayerHUDMT;
-        extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
         extern LIBZHL_API const char* WeaponMT;
-        extern LIBZHL_API const char* MinimapConfigMT;
     }
 
     LIBZHL_API void UnloadMetatables();
@@ -575,6 +567,12 @@ namespace lua {
             COSTUME_SPRITE_DESC_PTR,
             GENERIC_PROMPT,
             GENERIC_PROMPT_PTR,
+            HUD,
+            HUD_PTR,
+            PLAYER_HUD,
+            PLAYER_HUD_PTR,
+            HISTORY_HUD,
+            HISTORY_HUD_PTR,
             MAX_CDATA
         };
 

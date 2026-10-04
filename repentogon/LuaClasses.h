@@ -593,8 +593,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "HUD";
         using Type = HUD;
-        static constexpr lua::Metatables MT = lua::Metatables::HUD;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_HUD;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HUD;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HUD_PTR;
     };
 
     struct LuaEntity
@@ -1047,6 +1047,22 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GENERIC_PROMPT;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GENERIC_PROMPT_PTR;
     };
+
+    struct LuaPlayerHUD
+    {
+        static constexpr const char* Name = "PlayerHUD";
+        using Type = PlayerHUD;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::PLAYER_HUD;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::PLAYER_HUD_PTR;
+    };
+
+    struct LuaHistoryHUD
+    {
+        static constexpr const char* Name = "HistoryHUD";
+        using Type = HistoryHUD;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HISTORY_HUD;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HISTORY_HUD_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1072,7 +1088,7 @@ using LuaRoom = CDataType<LuaTraits::LuaRoom>;
 using LuaRoomDescriptor = CDataType<LuaTraits::LuaRoomDescriptor>;
 using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;
 using LuaItemPool = LuabridgeType<LuaTraits::LuaItemPool>;
-using LuaHUD = LuabridgeType<LuaTraits::LuaHUD>;
+using LuaHUD = CDataType<LuaTraits::LuaHUD>;
 using LuaEntity = LuabridgeType<LuaTraits::LuaEntity>;
 using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
 using LuaEntityTear = LuabridgeType<LuaTraits::LuaEntityTear>;
@@ -1134,7 +1150,8 @@ struct WeaponData {
 
 // RGON Classes
 
-using LuaHistoryHUD = LuaUserdataPtr<HistoryHUD, lua::metatables::HistoryHUDMT>;
+using LuaHistoryHUD = CDataType<LuaTraits::LuaHistoryHUD>;
+using LuaPlayerHUD = CDataType<LuaTraits::LuaPlayerHUD>;
 using LuaBossPool = CDataType<LuaTraits::LuaBossPool>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;

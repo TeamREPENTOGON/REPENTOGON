@@ -396,6 +396,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::COSTUME_SPRITE_DESC_PTR] = lua_ctypeid(L, "CostumeSpriteDescPtr");
 	lua::ffi::CData[lua::ffi::CDataID::GENERIC_PROMPT] = lua_ctypeid(L, "GenericPrompt");
 	lua::ffi::CData[lua::ffi::CDataID::GENERIC_PROMPT_PTR] = lua_ctypeid(L, "GenericPromptPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HUD] = lua_ctypeid(L, "HUD");
+	lua::ffi::CData[lua::ffi::CDataID::HUD_PTR] = lua_ctypeid(L, "HUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::PLAYER_HUD] = lua_ctypeid(L, "PlayerHUD");
+	lua::ffi::CData[lua::ffi::CDataID::PLAYER_HUD_PTR] = lua_ctypeid(L, "PlayerHUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD] = lua_ctypeid(L, "HistoryHUD");
+	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD_PTR] = lua_ctypeid(L, "HistoryHUDPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

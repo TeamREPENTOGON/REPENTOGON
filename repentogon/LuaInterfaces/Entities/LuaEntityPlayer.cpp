@@ -3479,9 +3479,7 @@ LUA_FUNCTION(Lua_PlayerGetPlayerHUD) {
 	}
 	
 	if (playerhud) {
-		PlayerHUD** ud = (PlayerHUD**)lua_newuserdata(L, sizeof(PlayerHUD*));
-		*ud = playerhud;
-		luaL_setmetatable(L, lua::metatables::PlayerHUDMT);
+		LuaPlayerHUD::PushPtr(L, playerhud);
 	} else {
 		lua_pushnil(L);
 	}

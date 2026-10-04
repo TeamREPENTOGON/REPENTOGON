@@ -285,23 +285,6 @@ end
 EndClass()
 
 ---------------------------------------------------------
-BeginClass(HUD)
-
--- void HUD:FlashChargeBar(EntityPlayer Player, ActiveSlot Slot = ActiveSlot.SLOT_PRIMARY)
-local HUD_FlashChargeBar = META0.FlashChargeBar
-function META:FlashChargeBar(player, slot)
-	HUD_FlashChargeBar(self, player, slot or 0)
-end
-
--- void HUD:InvalidateActiveItem(EntityPlayer Player, ActiveSlot Slot = ActiveSlot.SLOT_PRIMARY)
-local HUD_InvalidateActiveItem = META0.InvalidateActiveItem
-function META:InvalidateActiveItem(player, slot)
-	HUD_InvalidateActiveItem(self, player, slot or 0)
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(Game)
 
 -- void Game:ChangeRoom(int RoomIndex, int Dimension = -1)

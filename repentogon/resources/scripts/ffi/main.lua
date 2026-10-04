@@ -261,6 +261,12 @@ loadmodule("BossPool")
 loadmodule("CostumeSpriteDesc")
 loadmodule("GenericPrompt")
 loadmodule("BeamRenderer")
+loadmodule("HUD.PlayerHUDHeart")
+loadmodule("HUD.PlayerHUD")
+loadmodule("HUD.HUDMessage")
+loadmodule("HUD.HistoryHUD")
+loadmodule("HUD.MinimapConfig")
+loadmodule("HUD.HUD")
 
 ffi = nil
 ffidll = nil

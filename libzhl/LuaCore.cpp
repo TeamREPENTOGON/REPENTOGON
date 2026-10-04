@@ -83,7 +83,6 @@ namespace lua {
 	static void InitMetatableIdxFromName() {
 		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
 		_metatable_idx_from_name["EntityTear"] = Metatables::ENTITY_TEAR;
-		_metatable_idx_from_name["HUD"] = Metatables::HUD;
 		_metatable_idx_from_name["Seeds"] = Metatables::SEEDS;
 		_metatable_idx_from_name["ActiveItemDesc"] = Metatables::ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
@@ -114,7 +113,6 @@ namespace lua {
 
 		_metatable_idx_from_name["const PillEffect"] = Metatables::CONST_PILL_EFFECT;
 		_metatable_idx_from_name["const EntityTear"] = Metatables::CONST_ENTITY_TEAR;
-		_metatable_idx_from_name["const HUD"] = Metatables::CONST_HUD;
 		_metatable_idx_from_name["const Seeds"] = Metatables::CONST_SEEDS;
 		_metatable_idx_from_name["const ActiveItemDesc"] = Metatables::CONST_ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
@@ -731,16 +729,10 @@ namespace lua {
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* DeliriumMetatable = "DeliriumMT";
-		const char* HistoryHUDMT = "HistoryHUD";
-		const char* HistoryHUDItemMT = "HistoryHUDItem";
-		const char* HUDMessageMT = "HUDMessage";
 		const char* ImGuiMT = "ImGui";
-		const char* PlayerHUDMT = "PlayerHUD";
-		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 		const char* WeaponMT = "Weapon";
-		const char* MinimapConfigMT = "MinimapConfig";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
