@@ -275,6 +275,9 @@ loadmodule("HUD.HistoryHUD")
 loadmodule("HUD.MinimapConfig")
 loadmodule("HUD.HUD")
 loadmodule("Weapon")
+loadmodule("EntitySaveState.EntitySaveState")
+loadmodule("EntitySaveState.EntitiesSaveStateVector")
+loadmodule("EntitySaveState.GridEntitiesSaveStateVector")
 
 lffi.metatype = ffi_metatype
 

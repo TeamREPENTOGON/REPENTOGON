@@ -401,6 +401,13 @@ public:
     };
 };
 
+struct Lua_EntitySaveState {
+    std::vector<EntitySaveState>* vec;
+    int index;
+
+    EntitySaveState& Get() const { return (*vec)[index]; }
+};
+
 namespace LuaTraits
 {
     struct LuaIntValues
@@ -1071,6 +1078,30 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEAPON;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEAPON_PTR;
     };
+
+    struct LuaEntitySaveState
+    {
+        static constexpr const char* Name = "EntitySaveState";
+        using Type = Lua_EntitySaveState;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_SAVE_STATE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_SAVE_STATE_PTR;
+    };
+
+    struct LuaEntitiesSaveStateVector
+    {
+        static constexpr const char* Name = "EntitiesSaveStateVector";
+        using Type = std::vector<EntitySaveState>;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR_PTR;
+    };
+
+    struct LuaGridEntitiesSaveStateVector
+    {
+        static constexpr const char* Name = "GridEntitiesSaveStateVector";
+        using Type = std::vector<GridEntityDesc>;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1161,3 +1192,6 @@ using LuaLevelGeneratorRoom = CDataType<LuaTraits::LuaLevelGeneratorRoom>;
 using LuaLevelGeneratorEntry = CDataType<LuaTraits::LuaLevelGeneratorEntry>;
 using LuaCostumeSpriteDesc = CDataType<LuaTraits::LuaCostumeSpriteDesc>;
 using LuaGenericPrompt = CDataType<LuaTraits::LuaGenericPrompt>;
+using LuaEntitySaveState = CDataType<LuaTraits::LuaEntitySaveState>;
+using LuaEntitiesSaveStateVector = CDataType<LuaTraits::LuaEntitiesSaveStateVector>;
+using LuaGridEntitiesSaveStateVector = CDataType<LuaTraits::LuaGridEntitiesSaveStateVector>;

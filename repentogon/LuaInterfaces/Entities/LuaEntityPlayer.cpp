@@ -3,7 +3,6 @@
 #include "../../LuaClasses.h"
 #include "HookSystem.h"
 
-#include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/CustomCache.h"
 #include "../../Patches/ItemPoolManager.h"
@@ -1075,8 +1074,7 @@ LUA_FUNCTION(Lua_CalculateBagOfCraftingOutput)
 LUA_FUNCTION(Lua_PlayerGetMovingBoxContents)
 {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
-	ud->data = (player->GetMovingBoxContents());
+	LuaEntitiesSaveStateVector::PushPtr(L, player->GetMovingBoxContents());
 	return 1;
 }
 

@@ -404,6 +404,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD_PTR] = lua_ctypeid(L, "HistoryHUDPtr");
 	lua::ffi::CData[lua::ffi::CDataID::WEAPON] = lua_ctypeid(L, "Weapon");
 	lua::ffi::CData[lua::ffi::CDataID::WEAPON_PTR] = lua_ctypeid(L, "WeaponPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SAVE_STATE] = lua_ctypeid(L, "EntitySaveState");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SAVE_STATE_PTR] = lua_ctypeid(L, "EntitySaveStatePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR] = lua_ctypeid(L, "EntitiesSaveStateVector");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "EntitiesSaveStateVectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR] = lua_ctypeid(L, "GridEntitiesSaveStateVector");
+	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "GridEntitiesSaveStateVectorPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

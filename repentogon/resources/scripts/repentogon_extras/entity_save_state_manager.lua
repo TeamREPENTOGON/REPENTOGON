@@ -566,7 +566,14 @@ local function get_entity_save_state_params(mod, ess, errLevel)
         error(string_format("bad argument #2 (expected userdata, got %s)", essArgType), errLevel + 1)
     end
 
-    local userdataName = getmetatable(ess).__name
+    local metatable = getmetatable(ess)
+    local userdataName
+    if metatable == "ffi" then
+        local ok, typeName = pcall(function() return ess.__type end)
+        userdataName = ok and typeName or nil
+    else
+        userdataName = metatable.__name
+    end
     if userdataName ~= "EntitySaveState" then
         error(string_format("bad argument #2 (expected EntitySaveState, got %s)", userdataName), errLevel + 1)
     end

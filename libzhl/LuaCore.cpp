@@ -720,13 +720,10 @@ namespace lua {
 
 	namespace metatables
 	{;
-		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
-		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntityConfigMT = "EntityConfig";
 		const char* EntityConfigEntityMT = "EntityConfigEntity";
 		const char* EntityConfigPlayerMT = "EntityConfigPlayer";
 		const char* EntityConfigBabyMT = "EntityConfigBaby";
-		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* DeliriumMetatable = "DeliriumMT";
 		const char* ImGuiMT = "ImGui";

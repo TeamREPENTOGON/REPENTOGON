@@ -4,7 +4,6 @@
 #include "HookSystem.h"
 
 #include "Level.h"
-#include "LuaEntitySaveState.h"
 #include "Room/RoomPlacement.h"
 
 LevelASM levelASM;
@@ -112,8 +111,7 @@ LUA_FUNCTION(Lua_SetForceSpecialQuest) {
 
 LUA_FUNCTION(Lua_GetMyosotisPickups) {
 	Game* level = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
-	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
-	ud->data = (&level->_myosotisPickups);
+	LuaEntitiesSaveStateVector::PushPtr(L, &level->_myosotisPickups);
 	return 1;
 }
 

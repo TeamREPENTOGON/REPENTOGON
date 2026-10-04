@@ -5,7 +5,6 @@
 #include "HookSystem.h"
 
 #include "RoomPlacement.h"
-#include "../LuaEntitySaveState.h"
 
 extern "C" {
 	__declspec(dllexport) void L_RoomDescriptor_AddRestrictedGridIndex(RoomDescriptor* descriptor, int gridIdx) {
@@ -65,23 +64,20 @@ extern "C" {
 
 LUA_FUNCTION(Lua_RoomDescriptorGetDecoSaveState) {
 	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
-	ud->data = &(descriptor->SavedEffects);
+	LuaEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedEffects);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomDescriptorGetEntitiesSaveState) {
 	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
-	ud->data = &(descriptor->SavedEntities);
+	LuaEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedEntities);
 	return 1;
 }
 
 
 LUA_FUNCTION(Lua_RoomDescriptorGetGridEntitiesSaveState) {
 	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	Lua_GridEntitiesSaveStateVector* ud = lua::place<Lua_GridEntitiesSaveStateVector>(L, lua::metatables::GridEntitiesSaveStateVectorMT);
-	ud->data = &(descriptor->SavedGridEntities);
+	LuaGridEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedGridEntities);
 	return 1;
 }
 
