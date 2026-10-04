@@ -1281,7 +1281,7 @@ void ASMPatchNpcUpdatePickupGhosts() {
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ESI) // npc
-		.AddInternalCall(RunPickupUpdatePickupGhostsCallback)
+		.AddInternalCall(RunNpcUpdatePickupGhostsCallback)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x13);
 	sASMPatcher.PatchAt(addr, &patch);

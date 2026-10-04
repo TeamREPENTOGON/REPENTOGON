@@ -11,7 +11,7 @@ Added:
 		Additional pickups can be added to the provided LootList
 		Prefer to use the provided RNG, since it will be automatically reset at the end of the callback if ShouldAdvance is false
 		Optional param: EntityType
-	- MC_PRE_NPC_UPDATE_GHOST_PICKUPS
+	- MC_PRE_NPC_UPDATE_GHOST_PICKUPS(EntityNPC)
 		Return true to force a loot preview to appear, false to prevent it.
 		Optional param: EntityType
 * EntityNPC:
