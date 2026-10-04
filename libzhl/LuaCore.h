@@ -81,10 +81,6 @@ namespace lua {
 
     namespace metatables
     {
-        extern LIBZHL_API const char* EntityConfigMT;
-        extern LIBZHL_API const char* EntityConfigEntityMT;
-        extern LIBZHL_API const char* EntityConfigPlayerMT;
-        extern LIBZHL_API const char* EntityConfigBabyMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
         extern LIBZHL_API const char* ImGuiMT;
@@ -577,6 +573,12 @@ namespace lua {
             ENTITIES_SAVE_STATE_VECTOR_PTR,
             GRID_ENTITIES_SAVE_STATE_VECTOR,
             GRID_ENTITIES_SAVE_STATE_VECTOR_PTR,
+            ENTITY_CONFIG_ENTITY,
+            ENTITY_CONFIG_ENTITY_PTR,
+            ENTITY_CONFIG_PLAYER,
+            ENTITY_CONFIG_PLAYER_PTR,
+            ENTITY_CONFIG_BABY,
+            ENTITY_CONFIG_BABY_PTR,
             MAX_CDATA
         };
 

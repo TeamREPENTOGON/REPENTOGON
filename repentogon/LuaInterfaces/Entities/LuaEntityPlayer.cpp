@@ -4085,12 +4085,19 @@ LUA_FUNCTION(Lua_PlayerGetWeapon) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetEntityConfigPlayer) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	LuaEntityConfigPlayer::PushPtr(L, g_Manager->GetEntityConfig()->GetPlayer(player->GetPlayerType()));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetEntityConfigPlayer", Lua_PlayerGetEntityConfigPlayer },
 		{ "GetWeapon", Lua_PlayerGetWeapon },
 		{ "GetCostumeSpriteDescs", Lua_PlayerGetCostumeSpriteDescs },
 		{ "GetPocketItem", Lua_PlayerGetPocketItem },

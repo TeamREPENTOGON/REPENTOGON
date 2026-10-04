@@ -1235,12 +1235,19 @@ LUA_FUNCTION(Lua_EntityGetDebugShape) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityGetEntityConfigEntity) {
+	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	LuaEntityConfigEntity::PushPtr(L, g_Manager->GetEntityConfig()->GetEntity(*entity->GetType(), *entity->GetVariant(), *entity->GetSubType()));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetEntityConfigEntity", Lua_EntityGetEntityConfigEntity },
 		{ "GetDebugShape", Lua_EntityGetDebugShape },
 		{ "GetNullCapsule", Lua_EntityGetNullCapsule },
 		{ "GetCollisionCapsule", Lua_EntityGetCollisionCapsule },

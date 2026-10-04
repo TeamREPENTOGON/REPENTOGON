@@ -138,6 +138,23 @@ ffichecks.vectortotable = function(first, last, elemSize)
 	return result
 end
 
+lffi.cdef [[
+	struct StdString {
+		private char Storage[0x18];
+	} : 0x18;
+
+	const char* L_StdString_CStr(const struct StdString*);
+]]
+
+local repentogon = ffidll
+ffichecks.stdstring = function(str)
+	return lffi.string(repentogon.L_StdString_CStr(str))
+end
+
+ffichecks.copyvector = function(vector)
+	return Vector(vector.X, vector.Y)
+end
+
 local function loadmodule(name)
 	local ok, err = pcall(require, "ffi." .. name)
 	if not ok then
@@ -278,6 +295,10 @@ loadmodule("Weapon")
 loadmodule("EntitySaveState.EntitySaveState")
 loadmodule("EntitySaveState.EntitiesSaveStateVector")
 loadmodule("EntitySaveState.GridEntitiesSaveStateVector")
+loadmodule("EntityConfig.EntityConfigEntity")
+loadmodule("EntityConfig.EntityConfigPlayer")
+loadmodule("EntityConfig.EntityConfigBaby")
+loadmodule("EntityConfig.EntityConfig")
 
 lffi.metatype = ffi_metatype
 

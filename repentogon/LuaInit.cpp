@@ -410,6 +410,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "EntitiesSaveStateVectorPtr");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR] = lua_ctypeid(L, "GridEntitiesSaveStateVector");
 	lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR_PTR] = lua_ctypeid(L, "GridEntitiesSaveStateVectorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_ENTITY] = lua_ctypeid(L, "EntityConfigEntity");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_ENTITY_PTR] = lua_ctypeid(L, "EntityConfigEntityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_PLAYER] = lua_ctypeid(L, "EntityConfigPlayer");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_PLAYER_PTR] = lua_ctypeid(L, "EntityConfigPlayerPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY] = lua_ctypeid(L, "EntityConfigBaby");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY_PTR] = lua_ctypeid(L, "EntityConfigBabyPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

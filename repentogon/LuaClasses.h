@@ -1102,6 +1102,30 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GRID_ENTITIES_SAVE_STATE_VECTOR_PTR;
     };
+
+    struct LuaEntityConfigEntity
+    {
+        static constexpr const char* Name = "EntityConfigEntity";
+        using Type = EntityConfig_Entity;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_CONFIG_ENTITY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_CONFIG_ENTITY_PTR;
+    };
+
+    struct LuaEntityConfigPlayer
+    {
+        static constexpr const char* Name = "EntityConfigPlayer";
+        using Type = EntityConfig_Player;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_CONFIG_PLAYER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_CONFIG_PLAYER_PTR;
+    };
+
+    struct LuaEntityConfigBaby
+    {
+        static constexpr const char* Name = "EntityConfigBaby";
+        using Type = EntityConfig_Baby;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_CONFIG_BABY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_CONFIG_BABY_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1195,3 +1219,6 @@ using LuaGenericPrompt = CDataType<LuaTraits::LuaGenericPrompt>;
 using LuaEntitySaveState = CDataType<LuaTraits::LuaEntitySaveState>;
 using LuaEntitiesSaveStateVector = CDataType<LuaTraits::LuaEntitiesSaveStateVector>;
 using LuaGridEntitiesSaveStateVector = CDataType<LuaTraits::LuaGridEntitiesSaveStateVector>;
+using LuaEntityConfigEntity = CDataType<LuaTraits::LuaEntityConfigEntity>;
+using LuaEntityConfigPlayer = CDataType<LuaTraits::LuaEntityConfigPlayer>;
+using LuaEntityConfigBaby = CDataType<LuaTraits::LuaEntityConfigBaby>;
