@@ -738,9 +738,6 @@ namespace lua {
 		const char* HistoryHUDItemMT = "HistoryHUDItem";
 		const char* HUDMessageMT = "HUDMessage";
 		const char* ImGuiMT = "ImGui";
-		const char* LevelGeneratorMT = "LevelGenerator";
-		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
-		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
 		const char* PointMT = "Point";

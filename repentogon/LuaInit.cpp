@@ -384,6 +384,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_ITEM_PTR] = lua_ctypeid(L, "HistoryItemPtr");
 	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM] = lua_ctypeid(L, "PocketItem");
 	lua::ffi::CData[lua::ffi::CDataID::POCKET_ITEM_PTR] = lua_ctypeid(L, "PocketItemPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR] = lua_ctypeid(L, "LevelGenerator");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_PTR] = lua_ctypeid(L, "LevelGeneratorPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ROOM] = lua_ctypeid(L, "LevelGeneratorRoom");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ROOM_PTR] = lua_ctypeid(L, "LevelGeneratorRoomPtr");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY] = lua_ctypeid(L, "LevelGeneratorEntry");
+	lua::ffi::CData[lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR] = lua_ctypeid(L, "LevelGeneratorEntryPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

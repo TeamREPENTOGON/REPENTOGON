@@ -6,12 +6,10 @@
 #include <vector>
 #include <algorithm>
 
-#include "HookSystem.h"
 #include "IsaacRepentance.h"
-#include "LuaCore.h"
 #include "Exception.h"
 #include "Log.h"
-#include "../LuaClasses.h"
+#include "../MiscFunctions.h"
 
 #ifdef max
 #undef max
@@ -29,11 +27,6 @@ enum LinkDirection {
 	LINK_DIRECTION_ADJ_UP
 };
 
-static void ExtractRooms(lua_State* L, bool deadEnds);
-static void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Room& room);
-static LevelGenerator* GetLevelGenerator(lua_State* L, int idx = 1);
-static LuaLevelGeneratorRoomData* GetLGR(lua_State* L, int idx = 1);
-static LuaLevelGeneratorRoomData* CreateLGR(lua_State* L);
 static std::tuple<bool, std::optional<std::vector<int>>> ValidateRoomPlacement(LevelGenerator* generator, int col, int line, eRoomShape shape);
 static bool ValidateRoomPlacement(LevelGenerator_Room const& source, int col, int line, eRoomShape shape);
 static inline int ComposeGridIndex(int col, int line);
@@ -46,17 +39,6 @@ static LinkDirection ComputeLinkDirection(int source, int target);
 static bool RequiresAdjustment(eRoomShape shape);
 static LinkDirection ComputeAdjustedLinkDirection(LevelGenerator_Room const& source, int index);
 static std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, LevelGenerator_Room const& target);
-
-LUA_FUNCTION(lua_LGR_gc) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	if (data->isValue) {
-		data->isValue = false;
-		ZHL::Log("About to cleanup %p\n", data->room);
-		delete data->room;
-		ZHL::Log("Done cleaning up %p\n", data->room);
-	}
-	return 0;
-}
 
 int ComposeGridIndex(int col, int line) {
 	return line * 13 + col;
@@ -177,47 +159,6 @@ bool ValidateRoomPlacement(LevelGenerator_Room const& source, int col, int line,
 
 	std::set_intersection(sourceIndices.begin(), sourceIndices.end(), ourIndices.begin(), ourIndices.end(), output);
 	return intersection.empty();
-}
-
-LuaLevelGeneratorRoomData* CreateLGR(lua_State* L) {
-	LuaLevelGeneratorRoomData* data = (LuaLevelGeneratorRoomData*)lua_newuserdata(L, sizeof(LuaLevelGeneratorRoomData));
-	luaL_setmetatable(L, lua::metatables::LevelGeneratorRoomMT);
-	return data;
-}
-
-void ExtractRooms(lua_State* L, bool deadEnds) {
-	LevelGenerator* generator = GetLevelGenerator(L); // lua::GetRawUserdata<LevelGenerator*>(L, 1, lua::metatables::LevelGeneratorMT);
-	lua_newtable(L);
-	int i = 1;
-	std::vector<int>* target;
-	if (deadEnds) {
-		target = generator->GetDeadEnds();
-	}
-	else {
-		target = generator->GetNonDeadEnds();
-	}
-
-	std::vector<LevelGenerator_Room>& rooms = *generator->GetAllRooms();
-	for (int roomId : *target) {
-		PushRoom(L, i, generator, rooms[roomId]);
-		++i;
-	}
-}
-
-void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Room& room) {
-	lua_pushinteger(L, i);
-	LuaLevelGeneratorRoomData* data = CreateLGR(L);
-	data->context = generator;
-	data->room = &room;
-	lua_rawset(L, -3);
-}
-
-LevelGenerator* GetLevelGenerator(lua_State* L, int idx) {
-	return *lua::GetRawUserdata<LevelGenerator**>(L, idx, lua::metatables::LevelGeneratorMT);
-}
-
-LuaLevelGeneratorRoomData* GetLGR(lua_State* L, int idx) {
-	return lua::GetRawUserdata<LuaLevelGeneratorRoomData*>(L, idx, lua::metatables::LevelGeneratorRoomMT);
 }
 
 std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source, LevelGenerator_Room const& target) {
@@ -427,70 +368,15 @@ std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, Le
 	}
 }
 
-LUA_FUNCTION(lua_LG_GetAllRooms) {
-	LevelGenerator* generator = GetLevelGenerator(L);
-	lua_newtable(L);
-	int i = 1;
-	for (LevelGenerator_Room & room : *(generator->GetAllRooms())) {
-		PushRoom(L, i, generator, room);
-		++i;
-	}
-	return 1;
+static std::string s_PlaceRoomError;
+
+static const char* PlaceRoomError(std::string message) {
+	s_PlaceRoomError = std::move(message);
+	return s_PlaceRoomError.c_str();
 }
 
-LUA_FUNCTION(lua_LG_GetNonDeadEnds) {
-	ExtractRooms(L, false);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LG_GetDeadEnds) {
-	ExtractRooms(L, true);
-	return 1;
-}
-
-/* LUA_FUNCTION(lua_LG_NewRoomData) {
-	LevelGenerator_Room* room = new LevelGenerator_Room;
-	room->_doors = room->_distanceFromStart
-		= room->_horizontalSize
-		= room->_verticalSize
-		= room->_generationIndex 
-		= 0;
-
-	// Invalid value because we need to identify if the room has been properly initialized or not
-	room->_gridColIdx = room->_gridLineIdx = room->_shape = LevelGeneratorRoom_INVALID;
-
-	room->_linkColIdx = room->_linkLineIdx
-		= room->_originNeighborConnectDir
-		= room->_originNeighborConnectDirAdjust
-		= -1;
-
-	room->_deadEnd = false;
-
-	LuaLevelGeneratorRoomData* data = CreateLGR(L);
-	data->context = GetLevelGenerator(L);
-	data->isValue = true;
-	data->room = room;
-	return 1;
-} */
-
-LUA_FUNCTION(lua_LG_PlaceRoom) {
-	LevelGenerator* generator = GetLevelGenerator(L);
-
-	int column = (int)luaL_checkinteger(L, 2);
-	if (column < 0 || column > 12) {
-		return luaL_error(L, "Invalid column %d, value must be between 0 and 12 (inclusive)", column);
-	}
-
-	int line = (int)luaL_checkinteger(L, 3);
-	if (line < 0 || line > 12) {
-		return luaL_error(L, "Invalid line %d, value must be between 0 and 12 (inclusive)", line);
-	}
-
-	int shape = (int)luaL_checkinteger(L, 4);
-	if (shape < 0 || shape >= eRoomShape::MAX_ROOMSHAPES) {
-		return luaL_error(L, "Invalid room shape %d, value must be between 0 and %d (inclusive)", shape, eRoomShape::MAX_ROOMSHAPES);
-	}
-	
+MOD_EXPORT const char* L_LevelGenerator_PlaceRoom(LevelGenerator* generator, int column, int line, int shape, LevelGenerator_Room* neighbor, int* outIndex) {
+	*outIndex = -1;
 	eRoomShape eShape = (eRoomShape)shape;
 
 	auto [ok, errors] = ValidateRoomPlacement(generator, column, line, eShape);
@@ -508,11 +394,8 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 			err << conflict << " at (" << room._gridLineIdx << ", " << room._gridColIdx << "); ";
 		}
 
-
-		return luaL_error(L, err.str().c_str());
+		return PlaceRoomError(err.str());
 	}
-
-	LuaLevelGeneratorRoomData* neighborData = GetLGR(L, 5);
 
 	// Reverse engineering is_placement_valid, the following must be known :
 	// gridCol, lineCol, horizontal / vertical size, shape, originNeighborConnect*, col / line link, distance from start
@@ -522,302 +405,47 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 	room._gridLineIdx = line;
 	room._shape = eShape;
 	std::tie(room._horizontalSize, room._verticalSize) = ShapeToDimensions(eShape);
-	room._distanceFromStart = neighborData->room->_distanceFromStart + 1;
+	room._distanceFromStart = neighbor->_distanceFromStart + 1;
 
-	auto [connects, connection] = Connects(room, *neighborData->room);
+	auto [connects, connection] = Connects(room, *neighbor);
 	if (!connects) {
-		return luaL_error(L, "Source room placement does not allow a connection with the target room");
+		return PlaceRoomError("Source room placement does not allow a connection with the target room");
 	}
 
 	auto [sourceIndex, targetIndex] = connection;
 	LinkDirection dir = ComputeLinkDirection(sourceIndex, targetIndex);
 	if (dir == LINK_DIRECTION_INVALID) {
-		return luaL_error(L, "Unable to compute the basic link direction with the neighbor");
+		return PlaceRoomError("Unable to compute the basic link direction with the neighbor");
 	}
 	room._originNeighborConnectDir = dir;
 
 	if (RequiresAdjustment(eShape)) {
 		dir = ComputeAdjustedLinkDirection(room, targetIndex);
 		if (dir == LINK_DIRECTION_INVALID) {
-			return luaL_error(L, "Unable to compute adjusted link direction with the neighbor");
+			return PlaceRoomError("Unable to compute adjusted link direction with the neighbor");
 		}
 	}
 
 	room._originNeighborConnectDirAdjust = dir;
 
 	try {
-		std::tie(room._linkColIdx, room._linkLineIdx) = ComputeSafeConnection(*neighborData->room, room);
+		std::tie(room._linkColIdx, room._linkLineIdx) = ComputeSafeConnection(*neighbor, room);
 	}
 	catch (std::runtime_error& e) {
-		return luaL_error(L, "[ERROR] Unable to compute safe connection between room at (%d, %d) and tentative room at (%d, %d): %s\n",
-			neighborData->room->_gridColIdx, neighborData->room->_gridLineIdx,
-			room._gridColIdx, room._gridLineIdx, e.what());
+		return PlaceRoomError(REPENTOGON::StringFormat("[ERROR] Unable to compute safe connection between room at (%d, %d) and tentative room at (%d, %d): %s\n",
+			neighbor->_gridColIdx, neighbor->_gridLineIdx,
+			room._gridColIdx, room._gridLineIdx, e.what()));
 	}
 
 	if (!generator->is_placement_valid(&room._gridColIdx, eShape)) {
-		return luaL_error(L, "Error while adding room: placement is invalid (%d, %d) from (%d, %d)", room._gridColIdx, room._gridLineIdx, neighborData->room->_gridColIdx, neighborData->room->_gridLineIdx);
+		return PlaceRoomError(REPENTOGON::StringFormat("Error while adding room: placement is invalid (%d, %d) from (%d, %d)", room._gridColIdx, room._gridLineIdx, neighbor->_gridColIdx, neighbor->_gridLineIdx));
 	}
 
-	void* rooms = generator->GetAllRooms();
-	auto get_ptr = [rooms]() -> void* {
-		char* first = *(char**)rooms;
-		char* last = *(char**)((char*)rooms + 8);
-
-		if (last - first > 0x1000) {
-			return *(char**)((char*)first - 4);
-		}
-		else {
-			return first;
-		}
-	};
-	//void* unk = ((char*)*(void**)rooms - 4);
-	//ZHL::Log("pre place_room unk = %p\n", *(void**)unk);
-	HANDLE heap = GetProcessHeap();
-	// ZHL::Log("room ptr: %p, heap ptr: %p\n", get_ptr(), heap);
-
-	auto check_stack = [heap, get_ptr](const char* text) {
-		bool ok_array = HeapValidate(heap, 0, get_ptr());
-		bool ok_all = HeapValidate(heap, 0, 0);
-
-		ZHL::Log("%s: array = %hhd (%p), all = %hhd\n", text, ok_array, get_ptr(), ok_all);
-
-		return std::make_tuple(ok_array, ok_all);
-	};
-
-	auto heap_iterate = [heap](const char* s) {
-		PROCESS_HEAP_ENTRY entry;
-		entry.lpData = NULL;
-
-		ZHL::Log("Validating heap because a corruption has been detected (%s)\n", s);
-		HeapLock(heap);
-		while (HeapWalk(heap, &entry)) {
-			if (entry.wFlags & PROCESS_HEAP_ENTRY_BUSY) {
-				BOOL ok = HeapValidate(heap, 0, entry.lpData);
-				if (!ok) {
-					ZHL::Log("Invalid heap block at %p\n", entry.lpData);
-				}
-				else {
-					ZHL::Log("Valid heap block at %p\n", entry.lpData);
-				}
-			}
-		}
-
-		DWORD err = GetLastError();
-		if (GetLastError() != ERROR_NO_MORE_ITEMS) {
-			ZHL::Log("Error while validating heap: %d\n", err);
-		}
-
-		HeapUnlock(heap);
-	};
-
-	auto dump_layout = [generator](const char* s) {
-		ZHL::Logger logger;
-		logger.Log(s);
-
-		signed char rooms[13][13] = { -1 } ;
-		for (LevelGenerator_Room const& room : *generator->GetAllRooms()) {
-			int col = room._gridColIdx;
-			int line = room._gridLineIdx;
-			int idx = room._generationIndex;
-			switch (room._shape) {
-			case 1:
-			case 2:
-			case 3:
-				rooms[line][col] = idx;
-				break;
-
-			case 4:
-			case 5:
-				rooms[line][col] = idx;
-				rooms[line + 1][col] = idx;
-				break;
-
-			case 6:
-			case 7:
-				rooms[line][col] = idx;
-				rooms[line][col + 1] = idx;
-				break;
-
-			case 8:
-				rooms[line][col] = idx;
-				rooms[line + 1][col] = idx;
-				rooms[line][col + 1] = idx;
-				rooms[line + 1][col + 1] = idx;
-				break;
-
-			case 9:
-				rooms[line + 1][col] = idx;
-				rooms[line][col + 1] = idx;
-				rooms[line + 1][col + 1] = idx;
-				break;
-
-			case 10:
-				rooms[line][col] = idx;
-				rooms[line + 1][col] = idx;
-				rooms[line + 1][col + 1] = idx;
-				break;
-
-			case 11:
-				rooms[line][col] = idx;
-				rooms[line][col + 1] = idx;
-				rooms[line + 1][col + 1] = idx;
-				break;
-
-			case 12:
-				rooms[line][col] = idx;
-				rooms[line + 1][col] = idx;
-				rooms[line][col + 1] = idx;
-				break;
-
-			default:
-				break;
-			}
-		}
-
-		for (int i = 0; i < 13; ++i) {
-			for (int j = 0; j < 13; ++j) {
-				char c = rooms[i][j];
-				if (c >= 10) {
-					logger.Log("%hhd ", c);
-				}
-				else {
-					logger.Log("%hhd  ", c);
-				}
-			}
-			logger.Log("\n");
-		}
-
-		logger.Log("\n");
-	};
-
-	// bool ok_array_pre_place, ok_all_pre_place, ok_array_post_place, ok_all_post_place, ok_array_post_calculate, ok_all_post_calculate, ok_array_post_mark, ok_all_post_mark; 
-	// std::tie(ok_array_pre_place, ok_all_pre_place) = check_stack("pre place_room");
-	// dump_layout("pre place_room\n");
-	bool result = generator->place_room(&room);
-	// dump_layout("post place_room\n");
-	// std::tie(ok_array_post_place, ok_all_post_place) = check_stack("post place_room");
-
-	// generator->mark_dead_ends();
-	// std::tie(ok_array_post_mark, ok_all_post_mark) = check_stack("post mark_dead_ends");
-
-	/* if (ok_array_post_place && ok_array_post_mark != ok_array_post_place) {
-		ZHL::Log("Local heap block corruption during mark_dead_ends");
-		abort();
-	} */
-
-	/* if (ok_all_post_place && ok_all_post_mark != ok_all_post_place) {
-		ZHL::Log("Global heap corruption during mark_dead_ends");
-		abort();
-	} */
-
-	if (result) {
-		// unk = ((char*)*(void**)rooms - 4);
-		// ZHL::Log("pre calc_required_doors unk = %p\n", *(void**)unk);
+	if (generator->place_room(&room)) {
 		generator->calc_required_doors();
-		// dump_layout("post calc_required_doors\n");
-		// std::tie(ok_array_post_calculate, ok_all_post_calculate) = check_stack("post calc_required_doors");
-
-		/* if (ok_array_post_mark && ok_array_post_calculate != ok_array_post_mark) {
-			// heap_iterate("array invalidated during calc_required_doors\n");
-			abort();
-		} */
-
-		/* if (ok_all_post_mark && ok_all_post_calculate != ok_all_post_mark) {
-			// heap_iterate("heap invalidated during calc_required_doors\n");
-			abort();
-		} */
-		// unk2 = ((char*)*(void**)rooms - 4);
-		// ZHL::Log("post calc_required_doors unk = %p\n", *(void**)unk2);
-		lua_pushinteger(L, generator->GetAllRooms()->back()._generationIndex);
-	}
-	else {
-		lua_pushnil(L);
+		*outIndex = generator->GetAllRooms()->back()._generationIndex;
 	}
 
 	ZHL::Log("Leaving PlaceRoom\n");
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_GenerationIndex) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushinteger(L, data->room->_generationIndex);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_Column) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushinteger(L, data->room->_gridColIdx);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_Line) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushinteger(L, data->room->_gridLineIdx);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_Shape) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushinteger(L, data->room->_shape);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_DoorMask) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushinteger(L, data->room->_doors);
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_Neighbors) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_newtable(L);
-
-	int i = 1;
-	for (int idx : data->room->_neighbors) {
-		lua_pushinteger(L, i);
-		lua_pushinteger(L, idx);
-		lua_rawset(L, -3);
-		++i;
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(lua_LGR_IsDeadEnd) {
-	LuaLevelGeneratorRoomData* data = GetLGR(L);
-	lua_pushboolean(L, data->room->_deadEnd);
-	return 1;
-}
-
-static void RegisterLevelGenerator(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GetAllRooms", lua_LG_GetAllRooms },
-		{ "GetDeadEnds", lua_LG_GetDeadEnds },
-		{ "GetNonDeadEnds", lua_LG_GetNonDeadEnds },
-		{ "PlaceRoom", lua_LG_PlaceRoom },
-		{ NULL, NULL }
-	};
-	
-	lua::RegisterNewClass(L, lua::metatables::LevelGeneratorMT, lua::metatables::LevelGeneratorMT, functions);
-}
-
-static void RegisterLevelGeneratorRoom(lua_State* L) {
-	luaL_Reg functions[] = {
-		{ "GenerationIndex", lua_LGR_GenerationIndex },
-		{ "DoorMask", lua_LGR_DoorMask },
-		{ "Column", lua_LGR_Column },
-		{ "Row", lua_LGR_Line },
-		{ "Shape", lua_LGR_Shape },
-		{ "Neighbors", lua_LGR_Neighbors },
-		{ "IsDeadEnd", lua_LGR_IsDeadEnd },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::LevelGeneratorRoomMT, lua::metatables::LevelGeneratorRoomMT, functions);
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	RegisterLevelGenerator(_state);
-	RegisterLevelGeneratorRoom(_state);
+	return nullptr;
 }

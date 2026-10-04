@@ -412,12 +412,23 @@ LUA_FUNCTION(Lua_LevelQueryRoomTypeIndex) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LevelPlaceRoom) {
+	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	LevelGenerator_Room* room = LuaLevelGeneratorEntry::Get(L, 2);
+	RoomConfig_Room* config = LuaRoomConfigRoom::Get(L, 3);
+	uint32_t seed = (uint32_t)luaL_checkinteger(L, 4);
+
+	lua_pushboolean(L, game->PlaceRoom(room, config, seed, 0));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {	
+		{ "PlaceRoom", Lua_LevelPlaceRoom },
 		{ "QueryRoomTypeIndex", Lua_LevelQueryRoomTypeIndex },
 		{ "GetDevilAngelRoomRNG", Lua_LevelGetDevilAngelRoomRNG },
 		{ "GetCurrentRoomDesc", Lua_LevelGetCurrentRoomDesc },

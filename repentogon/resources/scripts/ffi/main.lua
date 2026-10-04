@@ -254,6 +254,9 @@ loadmodule("PocketItem")
 loadmodule("ProceduralItems.ProceduralEffect")
 loadmodule("ProceduralItems.ProceduralItem")
 loadmodule("ProceduralItems.ProceduralItemManager")
+loadmodule("LevelGenerator.LevelGeneratorRoom")
+loadmodule("LevelGenerator.LevelGeneratorEntry")
+loadmodule("LevelGenerator.LevelGenerator")
 
 ffi = nil
 ffidll = nil

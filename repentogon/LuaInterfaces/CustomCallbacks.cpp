@@ -3882,7 +3882,7 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.pushClassPtr<LuaLevelGeneratorRoom>(nullptr, slot)
+			.pushClassPtr<LuaLevelGeneratorRoom>(slot)
 			.pushClassPtr<LuaRoomConfigRoom>(config)
 			.push(seed)
 			.call(1);

@@ -999,6 +999,30 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::POCKET_ITEM;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::POCKET_ITEM_PTR;
     };
+
+    struct LuaLevelGenerator
+    {
+        static constexpr const char* Name = "LevelGenerator";
+        using Type = LevelGenerator;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LEVEL_GENERATOR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_GENERATOR_PTR;
+    };
+
+    struct LuaLevelGeneratorRoom
+    {
+        static constexpr const char* Name = "LevelGeneratorRoom";
+        using Type = LevelGenerator_Room;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LEVEL_GENERATOR_ROOM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_GENERATOR_ROOM_PTR;
+    };
+
+    struct LuaLevelGeneratorEntry
+    {
+        static constexpr const char* Name = "LevelGeneratorEntry";
+        using Type = LevelGenerator_Room;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_GENERATOR_ENTRY_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1084,19 +1108,9 @@ struct WeaponData {
 	static Weapon* GetWeaponFromLua(lua_State* L, int idx);
 };
 
-struct LuaLevelGeneratorRoomData {
-	LevelGenerator* context = nullptr;
-	LevelGenerator_Room* room = nullptr;
-	bool isValue = false;
-
-    LevelGenerator_Room* get() const { return this->room; }
-};
-
 // RGON Classes
 
 using LuaHistoryHUD = LuaUserdataPtr<HistoryHUD, lua::metatables::HistoryHUDMT>;
-using LuaLevelGenerator = LuaUserdataPtr<LevelGenerator, lua::metatables::LevelGeneratorMT>;
-struct LuaLevelGeneratorRoom; // forward declaration
 using LuaBossPool = LuaUserdataPtr<BossPool_Pool, lua::metatables::BossPoolMT>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
@@ -1123,51 +1137,6 @@ using LuaWeightedOutcomePicker = CDataType<LuaTraits::LuaWeightedOutcomePicker>;
 using LuaHistory = CDataType<LuaTraits::LuaHistory>;
 using LuaHistoryItem = CDataType<LuaTraits::LuaHistoryItem>;
 using LuaPocketItem = CDataType<LuaTraits::LuaPocketItem>;
-
-struct LuaLevelGeneratorRoom
-{
-private:
-    static constexpr int UNDERLYING_TYPE = LUA_TUSERDATA;
-    inline static const char*& MT = lua::metatables::LevelGeneratorRoomMT;
-    using DataType = LuaLevelGeneratorRoomData;
-    using T = LevelGenerator_Room;
-
-public:
-    static bool IsUnderlyingType(lua_State* L, int index)
-    {
-        return lua_type(L, index) == UNDERLYING_TYPE;
-    }
-
-    static LevelGenerator_Room* Get(lua_State* L, int index)
-    {
-        DataType* data = lua::GetRawUserdata<DataType*>(L, index, MT);
-        return data->get();
-    }
-
-    static REPENTOGON::Result<T*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
-    {
-        DataType* ud = (DataType*)LuaClasses::detail::try_checkudata(L, index, MT);
-        if (!ud)
-        {
-            return REPENTOGON::err(LuaClasses::GetClassError(MT, lua_type(L, index)));
-        }
-
-        return REPENTOGON::ok(ud->get());
-    }
-
-    static T* GetOpt(lua_State* L, int index)
-    {
-        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
-    }
-
-    // we cannot push a value when using this type
-
-    static void PushPtr(lua_State* L, LevelGenerator* context, LevelGenerator_Room* room)
-    {
-        DataType* result = (DataType*)lua_newuserdata(L, sizeof(DataType));
-        result->isValue = false;
-        result->context = context;
-        result->room = room;
-        luaL_setmetatable(L, MT);
-    }
-};
+using LuaLevelGenerator = CDataType<LuaTraits::LuaLevelGenerator>;
+using LuaLevelGeneratorRoom = CDataType<LuaTraits::LuaLevelGeneratorRoom>;
+using LuaLevelGeneratorEntry = CDataType<LuaTraits::LuaLevelGeneratorEntry>;

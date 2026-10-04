@@ -99,9 +99,6 @@ namespace lua {
         extern LIBZHL_API const char* HistoryHUDItemMT;
         extern LIBZHL_API const char* HUDMessageMT;
         extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* LevelGeneratorMT;
-        extern LIBZHL_API const char* LevelGeneratorEntryMT;
-        extern LIBZHL_API const char* LevelGeneratorRoomMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* PointMT;
@@ -571,6 +568,12 @@ namespace lua {
             HISTORY_ITEM_PTR,
             POCKET_ITEM,
             POCKET_ITEM_PTR,
+            LEVEL_GENERATOR,
+            LEVEL_GENERATOR_PTR,
+            LEVEL_GENERATOR_ROOM,
+            LEVEL_GENERATOR_ROOM_PTR,
+            LEVEL_GENERATOR_ENTRY,
+            LEVEL_GENERATOR_ENTRY_PTR,
             MAX_CDATA
         };
 
