@@ -495,8 +495,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "ItemConfig";
         using Type = ItemConfig;
-        static constexpr lua::Metatables MT = lua::Metatables::CONFIG;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_CONFIG;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ITEM_CONFIG;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ITEM_CONFIG_PTR;
     };
 
     struct LuaItem
@@ -511,16 +511,16 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Card";
         using Type = ItemConfig_Card;
-        static constexpr lua::Metatables MT = lua::Metatables::CARD;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_CARD;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ITEM_CONFIG_CARD;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ITEM_CONFIG_CARD_PTR;
     };
 
     struct LuaPillEffect
     {
         static constexpr const char* Name = "PillEffect";
         using Type = ItemConfig_Pill;
-        static constexpr lua::Metatables MT = lua::Metatables::PILL_EFFECT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_PILL_EFFECT;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT_PTR;
     };
 
     struct LuaCostume
@@ -1137,10 +1137,10 @@ using LuaSprite = CDataType<LuaTraits::LuaSprite>;
 using LuaFont = CDataType<LuaTraits::LuaFont>;
 using LuaFontRenderSettings = CDataType<LuaTraits::LuaFontRenderSettings>;
 using LuaRNG = CDataType<LuaTraits::LuaRNG>;
-using LuaItemConfig = LuabridgeType<LuaTraits::LuaItemConfig>;
+using LuaItemConfig = CDataType<LuaTraits::LuaItemConfig>;
 using LuaItem = CDataType<LuaTraits::LuaItem>;
-using LuaCard = LuabridgeType<LuaTraits::LuaCard>;
-using LuaPillEffect = LuabridgeType<LuaTraits::LuaPillEffect>;
+using LuaCard = CDataType<LuaTraits::LuaCard>;
+using LuaPillEffect = CDataType<LuaTraits::LuaPillEffect>;
 using LuaCostume = CDataType<LuaTraits::LuaCostume>;
 using LuaRoomConfigRoom = CDataType<LuaTraits::LuaRoomConfigRoom>;
 using LuaSeeds = CDataType<LuaTraits::LuaSeeds>;

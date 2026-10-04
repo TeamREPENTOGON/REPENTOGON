@@ -148,6 +148,7 @@ lffi.cdef [[
 	} : 0x18;
 
 	const char* L_StdString_CStr(const struct StdString*);
+	void L_StdString_Assign(struct StdString*, const char*);
 ]]
 
 local repentogon = ffidll
@@ -310,6 +311,12 @@ loadmodule("Renderer.Renderer")
 loadmodule("Seeds")
 loadmodule("Font.FontRenderSettings")
 loadmodule("Font.Font")
+loadmodule("ItemConfig.ItemConfigCard")
+loadmodule("ItemConfig.ItemConfigPillEffect")
+loadmodule("ItemConfig.ItemConfigList")
+loadmodule("ItemConfig.CardConfigList")
+loadmodule("ItemConfig.PillConfigList")
+loadmodule("ItemConfig.ItemConfig")
 
 lffi.metatype = ffi_metatype
 

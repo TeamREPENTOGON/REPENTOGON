@@ -11,16 +11,12 @@ struct lua_State;
 namespace lua {
     enum class Metatables {
         BEGIN_NORMAL,
-        PILL_EFFECT,
         ENTITY_TEAR,
         ACTIVE_ITEM_DESC,
         ENTITY,
         ENTITY_BOMB,
-        CONFIG,
-        ITEM_CONFIG_LIST,
         ENTITY_KNIFE,
         LEVEL,
-        PILL_CONFIG_LIST,
         ENTITY_EFFECT,
         ENTITY_PLAYER,
         ENTITY_PICKUP,
@@ -33,20 +29,14 @@ namespace lua {
         ITEM_POOL,
         ENTITY_PTR,
         PATHFINDER,
-        CARD,
         ENTITY_LASER,
-        CARD_CONFIG_LIST,
         BEGIN_CONST,
-        CONST_PILL_EFFECT,
         CONST_ENTITY_TEAR,
         CONST_ACTIVE_ITEM_DESC,
         CONST_ENTITY,
         CONST_ENTITY_BOMB,
-        CONST_CONFIG,
-        CONST_ITEM_CONFIG_LIST,
         CONST_ENTITY_KNIFE,
         CONST_LEVEL,
-        CONST_PILL_CONFIG_LIST,
         CONST_ENTITY_EFFECT,
         CONST_ENTITY_PLAYER,
         CONST_ENTITY_PICKUP,
@@ -59,9 +49,7 @@ namespace lua {
         CONST_ITEM_POOL,
         CONST_ENTITY_PTR,
         CONST_PATHFINDER,
-        CONST_CARD,
         CONST_ENTITY_LASER,
-        CONST_CARD_CONFIG_LIST,
 
         METATABLES_MAX
     };
@@ -576,6 +564,12 @@ namespace lua {
             FONT_PTR,
             FONT_RENDER_SETTINGS,
             FONT_RENDER_SETTINGS_PTR,
+            ITEM_CONFIG,
+            ITEM_CONFIG_PTR,
+            ITEM_CONFIG_CARD,
+            ITEM_CONFIG_CARD_PTR,
+            ITEM_CONFIG_PILL_EFFECT,
+            ITEM_CONFIG_PILL_EFFECT_PTR,
             MAX_CDATA
         };
 

@@ -81,17 +81,12 @@ namespace lua {
 	}
 
 	static void InitMetatableIdxFromName() {
-		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
 		_metatable_idx_from_name["EntityTear"] = Metatables::ENTITY_TEAR;
 		_metatable_idx_from_name["ActiveItemDesc"] = Metatables::ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
 		_metatable_idx_from_name["EntityBomb"] = Metatables::ENTITY_BOMB;
-		_metatable_idx_from_name["Config"] = Metatables::CONFIG;
-		_metatable_idx_from_name["ItemConfigList"] = Metatables::ITEM_CONFIG_LIST;
 		_metatable_idx_from_name["EntityKnife"] = Metatables::ENTITY_KNIFE;
 		_metatable_idx_from_name["Level"] = Metatables::LEVEL;
-		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
-		_metatable_idx_from_name["PillConfigList"] = Metatables::PILL_CONFIG_LIST;
 		_metatable_idx_from_name["EntityEffect"] = Metatables::ENTITY_EFFECT;
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
@@ -104,20 +99,14 @@ namespace lua {
 		_metatable_idx_from_name["ItemPool"] = Metatables::ITEM_POOL;
 		_metatable_idx_from_name["EntityPtr"] = Metatables::ENTITY_PTR;
 		_metatable_idx_from_name["PathFinder"] = Metatables::PATHFINDER;
-		_metatable_idx_from_name["Card"] = Metatables::CARD;
 		_metatable_idx_from_name["EntityLaser"] = Metatables::ENTITY_LASER;
-		_metatable_idx_from_name["CardConfigList"] = Metatables::CARD_CONFIG_LIST;
 
-		_metatable_idx_from_name["const PillEffect"] = Metatables::CONST_PILL_EFFECT;
 		_metatable_idx_from_name["const EntityTear"] = Metatables::CONST_ENTITY_TEAR;
 		_metatable_idx_from_name["const ActiveItemDesc"] = Metatables::CONST_ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
 		_metatable_idx_from_name["const EntityBomb"] = Metatables::CONST_ENTITY_BOMB;
-		_metatable_idx_from_name["const Config"] = Metatables::CONST_CONFIG;
-		_metatable_idx_from_name["const ItemConfigList"] = Metatables::CONST_ITEM_CONFIG_LIST;
 		_metatable_idx_from_name["const EntityKnife"] = Metatables::CONST_ENTITY_KNIFE;
 		_metatable_idx_from_name["const Level"] = Metatables::CONST_LEVEL;
-		_metatable_idx_from_name["const PillConfigList"] = Metatables::CONST_PILL_CONFIG_LIST;
 		_metatable_idx_from_name["const EntityEffect"] = Metatables::CONST_ENTITY_EFFECT;
 		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
@@ -130,9 +119,7 @@ namespace lua {
 		_metatable_idx_from_name["const ItemPool"] = Metatables::CONST_ITEM_POOL;
 		_metatable_idx_from_name["const EntityPtr"] = Metatables::CONST_ENTITY_PTR;
 		_metatable_idx_from_name["const PathFinder"] = Metatables::CONST_PATHFINDER;
-		_metatable_idx_from_name["const Card"] = Metatables::CONST_CARD;
 		_metatable_idx_from_name["const EntityLaser"] = Metatables::CONST_ENTITY_LASER;
-		_metatable_idx_from_name["const CardConfigList"] = Metatables::CONST_CARD_CONFIG_LIST;
 	}
 
 	Metatables GetMetatableIdxFromName(std::string const& name) {

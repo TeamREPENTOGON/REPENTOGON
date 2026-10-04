@@ -422,6 +422,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::FONT_PTR] = lua_ctypeid(L, "FontPtr");
 	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS] = lua_ctypeid(L, "FontRenderSettings");
 	lua::ffi::CData[lua::ffi::CDataID::FONT_RENDER_SETTINGS_PTR] = lua_ctypeid(L, "FontRenderSettingsPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG] = lua_ctypeid(L, "ItemConfig");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PTR] = lua_ctypeid(L, "ItemConfigPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_CARD] = lua_ctypeid(L, "ItemConfigCard");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_CARD_PTR] = lua_ctypeid(L, "ItemConfigCardPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT] = lua_ctypeid(L, "ItemConfigPillEffect");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT_PTR] = lua_ctypeid(L, "ItemConfigPillEffectPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");
