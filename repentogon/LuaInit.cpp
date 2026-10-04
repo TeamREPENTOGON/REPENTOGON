@@ -416,6 +416,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_PLAYER_PTR] = lua_ctypeid(L, "EntityConfigPlayerPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY] = lua_ctypeid(L, "EntityConfigBaby");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_CONFIG_BABY_PTR] = lua_ctypeid(L, "EntityConfigBabyPtr");
+	lua::ffi::CData[lua::ffi::CDataID::SEEDS] = lua_ctypeid(L, "Seeds");
+	lua::ffi::CData[lua::ffi::CDataID::SEEDS_PTR] = lua_ctypeid(L, "SeedsPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

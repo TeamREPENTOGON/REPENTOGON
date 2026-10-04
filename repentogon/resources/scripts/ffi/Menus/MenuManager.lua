@@ -3,6 +3,7 @@ ffi.cdef [[
     struct ColorModifier* L_MenuManager_GetColorModifierLerpAmount();
     struct ColorModifier* L_MenuManager_GetCurrentColorModifier();
     unsigned int L_MenuManager_GetInputMask();
+    struct Seeds* L_MenuManager_GetSeeds();
     struct Sprite* L_MenuManager_GetShadowSprite();
     struct ColorModifier* L_MenuManager_GetTargetColorModifier();
     struct Vector* L_MenuManager_GetViewPosition();
@@ -14,10 +15,6 @@ ffi.cdef [[
 ]]
 local ffi = ffi
 local repentogon = ffidll
-
-local cfuncs = {
-    GetSeeds = __Lua_MenuManager_GetSeeds
-}
 
 ffichecks.checkmainmenu = function(className)
 	if not repentogon.L_MenuManager_IsActive() then
@@ -46,7 +43,7 @@ MenuManager = {
     end,
     GetSeeds = function()
         ffichecks.checkmainmenu("MenuManager")
-        return cfuncs.GetSeeds()
+        return repentogon.L_MenuManager_GetSeeds()
     end,
     GetShadowSprite = function()
         ffichecks.checkmainmenu("MenuManager")
@@ -87,4 +84,3 @@ MenuManager = {
         repentogon.L_MenuManager_SetViewPosition(position);
     end,
 }
-__Lua_MenuManager_GetSeeds = nil

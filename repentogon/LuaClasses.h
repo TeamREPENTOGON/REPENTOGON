@@ -544,8 +544,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Seeds";
         using Type = Seeds;
-        static constexpr lua::Metatables MT = lua::Metatables::SEEDS;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_SEEDS;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::SEEDS;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::SEEDS_PTR;
     };
 
     struct LuaGame
@@ -1144,7 +1144,7 @@ using LuaCard = LuabridgeType<LuaTraits::LuaCard>;
 using LuaPillEffect = LuabridgeType<LuaTraits::LuaPillEffect>;
 using LuaCostume = CDataType<LuaTraits::LuaCostume>;
 using LuaRoomConfigRoom = CDataType<LuaTraits::LuaRoomConfigRoom>;
-using LuaSeeds = LuabridgeType<LuaTraits::LuaSeeds>;
+using LuaSeeds = CDataType<LuaTraits::LuaSeeds>;
 using LuaGame = LuabridgeType<LuaTraits::LuaGame>;
 using LuaLevel = LuabridgeType<LuaTraits::LuaLevel>;
 using LuaRoom = CDataType<LuaTraits::LuaRoom>;

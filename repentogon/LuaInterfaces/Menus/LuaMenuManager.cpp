@@ -28,11 +28,8 @@ MOD_EXPORT unsigned int L_MenuManager_GetInputMask() {
 	return MainMenuInputBlock::GetInputMask();
 }
 
-LUA_FUNCTION(Lua_MenuManagerGetSeeds) {
-	Seeds* seeds = &g_MenuManager->_seedsObject;
-	lua::luabridge::UserdataPtr::push(L, seeds, lua::GetMetatableKey(lua::Metatables::SEEDS));
-
-	return 1;
+MOD_EXPORT Seeds* L_MenuManager_GetSeeds() {
+	return &g_MenuManager->_seedsObject;
 }
 
 MOD_EXPORT ANM2* L_MenuManager_GetShadowSprite() {
@@ -144,8 +141,6 @@ HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state)->void,__stdcall) {
 };
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_MenuManager_GetSeeds", Lua_MenuManagerGetSeeds);
-
 	super();
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToMenuPosition", Lua_WorldToMenuPosition);

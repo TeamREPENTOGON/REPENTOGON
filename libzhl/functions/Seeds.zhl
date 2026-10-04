@@ -16,16 +16,60 @@ __thiscall bool Seeds::HasSeedEffect(uint32_t seedEffect);
 "558bec83ec1453568b71":
 __thiscall bool Seeds::AchievementUnlocksDisallowed();
 
+"558bec83ec0ca1????????33c58945??538b5d":
+static cleanup std_string Seeds::Seed2String(unsigned int seed);
+
+"558bec6aff68????????64a1????????5083ec54a1????????33c58945??56508d45??64a3????????c745??00000000":
+static cleanup int Seeds::GetSeedEffect(StdStringStorage seed);
+
+"8b0d????????5633f6":
+static cleanup int Seeds::CountUnlockedSeedEffects();
+
+"558bec6aff68????????64a1????????5083ec40a1????????33c58945??5657508d45??64a3????????8b15":
+static cleanup void Seeds::InitSeedInfo();
+
+"558bec83e4f883ec08837d??4f":
+__thiscall void Seeds::AddSeedEffect(int seedEffect);
+
+"558bec83ec0c8bc18945??53568b088bf157894d??8bf98b41??8bd0807a??0075??8b5d??8b1b8b4a??3bcb7d??8b52??eb??807f??0074??3bd90f4cfa8bf28b12807a??0074??807f??0075??8b078078??0075??8b4d??8b090f1f44??003b48??7d??8bf88b00eb??8b40??8078??0074??33db8bc6895d??3bf774??908b48??438079??0074??8b48??8079??0075??3b41??75??8bc18b49??8079??0074??8bc1eb??8bc18b10807a??0075??8b0a8bc28bd18079??0074??3bc775??895d??8b45??8975??3b3075??807f??0074??8b7d??8bf08bcfff76??57e8????????8976??89368976??c747??000000005f":
+static __stdcall unsigned int Seeds::RemoveSeedEffect(std_set_int* seedEffects<ecx>, const int* seedEffect);
+
+"558bec518b45??83f84f":
+__thiscall void Seeds::RemoveBlockingSeedEffects(int seedEffect);
+
+"568b7154578d79":
+__thiscall void Seeds::ClearSeedEffects();
+
+"558bec83e4f883ec1c53568b75??57":
+__thiscall bool Seeds::CanAddSeedEffect(int seedEffect);
+
+"558bec8b4d??83f94f":
+__thiscall bool Seeds::IsSeedComboBanned(int seedEffect1, int seedEffect2);
+
+"568bf1837e??0075??68????????6a03e8????????83c4088b56":
+__thiscall unsigned int Seeds::GetNextSeed();
+
+"558bec83e4f883ec14f30f7e05????????33d2":
+__thiscall void Seeds::ForgetStageSeed(int stage);
+
+"56578d7954c7410400000000":
+__thiscall void Seeds::Reset();
+
+"558bec51803900":
+__thiscall void Seeds::Restart(int challenge);
+
 // Please note that the constructors for this class allocate 0x14 bytes for SeedEffects.
 // We cannot properly free this memory ourselves at the moment. The proper destructor for this
 // class may have been inlined everywhere. Passing the Seeds to certain functions like
 // StartNewGame will handle the cleanup for us however, just be mindful.
-struct Seeds depends (RNG,ANM2){
+struct Seeds depends (RNG,ANM2,StdStringStorage){
+    {{
+        inline std_set_int* GetSeedEffects() { return (std_set_int*)((char*)this + 0x54); }
+    }}
     bool _isCustomRun : 0x0;
     unsigned int _gameStartSeed : 0x4;
     RNG _rng : 0x8;
     unsigned int _stageSeeds[14] : 0x18;
     unsigned int _playerInitSeed : 0x50;
-    // 0x54 is a pointer to some kind of data structure for SeedEffects.
     int _seedEffectsCount : 0x58;
 } : 0x5c;

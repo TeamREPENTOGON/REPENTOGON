@@ -1,0 +1,3 @@
+struct StdStringStorage {
+    char _data[24] : 0x0;
+} : 0x18;

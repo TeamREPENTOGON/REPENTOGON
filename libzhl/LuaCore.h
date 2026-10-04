@@ -13,7 +13,6 @@ namespace lua {
         BEGIN_NORMAL,
         PILL_EFFECT,
         ENTITY_TEAR,
-        SEEDS,
         ACTIVE_ITEM_DESC,
         ENTITY,
         ENTITY_BOMB,
@@ -42,7 +41,6 @@ namespace lua {
         BEGIN_CONST,
         CONST_PILL_EFFECT,
         CONST_ENTITY_TEAR,
-        CONST_SEEDS,
         CONST_ACTIVE_ITEM_DESC,
         CONST_ENTITY,
         CONST_ENTITY_BOMB,
@@ -576,6 +574,8 @@ namespace lua {
             ENTITY_CONFIG_PLAYER_PTR,
             ENTITY_CONFIG_BABY,
             ENTITY_CONFIG_BABY_PTR,
+            SEEDS,
+            SEEDS_PTR,
             MAX_CDATA
         };
 

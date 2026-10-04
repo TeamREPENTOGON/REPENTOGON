@@ -83,7 +83,6 @@ namespace lua {
 	static void InitMetatableIdxFromName() {
 		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
 		_metatable_idx_from_name["EntityTear"] = Metatables::ENTITY_TEAR;
-		_metatable_idx_from_name["Seeds"] = Metatables::SEEDS;
 		_metatable_idx_from_name["ActiveItemDesc"] = Metatables::ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
 		_metatable_idx_from_name["EntityBomb"] = Metatables::ENTITY_BOMB;
@@ -113,7 +112,6 @@ namespace lua {
 
 		_metatable_idx_from_name["const PillEffect"] = Metatables::CONST_PILL_EFFECT;
 		_metatable_idx_from_name["const EntityTear"] = Metatables::CONST_ENTITY_TEAR;
-		_metatable_idx_from_name["const Seeds"] = Metatables::CONST_SEEDS;
 		_metatable_idx_from_name["const ActiveItemDesc"] = Metatables::CONST_ACTIVE_ITEM_DESC;
 		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
 		_metatable_idx_from_name["const EntityBomb"] = Metatables::CONST_ENTITY_BOMB;

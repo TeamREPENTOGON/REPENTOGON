@@ -303,6 +303,7 @@ loadmodule("ImGui")
 loadmodule("Renderer.Transformer")
 loadmodule("Renderer.SurfaceRenderController")
 loadmodule("Renderer.Renderer")
+loadmodule("Seeds")
 
 lffi.metatype = ffi_metatype
 
