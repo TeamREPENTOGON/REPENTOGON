@@ -105,9 +105,6 @@ namespace lua {
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
         extern LIBZHL_API const char* PointMT;
-        extern LIBZHL_API const char* ProceduralEffectMT;
-        extern LIBZHL_API const char* ProceduralItemMT;
-        extern LIBZHL_API const char* ProceduralItemManagerMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
         extern LIBZHL_API const char* WeaponMT;

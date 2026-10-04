@@ -251,6 +251,9 @@ loadmodule("WeightedOutcomePicker")
 loadmodule("MultiShotParams")
 loadmodule("History")
 loadmodule("PocketItem")
+loadmodule("ProceduralItems.ProceduralEffect")
+loadmodule("ProceduralItems.ProceduralItem")
+loadmodule("ProceduralItems.ProceduralItemManager")
 
 ffi = nil
 ffidll = nil
