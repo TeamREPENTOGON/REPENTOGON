@@ -1039,6 +1039,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::COSTUME_SPRITE_DESC;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::COSTUME_SPRITE_DESC_PTR;
     };
+
+    struct LuaGenericPrompt
+    {
+        static constexpr const char* Name = "GenericPrompt";
+        using Type = GenericPrompt;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::GENERIC_PROMPT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::GENERIC_PROMPT_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1157,3 +1165,4 @@ using LuaLevelGenerator = CDataType<LuaTraits::LuaLevelGenerator>;
 using LuaLevelGeneratorRoom = CDataType<LuaTraits::LuaLevelGeneratorRoom>;
 using LuaLevelGeneratorEntry = CDataType<LuaTraits::LuaLevelGeneratorEntry>;
 using LuaCostumeSpriteDesc = CDataType<LuaTraits::LuaCostumeSpriteDesc>;
+using LuaGenericPrompt = CDataType<LuaTraits::LuaGenericPrompt>;

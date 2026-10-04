@@ -723,7 +723,6 @@ namespace lua {
 	namespace metatables
 	{;
 		const char* BeamMT = "Beam";
-		const char* GenericPromptMT = "GenericPrompt";
 		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntityConfigMT = "EntityConfig";

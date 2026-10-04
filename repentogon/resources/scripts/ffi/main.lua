@@ -259,6 +259,7 @@ loadmodule("LevelGenerator.LevelGeneratorEntry")
 loadmodule("LevelGenerator.LevelGenerator")
 loadmodule("BossPool")
 loadmodule("CostumeSpriteDesc")
+loadmodule("GenericPrompt")
 
 ffi = nil
 ffidll = nil

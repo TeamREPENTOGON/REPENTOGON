@@ -574,9 +574,7 @@ LUA_FUNCTION(Lua_RecordPlayerCompletion) {
 
 LUA_FUNCTION(Lua_GetGenericPrompt) {
 	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	auto* toLua = (GenericPrompt*)lua_newuserdata(L, sizeof(GenericPrompt));
-	*toLua = *game->GetGenericPrompt(); //
-	luaL_setmetatable(L, lua::metatables::GenericPromptMT);
+	new (LuaGenericPrompt::Place(L)) GenericPrompt(*game->GetGenericPrompt());
 	return 1;
 }
 
