@@ -103,9 +103,11 @@ static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
 "558bec83e4f883ec20568bf1578b86":
 __thiscall Vector* Entity_NPC::CalcTargetPosition(float distanceLimit);
 
-
 "558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bf98b47??83f829":
 __thiscall bool Entity_NPC::CanBeDamagedFromVelocity(Vector* Velocity);
+
+"558bec6aff68????????64a1????????5083ec2c535657a1????????33c5508d45??64a3????????8bf18b0d":
+__thiscall void Entity_NPC::UpdatePickupGhosts();
 
 /*
 // Minecart functions
@@ -161,6 +163,7 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile
 	std_vector_uint _hitList : 0xf00;
 	int32_t _controllerID : 0xf1c;
     Entity_Player* _sirenPlayerEntity : 0xf40;
+	Entity_Effect* _pickupGhostsEntity : 0xf50;
 	
     __vtable {
 		skip; // Free
@@ -177,7 +180,11 @@ struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile
 		skip; // PostRender
 		skip; // TakeDamage
 		skip; // Kill
-		skip; // Remove
+		
+		override
+		"568bf1817e??62030000":
+		void Remove();
+		
 		skip; // TriggerGlowingHourglass
 		skip; // ???
 		skip; // GetRenderZ

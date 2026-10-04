@@ -252,6 +252,7 @@ void PerformASMPatches() {
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
+	ASMPatchNpcUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();

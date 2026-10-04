@@ -98,7 +98,3 @@ ___
 #### void SetXMLName ( string name ) {: .copyable aria-label='Functions' }
 
 ___
-### Unload () {: aria-label='Functions' }
-#### void Unload ( ) {: .copyable aria-label='Functions' }
-
-___

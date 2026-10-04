@@ -1,7 +1,35 @@
 v1.1.x -
 Added:
+* ModCallbacks:
+	- MC_PRE_SELECT_AMBUSH/GREED_WAVE(RoomConfig_Room, seed)
+		Return a different RoomConfig_Room to change the wave layout
+	- MC_PRE_NPC_GET_LOOT_LIST(EntityNPC, bool ShouldAdvance, RNG)
+		Return a LootList to override the default loot (the default would be empty except for shopkeepers and fireplaces)
+		Prefer to use the provided RNG, since it will be automatically reset at the end of the callback if ShouldAdvance is false
+		Optional param: EntityType
+	- MC_POST_NPC_GET_LOOT_LIST(EntityNPC, LootList, bool ShouldAdvance, RNG)
+		Additional pickups can be added to the provided LootList
+		Prefer to use the provided RNG, since it will be automatically reset at the end of the callback if ShouldAdvance is false
+		Optional param: EntityType
+	- MC_PRE_NPC_UPDATE_GHOST_PICKUPS(EntityNPC)
+		Return true to force a loot preview to appear, false to prevent it.
+		Optional param: EntityType
+* EntityNPC:
+	- GetLootList(bool ShouldAdvance = false)
+		Generic replacement for GetFireplaceLoot and GetShopkeeperLoot that enables LootList for all NPCs.
+		GetFireplaceLoot and GetShopkeeperLoot are now considered deprecated.
+	- UpdatePickupGhosts()
+		Refreshes the loot preview shown by Guppy's Eye for this NPC.
+		Only Fireplaces and Shopkeepers naturally call this function, so if you want to add/modify an NPC's LootList, you should call this once.
 * EntityPickup:
 	- ShouldIgnoreModifiers()
+/newline/
+Modified:
+* ModCallbacks:
+	- Added PickupVariant optional param for MC_PRE/POST_PICKUP_GET_LOOT_LIST & MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS
+/newline/
+Fixes:
+* 
 /newline/
 /versionseparator/
 v1.1.3 -

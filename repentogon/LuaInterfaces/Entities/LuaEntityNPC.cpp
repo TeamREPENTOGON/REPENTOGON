@@ -498,7 +498,8 @@ LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityNPC_GetFireplaceLoot) {
+// Deprecated in favor of generic GetLootList
+LUA_FUNCTION(Lua_EntityNPC_GetFireplaceLoot_DEPRECATED) {
 	Entity_NPC* npc = LuaEntityNPC::Get(L, 1);
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
@@ -507,7 +508,8 @@ LUA_FUNCTION(Lua_EntityNPC_GetFireplaceLoot) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityNPC_GetShopkeeperLoot) {
+// Deprecated in favor of generic GetLootList
+LUA_FUNCTION(Lua_EntityNPC_GetShopkeeperLoot_DEPRECATED) {
 	Entity_NPC* npc = LuaEntityNPC::Get(L, 1);
 	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
@@ -516,14 +518,30 @@ LUA_FUNCTION(Lua_EntityNPC_GetShopkeeperLoot) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetLootList) {
+	Entity_NPC* npc = LuaEntityNPC::Get(L, 1);
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList list = CustomCallbacks::GetNpcLootList(*npc, shouldAdvance);
+	new (LuaLootList::Place(L)) LootList(std::move(list));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_UpdatePickupGhosts) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	npc->UpdatePickupGhosts();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		{ "GetFireplaceLoot", Lua_EntityNPC_GetFireplaceLoot },
-		{ "GetShopkeeperLoot", Lua_EntityNPC_GetShopkeeperLoot },
+		{ "GetLootList", Lua_EntityNPC_GetLootList},
+		{ "GetFireplaceLoot", Lua_EntityNPC_GetFireplaceLoot_DEPRECATED },
+		{ "GetShopkeeperLoot", Lua_EntityNPC_GetShopkeeperLoot_DEPRECATED },
 		{ "CalcTargetPosition", Lua_EntityNPC_CalcTargetPosition },
 		{ "CanBeDamagedFromVelocity", Lua_EntityNPC_CanBeDamagedFromVelocity },
 		{ "FireBossProjectiles", Lua_EntityNPC_FireBossProjectiles },
@@ -556,6 +574,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TrySplit", Lua_EntityNPC_TrySplit },
 		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
 		{ "GetPathfinder", Lua_EntityNPC_GetPathfinder },
+		{ "UpdatePickupGhosts", Lua_EntityNPC_UpdatePickupGhosts },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

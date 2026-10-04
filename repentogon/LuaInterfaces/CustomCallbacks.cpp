@@ -4636,27 +4636,38 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 }
 
 //MC_PRE/POST_PICKUP_GET_LOOT_LIST (1334 / 1336)
-HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
-	RNG rngCopy = this->_dropRNG;
-	RNG& rng = this->_dropRNG;
-	LootList list = super(shouldAdvance, player);
+//MC_PRE/POST_NPC_GET_LOOT_LIST (1337 / 1339)
+static void RunLootListCallbacks(LootList& list, Entity& entity, bool shouldAdvance, RNG& rng, Entity_Player* player) {
+	bool isPickup = entity._type == ENTITY_PICKUP;
+	if (!isPickup && entity.ToNPC() == nullptr) {
+		return;
+	}
+	int precallbackid = isPickup ? 1334 : 1337;
+	int postcallbackid = isPickup ? 1336 : 1339;
+	int callbackparam = isPickup ? entity._variant : entity._type;
 
-	const int MC_PRE_PICKUP_GET_LOOT_LIST = 1334;
-	const int MC_POST_PICKUP_GET_LOOT_LIST = 1336;
-
-	if (CallbackState.test(MC_PRE_PICKUP_GET_LOOT_LIST - 1000)) {
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(MC_PRE_PICKUP_GET_LOOT_LIST)
-			.pushnil()
-			.pushClassPtr<LuaEntityPickup>(this)
-			.push(shouldAdvance)
-			.pushClassPtr<LuaRNG>(&rng)
-			.pushClassPtr<LuaEntityPlayer>(player)
-			.call(1);
+		lua::LuaCaller caller(L);
+		caller.push(precallbackid)
+			.push(callbackparam);
+		if (isPickup) {
+			caller.pushClassPtr<LuaEntityPickup>((Entity_Pickup*)&entity);
+		}
+		else {
+			caller.pushClassPtr<LuaEntityNPC>((Entity_NPC*)&entity);
+		}
+			caller.push(shouldAdvance)
+			.pushClassPtr<LuaRNG>(&rng);
+			
+		if (player) {
+			caller.pushClassPtr<LuaEntityPlayer>(player);
+		}
+		lua::LuaResults result = caller.call(1);
 
 		if (!result && LuaLootList::IsUnderlyingType(L, -1)) {
 			auto luaReturn = LuaLootList::TryGet(L, -1);
@@ -4670,7 +4681,7 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 		}
 	}
 
-	if (CallbackState.test(MC_POST_PICKUP_GET_LOOT_LIST - 1000)) {
+	if (CallbackState.test(postcallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -4685,19 +4696,35 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 		{
 			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-			lua::LuaResults result = lua::LuaCaller(L).push(MC_POST_PICKUP_GET_LOOT_LIST)
-				.pushnil()
-				.pushClassPtr<LuaEntityPickup>(this)
-				.pushvalue(lootListAbsIdx)
+			lua::LuaCaller caller(L);
+			caller.push(postcallbackid)
+				.push(callbackparam);
+			if (isPickup) {
+				caller.pushClassPtr<LuaEntityPickup>((Entity_Pickup*)&entity);
+			}
+			else {
+				caller.pushClassPtr<LuaEntityNPC>((Entity_NPC*)&entity);
+			}
+				caller.pushvalue(lootListAbsIdx)
 				.push(shouldAdvance)
-				.pushClassPtr<LuaRNG>(&rng)
-				.pushClassPtr<LuaEntityPlayer>(player)
-				.call(0);
+				.pushClassPtr<LuaRNG>(&rng);
+			if (player) {
+				caller.pushClassPtr<LuaEntityPlayer>(player);
+			}
+			caller.call(0);
 		}
-		
+
 		list = std::move(*toLua);
 		lua_pop(L, 1); // LuaLootList
 	}
+}
+
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* player) -> LootList) {
+	RNG rngCopy = this->_dropRNG;
+	RNG& rng = this->_dropRNG;
+	LootList list = super(shouldAdvance, player);
+
+	RunLootListCallbacks(list, *this, shouldAdvance, rng, player);
 
 	if (!shouldAdvance)
 	{
@@ -4706,16 +4733,63 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance, Entity_Player* play
 
 	return list;
 }
+HOOK_METHOD(Entity_NPC, fireplace_get_loot, (bool shouldAdvance) -> LootList) {
+	RNG rngCopy = this->_dropRNG;
+	RNG& rng = this->_dropRNG;
+	LootList list = super(shouldAdvance);
 
-/// @brief Patches the conditional move that selects the entity's dropRNG
+	if (this->_type == ENTITY_FIREPLACE) {
+		RunLootListCallbacks(list, *this, shouldAdvance, rng, nullptr);
+	}
+
+	if (!shouldAdvance) {
+		this->_dropRNG = rngCopy;
+	}
+
+	return list;
+}
+HOOK_METHOD(Entity_NPC, shopkeeper_get_loot, (bool shouldAdvance) -> LootList) {
+	RNG rngCopy = this->_dropRNG;
+	RNG& rng = this->_dropRNG;
+	LootList list = super(shouldAdvance);
+
+	if (this->_type == ENTITY_SHOPKEEPER) {
+		RunLootListCallbacks(list, *this, shouldAdvance, rng, nullptr);
+	}
+
+	if (!shouldAdvance) {
+		this->_dropRNG = rngCopy;
+	}
+
+	return list;
+}
+
+LootList CustomCallbacks::GetNpcLootList(Entity_NPC& npc, bool shouldAdvance) {
+	if (npc._type == ENTITY_FIREPLACE) {
+		return npc.fireplace_get_loot(shouldAdvance);
+	} else if (npc._type == ENTITY_SHOPKEEPER) {
+		return npc.shopkeeper_get_loot(shouldAdvance);
+	}
+
+	// Custom execution to enable custom lootable NPCs
+	RNG rngCopy = npc._dropRNG;
+	RNG& rng = npc._dropRNG;
+	LootList list;
+	RunLootListCallbacks(list, npc, shouldAdvance, rng, nullptr);
+	if (!shouldAdvance) {
+		npc._dropRNG = rngCopy;
+	}
+	return list;
+}
+
+/// @brief Patches the conditional moves that select the entity's dropRNG
 /// as the RNG to use when `shouldAdvance` is true.
 /// 
 /// This replaces the CMOV with an unconditional MOV so that dropRNG is always
 /// selected, ensuring access to the correct RNG state for PRE_LOOT / POST_LOOT callbacks.
 ///
-/// To compensate, the hook in GetLootList is now responsible for restoring the original
-/// RNG state.
-static void Patch_EntityPlayerGetLootList_SelectRNG()
+/// To compensate, the hooks above are now responsible for restoring the original RNG state.
+static void Patch_EntityPickupGetLootList_SelectRNG()
 {
 	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_GetLootList_SelectRNG);
 	ZHL::Log("[REPENTOGON] Patching Entity_Pickup::GetLootList for LootList callbacks at %p\n", addr);
@@ -4723,6 +4797,28 @@ static void Patch_EntityPlayerGetLootList_SelectRNG()
 	ASMPatch patch;
 	ByteBuffer buffer;
 	buffer.AddString("\x89\xFE\x90"); // Replace CMOV with MOV + NOP padding
+	patch.AddBytes(buffer);
+
+	sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+static void Patch_EntityNPCGetFireplaceLoot_SelectRNG() {
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_GetFireplaceLoot_SelectRNG);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::fireplace_get_loot for LootList callbacks at %p\n", addr);
+
+	ASMPatch patch;
+	ByteBuffer buffer;
+	buffer.AddString("\x89\xC6\x90"); // Replace CMOV with MOV + NOP padding
+	patch.AddBytes(buffer);
+
+	sASMPatcher.FlatPatch((void*)addr, &patch);
+}
+static void Patch_EntityNPCGetShopkeeperLoot_SelectRNG() {
+	intptr_t addr = (intptr_t)sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_GetShopkeeperLoot_SelectRNG);
+	ZHL::Log("[REPENTOGON] Patching Entity_NPC::shopkeeper_get_loot for LootList callbacks at %p\n", addr);
+
+	ASMPatch patch;
+	ByteBuffer buffer;
+	buffer.AddString("\x89\xF7\x90"); // Replace CMOV with MOV + NOP padding
 	patch.AddBytes(buffer);
 
 	sASMPatcher.FlatPatch((void*)addr, &patch);
@@ -6858,5 +6954,7 @@ void CustomCallbacks::detail::ApplyPatches()
 	Patch_PlayerRecomputeWispCollectibles_TriggerCollectibleRemoved();
     Patch_PlayerTriggerCollectibleRemoved_Stompy();
     Patch_PlayerTriggerCollectibleRemoved_Heartbreak();
-	Patch_EntityPlayerGetLootList_SelectRNG();
+	Patch_EntityPickupGetLootList_SelectRNG();
+	Patch_EntityNPCGetFireplaceLoot_SelectRNG();
+	Patch_EntityNPCGetShopkeeperLoot_SelectRNG();
 }
