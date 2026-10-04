@@ -237,6 +237,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr) {
 	Vector _posOffset : 0x34c;
     Vector _velocity : 0x360;
     float _size : 0x370;
+	float _health : 0x380;
     float _collisionDamage : 0x388;
     float _speedMultiplier : 0x39c;
 	bool _isInvicible : 0x3b0;

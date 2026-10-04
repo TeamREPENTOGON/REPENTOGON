@@ -13,6 +13,7 @@
 #include "../../Patches/ItemConfigEx.h"
 #include "../XMLPlayerExtras.h"
 #include "../EntityConfigEx.h"
+#include "../../LuaInterfaces/CustomCallbacks.h"
 
 static inline void* get_sig_address(const char* signature, const char* location, const char* callbackName)
 {
@@ -1178,7 +1179,7 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(pickup->_variant)
 			.push(pickup, lua::Metatables::ENTITY_PICKUP)
 			.call(1);
 
@@ -1193,18 +1194,13 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead))
 			&& (pickup->_timeout < 1) );
 }
-
 void ASMPatchPickupUpdatePickupGhosts() {
-    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
-    ASMPatch patch;
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityPickup_UpdatePickupGhosts_ShouldShow);
 
-    SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
-    signature.Scan();
+    ZHL::Log("[REPENTOGON] Patching EntityPickup::UpdatePickupGhosts at %p\n", addr);
 
-    void* addr = signature.GetAddress();
-
-    ZHL::Log("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
-
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
     patch.Pop(ASMPatch::Registers::EAX)
         .Pop(ASMPatch::Registers::EAX)
         .Pop(ASMPatch::Registers::EAX)  // Pop everything that was pushed onto the stack intended for the overwritten call to FirstCollectibleOwner.
@@ -1217,6 +1213,88 @@ void ASMPatchPickupUpdatePickupGhosts() {
         //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
         .AddRelativeJump((char*)addr + 0xCC);
     sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Allow any NPC to potentially recieve a lootlist, not just shopkeepers (and fireplaces)
+void __stdcall GetNpcLootListTrampoline(Entity_NPC* npc, LootList* out) {
+	new (out) LootList(std::move(CustomCallbacks::GetNpcLootList(*npc, false)));
+}
+void ASMPatchNpcUpdatePickupGhosts_GetLootList() {
+	void* nopAddr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_ShopkeeperCheck);
+	ZHL::Log("[REPENTOGON] NOP'ing EntityNPC::UpdatePickupGhosts shopkeeper check at %p\n", nopAddr);
+	ASMPatch nopPatch(ByteBuffer().AddByte(0x90, 0x9));
+	sASMPatcher.FlatPatch(nopAddr, &nopPatch);
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_GetShopkeeperLoot);
+	ZHL::Log("[REPENTOGON] Patching EntityNPC::UpdatePickupGhosts shopkeeper_get_loot call at %p\n", addr);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes("\x83\xC4\x08")  // add esp, 8 (clears inputs intended for shopkeeper_get_loot)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // LootList* (uninitialized)
+		.Push(ASMPatch::Registers::ECX) // Entity_NPC*
+		.AddInternalCall(GetNpcLootListTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+//MC_PRE_NPC_UPDATE_GHOST_PICKUPS (1338)
+bool __stdcall RunNpcUpdatePickupGhostsCallback(Entity_NPC* npc) {
+	if (npc->_type == ENTITY_FIREPLACE) {
+		if (npc->_health <= 1.0f) {
+			return false;
+		}
+	} else if (npc->_dead) {
+		return false;
+	}
+
+	const int callbackid = 1338;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.push(npc, lua::Metatables::ENTITY_NPC)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr;
+}
+void ASMPatchNpcUpdatePickupGhosts() {
+	ASMPatchNpcUpdatePickupGhosts_GetLootList();
+
+	void* addr = sASMDefinitionHolder->GetDefinition(&AsmDefinitions::EntityNPC_UpdatePickupGhosts_ShouldShow);
+
+	ZHL::Log("[REPENTOGON] Patching EntityNPC::UpdatePickupGhosts at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // npc
+		.AddInternalCall(RunPickupUpdatePickupGhostsCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x13);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// Prevent pickup ghosts from lingering after the npc is gone.
+// Pickups already handle this on remove, NPCs do not.
+// This means even in vanilla, Remove'ing a Shopkeeper will leave behind the loot preview.
+HOOK_METHOD(Entity_NPC, Remove, ()->void) {
+	if (this->_pickupGhostsEntity) {
+		this->_pickupGhostsEntity->Remove();
+	}
+	super();
 }
 
 // MC_POST_PROJECTILE_DEATH

@@ -18,5 +18,7 @@ namespace CustomCallbacks
     void TriggerInnateItemAddedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, int duration);
     void TriggerInnateItemRemovedCallback(Entity_Player& player, int id, bool isTrinket, const std::string& key, int amount, bool expiredDuration);
 
+	LootList GetNpcLootList(Entity_NPC& npc, bool shouldAdvance);
+
     void PRE_ROOM_COLLISION_PASS();
 }

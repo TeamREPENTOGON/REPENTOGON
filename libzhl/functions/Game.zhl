@@ -175,6 +175,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	{
 		this->constructor();
 	}
+	
+	inline Level* GetLevel() { return (Level*)this; }
     
     uint32_t GetNbRooms() const 
     { 

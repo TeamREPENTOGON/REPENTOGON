@@ -423,6 +423,12 @@ LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_UpdatePickupGhosts) {
+	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	npc->UpdatePickupGhosts();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -456,6 +462,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TrySplit", Lua_EntityNPC_TrySplit },
 		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
 		{ "GetPathfinder", Lua_EntityNPC_GetPathfinder },
+		{ "UpdatePickupGhosts", Lua_EntityNPC_UpdatePickupGhosts },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
