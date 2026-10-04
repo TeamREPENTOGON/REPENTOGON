@@ -299,6 +299,7 @@ loadmodule("EntityConfig.EntityConfigEntity")
 loadmodule("EntityConfig.EntityConfigPlayer")
 loadmodule("EntityConfig.EntityConfigBaby")
 loadmodule("EntityConfig.EntityConfig")
+loadmodule("ImGui")
 
 lffi.metatype = ffi_metatype
 

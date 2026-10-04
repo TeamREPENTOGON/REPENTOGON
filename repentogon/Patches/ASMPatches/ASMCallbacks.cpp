@@ -1271,7 +1271,7 @@ bool __stdcall RunNpcUpdatePickupGhostsCallback(Entity_NPC* npc) {
 			.push(npc->_type)
 			.pushClassPtr<LuaEntityNPC>(npc)
 			.call(1);
-
+		
 		if (!result) {
 			if (lua_isboolean(L, -1)) {
 				return (bool)lua_toboolean(L, -1);

@@ -83,9 +83,6 @@ namespace lua {
     {
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
-        extern LIBZHL_API const char* ImGuiMT;
-        extern LIBZHL_API const char* RoomDescriptorDoors;
-        extern LIBZHL_API const char* RoomDescriptorDoorsConst;
     }
 
     LIBZHL_API void UnloadMetatables();

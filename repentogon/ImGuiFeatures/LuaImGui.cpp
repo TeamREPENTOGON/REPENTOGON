@@ -12,617 +12,539 @@ extern NotificationHandler notificationHandler;
 
 extern bool menuShown;
 
-static int CheckAndSetCallback(lua_State* L, int slot)
-{
-	if (!lua_isfunction(L, slot) && !lua_isnoneornil(L, slot))
-		return luaL_error(L, "Argument %d is not a function and not nil", (slot - 1));
-	if (!lua_isfunction(L, slot)) {
-		return 0;
-	}
-	lua_pushvalue(L, slot); // push function on stack
-	return luaL_ref(L, LUA_REGISTRYINDEX); // get unique key
-}
-
-static int EvalIDAndParent(lua_State* L, const char* id, const char* parentId)
-{
+static bool PrepareElement(const char* id, const char* parentId) {
 	if (!customImGui.ElementExists(parentId))
-		return luaL_error(L, "Parent Element with id '%s'doesnt exist.", parentId);
+		return false;
 	if (customImGui.ElementExists(id))
 		customImGui.RemoveElement(id);
-	return 0;
+	return true;
 }
 
-LUA_FUNCTION(Lua_CustomImGui)
+static Element* CreateElement(const char* parentId, const char* id, const char* text, IMGUI_ELEMENT type) {
+	customImGui.AddElement(parentId, id, text, static_cast<int>(type));
+	return customImGui.GetElementById(id);
+}
+
+static void SetEditedCallback(const char* id, int callbackRef) {
+	if (callbackRef != 0) {
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), callbackRef);
+	}
+}
+
+static Element* GetWindow(const char* id) {
+	Element* element = customImGui.GetElementById(id);
+	if (element != nullptr && element->type == IMGUI_ELEMENT::Window) {
+		return element;
+	}
+	return nullptr;
+}
+
+// Turns a Lua function into a registry reference for the element callbacks.
+LUA_FUNCTION(Lua_ImGui_Ref)
 {
-	CustomImGui** ud = (CustomImGui**)lua_newuserdata(L, sizeof(CustomImGui*));
-	*ud = &customImGui;
-	luaL_setmetatable(L, lua::metatables::ImGuiMT);
+	luaL_checktype(L, 1, LUA_TFUNCTION);
+	lua_pushvalue(L, 1);
+	lua_pushinteger(L, luaL_ref(L, LUA_REGISTRYINDEX));
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddElement)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	int type = (int)luaL_checkinteger(L, 3);
-	const char* text = luaL_optstring(L, 4, "");
 
-	EvalIDAndParent(L, id, parentId);
-
+MOD_EXPORT bool L_ImGui_AddElement(const char* parentId, const char* id, int type, const char* text) {
+	if (!PrepareElement(id, parentId))
+		return false;
 	customImGui.AddElement(parentId, id, text, type);
-
-	return 1;
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_RemoveElement)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-
-	customImGui.RemoveElement(elementId);
-
-	return 0;
+MOD_EXPORT void L_ImGui_RemoveElement(const char* id) {
+	customImGui.RemoveElement(id);
 }
 
-LUA_FUNCTION(Lua_ImGui_LinkWindowToElement)
-{
-	const char* windowId = luaL_checkstring(L, 1);
-	const char* elementId = luaL_checkstring(L, 2);
-
-	if (customImGui.GetElementById(windowId) == NULL) {
-		return luaL_error(L, "No window with id '%s' exists", windowId);
-	}
-
-	bool success = customImGui.LinkWindowToElement(windowId, elementId);
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 1;
+// 0: success, 1: no window, 2: no element
+MOD_EXPORT int L_ImGui_LinkWindowToElement(const char* windowId, const char* elementId) {
+	if (customImGui.GetElementById(windowId) == nullptr)
+		return 1;
+	return customImGui.LinkWindowToElement(windowId, elementId) ? 0 : 2;
 }
 
-LUA_FUNCTION(Lua_ImGui_CreateMenu)
-{
-	const char* id = luaL_checkstring(L, 1);
-	const char* text = luaL_checkstring(L, 2);
-
-	if (customImGui.ElementExists(id)) {
+MOD_EXPORT bool L_ImGui_CreateMenu(const char* id, const char* text) {
+	if (customImGui.ElementExists(id))
 		customImGui.RemoveElement(id);
-	}
-
-	bool success = customImGui.CreateMenuElement(id, text);
-	if (!success) {
-		return luaL_error(L, "Error while adding new Menu '%s'", id);
-	}
-
-	return 1;
+	return customImGui.CreateMenuElement(id, text);
 }
 
-LUA_FUNCTION(Lua_ImGui_CreateWindow)
-{
-	const char* id = luaL_checkstring(L, 1);
-	const char* title = luaL_checkstring(L, 2);
-	const char* parentId = luaL_optstring(L, 3, nullptr);
-
-	if (customImGui.ElementExists(id)) {
+MOD_EXPORT bool L_ImGui_CreateWindow(const char* id, const char* title, const char* parentId) {
+	if (customImGui.ElementExists(id))
 		customImGui.RemoveElement(id);
-	}
-
-	bool success = customImGui.CreateWindowElement(id, title, parentId);
-	if (!success) {
-		return luaL_error(L, "Error while adding new Window '%s'", id);
-	}
-
-	return 1;
+	return customImGui.CreateWindowElement(id, title, parentId);
 }
 
-LUA_FUNCTION(Lua_ImGui_AddCallback)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	int type = (int)luaL_checkinteger(L, 2);
-	if (!lua_isfunction(L, 3)) {
-		return luaL_error(L, "Argument %d is not a function", 3);
-	}
-	int stackID = CheckAndSetCallback(L, 3);
-
-	bool success = customImGui.AddCallback(parentId, type, stackID);
-	if (!success) {
-		return luaL_error(L, "No element '%s' found.", parentId);
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_AddCallback(const char* parentId, int type, int callbackRef) {
+	return customImGui.AddCallback(parentId, type, callbackRef);
 }
 
-LUA_FUNCTION(Lua_ImGui_RemoveCallback)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	int type = (int)luaL_checkinteger(L, 2);
-
-	bool success = customImGui.RemoveCallback(parentId, type);
-	if (!success) {
-		return luaL_error(L, "No element '%s' found.", parentId);
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_RemoveCallback(const char* parentId, int type) {
+	return customImGui.RemoveCallback(parentId, type);
 }
 
-LUA_FUNCTION(Lua_ImGui_UpdateText)
-{
-	const char* id = luaL_checkstring(L, 1);
-	const char* text = luaL_checkstring(L, 2);
-
-	bool success = customImGui.UpdateText(id, text);
-	if (!success) {
-		return luaL_error(L, "No element with id '%s' found.", id);
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_UpdateText(const char* id, const char* text) {
+	return customImGui.UpdateText(id, text);
 }
 
-LUA_FUNCTION(Lua_ImGui_UpdateData)
-{
-	// prechecks
-	const char* id = luaL_checkstring(L, 1);
-	luaL_checkinteger(L, 2);
-	Element* createdElement = customImGui.GetElementById(id);
-	if (createdElement == nullptr) {
-		return luaL_error(L, "No element with id '%s' found.", id);
-	}
-
-	bool success = customImGui.UpdateElementData(createdElement, L);
-	if (!success) {
-		return luaL_error(L, "The given element does not use the provided data type.");
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_ElementExists(const char* id) {
+	return customImGui.ElementExists(id);
 }
 
-LUA_FUNCTION(Lua_ImGui_AddButton)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	bool isSmall = lua::luaL_optboolean(L, 5, false);
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::Button);
-	if (isSmall)
-		type = static_cast<int>(IMGUI_ELEMENT::SmallButton);
-
-	customImGui.AddElement(parentId, id, text, type);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Clicked), stackID);
+// 0: unsupported, 1: string, 2: boolean, 3: integer, 4: float
+MOD_EXPORT int L_ImGui_GetValueKind(const char* id) {
+	Element* element = customImGui.GetElementById(id);
+	switch (element->type) {
+	case IMGUI_ELEMENT::InputText:
+	case IMGUI_ELEMENT::InputTextWithHint:
+	case IMGUI_ELEMENT::InputTextMultiline:
+		return 1;
+	case IMGUI_ELEMENT::Checkbox:
+		return 2;
+	case IMGUI_ELEMENT::RadioButton:
+	case IMGUI_ELEMENT::Combobox:
+	case IMGUI_ELEMENT::InputInt:
+	case IMGUI_ELEMENT::DragInt:
+	case IMGUI_ELEMENT::SliderInt:
+	case IMGUI_ELEMENT::InputController:
+	case IMGUI_ELEMENT::InputKeyboard:
+		return 3;
+	case IMGUI_ELEMENT::InputFloat:
+	case IMGUI_ELEMENT::DragFloat:
+	case IMGUI_ELEMENT::SliderFloat:
+	case IMGUI_ELEMENT::ProgressBar:
+		return 4;
+	default:
+		return 0;
 	}
-
-	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddText)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* text = luaL_optstring(L, 2, "");
-	bool isWrapped = lua::luaL_optboolean(L, 3, false);
-	const char* id = luaL_optstring(L, 4, "");
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::Text);
-	if (isWrapped)
-		type = static_cast<int>(IMGUI_ELEMENT::TextWrapped);
-
-	customImGui.AddElement(parentId, id, text, type);
-
-	return 1;
+MOD_EXPORT void L_ImGui_SetValueString(const char* id, const char* value) {
+	customImGui.GetElementById(id)->elementData.inputText = value;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputInteger)
-{
+MOD_EXPORT void L_ImGui_SetValueBoolean(const char* id, bool value) {
+	customImGui.GetElementById(id)->elementData.checked = value;
+}
+
+MOD_EXPORT void L_ImGui_SetValueInteger(const char* id, int value) {
+	Element* element = customImGui.GetElementById(id);
+	if (element->type == IMGUI_ELEMENT::RadioButton || element->type == IMGUI_ELEMENT::Combobox) {
+		element->elementData.index = value;
+	}
+	else {
+		element->elementData.currentIntVal = value;
+	}
+}
+
+MOD_EXPORT void L_ImGui_SetValueFloat(const char* id, float value) {
+	customImGui.GetElementById(id)->elementData.currentFloatVal = value;
+}
+
+MOD_EXPORT void L_ImGui_SetLabel(const char* id, const char* label) {
+	customImGui.GetElementById(id)->name = label;
+}
+
+MOD_EXPORT bool L_ImGui_SetHintText(const char* id, const char* text) {
+	Element* element = customImGui.GetElementById(id);
+	if (element->type != IMGUI_ELEMENT::InputText
+		&& element->type != IMGUI_ELEMENT::InputTextWithHint
+		&& element->type != IMGUI_ELEMENT::PlotLines
+		&& element->type != IMGUI_ELEMENT::PlotHistogram
+		&& element->type != IMGUI_ELEMENT::ProgressBar)
+		return false;
+	element->elementData.hintText = text;
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_SetMinMax(const char* id, bool isMax, float value) {
+	Element* element = customImGui.GetElementById(id);
+	switch (element->type) {
+	case IMGUI_ELEMENT::DragInt:
+	case IMGUI_ELEMENT::SliderInt:
+	case IMGUI_ELEMENT::DragFloat:
+	case IMGUI_ELEMENT::SliderFloat:
+		(isMax ? element->elementData.maxVal : element->elementData.minVal) = value;
+		return true;
+	default:
+		return false;
+	}
+}
+
+MOD_EXPORT bool L_ImGui_IsPlot(const char* id) {
+	Element* element = customImGui.GetElementById(id);
+	return element->type == IMGUI_ELEMENT::PlotLines || element->type == IMGUI_ELEMENT::PlotHistogram;
+}
+
+MOD_EXPORT void L_ImGui_SetListStrings(const char* id, const char** values, int count) {
+	Element* element = customImGui.GetElementById(id);
+	element->elementData.plotValues->clear();
+	element->elementData.values->clear();
+	for (int i = 0; i < count; ++i) {
+		element->elementData.values->push_back(values[i]);
+	}
+}
+
+MOD_EXPORT void L_ImGui_SetListNumbers(const char* id, const float* values, int count) {
+	Element* element = customImGui.GetElementById(id);
+	element->elementData.plotValues->clear();
+	element->elementData.values->clear();
+	for (int i = 0; i < count; ++i) {
+		element->elementData.plotValues->push_back(values[i]);
+	}
+}
+
+MOD_EXPORT bool L_ImGui_SetColorValues(const char* id, const float* values, int count) {
+	Element* element = customImGui.GetElementById(id);
+	if (element->type != IMGUI_ELEMENT::ColorEdit)
+		return false;
+	ColorData& color = element->colorData;
+	color.useAlpha = count > 3;
+	color.r = count > 0 ? values[0] : 0.0f;
+	color.g = count > 1 ? values[1] : 0.0f;
+	color.b = count > 2 ? values[2] : 0.0f;
+	color.a = count > 3 ? values[3] : 1.0f;
+	color.init();
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_AddButton(const char* parentId, const char* id, const char* text, int callbackRef, bool isSmall) {
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, isSmall ? IMGUI_ELEMENT::SmallButton : IMGUI_ELEMENT::Button);
+	if (callbackRef != 0) {
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Clicked), callbackRef);
+	}
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_AddText(const char* parentId, const char* text, bool isWrapped, const char* id) {
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, isWrapped ? IMGUI_ELEMENT::TextWrapped : IMGUI_ELEMENT::Text);
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_AddInputInteger(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal, int step, int stepFast) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultIntVal((int)luaL_optinteger(L, 5, data.defaultIntVal));
-	data.step = (float)luaL_optinteger(L, 6, (int)data.step);
-	data.stepFast = (float)luaL_optinteger(L, 7, (int)data.stepFast);
+	data.setDefaultIntVal(defaultVal);
+	data.step = (float)step;
+	data.stepFast = (float)stepFast;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::InputInt);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::InputInt)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputFloat)
-{
+MOD_EXPORT bool L_ImGui_AddInputFloat(const char* parentId, const char* id, const char* text, int callbackRef, float defaultVal, float step, float stepFast) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultFloatVal((float)luaL_optnumber(L, 5, data.defaultFloatVal));
-	data.step = (float)luaL_optnumber(L, 6, data.step);
-	data.stepFast = (float)luaL_optnumber(L, 7, data.stepFast);
+	data.setDefaultFloatVal(defaultVal);
+	data.step = step;
+	data.stepFast = stepFast;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::InputFloat);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::InputFloat)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddDragInteger)
-{
+MOD_EXPORT bool L_ImGui_AddDragInteger(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal, float speed, int minVal, int maxVal, const char* formatting) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultIntVal((int)luaL_optinteger(L, 5, data.defaultIntVal));
-	data.speed = (float)luaL_optnumber(L, 6, data.speed);
-	data.minVal = (float)luaL_optinteger(L, 7, (int)data.minVal);
-	data.maxVal = (float)luaL_optinteger(L, 8, (int)data.maxVal);
-	data.formatting = luaL_optstring(L, 9, data.DefaultIntNumberFormatting);
+	data.setDefaultIntVal(defaultVal);
+	data.speed = speed;
+	data.minVal = (float)minVal;
+	data.maxVal = (float)maxVal;
+	data.formatting = formatting;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::DragInt);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::DragInt)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddDragFloat)
-{
+MOD_EXPORT bool L_ImGui_AddDragFloat(const char* parentId, const char* id, const char* text, int callbackRef, float defaultVal, float speed, float minVal, float maxVal, const char* formatting) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultFloatVal((float)luaL_optnumber(L, 5, data.defaultFloatVal));
-	data.speed = (float)luaL_optnumber(L, 6, data.speed);
-	data.minVal = (float)luaL_optnumber(L, 7, data.minVal);
-	data.maxVal = (float)luaL_optnumber(L, 8, data.maxVal);
-	data.formatting = luaL_optstring(L, 9, data.DefaultFloatNumberFormatting);
+	data.setDefaultFloatVal(defaultVal);
+	data.speed = speed;
+	data.minVal = minVal;
+	data.maxVal = maxVal;
+	data.formatting = formatting;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::DragFloat);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::DragFloat)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddSliderInteger)
-{
+MOD_EXPORT bool L_ImGui_AddSliderInteger(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal, int minVal, int maxVal, const char* formatting) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultIntVal((int)luaL_optinteger(L, 5, data.defaultIntVal));
-	data.minVal = (float)luaL_optinteger(L, 6, (int)data.minVal);
-	data.maxVal = (float)luaL_optinteger(L, 7, (int)data.maxVal);
-	data.formatting = luaL_optstring(L, 8, data.DefaultIntNumberFormatting);
+	data.setDefaultIntVal(defaultVal);
+	data.minVal = (float)minVal;
+	data.maxVal = (float)maxVal;
+	data.formatting = formatting;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::SliderInt);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::SliderInt)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddSliderFloat)
-{
+MOD_EXPORT bool L_ImGui_AddSliderFloat(const char* parentId, const char* id, const char* text, int callbackRef, float defaultVal, float minVal, float maxVal, const char* formatting) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.setDefaultFloatVal((float)luaL_optnumber(L, 5, data.defaultFloatVal));
-	data.minVal = (float)luaL_optnumber(L, 6, data.minVal);
-	data.maxVal = (float)luaL_optnumber(L, 7, data.maxVal);
-	data.formatting = luaL_optstring(L, 8, data.DefaultFloatNumberFormatting);
+	data.setDefaultFloatVal(defaultVal);
+	data.minVal = minVal;
+	data.maxVal = maxVal;
+	data.formatting = formatting;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::SliderFloat);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::SliderFloat)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputColor)
-{
+MOD_EXPORT bool L_ImGui_AddInputColor(const char* parentId, const char* id, const char* text, int callbackRef, float r, float g, float b, bool useAlpha, float a) {
 	ColorData data = ColorData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.r = (float)luaL_optnumber(L, 5, 0);
-	data.g = (float)luaL_optnumber(L, 6, 0);
-	data.b = (float)luaL_optnumber(L, 7, 0);
-	data.useAlpha = !lua_isnoneornil(L, 8);
-	data.a = (float)luaL_optnumber(L, 8, 1);
-
+	data.r = r;
+	data.g = g;
+	data.b = b;
+	data.useAlpha = useAlpha;
+	data.a = a;
 	data.init();
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::ColorEdit);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::ColorEdit)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddCheckbox)
-{
+MOD_EXPORT bool L_ImGui_AddCheckbox(const char* parentId, const char* id, const char* text, int callbackRef, bool checked) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.checked = lua::luaL_optboolean(L, 5, false);
+	data.checked = checked;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::Checkbox);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::Checkbox)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
-{
+MOD_EXPORT bool L_ImGui_AddRadioButtons(const char* parentId, const char* id, int callbackRef, const char** values, int count, int index, bool sameLine) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	int stackID = CheckAndSetCallback(L, 3);
-	if (!lua_istable(L, 4)) {
-		return luaL_error(L, "Argument 5 needs to be a table!");
-	}
-	data.index = (int)luaL_optinteger(L, 5, 0);
-	data.sameLine = lua::luaL_optboolean(L, 6, true);
-
-	// get table input
-	auto tableLength = lua_rawlen(L, 4);
-	for (auto i = 1; i <= tableLength; ++i) {
-		lua_pushinteger(L, i);
-		lua_gettable(L, 4);
-		if (lua_type(L, -1) == LUA_TNIL)
-			break;
-		data.values->push_back(luaL_checkstring(L, -1));
-		lua_pop(L, 1);
+	data.index = index;
+	data.sameLine = sameLine;
+	for (int i = 0; i < count; ++i) {
+		data.values->push_back(values[i]);
 	}
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::RadioButton);
-
-	customImGui.AddElement(parentId, id, "", type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 3)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, "", IMGUI_ELEMENT::RadioButton)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddTabBar)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::TabBar);
-
-	customImGui.AddElement(parentId, id, "", type);
-
-	return 1;
+MOD_EXPORT bool L_ImGui_AddTabBar(const char* parentId, const char* id) {
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, "", IMGUI_ELEMENT::TabBar);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddTab)
-{
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_checkstring(L, 3);
-
-	EvalIDAndParent(L, id, parentId);
-	if (customImGui.GetElementById(parentId)->type != IMGUI_ELEMENT::TabBar) {
-		return luaL_error(L, "The given parent element is not of type 'TabBar'!");
-	}
-
-	int type = static_cast<int>(IMGUI_ELEMENT::Tab);
-
-	customImGui.AddElement(parentId, id, text, type);
-
-	return 1;
+// 0: success, 1: no parent, 2: parent isn't a TabBar
+MOD_EXPORT int L_ImGui_AddTab(const char* parentId, const char* id, const char* text) {
+	if (!PrepareElement(id, parentId))
+		return 1;
+	if (customImGui.GetElementById(parentId)->type != IMGUI_ELEMENT::TabBar)
+		return 2;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::Tab);
+	return 0;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddCombobox)
-{
+MOD_EXPORT bool L_ImGui_AddCombobox(const char* parentId, const char* id, const char* text, int callbackRef, const char** values, int count, int index, bool isSlider) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	if (!lua_istable(L, 5)) {
-		return luaL_error(L, "Argument 6 needs to be a table!");
-	}
-	data.index = (int)luaL_optinteger(L, 6, 0);
-	data.isSlider = lua::luaL_optboolean(L, 7, false);
-
-	// get table input
-	auto tableLength = lua_rawlen(L, 5);
-	for (auto i = 1; i <= tableLength; ++i) {
-		lua_pushinteger(L, i);
-		lua_gettable(L, 5);
-		if (lua_type(L, -1) == LUA_TNIL)
-			break;
-		data.values->push_back(luaL_checkstring(L, -1));
-		lua_pop(L, 1);
+	data.index = index;
+	data.isSlider = isSlider;
+	for (int i = 0; i < count; ++i) {
+		data.values->push_back(values[i]);
 	}
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::Combobox);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::Combobox)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputText)
-{
+MOD_EXPORT bool L_ImGui_AddInputText(const char* parentId, const char* id, const char* text, int callbackRef, const char* inputText, const char* hintText) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.inputText = luaL_optstring(L, 5, "");
-	data.hintText = luaL_optstring(L, 6, "");
+	data.inputText = inputText;
+	data.hintText = hintText;
 
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::InputText);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::InputText)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputTextMultiline)
-{
+MOD_EXPORT bool L_ImGui_AddInputTextMultiline(const char* parentId, const char* id, const char* text, int callbackRef, const char* inputText, float lineCount) {
 	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.inputText = luaL_optstring(L, 5, "");
-	data.lineCount = (float)luaL_optnumber(L, 6, 6);
+	data.inputText = inputText;
+	data.lineCount = lineCount;
 
-	EvalIDAndParent(L, id, parentId);
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::InputTextMultiline)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
+}
 
-	int type = static_cast<int>(IMGUI_ELEMENT::InputTextMultiline);
+static bool AddInputBinding(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal, IMGUI_ELEMENT type) {
+	ElementData data = ElementData();
+	data.currentIntVal = defaultVal;
 
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, type)->AddData(data);
+	SetEditedCallback(id, callbackRef);
+	return true;
+}
 
+MOD_EXPORT bool L_ImGui_AddInputController(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal) {
+	return AddInputBinding(parentId, id, text, callbackRef, defaultVal, IMGUI_ELEMENT::InputController);
+}
+
+MOD_EXPORT bool L_ImGui_AddInputKeyboard(const char* parentId, const char* id, const char* text, int callbackRef, int defaultVal) {
+	return AddInputBinding(parentId, id, text, callbackRef, defaultVal, IMGUI_ELEMENT::InputKeyboard);
+}
+
+static bool AddPlot(const char* parentId, const char* id, const char* text, const float* values, int count, const char* hintText, float minVal, float maxVal, float height, IMGUI_ELEMENT type) {
+	ElementData data = ElementData();
+	data.hintText = hintText;
+	data.minVal = minVal;
+	data.maxVal = maxVal;
+
+	if (!PrepareElement(id, parentId))
+		return false;
+	for (int i = 0; i < count; ++i) {
+		data.plotValues->push_back(values[i]);
+	}
+	Element* createdElement = CreateElement(parentId, id, text, type);
+	createdElement->data.size.y = height;
 	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
+	return true;
 }
 
-LUA_FUNCTION(Lua_ImGui_SetTooltip)
-{
-	const char* id = luaL_checkstring(L, 1);
-	const char* text = luaL_checkstring(L, 2);
-
-	bool success = customImGui.SetTooltipText(id, text);
-	if (!success) {
-		return luaL_error(L, "No element with id '%s' found.", id);
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_AddPlotLines(const char* parentId, const char* id, const char* text, const float* values, int count, const char* hintText, float minVal, float maxVal, float height) {
+	return AddPlot(parentId, id, text, values, count, hintText, minVal, maxVal, height, IMGUI_ELEMENT::PlotLines);
 }
 
-LUA_FUNCTION(Lua_ImGui_SetHelpmarker)
-{
-	const char* id = luaL_checkstring(L, 1);
-	const char* text = luaL_checkstring(L, 2);
-
-	bool success = customImGui.SetHelpMarkerText(id, text);
-	if (!success) {
-		return luaL_error(L, "No element with id '%s' found.", id);
-	}
-
-	return 1;
+MOD_EXPORT bool L_ImGui_AddPlotHistogram(const char* parentId, const char* id, const char* text, const float* values, int count, const char* hintText, float minVal, float maxVal, float height) {
+	return AddPlot(parentId, id, text, values, count, hintText, minVal, maxVal, height, IMGUI_ELEMENT::PlotHistogram);
 }
 
-LUA_FUNCTION(Lua_ImGui_GetMousePos)
-{
+MOD_EXPORT bool L_ImGui_AddProgressBar(const char* parentId, const char* id, const char* text, float value, const char* hintText) {
+	ElementData data = ElementData();
+	data.currentFloatVal = value;
+	data.hintText = hintText;
+
+	if (!PrepareElement(id, parentId))
+		return false;
+	CreateElement(parentId, id, text, IMGUI_ELEMENT::ProgressBar)->AddData(data);
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_SetTooltip(const char* id, const char* text) {
+	return customImGui.SetTooltipText(id, text);
+}
+
+MOD_EXPORT bool L_ImGui_SetHelpmarker(const char* id, const char* text) {
+	return customImGui.SetHelpMarkerText(id, text);
+}
+
+MOD_EXPORT bool L_ImGui_GetVisible(const char* id) {
+	return customImGui.GetVisible(id);
+}
+
+MOD_EXPORT bool L_ImGui_SetVisible(const char* id, bool visible) {
+	return customImGui.SetVisible(id, visible);
+}
+
+MOD_EXPORT bool L_ImGui_SetColor(const char* id, int type, float r, float g, float b, float a) {
+	return customImGui.SetColor(id, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
+}
+
+MOD_EXPORT bool L_ImGui_RemoveColor(const char* id, int type) {
+	return customImGui.RemoveColor(id, static_cast<ImGuiCol_>(type));
+}
+
+MOD_EXPORT bool L_ImGui_SetTextColor(const char* id, float r, float g, float b, float a) {
+	return customImGui.SetColor(id, ImGuiCol_Text, ImVec4(r, g, b, a));
+}
+
+MOD_EXPORT bool L_ImGui_SetSize(const char* id, float x, float y) {
+	return customImGui.SetElementSize(id, x, y);
+}
+
+// -1: not a window
+MOD_EXPORT int L_ImGui_GetWindowPinned(const char* id) {
+	Element* window = GetWindow(id);
+	return window ? (int)window->data.windowPinned : -1;
+}
+
+MOD_EXPORT bool L_ImGui_SetWindowPinned(const char* id, bool pinned) {
+	return customImGui.SetPinned(id, pinned);
+}
+
+MOD_EXPORT bool L_ImGui_GetWindowFlags(const char* id, int* flags) {
+	Element* window = GetWindow(id);
+	if (!window)
+		return false;
+	*flags = window->data.windowFlags;
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_SetWindowFlags(const char* id, int flags) {
+	return customImGui.SetWindowFlags(id, (ImGuiWindowFlags)flags);
+}
+
+MOD_EXPORT bool L_ImGui_GetWindowChildFlags(const char* id, int* flags) {
+	Element* window = GetWindow(id);
+	if (!window)
+		return false;
+	*flags = window->data.childFlags;
+	return true;
+}
+
+MOD_EXPORT bool L_ImGui_SetWindowChildFlags(const char* id, int flags) {
+	return customImGui.SetWindowChildFlags(id, (ImGuiChildFlags)flags);
+}
+
+MOD_EXPORT bool L_ImGui_SetWindowPosition(const char* id, float x, float y) {
+	RECT rect = { 0,0,0,0 };
+	if ((ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) && GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
+		// when viewports enabled, the position is relative to monitor, so we fix it
+		// when viewports disabled, the position is relative to the game window, that's fine
+		x += rect.left;
+		y += rect.top;
+	}
+
+	return customImGui.SetWindowPosition(id, x, y);
+}
+
+MOD_EXPORT void L_ImGui_GetMousePosition(Vector* out) {
 	float x = -1;
 	float y = -1;
 
@@ -631,7 +553,7 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 		if (ImGui::IsMousePosValid()) {
 			x = io.MousePos.x;
 			y = io.MousePos.y;
-			
+
 			RECT rect = { 0,0,0,0 };
 			if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
 				x -= rect.left;
@@ -644,499 +566,39 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 		y = (float)*(double*)(g_KAGEInputController + 0x50);
 	}
 
-	lua::LuaCaller(L).pushClass<LuaVector>(Vector(x, y));
-
-	return 1;
+	*out = Vector(x, y);
 }
 
-LUA_FUNCTION(Lua_ImGui_GetGameWindowRect)
-{
-	float x = 0;
-	float y = 0;
+MOD_EXPORT void L_ImGui_GetGameWindowRect(Vector* position, Vector* size) {
 	RECT rect = { 0,0,0,0 };
-
-	//if (/* repentogonOptions.enableImGuiMultiView && */!(g_Manager->GetOptions()->_isFullscreen)) {
-		if (GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
-			x = rect.left;
-			y = rect.top;
-		}
-	//}
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], Vector(rect.left, rect.top));
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], Vector(rect.right - rect.left, rect.bottom - rect.top));
-
-	return 2;
+	GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect);
+	*position = Vector((float)rect.left, (float)rect.top);
+	*size = Vector((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
 }
 
-LUA_FUNCTION(Lua_ImGui_AddInputController)
-{
-	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.currentIntVal = (int)luaL_optinteger(L, 5, 0);
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::InputController);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_AddInputKeyboard)
-{
-	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	int stackID = CheckAndSetCallback(L, 4);
-	data.currentIntVal = (int)luaL_optinteger(L, 5, 0);
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::InputKeyboard);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	if (lua_isfunction(L, 4)) {
-		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_AddPlotLines)
-{
-	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	if (!lua_istable(L, 4)) {
-		return luaL_error(L, "Argument 5 needs to be a table!");
-	}
-	data.hintText = luaL_optstring(L, 5, "");
-	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
-	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	float height = (float)luaL_optnumber(L, 8, 40.0f);
-
-	EvalIDAndParent(L, id, parentId);
-
-	// get table input
-	auto tableLength = lua_rawlen(L, 4);
-	for (auto i = 1; i <= tableLength; ++i) {
-		lua_pushinteger(L, i);
-		lua_gettable(L, 4);
-		if (lua_type(L, -1) == LUA_TNIL)
-			break;
-		data.plotValues->push_back((float)luaL_checknumber(L, -1));
-		lua_pop(L, 1);
-	}
-
-	int type = static_cast<int>(IMGUI_ELEMENT::PlotLines);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-	createdElement->data.size.y = height;
-
-	createdElement->AddData(data);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
-{
-	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	if (!lua_istable(L, 4)) {
-		return luaL_error(L, "Argument 5 needs to be a table!");
-	}
-	data.hintText = luaL_optstring(L, 5, "");
-	data.minVal = (float)luaL_optnumber(L, 6, FLT_MIN);
-	data.maxVal = (float)luaL_optnumber(L, 7, FLT_MAX);
-	float height = (float)luaL_optnumber(L, 8, 40.0f);
-
-	EvalIDAndParent(L, id, parentId);
-
-	// get table input
-	auto tableLength = lua_rawlen(L, 4);
-	for (auto i = 1; i <= tableLength; ++i) {
-		lua_pushinteger(L, i);
-		lua_gettable(L, 4);
-		if (lua_type(L, -1) == LUA_TNIL)
-			break;
-		data.plotValues->push_back((float)luaL_checknumber(L, -1));
-		lua_pop(L, 1);
-	}
-
-	int type = static_cast<int>(IMGUI_ELEMENT::PlotHistogram);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-	createdElement->data.size.y = height;
-
-	createdElement->AddData(data);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_AddProgressBar)
-{
-	ElementData data = ElementData();
-	const char* parentId = luaL_checkstring(L, 1);
-	const char* id = luaL_checkstring(L, 2);
-	const char* text = luaL_optstring(L, 3, "");
-	data.currentFloatVal = (float)luaL_optnumber(L, 4, 0.0f);
-	data.hintText = luaL_optstring(L, 5, "__DEFAULT__"); // special placeholder for default behavior handling
-
-	EvalIDAndParent(L, id, parentId);
-
-	int type = static_cast<int>(IMGUI_ELEMENT::ProgressBar);
-
-	customImGui.AddElement(parentId, id, text, type);
-	Element* createdElement = customImGui.GetElementById(id);
-
-	createdElement->AddData(data);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_PushNotification)
-{
-	const char* text = luaL_checkstring(L, 1);
-	int severity = (int)luaL_optinteger(L, 2, 0);
-	if (severity < 0 || severity > 3)
-		return luaL_error(L, "Severity needs to be a value between 0 and 3");
-	int lifetime = (int)luaL_optinteger(L, 3, 5000);
-
+MOD_EXPORT void L_ImGui_PushNotification(const char* text, int severity, int lifetime) {
 	notificationHandler.AddNotification(text, severity, lifetime);
-
-	return 1;
 }
 
-LUA_FUNCTION(Lua_ImGui_Show)
-{
+MOD_EXPORT void L_ImGui_Show() {
 	menuShown = true;
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_ImGui_Hide)
-{
+MOD_EXPORT void L_ImGui_Hide() {
 	menuShown = false;
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_ImGui_Reset)
-{
+MOD_EXPORT bool L_ImGui_IsVisible() {
+	return menuShown;
+}
+
+MOD_EXPORT void L_ImGui_Reset() {
 	customImGui.Reset();
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_ElementExists)
-{
-	const char* id = luaL_checkstring(L, 1);
-
-	lua_pushboolean(L, customImGui.ElementExists(id));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ImGui_GetVisible)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-
-	if (!customImGui.ElementExists(elementId)) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	lua_pushboolean(L, customImGui.GetVisible(elementId));
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_ImGui_SetVisible)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	bool newState = lua::luaL_checkboolean(L, 2);
-
-	bool success = customImGui.SetVisible(elementId, newState);
-
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_SetColor)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	int type = (int)luaL_checkinteger(L, 2);
-	float r = (float)luaL_checknumber(L, 3);
-	float g = (float)luaL_checknumber(L, 4);
-	float b = (float)luaL_checknumber(L, 5);
-	float a = (float)luaL_optnumber(L, 6, 1.0f);
-
-	bool success = customImGui.SetColor(elementId, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
-
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_RemoveColor)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	int type = (int)luaL_checkinteger(L, 2);
-
-	bool success = customImGui.RemoveColor(elementId, static_cast<ImGuiCol_>(type));
-
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_SetTextColor)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	float r = (float)luaL_checknumber(L, 2);
-	float g = (float)luaL_checknumber(L, 3);
-	float b = (float)luaL_checknumber(L, 4);
-	float a = (float)luaL_optnumber(L, 5, 1.0f);
-
-	bool success = customImGui.SetColor(elementId, ImGuiCol_Text, ImVec4(r, g, b, a));
-
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_GetWindowPinned)
-{
-	const char* elementId = luaL_checkstring(L, 2);
-
-	const Element* element = customImGui.GetElementById(elementId);
-	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-		lua_pushboolean(L, element->data.windowPinned);
-		return 1;
-	}
-	else {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-}
-
-LUA_FUNCTION(Lua_ImGui_SetWindowPinned)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	bool newState = lua::luaL_checkboolean(L, 2);
-
-	bool success = customImGui.SetPinned(elementId, newState);
-
-	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_GetWindowFlags)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-
-	const Element* element = customImGui.GetElementById(elementId);
-	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-		lua_pushinteger(L, element->data.windowFlags);
-		return 1;
-	}
-	else {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-}
-
-LUA_FUNCTION(Lua_ImGui_SetWindowFlags)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	ImGuiWindowFlags newFlags = (ImGuiWindowFlags)luaL_checkinteger(L, 2);
-
-
-	bool success = customImGui.SetWindowFlags(elementId, newFlags);
-
-	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_GetWindowChildFlags)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-
-	const Element* element = customImGui.GetElementById(elementId);
-	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-		lua_pushinteger(L, element->data.childFlags);
-		return 1;
-	}
-	else {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-}
-
-LUA_FUNCTION(Lua_ImGui_SetWindowChildFlags)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	ImGuiChildFlags newFlags = (ImGuiChildFlags)luaL_checkinteger(L, 2);
-
-
-	bool success = customImGui.SetWindowChildFlags(elementId, newFlags);
-
-	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	float x = (float)luaL_checknumber(L, 2);
-	float y = (float)luaL_checknumber(L, 3);
-
-	RECT rect = { 0,0,0,0 };
-	if ((ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) &&  GetWindowRect(rgonImGuiMultiViewportConfig.mainGameWindowForCreateImGuiWindow, &rect)) {
-		// when viewports enabled, the position is relative to monitor, so we fix it
-		// when viewports disabled, the position is relative to the game window, that's fine
-		x += rect.left;
-		y += rect.top;
-	}
-
-
-	bool success = customImGui.SetWindowPosition(elementId, x, y);
-
-	if (!success) {
-		return luaL_error(L, "Window Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_SetSize)
-{
-	const char* elementId = luaL_checkstring(L, 1);
-	float sizeX = (float)luaL_checknumber(L, 2);
-	float sizeY = (float)luaL_checknumber(L, 3);
-
-	bool success = customImGui.SetElementSize(elementId, sizeX, sizeY);
-
-	if (!success) {
-		return luaL_error(L, "Element with id '%s' not found", elementId);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ImGui_IsVisible)
-{
-	lua_pushboolean(L, menuShown);
-	return 1;
-}
-
-static void RegisterCustomImGui(lua_State* L)
-{
-	//lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetImGui", Lua_CustomImGui);
-
-	//luaL_Reg functions[] = {
-	lua_newtable(L);
-			lua::TableAssoc(L, "AddCallback", Lua_ImGui_AddCallback );
-			lua::TableAssoc(L, "RemoveCallback", Lua_ImGui_RemoveCallback );
-			lua::TableAssoc(L, "AddElement", Lua_ImGui_AddElement );
-			lua::TableAssoc(L, "RemoveElement", Lua_ImGui_RemoveElement );
-			lua::TableAssoc(L, "CreateMenu", Lua_ImGui_CreateMenu );
-			lua::TableAssoc(L, "RemoveMenu", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
-			lua::TableAssoc(L, "CreateWindow", Lua_ImGui_CreateWindow );
-			lua::TableAssoc(L, "RemoveWindow", Lua_ImGui_RemoveElement); // deprecated. now its an alias of RemoveElement
-			lua::TableAssoc(L, "LinkWindowToElement", Lua_ImGui_LinkWindowToElement );
-			lua::TableAssoc(L, "ElementExists", Lua_ImGui_ElementExists );
-			lua::TableAssoc(L, "UpdateText", Lua_ImGui_UpdateText );
-			lua::TableAssoc(L, "UpdateData", Lua_ImGui_UpdateData );
-			lua::TableAssoc(L, "AddButton", Lua_ImGui_AddButton );
-			lua::TableAssoc(L, "AddText", Lua_ImGui_AddText );
-			lua::TableAssoc(L, "AddInputInteger", Lua_ImGui_AddInputInteger );
-			lua::TableAssoc(L, "AddInputFloat", Lua_ImGui_AddInputFloat );
-			lua::TableAssoc(L, "AddDragInteger", Lua_ImGui_AddDragInteger );
-			lua::TableAssoc(L, "AddDragFloat", Lua_ImGui_AddDragFloat );
-			lua::TableAssoc(L, "AddSliderInteger", Lua_ImGui_AddSliderInteger );
-			lua::TableAssoc(L, "AddSliderFloat", Lua_ImGui_AddSliderFloat );
-			lua::TableAssoc(L, "AddInputColor", Lua_ImGui_AddInputColor );
-			lua::TableAssoc(L, "AddCheckbox", Lua_ImGui_AddCheckbox );
-			lua::TableAssoc(L, "AddRadioButtons", Lua_ImGui_AddRadioButtons );
-			lua::TableAssoc(L, "AddCombobox", Lua_ImGui_AddCombobox );
-			lua::TableAssoc(L, "AddInputText", Lua_ImGui_AddInputText );
-			lua::TableAssoc(L, "AddInputTextMultiline", Lua_ImGui_AddInputTextMultiline );
-			lua::TableAssoc(L, "AddTabBar", Lua_ImGui_AddTabBar );
-			lua::TableAssoc(L, "AddTab", Lua_ImGui_AddTab );
-			lua::TableAssoc(L, "AddInputController", Lua_ImGui_AddInputController );
-			lua::TableAssoc(L, "AddInputKeyboard", Lua_ImGui_AddInputKeyboard );
-			lua::TableAssoc(L, "AddPlotLines", Lua_ImGui_AddPlotLines );
-			lua::TableAssoc(L, "AddPlotHistogram", Lua_ImGui_AddPlotHistogram );
-			lua::TableAssoc(L, "AddProgressBar", Lua_ImGui_AddProgressBar );
-			lua::TableAssoc(L, "SetHelpmarker", Lua_ImGui_SetHelpmarker );
-			lua::TableAssoc(L, "SetColor", Lua_ImGui_SetColor );
-			lua::TableAssoc(L, "SetSize", Lua_ImGui_SetSize );
-			lua::TableAssoc(L, "SetTextColor", Lua_ImGui_SetTextColor );
-			lua::TableAssoc(L, "SetVisible", Lua_ImGui_SetVisible );
-			lua::TableAssoc(L, "SetWindowPinned", Lua_ImGui_SetWindowPinned );
-			lua::TableAssoc(L, "SetWindowFlags", Lua_ImGui_SetWindowFlags);
-			lua::TableAssoc(L, "SetWindowChildFlags", Lua_ImGui_SetWindowChildFlags);
-			lua::TableAssoc(L, "SetWindowPosition", Lua_ImGui_SetWindowPosition );
-			lua::TableAssoc(L, "SetWindowSize", Lua_ImGui_SetSize ); // deprecated. now its an alias of SetSize
-			lua::TableAssoc(L, "SetTooltip", Lua_ImGui_SetTooltip );
-			lua::TableAssoc(L, "RemoveColor", Lua_ImGui_RemoveColor );
-			lua::TableAssoc(L, "GetGameWindowRect", Lua_ImGui_GetGameWindowRect);
-			lua::TableAssoc(L, "GetMousePosition", Lua_ImGui_GetMousePos );
-			lua::TableAssoc(L, "GetVisible", Lua_ImGui_GetVisible );
-			lua::TableAssoc(L, "GetWindowPinned", Lua_ImGui_GetWindowPinned );
-			lua::TableAssoc(L, "GetWindowFlags", Lua_ImGui_GetWindowFlags);
-			lua::TableAssoc(L, "GetWindowChildFlags", Lua_ImGui_GetWindowChildFlags);
-			lua::TableAssoc(L, "PushNotification", Lua_ImGui_PushNotification );
-			lua::TableAssoc(L, "Reset", Lua_ImGui_Reset );
-			lua::TableAssoc(L, "Show", Lua_ImGui_Show );
-			lua::TableAssoc(L, "Hide", Lua_ImGui_Hide );
-			lua::TableAssoc(L, "IsVisible", Lua_ImGui_IsVisible);
-			//{ NULL, NULL }
-	//};
-	lua_setglobal(L, "ImGui");
-	
-	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "OpenConsole", Lua_ImGui_Show);
-	//lua::RegisterNewClass(L, lua::metatables::ImGuiMT, lua::metatables::ImGuiMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, ()->void)
 {
+	lua_register(_state, "__Lua_ImGui_Ref", Lua_ImGui_Ref);
+
 	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	RegisterCustomImGui(_state);
 }
