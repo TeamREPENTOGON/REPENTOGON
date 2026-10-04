@@ -1144,6 +1144,42 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_IsaacCreateWeapon) {
+	int wepType = (int)luaL_checkinteger(L, 1);
+	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+
+	if (!(WEAPON_NULL <= wepType && wepType < NUM_WEAPON_TYPES))
+	{
+		return luaL_argerror(L, 1, "Invalid WeaponType");
+	}
+
+	LuaWeapon::PushPtr(L, Isaac::CreateWeapon((WeaponType)wepType, ent));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacDestroyWeapon) {
+	Weapon* weapon = LuaWeapon::Get(L, 1);
+	Entity* owner = weapon->GetOwner();
+	if (!owner) {
+		return 0;
+	}
+
+	if (Entity_Player* player = owner->ToPlayer()) {
+		for (int i = 0; i < 5; ++i) {
+			if (*player->GetWeapon(i) == weapon) {
+				Isaac::DestoryWeapon(player->GetWeapon(i));
+				break;
+			}
+		}
+	}
+	else if (Entity_Familiar* familiar = owner->ToFamiliar()) {
+		if (*familiar->GetWeapon() == weapon) {
+			Isaac::DestoryWeapon(familiar->GetWeapon());
+		}
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1151,6 +1187,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_newtable(_state);
 	timerFnTable = luaL_ref(_state, LUA_REGISTRYINDEX);
+
 
 	// Fix existing functions
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRoomEntities", Lua_IsaacGetRoomEntitiesFix);
@@ -1168,6 +1205,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToScreenDistance", Lua_IsaacWorldToScreenDistance);
 
 	// new functions
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateWeapon", Lua_IsaacCreateWeapon);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DestroyWeapon", Lua_IsaacDestroyWeapon);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderToWorld", Lua_RenderToWorld);

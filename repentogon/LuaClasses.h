@@ -1063,6 +1063,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::HISTORY_HUD;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HISTORY_HUD_PTR;
     };
+
+    struct LuaWeapon
+    {
+        static constexpr const char* Name = "Weapon";
+        using Type = Weapon;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::WEAPON;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::WEAPON_PTR;
+    };
 }
 
 using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
@@ -1118,36 +1126,6 @@ using LuaGridEntityPressurePlate = CDataType<LuaTraits::LuaGridEntityPressurePla
 using LuaGridEntityDesc = CDataType<LuaTraits::LuaGridEntityDesc>;
 using LuaBlendMode = CDataType<LuaTraits::LuaBlendMode>;
 
-struct WeaponData {
-	Weapon* weapon;
-	// Arbitrarily default to EntityPlayer here. This thing is super unsafe and the API
-	// should be tweaked to prevent crashes.
-	std::variant<Entity_Player*, Entity_Familiar*> owner = (Entity_Player*)nullptr;
-	int8_t slot = -1;
-
-    WeaponData() = default;
-    WeaponData(Weapon* weapon, Entity* owner)
-    {
-        this->weapon = weapon;
-
-        if (Entity_Familiar* familiar = owner->ToFamiliar()) {
-            this->owner = familiar;
-        }
-        else if (Entity_Player* player = owner->ToPlayer()) {
-            this->owner = player;
-            for (int i = 0; i < 4; ++i) {
-                if (*(player->GetWeapon(i)) == weapon) {
-                    this->slot = i;
-                    break;
-                }
-            }
-        }
-    }
-
-    Weapon* get() const { return this->weapon; }
-	static Weapon* GetWeaponFromLua(lua_State* L, int idx);
-};
-
 // RGON Classes
 
 using LuaHistoryHUD = CDataType<LuaTraits::LuaHistoryHUD>;
@@ -1155,7 +1133,7 @@ using LuaPlayerHUD = CDataType<LuaTraits::LuaPlayerHUD>;
 using LuaBossPool = CDataType<LuaTraits::LuaBossPool>;
 using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
-using LuaWeapon = LuaUserdataPtr<Weapon, lua::metatables::WeaponMT, WeaponData>;
+using LuaWeapon = CDataType<LuaTraits::LuaWeapon>;
 using LuaMultiShotParams = CDataType<LuaTraits::LuaMultiShotParams>;
 using LuaLootList = CDataType<LuaTraits::LuaLootList>;
 using LuaGridEntityDecoration = CDataType<LuaTraits::LuaGridEntityDecoration>;

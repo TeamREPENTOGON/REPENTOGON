@@ -326,12 +326,19 @@ LUA_FUNCTION(Lua_FamiliarGetActiveWeaponNumFired)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarGetWeapon) {
+	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	LuaWeapon::PushPtr(L, *fam->GetWeapon());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetWeapon", Lua_FamiliarGetWeapon },
 		{ "GetOrbitPosition", Lua_FamiliarGetOrbitPosition },
 		{ "FireProjectile", Lua_FamiliarFireProjectile },
 		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },

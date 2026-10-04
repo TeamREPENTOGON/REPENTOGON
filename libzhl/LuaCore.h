@@ -93,7 +93,6 @@ namespace lua {
         extern LIBZHL_API const char* ImGuiMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* WeaponMT;
     }
 
     LIBZHL_API void UnloadMetatables();
@@ -573,6 +572,8 @@ namespace lua {
             PLAYER_HUD_PTR,
             HISTORY_HUD,
             HISTORY_HUD_PTR,
+            WEAPON,
+            WEAPON_PTR,
             MAX_CDATA
         };
 

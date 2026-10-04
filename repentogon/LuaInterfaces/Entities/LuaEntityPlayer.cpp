@@ -1299,14 +1299,12 @@ LUA_FUNCTION(Lua_PlayerGetWildCardItemType) {
 
 LUA_FUNCTION(Lua_PlayerSetWeapon) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	WeaponData* weaponData = lua::GetRawUserdata<WeaponData*>(L, 2, lua::metatables::WeaponMT);
+	Weapon* weapon = LuaWeapon::Get(L, 2);
 	int index = (int)luaL_checkinteger(L, 3);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
 	}
-	*player->GetWeapon(index) = weaponData->weapon;
-	weaponData->owner = player;
-	weaponData->slot = index;
+	*player->GetWeapon(index) = weapon;
 
 	return 0;
 }
@@ -4079,12 +4077,23 @@ LUA_FUNCTION(Lua_PlayerGetCostumeSpriteDescs) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetWeapon) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int index = (int)luaL_checkinteger(L, 2);
+	if (index < 0 || index > 4) {
+		return luaL_argerror(L, 2, "Index must be between 0 and 4");
+	}
+	LuaWeapon::PushPtr(L, *player->GetWeapon(index));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetWeapon", Lua_PlayerGetWeapon },
 		{ "GetCostumeSpriteDescs", Lua_PlayerGetCostumeSpriteDescs },
 		{ "GetPocketItem", Lua_PlayerGetPocketItem },
 		{ "GetHistory", Lua_PlayerGetHistory },

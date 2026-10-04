@@ -3400,7 +3400,7 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> voi
 			.pushClass<LuaVector>(dir)
 			.push(FireAmount)
 			.pushClassPtr<LuaEntity>(ent)
-			.pushClassPtr<LuaWeapon>(this, ent)
+			.pushClassPtr<LuaWeapon>(this)
 			.call(1);
 	}
 }
@@ -3418,7 +3418,7 @@ HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolat
 
 		lua::LuaCaller(L).push(callbackid)
 			.push(this->GetWeaponType())
-			.pushClassPtr<LuaWeapon>(this, ent)
+			.pushClassPtr<LuaWeapon>(this)
 			.pushClass<LuaVector>(dir)
 			.push(isShooting)
 			.push(isInterpolated)

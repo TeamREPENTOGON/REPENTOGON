@@ -402,6 +402,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::PLAYER_HUD_PTR] = lua_ctypeid(L, "PlayerHUDPtr");
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD] = lua_ctypeid(L, "HistoryHUD");
 	lua::ffi::CData[lua::ffi::CDataID::HISTORY_HUD_PTR] = lua_ctypeid(L, "HistoryHUDPtr");
+	lua::ffi::CData[lua::ffi::CDataID::WEAPON] = lua_ctypeid(L, "Weapon");
+	lua::ffi::CData[lua::ffi::CDataID::WEAPON_PTR] = lua_ctypeid(L, "WeaponPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

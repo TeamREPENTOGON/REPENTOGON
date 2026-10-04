@@ -732,7 +732,6 @@ namespace lua {
 		const char* ImGuiMT = "ImGui";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
-		const char* WeaponMT = "Weapon";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

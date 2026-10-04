@@ -274,6 +274,7 @@ loadmodule("HUD.HUDMessage")
 loadmodule("HUD.HistoryHUD")
 loadmodule("HUD.MinimapConfig")
 loadmodule("HUD.HUD")
+loadmodule("Weapon")
 
 lffi.metatype = ffi_metatype
 
