@@ -1283,7 +1283,8 @@ void ASMPatchNpcUpdatePickupGhosts() {
 		.Push(ASMPatch::Registers::ESI) // npc
 		.AddInternalCall(RunNpcUpdatePickupGhostsCallback)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x13);
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.AddRelativeJump((char*)addr + 0x15);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
