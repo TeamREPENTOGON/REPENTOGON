@@ -21,20 +21,16 @@ ffi.cdef[[
         int PreviousState;
         int PreviousVariant;
         private int BehaviorFlags;
-        padding char StdString_OpenAnimation[0x18];
-        padding char StdString_CloseAnimation[0x18];
-        padding char StdString_LockedAnimation[0x18];
-        padding char StdString_OpenLockedAnimation[0x18];
+        private struct StdString OpenAnimationString;
+        private struct StdString CloseAnimationString;
+        private struct StdString LockedAnimationString;
+        private struct StdString OpenLockedAnimationString;
     };
     typedef struct GridEntityDoor* GridEntityDoorPtr;
 
     void L_GridEntityDoor_Bar(struct GridEntityDoor*);
     bool L_GridEntityDoor_CanBlowOpen(struct GridEntityDoor*);
     void L_GridEntityDoor_Close(struct GridEntityDoor*, bool);
-    const char* L_GridEntityDoor_GetCloseAnimation(struct GridEntityDoor*);
-    const char* L_GridEntityDoor_GetLockedAnimation(struct GridEntityDoor*);
-    const char* L_GridEntityDoor_GetOpenAnimation(struct GridEntityDoor*);
-    const char* L_GridEntityDoor_GetOpenLockedAnimation(struct GridEntityDoor*);
     bool L_GridEntityDoor_IsLocked(struct GridEntityDoor*);
     bool L_GridEntityDoor_IsTargetRoomArcade(struct GridEntityDoor*);
     void L_GridEntityDoor_Open(struct GridEntityDoor*);
@@ -137,16 +133,16 @@ GridEntityDoorMT.__index = function(self, key)
         return ffi.getprivate(self, "_ExtraSprite")
     end
     if key == "CloseAnimation" then
-        return ffi.string(repentogon.L_GridEntityDoor_GetCloseAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "CloseAnimationString"))
     end 
     if key == "LockedAnimation" then
-        return ffi.string(repentogon.L_GridEntityDoor_GetLockedAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "LockedAnimationString"))
     end
     if key == "OpenAnimation" then
-        return ffi.string(repentogon.L_GridEntityDoor_GetOpenAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "OpenAnimationString"))
     end
     if key == "OpenLockedAnimation" then
-        return ffi.string(repentogon.L_GridEntityDoor_GetOpenLockedAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "OpenLockedAnimationString"))
     end
     if GridEntityDoorMT[key] ~= nil then
         return GridEntityDoorMT[key]

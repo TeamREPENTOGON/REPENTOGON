@@ -1,10 +1,6 @@
 #include "IsaacRepentance.h"
 
 extern "C" {
-	__declspec(dllexport) const char* L_GridEntityPoop_GetStateAnimation(GridEntity_Poop* poop) {
-		return poop->_stateAnimation.c_str();
-	}
-
 	__declspec(dllexport) bool L_GridEntityPoop_Hurt(GridEntity_Poop* poop, int damage, EntityRef* source) {
 		return poop->Hurt(damage, source);
 	}

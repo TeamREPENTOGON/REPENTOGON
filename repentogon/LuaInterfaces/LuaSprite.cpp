@@ -33,10 +33,6 @@ extern "C" {
 		return sprite->GetAnimationData(animName);
 	}
 
-	__declspec(dllexport) const char* L_Sprite_GetDefaultAnimation(ANM2* sprite) {
-		return sprite->_animDefaultName.c_str();
-	}
-
 	__declspec(dllexport) int L_Sprite_GetEventId(ANM2* sprite, const char* eventName) {
 		auto evt = sprite->GetEventByName(eventName);
 		if (evt.has_value()) {
@@ -45,10 +41,6 @@ extern "C" {
 		return -1;
 	}
 
-	__declspec(dllexport) const char* L_Sprite_GetFilename(ANM2* sprite) {
-		return sprite->_filename.c_str();
-	}
-	
 	__declspec(dllexport) LayerState* L_Sprite_GetLayerById(ANM2* sprite, int layerId) {
 		return sprite->GetLayer(layerId);
 	}

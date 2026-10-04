@@ -3,10 +3,6 @@
 #include "HookSystem.h"
 #include "../LuaClasses.h"
 
-MOD_EXPORT const char* L_ChallengeParam_GetName(ChallengeParam* challengeParam) {
-	return challengeParam->_name.c_str();
-}
-
 MOD_EXPORT int L_ChallengeParam_GetRoomFilterSize(ChallengeParam* challengeParam) {
 	return (int)challengeParam->_roomset.size();
 }

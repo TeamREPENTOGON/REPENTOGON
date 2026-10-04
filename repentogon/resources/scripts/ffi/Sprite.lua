@@ -1,7 +1,7 @@
 ffi.cdef[[
 struct Sprite {
-    padding char[0x18]; // std::string _filename
-    padding char[0x18]; // std::string _animDefaultName
+    private struct StdString Filename;
+    private struct StdString DefaultAnimation;
     private struct AnimationState AnimState;
     private struct AnimationState OverlayAnimState;
     private bool OverlayRenderFirst;
@@ -37,9 +37,7 @@ struct Sprite* L_Sprite_Copy(struct Sprite*);
 void L_Sprite_ClearCustomShader(struct Sprite*, bool);
 const char* L_Sprite_GetAnimation(struct Sprite*);
 struct AnimationData* L_Sprite_GetAnimationData(struct Sprite*, const char*);
-const char* L_Sprite_GetDefaultAnimation(struct Sprite*);
 int L_Sprite_GetEventId(struct Sprite*, const char*);
-const char* L_Sprite_GetFilename(struct Sprite*);
 struct LayerState* L_Sprite_GetLayerById(struct Sprite*, int);
 struct LayerState* L_Sprite_GetLayerByName(struct Sprite*, const char*);
 const char* L_Sprite_GetOverlayAnimation(struct Sprite*);
@@ -137,10 +135,10 @@ SpriteMT = {
         return ffi.getprivate(self, "AnimState").AnimData
     end,
     GetDefaultAnimation = function(self)
-        return ffi.string(repentogon.L_Sprite_GetDefaultAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "DefaultAnimation"))
     end,
     GetDefaultAnimationName = function(self)
-        return ffi.string(repentogon.L_Sprite_GetDefaultAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "DefaultAnimation"))
     end,
     GetEventTriggerFrames = function(self, animationName, eventName)
         ffichecks.checkstring(1, animationName)
@@ -160,7 +158,7 @@ SpriteMT = {
         return ret
     end,
     GetFilename = function(self)
-        return ffi.string(repentogon.L_Sprite_GetFilename(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "Filename"))
     end,
     GetFrame = function(self)
         local state = ffi.getprivate(self, "AnimState")

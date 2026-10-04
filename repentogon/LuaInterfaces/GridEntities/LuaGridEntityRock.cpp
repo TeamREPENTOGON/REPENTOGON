@@ -10,14 +10,6 @@ extern "C" {
 		return GridEntity_Rock::GetAltRockType(backdrop);
 	}
 
-	MOD_EXPORT const char* L_GridEntityRock_GetAnim(GridEntity_Rock* rock) {
-		return rock->_anim.c_str();
-	}
-
-	MOD_EXPORT const char* L_GridEntityRock_GetRubbleAnim(GridEntity_Rock* rock) {
-		return rock->_rubbleAnim.c_str();
-	}
-
 	// ditto
 	MOD_EXPORT void L_GridEntityRock_PlayBreakSound(GridEntity_Rock* rock, int gridType, int backdrop) {
 		rock->PlayBreakSound(gridType, backdrop);

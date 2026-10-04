@@ -544,8 +544,7 @@ RoomMT = {
         return ffi.new("struct KColor", ffi.getprivate(self, "WaterColorMultiplier"))
     end,
     GetWaterCurrent = function(self)
-        local v = ffi.getprivate(self, "WaterCurrent")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "WaterCurrent"))
     end,
     HasCurseMist = function(self)   
         return (ffi.getprivate(self, "RoomDescriptor").Flags >> 13) & 1 ~= 0

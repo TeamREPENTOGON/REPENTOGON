@@ -15,8 +15,7 @@ ffi.cdef [[
 local ffi = ffi
 
 local function GetVector(self, field)
-    local v = ffi.getprivate(self, field)
-    return Vector(v.X, v.Y)
+    return ffichecks.copyvector(ffi.getprivate(self, field))
 end
 
 local MinimapConfigMT

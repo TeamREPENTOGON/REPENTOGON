@@ -5,7 +5,7 @@ ffi.cdef [[
     };
 
     struct AnimationData {
-        padding char[0x18]; // std::string _name
+        private struct StdString Name;
         private const struct AnimationLayer* AnimationLayers;
         private const unsigned int LayerCount;
         padding char[0x4]; // NullLayer* _nullLayers
@@ -19,7 +19,6 @@ ffi.cdef [[
         padding char[0x4]; // unk
     };
 
-    const char* L_AnimationData_GetName(struct AnimationData*);
     bool L_AnimationData_IsEventTriggered(struct AnimationData*, const char*);
 ]]	
 
@@ -74,7 +73,7 @@ AnimationDataMT = {
         return ffi.getprivate(self, "Length")
     end,
     GetName = function(self)
-        return ffi.string(repentogon.L_AnimationData_GetName(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     IsLoopingAnimation = function(self)
         return ffi.getprivate(self, "Loop")

@@ -7,8 +7,8 @@ ffi.cdef[[
         private struct RNG RNG;
         int CollisionClass;
         private struct Sprite Sprite;
-        padding char StdString_Anim[0x18];
-        padding char StdString_RubbleAnim[0x18];
+        private struct StdString AnimString;
+        private struct StdString RubbleAnimString;
         padding char[0xc];
         int FrameCnt;
         padding char[0x4];
@@ -17,8 +17,6 @@ ffi.cdef[[
     
     bool L_GridEntityRock_Destroy(struct GridEntityRock*, int, struct EntityRef*);
     int L_GridEntityRock_GetAltRockType(int);
-    const char* L_GridEntityRock_GetAnim(struct GridEntityRock*);
-    const char* L_GridEntityRock_GetRubbleAnim(struct GridEntityRock*);
     void L_GridEntityRock_PlayBreakSound(struct GridEntityRock*, int, int);
     void L_GridEntityRock_PostInit(struct GridEntityRock*);
     void L_GridEntityRock_RegisterRocksDestroyed(struct GridEntityRock*, int);
@@ -59,7 +57,7 @@ GridEntityRockMT = {
         return self.Desc.Variant - 1000
     end,
     GetRubbleAnim = function(self)
-        return ffi.string(repentogon.L_GridEntityRock_GetRubbleAnim(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "RubbleAnimString"))
     end,
     PlayBreakSound = function(self, gridType, backdrop)
         ffichecks.checkinteger(1, gridType)
@@ -101,7 +99,7 @@ GridEntityRockMT = {
 
         local sprite = ffi.getprivate(self, "Sprite")
         local animState = ffi.getprivate(sprite, "AnimState")
-        local name = ffi.string(repentogon.L_GridEntityRock_GetAnim(self))
+        local name = ffichecks.stdstring(ffi.getprivate(self, "AnimString"))
 
         if sprite:SetAnimation(name, true) and not ffichecks.isnullptr(animState.AnimData) then
             animState:SetPosition(self.Desc.Variant - 1000)
@@ -125,10 +123,10 @@ local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityRockMT.__index = function(self, key)
     if key == "Anim" then
-        return ffi.string(repentogon.L_GridEntityRock_GetAnim(self));
+        return ffichecks.stdstring(ffi.getprivate(self, "AnimString"));
     end
     if key == "RubbleAnim" then
-        return ffi.string(repentogon.L_GridEntityRock_GetRubbleAnim(self));
+        return ffichecks.stdstring(ffi.getprivate(self, "RubbleAnimString"));
     end
     if GridEntityRockMT[key] ~= nil then
         return GridEntityRockMT[key]

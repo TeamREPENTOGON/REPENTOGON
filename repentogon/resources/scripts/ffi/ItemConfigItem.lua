@@ -3,9 +3,9 @@ struct ItemConfigItem
 {
     int Type;
     int ID;
-    padding char [0x18]; // Name
-    padding char [0x18]; // Desc
-    padding char [0x18]; // GfxFileName
+    private struct StdString NameString;
+    private struct StdString DescriptionString;
+    private struct StdString GfxFileNameString;
     int AchievementID;
     int CacheFlags;
     int AddMaxHearts;
@@ -36,11 +36,8 @@ struct ItemConfigItem
 
 typedef struct ItemConfigItem* ItemConfigItemPtr;
 
-const char* L_ItemConfigItem_GetName(struct ItemConfigItem*);
 void L_ItemConfigItem_SetName(struct ItemConfigItem*, const char*);
-const char* L_ItemConfigItem_GetDesc(struct ItemConfigItem*);
 void L_ItemConfigItem_SetDesc(struct ItemConfigItem*, const char*);
-const char* L_ItemConfigItem_GetGfxFileName(struct ItemConfigItem*);
 void L_ItemConfigItem_SetGfxFileName(struct ItemConfigItem*, const char*);
 bool L_ItemConfigItem_IsAvailable(struct ItemConfigItem*);
 int L_ItemConfigItem_GetCustomTags(struct ItemConfigItem*, const char**);   
@@ -60,9 +57,9 @@ local repentogon = ffidll
 
 
 local getkeys = {
-    Name = repentogon.L_ItemConfigItem_GetName,
-	Description = repentogon.L_ItemConfigItem_GetDesc,
-	GfxFileName = repentogon.L_ItemConfigItem_GetGfxFileName,
+    Name = "NameString",
+	Description = "DescriptionString",
+	GfxFileName = "GfxFileNameString",
 }
 
 local setkeys = {
@@ -77,7 +74,7 @@ ItemConfigItemMT = {
 
     __index = function(self, key)
         if getkeys[key] ~= nil then
-            return ffi.string(getkeys[key](self))
+            return ffichecks.stdstring(ffi.getprivate(self, getkeys[key]))
         end
         return ItemConfigItemMT[key]
     end,

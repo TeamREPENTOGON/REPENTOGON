@@ -102,8 +102,7 @@ EntitySaveStateMT = {
         return GetData(self).InitSeed
     end,
     GetPos = function(self)
-        local position = GetData(self).TargetPosition
-        return Vector(position.X, position.Y)
+        return ffichecks.copyvector(GetData(self).TargetPosition)
     end,
     GetSpawnerType = function(self)
         return GetData(self).SpawnerType

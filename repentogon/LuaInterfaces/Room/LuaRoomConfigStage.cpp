@@ -4,32 +4,16 @@ MOD_EXPORT bool L_RoomConfigStage_ValidateMusicID(int id, int* max) {
 	return g_Manager->_musicmanager.ValidateMusicID(id, *max);
 }
 
-MOD_EXPORT const char* L_RoomConfigStage_GetDisplayName(RoomConfig_Stage* stage) {
-	return stage->_displayName.c_str();
-}
-
 MOD_EXPORT void L_RoomConfigStage_SetDisplayName(RoomConfig_Stage* stage, const char* value) {
 	stage->_displayName = value;
-}
-
-MOD_EXPORT const char* L_RoomConfigStage_GetPlayerSpot(RoomConfig_Stage* stage) {
-	return stage->_playerSpot.c_str();
 }
 
 MOD_EXPORT void L_RoomConfigStage_SetPlayerSpot(RoomConfig_Stage* stage, const char* value) {
 	stage->_playerSpot = value;
 }
 
-MOD_EXPORT const char* L_RoomConfigStage_GetBossSpot(RoomConfig_Stage* stage) {
-	return stage->_bossSpot.c_str();
-}
-
 MOD_EXPORT void L_RoomConfigStage_SetBossSpot(RoomConfig_Stage* stage, const char* value) {
 	stage->_bossSpot = value;
-}
-
-MOD_EXPORT const char* L_RoomConfigStage_GetSuffix(RoomConfig_Stage* stage) {
-	return stage->_suffix.c_str();
 }
 
 MOD_EXPORT void L_RoomConfigStage_SetSuffix(RoomConfig_Stage* stage, const char* value) {

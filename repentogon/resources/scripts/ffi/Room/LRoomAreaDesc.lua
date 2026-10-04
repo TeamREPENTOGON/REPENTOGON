@@ -14,20 +14,16 @@ local LRoomAreaDescMT
 LRoomAreaDescMT = {
     __type = "LRoomAreaDesc",
     GetHighTopLeft = function(self)
-        local v = ffi.getprivate(self, "HighTopLeft")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "HighTopLeft"))
     end,
     GetHighBottomRight = function(self)
-        local v = ffi.getprivate(self, "HighBottomRight")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "HighBottomRight"))
     end,
     GetLowTopLeft = function(self)
-        local v = ffi.getprivate(self, "LowTopLeft")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "LowTopLeft"))
     end,
     GetLowBottomRight = function(self)
-        local v = ffi.getprivate(self, "LowBottomRight")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "LowBottomRight"))
     end,
 }
 

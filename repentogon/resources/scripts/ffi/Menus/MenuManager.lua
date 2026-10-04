@@ -59,8 +59,7 @@ MenuManager = {
     end,
     GetViewPosition = function()
         ffichecks.checkmainmenu("MenuManager")
-        local v = repentogon.L_MenuManager_GetViewPosition()
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(repentogon.L_MenuManager_GetViewPosition())
     end,
     IsActive = function()
         return repentogon.L_MenuManager_IsActive();

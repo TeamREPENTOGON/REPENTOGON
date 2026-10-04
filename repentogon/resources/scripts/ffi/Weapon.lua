@@ -39,8 +39,7 @@ WeaponMT = {
         return ffi.getprivate(self, "Charge")
     end,
     GetDirection = function(self)
-        local direction = ffi.getprivate(self, "Direction")
-        return Vector(direction.X, direction.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Direction"))
     end,
     GetFireDelay = function(self)
         return ffi.getprivate(self, "FireDelay")

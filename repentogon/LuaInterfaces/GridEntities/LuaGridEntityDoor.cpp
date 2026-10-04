@@ -15,22 +15,6 @@ extern "C" {
 		door->Close(force);
 	}
 
-	__declspec(dllexport) const char* L_GridEntityDoor_GetCloseAnimation(GridEntity_Door* door) {
-		return door->_closeAnimation.c_str();
-	}
-
-	__declspec(dllexport) const char* L_GridEntityDoor_GetLockedAnimation(GridEntity_Door* door) {
-		return door->_lockedAnimation.c_str();
-	}
-
-	__declspec(dllexport) const char* L_GridEntityDoor_GetOpenAnimation(GridEntity_Door* door) {
-		return door->_openAnimation.c_str();
-	}
-
-	__declspec(dllexport) const char* L_GridEntityDoor_GetOpenLockedAnimation(GridEntity_Door* door) {
-		return door->_openLockedAnimation.c_str();
-	}
-
 	__declspec(dllexport) bool L_GridEntityDoor_IsLocked(GridEntity_Door* door) {
 		return door->IsLocked();
 	}

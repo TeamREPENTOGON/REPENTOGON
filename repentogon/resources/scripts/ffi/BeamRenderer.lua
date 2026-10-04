@@ -49,8 +49,7 @@ PointMT = {
         return ffi.getprivate(self, "WorldSpace")
     end,
     GetPosition = function(self)
-        local position = ffi.getprivate(self, "Position")
-        return Vector(position.X, position.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Position"))
     end,
     GetSpritesheetCoordinate = function(self)
         return ffi.getprivate(self, "SpritesheetCoordinate")

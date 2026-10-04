@@ -5,6 +5,7 @@ ffi.cdef [[
         const int32_t Type : 0x8;
         const uint32_t Variant : 0xC;
         const int32_t Subtype : 0x10;
+        private struct StdString NameString : 0x14;
         const int32_t Difficulty : 0x2C;
         const float InitialWeight : 0x30;
         const float Weight : 0x34;
@@ -19,7 +20,6 @@ ffi.cdef [[
 
     typedef struct RoomConfigRoom* RoomConfigRoomPtr;
 
-    const char* L_RoomConfigRoom_GetName(struct RoomConfigRoom*);
 ]];
 
 local ffi = ffi
@@ -34,9 +34,7 @@ setmetatable(RoomConfigRoomMT, { __index = function() end })
 
 RoomConfigRoomMT.__index = function(self, key)
     if key == "Name" then
-        local name = repentogon.L_RoomConfigRoom_GetName(self)
-        if name == nil then return "" end
-        return ffi.string(name)
+        return ffichecks.stdstring(ffi.getprivate(self, "NameString"))
     elseif key == "Spawns" then
         return __RoomConfigSpawns_wrap(ffi.getprivate(self, "_Spawns"), self.SpawnCount)
     end

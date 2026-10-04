@@ -20,8 +20,7 @@ VectorListMT.__len = function(self) return el_size(self) end
 function VectorListMT:Get(idx)
     ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= el_size(self) then return nil end
-    local v = ffi.getprivate(self, "_first")[idx]
-    return Vector(v.X, v.Y)
+    return ffichecks.copyvector(ffi.getprivate(self, "_first")[idx])
 end
 
 setmetatable(VectorListMT, { __index = function() end })

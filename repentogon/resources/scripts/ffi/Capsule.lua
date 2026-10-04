@@ -27,16 +27,13 @@ CapsuleMT = {
         return repentogon.L_Capsule_Collide(self, capsule, point)
     end,
     GetDirection = function(self)
-        local v = ffi.getprivate(self, "Direction")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Direction"))
     end,
     GetEndPoint = function(self)
-        local v = ffi.getprivate(self, "EndPoint")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "EndPoint"))
     end,
     GetPosition = function(self)
-        local v = ffi.getprivate(self, "Position")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Position"))
     end,
     GetSize = function(self)
         return ffi.getprivate(self, "Size")
@@ -45,8 +42,7 @@ CapsuleMT = {
         return ffi.getprivate(self, "SizeDifference")
     end,
     GetStartPoint = function(self)
-        local v = ffi.getprivate(self, "StartPoint")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "StartPoint"))
     end,
     -- Deprecated methods
     GetF1 = function(self)

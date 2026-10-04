@@ -2,26 +2,14 @@
 #include "../Patches/ItemConfigEx.h"
 
 extern "C" {
-	__declspec(dllexport) const char* L_ItemConfigItem_GetDesc(ItemConfig_Item* item) {
-		return item->desc.c_str();
-	}
-
 	__declspec(dllexport) void L_ItemConfigItem_SetDesc(ItemConfig_Item* item, const char* desc) {
 		item->desc = desc;
-	}
-
-	__declspec(dllexport) const char* L_ItemConfigItem_GetName(ItemConfig_Item* item) {
-		return item->name.c_str();
 	}
 
 	__declspec(dllexport) void L_ItemConfigItem_SetName(ItemConfig_Item* item, const char* name) {
 		item->name = name;
 	}
 
-	__declspec(dllexport) const char* L_ItemConfigItem_GetGfxFileName(ItemConfig_Item* item) {
-		return item->gfxFilename.c_str();
-	}
-	
 	__declspec(dllexport) void L_ItemConfigItem_SetGfxFileName(ItemConfig_Item* item, const char* name) {
 		item->gfxFilename = name;
 	}

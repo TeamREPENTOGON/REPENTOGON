@@ -7,18 +7,6 @@ extern "C" {
 		ClearCustomShader(layer, champion);
 	}
 	
-	__declspec(dllexport) const char* L_LayerState_GetDefaultSpritesheetPath(LayerState* layer) {
-		return layer->_layerData->defaultSpriteSheetPath.c_str();
-	}
-
-	__declspec(dllexport) const char* L_LayerState_GetName(LayerState* layer) {
-		return layer->_layerData->name.c_str();
-	}
-
-	__declspec(dllexport) const char* L_LayerState_GetSpritesheetPath(LayerState* layer) {
-		return layer->_spriteSheetPath.c_str();
-	}
-
 	__declspec(dllexport) bool L_LayerState_HasCustomShader(LayerState* layer, bool champion) {
 		return HasCustomShader(layer, champion);
 	}

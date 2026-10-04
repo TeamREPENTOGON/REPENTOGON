@@ -8,6 +8,7 @@ ffi.cdef [[
     };
 
     struct BossPool {
+        private struct StdString Name : 0x0;
         private struct BossPoolEntry* EntriesFirst : 0x18;
         private struct BossPoolEntry* EntriesLast : 0x1c;
         private float TotalWeight : 0x24;
@@ -30,7 +31,6 @@ ffi.cdef [[
     } : 0x8cc;
 
     struct BossPoolManager* L_BossPoolManager_Get();
-    const char* L_BossPool_GetName(struct BossPool*);
 ]]
 
 local repentogon = ffidll
@@ -63,7 +63,7 @@ BossPoolMT = {
         return entries
     end,
     GetName = function(self)
-        return ffi.string(repentogon.L_BossPool_GetName(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     GetRNG = function(self)
         return ffi.getprivate(self, "RNG")

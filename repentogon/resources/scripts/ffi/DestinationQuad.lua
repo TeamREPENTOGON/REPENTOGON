@@ -133,8 +133,7 @@ DestinationQuadMT = {
         flipY = ffichecks.optboolean(flipY, true)
 
         local function copyCorner(field)
-            local v = ffi.getprivate(self, field)
-            return Vector(v.X, v.Y)
+            return ffichecks.copyvector(ffi.getprivate(self, field))
         end
 
         if flipX then 

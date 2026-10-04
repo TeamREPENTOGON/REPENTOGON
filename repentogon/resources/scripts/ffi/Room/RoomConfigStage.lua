@@ -1,6 +1,10 @@
 ffi.cdef [[
     struct RoomConfigStage {
         private unsigned int ID : 0x0;
+        private struct StdString DisplayName : 0x4;
+        private struct StdString PlayerSpot : 0x1c;
+        private struct StdString BossSpot : 0x34;
+        private struct StdString Suffix : 0x4c;
         private struct RoomSet Rooms[2] : 0x64;
         private int Music : 0xbc;
         private int Backdrop : 0xc0;
@@ -8,13 +12,9 @@ ffi.cdef [[
     typedef struct RoomConfigStage* RoomConfigStagePtr;
 
     bool L_RoomConfigStage_ValidateMusicID(int, int*);
-    const char* L_RoomConfigStage_GetDisplayName(struct RoomConfigStage*);
     void L_RoomConfigStage_SetDisplayName(struct RoomConfigStage*, const char*);
-    const char* L_RoomConfigStage_GetPlayerSpot(struct RoomConfigStage*);
     void L_RoomConfigStage_SetPlayerSpot(struct RoomConfigStage*, const char*);
-    const char* L_RoomConfigStage_GetBossSpot(struct RoomConfigStage*);
     void L_RoomConfigStage_SetBossSpot(struct RoomConfigStage*, const char*);
-    const char* L_RoomConfigStage_GetSuffix(struct RoomConfigStage*);
     void L_RoomConfigStage_SetSuffix(struct RoomConfigStage*, const char*);
     const char* L_RoomConfigStage_GetXMLName(struct RoomConfigStage*);
     void L_RoomConfigStage_SetXMLName(struct RoomConfigStage*, const char*);
@@ -49,10 +49,10 @@ RoomConfigStageMT = {
         return ffi.getprivate(self, "Backdrop")
     end,
     GetBossSpot = function(self)
-        return ffi.string(repentogon.L_RoomConfigStage_GetBossSpot(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "BossSpot"))
     end,
     GetDisplayName = function(self)
-        return ffi.string(repentogon.L_RoomConfigStage_GetDisplayName(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "DisplayName"))
     end,
     GetID = function(self)
         return ffi.getprivate(self, "ID")
@@ -61,7 +61,7 @@ RoomConfigStageMT = {
         return ffi.getprivate(self, "Music")
     end,
     GetPlayerSpot = function(self)
-        return ffi.string(repentogon.L_RoomConfigStage_GetPlayerSpot(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "PlayerSpot"))
     end,
     GetRoomSet = function(self, mode)
         mode = CheckMode(mode)
@@ -69,7 +69,7 @@ RoomConfigStageMT = {
         return RoomConfigSetT(ffi.getprivate(self, "Rooms") + mode, repentogon.L_RoomConfig_GetVanillaSetID(ffi.getprivate(self, "ID"), mode))
     end,
     GetSuffix = function(self)
-        return ffi.string(repentogon.L_RoomConfigStage_GetSuffix(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "Suffix"))
     end,
     GetXMLName = function(self)
         return ffi.string(repentogon.L_RoomConfigStage_GetXMLName(self))

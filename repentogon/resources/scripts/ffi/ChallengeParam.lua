@@ -6,6 +6,7 @@ ffi.cdef[[
     };
 
     struct ChallengeParam {
+        private struct StdString Name : 0x0;
         private struct ChallengeParamIntVector CollectibleList : 0x20;
         private struct ChallengeParamIntVector TrinketList : 0x2c;
         private int StartingPill : 0x38;
@@ -34,7 +35,6 @@ ffi.cdef[[
 
     typedef struct ChallengeParam* ChallengeParamPtr;
 
-    const char* L_ChallengeParam_GetName(struct ChallengeParam*);
     int L_ChallengeParam_GetRoomFilterSize(struct ChallengeParam*);
     void L_ChallengeParam_GetRoomFilter(struct ChallengeParam*, int*);
 ]]
@@ -92,7 +92,7 @@ ChallengeParamMT = {
         return ffi.getprivate(self, "MinFireRate")
     end,
     GetName = function(self)
-        return ffi.string(repentogon.L_ChallengeParam_GetName(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "Name"))
     end,
     GetPlayerType = function(self)
         return ffi.getprivate(self, "PlayerType")

@@ -2,14 +2,14 @@ ffi.cdef[[
 struct LayerData {
     unsigned int ID;
     unsigned int spritesheetID;
-    padding char[0x18]; // std::string name;
-    padding char[0x18]; // std::string defaultSpriteSheetPath;
+    private struct StdString Name;
+    private struct StdString DefaultSpritesheetPath;
 };
 
 struct LayerState {
     private struct LayerData* LayerData;
     private struct Sprite* Animation;
-    padding char[0x18]; // std::string SpritesheetFilePath;
+    private struct StdString SpritesheetPath;
     private unsigned int MinFilterMode;
     private unsigned int MagFilterMode;
     private unsigned int WrapSMode;
@@ -33,9 +33,6 @@ struct LayerState {
 typedef struct LayerState* LayerStatePtr;
 
 void L_LayerState_ClearCustomShader(struct LayerState*, bool);
-const char* L_LayerState_GetDefaultSpritesheetPath(struct LayerState*);
-const char* L_LayerState_GetName(struct LayerState*);
-const char* L_LayerState_GetSpritesheetPath(struct LayerState*);
 bool L_LayerState_HasCustomShader(struct LayerState*, bool);
 bool L_LayerState_HasCustomShaderWithPath(struct LayerState*, const char*, bool);
 bool L_LayerState_SetCustomShader(struct LayerState*, const char*, bool);
@@ -62,11 +59,10 @@ LayerStateMT = {
         return ffi.new("struct Color", ffi.getprivate(self, "Color"))
     end,
     GetCropOffset = function(self)
-        local v = ffi.getprivate(self, "CropOffset")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "CropOffset"))
     end,
     GetDefaultSpritesheetPath = function(self)
-        return ffi.string(repentogon.L_LayerState_GetDefaultSpritesheetPath(self))
+        return ffichecks.stdstring(ffi.getprivate(ffi.getprivate(self, "LayerData"), "DefaultSpritesheetPath"))
     end,
     GetFlipX = function(self)
         return ffi.getprivate(self, "FlipX")
@@ -78,11 +74,10 @@ LayerStateMT = {
         return ffi.getprivate(self, "LayerData").ID
     end,
     GetName = function(self)
-        return ffi.string(repentogon.L_LayerState_GetName(self))
+        return ffichecks.stdstring(ffi.getprivate(ffi.getprivate(self, "LayerData"), "Name"))
     end,
     GetPos = function(self)
-        local v = ffi.getprivate(self, "Pos")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Pos"))
     end,
     GetRenderFlags = function(self)
         return ffi.getprivate(self, "RenderFlags")
@@ -91,8 +86,7 @@ LayerStateMT = {
         return ffi.getprivate(self, "Rotation")
     end,
     GetSize = function(self)
-        local v = ffi.getprivate(self, "Size")
-        return Vector(v.X, v.Y)
+        return ffichecks.copyvector(ffi.getprivate(self, "Size"))
     end,
     GetSpritesheet = function(self)
         local sheet = ffi.getprivate(self, "Spritesheet")
@@ -102,7 +96,7 @@ LayerStateMT = {
         return sheet
     end,
     GetSpritesheetPath = function(self)
-        return ffi.string(repentogon.L_LayerState_GetSpritesheetPath(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "SpritesheetPath"))
     end,
     GetWrapSMode = function(self)
         return ffi.getprivate(self, "WrapSMode")

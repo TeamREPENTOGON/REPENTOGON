@@ -8,14 +8,13 @@ ffi.cdef[[
         int CollisionClass;
         private struct Sprite Sprite;
         int ReviveTimer;
-        padding char StdString_StateAnimation[0x18];
+        private struct StdString StateAnimationString;
         bool UnderPlayer;
         private bool Destroyed;
         padding char[0x2a];
     };
     typedef struct GridEntityPoop* GridEntityPoopPtr;
     
-    const char* L_GridEntityPoop_GetStateAnimation(struct GridEntityPoop*);
     bool L_GridEntityPoop_Hurt(struct GridEntityPoop*, int, struct EntityRef*);
     void L_GridEntityPoop_PostInit(struct GridEntityPoop*);
     void L_GridEntityPoop_Render(struct GridEntityPoop*, struct Vector);
@@ -83,7 +82,7 @@ local baseNewindex = getmetatable(GridEntity).__class.__newindex
 
 GridEntityPoopMT.__index = function(self, key)
     if key == "StateAnimation" then
-        return ffi.string(repentogon.L_GridEntityPoop_GetStateAnimation(self))
+        return ffichecks.stdstring(ffi.getprivate(self, "StateAnimationString"))
     end 
     if GridEntityPoopMT[key] ~= nil then
         return GridEntityPoopMT[key]

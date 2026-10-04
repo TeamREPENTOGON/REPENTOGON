@@ -2,7 +2,7 @@ ffi.cdef[[
 struct ItemConfigCostume
 {
     unsigned int ID;
-    padding char [0x18]; // Anm2Path
+    private struct StdString Anm2PathString;
     unsigned int Priority;
     bool HasOverlay;
     bool IsFlying;
@@ -14,7 +14,6 @@ struct ItemConfigCostume
 
 typedef struct ItemConfigCostume* ItemConfigCostumePtr;
 
-const char* L_ItemConfigCostume_GetAnm2Path(struct ItemConfigCostume*);
 void L_ItemConfigCostume_SetAnm2Path(struct ItemConfigCostume*, const char*);
 ]]
 
@@ -28,7 +27,7 @@ ItemConfigCostumeMT = {
 
     __index = function(self, key)
         if key == "Anm2Path" then
-            return ffi.string(repentogon.L_ItemConfigCostume_GetAnm2Path(self))
+            return ffichecks.stdstring(ffi.getprivate(self, "Anm2PathString"))
         end
         return ItemConfigCostumeMT[key]
     end,
