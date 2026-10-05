@@ -39,7 +39,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectiles) {
 	float trajectoryModifier = (float)luaL_checknumber(L, 4);
 	ProjectileParams* params = lua::GetCData<ProjectileParams*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::PROJECTILE_PARAMS], "ProjectileParams");
 
-	lua::luabridge::UserdataPtr::push(L, npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params), lua::Metatables::ENTITY_PROJECTILE);
+	LuaEntityProjectile::PushPtr(L, npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params));
 	return 1;
 }
 
@@ -131,7 +131,7 @@ static void ProjectileStorageToLua(lua_State* L, std::vector<Entity_Projectile*>
 	lua_newtable(L);
 	for (size_t i = 0; i < projectiles.size(); ++i) {
 		lua_pushinteger(L, i + 1);
-		lua::luabridge::UserdataPtr::push(L, projectiles[i], lua::GetMetatableKey(lua::Metatables::ENTITY_PROJECTILE));
+		LuaEntityProjectile::PushPtr(L, projectiles[i]);
 		lua_rawset(L, -3);
 	}
 
@@ -259,7 +259,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
 	GridEntityDesc* desc = lua::GetCData<GridEntityDesc*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC], "GridEntityDesc");
 	Vector* velocity = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	int backdrop = min((int)luaL_optinteger(L, 5, g_Game->_room->GetBackdrop()->backdropId), 1);
-	lua::luabridge::UserdataPtr::push(L, npc->FireGridEntity(sprite, desc, velocity, backdrop), lua::Metatables::ENTITY_PROJECTILE);
+	LuaEntityProjectile::PushPtr(L, npc->FireGridEntity(sprite, desc, velocity, backdrop));
 
 	return 1;
 }

@@ -950,11 +950,11 @@ MOD_EXPORT int L_Isaac_CountEntities(Entity* spawner, int type, int variant, int
 }
 
 MOD_EXPORT float L_Isaac_GetScreenWidth() {
-	return g_ScreenWidth;
+	return g_WIDTH;
 }
 
 MOD_EXPORT float L_Isaac_GetScreenHeight() {
-	return g_ScreenHeight;
+	return g_HEIGHT;
 }
 
 MOD_EXPORT float L_Isaac_GetScreenPointScale() {

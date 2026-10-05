@@ -434,6 +434,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_PTR] = lua_ctypeid(L, "LevelPtr");
 	lua::ffi::CData[lua::ffi::CDataID::GAME] = lua_ctypeid(L, "Game");
 	lua::ffi::CData[lua::ffi::CDataID::GAME_PTR] = lua_ctypeid(L, "GamePtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY] = lua_ctypeid(L, "Entity");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PTR] = lua_ctypeid(L, "EntityPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE] = lua_ctypeid(L, "EntityProjectile");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE_PTR] = lua_ctypeid(L, "EntityProjectilePtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

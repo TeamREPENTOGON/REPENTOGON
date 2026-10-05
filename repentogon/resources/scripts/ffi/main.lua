@@ -180,7 +180,7 @@ end
 local entityBridges = {
 	EntityAddress = __Lua_Entity_EntityAddress,
 	PlayerAddress = __Lua_Entity_PlayerAddress,
-	PushEntity = __Lua_Entity_PushEntity,
+	PushClass = __Lua_Entity_PushClass,
 	PushPlayer = __Lua_Entity_PushPlayer,
 	PushNPC = __Lua_Entity_PushNPC,
 	PushEffect = __Lua_Entity_PushEffect,
@@ -192,6 +192,9 @@ local uintptr = lffi.typeof("uintptr_t")
 ffichecks.entitytopointer = function(entity)
 	if entity == nil then
 		return nil
+	end
+	if pcall(lffi.typeof, entity) then
+		return lffi.cast(voidptr, entity)
 	end
 	return lffi.cast(voidptr, entityBridges.EntityAddress(entity))
 end
@@ -210,7 +213,12 @@ local function pointertouserdata(push)
 		return push(tonumber(lffi.cast(uintptr, pointer)))
 	end
 end
-ffichecks.pointertoentity = pointertouserdata(entityBridges.PushEntity)
+ffichecks.pointertoclass = function(pointer, entityType)
+	if pointer == nil then
+		return nil
+	end
+	return entityBridges.PushClass(tonumber(lffi.cast(uintptr, pointer)), entityType)
+end
 ffichecks.pointertoplayer = pointertouserdata(entityBridges.PushPlayer)
 ffichecks.pointertonpc = pointertouserdata(entityBridges.PushNPC)
 ffichecks.pointertoeffect = pointertouserdata(entityBridges.PushEffect)
@@ -363,6 +371,8 @@ loadmodule("PlayerManager")
 loadmodule("ItemPool")
 loadmodule("Level")
 loadmodule("Game")
+loadmodule("Entity.Entity")
+loadmodule("Entity.EntityProjectile")
 loadmodule("Isaac")
 loadmodule("Options")
 
@@ -449,7 +459,7 @@ end
 
 __Lua_Entity_EntityAddress = nil
 __Lua_Entity_PlayerAddress = nil
-__Lua_Entity_PushEntity = nil
+__Lua_Entity_PushClass = nil
 __Lua_Entity_PushPlayer = nil
 __Lua_Entity_PushNPC = nil
 __Lua_Entity_PushEffect = nil

@@ -20,11 +20,6 @@ LUA_FUNCTION(Lua_Entity_PlayerAddress) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Entity_PushEntity) {
-	LuaEntity::PushPtr(L, (Entity*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
 LUA_FUNCTION(Lua_Entity_PushPlayer) {
 	LuaEntityPlayer::PushPtr(L, (Entity_Player*)(uintptr_t)luaL_checknumber(L, 1));
 	return 1;
@@ -40,6 +35,22 @@ LUA_FUNCTION(Lua_Entity_PushEffect) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Entity_PushClass) {
+	void* pointer = (void*)(uintptr_t)luaL_checknumber(L, 1);
+	switch ((int)luaL_checkinteger(L, 2)) {
+	case 1: LuaEntityPlayer::PushPtr(L, (Entity_Player*)pointer); break;
+	case 2: LuaEntityTear::PushPtr(L, (Entity_Tear*)pointer); break;
+	case 3: LuaEntityFamiliar::PushPtr(L, (Entity_Familiar*)pointer); break;
+	case 4: LuaEntityBomb::PushPtr(L, (Entity_Bomb*)pointer); break;
+	case 5: LuaEntityPickup::PushPtr(L, (Entity_Pickup*)pointer); break;
+	case 6: LuaEntitySlot::PushPtr(L, (Entity_Slot*)pointer); break;
+	case 7: LuaEntityLaser::PushPtr(L, (Entity_Laser*)pointer); break;
+	case 8: LuaEntityKnife::PushPtr(L, (Entity_Knife*)pointer); break;
+	default: return luaL_error(L, "No FFI-less class for this entity");
+	}
+	return 1;
+}
+
 LUA_FUNCTION(Lua_Entity_PushResults) {
 	lua_createtable(L, (int)s_entityResults.size(), 0);
 	for (size_t i = 0; i < s_entityResults.size(); i++) {
@@ -52,8 +63,8 @@ LUA_FUNCTION(Lua_Entity_PushResults) {
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_register(_state, "__Lua_Entity_EntityAddress", Lua_Entity_EntityAddress);
 	lua_register(_state, "__Lua_Entity_PlayerAddress", Lua_Entity_PlayerAddress);
-	lua_register(_state, "__Lua_Entity_PushEntity", Lua_Entity_PushEntity);
 	lua_register(_state, "__Lua_Entity_PushPlayer", Lua_Entity_PushPlayer);
+	lua_register(_state, "__Lua_Entity_PushClass", Lua_Entity_PushClass);
 	lua_register(_state, "__Lua_Entity_PushNPC", Lua_Entity_PushNPC);
 	lua_register(_state, "__Lua_Entity_PushEffect", Lua_Entity_PushEffect);
 	lua_register(_state, "__Lua_Entity_PushResults", Lua_Entity_PushResults);

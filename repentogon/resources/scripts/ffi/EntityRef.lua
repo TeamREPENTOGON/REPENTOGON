@@ -7,23 +7,15 @@ ffi.cdef [[
         struct Vector Position;
         private struct Vector Velocity; // No idea why John Nicalis didn't expose this
         private int Flags;
-        private void* EntityTODO;
+        private struct Entity* EntityValue;
     };
 
     typedef struct EntityRef* EntityRefPtr;
+
+    void L_EntityRef_Init(struct EntityRef*, void*);
 ]]
 
---[[
-    We haven't FFI'd Entity yet so we're getting a little creative.
-    EntityRef's constructor and Entity fields are going through the traditional API for now.
-    This is thanks to our LuaJIT fork supporting pushing CData through the standard API.
-    We can follow this pattern for anything that depends on a class that isn't FFI'd.
-]]
-local cfuncs = {
-    Ctor = __Lua_EntityRef_Ctor,
-    GetEntity = __Lua_EntityRef_GetEntity,
-    SetEntity = __Lua_EntityRef_SetEntity,
-}
+local repentogon = ffidll
 
 local FLAG_CHARMED = 1
 local FLAG_FRIENDLY = 2
@@ -36,7 +28,7 @@ EntityRefMT = {
 
 EntityRefMT.__index = function(self, key)
     if key == "Entity" then
-        return cfuncs.GetEntity(self)
+        return ffi.getprivate(self, "EntityValue")
     end
     if key == "IsCharmed" then
         return (ffi.getprivate(self, "Flags") & FLAG_CHARMED) ~= 0
@@ -49,7 +41,8 @@ end
 
 EntityRefMT.__newindex = function(self, key, value)
     if key == "Entity" then
-        return cfuncs.SetEntity(self, value)
+        ffi.setprivate(self, "EntityValue", ffichecks.entitytopointer(value))
+        return
     end
     if key == "IsCharmed" then
         ffichecks.checkboolean(1, value)
@@ -79,11 +72,9 @@ local EntityRefT = ffi.metatype("struct EntityRef", EntityRefMT)
 
 EntityRef = setmetatable({}, {
     __class = EntityRefMT,
-    __call = function(_, ent)
-        return cfuncs.Ctor(ent)
+    __call = function(_, entity)
+        local ref = EntityRefT()
+        repentogon.L_EntityRef_Init(ref, ffichecks.entitytopointer(entity))
+        return ref
     end,
 })
-
-__Lua_EntityRef_Ctor = nil
-__Lua_EntityRef_GetEntity = nil
-__Lua_EntityRef_SetEntity = nil

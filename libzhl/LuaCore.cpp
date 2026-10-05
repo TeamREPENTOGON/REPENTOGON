@@ -130,7 +130,62 @@ namespace lua {
 		return _metatable_idx_from_name[name];
 	}
 
+	namespace {
+		struct EntityCDataUserdata {
+			void* vtable;
+			void* entity;
+		};
+
+		struct EntityCDataType {
+			lua::ffi::CDataID id;
+			lua::ffi::CDataID ptrId;
+			lua::Metatables accepted[4];
+		};
+
+		const EntityCDataType s_entityCDataTypes[] = {
+			{ lua::ffi::ENTITY, lua::ffi::ENTITY_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
+			{ lua::ffi::ENTITY_PROJECTILE, lua::ffi::ENTITY_PROJECTILE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PROJECTILE, Metatables::CONST_ENTITY_PROJECTILE } },
+		};
+
+		EntityCDataUserdata s_entityCDataUserdata[16];
+		unsigned int s_entityCDataSlot = 0;
+
+		void* TestEntityCData(lua_State* L, int ud, lua::Metatables mt) {
+			if (lua_type(L, ud) != LUA_TCDATA) {
+				return NULL;
+			}
+
+			for (const EntityCDataType& type : s_entityCDataTypes) {
+				void* entity = NULL;
+				if (void* pp = lua::TestCData(L, ud, lua::ffi::CData[type.ptrId])) {
+					entity = *static_cast<void**>(pp);
+				}
+				else if (void* pv = lua::TestCData(L, ud, lua::ffi::CData[type.id])) {
+					entity = pv;
+				}
+				else {
+					continue;
+				}
+
+				for (lua::Metatables accepted : type.accepted) {
+					if (accepted == mt) {
+						EntityCDataUserdata& slot = s_entityCDataUserdata[s_entityCDataSlot++ % 16];
+						slot.vtable = NULL;
+						slot.entity = entity;
+						return &slot;
+					}
+				}
+				return NULL;
+			}
+			return NULL;
+		}
+	}
+
 	void* TestUserdata(lua_State* L, int ud, lua::Metatables mt) {
+		if (void* entity = TestEntityCData(L, ud, mt)) {
+			return entity;
+		}
+
 		// s = ... userdata ...
 		void* p = lua_touserdata(L, ud);
 		if (p != NULL) {

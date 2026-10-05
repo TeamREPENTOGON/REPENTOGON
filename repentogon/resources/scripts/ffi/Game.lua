@@ -4,7 +4,7 @@ ffi.cdef [[
         private struct ItemPool ItemPoolValue : 0x1a740;
         private struct Seeds SeedsValue : 0x1bb84;
         private struct HUD HUDValue : 0x1d9ac;
-        private int FrameCount : 0x25a70;
+        int FrameCount : 0x25a70;
         private int TimeCounterValue : 0x25a74;
         private int BossRushParTimeValue : 0x25a78;
         private int BlueWombParTimeValue : 0x25a7c;
@@ -384,7 +384,9 @@ GameMT = {
     GetFont = function(self)
         return repentogon.L_Game_GetFont()
     end,
-    GetFrameCount = Getter("FrameCount"),
+    GetFrameCount = function(self)
+        return self.FrameCount
+    end,
     GetGenericPrompt = function(self)
         local prompt = GenericPromptT()
         repentogon.L_Game_CopyGenericPrompt(self, prompt)

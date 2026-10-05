@@ -568,6 +568,10 @@ namespace lua {
             LEVEL_PTR,
             GAME,
             GAME_PTR,
+            ENTITY,
+            ENTITY_PTR,
+            ENTITY_PROJECTILE,
+            ENTITY_PROJECTILE_PTR,
             MAX_CDATA
         };
 

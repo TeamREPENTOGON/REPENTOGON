@@ -673,6 +673,8 @@ namespace LuaTraits
         using Type = Entity_Projectile;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PROJECTILE;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PROJECTILE;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PROJECTILE;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PROJECTILE_PTR;
     };
 
     struct LuaEntityNPC
@@ -1151,7 +1153,35 @@ using LuaRoomDescriptor = CDataType<LuaTraits::LuaRoomDescriptor>;
 using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;
 using LuaItemPool = CDataType<LuaTraits::LuaItemPool>;
 using LuaHUD = CDataType<LuaTraits::LuaHUD>;
-using LuaEntity = LuabridgeType<LuaTraits::LuaEntity>;
+
+struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
+{
+    static bool IsUnderlyingType(lua_State* L, int index)
+    {
+        const int type = lua_type(L, index);
+        return type == LUA_TUSERDATA || type == LUA_TCDATA;
+    }
+
+    static void PushPtr(lua_State* L, Entity* ptr)
+    {
+        lua::ffi::pushCdataPtr(L, ptr, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PTR]);
+    }
+
+    static constexpr lua::LuaClassInterface Interface
+    {
+        [](lua_State* L, const void* value)
+        {
+            Push(L, *static_cast<const Entity*>(value));
+        },
+
+        [](lua_State* L, void* value)
+        {
+            PushPtr(L, static_cast<Entity*>(value));
+        }
+    };
+};
+
+using LuaEntity = LuaEntityType;
 using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
 using LuaEntityTear = LuabridgeType<LuaTraits::LuaEntityTear>;
 using LuaEntityFamiliar = LuabridgeType<LuaTraits::LuaEntityFamiliar>;
@@ -1159,7 +1189,7 @@ using LuaEntityBomb = LuabridgeType<LuaTraits::LuaEntityBomb>;
 using LuaEntityPickup = LuabridgeType<LuaTraits::LuaEntityPickup>;
 using LuaEntityLaser = LuabridgeType<LuaTraits::LuaEntityLaser>;
 using LuaEntityKnife = LuabridgeType<LuaTraits::LuaEntityKnife>;
-using LuaEntityProjectile = LuabridgeType<LuaTraits::LuaEntityProjectile>;
+using LuaEntityProjectile = CDataType<LuaTraits::LuaEntityProjectile>;
 using LuaEntityNPC = LuabridgeType<LuaTraits::LuaEntityNPC>;
 using LuaEntityEffect = LuabridgeType<LuaTraits::LuaEntityEffect>;
 using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;

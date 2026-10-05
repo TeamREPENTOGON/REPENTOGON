@@ -300,23 +300,6 @@ end
 EndClass()
 
 ---------------------------------------------------------
-BeginClass(EntityProjectile)
-
--- void EntityProjectile:ClearProjectileFlags(int Flags)
---	Removes the specified projectile flags
-function META:ClearProjectileFlags(f)
-	self.ProjectileFlags = self.ProjectileFlags & ~f
-end
-
--- boolean EntityProjectile:HasProjectileFlags(int Flags)
---	Returns true if we have any of the specified projectile flags
-function META:HasProjectileFlags(f)
-	return self.ProjectileFlags & f ~= 0
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityNPC)
 
 -- void	EntityNPC:MakeChampion(int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false)

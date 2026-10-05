@@ -138,6 +138,24 @@ __thiscall void Entity::Render(Vector * offset);
 "558bec83e4f8f30f1055":
 __thiscall void Entity::SetSize(float size, Vector sizeMulti, int numGridCollisionPoints);
 
+"a1????????83b8????????027c??8379??0175":
+__thiscall bool Entity::IsEnemy();
+
+"558bec83e4f851a1????????53565783b8????????028bf18b7d":
+__thiscall bool Entity::IsVulnerableEnemy(Entity* source);
+
+"558bec83e4f8518b81":
+__thiscall bool Entity::IsFrame(int frame, int offset);
+
+"558bec8b45??8bd185c0":
+__thiscall bool Entity::HasCommonParentWithEntity(Entity* other);
+
+"558bec83e4f881ec00010000a1????????33c4898424????????56578bf933c0":
+__thiscall void Entity::BloodExplode();
+
+"558bec83e4f883ec0c568bf16aff":
+__thiscall void Entity::RemoveStatusEffects();
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector, EntityPtr, ColorMod) {
 {{
 	inline int GetIndex() { return this->_index; }

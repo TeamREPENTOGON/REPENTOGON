@@ -1420,7 +1420,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Projectile* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::Metatables::ENTITY_PROJECTILE);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PROJECTILE_PTR]);
 		}
 
 		void operator()(Entity_Slot* s) {
