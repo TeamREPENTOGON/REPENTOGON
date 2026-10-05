@@ -90,7 +90,6 @@ namespace lua {
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
 		_metatable_idx_from_name["EntityList"] = Metatables::ENTITY_LIST;
-		_metatable_idx_from_name["Game"] = Metatables::GAME;
 		_metatable_idx_from_name["EntityNPC"] = Metatables::ENTITY_NPC;
 		_metatable_idx_from_name["EntityProjectile"] = Metatables::ENTITY_PROJECTILE;
 		_metatable_idx_from_name["EntityFamiliar"] = Metatables::ENTITY_FAMILIAR;
@@ -108,7 +107,6 @@ namespace lua {
 		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
 		_metatable_idx_from_name["const EntityList"] = Metatables::CONST_ENTITY_LIST;
-		_metatable_idx_from_name["const Game"] = Metatables::CONST_GAME;
 		_metatable_idx_from_name["const EntityNPC"] = Metatables::CONST_ENTITY_NPC;
 		_metatable_idx_from_name["const EntityProjectile"] = Metatables::CONST_ENTITY_PROJECTILE;
 		_metatable_idx_from_name["const EntityFamiliar"] = Metatables::CONST_ENTITY_FAMILIAR;

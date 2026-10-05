@@ -194,6 +194,48 @@ static cleanup void Game::FixErasedEnemyID(int* type<ecx>, int* variant<edx>, in
 "a1(????????)c3????????????????????558bec6a00":
 reference Game *g_Game;
 
+"558bec5153568bf15733ff":
+__thiscall void Game::ChangeRoom(int roomIndex, int dimension);
+
+"558bec83e4f883ec54538b5d??8bd1":
+__thiscall void Game::StartRoomTransition(int roomIndex, int direction, int animation, Entity_Player* player, int dimension);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????894d??8b73":
+__thiscall bool Game::RerollEnemy(Entity* entity, bool unk);
+
+"5168????????81c198ba0100e8????????59c3??????????????????????????a1":
+__thiscall void Game::ShowFortune();
+
+"5168????????81c198ba0100e8????????59c3??????????????????????????e8":
+__thiscall void Game::ShowRule();
+
+"558bec83ec108bc15633f6":
+__thiscall void Game::RerollLevelCollectibles();
+
+"558bec83ec388bc1":
+__thiscall void Game::RerollLevelPickups(int seed);
+
+"558bec83ec280f57c0":
+__thiscall void Game::FinishChallenge();
+
+"558bec8b81????????8d55":
+__thiscall void Game::AddPixelation(int duration);
+
+"558bec83e4f883ec0c8b45??53568b35":
+__thiscall void Game::ShowHallucination(int frameCount, int backdrop);
+
+"558bec8b91????????83ec0c33c0":
+__thiscall void Game::AddEncounteredBoss(int type, int variant);
+
+"558bec8b91????????33c0":
+__thiscall bool Game::HasEncounteredBoss(int type, int variant);
+
+"ff81e05a020083b9e05a020003":
+__thiscall void Game::AddDevilRoomDeal();
+
+"558beca1????????568bf18b90":
+__thiscall void Game::SetChallenge(int challenge);
+
 struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector, EntityFactory, StageTransition, Minimap, ColorMod, HUD, PauseScreen, BackwardsStageDesc, RNG) { {{
 	Game()
 	{

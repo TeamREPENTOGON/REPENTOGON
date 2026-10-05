@@ -323,6 +323,7 @@ loadmodule("ItemConfig.ItemConfig")
 loadmodule("PlayerManager")
 loadmodule("ItemPool")
 loadmodule("Level")
+loadmodule("Game")
 
 lffi.metatype = ffi_metatype
 
@@ -340,6 +341,69 @@ for _, mt in ipairs(metatypes) do
 			meta.__call = IndexCall
 		end
 	end
+end
+
+local function InstallPropertyTable(mt, isSet)
+	local key = isSet and "__propset" or "__propget"
+	if rawget(mt, key) ~= nil then
+		return
+	end
+
+	local handlerKey = isSet and "__newindex" or "__index"
+	local original = rawget(mt, handlerKey)
+	if type(original) ~= "function" then
+		original = nil
+	end
+
+	local hooked = false
+	local properties
+	properties = setmetatable({}, {
+		__index = function(_, name)
+			if isSet then
+				return function(self, value)
+					if original then
+						return original(self, name, value)
+					end
+					self[name] = value
+				end
+			end
+			return function(self)
+				if original then
+					return original(self, name)
+				end
+				return self[name]
+			end
+		end,
+		__newindex = function(t, name, accessor)
+			rawset(t, name, accessor)
+			if original and not hooked then
+				hooked = true
+				if isSet then
+					rawset(mt, handlerKey, function(self, k, v)
+						local accessor = rawget(properties, k)
+						if accessor then
+							return accessor(self, v)
+						end
+						return original(self, k, v)
+					end)
+				else
+					rawset(mt, handlerKey, function(self, k)
+						local accessor = rawget(properties, k)
+						if accessor then
+							return accessor(self)
+						end
+						return original(self, k)
+					end)
+				end
+			end
+		end,
+	})
+	rawset(mt, key, properties)
+end
+
+for _, mt in ipairs(metatypes) do
+	InstallPropertyTable(mt, false)
+	InstallPropertyTable(mt, true)
 end
 
 ffi = nil

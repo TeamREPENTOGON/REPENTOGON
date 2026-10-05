@@ -264,6 +264,7 @@ LevelMT = {
     end,
     ChangeRoom = function(self, roomIndex, dimension)
         ffichecks.checkinteger(1, roomIndex)
+        dimension = ffichecks.optnumber(dimension, -1)
         ffichecks.checkinteger(2, dimension)
         repentogon.L_Level_ChangeRoom(self, roomIndex, dimension)
     end,
@@ -387,6 +388,7 @@ LevelMT = {
     end,
     GetRoomByIdx = function(self, index, dimension)
         ffichecks.checkinteger(1, index)
+        dimension = ffichecks.optnumber(dimension, -1)
         ffichecks.checkinteger(2, dimension)
         return repentogon.L_Level_GetRoomByIdx(self, index, dimension)
     end,

@@ -432,6 +432,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ITEM_POOL_PTR] = lua_ctypeid(L, "ItemPoolPtr");
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL] = lua_ctypeid(L, "Level");
 	lua::ffi::CData[lua::ffi::CDataID::LEVEL_PTR] = lua_ctypeid(L, "LevelPtr");
+	lua::ffi::CData[lua::ffi::CDataID::GAME] = lua_ctypeid(L, "Game");
+	lua::ffi::CData[lua::ffi::CDataID::GAME_PTR] = lua_ctypeid(L, "GamePtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

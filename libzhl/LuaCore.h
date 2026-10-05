@@ -20,7 +20,6 @@ namespace lua {
         ENTITY_PLAYER,
         ENTITY_PICKUP,
         ENTITY_LIST,
-        GAME,
         ENTITY_NPC,
         ENTITY_PROJECTILE,
         ENTITY_FAMILIAR,
@@ -38,7 +37,6 @@ namespace lua {
         CONST_ENTITY_PLAYER,
         CONST_ENTITY_PICKUP,
         CONST_ENTITY_LIST,
-        CONST_GAME,
         CONST_ENTITY_NPC,
         CONST_ENTITY_PROJECTILE,
         CONST_ENTITY_FAMILIAR,
@@ -570,6 +568,8 @@ namespace lua {
             ITEM_POOL_PTR,
             LEVEL,
             LEVEL_PTR,
+            GAME,
+            GAME_PTR,
             MAX_CDATA
         };
 
