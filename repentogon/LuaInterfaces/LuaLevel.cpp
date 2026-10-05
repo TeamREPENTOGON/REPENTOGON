@@ -1,4 +1,4 @@
-﻿#include "IsaacRepentance.h"
+#include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "../LuaClasses.h"
 #include "HookSystem.h"
@@ -8,122 +8,201 @@
 
 LevelASM levelASM;
 
-LUA_FUNCTION(Lua_LevelGetEnterPosition) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	level->GetEnterPosition(toLua);
-
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_LevelGetDungeonReturnPosition) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], level->_dungeonReturnPos);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelSetDungeonReturnPosition) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	Vector* pos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	level->_dungeonReturnPos = *pos;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	int roomIDX = (int)luaL_checkinteger(L, 2);
-	unsigned int doorSlot = (unsigned int)luaL_checkinteger(L, 3);
-	lua_pushboolean(L, level->CanSpawnDoorOutline(roomIDX, doorSlot));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelHasAbandonedMineshaft)
-{
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushboolean(L, level->HasAbandonedMineshaft());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelHasMirrorDimension)
-{
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushboolean(L, level->HasMirrorDimension());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelHasPhotoDoor)
-{
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushboolean(L, level->HasPhotoDoor());
-
-	return 1;
-}
-
 static std::string CustomStageName;
+static std::string returnedString;
 
-LUA_FUNCTION(lua_LevelSetName) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	const char* name = luaL_checkstring(L, 2);
+static const char* ReturnString(const std::string& string) {
+	returnedString = string;
+	return returnedString.c_str();
+}
+
+MOD_EXPORT void L_Level_Update(Level* level) {
+	level->Update();
+}
+
+MOD_EXPORT void L_Level_SetStage(Level* level, int stage, int stageType) {
+	level->SetStage(stage, stageType);
+}
+
+MOD_EXPORT void L_Level_SetNextStage(Level* level) {
+	level->SetNextStage();
+}
+
+MOD_EXPORT const char* L_Level_GetName(Level* level) {
+	return ReturnString(level->GetName());
+}
+
+MOD_EXPORT const char* L_Level_GetCurseName(Level* level) {
+	return ReturnString(level->GetCurseName());
+}
+
+MOD_EXPORT bool L_Level_CanStageHaveCurseOfLabyrinth(Level* level, int stage) {
+	return level->CanStageHaveCurseOfLabyrinth(stage);
+}
+
+MOD_EXPORT void L_Level_ShowName(Level* level, bool sticky) {
+	level->ShowName(sticky);
+}
+
+MOD_EXPORT bool L_Level_GetStateFlag(Level* level, unsigned int flag) {
+	return ((Game*)level)->GetLevelStateFlag(flag);
+}
+
+MOD_EXPORT void L_Level_SetStateFlag(Level* level, unsigned int flag, bool value) {
+	level->SetStateFlag(flag, value);
+}
+
+MOD_EXPORT int L_Level_GetRandomRoomIndex(Level* level, bool iAmErrorRoom, unsigned int seed) {
+	return level->GetRandomRoomIndex(iAmErrorRoom, seed);
+}
+
+MOD_EXPORT int L_Level_GetNonCompleteRoomIndex(Level* level) {
+	return level->GetNonCompleteRoomIndex();
+}
+
+MOD_EXPORT RoomDescriptor* L_Level_GetRoomByIdx(Level* level, int idx, int dimension) {
+	return level->GetRoomByIdx(idx, dimension);
+}
+
+MOD_EXPORT RoomDescriptor* L_Level_GetCurrentRoomDesc(Level* level) {
+	return ((Game*)level)->GetCurrentRoomDesc();
+}
+
+MOD_EXPORT RoomDescriptor* L_Level_GetLastRoomDesc(Level* level) {
+	Game* game = (Game*)level;
+	return game->GetRoomByIdx(game->_lastRoomIdx, game->_lastRoomDimensionIdx);
+}
+
+MOD_EXPORT int L_Level_QueryRoomTypeIndex(Level* level, int roomType, bool visited, RNG* rng, bool ignoreGroup) {
+	return level->QueryRoomTypeIndex(roomType, visited, rng, ignoreGroup);
+}
+
+MOD_EXPORT bool L_Level_CanOpenChallengeRoom(Level* level, int roomIndex) {
+	return level->CanOpenChallengeRoom(roomIndex);
+}
+
+MOD_EXPORT void L_Level_GetEnterPosition(Level* level, Vector* out) {
+	level->GetEnterPosition(out);
+}
+
+MOD_EXPORT void L_Level_ChangeRoom(Level* level, int roomIndex, int dimension) {
+	level->ChangeRoom(roomIndex, dimension);
+}
+
+MOD_EXPORT bool L_Level_ForceHorsemanBoss(Level* level, int seed) {
+	return level->ForceHorsemanBoss(seed);
+}
+
+MOD_EXPORT int L_Level_GetAbsoluteStage(Level* level) {
+	return level->GetAbsoluteStage();
+}
+
+MOD_EXPORT int L_Level_GetCurses(Level* level) {
+	return level->GetCurses();
+}
+
+MOD_EXPORT void L_Level_UpdateVisibility(Level* level) {
+	((Game*)level)->UpdateVisibility();
+}
+
+MOD_EXPORT void L_Level_ApplyMapEffect(Level* level) {
+	level->ApplyMapEffect();
+}
+
+MOD_EXPORT void L_Level_ApplyBlueMapEffect(Level* level) {
+	level->ApplyBlueMapEffect();
+}
+
+MOD_EXPORT void L_Level_ApplyCompassEffect(Level* level, bool persistent) {
+	level->ApplyCompassEffect(persistent);
+}
+
+MOD_EXPORT void L_Level_RemoveCompassEffect(Level* level) {
+	level->RemoveCompassEffect();
+}
+
+MOD_EXPORT void L_Level_ShowMap(Level* level) {
+	level->ShowMap();
+}
+
+MOD_EXPORT void L_Level_AddCurse(Level* level, int curse, bool showName) {
+	level->AddCurse(curse, showName);
+}
+
+MOD_EXPORT void L_Level_RemoveCurses(Level* level, int curses) {
+	level->RemoveCurses(curses);
+}
+
+MOD_EXPORT bool L_Level_CanSpawnDevilRoom(Level* level) {
+	return level->CanSpawnDevilRoom();
+}
+
+MOD_EXPORT void L_Level_InitializeDevilAngelRoom(Level* level, bool forceAngel, bool forceDevil) {
+	level->InitializeDevilAngelRoom(forceAngel, forceDevil);
+}
+
+MOD_EXPORT void L_Level_UncoverHiddenDoor(Level* level, int roomIndex, int doorSlot) {
+	level->UncoverHiddenDoor(roomIndex, doorSlot);
+}
+
+MOD_EXPORT bool L_Level_IsNextStageAvailable(Level* level) {
+	return level->IsNextStageAvailable();
+}
+
+MOD_EXPORT float L_Level_GetPlanetariumChance(Level* level) {
+	return ((Game*)level)->GetPlanetariumChance();
+}
+
+MOD_EXPORT bool L_Level_MakeRedRoomDoor(Level* level, int roomIndex, int doorSlot) {
+	return level->MakeRedRoomDoor(roomIndex, doorSlot);
+}
+
+MOD_EXPORT bool L_Level_IsAscent(Level* level) {
+	return level->IsAscent();
+}
+
+MOD_EXPORT bool L_Level_IsPreAscent(Level* level) {
+	return level->IsPreAscent();
+}
+
+MOD_EXPORT void L_Level_SetRedHeartDamage(Level* level) {
+	level->SetRedHeartDamage();
+}
+
+MOD_EXPORT bool L_Level_CanSpawnDoorOutline(Level* level, int roomIDX, unsigned int doorSlot) {
+	return level->CanSpawnDoorOutline(roomIDX, doorSlot);
+}
+
+MOD_EXPORT bool L_Level_HasAbandonedMineshaft(Level* level) {
+	return level->HasAbandonedMineshaft();
+}
+
+MOD_EXPORT bool L_Level_HasMirrorDimension(Level* level) {
+	return level->HasMirrorDimension();
+}
+
+MOD_EXPORT bool L_Level_HasPhotoDoor(Level* level) {
+	return level->HasPhotoDoor();
+}
+
+MOD_EXPORT void L_Level_SetName(const char* name) {
 	CustomStageName = name;
-	return 0;
 }
 
-LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->_greedwavesclearedwithoutredheartdamage = (uint32_t)luaL_checkinteger(L, 2);
-	return 0;
-}
-LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushinteger(L, level->_greedwavesclearedwithoutredheartdamage);
-	return 1;
+MOD_EXPORT bool L_Level_IsStageAvailable(int levelStage, int stageType) {
+	return Level::IsStageAvailable(levelStage, stageType);
 }
 
-LUA_FUNCTION(lua_LevelIsStageAvailable) {
-	Level* level = lua::GetLuabridgeUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	int levelStage = (int)luaL_checkinteger(L, 2);
-	int stageType = (int)luaL_checkinteger(L, 3);
-	lua_pushboolean(L, level->IsStageAvailable(levelStage, stageType));
-	return 1;
+MOD_EXPORT int L_Level_GetForceSpecialQuest() {
+	return levelASM.ForceSpecialQuest;
 }
 
-LUA_FUNCTION(Lua_GetDimension) {
-	Game* level = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushinteger(L, level->GetDimension());
-	return 1;
+MOD_EXPORT void L_Level_SetForceSpecialQuest(int quest) {
+	levelASM.ForceSpecialQuest = quest;
 }
 
-LUA_FUNCTION(Lua_GetForceSpecialQuest) {
-	lua_pushinteger(L, (int)levelASM.ForceSpecialQuest);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetForceSpecialQuest) {
-	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetMyosotisPickups) {
-	Game* level = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
-	LuaEntitiesSaveStateVector::PushPtr(L, &level->_myosotisPickups);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelIsAltPath) {
-	bool ret = false;
-	// If ForceSpecialQuest is -1, quest doors are disabled
-	if (levelASM.ForceSpecialQuest > -1) {
-		// ForceSpecialQuest 0 defaults to vanilla behavior
-		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_stageType == 4 || g_Game->_stageType == 5);
-	}
-	lua_pushboolean(L, ret);
-	return 1;
+MOD_EXPORT bool L_Level_PlaceRoom(Level* level, LevelGenerator_Room* room, RoomConfig_Room* config, unsigned int seed) {
+	return ((Game*)level)->PlaceRoom(room, config, seed, 0);
 }
 
 /*
@@ -172,292 +251,72 @@ HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t sta
 	}
 }
 
-LUALIB_API int LuaCheckDimension(lua_State* L, int arg) {
-	lua_Integer dimension = luaL_optinteger(L, arg, -1);
-	if (dimension < -1 || dimension > 2) {
-		return luaL_argerror(L, arg, "Invalid Dimension");
-	}
-	return (int)dimension;
-}
-
 // Generates a determinstic seed for room placement based on the shape of the room and where we are trying to place it.
 // This is very similar to what is done when the game creates red rooms.
-uint32_t GetRoomPlacementSeed(const int roomShape, const int x, const int y) {
+static uint32_t GetRoomPlacementSeed(const int roomShape, const int x, const int y) {
 	const uint32_t seed = (g_Game->_dungeonPlacementSeed + y * 929) * (x + roomShape);
 	RNG rng;
 	rng.SetSeed(seed, 35);
 	return std::max(rng.Next(), 1u);
 }
 
-// Validates room placement seed passed from lua. If 0 or nil is passed, generate a seed.
-LUALIB_API uint32_t LuaCheckRoomPlacementSeed(lua_State* L, int arg, const int roomShape, const int x, const int y) {
-	lua_Integer inputSeed = luaL_optinteger(L, arg, 0);
-	if (inputSeed < 0) {
-		luaL_argerror(L, arg, "Invalid Seed");
-	} else if (inputSeed == 0) {
-		return GetRoomPlacementSeed(roomShape, x, y);
-	}
-	return (uint32_t)inputSeed;
+// If 0 or nil is passed, generate a seed.
+static uint32_t ResolvePlacementSeed(uint32_t seed, const int roomShape, const int x, const int y) {
+	return seed == 0 ? GetRoomPlacementSeed(roomShape, x, y) : seed;
 }
 
-LUA_FUNCTION(Lua_LevelCanPlaceRoom) {
-	int stackIdx = 2;
-
-	int roomShape = 0;
-	int doorMask = 0;
-
-	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
-	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
-		if (roomConfig) {
-			roomShape = roomConfig->Shape;
-			doorMask = roomConfig->Doors;
-		}
-	} else {
-		roomShape = (int)luaL_checkinteger(L, stackIdx++);
-		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
-	}
-
-	const int gridIndex = (int)luaL_checkinteger(L, stackIdx++);
-	if (gridIndex < 0 || gridIndex > 168) {
-		lua_pushboolean(L, false);
-		return 1;
-	}
+MOD_EXPORT bool L_Level_CanPlaceRoom(int roomShape, int doorMask, int gridIndex, int dimension, bool allowMultipleDoors, bool allowSpecialNeighbors, bool allowNoNeighbors) {
 	const XY coords = RoomIndexToCoords(gridIndex);
-	const int dimension = LuaCheckDimension(L, stackIdx++);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
-	const bool allowNoNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
-	const bool result = CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
-	lua_pushboolean(L, result);
-	return 1;
+	return CanPlaceRoom(roomShape, doorMask, coords.x, coords.y, dimension, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 }
 
-LUA_FUNCTION(Lua_LevelTryPlaceRoom) {
-	RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, 2);
-	const int gridIndex = (int)luaL_checkinteger(L, 3);
-	if (gridIndex < 0 || gridIndex > 168) {
-		lua_pushboolean(L, false);
-		return 1;
-	}
+MOD_EXPORT RoomDescriptor* L_Level_TryPlaceRoom(RoomConfig_Room* roomConfig, int gridIndex, int dimension, unsigned int seed, bool allowMultipleDoors, bool allowSpecialNeighbors, bool allowNoNeighbors) {
 	const XY coords = RoomIndexToCoords(gridIndex);
-	const int dimension = LuaCheckDimension(L, 4);
-	const uint32_t seed = LuaCheckRoomPlacementSeed(L, 5, roomConfig->Shape, coords.x, coords.y);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, 6, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 7, false);
-	const bool allowNoNeighbors = lua::luaL_optboolean(L, 8, false);
-	RoomDescriptor* newRoom = TryPlaceRoom(roomConfig, coords.x, coords.y, dimension, seed, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
-	if (newRoom) {
-		LuaRoomDescriptor::PushPtr(L, newRoom);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
+	seed = ResolvePlacementSeed(seed, roomConfig->Shape, coords.x, coords.y);
+	return TryPlaceRoom(roomConfig, coords.x, coords.y, dimension, seed, allowMultipleDoors, allowSpecialNeighbors, allowNoNeighbors);
 }
 
-LUA_FUNCTION(Lua_LevelCanPlaceRoomAtDoor) {
-	int stackIdx = 2;
-
-	int roomShape = 0;
-	int doorMask = 0;
-
-	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
-	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
-		if (roomConfig) {
-			roomShape = roomConfig->Shape;
-			doorMask = roomConfig->Doors;
-		}
-	} else {
-		roomShape = (int)luaL_checkinteger(L, stackIdx++);
-		doorMask = (int)luaL_optinteger(L, stackIdx++, -1);
-	}
-
-	RoomDescriptor* roomDescToConnect = LuaRoomDescriptor::Get(L, stackIdx++);
-	const int doorSlot = (int)luaL_checkinteger(L, stackIdx++);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
-	const bool result = CanPlaceRoomAtDoor(roomShape, doorMask, roomDescToConnect, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
-	lua_pushboolean(L, result);
-	return 1;
+MOD_EXPORT bool L_Level_CanPlaceRoomAtDoor(int roomShape, int doorMask, RoomDescriptor* roomDescToConnect, int doorSlot, bool allowMultipleDoors, bool allowSpecialNeighbors) {
+	return CanPlaceRoomAtDoor(roomShape, doorMask, roomDescToConnect, doorSlot, allowMultipleDoors, allowSpecialNeighbors);
 }
 
-LUA_FUNCTION(Lua_LevelTryPlaceRoomAtDoor) {
-	RoomConfig_Room* roomConfigToPlace = LuaRoomConfigRoom::Get(L, 2);
-	RoomDescriptor* roomDescToConnect = LuaRoomDescriptor::Get(L, 3);
+MOD_EXPORT RoomDescriptor* L_Level_TryPlaceRoomAtDoor(RoomConfig_Room* roomConfigToPlace, RoomDescriptor* roomDescToConnect, int doorSlot, unsigned int seed, bool allowMultipleDoors, bool allowSpecialNeighbors, bool* attempted) {
+	*attempted = false;
 	if (!roomDescToConnect || !roomDescToConnect->Data) {
-		lua_pushboolean(L, false);
-		return 1;
+		return nullptr;
 	}
-	const int doorSlot = (int)luaL_checkinteger(L, 4);
 
 	// Find the target coordinates of this door, as we might use it to generate a seed.
 	const DoorSourceTarget doorsourceTarget = GetDoorSourceTarget(roomDescToConnect->GridIndex, roomDescToConnect->Data->Shape, doorSlot, false);
 	if (!doorsourceTarget.IsValid()) {
-		lua_pushboolean(L, false);
-		return 1;
+		return nullptr;
 	}
-	const uint32_t seed = LuaCheckRoomPlacementSeed(L, 5, roomConfigToPlace->Shape, doorsourceTarget.target.x, doorsourceTarget.target.y);
 
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, 6, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, 7, false);
-	RoomDescriptor* newRoom = TryPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors);
-	if (newRoom) {
-		LuaRoomDescriptor::PushPtr(L, newRoom);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
+	*attempted = true;
+	seed = ResolvePlacementSeed(seed, roomConfigToPlace->Shape, doorsourceTarget.target.x, doorsourceTarget.target.y);
+	return TryPlaceRoomAtDoor(roomConfigToPlace, roomDescToConnect, doorSlot, seed, allowMultipleDoors, allowSpecialNeighbors);
 }
 
-LUA_FUNCTION(Lua_LevelFindValidRoomPlacementLocations) {
-	int stackIdx = 2;
-
-	int roomShape = ROOMSHAPE_1x1;
-	int doorMask = -1;
-
-	bool roomOverload = LuaRoomConfigRoom::IsUnderlyingType(L, stackIdx);
-	if (roomOverload) {
-		const RoomConfig_Room* roomConfig = LuaRoomConfigRoom::Get(L, stackIdx++);
-		if (roomConfig) {
-			roomShape = roomConfig->Shape;
-			doorMask = roomConfig->Doors;
-		}
-	} else {
-		roomShape = (int)luaL_optinteger(L, stackIdx++, roomShape);
-		doorMask = (int)luaL_optinteger(L, stackIdx++, doorMask);
-	}
-
-	const int dimension = LuaCheckDimension(L, stackIdx++);
-	const bool allowMultipleDoors = lua::luaL_optboolean(L, stackIdx++, true);
-	const bool allowSpecialNeighbors = lua::luaL_optboolean(L, stackIdx++, false);
+MOD_EXPORT int L_Level_FindValidRoomPlacementLocations(int roomShape, int doorMask, int dimension, bool allowMultipleDoors, bool allowSpecialNeighbors, int* out) {
 	const std::set<int> validLocations = FindValidRoomPlacementLocations(roomShape, doorMask, dimension, allowMultipleDoors, allowSpecialNeighbors);
-	
-	lua_newtable(L);
-	int i = 0;
-	for (const int gridIndex : validLocations) {
-		lua_pushinteger(L, gridIndex);
-		lua_rawseti(L, -2, i + 1);
-		i++;
+	if (out) {
+		int i = 0;
+		for (const int gridIndex : validLocations) {
+			out[i++] = gridIndex;
+		}
 	}
-
-	return 1;
+	return (int)validLocations.size();
 }
 
-LUA_FUNCTION(Lua_LevelGetNeighboringRooms) {
-	const int gridIndex = (int)luaL_checkinteger(L, 2);
-	const int roomShape = (int)luaL_checkinteger(L, 3);
-	const int dimension = LuaCheckDimension(L, 4);
-	
+MOD_EXPORT int L_Level_GetNeighboringRooms(int gridIndex, int roomShape, int dimension, int* doorSlots, RoomDescriptor** rooms) {
 	const std::map<int, RoomDescriptor*> neighbors = GetNeighboringRooms(gridIndex, roomShape, dimension);
-
-	lua_newtable(L);
-	for (const auto& [doorSlot, neighborDesc] : neighbors) {
-		LuaRoomDescriptor::PushPtr(L, neighborDesc);
-		lua_rawseti(L, -2, doorSlot);
+	if (doorSlots && rooms) {
+		int i = 0;
+		for (const auto& [doorSlot, neighborDesc] : neighbors) {
+			doorSlots[i] = doorSlot;
+			rooms[i] = neighborDesc;
+			i++;
+		}
 	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetGenerationRNG) {
-	LuaRNG::PushPtr(L, &g_Game->_generationRNG);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetCurrentRoom) {
-	LuaRoom::PushPtr(L, g_Game->_room);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetCurrentRoomDesc) {
-	LuaRoomDescriptor::PushPtr(L, g_Game->GetCurrentRoomDesc());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetRooms) {
-	LuaArrayProxy<RoomDescriptor>* list = LuaRoomDescriptorList::Place(L);
-	list->size = g_Game->_nbRooms;
-	list->data = g_Game->_gridRooms;
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetLastRoomDesc) {
-	LuaRoomDescriptor::PushPtr(L, g_Game->GetRoomByIdx(g_Game->_lastRoomIdx, g_Game->_lastRoomDimensionIdx));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetRoomByIdx) {
-	int idx = luaL_checkinteger(L, 2);
-	int dimension = luaL_checkinteger(L, 3);
-	LuaRoomDescriptor::PushPtr(L, g_Game->GetRoomByIdx(idx, dimension));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelGetDevilAngelRoomRNG) {
-	int idx = luaL_checkinteger(L, 2);
-	LuaRNG::PushPtr(L, &g_Game->_devilAngelRoomRNG);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelQueryRoomTypeIndex) {
-	int roomType = luaL_checkinteger(L, 2);
-	bool visited = lua::luaL_optboolean(L, 3, false);
-	RNG* rng = LuaRNG::Get(L, 4);
-	bool ignoreGroup = lua::luaL_optboolean(L, 5, false);
-
-	lua_pushinteger(L, ((Level*)g_Game)->QueryRoomTypeIndex(roomType, visited, rng, ignoreGroup));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_LevelPlaceRoom) {
-	Game* game = lua::GetLuabridgeUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
-	LevelGenerator_Room* room = LuaLevelGeneratorEntry::Get(L, 2);
-	RoomConfig_Room* config = LuaRoomConfigRoom::Get(L, 3);
-	uint32_t seed = (uint32_t)luaL_checkinteger(L, 4);
-
-	lua_pushboolean(L, game->PlaceRoom(room, config, seed, 0));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {	
-		{ "PlaceRoom", Lua_LevelPlaceRoom },
-		{ "QueryRoomTypeIndex", Lua_LevelQueryRoomTypeIndex },
-		{ "GetDevilAngelRoomRNG", Lua_LevelGetDevilAngelRoomRNG },
-		{ "GetCurrentRoomDesc", Lua_LevelGetCurrentRoomDesc },
-		{ "GetRooms", Lua_LevelGetRooms },
-		{ "GetLastRoomDesc", Lua_LevelGetLastRoomDesc },
-		{ "GetRoomByIdx", Lua_LevelGetRoomByIdx },
-		{ "GetCurrentRoom", Lua_LevelGetCurrentRoom },
-		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
-		{ "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
-		{ "HasMirrorDimension", Lua_LevelHasMirrorDimension },
-		{ "HasPhotoDoor", Lua_LevelHasPhotoDoor },
-		{ "SetName", lua_LevelSetName },
-		{ "IsStageAvailable", lua_LevelIsStageAvailable },
-		{ "GetDimension", Lua_GetDimension},
-		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
-		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
-		{ "GetMyosotisPickups", Lua_GetMyosotisPickups },
-
-		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
-		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },
-
-		{ "CanPlaceRoom", Lua_LevelCanPlaceRoom },
-		{ "TryPlaceRoom", Lua_LevelTryPlaceRoom },
-		{ "CanPlaceRoomAtDoor", Lua_LevelCanPlaceRoomAtDoor },
-		{ "TryPlaceRoomAtDoor", Lua_LevelTryPlaceRoomAtDoor },
-		{ "FindValidRoomPlacementLocations", Lua_LevelFindValidRoomPlacementLocations },
-		{ "GetNeighboringRooms", Lua_LevelGetNeighboringRooms },
-		{ "GetGenerationRNG", Lua_LevelGetGenerationRNG },
-
-		{ NULL, NULL }
-	};
-
-	lua::RegisterFunctions(_state, lua::Metatables::LEVEL, functions);
+	return (int)neighbors.size();
 }

@@ -559,8 +559,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Level";
         using Type = Level;
-        static constexpr lua::Metatables MT = lua::Metatables::LEVEL;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_LEVEL;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::LEVEL;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::LEVEL_PTR;
     };
 
     struct LuaRoom
@@ -1145,7 +1145,7 @@ using LuaCostume = CDataType<LuaTraits::LuaCostume>;
 using LuaRoomConfigRoom = CDataType<LuaTraits::LuaRoomConfigRoom>;
 using LuaSeeds = CDataType<LuaTraits::LuaSeeds>;
 using LuaGame = LuabridgeType<LuaTraits::LuaGame>;
-using LuaLevel = LuabridgeType<LuaTraits::LuaLevel>;
+using LuaLevel = CDataType<LuaTraits::LuaLevel>;
 using LuaRoom = CDataType<LuaTraits::LuaRoom>;
 using LuaRoomDescriptor = CDataType<LuaTraits::LuaRoomDescriptor>;
 using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;

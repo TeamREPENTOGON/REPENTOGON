@@ -322,6 +322,7 @@ loadmodule("ItemConfig.PillConfigList")
 loadmodule("ItemConfig.ItemConfig")
 loadmodule("PlayerManager")
 loadmodule("ItemPool")
+loadmodule("Level")
 
 lffi.metatype = ffi_metatype
 

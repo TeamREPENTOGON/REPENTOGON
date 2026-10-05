@@ -16,7 +16,6 @@ namespace lua {
         ENTITY,
         ENTITY_BOMB,
         ENTITY_KNIFE,
-        LEVEL,
         ENTITY_EFFECT,
         ENTITY_PLAYER,
         ENTITY_PICKUP,
@@ -35,7 +34,6 @@ namespace lua {
         CONST_ENTITY,
         CONST_ENTITY_BOMB,
         CONST_ENTITY_KNIFE,
-        CONST_LEVEL,
         CONST_ENTITY_EFFECT,
         CONST_ENTITY_PLAYER,
         CONST_ENTITY_PICKUP,
@@ -570,6 +568,8 @@ namespace lua {
             ITEM_CONFIG_PILL_EFFECT_PTR,
             ITEM_POOL,
             ITEM_POOL_PTR,
+            LEVEL,
+            LEVEL_PTR,
             MAX_CDATA
         };
 

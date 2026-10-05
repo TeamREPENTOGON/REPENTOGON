@@ -86,7 +86,6 @@ namespace lua {
 		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
 		_metatable_idx_from_name["EntityBomb"] = Metatables::ENTITY_BOMB;
 		_metatable_idx_from_name["EntityKnife"] = Metatables::ENTITY_KNIFE;
-		_metatable_idx_from_name["Level"] = Metatables::LEVEL;
 		_metatable_idx_from_name["EntityEffect"] = Metatables::ENTITY_EFFECT;
 		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
 		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
@@ -105,7 +104,6 @@ namespace lua {
 		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
 		_metatable_idx_from_name["const EntityBomb"] = Metatables::CONST_ENTITY_BOMB;
 		_metatable_idx_from_name["const EntityKnife"] = Metatables::CONST_ENTITY_KNIFE;
-		_metatable_idx_from_name["const Level"] = Metatables::CONST_LEVEL;
 		_metatable_idx_from_name["const EntityEffect"] = Metatables::CONST_ENTITY_EFFECT;
 		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
 		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
