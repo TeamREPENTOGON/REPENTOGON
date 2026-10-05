@@ -689,8 +689,6 @@ namespace lua {
 	namespace GlobalClasses
 	{
 		const char* Isaac = "Isaac";
-		const char* HUD = "HUD";
-		const char* Options = "Options";
 	}
 
 	namespace metatables

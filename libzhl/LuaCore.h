@@ -51,8 +51,6 @@ namespace lua {
     namespace GlobalClasses
     {
       extern LIBZHL_API const char* Isaac;
-      extern LIBZHL_API const char* HUD;
-      extern LIBZHL_API const char* Options;
     }
 
     namespace metatables

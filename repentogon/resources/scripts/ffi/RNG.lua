@@ -9,6 +9,7 @@ ffi.cdef[[
     typedef struct RNG* RNGPtr;
 
     const uint32_t* L_RNG_GetShiftsTable();
+    uint32_t L_Random();
 ]]
 
 local MAX_SHIFT_IDX = 80
@@ -288,3 +289,7 @@ RNG = setmetatable({}, {
         return newRNG
     end
 })
+
+Random = function()
+    return repentogon.L_Random()
+end

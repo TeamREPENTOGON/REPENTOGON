@@ -364,6 +364,7 @@ loadmodule("ItemPool")
 loadmodule("Level")
 loadmodule("Game")
 loadmodule("Isaac")
+loadmodule("Options")
 
 lffi.metatype = ffi_metatype
 
