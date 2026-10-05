@@ -208,29 +208,6 @@ end
 -- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
 
 ---------------------------------------------------------
-BeginClass(ItemPool)
-
--- CollectibleType ItemPool:GetCollectible(ItemPoolType PoolType, boolean Decrease = false, int Seed = Random(), CollectibleType DefaultItem = CollectibleType.COLLECTIBLE_NULL)
-local ItemPool_GetCollectible = META0.GetCollectible
-function META:GetCollectible(poolType, decrease, seed, defaultItem)
-	return ItemPool_GetCollectible(self, poolType, seed or Random(), (decrease and 0) or 1, defaultItem or 0)
-end
-
--- TrinketType ItemPool:GetTrinket(boolean DontAdvanceRNG = false)
-local ItemPool_GetTrinket = META0.GetTrinket
-function META:GetTrinket(noAdvance)
-	return ItemPool_GetTrinket(self, noAdvance)
-end
-
--- PillEffect ItemPool:GetPillEffect(PillColor PillColor, EntityPlayer Player = nil)
-local ItemPool_GetPillEffect = META0.GetPillEffect
-function META:GetPillEffect(pillColor, player)
-	return ItemPool_GetPillEffect(self, pillColor, player)
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(Game)
 
 -- void Game:ChangeRoom(int RoomIndex, int Dimension = -1)

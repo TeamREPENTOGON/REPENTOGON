@@ -77,7 +77,10 @@ ffichecks.checkstring = function(index, val, level)
 	ffichecks.checktype(index, val, "string", (level or 2)+1)
 	return val
 end
-ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+ffichecks.checkboolean = function(index, val, level)
+	if val == nil then ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+	return not not val
+end
 ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
 ffichecks.checkinteger = function(index, val, level) 
 	if math.type(val) ~= "integer" then
@@ -318,6 +321,7 @@ loadmodule("ItemConfig.CardConfigList")
 loadmodule("ItemConfig.PillConfigList")
 loadmodule("ItemConfig.ItemConfig")
 loadmodule("PlayerManager")
+loadmodule("ItemPool")
 
 lffi.metatype = ffi_metatype
 

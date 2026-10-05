@@ -591,8 +591,8 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "ItemPool";
         using Type = ItemPool;
-        static constexpr lua::Metatables MT = lua::Metatables::ITEM_POOL;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ITEM_POOL;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ITEM_POOL;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ITEM_POOL_PTR;
     };
 
     struct LuaHUD
@@ -1149,7 +1149,7 @@ using LuaLevel = LuabridgeType<LuaTraits::LuaLevel>;
 using LuaRoom = CDataType<LuaTraits::LuaRoom>;
 using LuaRoomDescriptor = CDataType<LuaTraits::LuaRoomDescriptor>;
 using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;
-using LuaItemPool = LuabridgeType<LuaTraits::LuaItemPool>;
+using LuaItemPool = CDataType<LuaTraits::LuaItemPool>;
 using LuaHUD = CDataType<LuaTraits::LuaHUD>;
 using LuaEntity = LuabridgeType<LuaTraits::LuaEntity>;
 using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;

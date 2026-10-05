@@ -26,7 +26,6 @@ namespace lua {
         ENTITY_PROJECTILE,
         ENTITY_FAMILIAR,
         INT_VALUES,
-        ITEM_POOL,
         ENTITY_PTR,
         PATHFINDER,
         ENTITY_LASER,
@@ -46,7 +45,6 @@ namespace lua {
         CONST_ENTITY_PROJECTILE,
         CONST_ENTITY_FAMILIAR,
         CONST_INT_VALUES,
-        CONST_ITEM_POOL,
         CONST_ENTITY_PTR,
         CONST_PATHFINDER,
         CONST_ENTITY_LASER,
@@ -570,6 +568,8 @@ namespace lua {
             ITEM_CONFIG_CARD_PTR,
             ITEM_CONFIG_PILL_EFFECT,
             ITEM_CONFIG_PILL_EFFECT_PTR,
+            ITEM_POOL,
+            ITEM_POOL_PTR,
             MAX_CDATA
         };
 

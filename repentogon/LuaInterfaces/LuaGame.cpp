@@ -628,11 +628,18 @@ LUA_FUNCTION(Lua_GameGetSeeds) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GameGetItemPool) {
+	Game* game = LuaGame::Get(L, 1);
+	LuaItemPool::PushPtr(L, &game->_itemPool);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
+		{ "GetItemPool", Lua_GameGetItemPool },
 		{ "GetSeeds", Lua_GameGetSeeds },
 		{ "GetHUD", Lua_GetHUD },
 		{ "GetRoom", Lua_GetRoom },

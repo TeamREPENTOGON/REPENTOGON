@@ -3075,7 +3075,6 @@ end
 -- errors report the actual call site instead of the line in `scripts/main.lua`.
 -- Make sure you understand what the old wrapper was doing, and that the new hook maintains any features like optional args.
 local LuaWrappersToRemove = {
-	{ ItemPool, {"GetCollectible"} },
 	{
 		EntityPlayer, {
 			"AddCollectible",

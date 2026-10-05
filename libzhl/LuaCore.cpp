@@ -96,7 +96,6 @@ namespace lua {
 		_metatable_idx_from_name["EntityProjectile"] = Metatables::ENTITY_PROJECTILE;
 		_metatable_idx_from_name["EntityFamiliar"] = Metatables::ENTITY_FAMILIAR;
 		_metatable_idx_from_name["intValues"] = Metatables::INT_VALUES;
-		_metatable_idx_from_name["ItemPool"] = Metatables::ITEM_POOL;
 		_metatable_idx_from_name["EntityPtr"] = Metatables::ENTITY_PTR;
 		_metatable_idx_from_name["PathFinder"] = Metatables::PATHFINDER;
 		_metatable_idx_from_name["EntityLaser"] = Metatables::ENTITY_LASER;
@@ -116,7 +115,6 @@ namespace lua {
 		_metatable_idx_from_name["const EntityProjectile"] = Metatables::CONST_ENTITY_PROJECTILE;
 		_metatable_idx_from_name["const EntityFamiliar"] = Metatables::CONST_ENTITY_FAMILIAR;
 		_metatable_idx_from_name["const intValues"] = Metatables::CONST_INT_VALUES;
-		_metatable_idx_from_name["const ItemPool"] = Metatables::CONST_ITEM_POOL;
 		_metatable_idx_from_name["const EntityPtr"] = Metatables::CONST_ENTITY_PTR;
 		_metatable_idx_from_name["const PathFinder"] = Metatables::CONST_PATHFINDER;
 		_metatable_idx_from_name["const EntityLaser"] = Metatables::CONST_ENTITY_LASER;

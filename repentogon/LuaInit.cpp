@@ -428,6 +428,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_CARD_PTR] = lua_ctypeid(L, "ItemConfigCardPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT] = lua_ctypeid(L, "ItemConfigPillEffect");
 	lua::ffi::CData[lua::ffi::CDataID::ITEM_CONFIG_PILL_EFFECT_PTR] = lua_ctypeid(L, "ItemConfigPillEffectPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_POOL] = lua_ctypeid(L, "ItemPool");
+	lua::ffi::CData[lua::ffi::CDataID::ITEM_POOL_PTR] = lua_ctypeid(L, "ItemPoolPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");
