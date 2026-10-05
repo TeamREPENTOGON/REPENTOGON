@@ -177,6 +177,45 @@ lffi.metatype = function(ct, mt)
 	return ffi_metatype(ct, mt)
 end
 
+local entityBridges = {
+	EntityAddress = __Lua_Entity_EntityAddress,
+	PlayerAddress = __Lua_Entity_PlayerAddress,
+	PushEntity = __Lua_Entity_PushEntity,
+	PushPlayer = __Lua_Entity_PushPlayer,
+	PushNPC = __Lua_Entity_PushNPC,
+	PushEffect = __Lua_Entity_PushEffect,
+	PushResults = __Lua_Entity_PushResults,
+}
+local voidptr = lffi.typeof("void*")
+local uintptr = lffi.typeof("uintptr_t")
+
+ffichecks.entitytopointer = function(entity)
+	if entity == nil then
+		return nil
+	end
+	return lffi.cast(voidptr, entityBridges.EntityAddress(entity))
+end
+ffichecks.playertopointer = function(player)
+	if player == nil then
+		return nil
+	end
+	return lffi.cast(voidptr, entityBridges.PlayerAddress(player))
+end
+
+local function pointertouserdata(push)
+	return function(pointer)
+		if pointer == nil then
+			return nil
+		end
+		return push(tonumber(lffi.cast(uintptr, pointer)))
+	end
+end
+ffichecks.pointertoentity = pointertouserdata(entityBridges.PushEntity)
+ffichecks.pointertoplayer = pointertouserdata(entityBridges.PushPlayer)
+ffichecks.pointertonpc = pointertouserdata(entityBridges.PushNPC)
+ffichecks.pointertoeffect = pointertouserdata(entityBridges.PushEffect)
+ffichecks.entityresults = entityBridges.PushResults
+
 loadmodule("Vector")
 loadmodule("VectorList")
 loadmodule("GridEntityDesc")
@@ -324,6 +363,7 @@ loadmodule("PlayerManager")
 loadmodule("ItemPool")
 loadmodule("Level")
 loadmodule("Game")
+loadmodule("Isaac")
 
 lffi.metatype = ffi_metatype
 
@@ -405,6 +445,14 @@ for _, mt in ipairs(metatypes) do
 	InstallPropertyTable(mt, false)
 	InstallPropertyTable(mt, true)
 end
+
+__Lua_Entity_EntityAddress = nil
+__Lua_Entity_PlayerAddress = nil
+__Lua_Entity_PushEntity = nil
+__Lua_Entity_PushPlayer = nil
+__Lua_Entity_PushNPC = nil
+__Lua_Entity_PushEffect = nil
+__Lua_Entity_PushResults = nil
 
 ffi = nil
 ffidll = nil

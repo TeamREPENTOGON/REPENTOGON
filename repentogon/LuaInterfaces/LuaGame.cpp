@@ -284,38 +284,3 @@ MOD_EXPORT void L_Game_AddShopVisits(Game* game, int visitCount) {
 MOD_EXPORT void L_Game_RecordPlayerCompletion(int event) {
 	g_Manager->RecordPlayerCompletion(event);
 }
-
-LUA_FUNCTION(Lua_Game_EntityAddress) {
-	lua_pushnumber(L, (lua_Number)(uintptr_t)LuaEntity::Get(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Game_PlayerAddress) {
-	lua_pushnumber(L, (lua_Number)(uintptr_t)LuaEntityPlayer::Get(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Game_PushEntity) {
-	LuaEntity::PushPtr(L, (Entity*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Game_PushPlayer) {
-	LuaEntityPlayer::PushPtr(L, (Entity_Player*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Game_PushEffect) {
-	LuaEntityEffect::PushPtr(L, (Entity_Effect*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_Game_EntityAddress", Lua_Game_EntityAddress);
-	lua_register(_state, "__Lua_Game_PlayerAddress", Lua_Game_PlayerAddress);
-	lua_register(_state, "__Lua_Game_PushEntity", Lua_Game_PushEntity);
-	lua_register(_state, "__Lua_Game_PushPlayer", Lua_Game_PushPlayer);
-	lua_register(_state, "__Lua_Game_PushEffect", Lua_Game_PushEffect);
-
-	super();
-}

@@ -305,18 +305,8 @@ static std::vector<std::string> ParseCommandA(std::string command, int size = 0)
 
 
 
-LUA_FUNCTION(Lua_GetAchievementByName) {
-	string text = string(luaL_checkstring(L, 1));
-	lua_pushinteger(L, GetAchievementIdByName(text));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAchievementIdByName", Lua_GetAchievementByName);
+MOD_EXPORT int L_Isaac_GetAchievementIdByName(const char* name) {
+	return GetAchievementIdByName(string(name));
 }
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {

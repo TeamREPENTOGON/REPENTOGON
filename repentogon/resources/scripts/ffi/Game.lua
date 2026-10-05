@@ -111,39 +111,10 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
-local cfuncs = {
-    EntityAddress = __Lua_Game_EntityAddress,
-    PlayerAddress = __Lua_Game_PlayerAddress,
-    PushEntity = __Lua_Game_PushEntity,
-    PushPlayer = __Lua_Game_PushPlayer,
-    PushEffect = __Lua_Game_PushEffect,
-}
-
-local voidptr = ffi.typeof("void*")
-local uintptr = ffi.typeof("uintptr_t")
 local LevelPtr = ffi.typeof("struct Level*")
 local GenericPromptT = ffi.typeof("struct GenericPrompt")
-
-local function EntityToPointer(entity)
-    if entity == nil then
-        return nil
-    end
-    return ffi.cast(voidptr, cfuncs.EntityAddress(entity))
-end
-
-local function PlayerToPointer(player)
-    if player == nil then
-        return nil
-    end
-    return ffi.cast(voidptr, cfuncs.PlayerAddress(player))
-end
-
-local function PointerToValue(push, pointer)
-    if pointer == nil then
-        return nil
-    end
-    return push(tonumber(ffi.cast(uintptr, pointer)))
-end
+local EntityToPointer = ffichecks.entitytopointer
+local PlayerToPointer = ffichecks.playertopointer
 
 local function ToBitSet128(value)
     if ffichecks.isnumber(value) then
@@ -346,7 +317,7 @@ GameMT = {
         ffichecks.checkcdata(1, position, "Vector")
         baseDamage = ffichecks.optnumber(baseDamage, 3.5)
         local effect = repentogon.L_Game_ChainLightning(self, position, baseDamage, ToBitSet128(tearFlags), EntityToPointer(spawner))
-        return PointerToValue(cfuncs.PushEffect, effect)
+        return ffichecks.pointertoeffect(effect)
     end,
     ChangeRoom = function(self, roomIndex, dimension)
         ffichecks.checkinteger(1, roomIndex)
@@ -439,7 +410,7 @@ GameMT = {
     end,
     GetNearestPlayer = function(self, position)
         ffichecks.checkcdata(1, position, "Vector")
-        return PointerToValue(cfuncs.PushPlayer, repentogon.L_Game_GetNearestPlayer(self, position))
+        return ffichecks.pointertoplayer(repentogon.L_Game_GetNearestPlayer(self, position))
     end,
     GetNumEncounteredBosses = function(self)
         return ffichecks.vectorsize(ffi.getprivate(self, "EncounteredBossesBegin"), ffi.getprivate(self, "EncounteredBossesEnd"), 8)
@@ -454,12 +425,12 @@ GameMT = {
     GetPlayer = function(self, index)
         index = ffichecks.optnumber(index, 0)
         ffichecks.checkinteger(1, index)
-        return PointerToValue(cfuncs.PushPlayer, repentogon.L_Game_GetPlayer(self, index))
+        return ffichecks.pointertoplayer(repentogon.L_Game_GetPlayer(self, index))
     end,
     GetRandomPlayer = function(self, position, radius)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checknumber(2, radius)
-        return PointerToValue(cfuncs.PushPlayer, repentogon.L_Game_GetRandomPlayer(self, position, radius))
+        return ffichecks.pointertoplayer(repentogon.L_Game_GetRandomPlayer(self, position, radius))
     end,
     GetRoom = Getter("CurrentRoom"),
     GetScreenShakeCountdown = Getter("ScreenShakeCountdown"),
@@ -598,11 +569,11 @@ GameMT = {
         ffichecks.checkcdata(4, velocity, "Vector")
         ffichecks.checkinteger(6, subtype)
         ffichecks.checkinteger(7, seed)
-        return PointerToValue(cfuncs.PushEntity, repentogon.L_Game_Spawn(self, type, variant, position, velocity, EntityToPointer(spawner), subtype, seed))
+        return ffichecks.pointertoentity(repentogon.L_Game_Spawn(self, type, variant, position, velocity, EntityToPointer(spawner), subtype, seed))
     end,
     SpawnBombCrater = function(self, position, radius)
         ffichecks.checkcdata(1, position, "Vector")
-        return PointerToValue(cfuncs.PushEntity, repentogon.L_Game_SpawnBombCrater(self, position, ffichecks.optnumber(radius, 1)))
+        return ffichecks.pointertoentity(repentogon.L_Game_SpawnBombCrater(self, position, ffichecks.optnumber(radius, 1)))
     end,
     SpawnParticles = function(self, position, variant, num, speed, color, height, subtype)
         ffichecks.checkcdata(1, position, "Vector")
@@ -645,9 +616,3 @@ Game = setmetatable({}, {
         return repentogon.L_Game_Get()
     end,
 })
-
-__Lua_Game_EntityAddress = nil
-__Lua_Game_PlayerAddress = nil
-__Lua_Game_PushEntity = nil
-__Lua_Game_PushPlayer = nil
-__Lua_Game_PushEffect = nil

@@ -87,34 +87,26 @@ MOD_EXPORT void L_MenuManager_SetViewPosition(Vector* position) {
 	g_MenuManager->_ViewPosition = *position;
 }
 
-LUA_FUNCTION(Lua_WorldToMenuPosition) // will migrate this when we get to Isaac
+MOD_EXPORT int L_Isaac_WorldToMenuPosition(int menuid, Vector* pos, Vector* out)
 {
-	if (g_MenuManager != NULL) {
-		int n = lua_gettop(L);
-		if (n != 2) {
-			return luaL_error(L, "Expected two parameters(MenuId,WorldPosition) got %d\n", n);
-		}
-		eMainMenuType menuid = (eMainMenuType)luaL_checkinteger(L, 1);
-		Vector* pos = LuaVector::Get(L, 2);
-		Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
-		Vector posbase = *ref + Vector(39, 15);
-		ref = &posbase;
-;		Vector offset;
-		offset = Vector(ref->x + 39, ref->y + 15);
+	if (g_MenuManager == NULL) {
+		return 2;
+	}
 
-		if (menuid >= TITLE && menuid <= ONLINEAWARDS) {
-			offset = Vector(ref->x + (-g_MenuManager->_viewPositionSet[menuid].x), ref->y + (-g_MenuManager->_viewPositionSet[menuid].y));
-		}
-		else {
-			return luaL_error(L, "Invalid Menu Id %d\n", menuid);
-		}
-		
-		LuaVector::Push(L, Vector(offset.x + pos->x, offset.y + pos->y));
-		return 1;
+	Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
+	Vector posbase = *ref + Vector(39, 15);
+	ref = &posbase;
+	Vector offset;
+
+	if (menuid >= TITLE && menuid <= ONLINEAWARDS) {
+		offset = Vector(ref->x + (-g_MenuManager->_viewPositionSet[menuid].x), ref->y + (-g_MenuManager->_viewPositionSet[menuid].y));
 	}
 	else {
-		return luaL_error(L, "WorldToMenu can only be used in the main menu");
+		return 1;
 	}
+
+	*out = Vector(offset.x + pos->x, offset.y + pos->y);
+	return 0;
 }
 
 HOOK_METHOD(InputManager, IsActionTriggered, (int btn, int controllerid, int unk)->bool) {
@@ -139,9 +131,3 @@ HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state)->void,__stdcall) {
 	MainMenuInputBlock::ClearInputMask();
 	super(state);
 };
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToMenuPosition", Lua_WorldToMenuPosition);
-}

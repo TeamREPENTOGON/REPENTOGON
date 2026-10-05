@@ -6,18 +6,21 @@
 #include "../Patches/XMLData.h"
 #include "../Patches/ItemSpoofSystem.h"
 #include "../LuaClasses.h"
+#include "LuaEntityBridge.h"
 
 #include "Windows.h"
 #include <string>
 #include "../Patches/ChallengesStuff.h"
 #include <dwmapi.h>
 #include <chrono>
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm.lib")
 
 #include "../MiscFunctions.h"
 
 constexpr uint32_t CONSOLE_COLOR_WARN = 0xFFFCCA03;
 
-static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
 
 static bool s_modsLoaded = false;
@@ -30,234 +33,109 @@ HOOK_METHOD_PRIORITY(ModManager, LoadConfigs, -1, () -> void)
 	s_modsLoaded = true;
 }
 
-LUA_FUNCTION(Lua_IsaacFindByTypeFix)
+MOD_EXPORT int L_Isaac_FindByType(int type, int variant, int subtype, bool cache, bool ignoreFriendly)
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	int type = (int)luaL_checkinteger(L, 1);
-	int variant = (int)luaL_optinteger(L, 2, -1);
-	int subtype = (int)luaL_optinteger(L, 3, -1);
-	bool cache = lua::luaL_optboolean(L, 4, false);
-	bool ignoreFriendly = lua::luaL_optboolean(L, 5, false);
-	lua_newtable(L);
 	EntityList_EL res(*list->GetUpdateEL());
 
 	list->QueryType(&res, type, variant, subtype, cache, ignoreFriendly);
 
 	unsigned int size = res._size;
-
+	StoreEntityResults(res._data, size);
 	if (size) {
-		Entity** data = res._data;
-		unsigned int idx = 1;
-		while (size) {
-			Entity* ent = *data;
-			lua_pushnumber(L, idx);
-			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
-			lua_settable(L, -3);
-			++data;
-			idx++;
-			--size;
-		}
-
 		res.Destroy();
 	}
-
-	return 1;
+	return (int)size;
 }
 
-
-LUA_FUNCTION(Lua_IsaacGetRoomEntitiesFix)
+MOD_EXPORT int L_Isaac_GetRoomEntities()
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
-	lua_newtable(L);
-	unsigned int size = res->_size;
-
-	if (size) {
-		Entity** data = res->_data;
-		unsigned int idx = 1;
-		while (size) {
-			Entity* ent = *data;
-			lua_pushnumber(L, idx);
-			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
-			lua_settable(L, -3);
-			++data;
-			idx++;
-			--size;
-		}
-	}
-	return 1;
+	StoreEntityResults(res->_data, res->_size);
+	return (int)res->_size;
 }
 
-static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
-	el->_data = nullptr;
-	el->_size = 0;
-	el->_sublist = 1;
-	el->_capacity = 0;
-}
-
-LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
+MOD_EXPORT int L_Isaac_FindInRadius(Vector* pos, float radius, unsigned int partition)
 {
 	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float radius = (float)luaL_checknumber(L, 2);
-	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
 	EntityList_EL res = list->QueryRadius(pos, radius, partition);
-	EntityList_EL* resPtr = &res;
-	lua_newtable(L);
-
-	lua_rawgeti(g_LuaEngine->_state, LUA_REGISTRYINDEX, QueryRadiusRef);
-	const void* queryRadius = lua_topointer(g_LuaEngine->_state, -1);
-	lua_pop(g_LuaEngine->_state, 1);
-
-	/* __asm {
-		push ecx;
-		mov ecx, list;
-		push partition;
-		push pos;
-		push resPtr;
-		movss xmm3, radius;
-		call queryRadius;
-		pop ecx;
-	} */
 
 	unsigned int size = res._size;
-
+	StoreEntityResults(res._data, size);
 	if (size) {
-		Entity** data = res._data;
-		unsigned int idx = 1;
-		while (size) {
-			Entity* ent = *data;
-			lua_pushnumber(L, idx);
-			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
-			lua_settable(L, -3);
-			++data;
-			idx++;
-			--size;
-		}
-
 		res.Destroy();
 	}
-
-	return 1;
+	return (int)size;
 }
 
-LUA_FUNCTION(Lua_IsaacExplode)
+MOD_EXPORT int L_Isaac_FindInCapsule(Capsule* capsule, unsigned int partition)
 {
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = LuaEntity::GetOpt(L, 2);
-	float damage = (float)luaL_checknumber(L, 3);
+	Room* room = g_Game->GetCurrentRoom();
+	EntityList* list = room->GetEntityList();
+	EntityList_EL res(*list->GetUpdateEL());
 
-	g_LuaEngine->Isaac_Explode(pos, source, damage);
+	list->QueryCapsule(&res, capsule, partition);
 
-	return 0;
-}
-
-LUA_FUNCTION(Lua_IsaacGetFreeNearPosition)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float step = (float)luaL_checknumber(L, 2);
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_GetFreeNearPosition(toLua, pos, step);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacGetRandomPosition)
-{
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_GetRandomPosition(toLua);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacGridSpawn) 
-{
-	int type = (int)luaL_checkinteger(L, 1);
-	int variant = (int)luaL_checkinteger(L, 2);
-	Vector* pos = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	bool forced = lua::luaL_optboolean(L, 4, false);
-	LuaGridEntity::PushPtr(L, g_LuaEngine->Isaac_GridSpawn(type, variant, pos, forced));
-	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacScreenToWorld)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_ScreenToWorld(toLua, pos);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacScreenToWorldDistance)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_ScreenToWorldDistance(toLua, pos);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacSpawn)
-{ 
-	int type = (int)luaL_checkinteger(L, 1);
-	int variant = (int)luaL_checkinteger(L, 2);
-	int subtype = (int)luaL_checkinteger(L, 3);
-	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* spawner = LuaEntity::GetOpt(L, 6);
-
-	lua::luabridge::UserdataPtr::push(L, g_LuaEngine->Isaac_Spawn(type, variant, subtype, pos, vel, spawner), lua::GetMetatableKey(lua::Metatables::ENTITY));
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacWorldToRenderPosition)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_WorldToRenderPosition(toLua, pos);
-
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_IsaacWorldToScreen)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_WorldToScreen(toLua, pos);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_IsaacWorldToScreenDistance)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	g_LuaEngine->Isaac_WorldToScreenDistance(toLua, pos);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_GetLoadedModules) {
-	lua_pushstring(L, "_LOADED");
-	int t = lua_rawget(L, LUA_REGISTRYINDEX);
-	if (t != LUA_TNIL) {
-		return 1;
+	unsigned int size = res._size;
+	StoreEntityResults(res._data, size);
+	if (size) {
+		res.Destroy();
 	}
+	return (int)size;
+}
 
-	return 0;
+MOD_EXPORT void L_Isaac_Explode(Vector* pos, Entity* source, float damage)
+{
+	g_LuaEngine->Isaac_Explode(pos, source, damage);
+}
+
+MOD_EXPORT void L_Isaac_GetFreeNearPosition(Vector* out, Vector* pos, float step)
+{
+	g_LuaEngine->Isaac_GetFreeNearPosition(out, pos, step);
+}
+
+MOD_EXPORT void L_Isaac_GetRandomPosition(Vector* out)
+{
+	g_LuaEngine->Isaac_GetRandomPosition(out);
+}
+
+MOD_EXPORT GridEntity* L_Isaac_GridSpawn(int type, int variant, Vector* pos, bool forced)
+{
+	return g_LuaEngine->Isaac_GridSpawn(type, variant, pos, forced);
+}
+
+MOD_EXPORT void L_Isaac_ScreenToWorld(Vector* out, Vector* pos)
+{
+	g_LuaEngine->Isaac_ScreenToWorld(out, pos);
+}
+
+MOD_EXPORT void L_Isaac_ScreenToWorldDistance(Vector* out, Vector* pos)
+{
+	g_LuaEngine->Isaac_ScreenToWorldDistance(out, pos);
+}
+
+MOD_EXPORT Entity* L_Isaac_Spawn(int type, int variant, int subtype, Vector* pos, Vector* vel, Entity* spawner)
+{
+	return g_LuaEngine->Isaac_Spawn(type, variant, subtype, pos, vel, spawner);
+}
+
+MOD_EXPORT void L_Isaac_WorldToRenderPosition(Vector* out, Vector* pos)
+{
+	g_LuaEngine->Isaac_WorldToRenderPosition(out, pos);
+}
+
+MOD_EXPORT void L_Isaac_WorldToScreen(Vector* out, Vector* pos)
+{
+	g_LuaEngine->Isaac_WorldToScreen(out, pos);
+}
+
+MOD_EXPORT void L_Isaac_WorldToScreenDistance(Vector* out, Vector* pos)
+{
+	g_LuaEngine->Isaac_WorldToScreenDistance(out, pos);
 }
 
 static void __cdecl TimerFunction(Entity_Effect* effect) {
@@ -271,6 +149,7 @@ static void __cdecl TimerFunction(Entity_Effect* effect) {
 	lua_pop(L, 1); // restored
 }
 
+// Timers call a Lua function later, so this one has to stay on the Lua stack.
 LUA_FUNCTION(Lua_CreateTimer) {
 	if (!lua_isfunction(L, 1)) {
 		return luaL_error(L, "Expected function, got %s", lua_typename(L, lua_type(L, 1)));
@@ -288,7 +167,7 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	bool persistent = lua::luaL_optboolean(L, 4, true);
 
 	Entity_Effect* effect = Entity_Effect::CreateTimer(&TimerFunction, delay, times, persistent);
-	
+
 	// Register function in the registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, timerFnTable);
 	lua_pushlightuserdata(L, effect);
@@ -300,28 +179,19 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_StartNewGame) {
-	int pltype = (int)luaL_optinteger(L, 1, 0);
-	int challenge = (int)luaL_optinteger(L, 2, 0);
-	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
-	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors ourselves.
-	// However, StartNewGame will handle it for us. Just be aware of this.
+MOD_EXPORT void L_Isaac_StartNewGame(int pltype, int challenge, unsigned int difficulty, Seeds* seeds, unsigned int seed, bool isCustomRun) {
 	Seeds seedobj;
-	bool seedsOverload = LuaSeeds::IsUnderlyingType(L, 4);
-	if (seedsOverload) {
-		seedobj.construct_from_copy(LuaSeeds::Get(L, 4));
+	if (seeds) {
+		seedobj.construct_from_copy(seeds);
 	} else {
-		unsigned int seed = (unsigned int)luaL_optinteger(L, 4, 0);
-		bool isCustomRun = lua::luaL_optboolean(L, 5, false);
 		seedobj.constructor();
 		seedobj.set_start_seed(seed);
 		seedobj._isCustomRun = isCustomRun;
 	}
 	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
-	return 0;
 }
 
-LUA_FUNCTION(Lua_RenderToWorld) {
+MOD_EXPORT void L_Isaac_RenderToWorld(Vector* out, Vector* pos) {
 	const Vector WORLD_VIEWPORT_SIZE = Vector(338.0, 182.0);
 	const Vector WORLD_RENDER_ORIGIN = Vector(60.0, 140.0);
 	const float WORLD_TO_SCREEN_SCALE = 0.65f;
@@ -330,38 +200,18 @@ LUA_FUNCTION(Lua_RenderToWorld) {
 	Room& room = *game._room;
 	Vector screenSize = Vector(g_WIDTH, g_HEIGHT);
 
-	Vector position = *lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
 	Vector offset = game._screenShakeOffset + room._renderScrollOffset;
 	Vector uiViewportTopLeft = (screenSize - WORLD_VIEWPORT_SIZE) * 0.5f;
-	Vector worldLocalRenderPos = (position - offset) - uiViewportTopLeft;
+	Vector worldLocalRenderPos = (*pos - offset) - uiViewportTopLeft;
 
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = worldLocalRenderPos / WORLD_TO_SCREEN_SCALE + WORLD_RENDER_ORIGIN;
-
-	return 1;
+	*out = worldLocalRenderPos / WORLD_TO_SCREEN_SCALE + WORLD_RENDER_ORIGIN;
 }
 
-LUA_FUNCTION(Lua_DrawLine) {
-	Vector* pos1 = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* pos2 = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	KColor* col1 = LuaKColor::Get(L, 3);
-	KColor* col2 = LuaKColor::Get(L, 4);
-	float thickness = (float)luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
-
+MOD_EXPORT void L_Isaac_DrawLine(Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, float thickness) {
 	g_ShapeRenderer->RenderLine(pos1, pos2, col1, col2, thickness);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_DrawQuad) {
-	Vector* postl = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* postr = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* posbl = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* posbr = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	KColor* col = LuaKColor::Get(L, 5);
-	float thickness = (float)luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
-
+MOD_EXPORT void L_Isaac_DrawQuad(Vector* postl, Vector* postr, Vector* posbl, Vector* posbr, KColor* col, float thickness) {
 	DestinationQuad quad; //TODO make a constructor for this
 	quad._topLeft = *postl;
 	quad._topRight = *postr;
@@ -369,9 +219,6 @@ LUA_FUNCTION(Lua_DrawQuad) {
 	quad._bottomRight = *posbr;
 
 	g_ShapeRenderer->OutlineQuad(&quad, col, thickness);
-
-	return 0;
-
 }
 
 std::wstring mb_to_wide(const char* input,size_t len) {
@@ -390,12 +237,9 @@ std::string wide_to_mb(const wchar_t* input, size_t len) {
 	return out;
 };
 
-LUA_FUNCTION(Lua_SetClipboard) {
-	const char* text = luaL_checkstring(L, 1);
-
+MOD_EXPORT bool L_Isaac_SetClipboard(const char* text) {
 	if (!OpenClipboard(NULL)) {
-		lua_pushboolean(L, false);
-		return 2;
+		return false;
 	}
 
 	EmptyClipboard();
@@ -409,8 +253,7 @@ LUA_FUNCTION(Lua_SetClipboard) {
 	HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, allocsize);
 	if (hData == NULL) {
 		CloseClipboard();
-		lua_pushboolean(L, false);
-		return 2;
+		return false;
 	}
 
 	//lock the global memory to get a pointer to the data
@@ -418,168 +261,120 @@ LUA_FUNCTION(Lua_SetClipboard) {
 	if (pszText == NULL) {
 		CloseClipboard();
 		GlobalFree(hData);
-		lua_pushboolean(L, false);
-		return 2;
+		return false;
 	}
 	wcscpy(pszText, converted_str.c_str()); //copy the text to the global memory
 	GlobalUnlock(hData);//unlock the global memory
 	SetClipboardData(CF_UNICODETEXT, hData);
 	CloseClipboard();
-	lua_pushboolean(L, true);
 
-	return 1;
+	return true;
 }
 
-LUA_FUNCTION(Lua_GetClipboard) {
+MOD_EXPORT const char* L_Isaac_GetClipboard() {
+	static std::string clipboardText;
+
 	if (!OpenClipboard(NULL)) {
-		lua_pushnil(L);
-		return 1;
+		return nullptr;
 	}
 
 	HANDLE hData = GetClipboardData(CF_UNICODETEXT); //get the clipboard data handle
 	if (hData == NULL) {
 		CloseClipboard();
-		lua_pushnil(L);
-		return 1;
+		return nullptr;
 	}
 
 	wchar_t* pszText = static_cast<wchar_t*>(GlobalLock(hData)); 	//lock the handle to get a pointer to the data
 	if (pszText == NULL) {
 		CloseClipboard();
-		lua_pushnil(L);
-		return 1;
+		return nullptr;
 	}
-	std::string clipboardText=wide_to_mb(pszText,wcslen(pszText)+1);
+	clipboardText = wide_to_mb(pszText,wcslen(pszText)+1);
 
 	//unlock and close the clipboard
 	GlobalUnlock(hData);
 	CloseClipboard();
 
-	lua_pushstring(L, clipboardText.c_str());
-
-	return 1;
+	return clipboardText.c_str();
 }
 
-LUA_FUNCTION(Lua_GetSubTypeByName) {
-	string text = string(luaL_checkstring(L, 1));
+MOD_EXPORT int L_Isaac_GetSubTypeByName(const char* name) {
+	string text = string(name);
 	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
 		XMLAttributes ent = XMLStuff.EntityData->GetNodeByName(text);
 		if ((ent.count("subtype") > 0) && (ent["subtype"].length() > 0)) {
-			lua_pushinteger(L, stoi(ent["subtype"]));
-			return 1;
+			return stoi(ent["subtype"]);
 		}
 	};
-	lua_pushinteger(L, 0);
-	return 1;
+	return 0;
 }
 
-LUA_FUNCTION(Lua_PlayCutscene) {
-	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
-	const bool shouldClear = lua::luaL_optboolean(L, 2, false);
-
+MOD_EXPORT void L_Isaac_PlayCutscene(unsigned int cutscene, bool shouldClear) {
 	if (cutscene > 26) {
 		string out;
 		g_Game->GetConsole()->RunCommand("cutscene " + to_string(cutscene), &out, NULL);
-		return 0;
+		return;
 	}
-	g_Manager->ShowCutscene(cutscene, shouldClear,0);
-	return 0;
-
-
+	g_Manager->ShowCutscene(cutscene, shouldClear, 0);
 }
 
-LUA_FUNCTION(Lua_SpawnBoss) {
-	const unsigned int type = (unsigned int)luaL_checkinteger(L, 1);
-	const unsigned int var = (unsigned int)luaL_checkinteger(L, 2);
-	const unsigned int sub = (unsigned int)luaL_checkinteger(L, 3);
-	Vector* pos = lua::GetCData<Vector*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* vel = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	const unsigned int seed = (unsigned int)luaL_optinteger(L, 7, g_Game->GetCurrentRoomDesc()->SpawnSeed);
-
-	Entity_NPC* ent = nullptr;
-
-	if ((type > 9) && (type < 990)) {
-		if (!lua_isnil(L, 6)) {
-			Entity* spawner = lua::GetLuabridgeUserdata<Entity*>(L, 6, lua::Metatables::ENTITY, "Entity");
-			ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, spawner, sub, seed, 0);
-			ent->_isBoss = true;
-		}
-		else {
-			ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, nullptr, sub, seed, 0);
-			ent->_isBoss = true;
-		}
-		lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
-
-	}
-	else {
-		return luaL_error(L, "SpawnBoss only works with NPC-able entity types");
-	}
-	return 1;
+MOD_EXPORT unsigned int L_Isaac_GetRoomSpawnSeed() {
+	return g_Game->GetCurrentRoomDesc()->SpawnSeed;
 }
 
-LUA_FUNCTION(Lua_GetCutsceneByName) {
-	string text = string(luaL_checkstring(L, 1));
+MOD_EXPORT Entity_NPC* L_Isaac_SpawnBoss(unsigned int type, unsigned int var, unsigned int sub, Vector* pos, Vector* vel, Entity* spawner, unsigned int seed) {
+	Entity_NPC* ent = (Entity_NPC*)g_Game->Spawn(type, var, *pos, *vel, spawner, sub, seed, 0);
+	ent->_isBoss = true;
+	return ent;
+}
+
+MOD_EXPORT int L_Isaac_GetCutsceneByName(const char* name) {
+	string text = string(name);
 	if (XMLStuff.CutsceneData->byname.count(text) > 0)
 	{
 		XMLAttributes ent = XMLStuff.CutsceneData->GetNodeByName(text);
 		if ((ent.end() != ent.begin()) && (ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushinteger(L, stoi(ent["id"]));
-			return 1;
+			return stoi(ent["id"]);
 		}
 	};
-	lua_pushinteger(L, -1);
-	return 1;
+	return -1;
 }
 
-LUA_FUNCTION(Lua_GetGiantBookByName) {
-	string text = string(luaL_checkstring(L, 1));
+MOD_EXPORT int L_Isaac_GetGiantBookByName(const char* name) {
+	string text = string(name);
 	if (XMLStuff.GiantBookData->byname.count(text) > 0)
 	{
 		XMLAttributes ent = XMLStuff.GiantBookData->GetNodeByName(text);
 		if ((ent.end() != ent.begin()) && (ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushinteger(L, stoi(ent["id"]));
-			return 1;
+			return stoi(ent["id"]);
 		}
 	};
-	lua_pushinteger(L, -1);
-	return 1;
+	return -1;
 }
 
-LUA_FUNCTION(Lua_IsaacCanStartTrueCoop) {
-	lua_pushboolean(L, !PlayerManager::CoopBabiesOnly());
-	return 1;
+MOD_EXPORT bool L_Isaac_CanStartTrueCoop() {
+	return !PlayerManager::CoopBabiesOnly();
 }
 
-LUA_FUNCTION(Lua_IsaacGetNullItemIdByName) {
-	const string name = string(luaL_checkstring(L, 1));
+MOD_EXPORT int L_Isaac_GetNullItemIdByName(const char* nameString) {
+	const string name = string(nameString);
 
 	for (ItemConfig_Item* nullitem : *g_Manager->GetItemConfig()->GetNullItems()) {
 		if (nullitem != nullptr && nullitem->name == name) {
-			lua_pushinteger(L, nullitem->id);
-			return 1;
+			return nullitem->id;
 		}
 	}
 
-	lua_pushinteger(L, -1);
-	return 1;
+	return -1;
 }
 
-LUA_FUNCTION(Lua_IsaacShowErrorDialog) {
-	const char* title = luaL_checkstring(L, 1);
-	const char* text = luaL_checkstring(L, 2);
-	int icon = (int)luaL_optinteger(L, 3, MB_ICONERROR);
-	int buttons = (int)luaL_optinteger(L, 4, MB_OK);
-
-	int mbreturn = MessageBoxA(NULL, text, title, icon | buttons);
-	lua_pushinteger(L, mbreturn);
-
-	return 1;
+MOD_EXPORT int L_Isaac_ShowErrorDialog(const char* title, const char* text, int icon, int buttons) {
+	return MessageBoxA(NULL, text, title, icon | buttons);
 }
 
-LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
-	LuaSprite::PushPtr(L, &g_Manager->_cursorSprite);
-	return 1;
+MOD_EXPORT ANM2* L_Isaac_GetCursorSprite() {
+	return &g_Manager->_cursorSprite;
 }
 
 bool apipause = false;
@@ -588,7 +383,7 @@ HOOK_STATIC(Manager, Update, (bool unk) -> void, __stdcall) {
 		g_Manager->_state = 2;
 	}
 	super(unk);
-	
+
 }
 LUA_FUNCTION(Lua_IsaacPause) {
 	apipause = true;
@@ -602,67 +397,20 @@ LUA_FUNCTION(Lua_IsaacResume) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	bool scale = lua::luaL_optboolean(L, 2, true);
-	
-	Vector result = Isaac::GetRenderPosition(pos, scale);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = result;
-
-	return 1;
+MOD_EXPORT void L_Isaac_GetRenderPosition(Vector* out, Vector* pos, bool scale) {
+	*out = Isaac::GetRenderPosition(pos, scale);
 }
 
-LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector result = Isaac::GetCollectibleSpawnPosition(pos);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = result;
-
-	return 1;
+MOD_EXPORT void L_Isaac_GetCollectibleSpawnPosition(Vector* out, Vector* pos) {
+	*out = Isaac::GetCollectibleSpawnPosition(pos);
 }
 
-LUA_FUNCTION(Lua_IsaacFindInCapsule)
-{
-	Room* room = g_Game->GetCurrentRoom();
-	EntityList* list = room->GetEntityList();
-	Capsule* capsule = LuaCapsule::Get(L, 1);
-	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
-
-	lua_newtable(L);
-	EntityList_EL res(*list->GetUpdateEL());
-
-	list->QueryCapsule(&res, capsule, partition);
-
-	unsigned int size = res._size;
-
-	if (size) {
-		Entity** data = res._data;
-		unsigned int idx = 1;
-		while (size) {
-			Entity* ent = *data;
-			lua_pushnumber(L, idx);
-			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
-			lua_settable(L, -3);
-			++data;
-			idx++;
-			--size;
-		}
-
-		res.Destroy();
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_TriggerWindowResize)
+MOD_EXPORT void L_Isaac_TriggerWindowResize()
 {
 	g_Manager->ResizeWindow(g_WindowSizeX, g_WindowSizeY);
-	return 0;
 }
 
-LUA_FUNCTION(Lua_CenterCursor)
+MOD_EXPORT void L_Isaac_CenterCursor()
 {
 	HWND hwnd = GetActiveWindow();
 	DWORD activeProcessId;
@@ -680,25 +428,20 @@ LUA_FUNCTION(Lua_CenterCursor)
 	if (activeProcessId == currentProcessId) { //so it doesnt do it if Isaac is not the active win
 		SetCursorPos(clientCenter.x, clientCenter.y);
 	}
-	return 0;
 };
 
-LUA_FUNCTION(Lua_SetDWMAttrib)
+MOD_EXPORT int L_Isaac_SetDwmWindowAttribute(int attribid, int attribval)
 {
 	HWND hwnd = GetActiveWindow();
 	DWORD activeProcessId;
 	GetWindowThreadProcessId(hwnd, &activeProcessId);
 	DWORD currentProcessId = GetCurrentProcessId();
-	int32_t attribid = (int32_t)luaL_optinteger(L, 1, 0);
-	int32_t attribval = (int32_t)luaL_optinteger(L, 2, 0);
 
 	switch (attribid) {
 	case (DWMWINDOWATTRIBUTE)DWMWA_CLOAK:
-		return luaL_error(L, "Usage of DWMWA_CLOAK attribute is prohibited!");
-		break;
+		return 1;
 	case (DWMWINDOWATTRIBUTE)DWMWA_CLOAKED:
-		return luaL_error(L, "Usage of DWMWA_CLOAKED attribute is prohibited!");
-		break;
+		return 2;
 	};
 	if (activeProcessId == currentProcessId) {
 		DwmSetWindowAttribute(hwnd, attribid, &attribval, sizeof(attribval));
@@ -707,130 +450,89 @@ LUA_FUNCTION(Lua_SetDWMAttrib)
 	return 0;
 };
 
-LUA_FUNCTION(Lua_GetDWMAttrib)
+MOD_EXPORT int L_Isaac_GetDwmWindowAttribute(int attribid)
 {
 	HWND hwnd = GetActiveWindow();
-	int32_t attribid = (int32_t)luaL_optinteger(L, 1, 0);
 	int32_t attribval;
 	DwmGetWindowAttribute(hwnd, attribid,&attribval,sizeof(attribval));
-	lua_pushinteger(L, attribval);
-	return 1;
+	return attribval;
 };
 
-LUA_FUNCTION(Lua_SetWindowTitle)
+MOD_EXPORT void L_Isaac_SetWindowTitle(const char* text)
 {
-	const char* text=nullptr;
-	if (!lua_isstring(L,1)) {
+	if (!text) {
 		REPENTOGON::SetStockWindowTitle();
-		return 0;
+		return;
 	};
-	text = luaL_checkstring(L, 1);
 	char buffer[256];
 	strncpy_s(REPENTOGON::moddedtitle, text, 255);
 	strncpy_s(buffer, REPENTOGON::stocktitle, 255);
 	strncat_s(buffer, REPENTOGON::moddedtitle, 255);
 	SetWindowTextA(GetActiveWindow(), buffer);
-	return 0;
 };
 
-LUA_FUNCTION(Lua_GetWindowTitle)
+MOD_EXPORT const char* L_Isaac_GetWindowTitle()
 {
-	lua_pushstring(L, REPENTOGON::moddedtitle);
-	return 1;
+	return REPENTOGON::moddedtitle;
 };
 
-LUA_FUNCTION(Lua_IsInGame) {
-	lua_pushboolean(L, Isaac::IsInGame());
-
-	return 1;
+MOD_EXPORT bool L_Isaac_IsInGame() {
+	return Isaac::IsInGame();
 }
 
-LUA_FUNCTION(Lua_IsChallengeDone) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
-	if (challengeid < 1) {
-		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
-	}
-	lua_pushboolean(L, IsChallengeCompleted(challengeid));
-	return 1;
+MOD_EXPORT bool L_Isaac_IsChallengeDone(int challengeid) {
+	return IsChallengeCompleted(challengeid);
 }
 
-LUA_FUNCTION(Lua_ClearChallenge) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
-	if (challengeid < 1) {
-		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
-	}
+MOD_EXPORT void L_Isaac_ClearChallenge(int challengeid) {
 	MarkChallengeCompleted(challengeid);
-	return 0;
 }
 
-LUA_FUNCTION(Lua_UndoChallenge) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
+MOD_EXPORT void L_Isaac_UndoChallenge(int challengeid) {
 	ResetChallengeCompletion(challengeid);
-	return 0;
 }
 
-LUA_FUNCTION(Lua_SetChallengeCompletion) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
-	if (challengeid < 1) {
-		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
-	}
-	bool completed = lua::luaL_checkboolean(L, 2, lua::BOOL_CHECK_MODE_STRICT);
-	if (completed) {
-		MarkChallengeCompleted(challengeid);
-	} else {
-		ResetChallengeCompletion(challengeid);
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetModChallengeCompletion) {
-	const string modid = luaL_checkstring(L, 1);
-	const string challengename = luaL_checkstring(L, 2);
+MOD_EXPORT int L_Isaac_GetModChallengeCompletion(const char* modidString, const char* challengenameString) {
+	const string modid = modidString;
+	const string challengename = challengenameString;
 
 	const string key = challengename + modid;
 	if (Challenges.count(key)) {
-		lua_pushboolean(L, Challenges[key] > 0);
-	} else {
-		lua_pushnil(L);
+		return Challenges[key] > 0;
 	}
-	return 1;
+	return -1;
 }
 
-LUA_FUNCTION(Lua_GetModChallengeClearCount) {
-	int challengeid = (int)luaL_checkinteger(L, 1);
+MOD_EXPORT int L_Isaac_GetModChallengeClearCount(int challengeid) {
 	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
-	lua_pushinteger(L, Challenges[node["name"] + node["sourceid"]]);
-
-	return 1;
+	return Challenges[node["name"] + node["sourceid"]];
 }
 
-LUA_FUNCTION(Lua_GetBossColorIdxByName) {
-	string bosscolorname = luaL_checkstring(L, 1);
+MOD_EXPORT int L_Isaac_GetBossColorIdxByName(const char* name) {
+	string bosscolorname = name;
 	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
-	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
-	else {
-		lua_pushinteger(L, (iter->second - 1));
+	if (iter == XMLStuff.BossColorData->childbyname.end()) {
+		return -1;
 	}
-
-	return 1;
+	return iter->second - 1;
 }
 
-LUA_FUNCTION(Lua_GetBackdropTypeByName) {
-	string text = string(luaL_checkstring(L, 1));
+MOD_EXPORT int L_Isaac_GetBackdropTypeByName(const char* name) {
+	string text = string(name);
 	if (XMLStuff.BackdropData->byname.count(text) > 0)
 	{
 		XMLAttributes ent = XMLStuff.BackdropData->GetNodeByName(text);
 		if ((ent.end() != ent.begin()) && (ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushinteger(L, stoi(ent["id"]));
-			return 1;
+			return stoi(ent["id"]);
 		}
 	};
-	lua_pushinteger(L, -1);
-	return 1;
+	return -1;
 }
 
-LUA_FUNCTION(Lua_GetRGON_Changelog) {
-	string text = "Changelog unavailable :(\n";
+// The returned string is only valid until the next call.
+MOD_EXPORT const char* L_Isaac_GetChangelog() {
+	static string text;
+	text = "Changelog unavailable :(\n";
 	ostringstream outtext;
 	ifstream changelog;
 	changelog.open("rgon_changelog.txt");
@@ -838,8 +540,7 @@ LUA_FUNCTION(Lua_GetRGON_Changelog) {
 		outtext << changelog.rdbuf();
 		text = outtext.str();
 	};
-	lua_pushstring(L, text.c_str());
-	return 1;
+	return text.c_str();
 };
 
 namespace {
@@ -848,40 +549,45 @@ namespace {
 	HANDLE currentIconBig = NULL;
 }
 
-LUA_FUNCTION(Lua_SetIcon) {
-	int smallIconResolution = 16;
-	int bigIconResolution = std::min(GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+static void GetIconResolutions(bool ignorecap, int& smallIconResolution, int& bigIconResolution) {
+	smallIconResolution = 16;
+	bigIconResolution = std::min(GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
 
-	bool ignorecap = lua::luaL_optboolean(L,2,false);
-	if(ignorecap){
+	if (ignorecap) {
 		smallIconResolution = LR_DEFAULTSIZE;
 		bigIconResolution = std::max(bigIconResolution, LR_DEFAULTSIZE);
 	};
+}
 
-	if (lua_isinteger(L, 1)) {
-		int icontoset = (int)luaL_checkinteger(L, 1);
-		switch (icontoset) {
-		case 0:
-			icontoset = 0x65;
-			break;
-		case 1:
-			icontoset = 0x68;
-			break;
-		default:
-			icontoset = 0x65;
-		};
-		HANDLE icon = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, smallIconResolution, smallIconResolution, 0);
-		HANDLE icon_big = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, bigIconResolution, bigIconResolution, 0);
-		if (icon) {
-			SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
-			SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon_big);
-		};
-		return 0;
+MOD_EXPORT void L_Isaac_SetIconID(int icontoset, bool ignorecap) {
+	int smallIconResolution, bigIconResolution;
+	GetIconResolutions(ignorecap, smallIconResolution, bigIconResolution);
+
+	switch (icontoset) {
+	case 0:
+		icontoset = 0x65;
+		break;
+	case 1:
+		icontoset = 0x68;
+		break;
+	default:
+		icontoset = 0x65;
 	};
+	HANDLE icon = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, smallIconResolution, smallIconResolution, 0);
+	HANDLE icon_big = LoadImageA(GetModuleHandle(NULL), (LPCSTR)icontoset, IMAGE_ICON, bigIconResolution, bigIconResolution, 0);
+	if (icon) {
+		SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
+		SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon_big);
+	};
+}
 
-	std::string modpath = luaL_optstring(L, 1, "");
+MOD_EXPORT bool L_Isaac_SetIconPath(const char* path, bool ignorecap) {
+	int smallIconResolution, bigIconResolution;
+	GetIconResolutions(ignorecap, smallIconResolution, bigIconResolution);
+
+	std::string modpath = path;
 	if (modpath.empty()) {
-		return 0;
+		return true;
 	}
 	std::string fullpath;
 	g_Manager->GetModManager()->TryRedirectPath(&fullpath, &modpath);
@@ -889,11 +595,11 @@ LUA_FUNCTION(Lua_SetIcon) {
 	if (currentIconSmall == NULL || currentIconBig == NULL || currentIconPath.empty() || currentIconPath != fullpath) {
 		HANDLE newIconSmall = LoadImageA(NULL, fullpath.c_str(), IMAGE_ICON, smallIconResolution, smallIconResolution, LR_LOADFROMFILE);
 		if (newIconSmall == NULL) {
-			return luaL_error(L, "Icon has failed to load!");
+			return false;
 		}
 		HANDLE newIconBig = LoadImageA(NULL, fullpath.c_str(), IMAGE_ICON, bigIconResolution, bigIconResolution, LR_LOADFROMFILE);
 		if (newIconBig == NULL) {
-			return luaL_error(L, "Icon has failed to load!");
+			return false;
 		}
 		if (currentIconSmall != NULL) {
 			DestroyIcon((HICON)currentIconSmall);
@@ -909,31 +615,18 @@ LUA_FUNCTION(Lua_SetIcon) {
 	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)currentIconSmall);
 	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)currentIconBig);
 
-	return 0;
+	return true;
 };
 
-LUA_FUNCTION(Lua_FindTargetPit) {
-	Vector* position = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* targetPosition = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	const int pitIndex = (int)luaL_optinteger(L, 3, -1);
-
-	lua_pushinteger(L, Entity_NPC::FindTargetPit(position, targetPosition, pitIndex));
-	return 1;
+MOD_EXPORT int L_Isaac_FindTargetPit(Vector* position, Vector* targetPosition, int pitIndex) {
+	return Entity_NPC::FindTargetPit(position, targetPosition, pitIndex);
 }
 
-LUA_FUNCTION(Lua_GetAxisAlignedUnitVectorFromDir) {
-	const int dir = (int)luaL_optinteger(L, 1, -1);
-
-	Vector result = Isaac::GetAxisAlignedUnitVectorFromDir(dir);
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = result;
-
-	return 1;
+MOD_EXPORT void L_Isaac_GetAxisAlignedUnitVectorFromDir(Vector* out, int dir) {
+	*out = Isaac::GetAxisAlignedUnitVectorFromDir(dir);
 }
 
-LUA_FUNCTION(Lua_StartDailyGame) {
-	const unsigned int date = (unsigned int)luaL_checkinteger(L, 1);
-
+MOD_EXPORT void L_Isaac_StartDailyGame(unsigned int date) {
 	// defer start to the manager
 	// Note: At the moment we cannot properly free some of the memory allocated by the Seeds constructors by ourselves.
 	// However, StartNewGame will handle it for us. Just be aware of this.
@@ -944,8 +637,6 @@ LUA_FUNCTION(Lua_StartDailyGame) {
 	auto* dailyChallenge = g_Manager->GetDailyChallenge();
 	dailyChallenge->Init(date);
 	dailyChallenge->_isPractice = true;
-
-	return 0;
 }
 
 static bool shuttingDown = false;
@@ -953,122 +644,98 @@ HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
 	shuttingDown = true;
 	super();
 }
-LUA_FUNCTION(Lua_IsaacIsShuttingDown) {
-	lua_pushboolean(L, shuttingDown);
-	return 1;
+MOD_EXPORT bool L_Isaac_IsShuttingDown() {
+	return shuttingDown;
 }
 
-LUA_FUNCTION(Lua_IsaacGetButtonsSprite) {
-	LuaSprite::PushPtr(L, &g_Manager->_buttonsSprite);
-	return 1;
+MOD_EXPORT ANM2* L_Isaac_GetButtonsSprite() {
+	return &g_Manager->_buttonsSprite;
 }
 
-LUA_FUNCTION(Lua_GetNanoTime)
+MOD_EXPORT int64_t L_Isaac_GetNanoTime()
 {
 	using clock = std::chrono::high_resolution_clock;
 	auto now = clock::now().time_since_epoch();
-	lua_Integer luaValue = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
-	lua_pushinteger(L, luaValue);
-	return 1;
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
 }
 
-LUA_FUNCTION(Lua_ReworkCollectible)
+MOD_EXPORT bool L_Isaac_ReworkCollectible(int collectible)
 {
-	int collectible = (int)luaL_checkinteger(L, 1);
 	if (!(CollectibleType::COLLECTIBLE_NULL < collectible && collectible < CollectibleType::NUM_COLLECTIBLES))
 	{
-		return luaL_argerror(L, 1, "invalid CollectibleType");
+		return false;
 	}
 
 	if (ItemSpoofSystem::IsReworkedCollectible(collectible, -1)) {
-		return 0;
+		return true;
 	}
-	
+
 	if (s_modsLoaded)
 	{
 		g_Game->GetConsole()->Print("[WARN] ReworkCollectible() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
-		return 0;
+		return true;
 	}
 
 	ItemSpoofSystem::ReworkCollectible(collectible);
-	return 0;
+	return true;
 }
 
-LUA_FUNCTION(Lua_ReworkBirthright)
+MOD_EXPORT bool L_Isaac_ReworkBirthright(int playerType)
 {
-	int playerType = (int)luaL_checkinteger(L, 1);
 	if (!(0 <= playerType && playerType < ePlayerType::NUM_PLAYER_TYPES))
 	{
-		return luaL_argerror(L, 1, "invalid PlayerType");
+		return false;
 	}
 
 	if (ItemSpoofSystem::IsReworkedCollectible(COLLECTIBLE_BIRTHRIGHT, playerType)) {
-		return 0;
+		return true;
 	}
 
 	if (s_modsLoaded)
 	{
 		g_Game->GetConsole()->Print("[WARN] ReworkBirthright() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
-		return 0;
+		return true;
 	}
 
 	ItemSpoofSystem::ReworkBirthright(playerType);
-	return 0;
+	return true;
 }
 
-LUA_FUNCTION(Lua_ReworkTrinket)
+MOD_EXPORT bool L_Isaac_ReworkTrinket(int trinket)
 {
-	int trinket = (int)luaL_checkinteger(L, 1);
 	if (!(TrinketType::TRINKET_NULL < trinket && trinket < TrinketType::NUM_TRINKETS))
 	{
-		return luaL_argerror(L, 1, "invalid TrinketType");
+		return false;
 	}
 
 	if (ItemSpoofSystem::IsReworkedTrinket(trinket)) {
-		return 0;
+		return true;
 	}
 
 	if (s_modsLoaded)
 	{
 		g_Game->GetConsole()->Print("[WARN] ReworkTrinket() ignored: Reworks can only be set during startup.\n", CONSOLE_COLOR_WARN, 0x96u);
-		return 0;
+		return true;
 	}
 
 	ItemSpoofSystem::ReworkTrinket(trinket);
-	return 0;
+	return true;
 }
 
-LUA_FUNCTION(Lua_RenderCollectionItem)
+MOD_EXPORT bool L_Isaac_RenderCollectionItem(int itemID, Vector* pos, Vector* scale, ColorMod* color)
 {
-	const int itemID = (int)luaL_checkinteger(L, 1);
-
 	if (!g_Manager->_itemConfig.GetCollectible(itemID)) {
-		return luaL_argerror(L, 1, "Invalid collectible ID");
+		return false;
 	}
 
-	Vector posVec = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector scaleVec;
-	if (lua_type(L, 3) == LUA_TCDATA) {
-		scaleVec = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	else {
-		scaleVec = Vector(1, 1);
-	}
-
-	ColorMod color;
-	if (lua_type(L, 4) == LUA_TCDATA) {
-		color = *lua::GetCData<ColorMod*>(L, 4, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
-	}
-	else {
-		color = ColorMod();
-	}
-
+	Vector posVec = *pos;
+	Vector scaleVec = scale ? *scale : Vector(1, 1);
+	ColorMod colorMod = color ? *color : ColorMod();
 	BlendMode blendMode = BlendMode(1);
 
-	g_Game->_gameOver.RenderItemSprite(itemID, &posVec, &color, &scaleVec, &blendMode);
+	g_Game->_gameOver.RenderItemSprite(itemID, &posVec, &colorMod, &scaleVec, &blendMode);
 
-	return 0;
+	return true;
 }
 
 // Returns true if the string can be used as a singular folder name (no sneaky things like "../folder" allowed).
@@ -1084,13 +751,13 @@ bool IsSafeFolderName(std::string_view name) {
 	return true;
 }
 
-LUA_FUNCTION(Lua_IsaacLoadModDataFromFolder) {
-	const char* folderName = luaL_checkstring(L, 1);
+// The returned string is only valid until the next call. NULL if there is no data.
+MOD_EXPORT const char* L_Isaac_LoadModDataFromFolder(const char* folderName) {
+	static std::string data;
 
 	int slot = g_Manager->_currentSaveSlot;
 	if (slot < 0 || slot > 3 || !IsSafeFolderName(folderName)) {
-		lua_pushnil(L);
-		return 1;
+		return nullptr;
 	} else if (slot == 0) {
 		// Isaac.LoadModData does this too
 		slot = 1;
@@ -1102,66 +769,50 @@ LUA_FUNCTION(Lua_IsaacLoadModDataFromFolder) {
 	KAGE_Filesys_File file;
 	if (file.OpenRead(path.c_str()) && file.IsOpen()) {
 		const long size = file.GetSize();
-		std::string data(size + 1, '\0');
+		data.assign(size + 1, '\0');
 		file.Read(data.data(), 1, size);
-		lua_pushstring(L, data.c_str());
-	} else {
-		lua_pushnil(L);
+		return data.c_str();
 	}
 
-	return 1;
+	return nullptr;
 }
 
-LUA_FUNCTION(Lua_IsaacGetBabyIdByName) {
-	const string name = luaL_checkstring(L, 1);
+MOD_EXPORT int L_Isaac_GetBabyIdByName(const char* nameString) {
+	const string name = nameString;
 
 	for (const EntityConfig_Baby& baby : *g_Manager->GetEntityConfig()->GetBabies()) {
 		if (baby.name == name) {
-			lua_pushinteger(L, baby.id);
-			return 1;
+			return baby.id;
 		}
 	}
 
-	lua_pushinteger(L, -1);
-	return 1;
+	return -1;
 }
 
 
 //Deprecated methods
 
-
-LUA_FUNCTION(Lua_IsaacClearBossHazards) {
-	if (g_Game == nullptr || g_Game->_room == nullptr) {
-		return luaL_error(L, "Must be in a room to use this!");
-	}
-	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);
-
+MOD_EXPORT void L_Isaac_ClearBossHazards(bool ignoreNPCs) {
 	Entity_NPC* entity = nullptr;
 	entity->ClearBossHazards(ignoreNPCs);
-	
-	g_Game->GetConsole()->Print("[WARN] Isaac.ClearBossHazards is deprecated. Use Room:ClearBossHazards instead", CONSOLE_COLOR_WARN, 0x96u);
 
-	return 0;
+	g_Game->GetConsole()->Print("[WARN] Isaac.ClearBossHazards is deprecated. Use Room:ClearBossHazards instead", CONSOLE_COLOR_WARN, 0x96u);
 }
 
-LUA_FUNCTION(Lua_IsaacCreateWeapon) {
-	int wepType = (int)luaL_checkinteger(L, 1);
-	Entity* ent = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-
+MOD_EXPORT bool L_Isaac_CreateWeapon(int wepType, Entity* ent, Weapon** weapon) {
 	if (!(WEAPON_NULL <= wepType && wepType < NUM_WEAPON_TYPES))
 	{
-		return luaL_argerror(L, 1, "Invalid WeaponType");
+		return false;
 	}
 
-	LuaWeapon::PushPtr(L, Isaac::CreateWeapon((WeaponType)wepType, ent));
-	return 1;
+	*weapon = Isaac::CreateWeapon((WeaponType)wepType, ent);
+	return true;
 }
 
-LUA_FUNCTION(Lua_IsaacDestroyWeapon) {
-	Weapon* weapon = LuaWeapon::Get(L, 1);
+MOD_EXPORT void L_Isaac_DestroyWeapon(Weapon* weapon) {
 	Entity* owner = weapon->GetOwner();
 	if (!owner) {
-		return 0;
+		return;
 	}
 
 	if (Entity_Player* player = owner->ToPlayer()) {
@@ -1177,7 +828,172 @@ LUA_FUNCTION(Lua_IsaacDestroyWeapon) {
 			Isaac::DestoryWeapon(familiar->GetWeapon());
 		}
 	}
-	return 0;
+}
+
+MOD_EXPORT void L_Isaac_DebugString(const char* text) {
+	std::string str(text);
+	LuaEngine::Isaac_DebugString(&str);
+}
+
+MOD_EXPORT Entity_Player* L_Isaac_GetPlayer(int index) {
+	if (g_Game == nullptr || g_Game->_playerManager._playerList.size() == 0) {
+		return nullptr;
+	}
+	return g_Game->GetPlayer((unsigned int)index);
+}
+
+MOD_EXPORT unsigned int L_Isaac_GetFrameCount() {
+	return g_Manager->_framecount;
+}
+
+MOD_EXPORT unsigned int L_Isaac_GetChallenge() {
+	return g_Game ? g_Game->_challenge : 0;
+}
+
+MOD_EXPORT Font* L_Isaac_GetTextFont() {
+	return &g_Manager->_font5_terminus8;
+}
+
+MOD_EXPORT void L_Isaac_AddPillEffectToPool(int effect) {
+	if (g_Game) {
+		g_Game->_itemPool.ForceAddPillEffect(effect);
+	}
+}
+
+MOD_EXPORT int L_Isaac_GetEntityTypeByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetEntityTypeByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetEntityVariantByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetEntityVariantByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetItemIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetItemIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetPlayerTypeByName(const char* name, bool isBSkin) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetPlayerTypeByName(&str, isBSkin);
+}
+
+MOD_EXPORT int L_Isaac_GetCardIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetCardIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetPillEffectByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetPillEffectByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetTrinketIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetTrinketIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetChallengeIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetChallengeIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetCostumeIdByPath(const char* path) {
+	std::string str(path);
+	return LuaEngine::Isaac_GetCostumeIdByPath(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetCurseIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetCurseIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetSoundIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetSoundIdByName(&str);
+}
+
+MOD_EXPORT int L_Isaac_GetMusicIdByName(const char* name) {
+	std::string str(name);
+	return LuaEngine::Isaac_GetMusicIdByName(&str);
+}
+
+MOD_EXPORT unsigned int L_Isaac_GetTime() {
+	return timeGetTime();
+}
+
+MOD_EXPORT const char* L_Isaac_ExecuteCommand(const char* command) {
+	static std::string result;
+	std::string cmd(command);
+
+	alignas(std::string) char buffer[sizeof(std::string)];
+	std::string* out = (std::string*)LuaEngine::Isaac_ExecuteCommand((std::string*)buffer, &cmd);
+	result = *out;
+	out->~basic_string();
+	return result.c_str();
+}
+
+MOD_EXPORT void L_Isaac_ConsoleOutput(const char* text) {
+	if (g_Game) {
+		std::string str(text);
+		g_Game->GetConsole()->Print(str, Console::Color::WHITE, 0x96u);
+	}
+}
+
+MOD_EXPORT int L_Isaac_CountEntities(Entity* spawner, int type, int variant, int subtype) {
+	if (g_Game == nullptr) {
+		return 0;
+	}
+	return g_Game->_room->GetEntityList()->CountEntities(spawner, type, variant, subtype);
+}
+
+MOD_EXPORT float L_Isaac_GetScreenWidth() {
+	return g_ScreenWidth;
+}
+
+MOD_EXPORT float L_Isaac_GetScreenHeight() {
+	return g_ScreenHeight;
+}
+
+MOD_EXPORT float L_Isaac_GetScreenPointScale() {
+	return g_PointScale;
+}
+
+static LuaBridgeRef ModRef(int ref) {
+	LuaBridgeRef modRef;
+	modRef._state = g_LuaEngine->_state;
+	modRef._ref = ref;
+	return modRef;
+}
+
+MOD_EXPORT void L_Isaac_RegisterMod(int ref, const char* name, int apiVersion) {
+	std::string str(name);
+	LuaEngine::Isaac_RegisterMod(ModRef(ref), &str, apiVersion);
+}
+
+MOD_EXPORT void L_Isaac_SaveModData(int ref, const char* data) {
+	std::string str(data);
+	LuaEngine::Isaac_SaveModData(ModRef(ref), &str);
+}
+
+MOD_EXPORT const char* L_Isaac_LoadModData(int ref) {
+	static std::string result;
+
+	alignas(std::string) char buffer[sizeof(std::string)];
+	std::string* out = (std::string*)LuaEngine::Isaac_LoadModData((std::string*)buffer, ModRef(ref));
+	result = *out;
+	out->~basic_string();
+	return result.c_str();
+}
+
+MOD_EXPORT bool L_Isaac_HasModData(int ref) {
+	return LuaEngine::Isaac_HasModData(ModRef(ref));
+}
+
+MOD_EXPORT void L_Isaac_RemoveModData(int ref) {
+	LuaEngine::Isaac_RemoveModData(ModRef(ref));
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -1188,89 +1004,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_newtable(_state);
 	timerFnTable = luaL_ref(_state, LUA_REGISTRYINDEX);
 
-
-	// Fix existing functions
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRoomEntities", Lua_IsaacGetRoomEntitiesFix);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindByType", Lua_IsaacFindByTypeFix);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInRadius", Lua_IsaacFindInRadiusFix);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Explode", Lua_IsaacExplode);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetFreeNearPosition", Lua_IsaacGetFreeNearPosition);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRandomPosition", Lua_IsaacGetRandomPosition);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GridSpawn", Lua_IsaacGridSpawn);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ScreenToWorld", Lua_IsaacScreenToWorld);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ScreenToWorldDistance", Lua_IsaacScreenToWorldDistance);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Spawn", Lua_IsaacSpawn);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToRenderPosition", Lua_IsaacWorldToRenderPosition);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToScreen", Lua_IsaacWorldToScreen);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "WorldToScreenDistance", Lua_IsaacWorldToScreenDistance);
-
-	// new functions
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateWeapon", Lua_IsaacCreateWeapon);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DestroyWeapon", Lua_IsaacDestroyWeapon);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderToWorld", Lua_RenderToWorld);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawQuad", Lua_DrawQuad);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawLine", Lua_DrawLine);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetClipboard", Lua_GetClipboard);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetClipboard", Lua_SetClipboard);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCursorSprite", Lua_IsaacGetCursorSprite);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypeByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetGiantBookIdByName", Lua_GetGiantBookByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRenderPosition", Lua_IsaacGetRenderPosition);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCollectibleSpawnPosition", Lua_IsaacGetCollectibleSpawnPosition);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PlayCutscene", Lua_PlayCutscene);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ShowErrorDialog", Lua_IsaacShowErrorDialog);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInCapsule", Lua_IsaacFindInCapsule);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetDwmWindowAttribute", Lua_SetDWMAttrib);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetDwmWindowAttribute", Lua_GetDWMAttrib);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetWindowTitle", Lua_SetWindowTitle);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetWindowTitle", Lua_GetWindowTitle);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetIcon", Lua_SetIcon);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
-	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Pause", Lua_IsaacPause); 
-	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsChallengeDone", Lua_IsChallengeDone);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "UnClearChallenge", Lua_UndoChallenge);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UndoChallenge);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetChallengeCompletion", Lua_SetChallengeCompletion);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeCompletionData", Lua_GetModChallengeCompletion);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RGON_GetChangelog", Lua_GetRGON_Changelog);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartDailyGame", Lua_StartDailyGame);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsShuttingDown", Lua_IsaacIsShuttingDown);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNanoTime", Lua_GetNanoTime);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkCollectible", Lua_ReworkCollectible);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkBirthright", Lua_ReworkBirthright);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ReworkTrinket", Lua_ReworkTrinket);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "LoadModDataFromFolder", Lua_IsaacLoadModDataFromFolder);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SpawnBoss", Lua_SpawnBoss);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetButtonsSprite", Lua_IsaacGetButtonsSprite);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RenderCollectionItem", Lua_RenderCollectionItem);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBabyIdByName", Lua_IsaacGetBabyIdByName);
-
-	//deprecated methods
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearBossHazards", Lua_IsaacClearBossHazards);
-
-	SigScan scanner("558bec83e4f883ec14535657f3");
-	bool result = scanner.Scan();
-	if (!result) {
-		lua_pushlightuserdata(_state, &DummyQueryRadius);
-	}
-	else {
-		lua_pushlightuserdata(_state, scanner.GetAddress());
-	}
-	QueryRadiusRef = luaL_ref(_state, LUA_REGISTRYINDEX);
 }
