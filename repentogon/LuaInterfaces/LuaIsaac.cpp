@@ -143,7 +143,7 @@ static void __cdecl TimerFunction(Entity_Effect* effect) {
 	lua_rawgeti(g_LuaEngine->_state, LUA_REGISTRYINDEX, timerFnTable); // table
 	lua_pushlightuserdata(L, effect); // table, ptr
 	lua_rawget(L, -2); // table, fn
-	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT)); // table, fn, arg
+	LuaEntityEffect::PushPtr(L, effect); // table, fn, arg
 	// lua_pushinteger(L, 10);
 	lua_pcall(L, 1, 0, 0); // table
 	lua_pop(L, 1); // restored
@@ -175,7 +175,7 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 
-	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	LuaEntityEffect::PushPtr(L, effect);
 	return 1;
 }
 

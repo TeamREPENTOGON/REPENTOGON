@@ -1392,7 +1392,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Effect* e) {
-			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::Metatables::ENTITY_EFFECT);
+			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::ffi::CData[lua::ffi::CDataID::ENTITY_EFFECT_PTR]);
 		}
 
 		void operator()(Entity_Familiar* f) {

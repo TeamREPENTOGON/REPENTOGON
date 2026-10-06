@@ -699,6 +699,8 @@ namespace LuaTraits
         using Type = Entity_Effect;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_EFFECT;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_EFFECT;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_EFFECT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_EFFECT_PTR;
     };
 
     struct LuaEntityRef
@@ -1199,7 +1201,7 @@ using LuaEntityLaser = CDataType<LuaTraits::LuaEntityLaser>;
 using LuaEntityKnife = CDataType<LuaTraits::LuaEntityKnife>;
 using LuaEntityProjectile = CDataType<LuaTraits::LuaEntityProjectile>;
 using LuaEntityNPC = LuabridgeType<LuaTraits::LuaEntityNPC>;
-using LuaEntityEffect = LuabridgeType<LuaTraits::LuaEntityEffect>;
+using LuaEntityEffect = CDataType<LuaTraits::LuaEntityEffect>;
 using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;
 using LuaEntityPtr = LuabridgeType<LuaTraits::LuaEntityPtr>;
 using LuaEntityList = LuabridgeType<LuaTraits::LuaEntityList>;

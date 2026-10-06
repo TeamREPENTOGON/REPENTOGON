@@ -122,6 +122,10 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 local getregistry = debug.getregistry
+
+-- Setting a mark fires MC_POST_COMPLETION_MARK from inside the call
+ffi.reentrant(repentogon.L_Isaac_SetCompletionMark)
+ffi.reentrant(repentogon.L_Isaac_SetCompletionMarks)
 local Game = Game
 
 local EntityToPointer = ffichecks.entitytopointer

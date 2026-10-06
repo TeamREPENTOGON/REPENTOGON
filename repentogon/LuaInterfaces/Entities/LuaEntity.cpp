@@ -466,7 +466,7 @@ LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
 	effect->SetColor(&color, -1, 255, false, true);
 	effect->_sprite._offset = offset;
 	effect->_depthOffset = -10.0f;
-	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	LuaEntityEffect::PushPtr(L, effect);
 
 	return 1;
 }
@@ -488,7 +488,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, poof, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+		LuaEntityEffect::PushPtr(L, poof);
 	}
 
 	return 1;
@@ -510,7 +510,7 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, poof, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+		LuaEntityEffect::PushPtr(L, poof);
 	}
 
 	return 1;

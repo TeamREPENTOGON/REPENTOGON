@@ -183,7 +183,6 @@ local entityBridges = {
 	PushClass = __Lua_Entity_PushClass,
 	PushPlayer = __Lua_Entity_PushPlayer,
 	PushNPC = __Lua_Entity_PushNPC,
-	PushEffect = __Lua_Entity_PushEffect,
 	PushResults = __Lua_Entity_PushResults,
 }
 local voidptr = lffi.typeof("void*")
@@ -221,7 +220,6 @@ ffichecks.pointertoclass = function(pointer, entityType)
 end
 ffichecks.pointertoplayer = pointertouserdata(entityBridges.PushPlayer)
 ffichecks.pointertonpc = pointertouserdata(entityBridges.PushNPC)
-ffichecks.pointertoeffect = pointertouserdata(entityBridges.PushEffect)
 ffichecks.entityresults = entityBridges.PushResults
 
 loadmodule("Vector")
@@ -377,6 +375,7 @@ loadmodule("Entity.EntityTear")
 loadmodule("Entity.EntityBomb")
 loadmodule("Entity.EntityKnife")
 loadmodule("Entity.EntityLaser")
+loadmodule("Entity.EntityEffect")
 loadmodule("Isaac")
 loadmodule("Options")
 
@@ -466,7 +465,6 @@ __Lua_Entity_PlayerAddress = nil
 __Lua_Entity_PushClass = nil
 __Lua_Entity_PushPlayer = nil
 __Lua_Entity_PushNPC = nil
-__Lua_Entity_PushEffect = nil
 __Lua_Entity_PushResults = nil
 
 ffi = nil

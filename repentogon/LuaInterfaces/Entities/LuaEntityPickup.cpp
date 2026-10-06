@@ -188,7 +188,7 @@ LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
 LUA_FUNCTION(Lua_PickupGetPickupGhost) {
 	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	Entity_Effect* pickupGhost = pickup->_pickupGhost;
-	lua::luabridge::UserdataPtr::push(L, pickupGhost, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	LuaEntityEffect::PushPtr(L, pickupGhost);
 	
 	return 1;
 }

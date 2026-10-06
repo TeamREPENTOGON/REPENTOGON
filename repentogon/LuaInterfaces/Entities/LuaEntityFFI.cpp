@@ -370,10 +370,6 @@ MOD_EXPORT Entity_NPC* L_Entity_ToNPC(Entity* entity) {
 	return entity->ToNPC();
 }
 
-MOD_EXPORT Entity_Effect* L_Entity_ToEffect(Entity* entity) {
-	return entity->ToEffect();
-}
-
 MOD_EXPORT Entity_Familiar* L_Entity_ToFamiliar(Entity* entity) {
 	return entity->ToFamiliar();
 }

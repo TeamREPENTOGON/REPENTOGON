@@ -31,11 +31,6 @@ LUA_FUNCTION(Lua_Entity_PushNPC) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Entity_PushEffect) {
-	LuaEntityEffect::PushPtr(L, (Entity_Effect*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
 LUA_FUNCTION(Lua_Entity_PushClass) {
 	void* pointer = (void*)(uintptr_t)luaL_checknumber(L, 1);
 	switch ((int)luaL_checkinteger(L, 2)) {
@@ -75,7 +70,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_register(_state, "__Lua_Entity_PushPlayer", Lua_Entity_PushPlayer);
 	lua_register(_state, "__Lua_Entity_PushClass", Lua_Entity_PushClass);
 	lua_register(_state, "__Lua_Entity_PushNPC", Lua_Entity_PushNPC);
-	lua_register(_state, "__Lua_Entity_PushEffect", Lua_Entity_PushEffect);
 	lua_register(_state, "__Lua_Entity_PushResults", Lua_Entity_PushResults);
 
 	super();

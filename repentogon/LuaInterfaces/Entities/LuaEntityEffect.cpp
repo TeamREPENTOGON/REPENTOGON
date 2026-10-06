@@ -1,34 +1,17 @@
-#include <unordered_set>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../LuaClasses.h"
 
-
-LUA_FUNCTION(Lua_EffectGetParentOffset) {
-	Entity_Effect* effect = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	lua::ffi::pushCdataPtr(L, &effect->_parentOffset, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
-	return 1;
+MOD_EXPORT void L_EntityEffect_FollowParent(Entity_Effect* effect, Entity* parent) {
+	effect->FollowParent(parent);
 }
 
-LUA_FUNCTION(Lua_EffectSetParentOffset) {
-	Entity_Effect* effect = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	effect->_parentOffset = *offset;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EffectCreateLight)
-{
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float scale = (float)luaL_optnumber(L, 2, (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)));
-	int lifespan = (int)luaL_optinteger(L, 3, -1);
-	int state = (int)luaL_optinteger(L, 4, 6);
-	ColorMod color;
-	if (lua_type(L, 5) == LUA_TCDATA) {
-		color = *lua::GetCData<ColorMod*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::COLOR], "Color");
+// color may be null
+MOD_EXPORT Entity_Effect* L_EntityEffect_CreateLight(Vector* position, float scale, int lifespan, int state, ColorMod* color) {
+	ColorMod effectColor;
+	if (color) {
+		effectColor = *color;
 	}
 
 	if (lifespan < 1) {
@@ -38,127 +21,27 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 		state = 6;
 	}
 
-	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 121, *pos, Vector(0, 0), nullptr, 0, Isaac::genrand_int32(), 0);
+	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 121, *position, Vector(0, 0), nullptr, 0, Isaac::genrand_int32(), 0);
 	if (!effect) {
-		lua_pushnil(L);
-	}
-	else {
-		effect->_state = state;
-		effect->_timeout = lifespan;
-		effect->_lifespan = lifespan;
-		effect->SetColor(&color, -1, 255, false, false);
-		effect->_sprite._scale *= scale;
-
-		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+		return nullptr;
 	}
 
-	return 1;
+	effect->_state = state;
+	effect->_timeout = lifespan;
+	effect->_lifespan = lifespan;
+	effect->SetColor(&effectColor, -1, 255, false, false);
+	effect->_sprite._scale *= scale;
+	return effect;
 }
 
-LUA_FUNCTION(Lua_EffectCreateLootPreview) {
-	LootList* loot = LuaLootList::Get(L, 1);
-	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity_Pickup* owner = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Entity_Effect* eff = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 4, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	lua::luabridge::UserdataPtr::push(L, Entity_Effect::CreateLootPreview(loot, position, owner, eff), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
-
-	return 1;
+MOD_EXPORT Entity_Effect* L_EntityEffect_CreateLootPreview(LootList* loot, Vector* position, Entity_Pickup* owner, Entity_Effect* effect) {
+	return Entity_Effect::CreateLootPreview(loot, position, owner, effect);
 }
 
-LUA_FUNCTION(Lua_GetGridEntityDesc) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-
-	if (entity->_variant == 136) {
-		lua::ffi::pushCdataPtr(L, (GridEntityDesc*)&entity->_varData, lua::ffi::CData[lua::ffi::CDataID::GRID_ENTITY_DESC_PTR]);
-	} else {
-		lua_pushnil(L);
+// Only the effect variants with a grid entity description in their varData
+MOD_EXPORT GridEntityDesc* L_EntityEffect_GetGridEntityDesc(Entity_Effect* effect) {
+	if (effect->_variant == 136) {
+		return (GridEntityDesc*)&effect->_varData;
 	}
-	
-	return 1;
-}
-
-static const std::unordered_set<int> tearflagEffectVariants = {
-	54,   // PLAYER_CREEP_HOLYWATER_TRAIL (Aquarius)
-	113,  // BRIMSTONE_BALL
-	126,  // TECH_DOT
-	167,  // CHAIN_LIGHTNING
-};
-static bool AllowTearflagAccess(Entity_Effect* effect) {
-	return tearflagEffectVariants.count(effect->_variant);
-}
-
-LUA_FUNCTION(Lua_GetTearFlags) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-
-	if (AllowTearflagAccess(entity)) {
-		lua::ffi::pushCdata<BitSet128>(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], entity->_varData);
-	} else {
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetTearFlags) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-
-	if (AllowTearflagAccess(entity)) {
-		entity->_varData = *lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_AddTearFlags) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-
-	if (AllowTearflagAccess(entity)) {
-		entity->_varData.AddFlags(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128"));
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_ClearTearFlags) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-
-	if (AllowTearflagAccess(entity)) {
-		entity->_varData.RemoveFlags(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128"));
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_HasTearFlags) {
-	auto* entity = lua::GetLuabridgeUserdata<Entity_Effect*>(L, 1, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
-	lua_pushboolean(L, AllowTearflagAccess(entity) && entity->_varData.HasAny(*lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128")));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "GetGridEntityDesc", Lua_GetGridEntityDesc },
-		{ "GetTearFlags", Lua_GetTearFlags },
-		{ "SetTearFlags", Lua_SetTearFlags },
-		{ "AddTearFlags", Lua_AddTearFlags },
-		{ "ClearTearFlags", Lua_ClearTearFlags },
-		{ "HasTearFlags", Lua_HasTearFlags },
-		// Previous function names
-		{ "GetAquariusTearFlags", Lua_GetTearFlags },
-		{ "SetAquariusTearFlags", Lua_SetTearFlags },
-		{ "AddAquariusTearFlags", Lua_AddTearFlags },
-		{ "ClearAquariusTearFlags", Lua_ClearTearFlags },
-		{ "HasAquariusTearFlags", Lua_HasTearFlags },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_EFFECT, functions);
-
-	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLight", Lua_EffectCreateLight);
-	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLootPreview", Lua_EffectCreateLootPreview);
-
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_EFFECT, "ParentOffset", Lua_EffectGetParentOffset, Lua_EffectSetParentOffset);
+	return nullptr;
 }

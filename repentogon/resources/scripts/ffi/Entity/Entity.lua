@@ -153,7 +153,6 @@ ffi.cdef [[
     void L_Entity_ResetWaterClipFlags(void*);
     void* L_Entity_ToPlayer(void*);
     void* L_Entity_ToNPC(void*);
-    void* L_Entity_ToEffect(void*);
     void* L_Entity_ToFamiliar(void*);
     void* L_Entity_ToPickup(void*);
     void* L_Entity_ToProjectile(void*);
@@ -421,6 +420,7 @@ local TYPE_PICKUP = 5
 local TYPE_SLOT = 6
 local TYPE_LASER = 7
 local TYPE_KNIFE = 8
+local TYPE_EFFECT = 1000
 local TYPE_DELIRIUM = 100
 
 -- Classes that are not cdata yet are still pushed as userdata
@@ -441,7 +441,7 @@ local function EffectResult(pointer)
     if pointer == nil then
         return nil
     end
-    return ffichecks.pointertoeffect(pointer)
+    return ffi.cast(classTypes[TYPE_EFFECT], pointer)
 end
 
 local function OptVector(index, value)
@@ -797,7 +797,7 @@ Methods {
         return ffichecks.pointertoclass(ffi.cast(pointerType, self), TYPE_DELIRIUM)
     end,
     ToEffect = function(self)
-        return EffectResult(repentogon.L_Entity_ToEffect(self))
+        return ToClass(self, TYPE_EFFECT)
     end,
     ToFamiliar = function(self)
         return ToClass(self, TYPE_FAMILIAR)

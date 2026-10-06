@@ -153,6 +153,7 @@ namespace lua {
 			{ lua::ffi::ENTITY_BOMB, lua::ffi::ENTITY_BOMB_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_BOMB, Metatables::CONST_ENTITY_BOMB } },
 			{ lua::ffi::ENTITY_KNIFE, lua::ffi::ENTITY_KNIFE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_KNIFE, Metatables::CONST_ENTITY_KNIFE } },
 			{ lua::ffi::ENTITY_LASER, lua::ffi::ENTITY_LASER_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_LASER, Metatables::CONST_ENTITY_LASER } },
+			{ lua::ffi::ENTITY_EFFECT, lua::ffi::ENTITY_EFFECT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_EFFECT, Metatables::CONST_ENTITY_EFFECT } },
 		};
 
 		EntityCDataUserdata s_entityCDataUserdata[16];

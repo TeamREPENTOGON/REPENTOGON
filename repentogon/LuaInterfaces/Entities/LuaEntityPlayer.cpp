@@ -1301,7 +1301,7 @@ LUA_FUNCTION(Lua_PlayerGetMarkedTarget) {
 		lua_pushnil(L);
 	}
 	else {
-		lua::luabridge::UserdataPtr::push(L, target, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+		LuaEntityEffect::PushPtr(L, target);
 	}
 	return 1;
 }
@@ -2077,7 +2077,7 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 		effect->_varData = params._flags;
 		effect->Update();
 
-		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+		LuaEntityEffect::PushPtr(L, effect);
 	}
 
 	return 1;
@@ -2514,7 +2514,7 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, effect, lua::Metatables::ENTITY_EFFECT);
+		LuaEntityEffect::PushPtr(L, effect);
 	}
 
 	return 1;
@@ -2867,7 +2867,7 @@ LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* shotDirection = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* flame = player->ShootBlueCandle(shotDirection);
-	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	LuaEntityEffect::PushPtr(L, flame->ToEffect());
 
 	return 1;
 }
@@ -3886,7 +3886,7 @@ LUA_FUNCTION(Lua_PlayerShootRedCandle) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* shotDirection = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* flame = player->ShootRedCandle(shotDirection);
-	lua::luabridge::UserdataPtr::push(L, flame->ToEffect(), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	LuaEntityEffect::PushPtr(L, flame->ToEffect());
 
 	return 1;
 }

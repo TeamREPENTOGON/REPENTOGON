@@ -272,7 +272,7 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
 	auto* optColor = LuaColor::GetOpt(L, 3);
 	ColorMod color = optColor ? *optColor : ColorMod();
 
-	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodCloud(&pos, &color), lua::Metatables::ENTITY_EFFECT);
+	LuaEntityEffect::PushPtr(L, npc->MakeBloodCloud(&pos, &color));
 
 	return 1;
 }

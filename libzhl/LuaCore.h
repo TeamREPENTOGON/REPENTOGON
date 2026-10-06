@@ -580,6 +580,8 @@ namespace lua {
             ENTITY_KNIFE_PTR,
             ENTITY_LASER,
             ENTITY_LASER_PTR,
+            ENTITY_EFFECT,
+            ENTITY_EFFECT_PTR,
             MAX_CDATA
         };
 
