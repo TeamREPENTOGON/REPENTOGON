@@ -625,6 +625,8 @@ namespace LuaTraits
         using Type = Entity_Tear;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_TEAR;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_TEAR;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_TEAR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_TEAR_PTR;
     };
 
     struct LuaEntityFamiliar
@@ -641,6 +643,8 @@ namespace LuaTraits
         using Type = Entity_Bomb;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_BOMB;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_BOMB;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_BOMB;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_BOMB_PTR;
     };
 
     struct LuaEntityPickup
@@ -1183,9 +1187,9 @@ struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
 
 using LuaEntity = LuaEntityType;
 using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
-using LuaEntityTear = LuabridgeType<LuaTraits::LuaEntityTear>;
+using LuaEntityTear = CDataType<LuaTraits::LuaEntityTear>;
 using LuaEntityFamiliar = LuabridgeType<LuaTraits::LuaEntityFamiliar>;
-using LuaEntityBomb = LuabridgeType<LuaTraits::LuaEntityBomb>;
+using LuaEntityBomb = CDataType<LuaTraits::LuaEntityBomb>;
 using LuaEntityPickup = LuabridgeType<LuaTraits::LuaEntityPickup>;
 using LuaEntityLaser = LuabridgeType<LuaTraits::LuaEntityLaser>;
 using LuaEntityKnife = LuabridgeType<LuaTraits::LuaEntityKnife>;

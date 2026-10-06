@@ -130,6 +130,10 @@ namespace lua {
 		return _metatable_idx_from_name[name];
 	}
 
+	namespace ffi {
+		lua_CTypeId CData[MAX_CDATA];
+	}
+
 	namespace {
 		struct EntityCDataUserdata {
 			void* vtable;
@@ -145,6 +149,8 @@ namespace lua {
 		const EntityCDataType s_entityCDataTypes[] = {
 			{ lua::ffi::ENTITY, lua::ffi::ENTITY_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
 			{ lua::ffi::ENTITY_PROJECTILE, lua::ffi::ENTITY_PROJECTILE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PROJECTILE, Metatables::CONST_ENTITY_PROJECTILE } },
+			{ lua::ffi::ENTITY_TEAR, lua::ffi::ENTITY_TEAR_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_TEAR, Metatables::CONST_ENTITY_TEAR } },
+			{ lua::ffi::ENTITY_BOMB, lua::ffi::ENTITY_BOMB_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_BOMB, Metatables::CONST_ENTITY_BOMB } },
 		};
 
 		EntityCDataUserdata s_entityCDataUserdata[16];

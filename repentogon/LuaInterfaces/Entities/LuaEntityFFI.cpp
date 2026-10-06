@@ -389,3 +389,89 @@ MOD_EXPORT Entity_Projectile* L_Entity_ToProjectile(Entity* entity) {
 MOD_EXPORT void L_EntityProjectile_Deflect(Entity_Projectile* projectile, Vector* velocity) {
 	projectile->Reflect(nullptr, velocity);
 }
+
+HOOK_STATIC(LuaEngine, GetUserdata, (lua_State* L, int idx, void* key, bool canBeConst) -> void*, __cdecl) {
+	if (lua_type(L, idx) == LUA_TCDATA) {
+		lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+		lua::PushMetatable(L, lua::Metatables::ENTITY);
+		const bool isEntity = lua_rawequal(L, -1, -2);
+		lua_pop(L, 2);
+
+		if (isEntity) {
+			if (void* userdata = lua::TestUserdata(L, idx, lua::Metatables::ENTITY)) {
+				return userdata;
+			}
+		}
+	}
+	return super(L, idx, key, canBeConst);
+}
+
+namespace {
+	Entity* CheckEntityArgument(lua_State* L, int index) {
+		if (lua_isnoneornil(L, index)) {
+			return nullptr;
+		}
+		return lua::GetLuabridgeUserdata<Entity*>(L, index, lua::Metatables::ENTITY, "Entity");
+	}
+
+	int PushEntityOrNil(lua_State* L, Entity* entity) {
+		if (entity) {
+			LuaEntity::PushPtr(L, entity);
+		}
+		else {
+			lua_pushnil(L);
+		}
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_Entity_GetParentLegacy) {
+		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetParent());
+	}
+
+	LUA_FUNCTION(Lua_Entity_SetParentLegacy) {
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		entity->SetParent(CheckEntityArgument(L, 2));
+		return 0;
+	}
+
+	LUA_FUNCTION(Lua_Entity_GetChildLegacy) {
+		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetChild());
+	}
+
+	LUA_FUNCTION(Lua_Entity_SetChildLegacy) {
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		entity->SetChild(CheckEntityArgument(L, 2));
+		return 0;
+	}
+
+	LUA_FUNCTION(Lua_Entity_GetTargetLegacy) {
+		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetTarget());
+	}
+
+	LUA_FUNCTION(Lua_Entity_SetTargetLegacy) {
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		entity->SetTarget(CheckEntityArgument(L, 2));
+		return 0;
+	}
+
+	LUA_FUNCTION(Lua_Entity_GetSpawnerEntityLegacy) {
+		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetSpawnerEntity());
+	}
+
+	LUA_FUNCTION(Lua_Entity_SetSpawnerEntityLegacy) {
+		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		entity->SetSpawnerEntity(CheckEntityArgument(L, 2));
+		return 0;
+	}
+}
+
+HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	super();
+
+	lua::LuaStackProtector protector(_state);
+
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Parent", Lua_Entity_GetParentLegacy, Lua_Entity_SetParentLegacy);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Child", Lua_Entity_GetChildLegacy, Lua_Entity_SetChildLegacy);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Target", Lua_Entity_GetTargetLegacy, Lua_Entity_SetTargetLegacy);
+	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SpawnerEntity", Lua_Entity_GetSpawnerEntityLegacy, Lua_Entity_SetSpawnerEntityLegacy);
+}

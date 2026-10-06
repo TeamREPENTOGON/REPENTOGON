@@ -25,8 +25,10 @@ enum SplitTearType {
 
 typedef std::variant<SplitTearType, std::string> CustomSplitTearType;
 
-// Shared lua function for Entity_Tear, Entity_Laser, and Entity_Knife
+// Shared lua function for Entity_Laser and Entity_Knife
 LUALIB_API int Lua_FireSplitTear(lua_State* L);
+
+Entity_Tear* FireSplitTear(Entity* sourceEntity, const Vector pos, const Vector vel, const float damageMult, const float sizeMult, const int variant, const CustomSplitTearType splitType);
 
 void ASMPatchesForSplitTearCallback();
 

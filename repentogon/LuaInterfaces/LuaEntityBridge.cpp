@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 #include "../LuaClasses.h"
 #include "LuaEntityBridge.h"
+#include "../REPENTOGONDelirium.h"
 
 static std::vector<Entity*> s_entityResults;
 
@@ -39,13 +40,23 @@ LUA_FUNCTION(Lua_Entity_PushClass) {
 	void* pointer = (void*)(uintptr_t)luaL_checknumber(L, 1);
 	switch ((int)luaL_checkinteger(L, 2)) {
 	case 1: LuaEntityPlayer::PushPtr(L, (Entity_Player*)pointer); break;
-	case 2: LuaEntityTear::PushPtr(L, (Entity_Tear*)pointer); break;
 	case 3: LuaEntityFamiliar::PushPtr(L, (Entity_Familiar*)pointer); break;
-	case 4: LuaEntityBomb::PushPtr(L, (Entity_Bomb*)pointer); break;
 	case 5: LuaEntityPickup::PushPtr(L, (Entity_Pickup*)pointer); break;
 	case 6: LuaEntitySlot::PushPtr(L, (Entity_Slot*)pointer); break;
 	case 7: LuaEntityLaser::PushPtr(L, (Entity_Laser*)pointer); break;
 	case 8: LuaEntityKnife::PushPtr(L, (Entity_Knife*)pointer); break;
+	case 100: {
+		Entity* entity = (Entity*)pointer;
+		Entity_NPC* npc = entity->ToNPC();
+		if (entity->_type == delirium::ENTITY_DELIRIUM || (npc && *npc->GetDeliriumBossType() == npc->_type && *npc->GetDeliriumBossVariant() == npc->_variant)) {
+			LuaEntityNPC::PushPtr(L, (Entity_NPC*)pointer);
+			luaL_setmetatable(L, lua::metatables::DeliriumMetatable);
+		}
+		else {
+			lua_pushnil(L);
+		}
+		break;
+	}
 	default: return luaL_error(L, "No FFI-less class for this entity");
 	}
 	return 1;

@@ -4458,12 +4458,25 @@ HOOK_METHOD(Room, IsPersistentRoomEntity, (int type, int variant, int subtype) -
 
 
 HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* entity, int hook, int action) -> LuaCallbackCallerResult) {
-	const int repentogonCallbackId = 1464;
-	if (!Isaac::IsInGame()) {
-		callbackId = repentogonCallbackId;
-	}
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
 
-	return super(engine, entity, hook, action);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L)
+		.push(Isaac::IsInGame() ? callbackId : 1464)
+		.push(optionalArg)
+		.pushClassPtr<LuaEntity>(entity)
+		.push(hook)
+		.push(action)
+		.call(1);
+
+	int ref = LUA_REFNIL;
+	if (!result) {
+		lua_pushvalue(L, -1);
+		ref = luaL_ref(L, LUA_REGISTRYINDEX);
+	}
+	return { L, ref };
 }
 
 //MC_POST_SAVESLOT_LOAD (1470)
@@ -4480,7 +4493,7 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 	const int callbackid1 = 1470;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid1 - 1000)) {
-
+		
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -6946,6 +6959,132 @@ HOOK_STATIC(LuaEngine, PreSpawnCleanAward, (RNG* rng, Vector* spawnPosition) -> 
 		}
 	}
 	return false;
+}
+
+HOOK_STATIC(LuaEngine, PostTearInit, (Entity_Tear* tear) -> void, __stdcall) {
+	const int callbackid = 39;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(tear->_variant)
+			.pushClassPtr<LuaEntityTear>(tear)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostTearUpdate, (Entity_Tear* tear) -> void, __stdcall) {
+	const int callbackid = 40;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(tear->_variant)
+			.pushClassPtr<LuaEntityTear>(tear)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostProjectileInit, (Entity_Projectile* projectile) -> void, __stdcall) {
+	const int callbackid = 43;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(projectile->_variant)
+			.pushClassPtr<LuaEntityProjectile>(projectile)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostProjectileUpdate, (Entity_Projectile* projectile) -> void, __stdcall) {
+	const int callbackid = 44;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(projectile->_variant)
+			.pushClassPtr<LuaEntityProjectile>(projectile)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostFireTear, (Entity_Tear* tear) -> void, __stdcall) {
+	const int callbackid = 61;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(tear->_variant)
+			.pushClassPtr<LuaEntityTear>(tear)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostGetTrinket, (int trinketType, RNG* rng) -> void, __stdcall) {
+	const int callbackid = 66;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(trinketType)
+			.pushClassPtr<LuaRNG>(rng)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostEntityRemove, (Entity* entity) -> void, __stdcall) {
+	const int callbackid = 67; // teehee
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(entity->_type)
+			.pushClassPtr<LuaEntity>(entity)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PreEntityDevolve, (Entity* entity) -> bool, __stdcall) {
+	const int callbackid = 72;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(entity->_type)
+			.pushClassPtr<LuaEntity>(entity)
+			.call(1);
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			}
+		}
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostBombInit, (Entity_Bomb* bomb) -> void, __stdcall) {
+	const int callbackid = 57;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(bomb->_variant)
+			.pushClassPtr<LuaEntityBomb>(bomb)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostBombUpdate, (Entity_Bomb* bomb) -> void, __stdcall) {
+	const int callbackid = 58;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(bomb->_variant)
+			.pushClassPtr<LuaEntityBomb>(bomb)
+			.call(0);
+	}
 }
 
 void CustomCallbacks::detail::ApplyPatches()

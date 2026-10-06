@@ -130,7 +130,7 @@ LUA_FUNCTION(Lua_FireBomb) {
 	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* source = LuaEntity::GetOpt(L, 4);
 
-	lua::luabridge::UserdataPtr::push(L, player->FireBomb(position, velocity, source), lua::GetMetatableKey(lua::Metatables::ENTITY_BOMB));
+	LuaEntityBomb::PushPtr(L, player->FireBomb(position, velocity, source));
 	return 1;
 }
 

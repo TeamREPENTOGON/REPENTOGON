@@ -572,10 +572,14 @@ namespace lua {
             ENTITY_PTR,
             ENTITY_PROJECTILE,
             ENTITY_PROJECTILE_PTR,
+            ENTITY_TEAR,
+            ENTITY_TEAR_PTR,
+            ENTITY_BOMB,
+            ENTITY_BOMB_PTR,
             MAX_CDATA
         };
 
-        inline lua_CTypeId CData[MAX_CDATA];
+        extern LIBZHL_API lua_CTypeId CData[MAX_CDATA];
     };
 
     template<typename T, typename... Args>

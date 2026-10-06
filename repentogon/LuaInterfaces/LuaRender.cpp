@@ -1388,7 +1388,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Bomb* b) {
-			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::Metatables::ENTITY_BOMB);
+			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::ffi::CData[lua::ffi::CDataID::ENTITY_BOMB_PTR]);
 		}
 
 		void operator()(Entity_Effect* e) {
@@ -1433,7 +1433,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Tear* t) {
-			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::Metatables::ENTITY_TEAR);
+			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::ffi::CData[lua::ffi::CDataID::ENTITY_TEAR_PTR]);
 		}
 
 		void operator()(GridEntity_Rock* r) {

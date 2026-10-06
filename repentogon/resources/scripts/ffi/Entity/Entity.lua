@@ -420,10 +420,18 @@ local TYPE_PICKUP = 5
 local TYPE_SLOT = 6
 local TYPE_LASER = 7
 local TYPE_KNIFE = 8
+local TYPE_DELIRIUM = 100
 
-local function ToLegacy(self, wantedType)
+-- Classes that are not cdata yet are still pushed as userdata
+local classTypes = {}
+
+local function ToClass(self, wantedType)
     if ffi.getprivate(self, "TypeValue") ~= wantedType then
         return nil
+    end
+    local ctype = classTypes[wantedType]
+    if ctype then
+        return ffi.cast(ctype, self)
     end
     return ffichecks.pointertoclass(ffi.cast(pointerType, self), wantedType)
 end
@@ -782,19 +790,22 @@ Methods {
     end,
     TeleportToRandomPosition = VoidMethod(repentogon.L_Entity_TeleportToRandomPosition),
     ToBomb = function(self)
-        return ToLegacy(self, TYPE_BOMB)
+        return ToClass(self, TYPE_BOMB)
+    end,
+    ToDelirium = function(self)
+        return ffichecks.pointertoclass(ffi.cast(pointerType, self), TYPE_DELIRIUM)
     end,
     ToEffect = function(self)
         return EffectResult(repentogon.L_Entity_ToEffect(self))
     end,
     ToFamiliar = function(self)
-        return ToLegacy(self, TYPE_FAMILIAR)
+        return ToClass(self, TYPE_FAMILIAR)
     end,
     ToKnife = function(self)
-        return ToLegacy(self, TYPE_KNIFE)
+        return ToClass(self, TYPE_KNIFE)
     end,
     ToLaser = function(self)
-        return ToLegacy(self, TYPE_LASER)
+        return ToClass(self, TYPE_LASER)
     end,
     ToNPC = function(self)
         local npc = repentogon.L_Entity_ToNPC(self)
@@ -804,7 +815,7 @@ Methods {
         return ffichecks.pointertonpc(npc)
     end,
     ToPickup = function(self)
-        return ToLegacy(self, TYPE_PICKUP)
+        return ToClass(self, TYPE_PICKUP)
     end,
     ToPlayer = function(self)
         local player = repentogon.L_Entity_ToPlayer(self)
@@ -821,10 +832,10 @@ Methods {
         return ffi.cast(projectileType, projectile)
     end,
     ToSlot = function(self)
-        return ToLegacy(self, TYPE_SLOT)
+        return ToClass(self, TYPE_SLOT)
     end,
     ToTear = function(self)
-        return ToLegacy(self, TYPE_TEAR)
+        return ToClass(self, TYPE_TEAR)
     end,
     TryThrow = function(self, source, direction, force)
         ffichecks.checkcdata(1, source, "EntityRef")
@@ -840,6 +851,19 @@ local Entity = {}
 function Entity.SetProjectileType(ctype)
     projectileType = ctype
 end
+
+function Entity.SetClassType(entityType, ctype)
+    classTypes[entityType] = ctype
+end
+
+Entity.Helpers = {
+    CopyStruct = CopyStruct,
+    Getter = Getter,
+    VectorGetter = VectorGetter,
+    VectorSetter = VectorSetter,
+    BooleanSetter = BooleanSetter,
+    EntityGetter = EntityGetter,
+}
 
 Entity.Fields = ENTITY_FIELDS
 Entity.Getters = getters
