@@ -378,6 +378,7 @@ loadmodule("Entity.EntityLaser")
 loadmodule("Entity.EntityEffect")
 loadmodule("Entity.EntityPickup")
 loadmodule("Entity.EntityFamiliar")
+loadmodule("Entity.EntitySlot")
 loadmodule("Isaac")
 loadmodule("Options")
 

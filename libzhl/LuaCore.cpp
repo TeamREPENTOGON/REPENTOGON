@@ -156,6 +156,7 @@ namespace lua {
 			{ lua::ffi::ENTITY_EFFECT, lua::ffi::ENTITY_EFFECT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_EFFECT, Metatables::CONST_ENTITY_EFFECT } },
 			{ lua::ffi::ENTITY_PICKUP, lua::ffi::ENTITY_PICKUP_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PICKUP, Metatables::CONST_ENTITY_PICKUP } },
 			{ lua::ffi::ENTITY_FAMILIAR, lua::ffi::ENTITY_FAMILIAR_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_FAMILIAR, Metatables::CONST_ENTITY_FAMILIAR } },
+			{ lua::ffi::ENTITY_SLOT, lua::ffi::ENTITY_SLOT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
 		};
 
 		EntityCDataUserdata s_entityCDataUserdata[16];
@@ -759,7 +760,6 @@ namespace lua {
 
 	namespace metatables
 	{;
-		const char* EntitySlotMT = "EntitySlot";
 		const char* DeliriumMetatable = "DeliriumMT";
 	}
 

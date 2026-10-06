@@ -1427,7 +1427,7 @@ namespace GL {
 			OpenTable();
 			PushType(LuaRender::RENDER_CTX_ENTITY_SLOT);
 			lua_pushstring(L, "Data");
-			lua::luabridge::UserdataPtr::push(L, s, lua::metatables::EntitySlotMT);
+			LuaEntitySlot::PushPtr(L, s);
 			lua_rawset(L, -3);
 			CloseTable();
 		}

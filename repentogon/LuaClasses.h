@@ -679,6 +679,14 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_KNIFE_PTR;
     };
 
+    struct LuaEntitySlot
+    {
+        static constexpr const char* Name = "EntitySlot";
+        using Type = Entity_Slot;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_SLOT;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_SLOT_PTR;
+    };
+
     struct LuaEntityProjectile
     {
         static constexpr const char* Name = "EntityProjectile";
@@ -1229,7 +1237,7 @@ using LuaBlendMode = CDataType<LuaTraits::LuaBlendMode>;
 using LuaHistoryHUD = CDataType<LuaTraits::LuaHistoryHUD>;
 using LuaPlayerHUD = CDataType<LuaTraits::LuaPlayerHUD>;
 using LuaBossPool = CDataType<LuaTraits::LuaBossPool>;
-using LuaEntitySlot = LuabridgeRGONType<Entity_Slot, lua::metatables::EntitySlotMT>;
+using LuaEntitySlot = CDataType<LuaTraits::LuaEntitySlot>;
 using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
 using LuaWeapon = CDataType<LuaTraits::LuaWeapon>;
 using LuaMultiShotParams = CDataType<LuaTraits::LuaMultiShotParams>;

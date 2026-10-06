@@ -35,7 +35,6 @@ LUA_FUNCTION(Lua_Entity_PushClass) {
 	void* pointer = (void*)(uintptr_t)luaL_checknumber(L, 1);
 	switch ((int)luaL_checkinteger(L, 2)) {
 	case 1: LuaEntityPlayer::PushPtr(L, (Entity_Player*)pointer); break;
-	case 6: LuaEntitySlot::PushPtr(L, (Entity_Slot*)pointer); break;
 	case 101:
 		lua::luabridge::UserdataPtr::push(L, (NPCAI_Pathfinder*)pointer, lua::GetMetatableKey(lua::Metatables::PATHFINDER));
 		break;

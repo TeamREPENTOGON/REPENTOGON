@@ -55,7 +55,6 @@ namespace lua {
 
     namespace metatables
     {
-        extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* DeliriumMetatable;
     }
 
@@ -586,6 +585,8 @@ namespace lua {
             ENTITY_PICKUP_PTR,
             ENTITY_FAMILIAR,
             ENTITY_FAMILIAR_PTR,
+            ENTITY_SLOT,
+            ENTITY_SLOT_PTR,
             MAX_CDATA
         };
 
