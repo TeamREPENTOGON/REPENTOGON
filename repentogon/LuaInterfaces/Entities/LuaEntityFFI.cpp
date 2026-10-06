@@ -397,6 +397,7 @@ HOOK_STATIC(LuaEngine, GetUserdata, (lua_State* L, int idx, void* key, bool canB
 			lua::Metatables::ENTITY_LASER,
 			lua::Metatables::ENTITY_EFFECT,
 			lua::Metatables::ENTITY_PICKUP,
+			lua::Metatables::ENTITY_NPC,
 		};
 
 		lua_rawgetp(L, LUA_REGISTRYINDEX, key);

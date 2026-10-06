@@ -703,6 +703,16 @@ namespace LuaTraits
         using Type = Entity_NPC;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_NPC;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_NPC;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_NPC;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_NPC_PTR;
+    };
+
+    struct LuaEntityDelirium
+    {
+        static constexpr const char* Name = "EntityDelirium";
+        using Type = Entity_NPC;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_DELIRIUM;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_DELIRIUM_PTR;
     };
 
     struct LuaEntityEffect
@@ -747,7 +757,8 @@ namespace LuaTraits
         using Type = NPCAI_Pathfinder;
         static constexpr lua::Metatables MT = lua::Metatables::PATHFINDER;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_PATHFINDER;
-        // Needs custom value vftable
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::PATHFINDER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::PATHFINDER_PTR;
     };
 
     struct LuaTearParams
@@ -1212,12 +1223,12 @@ using LuaEntityPickup = CDataType<LuaTraits::LuaEntityPickup>;
 using LuaEntityLaser = CDataType<LuaTraits::LuaEntityLaser>;
 using LuaEntityKnife = CDataType<LuaTraits::LuaEntityKnife>;
 using LuaEntityProjectile = CDataType<LuaTraits::LuaEntityProjectile>;
-using LuaEntityNPC = LuabridgeType<LuaTraits::LuaEntityNPC>;
+using LuaEntityNPC = CDataType<LuaTraits::LuaEntityNPC>;
 using LuaEntityEffect = CDataType<LuaTraits::LuaEntityEffect>;
 using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;
 using LuaEntityPtr = LuabridgeType<LuaTraits::LuaEntityPtr>;
 using LuaEntityList = LuabridgeType<LuaTraits::LuaEntityList>;
-using LuaPathfinder = LuabridgeType<LuaTraits::LuaPathfinder>;
+using LuaPathfinder = CDataType<LuaTraits::LuaPathfinder>;
 using LuaTearParams = CDataType<LuaTraits::LuaTearParams>;
 using LuaProjectileParams = CDataType<LuaTraits::LuaProjectileParams>;
 using LuaActiveItemDesc = LuabridgeType<LuaTraits::LuaActiveItemDesc>;
@@ -1238,7 +1249,7 @@ using LuaHistoryHUD = CDataType<LuaTraits::LuaHistoryHUD>;
 using LuaPlayerHUD = CDataType<LuaTraits::LuaPlayerHUD>;
 using LuaBossPool = CDataType<LuaTraits::LuaBossPool>;
 using LuaEntitySlot = CDataType<LuaTraits::LuaEntitySlot>;
-using LuaEntityDelirium = LuabridgeRGONType<Entity_NPC, lua::metatables::DeliriumMetatable>;
+using LuaEntityDelirium = CDataType<LuaTraits::LuaEntityDelirium>;
 using LuaWeapon = CDataType<LuaTraits::LuaWeapon>;
 using LuaMultiShotParams = CDataType<LuaTraits::LuaMultiShotParams>;
 using LuaLootList = CDataType<LuaTraits::LuaLootList>;

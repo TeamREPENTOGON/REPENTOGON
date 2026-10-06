@@ -589,6 +589,10 @@ namespace lua {
             ENTITY_SLOT_PTR,
             PATHFINDER,
             PATHFINDER_PTR,
+            ENTITY_NPC,
+            ENTITY_NPC_PTR,
+            ENTITY_DELIRIUM,
+            ENTITY_DELIRIUM_PTR,
             MAX_CDATA
         };
 

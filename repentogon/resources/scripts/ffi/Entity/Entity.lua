@@ -421,7 +421,6 @@ local TYPE_SLOT = 6
 local TYPE_LASER = 7
 local TYPE_KNIFE = 8
 local TYPE_EFFECT = 1000
-local TYPE_DELIRIUM = 100
 
 -- Classes that are not cdata yet are still pushed as userdata
 local classTypes = {}
@@ -793,9 +792,6 @@ Methods {
     ToBomb = function(self)
         return ToClass(self, TYPE_BOMB)
     end,
-    ToDelirium = function(self)
-        return ffichecks.pointertoclass(ffi.cast(pointerType, self), TYPE_DELIRIUM)
-    end,
     ToEffect = function(self)
         return ToClass(self, TYPE_EFFECT)
     end,
@@ -809,6 +805,10 @@ Methods {
         return ToClass(self, TYPE_LASER)
     end,
     ToNPC = function(self)
+        local entityType = ffi.getprivate(self, "TypeValue")
+        if entityType < 10 or entityType == TYPE_EFFECT then
+            return nil
+        end
         local npc = repentogon.L_Entity_ToNPC(self)
         if npc == nil then
             return nil
@@ -900,10 +900,13 @@ Entity.Getters = getters
 Entity.Setters = setters
 Entity.Methods = methods
 
-function Entity.Inherit(typeName, ownMethods, ownGetters, ownSetters)
-    local classGetters = ownGetters == getters and getters or setmetatable(ownGetters or {}, { __index = getters })
-    local classSetters = ownSetters == setters and setters or setmetatable(ownSetters or {}, { __index = setters })
-    local class = setmetatable(ownMethods or {}, { __index = methods })
+-- parent is the metatable of the class being extended, which is Entity's by default
+function Entity.Inherit(typeName, ownMethods, ownGetters, ownSetters, parent)
+    local parentGetters = parent and parent.__propget or getters
+    local parentSetters = parent and parent.__propset or setters
+    local classGetters = ownGetters == getters and getters or setmetatable(ownGetters or {}, { __index = parentGetters })
+    local classSetters = ownSetters == setters and setters or setmetatable(ownSetters or {}, { __index = parentSetters })
+    local class = setmetatable(ownMethods or {}, { __index = parent or methods })
 
     class.__type = typeName
     class.__index = function(self, key)

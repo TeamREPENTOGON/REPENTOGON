@@ -456,6 +456,10 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_SLOT_PTR] = lua_ctypeid(L, "EntitySlotPtr");
 	lua::ffi::CData[lua::ffi::CDataID::PATHFINDER] = lua_ctypeid(L, "PathFinder");
 	lua::ffi::CData[lua::ffi::CDataID::PATHFINDER_PTR] = lua_ctypeid(L, "PathFinderPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC] = lua_ctypeid(L, "EntityNPC");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC_PTR] = lua_ctypeid(L, "EntityNPCPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM] = lua_ctypeid(L, "EntityDelirium");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM_PTR] = lua_ctypeid(L, "EntityDeliriumPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

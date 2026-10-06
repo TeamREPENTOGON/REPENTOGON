@@ -362,7 +362,7 @@ LUA_FUNCTION(lua_EntityGiveMinecart) {
 	Vector* velocity = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
 	Entity* minecart = entity->GiveMinecart(position, velocity);
-	lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	LuaEntityNPC::PushPtr(L, (Entity_NPC*)minecart);
 	return 1;
 }
 
@@ -374,11 +374,11 @@ LUA_FUNCTION(lua_EntityGetMinecart) {
 		lua_pushnil(L);
 	}
 	else if (minecart->ToNPC()) {
-		lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+		LuaEntityNPC::PushPtr(L, (Entity_NPC*)minecart);
 	}
 	else {
 		// bwuh?
-		lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY));
+		LuaEntity::PushPtr(L, minecart);
 	}
 
 	return 1;

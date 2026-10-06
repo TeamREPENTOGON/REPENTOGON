@@ -1408,7 +1408,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_NPC* n) {
-			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::Metatables::ENTITY_NPC);
+			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC_PTR]);
 		}
 
 		void operator()(Entity_Pickup* p) {

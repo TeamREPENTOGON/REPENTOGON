@@ -208,19 +208,6 @@ end
 -- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
 
 ---------------------------------------------------------
-BeginClass(EntityNPC)
-
--- void	EntityNPC:MakeChampion(int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false)
--- * ChampionColorIdx: The type of champion to turn this enemy into (-1 results in a random champion type)
--- * Init: Set to true when called while initializing the enemy, false otherwise
-local Entity_NPC_MakeChampion = META0.MakeChampion
-function META:MakeChampion(seed, championType, init)
-	Entity_NPC_MakeChampion(self, seed, championType or -1, init)
-end
-		
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityPlayer)
 
 -- void	EntityPlayer:AddCollectible(CollectibleType Type, int Charge = 0, boolean AddConsumables = true, ActiveSlot Slot = ActiveSlot.SLOT_PRIMARY, int VarData = 0)

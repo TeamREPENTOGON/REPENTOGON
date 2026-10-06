@@ -101,7 +101,7 @@ __thiscall void Entity_NPC::Hornfel_UpdateFrame();
 static __cdecl void Entity_NPC::moms_heart_mausoleum_death();
 
 "558bec83e4f883ec20568bf1578b86":
-__thiscall Vector* Entity_NPC::CalcTargetPosition(float distanceLimit);
+__thiscall Vector* Entity_NPC::CalcTargetPosition(Vector* buffer, float distanceLimit);
 
 "558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bf98b47??83f829":
 __thiscall bool Entity_NPC::CanBeDamagedFromVelocity(Vector* Velocity);
@@ -121,7 +121,40 @@ __thiscall void Entity_NPC::MinecartBreak();
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
 */
 
-struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile) : public Entity {
+"558bec83e4f8807d080074??":
+__thiscall void Entity_NPC::SetCanShutDoors(bool canShutDoors);
+
+"558bec83ec2cf30f100d????????f30f1005????????":
+__thiscall void Entity_NPC::KillUnique();
+
+"f30f1005????????f30f118118040000f30f1005????????f30f11811c040000f30f1005????????f30f118120040000f30f1005????????f30f118124040000c3":
+__thiscall void Entity_NPC::ResetPathFinderTarget();
+
+"568bf18b86300300008b80d8000000":
+__thiscall bool Entity_NPC::CanReroll();
+
+"558bec83ec48a1????????33c58945f8535657":
+__thiscall void Entity_NPC::MakeChampion(unsigned int seed, int championColorIdx, bool init);
+
+"558bec83e4f851568bf1e8????????8b0d????????":
+__thiscall Entity_Effect* Entity_NPC::MakeSplat(float scale);
+
+"558bec83e4f88b8168010000":
+__thiscall int Entity_NPC::GetAliveEnemyCount();
+
+"558bec83e4f883ec0856578bf980bf630c000000":
+__thiscall void Entity_NPC::AnimWalkFrame(std_string& horizontalAnim, std_string& verticalAnim, float threshold);
+
+"558bec518b0d????????6a00":
+__thiscall EntityList_EL* Entity_NPC::QueryNPCsType(EntityList_EL* result, int type, int variant);
+
+"558bec518b15????????33c0":
+__thiscall EntityList_EL* Entity_NPC::QueryNPCsSpawnerType(EntityList_EL* result, int type, int variant, bool onlyEnemies);
+
+"558bec51a1????????33c953":
+__thiscall EntityList_EL* Entity_NPC::QueryNPCsGroup(EntityList_EL* result, int groupIdx);
+
+struct Entity_NPC depends (Vector, NPCAI_Pathfinder, ColorMod, Entity_Projectile, EntityList_EL) : public Entity {
 {{
     inline ColorMod* GetDirtColor() { return &this->_dirtColor; }
     inline uint32_t* GetDeliriumBossType() { return &this->_deliriumBossType; }

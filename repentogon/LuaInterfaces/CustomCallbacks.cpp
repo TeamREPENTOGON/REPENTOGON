@@ -7209,6 +7209,61 @@ HOOK_STATIC(LuaEngine, PostFamiliarInit, (Entity_Familiar* familiar) -> void, __
 	}
 }
 
+HOOK_STATIC(LuaEngine, PostNPCUpdate, (Entity_NPC* npc) -> void, __stdcall) {
+	const int callbackid = 0;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.pushClassPtr<LuaEntityNPC>(npc)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostNPCInit, (Entity_NPC* npc) -> void, __stdcall) {
+	const int callbackid = 27;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.pushClassPtr<LuaEntityNPC>(npc)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostNPCDeath, (Entity_NPC* npc) -> void, __stdcall) {
+	const int callbackid = 29;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.pushClassPtr<LuaEntityNPC>(npc)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PreNPCUpdate, (Entity_NPC* npc) -> bool, __stdcall) {
+	const int callbackid = 69;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(npc->_type)
+			.pushClassPtr<LuaEntityNPC>(npc)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			}
+		}
+	}
+	return false;
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();
