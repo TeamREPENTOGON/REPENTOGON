@@ -7136,7 +7136,6 @@ HOOK_STATIC(LuaEngine, PostLaserUpdate, (Entity_Laser* laser) -> void, __stdcall
 	}
 }
 
-
 HOOK_STATIC(LuaEngine, PostEffectInit, (Entity_Effect* effect) -> void, __stdcall) {
 	const int callbackid = 54;
 	if (VanillaCallbackState.test(callbackid)) {
@@ -7157,6 +7156,30 @@ HOOK_STATIC(LuaEngine, PostEffectUpdate, (Entity_Effect* effect) -> void, __stdc
 		lua::LuaCaller(L).push(callbackid)
 			.push(effect->_variant)
 			.pushClassPtr<LuaEntityEffect>(effect)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostPickupInit, (Entity_Pickup* pickup) -> void, __stdcall) {
+	const int callbackid = 34;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(pickup->_variant)
+			.pushClassPtr<LuaEntityPickup>(pickup)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostPickupUpdate, (Entity_Pickup* pickup) -> void, __stdcall) {
+	const int callbackid = 35;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(pickup->_variant)
+			.pushClassPtr<LuaEntityPickup>(pickup)
 			.call(0);
 	}
 }

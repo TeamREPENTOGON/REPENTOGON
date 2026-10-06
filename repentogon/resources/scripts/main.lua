@@ -221,22 +221,6 @@ end
 EndClass()
 
 ---------------------------------------------------------
-BeginClass(EntityPickup)
-
--- boolean EntityPickup:TryOpenChest(EntityPlayer Player = nil)
--- * Player: The player that opened this chest
-local Entity_Pickup_TryOpenChest = META0.TryOpenChest
-function META:TryOpenChest(player)
-	return Entity_Pickup_TryOpenChest(self, player)
-end
-
--- void	EntityPickup::Morph(EntityType Type, int Variant, int SubType, boolean KeepPrice = false, boolean KeepSeed = false, boolean IgnoreModifiers = false)
--- * KeepSeed: If set to true, keeps the initial RNG seed of the pickup instead of rerolling it
--- * IgnoreModifiers: If set to true, ignores item effects that might turn this pickup into something other than the specificed variant and subtype
-
-EndClass()
- 
----------------------------------------------------------
 BeginClass(EntityPlayer)
 
 -- void	EntityPlayer:AddCollectible(CollectibleType Type, int Charge = 0, boolean AddConsumables = true, ActiveSlot Slot = ActiveSlot.SLOT_PRIMARY, int VarData = 0)
@@ -506,7 +490,6 @@ EndClass()
 
 ---------------------------------------------------------
 
--- Game is the FFI class now, so the vanilla Game() stored in Game_0 is just dropped
 Game_0 = nil
 
 if not _LUADEBUG then

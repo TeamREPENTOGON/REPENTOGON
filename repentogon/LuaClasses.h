@@ -653,6 +653,8 @@ namespace LuaTraits
         using Type = Entity_Pickup;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PICKUP;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PICKUP;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PICKUP;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PICKUP_PTR;
     };
 
     struct LuaEntityLaser
@@ -1196,7 +1198,7 @@ using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
 using LuaEntityTear = CDataType<LuaTraits::LuaEntityTear>;
 using LuaEntityFamiliar = LuabridgeType<LuaTraits::LuaEntityFamiliar>;
 using LuaEntityBomb = CDataType<LuaTraits::LuaEntityBomb>;
-using LuaEntityPickup = LuabridgeType<LuaTraits::LuaEntityPickup>;
+using LuaEntityPickup = CDataType<LuaTraits::LuaEntityPickup>;
 using LuaEntityLaser = CDataType<LuaTraits::LuaEntityLaser>;
 using LuaEntityKnife = CDataType<LuaTraits::LuaEntityKnife>;
 using LuaEntityProjectile = CDataType<LuaTraits::LuaEntityProjectile>;

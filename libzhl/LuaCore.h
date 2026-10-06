@@ -582,6 +582,8 @@ namespace lua {
             ENTITY_LASER_PTR,
             ENTITY_EFFECT,
             ENTITY_EFFECT_PTR,
+            ENTITY_PICKUP,
+            ENTITY_PICKUP_PTR,
             MAX_CDATA
         };
 

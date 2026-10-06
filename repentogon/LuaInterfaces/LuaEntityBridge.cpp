@@ -36,7 +36,6 @@ LUA_FUNCTION(Lua_Entity_PushClass) {
 	switch ((int)luaL_checkinteger(L, 2)) {
 	case 1: LuaEntityPlayer::PushPtr(L, (Entity_Player*)pointer); break;
 	case 3: LuaEntityFamiliar::PushPtr(L, (Entity_Familiar*)pointer); break;
-	case 5: LuaEntityPickup::PushPtr(L, (Entity_Pickup*)pointer); break;
 	case 6: LuaEntitySlot::PushPtr(L, (Entity_Slot*)pointer); break;
 	case 100: {
 		Entity* entity = (Entity*)pointer;

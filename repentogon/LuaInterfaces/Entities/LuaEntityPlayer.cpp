@@ -799,7 +799,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectible) {
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, pickup, lua::Metatables::ENTITY_PICKUP);
+		LuaEntityPickup::PushPtr(L, pickup);
 	}
 
 	return 1;
@@ -816,7 +816,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 	}
 	else
 	{
-		lua::luabridge::UserdataPtr::push(L, pickup, lua::Metatables::ENTITY_PICKUP);
+		LuaEntityPickup::PushPtr(L, pickup);
 	}
 
 	return 1;

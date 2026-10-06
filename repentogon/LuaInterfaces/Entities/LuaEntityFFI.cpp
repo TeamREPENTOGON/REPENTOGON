@@ -388,13 +388,32 @@ MOD_EXPORT void L_EntityProjectile_Deflect(Entity_Projectile* projectile, Vector
 
 HOOK_STATIC(LuaEngine, GetUserdata, (lua_State* L, int idx, void* key, bool canBeConst) -> void*, __cdecl) {
 	if (lua_type(L, idx) == LUA_TCDATA) {
-		lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-		lua::PushMetatable(L, lua::Metatables::ENTITY);
-		const bool isEntity = lua_rawequal(L, -1, -2);
-		lua_pop(L, 2);
+		static const lua::Metatables entityClasses[] = {
+			lua::Metatables::ENTITY,
+			lua::Metatables::ENTITY_PROJECTILE,
+			lua::Metatables::ENTITY_TEAR,
+			lua::Metatables::ENTITY_BOMB,
+			lua::Metatables::ENTITY_KNIFE,
+			lua::Metatables::ENTITY_LASER,
+			lua::Metatables::ENTITY_EFFECT,
+			lua::Metatables::ENTITY_PICKUP,
+		};
 
-		if (isEntity) {
-			if (void* userdata = lua::TestUserdata(L, idx, lua::Metatables::ENTITY)) {
+		lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+		lua::Metatables wanted = lua::Metatables::METATABLES_MAX;
+		for (lua::Metatables mt : entityClasses) {
+			lua::PushMetatable(L, mt);
+			const bool match = lua_rawequal(L, -1, -2);
+			lua_pop(L, 1);
+			if (match) {
+				wanted = mt;
+				break;
+			}
+		}
+		lua_pop(L, 1);
+
+		if (wanted != lua::Metatables::METATABLES_MAX) {
+			if (void* userdata = lua::TestUserdata(L, idx, wanted)) {
 				return userdata;
 			}
 		}

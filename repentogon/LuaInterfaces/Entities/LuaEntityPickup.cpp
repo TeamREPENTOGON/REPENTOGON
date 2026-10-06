@@ -5,411 +5,175 @@
 #include "../../Utils/Entity/PickupUtils.h"
 #include "../../Patches/EntityPlus.h"
 
-LUA_FUNCTION(Lua_PickupSetAlternatePedestal) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int pedestalType = (int)luaL_checkinteger(L, 2);
+MOD_EXPORT void L_EntityPickup_Morph(Entity_Pickup* pickup, int type, int variant, int subType, bool keepPrice, bool keepSeed, bool ignoreModifiers) {
+	pickup->Morph(type, variant, subType, keepPrice, keepSeed, ignoreModifiers);
+}
 
+MOD_EXPORT void L_EntityPickup_SetPrice(Entity_Pickup* pickup, int price) {
+	pickup->SetPrice(price);
+}
+
+MOD_EXPORT int L_EntityPickup_GetCoinValue(Entity_Pickup* pickup) {
+	return pickup->GetCoinValue();
+}
+
+MOD_EXPORT bool L_EntityPickup_TryOpenChest(Entity_Pickup* pickup, Entity_Player* player) {
+	return pickup->TryOpenChest(player);
+}
+
+MOD_EXPORT void L_EntityPickup_PlayDropSound(Entity_Pickup* pickup) {
+	pickup->PlayDropSound();
+}
+
+MOD_EXPORT void L_EntityPickup_PlayPickupSound(Entity_Pickup* pickup) {
+	pickup->PlayPickupSound();
+}
+
+MOD_EXPORT void L_EntityPickup_AppearFast(Entity_Pickup* pickup) {
+	pickup->AppearFast();
+}
+
+MOD_EXPORT bool L_EntityPickup_CanReroll(Entity_Pickup* pickup) {
+	return pickup->CanReroll();
+}
+
+MOD_EXPORT bool L_EntityPickup_CanJeraDuplicate(Entity_Pickup* pickup) {
+	return pickup->CanJeraDuplicate();
+}
+
+MOD_EXPORT void L_EntityPickup_SetAlternatePedestal(Entity_Pickup* pickup, int pedestalType) {
 	pickup->SetAlternatePedestal(pedestalType);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_PickupTryRemoveCollectible) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->TryRemoveCollectible());
-
-	return 1;
+MOD_EXPORT int L_EntityPickup_GetAlternatePedestal(Entity_Pickup* pickup) {
+	return pickup->GetAlternatePedestal();
 }
 
-LUA_FUNCTION(Lua_PickupSetForceBlind) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool setBlind = lua::luaL_checkboolean(L, 2);
-
-	pickup->SetForceBlind(setBlind);
-
-	return 0;
+MOD_EXPORT bool L_EntityPickup_TryRemoveCollectible(Entity_Pickup* pickup) {
+	return pickup->TryRemoveCollectible();
 }
 
-LUA_FUNCTION(Lua_PickupIsBlind) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, true); // wish I implemented that method properly before...
+MOD_EXPORT void L_EntityPickup_SetForceBlind(Entity_Pickup* pickup, bool blind) {
+	pickup->SetForceBlind(blind);
+}
 
-	bool isBlind = false;
-	if (pickup->_variant == 100) {
-		if (checkForcedBlindOnly) {
-			isBlind = pickup->IsBlind();
-		}
-		else if (pickup->IsBlind() || !pickup->_sprite._layerState[1]._spriteSheetPath.compare("gfx/Items/Collectibles/questionmark.png")) {
-			isBlind = true;
-		}
+MOD_EXPORT bool L_EntityPickup_IsBlind(Entity_Pickup* pickup, bool checkForcedBlindOnly) {
+	if (pickup->_variant != 100) {
+		return false;
 	}
-	
 
-	lua_pushboolean(L, isBlind);
-	return 1;
+	if (checkForcedBlindOnly) {
+		return pickup->IsBlind();
+	}
+	return pickup->IsBlind() || !pickup->_sprite._layerState[1]._spriteSheetPath.compare("gfx/Items/Collectibles/questionmark.png");
 }
 
-LUA_FUNCTION(Lua_PickupGetVarData) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushinteger(L, *pickup->GetVarData());
-
-	return 1;
+MOD_EXPORT int L_EntityPickup_SetNewOptionsPickupIndex(Entity_Pickup* pickup) {
+	return pickup->SetNewOptionsPickupIndex();
 }
 
-LUA_FUNCTION(Lua_PickupSetVarData) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	*pickup->GetVarData() = (int)luaL_checkinteger(L, 2);
-
-	return 0;
+MOD_EXPORT bool L_EntityPickup_TryInitOptionCycle(Entity_Pickup* pickup, int numCycle) {
+	return pickup->TryInitOptionCycle(numCycle);
 }
 
-LUA_FUNCTION(Lua_PickupSetNewOptionsPickupIndex) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushinteger(L, pickup->SetNewOptionsPickupIndex());
-
-	return 1;
+MOD_EXPORT void L_EntityPickup_MakeShopItem(Entity_Pickup* pickup, int shopItemId) {
+	pickup->MakeShopItem(shopItemId);
 }
 
-LUA_FUNCTION(Lua_PickupTryInitOptionCycle) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int numCycle = (int)luaL_checkinteger(L, 2);
-	lua_pushboolean(L, pickup->TryInitOptionCycle(numCycle));
-
-	return 1;
+MOD_EXPORT bool L_EntityPickup_TryFlip(Entity_Pickup* pickup) {
+	return pickup->TryFlip(nullptr, 0);
 }
 
-LUA_FUNCTION(Lua_PickupGetDropDelay)
-{
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushinteger(L, *pickup->GetDropDelay());
-
-	return 1;
+MOD_EXPORT ANM2* L_EntityPickup_GetPriceSprite(Entity_Pickup* pickup) {
+	return &pickup->_priceANM2;
 }
 
-LUA_FUNCTION(Lua_PickupSetDropDelay)
-{
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	*pickup->GetDropDelay() = (int)luaL_checkinteger(L, 2);
-
-	return 0;
+MOD_EXPORT void L_EntityPickup_UpdatePickupGhosts(Entity_Pickup* pickup) {
+	pickup->UpdatePickupGhosts();
 }
 
-LUA_FUNCTION(Lua_PickupCanReroll)
-{
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->CanReroll());
-
-	return 1;
+MOD_EXPORT void L_EntityPickup_TriggerTheresOptionsPickup(Entity_Pickup* pickup) {
+	pickup->TriggerTheresOptionsPickup();
 }
 
-LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
-	Vector* pos = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	RNG* rng = LuaRNG::GetOpt(L, 2);
-	int velType = (int)luaL_optinteger(L, 3, 0);
-
-	Vector velocity;
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupMakeShopItem) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int shopItemID = (int)luaL_checkinteger(L, 2);
-
-	pickup->MakeShopItem(shopItemID);
-
-	return 0;
-}
-
-// reimplementation with error checking
-LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int id = (int)luaL_checkinteger(L, 2);
-
+MOD_EXPORT int L_EntityPickup_AddCycleCollectible(Entity_Pickup* pickup, int id) {
 	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
-		std::string error("Invalid collectible ID ");
-		error.append(std::to_string(id));
-		return luaL_argerror(L, 2, error.c_str());
+		return -1;
 	}
 
-	bool res = false;
 	if (pickup->_cycleCollectibleCount < 8) {
 		pickup->_cycleCollectibleList[pickup->_cycleCollectibleCount] = id;
 		pickup->_cycleCollectibleCount += 1;
-		res = true;
+		return 1;
 	}
-
-	lua_pushboolean(L, res);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupTryFlip) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->TryFlip(nullptr, 0));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupGetPriceSprite) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	LuaSprite::PushPtr(L, &pickup->_priceANM2);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupGetAlternatePedestal) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushinteger(L, pickup->GetAlternatePedestal());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-
-	lua_newtable(L);
-
-	for (unsigned int i = 0; i < pickup->_cycleCollectibleCount; i++) {
-		lua_pushinteger(L, pickup->_cycleCollectibleList[i]);
-		lua_rawseti(L, -2, i + 1);
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	for (int i = 0; i < 7; i++) {
-		pickup->_cycleCollectibleList[i] = 0; 
-	}
-	pickup->_cycleCollectibleCount = 0;
-
-	return 0;
-}
-LUA_FUNCTION(Lua_PickupGetPickupGhost) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Entity_Effect* pickupGhost = pickup->_pickupGhost;
-	LuaEntityEffect::PushPtr(L, pickupGhost);
-	
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	pickup->UpdatePickupGhosts();
 	return 0;
 }
 
-/*LUA_FUNCTION(Lua_PickupIsChest) {
-	Entity_Pickup* pickup = lua::GetRawUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
-	lua_pushboolean(L, pickup->IsChest(variant));
-	return 1;
-}
-*/
-
-
-LUA_FUNCTION(Lua_PickupTriggerTheresOptionsPickup) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	pickup->TriggerTheresOptionsPickup();
-	return 0;
+MOD_EXPORT bool L_EntityPickup_HasFlipData(Entity_Pickup* pickup) {
+	return pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr;
 }
 
-LUA_FUNCTION(Lua_PickupGetMegaChestLeftCollectible) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Entity_Pickup* collectible = pickup->_megaChestCollectible[0];
-	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
-
-	return 1;
+MOD_EXPORT int L_EntityPickup_GetFlipCollectible(Entity_Pickup* pickup) {
+	return pickup->_flipSaveState.saveState->subtype;
 }
 
-LUA_FUNCTION(Lua_PickupGetMegaChestRightCollectible) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Entity_Pickup* collectible = pickup->_megaChestCollectible[1];
-	lua::luabridge::UserdataPtr::push(L, collectible, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
-
-	return 1;
+MOD_EXPORT void L_EntityPickup_InitFlipState(Entity_Pickup* pickup, int collectibleId, bool setupCollectibleGraphics) {
+	PickupUtils::InitFlipState(*pickup, (CollectibleType)collectibleId, setupCollectibleGraphics);
 }
 
-LUA_FUNCTION(Lua_PickupGetMegaChestOtherCollectible) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	if (pickup->_megaChestCollectible[0] != nullptr) {
-		lua::luabridge::UserdataPtr::push(L, pickup->_megaChestCollectible[0], lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
-		lua_pushboolean(L, false);
-	}
-	else if (pickup->_megaChestCollectible[1] != nullptr) {
-		lua::luabridge::UserdataPtr::push(L, pickup->_megaChestCollectible[1], lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
-		lua_pushboolean(L, true);
-	}
-	else {
-		lua_pushnil(L);
-		lua_pushnil(L);
-	}
-
-	return 2;
-}
-
-LUA_FUNCTION(Lua_PickupGetFlippedCollectibleID) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-
-	if (pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr) {
-		lua_pushinteger(L, pickup->_flipSaveState.saveState->subtype);
-	}
-	else {
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupInitFlipState) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	const CollectibleType collectID = (CollectibleType)luaL_optinteger(L, 2, 0);
-	bool setupCollectibleGraphics = lua::luaL_optboolean(L, 3, true);
-	PickupUtils::InitFlipState(*pickup, collectID, setupCollectibleGraphics);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_PickupHasFlipData) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->_variant == 100 && pickup->_flipSaveState.saveState != nullptr);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupReloadGraphics) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool ignoreBlind = lua::luaL_checkboolean(L, 2);
-
+MOD_EXPORT void L_EntityPickup_ReloadGraphics(Entity_Pickup* pickup, bool ignoreBlind) {
 	pickup->ReloadGraphics(ignoreBlind);
-	return 0;
 }
 
-LUA_FUNCTION(Lua_PickupSetupCollectibleGraphics) {
-	ANM2* sprite = LuaSprite::Get(L, 1);
-	const int layerId = (int)luaL_checkinteger(L, 2);
+MOD_EXPORT void L_EntityPickup_GetLootList(Entity_Pickup* pickup, bool shouldAdvance, LootList* out) {
+	LootList list = pickup->GetLootList(shouldAdvance, nullptr);
+	out->~LootList();
+	new (out) LootList(std::move(list));
+}
 
-	if (layerId < 0 || sprite->_layerCount <= layerId ) {
-		std::string error("No Layed with Id ");
-		error.append(std::to_string(layerId));
-		return luaL_argerror(L, 2, error.c_str());
+MOD_EXPORT int L_EntityPickup_GetCanRerollOverride(Entity_Pickup* pickup) {
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup); entityPlus && entityPlus->canRerollOverride.has_value()) {
+		return *entityPlus->canRerollOverride ? 1 : 0;
+	}
+	return -1;
+}
+
+MOD_EXPORT void L_EntityPickup_SetCanRerollOverride(Entity_Pickup* pickup, bool canReroll) {
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
+		entityPlus->canRerollOverride = canReroll;
+	}
+}
+
+MOD_EXPORT void L_EntityPickup_ClearCanRerollOverride(Entity_Pickup* pickup) {
+	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
+		entityPlus->canRerollOverride = std::nullopt;
+	}
+}
+
+MOD_EXPORT bool L_EntityPickup_ShouldIgnoreModifiers() {
+	return Entity_Pickup::ShouldIgnoreModifiers();
+}
+
+MOD_EXPORT void L_EntityPickup_GetRandomPickupVelocity(Vector* position, RNG* rng, int velocityType, Vector* result) {
+	Vector velocity;
+	*result = *Entity_Pickup::GetRandomPickupVelocity(velocity, position, rng, velocityType);
+}
+
+MOD_EXPORT int L_EntityPickup_SetupCollectibleGraphics(ANM2* sprite, int layerId, int collectibleType, bool blind, unsigned int seed, bool loadGraphics) {
+	if (layerId < 0 || sprite->_layerCount <= layerId) {
+		return 1;
 	}
 
-	const int collectibleType = (int)luaL_checkinteger(L, 3);
 	if (!g_Manager->GetItemConfig()->GetCollectible(collectibleType)) {
-		std::string error("Invalid collectible with ID ");
-		error.append(std::to_string(collectibleType));
-		return luaL_argerror(L, 3, error.c_str());
+		return 2;
 	}
 
-	bool blind = lua::luaL_checkboolean(L, 4);
-
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 5, Isaac::genrand_int32());
 	if (seed == 0) seed = 1;
-
-	bool loadGraphics = lua::luaL_checkboolean(L, 6);
 
 	Entity_Pickup::SetupCollectibleGraphics(sprite, layerId, (CollectibleType)collectibleType, seed, blind);
 
 	if (loadGraphics) {
 		sprite->LoadGraphics(false);
 	}
-
 	return 0;
-}
-
-LUA_FUNCTION(Lua_PickupGetCanRerollOverride) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup); entityPlus && entityPlus->canRerollOverride.has_value()) {
-		lua_pushboolean(L, *entityPlus->canRerollOverride);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupSetCanRerollOverride) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
-		entityPlus->canRerollOverride = lua::luaL_checkboolean(L, 2);
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_PickupClearCanRerollOverride) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	if (EntityPickupPlus* entityPlus = GetEntityPickupPlus(pickup)) {
-		entityPlus->canRerollOverride = std::nullopt;
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_PickupCanJeraDuplicate) {
-	Entity_Pickup* pickup = lua::GetLuabridgeUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->CanJeraDuplicate());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupIgnoreModifiers) {
-	lua_pushboolean(L, Entity_Pickup::ShouldIgnoreModifiers());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PickupGetLootList) {
-	Entity_Pickup* pickup = LuaEntityPickup::Get(L, 1);
-	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
-
-	LootList list = pickup->GetLootList(shouldAdvance, nullptr);
-	new (LuaLootList::Place(L)) LootList(std::move(list));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "AddCollectibleCycle", Lua_PickupAddCycleCollectible },
-		{ "GetLootList", Lua_PickupGetLootList },
-		{ "CanReroll", Lua_PickupCanReroll },
-		{ "IsBlind", Lua_PickupIsBlind },
-		{ "SetAlternatePedestal", Lua_PickupSetAlternatePedestal },
-		{ "TryRemoveCollectible", Lua_PickupTryRemoveCollectible },
-		{ "SetForceBlind", Lua_PickupSetForceBlind },
-		{ "GetVarData", Lua_PickupGetVarData },
-		{ "SetVarData", Lua_PickupSetVarData },
-		{ "SetNewOptionsPickupIndex", Lua_PickupSetNewOptionsPickupIndex },
-		{ "TryInitOptionCycle", Lua_PickupTryInitOptionCycle },
-		{ "GetDropDelay", Lua_PickupGetDropDelay },
-		{ "SetDropDelay", Lua_PickupSetDropDelay },
-		{ "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity },
-		{ "MakeShopItem", Lua_PickupMakeShopItem },
-		// i REALLY want a TryReroll but even looking through UseActiveItem i can't tell how the new id is determined
-		{ "TryFlip", Lua_PickupTryFlip },
-		{ "GetPriceSprite", Lua_PickupGetPriceSprite },
-		{ "GetAlternatePedestal", Lua_PickupGetAlternatePedestal },
-		{ "GetCollectibleCycle", Lua_PickupGetCollectibleCycle },
-		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
-		//{ "IsChest", Lua_PickupIsChest },
-		{ "GetPickupGhost", Lua_PickupGetPickupGhost },
-		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhosts },
-		{ "TriggerTheresOptionsPickup", Lua_PickupTriggerTheresOptionsPickup },
-		{ "GetMegaChestLeftCollectible", Lua_PickupGetMegaChestLeftCollectible },
-		{ "GetMegaChestRightCollectible", Lua_PickupGetMegaChestRightCollectible },
-		{ "GetMegaChestOtherCollectible", Lua_PickupGetMegaChestOtherCollectible },
-		{ "GetFlipCollectible", Lua_PickupGetFlippedCollectibleID },
-		{ "InitFlipState", Lua_PickupInitFlipState },
-		{ "HasFlipData", Lua_PickupHasFlipData },
-		{ "ReloadGraphics", Lua_PickupReloadGraphics },
-		{ "GetCanRerollOverride", Lua_PickupGetCanRerollOverride },
-		{ "SetCanRerollOverride", Lua_PickupSetCanRerollOverride },
-		{ "ClearCanRerollOverride", Lua_PickupClearCanRerollOverride },
-		{ "CanJeraDuplicate", Lua_PickupCanJeraDuplicate },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PICKUP, functions);
-
-	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity);
-	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "SetupCollectibleGraphics", Lua_PickupSetupCollectibleGraphics);
-	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "ShouldIgnoreModifiers", Lua_PickupIgnoreModifiers);
 }

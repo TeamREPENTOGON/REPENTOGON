@@ -1412,7 +1412,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Pickup* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::Metatables::ENTITY_PICKUP);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP_PTR]);
 		}
 
 		void operator()(Entity_Player* p) {
