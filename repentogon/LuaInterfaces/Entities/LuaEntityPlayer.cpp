@@ -56,7 +56,7 @@ LUA_FUNCTION(Lua_AddFriendlyDip) {
 	int subtype = (int)luaL_checkinteger(L, 2);
 	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	lua::luabridge::UserdataPtr::push(L, player->AddFriendlyDip(subtype, position), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, player->AddFriendlyDip(subtype, position));
 	return 1;
 }
 
@@ -66,7 +66,7 @@ LUA_FUNCTION(Lua_AddItemWisp) {
 	Vector* position = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool adjustOrbitLayer = lua::luaL_optboolean(L, 4, false);
 
-	lua::luabridge::UserdataPtr::push(L, player->AddItemWisp(collectible, *position, adjustOrbitLayer), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, player->AddItemWisp(collectible, *position, adjustOrbitLayer));
 	return 1;
 }
 
@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_AddMinisaac) {
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	bool playAnim = lua::luaL_optboolean(L, 3, false);
 
-	lua::luabridge::UserdataPtr::push(L, player->AddMinisaac(position, playAnim), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, player->AddMinisaac(position, playAnim));
 	return 1;
 }
 
@@ -83,7 +83,7 @@ LUA_FUNCTION(Lua_AddSwarmFlyOrbital) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* position = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 
-	lua::luabridge::UserdataPtr::push(L, player->AddSwarmFlyOrbital(position), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, player->AddSwarmFlyOrbital(position));
 	return 1;
 }
 
@@ -94,7 +94,7 @@ LUA_FUNCTION(Lua_AddWisp) {
 	bool adjustOrbitLayer = lua::luaL_optboolean(L, 4, false);
 	bool dontUpdate = lua::luaL_optboolean(L, 5, false);
 
-	lua::luabridge::UserdataPtr::push(L, player->AddWisp(collectible, position, adjustOrbitLayer, dontUpdate), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, player->AddWisp(collectible, position, adjustOrbitLayer, dontUpdate));
 	return 1;
 }
 
@@ -2363,7 +2363,7 @@ static void FamiliarStorageToLua(lua_State* L, std::vector<Entity_Familiar*>& fa
 	lua_newtable(L);
 	for (size_t i = 0; i < familiars.size(); ++i) {
 		lua_pushinteger(L, i + 1);
-		lua::luabridge::UserdataPtr::push(L, familiars[i], lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+		LuaEntityFamiliar::PushPtr(L, familiars[i]);
 		lua_rawset(L, -3);
 	}
 
@@ -2426,7 +2426,7 @@ LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	
 	Entity* orbital = player->AddBoneOrbital(position);
 
-	lua::luabridge::UserdataPtr::push(L, orbital->ToFamiliar(), lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	LuaEntityFamiliar::PushPtr(L, orbital->ToFamiliar());
 
 	return 1;
 }

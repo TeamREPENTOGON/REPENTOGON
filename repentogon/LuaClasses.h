@@ -635,6 +635,8 @@ namespace LuaTraits
         using Type = Entity_Familiar;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_FAMILIAR;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_FAMILIAR;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_FAMILIAR;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_FAMILIAR_PTR;
     };
 
     struct LuaEntityBomb
@@ -1196,7 +1198,7 @@ struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
 using LuaEntity = LuaEntityType;
 using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
 using LuaEntityTear = CDataType<LuaTraits::LuaEntityTear>;
-using LuaEntityFamiliar = LuabridgeType<LuaTraits::LuaEntityFamiliar>;
+using LuaEntityFamiliar = CDataType<LuaTraits::LuaEntityFamiliar>;
 using LuaEntityBomb = CDataType<LuaTraits::LuaEntityBomb>;
 using LuaEntityPickup = CDataType<LuaTraits::LuaEntityPickup>;
 using LuaEntityLaser = CDataType<LuaTraits::LuaEntityLaser>;

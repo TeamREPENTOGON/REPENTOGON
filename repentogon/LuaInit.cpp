@@ -450,6 +450,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_EFFECT_PTR] = lua_ctypeid(L, "EntityEffectPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP] = lua_ctypeid(L, "EntityPickup");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PICKUP_PTR] = lua_ctypeid(L, "EntityPickupPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR] = lua_ctypeid(L, "EntityFamiliar");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR_PTR] = lua_ctypeid(L, "EntityFamiliarPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

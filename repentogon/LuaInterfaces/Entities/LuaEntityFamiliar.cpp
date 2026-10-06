@@ -5,374 +5,196 @@
 #include "../../Patches/FamiliarTags.h"
 #include "../../Patches/EntityPlus.h"
 
-LUA_FUNCTION(Lua_FamiliarGetOrbitDistance)
-{
-	int layer = (int)luaL_checkinteger(L, 1);
-	
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	Entity_Familiar::GetOrbitDistance(toLua, layer);
-
-	return 1;
-}
- 
-LUA_FUNCTION(Lua_FamiliarGetOrbitPosition)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Vector* offset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	fam->GetOrbitPosition(toLua, offset); 
-
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_SetPlayer(Entity_Familiar* familiar, Entity_Player* player) {
+	familiar->SetPlayer(player);
 }
 
-LUA_FUNCTION(Lua_FamiliarFireProjectile)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	LuaEntityTear::PushPtr(L, fam->FireProjectile(*dir, false));
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_AddCoins(Entity_Familiar* familiar, int coins) {
+	familiar->AddCoins(coins);
 }
 
-
-LUA_FUNCTION(Lua_FamiliarPickEnemyTarget)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	float maxDistance = (float)luaL_checknumber(L, 2);
-	int frameInterval = (int)luaL_optinteger(L, 3, 13);
-	int flags = (int)luaL_optinteger(L, 4, 0);
-	Vector coneDir = Vector(0, 0);
-	if (lua_type(L, 5) == LUA_TCDATA) {
-		coneDir = *lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	}
-	float coneAngle = (float)luaL_optnumber(L, 6, 15);
-
-	fam->PickEnemyTarget(maxDistance, frameInterval, flags, &coneDir, coneAngle);
-	return 0;
+MOD_EXPORT void L_EntityFamiliar_FollowParent(Entity_Familiar* familiar) {
+	familiar->FollowParent();
 }
 
-
-LUA_FUNCTION(Lua_FamiliarGetOrbitDistanceVar)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	lua::ffi::pushCdataPtr(L, &fam->_orbitDistance, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
-
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_FollowPosition(Entity_Familiar* familiar, Vector* position) {
+	familiar->FollowPosition(position);
 }
 
-LUA_FUNCTION(Lua_FamiliarSetOrbitDistanceVar)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Vector* orbitDistance = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-
-	fam->_orbitDistance = *orbitDistance;
-	return 0;
+MOD_EXPORT void L_EntityFamiliar_Shoot(Entity_Familiar* familiar) {
+	familiar->Shoot();
 }
 
-LUA_FUNCTION(Lua_FamiliarGetFollowerPriority)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	int priority = fam->GetFollowerPriority();
-	lua_pushinteger(L, priority);
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_PlayChargeAnim(Entity_Familiar* familiar, int direction) {
+	familiar->PlayChargeAnim(direction);
 }
 
-LUA_FUNCTION(Lua_FamiliarGetPathFinder)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	NPCAI_Pathfinder* pathFinder = fam->GetPathFinder();
-	lua::luabridge::UserdataPtr::push(L, pathFinder, lua::GetMetatableKey(lua::Metatables::PATHFINDER));
-
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_PlayShootAnim(Entity_Familiar* familiar, int direction) {
+	familiar->PlayShootAnim(direction);
 }
 
-LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	auto* optAimDirection = LuaVector::GetOpt(L, 2);
-	Vector aimDirection = optAimDirection ? *optAimDirection : Vector();
-	int direction = (int)luaL_optinteger(L, 3, -1);
-	// arg4 was the targetPosition buffer, though we aren't actually using it.
-	// We were originally making a copy of the passed vector, so the original was not actually modified.
-	bool legacyOverload = lua_gettop(L) == 3;
-	Vector targetPosBuffer;
-	bool success = fam->TryAimAtMarkedTarget(&aimDirection, &direction, &targetPosBuffer);
-
-	if (legacyOverload) {
-		if (success) {
-			lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], targetPosBuffer);
-		}
-		else
-		{
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-
-	lua_pushboolean(L, success);
-
-	lua_newtable(L);
-	lua_pushinteger(L, 1);
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], aimDirection);
-	lua_rawset(L, -3);
-	lua_pushinteger(L, 2);
-	lua_pushinteger(L, direction);
-	lua_rawset(L, -3);
-	lua_pushinteger(L, 3);
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], targetPosBuffer);
-	lua_rawset(L, -3);
-	
-	return 2;
+MOD_EXPORT void L_EntityFamiliar_PlayFloatAnim(Entity_Familiar* familiar, int direction) {
+	familiar->PlayFloatAnim(direction);
 }
 
-LUA_FUNCTION(Lua_FamiliarTriggerRoomClear)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	fam->TriggerRoomClear();
-
-	return 0;
+MOD_EXPORT void L_EntityFamiliar_MoveDelayed(Entity_Familiar* familiar, int frames) {
+	familiar->MoveDelayed(frames);
 }
 
-LUA_FUNCTION(Lua_FamiliarUpdateDirtColor)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	fam->UpdateDirtColor(true);
-	return 0;
+MOD_EXPORT void L_EntityFamiliar_MoveDiagonally(Entity_Familiar* familiar, float speed) {
+	familiar->MoveDiagonally(speed);
 }
 
-LUA_FUNCTION(Lua_FamiliarGetDirtColor)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-
-	ColorMod* toLua = lua::ffi::placeCdata<ColorMod>(L, lua::ffi::CData[lua::ffi::CDataID::COLOR]);
-	*toLua = fam->_dirtColor;
-
-	return 1;
+MOD_EXPORT int L_EntityFamiliar_RecalculateOrbitOffset(Entity_Familiar* familiar, int layer, bool add) {
+	return familiar->RecalculateOrbitOffset(layer, add);
 }
 
-LUA_FUNCTION(Lua_FamiliarRemoveFromPlayer)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	fam->RemoveFromPlayer(true);
-	return 0;
+MOD_EXPORT void L_EntityFamiliar_AddToFollowers(Entity_Familiar* familiar) {
+	familiar->AddToFollowers();
 }
 
-LUA_FUNCTION(Lua_FamiliarCanCharm)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	lua_pushboolean(L, fam->CanCharm());
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_AddToDelayed(Entity_Familiar* familiar) {
+	familiar->AddToDelayed();
 }
 
-LUA_FUNCTION(Lua_FamiliarIsCharmed)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Entity_Player* player = fam->_player;
-	
-	lua_pushboolean(L, player && (player->_spawnerType == 904 && player->_spawnerVariant == 0));
-	return 1;
+MOD_EXPORT void L_EntityFamiliar_AddToOrbit(Entity_Familiar* familiar, int layer) {
+	familiar->AddToOrbit(layer);
 }
 
-LUA_FUNCTION(Lua_FamiliarCanBeDamagedByEnemies)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	const int variant = *fam->GetVariant();
-	const int subtype = *fam->GetSubType();
+MOD_EXPORT void L_EntityFamiliar_RemoveFromFollowers(Entity_Familiar* familiar) {
+	familiar->RemoveFromFollowers();
+}
+
+MOD_EXPORT void L_EntityFamiliar_RemoveFromDelayed(Entity_Familiar* familiar) {
+	familiar->RemoveFromDelayed();
+}
+
+MOD_EXPORT void L_EntityFamiliar_RemoveFromOrbit(Entity_Familiar* familiar) {
+	familiar->RemoveFromOrbit();
+}
+
+MOD_EXPORT void L_EntityFamiliar_GetOrbitDistance(int layer, Vector* result) {
+	Entity_Familiar::GetOrbitDistance(result, layer);
+}
+
+MOD_EXPORT void L_EntityFamiliar_GetOrbitPosition(Entity_Familiar* familiar, Vector* offset, Vector* result) {
+	familiar->GetOrbitPosition(result, offset);
+}
+
+MOD_EXPORT Entity_Tear* L_EntityFamiliar_FireProjectile(Entity_Familiar* familiar, Vector* direction) {
+	return familiar->FireProjectile(*direction, false);
+}
+
+MOD_EXPORT void L_EntityFamiliar_PickEnemyTarget(Entity_Familiar* familiar, float maxDistance, int frameInterval, int flags, Vector* coneDirection, float coneAngle) {
+	familiar->PickEnemyTarget(maxDistance, frameInterval, flags, coneDirection, coneAngle);
+}
+
+MOD_EXPORT int L_EntityFamiliar_GetFollowerPriority(Entity_Familiar* familiar) {
+	return familiar->GetFollowerPriority();
+}
+
+MOD_EXPORT NPCAI_Pathfinder* L_EntityFamiliar_GetPathfinder(Entity_Familiar* familiar) {
+	return familiar->GetPathFinder();
+}
+
+MOD_EXPORT bool L_EntityFamiliar_TryAimAtMarkedTarget(Entity_Familiar* familiar, Vector* aimDirection, int* direction, Vector* targetPosition) {
+	return familiar->TryAimAtMarkedTarget(aimDirection, direction, targetPosition);
+}
+
+MOD_EXPORT void L_EntityFamiliar_TriggerRoomClear(Entity_Familiar* familiar) {
+	familiar->TriggerRoomClear();
+}
+
+MOD_EXPORT void L_EntityFamiliar_UpdateDirtColor(Entity_Familiar* familiar) {
+	familiar->UpdateDirtColor(true);
+}
+
+MOD_EXPORT void L_EntityFamiliar_RemoveFromPlayer(Entity_Familiar* familiar) {
+	familiar->RemoveFromPlayer(true);
+}
+
+MOD_EXPORT bool L_EntityFamiliar_CanCharm(Entity_Familiar* familiar) {
+	return familiar->CanCharm();
+}
+
+MOD_EXPORT bool L_EntityFamiliar_IsCharmed(Entity_Familiar* familiar) {
+	Entity_Player* player = familiar->_player;
+	return player && (player->_spawnerType == 904 && player->_spawnerVariant == 0);
+}
+
+MOD_EXPORT bool L_EntityFamiliar_CanBeDamagedByEnemies(Entity_Familiar* familiar) {
+	const int variant = *familiar->GetVariant();
+	const int subtype = *familiar->GetSubType();
 	// Ugh
 	if (variant == 206) {
 		// Wisps do get hurt by enemies, except the Vengeful Spirit ones.
-		lua_pushboolean(L, subtype != 702);
-	} else if(variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 237 || variant == 238) {
+		return subtype != 702;
+	}
+	if (variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 237 || variant == 238) {
 		// Friendly dips, Tinytomas, Minisaacs, Item Wisps and Blood Babies do, in fact, get hurt by enemy contact.
-		lua_pushboolean(L, true);
+		return true;
 	}
-	else {
-		lua_pushboolean(L, fam->CanBeDamagedByEnemy());
-	}
-	return 1;
+	return familiar->CanBeDamagedByEnemy();
 }
 
-LUA_FUNCTION(Lua_FamiliarCanBeDamagedByProjectiles)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	const int variant = *fam->GetVariant();
+MOD_EXPORT bool L_EntityFamiliar_CanBeDamagedByProjectiles(Entity_Familiar* familiar) {
+	const int variant = *familiar->GetVariant();
 	// Ugh 2
 	if (variant == 201 || variant == 216 || variant == 217 || variant == 228 || variant == 238) {
 		// Friendly dips, Tinytomas, Minisaacs and Blood Babies do, in fact, get hurt by projectiles.
-		lua_pushboolean(L, true);
+		return true;
 	}
-	else {
-		lua_pushboolean(L, FamiliarCanBeDamagedByProjectilesReimplementation(fam));
-	}
-	return 1;
+	return FamiliarCanBeDamagedByProjectilesReimplementation(familiar);
 }
 
-LUA_FUNCTION(Lua_FamiliarCanBeDamagedByLasers)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	lua_pushboolean(L, FamiliarCanBeDamagedByLaserReimplementation(fam));
-	return 1;
+MOD_EXPORT bool L_EntityFamiliar_CanBeDamagedByLasers(Entity_Familiar* familiar) {
+	return FamiliarCanBeDamagedByLaserReimplementation(familiar);
 }
 
-LUA_FUNCTION(Lua_FamiliarCanBlockProjectiles)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	lua_pushboolean(L, fam->CanBlockProjectiles());
-	return 1;
+MOD_EXPORT bool L_EntityFamiliar_CanBlockProjectiles(Entity_Familiar* familiar) {
+	return familiar->CanBlockProjectiles();
 }
 
-LUA_FUNCTION(Lua_FamiliarGetMoveDelayNum) {
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	lua_pushinteger(L, fam->_moveDelayNum);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FamiliarSetMoveDelayNum) {
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	fam->_moveDelayNum = (int)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
-	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	ItemConfig_Item* config = fam->_item;
-	lua::ffi::pushCdataPtr(L, config, lua::ffi::CData[lua::ffi::CDataID::ITEM_PTR]);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FamiliarGetMultiplier) {
-	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
+MOD_EXPORT float L_EntityFamiliar_GetMultiplier(Entity_Familiar* familiar) {
+	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(familiar);
 	if (famPlus && !famPlus->cachedMultiplier) {
 		// We can't use the return value yet due to where the float value ends up in memory.
 		// However, just calling it will trigger re-evaluation & cache the result via my ASM patch.
-		fam->GetMultiplier();
+		familiar->GetMultiplier();
 	}
 	if (famPlus && famPlus->cachedMultiplier) {
-		lua_pushnumber(L, *famPlus->cachedMultiplier);
+		return *famPlus->cachedMultiplier;
 	}
-	else {
-		// Uh oh
-		lua_pushnumber(L, 1.0f);
-	}
-	return 1;
+	// Uh oh
+	return 1.0f;
 }
 
-LUA_FUNCTION(Lua_FamiliarInvalidateCachedMultiplier) {
-	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
+MOD_EXPORT void L_EntityFamiliar_InvalidateCachedMultiplier(Entity_Familiar* familiar) {
+	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(familiar);
 	if (famPlus) {
 		famPlus->cachedMultiplier = std::nullopt;
 	}
-	return 0;
 }
 
-LUA_FUNCTION(Lua_FamiliarIsLilDelirium) {
-	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+MOD_EXPORT void L_EntityFamiliar_SetLilDelirium(Entity_Familiar* familiar, bool isLilDelirium) {
+	familiar->_isLilDelirium = isLilDelirium;
 
-	lua_pushboolean(L, fam->_isLilDelirium);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetLilDelirium) {
-	auto* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	bool isLilDelirium = lua_toboolean(L, 2);
-
-	fam->_isLilDelirium = isLilDelirium;
-	
 	if (isLilDelirium) {
-		fam->delirium_morph();
+		familiar->delirium_morph();
 	}
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_GetRandomWisp) {
-	RNG* rng = LuaRNG::Get(L, 1);
-	lua_pushinteger(L, Entity_Familiar::GetRandomWisp(*rng));
-	return 1;
+MOD_EXPORT int L_EntityFamiliar_GetRandomWisp(RNG* rng) {
+	return Entity_Familiar::GetRandomWisp(*rng);
 }
 
-LUA_FUNCTION(Lua_FamiliarGetActiveWeaponEntity)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Weapon* wep = fam->_weapon;
-	if (wep == nullptr) {
-		lua_pushnil(L);
-	}
-	else
-	{
-		lua::luabridge::UserdataPtr::push(L, wep->GetMainEntity(), lua::GetMetatableKey(lua::Metatables::ENTITY));
-	}
-
-	return 1;
+MOD_EXPORT Entity* L_EntityFamiliar_GetActiveWeaponEntity(Entity_Familiar* familiar) {
+	Weapon* weapon = familiar->_weapon;
+	return weapon ? weapon->GetMainEntity() : nullptr;
 }
 
-LUA_FUNCTION(Lua_FamiliarGetActiveWeaponNumFired)
-{
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	Weapon* wep = fam->_weapon;
-	if (wep == nullptr) {
-		lua_pushnil(L);
-	}
-	else
-	{
-		lua_pushinteger(L, wep->_numFired);
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_FamiliarGetWeapon) {
-	Entity_Familiar* fam = lua::GetLuabridgeUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	LuaWeapon::PushPtr(L, *fam->GetWeapon());
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "GetWeapon", Lua_FamiliarGetWeapon },
-		{ "GetOrbitPosition", Lua_FamiliarGetOrbitPosition },
-		{ "FireProjectile", Lua_FamiliarFireProjectile },
-		{ "GetFollowerPriority", Lua_FamiliarGetFollowerPriority },
-		{ "PickEnemyTarget", Lua_FamiliarPickEnemyTarget },
-		{ "GetPathFinder", Lua_FamiliarGetPathFinder }, // depreciated
-		{ "GetPathfinder", Lua_FamiliarGetPathFinder },
-		{ "TryAimAtMarkedTarget", Lua_FamiliarTryAimAtMarkedTarget },
-		{ "TriggerRoomClear", Lua_FamiliarTriggerRoomClear },
-		{ "UpdateDirtColor", Lua_FamiliarUpdateDirtColor },
-		{ "GetDirtColor", Lua_FamiliarGetDirtColor },
-		{ "RemoveFromPlayer", Lua_FamiliarRemoveFromPlayer },
-		{ "CanCharm", Lua_FamiliarCanCharm },
-		{ "IsCharmed", Lua_FamiliarIsCharmed },
-		{ "CanBeDamagedByEnemies", Lua_FamiliarCanBeDamagedByEnemies },
-		{ "CanBeDamagedByProjectiles", Lua_FamiliarCanBeDamagedByProjectiles },
-		{ "CanBeDamagedByLasers", Lua_FamiliarCanBeDamagedByLasers },
-		{ "CanBlockProjectiles", Lua_FamiliarCanBlockProjectiles },
-		{ "GetMoveDelayNum", Lua_FamiliarGetMoveDelayNum },
-		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
-		{ "GetItemConfig", Lua_FamiliarGetItemConfig },
-		{ "InvalidateCachedMultiplier", Lua_FamiliarInvalidateCachedMultiplier },
-		{ "GetMultiplier", Lua_FamiliarGetMultiplier },
-		{ "IsLilDelirium", Lua_FamiliarIsLilDelirium },
-		{ "SetLilDelirium", Lua_SetLilDelirium },
-		{ "GetRandomWisp", Lua_GetRandomWisp },
-		{ "GetActiveWeaponEntity", Lua_FamiliarGetActiveWeaponEntity },
-		{ "GetActiveWeaponNumFired", Lua_FamiliarGetActiveWeaponNumFired },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_FAMILIAR, functions);
-
-	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetOrbitDistance", Lua_FamiliarGetOrbitDistance);
-	lua::RegisterGlobalClassFunction(_state, "EntityFamiliar", "GetRandomWisp", Lua_GetRandomWisp);
-
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_FAMILIAR, "OrbitDistance", Lua_FamiliarGetOrbitDistanceVar, Lua_FamiliarSetOrbitDistanceVar);
+// Returns -1 when there is no weapon
+MOD_EXPORT int L_EntityFamiliar_GetActiveWeaponNumFired(Entity_Familiar* familiar) {
+	Weapon* weapon = familiar->_weapon;
+	return weapon ? weapon->_numFired : -1;
 }

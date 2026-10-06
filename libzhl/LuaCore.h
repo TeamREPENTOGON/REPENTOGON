@@ -584,6 +584,8 @@ namespace lua {
             ENTITY_EFFECT_PTR,
             ENTITY_PICKUP,
             ENTITY_PICKUP_PTR,
+            ENTITY_FAMILIAR,
+            ENTITY_FAMILIAR_PTR,
             MAX_CDATA
         };
 

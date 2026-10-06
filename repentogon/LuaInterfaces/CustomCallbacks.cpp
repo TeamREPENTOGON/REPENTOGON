@@ -7184,6 +7184,31 @@ HOOK_STATIC(LuaEngine, PostPickupUpdate, (Entity_Pickup* pickup) -> void, __stdc
 	}
 }
 
+
+HOOK_STATIC(LuaEngine, PostFamiliarUpdate, (Entity_Familiar* familiar) -> void, __stdcall) {
+	const int callbackid = 6; // dude
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(familiar->_variant)
+			.pushClassPtr<LuaEntityFamiliar>(familiar)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostFamiliarInit, (Entity_Familiar* familiar) -> void, __stdcall) {
+	const int callbackid = 7; // dude this is so funny
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(familiar->_variant)
+			.pushClassPtr<LuaEntityFamiliar>(familiar)
+			.call(0);
+	}
+}
+
 void CustomCallbacks::detail::ApplyPatches()
 {
 	Patch_PlayerRemoveCollectible_TriggerCollectibleRemoved();

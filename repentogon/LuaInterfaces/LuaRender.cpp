@@ -1396,7 +1396,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Familiar* f) {
-			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::Metatables::ENTITY_FAMILIAR);
+			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::ffi::CData[lua::ffi::CDataID::ENTITY_FAMILIAR_PTR]);
 		}
 
 		void operator()(Entity_Knife* k) {
