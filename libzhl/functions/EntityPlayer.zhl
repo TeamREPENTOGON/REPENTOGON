@@ -634,6 +634,12 @@ __thiscall Entity_Familiar* Entity_Player::AddWisp(CollectibleType collectible, 
 "558bec83e4f883ec4ca1????????33c4894424??5356578bf9e8":
 __thiscall void Entity_Player::DoZitEffect(Vector* direction);
 
+"558bec83e4f881ec84000000a1????????33c4898424????????f30f1045":
+__thiscall Entity_Laser* Entity_Player::FireDelayedBrimstone(float angle, Entity* source);
+
+"558bec83e4f85153568b35????????578bf9c74424??aa010000":
+__thiscall Entity_Laser* Entity_Player::SpawnMawOfVoid(int timeout);
+
 "558bec83ec34a1????????33c58945??8b45":
 __thiscall Entity_Laser* Entity_Player::FireBrimstone(Vector* direction, Entity* source, float damageMultiplier);
 

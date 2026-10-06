@@ -1404,7 +1404,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Laser* l) {
-			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::Metatables::ENTITY_LASER);
+			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::ffi::CData[lua::ffi::CDataID::ENTITY_LASER_PTR]);
 		}
 
 		void operator()(Entity_NPC* n) {

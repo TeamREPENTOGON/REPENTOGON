@@ -28,6 +28,12 @@ static cleanup Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector
 "558bec83e4f851535657e8":
 static cleanup Entity_Laser* Entity_Laser::ShootAngle(int Variant, Vector* SourcePos, float AngleDegrees, int Timeout, Vector* PosOffset, Entity* Source, bool Force);
 
+"558becf30f1045??8b81":
+__thiscall void Entity_Laser::SetAngle(float angle);
+
+"558bec807d??00f30f1045":
+__thiscall void Entity_Laser::SetActiveRotation(int delay, float degrees, float speed, bool setTimeout);
+
 struct Entity_Laser depends (BitSet128, HomingLaser, Vector, Entity) : public Entity { {{
 	inline uint32_t* GetHomingType() { return &this->_homingType; }
 	inline float* GetScale() { return &this->_scale; }

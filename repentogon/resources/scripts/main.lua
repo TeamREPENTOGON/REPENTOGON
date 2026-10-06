@@ -208,29 +208,6 @@ end
 -- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
 
 ---------------------------------------------------------
-BeginClass(EntityLaser)
-
--- void EntityLaser:AddTearFlags(BitSet128 Flags)
---	Adds the specified tear flags
-function META:AddTearFlags(f)
-	self.TearFlags = self.TearFlags | f
-end
-
--- void EntityLaser:ClearTearFlags(BitSet128 Flags)
---	Removes the specified tear flags
-function META:ClearTearFlags(f)
-	self.TearFlags = self.TearFlags & ~f
-end
-
--- boolean EntityLaser:HasTearFlags(BitSet128 Flags)
---	Returns true if we have any of the specified tear flags
-function META:HasTearFlags(f)
-	return self.TearFlags & f ~= TearFlags.TEAR_NORMAL
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityNPC)
 
 -- void	EntityNPC:MakeChampion(int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false)

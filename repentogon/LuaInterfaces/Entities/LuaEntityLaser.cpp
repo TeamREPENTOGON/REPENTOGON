@@ -5,287 +5,46 @@
 #include "../../LuaClasses.h"
 #include "HookSystem.h"
 #include "../../Patches/EntityPlus.h"
-#include "../../Patches/ASMPatches/ASMSplitTears.h"
 
-LUA_FUNCTION(Lua_EntityLaserCalculateEndPoint)
-{
-	Vector* start = lua::GetCData<Vector*>(L, 1, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* dir = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Vector* positionOffset = lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* parent = lua::GetLuabridgeUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
-	float margin = (float)luaL_checknumber(L, 5);
-
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	Entity_Laser::CalculateEndPosition(toLua, start, dir, positionOffset, parent, margin);
-	return 1;
+MOD_EXPORT Entity_Laser* L_EntityLaser_ShootAngle(int variant, Vector* sourcePos, float angleDegrees, int timeout, Vector* posOffset, Entity* source) {
+	return Entity_Laser::ShootAngle(variant, sourcePos, angleDegrees, timeout, posOffset, source, false);
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetEndPoint)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	Vector* toLua = lua::ffi::placeCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR]);
-	*toLua = laser->_endPoint;
-	
-	return 1;
+MOD_EXPORT void L_EntityLaser_CalculateEndPoint(Vector* start, Vector* dir, Vector* positionOffset, Entity* parent, float margin, Vector* result) {
+	Entity_Laser::CalculateEndPosition(result, start, dir, positionOffset, parent, margin);
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetEndPointVar) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdata<Vector>(L, lua::ffi::CData[lua::ffi::CDataID::VECTOR], laser->_endPoint);
-	return 1;
+MOD_EXPORT void L_EntityLaser_SetAngle(Entity_Laser* laser, float angle) {
+	laser->SetAngle(angle);
 }
 
-LUA_FUNCTION(Lua_EntityLaserSetEndPointVar) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	Vector* endPoint = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	laser->_endPoint = *endPoint;
-	return 0;
+MOD_EXPORT void L_EntityLaser_SetActiveRotation(Entity_Laser* laser, int delay, float degrees, float speed, bool setTimeout) {
+	laser->SetActiveRotation(delay, degrees, speed, setTimeout);
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetParentOffset) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdataPtr(L, &laser->_parentOffset, lua::ffi::CData[lua::ffi::CDataID::VECTOR_PTR]);
-	return 1;
+MOD_EXPORT int L_EntityLaser_GetRenderZ(Entity_Laser* laser) {
+	void** vtable = *reinterpret_cast<void***>(laser);
+	return reinterpret_cast<int(__thiscall*)(Entity*)>(vtable[0x34 / sizeof(void*)])(laser);
 }
 
-LUA_FUNCTION(Lua_EntityLaserSetParentOffset) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	Vector* parentOffset = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	laser->_parentOffset = *parentOffset;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserShootAngle) {
-	int variant = (int)luaL_checkinteger(L, 1);
-	Vector* sourcePos = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	float angleDegrees = (float)luaL_checknumber(L, 3);
-	int timeout = (int)luaL_checkinteger(L, 4);
-	Vector* posOffset = lua::GetCData<Vector*>(L, 5, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
-	Entity* source = LuaEntity::GetOpt(L, 6);
-
-	lua::luabridge::UserdataPtr::push(L, Entity_Laser::ShootAngle(variant, sourcePos, angleDegrees, timeout, posOffset, source, false), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
-	return 1;
-}
-
-
-LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetDisableFollowParent());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetDisableFollowParent)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetDisableFollowParent() = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetOneHit)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetOneHit());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetShrink)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetShrink());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetShrink)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetShrink() = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetTimeout)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushinteger(L, *laser->GetTimeout());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetScale)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushnumber(L, *laser->GetScale());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetScale)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetScale() = (float)luaL_checknumber(L, 2);
+MOD_EXPORT void L_EntityLaser_ResetSpriteScale(Entity_Laser* laser) {
 	laser->ResetSpriteScale();
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetDamageMultiplier)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushnumber(L, laser->_damageMultiplier);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetDamageMultiplier)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	laser->_damageMultiplier = (float)luaL_checknumber(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserResetSpriteScale)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	laser->ResetSpriteScale();
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetHomingType)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushinteger(L, *laser->GetHomingType());
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetHomingType)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetHomingType() = (uint32_t)luaL_checkinteger(L, 2);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetHitList) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	std::vector<unsigned int> hitList = *laser->GetHitList();
-
-	lua_newtable(L);
-	int idx = 1;
-	for (int index : hitList) {
-		lua_pushnumber(L, idx);
-		lua_pushinteger(L, index);
-		lua_settable(L, -3);
-		idx++;
-	}
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserRotateToAngle)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	float angle = (float)luaL_checknumber(L, 2);
-	float speed = (float)luaL_optnumber(L, 3, 8.0f);
+MOD_EXPORT void L_EntityLaser_RotateToAngle(Entity_Laser* laser, float angle, float speed) {
 	laser->RotateToAngle(angle, speed);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_EntityLaserRecalculateSamplesNextUpdate)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+MOD_EXPORT void L_EntityLaser_RecalculateSamplesNextUpdate(Entity_Laser* laser) {
 	EntityLaserPlus* laserPlus = GetEntityLaserPlus(laser);
 	if (laserPlus) {
 		laserPlus->recalculateSamplesNextUpdate = true;
 	}
-	return 0;
 }
 
-LUA_FUNCTION(Lua_EntityLaserIsMultidimensionalTouched) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, laser->_multidimensionalTouched);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserIsPrismTouched) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, laser->_prismTouched);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetPrismTouched) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	laser->_prismTouched = lua::luaL_checkboolean(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserRemoveFromHitList) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	auto hitList = laser->GetHitList();
-
-	auto iterator = std::find(hitList->begin(), hitList->end(), entity->GetHitListIndex());
-
-	if (iterator != hitList->end()) {
-		std::swap(*iterator, hitList->back());
-		hitList->pop_back();
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserAddToHitList) {
-	Entity_Laser* knife = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int hitListIndex = entity->GetHitListIndex();
-	auto hitList = knife->GetHitList();
-	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
-
-	if (!found) {
-		hitList->push_back(hitListIndex);
-	}
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserInHitList) {
-	Entity_Laser* knife = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY_LASER, "EntityLaser");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int hitListIndex = entity->GetHitListIndex();
-	auto hitList = knife->GetHitList();
-	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
-
-	lua_pushboolean(L, found);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserGetNumChainedLasers) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushinteger(L, laser->_chainedLasers);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetNumChainedLasers) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	laser->_chainedLasers = (int)luaL_checkinteger(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_EntityLaserSetInitSound) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	uint32_t soundId = (uint32_t)luaL_checkinteger(L, 2);
-
+MOD_EXPORT bool L_EntityLaser_SetInitSound(Entity_Laser* laser, unsigned int soundId) {
 	if (soundId >= g_Manager->_sfxManager._sounds.size()) {
-		luaL_argerror(L, 2, "Invalid SoundEffect");
+		return false;
 	}
 
 	EntityLaserPlus* laserPlus = GetEntityLaserPlus(laser);
@@ -293,80 +52,43 @@ LUA_FUNCTION(Lua_EntityLaserSetInitSound) {
 	if (laserPlus) {
 		laserPlus->initSound = soundId;
 	}
-	return 0;
+	return true;
 }
 
-LUA_FUNCTION(Lua_LaserGetTearFlags) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], laser->_tearFlags);
-	return 1;
-} 
-
-LUA_FUNCTION(Lua_LaserSetTearFlags) {
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-
-	laser->_tearFlags = *flags;
-	return 0;
+MOD_EXPORT void L_EntityLaser_SetBounceLaser(Entity_Laser* laser, Entity* bounceLaser) {
+	reinterpret_cast<EntityPtr*>(reinterpret_cast<char*>(laser) + 0x4e8)->SetReference(bounceLaser);
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetSamples)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdataPtr(L, &laser->_homingLaser._samples, lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR]);
-	return 1;
+MOD_EXPORT unsigned int L_EntityLaser_GetHitListSize(Entity_Laser* laser) {
+	return (unsigned int)laser->GetHitList()->size();
 }
 
-LUA_FUNCTION(Lua_EntityLaserGetNonOptimizedSamples)
-{
-	Entity_Laser* laser = lua::GetLuabridgeUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua::ffi::pushCdataPtr(L, &laser->_homingLaser._nonOptimizedSamples, lua::ffi::CData[lua::ffi::CDataID::VECTOR_LIST_PTR]);
-	return 1;
+MOD_EXPORT unsigned int L_EntityLaser_GetHitListEntry(Entity_Laser* laser, unsigned int index) {
+	return (*laser->GetHitList())[index];
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+MOD_EXPORT void L_EntityLaser_RemoveFromHitList(Entity_Laser* laser, Entity* entity) {
+	auto hitList = laser->GetHitList();
+	auto iterator = std::find(hitList->begin(), hitList->end(), entity->GetHitListIndex());
 
-	lua::LuaStackProtector protector(_state);
-	
-	luaL_Reg functions[] = {
-		{ "GetSamples", Lua_EntityLaserGetSamples },
-		{ "GetNonOptimizedSamples", Lua_EntityLaserGetNonOptimizedSamples },
-		{ "GetEndPoint", Lua_EntityLaserGetEndPoint},
-		{ "GetDisableFollowParent", Lua_EntityLaserGetDisableFollowParent },
-		{ "SetDisableFollowParent", Lua_EntityLaserSetDisableFollowParent },
-		{ "GetHitList", Lua_EntityLaserGetHitList },
-		{ "GetOneHit", Lua_EntityLaserGetOneHit },
-		{ "GetScale", Lua_EntityLaserGetScale },
-		{ "SetScale", Lua_EntityLaserSetScale },
-		{ "GetDamageMultiplier", Lua_EntityLaserGetDamageMultiplier },
-		{ "SetDamageMultiplier", Lua_EntityLaserSetDamageMultiplier },
-		{ "GetShrink", Lua_EntityLaserGetShrink },
-		{ "SetShrink", Lua_EntityLaserSetShrink },
-		{ "GetTimeout", Lua_EntityLaserGetTimeout },
-		{ "ResetSpriteScale", Lua_EntityLaserResetSpriteScale },
-		{ "RotateToAngle", Lua_EntityLaserRotateToAngle },
-		{ "RecalculateSamplesNextUpdate", Lua_EntityLaserRecalculateSamplesNextUpdate },
-		{ "IsMultidimensionalTouched", Lua_EntityLaserIsMultidimensionalTouched },
-		{ "IsPrismTouched", Lua_EntityLaserIsPrismTouched },
-		{ "SetPrismTouched", Lua_EntityLaserSetPrismTouched },
-		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
-		{ "RemoveFromHitList", Lua_EntityLaserRemoveFromHitList },
-		{ "AddToHitList", Lua_EntityLaserAddToHitList },
-		{ "InHitList", Lua_EntityLaserInHitList },
-		{ "GetNumChainedLasers", Lua_EntityLaserGetNumChainedLasers },
-		{ "SetNumChainedLasers", Lua_EntityLaserSetNumChainedLasers },
-		{ "SetInitSound", Lua_EntityLaserSetInitSound },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);
-	// fix HomingType
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "HomingType", Lua_EntityLaserGetHomingType, Lua_EntityLaserSetHomingType);
+	if (iterator != hitList->end()) {
+		std::swap(*iterator, hitList->back());
+		hitList->pop_back();
+	}
+}
 
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "EndPoint", Lua_EntityLaserGetEndPointVar, Lua_EntityLaserSetEndPointVar);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "ParentOffset", Lua_EntityLaserGetParentOffset, Lua_EntityLaserSetParentOffset);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_LASER, "TearFlags", Lua_LaserGetTearFlags, Lua_LaserSetTearFlags);
+MOD_EXPORT void L_EntityLaser_AddToHitList(Entity_Laser* laser, Entity* entity) {
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = laser->GetHitList();
 
-	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "ShootAngle", Lua_EntityLaserShootAngle);
-	lua::RegisterGlobalClassFunction(_state, "EntityLaser", "CalculateEndPoint", Lua_EntityLaserCalculateEndPoint);
+	if (std::find(hitList->begin(), hitList->end(), hitListIndex) == hitList->end()) {
+		hitList->push_back(hitListIndex);
+	}
+}
+
+MOD_EXPORT bool L_EntityLaser_InHitList(Entity_Laser* laser, Entity* entity) {
+	int hitListIndex = entity->GetHitListIndex();
+	auto hitList = laser->GetHitList();
+
+	return std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
 }

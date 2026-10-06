@@ -376,6 +376,7 @@ loadmodule("Entity.EntityProjectile")
 loadmodule("Entity.EntityTear")
 loadmodule("Entity.EntityBomb")
 loadmodule("Entity.EntityKnife")
+loadmodule("Entity.EntityLaser")
 loadmodule("Isaac")
 loadmodule("Options")
 

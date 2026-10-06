@@ -146,13 +146,30 @@ LUA_FUNCTION(Lua_FireKnife) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FireDelayedBrimstone) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	float angle = (float)luaL_checknumber(L, 2);
+	Entity* source = LuaEntity::Get(L, 3);
+
+	LuaEntityLaser::PushPtr(L, player->FireDelayedBrimstone(angle, source));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpawnMawOfVoid) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int timeout = (int)luaL_checkinteger(L, 2);
+
+	LuaEntityLaser::PushPtr(L, player->SpawnMawOfVoid(timeout));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_FireBrimstone) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	Entity* source = LuaEntity::GetOpt(L, 3);
 	float damageMultiplier = (float)luaL_optnumber(L, 4, 1.0f);
 
-	lua::luabridge::UserdataPtr::push(L, player->FireBrimstone(direction, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	LuaEntityLaser::PushPtr(L, player->FireBrimstone(direction, source, damageMultiplier));
 	return 1;
 }
 
@@ -182,7 +199,7 @@ LUA_FUNCTION(Lua_FireTechLaser) {
 	Entity* source = LuaEntity::GetOpt(L, 7);
 	float damageMultiplier = (float)luaL_optnumber(L, 8, 1.0f);
 
-	lua::luabridge::UserdataPtr::push(L, player->FireTechLaser(*position, offsetID, *direction, leftEye, oneHit, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	LuaEntityLaser::PushPtr(L, player->FireTechLaser(*position, offsetID, *direction, leftEye, oneHit, source, damageMultiplier));
 	return 1;
 }
 
@@ -194,7 +211,7 @@ LUA_FUNCTION(Lua_FireTechXLaser) {
 	Entity* source = LuaEntity::GetOpt(L, 5);
 	float damageMultiplier = (float)luaL_optnumber(L, 6, 1.0f);
 	
-	lua::luabridge::UserdataPtr::push(L, player->FireTechXLaser(*position, *direction, radius, source, damageMultiplier), lua::GetMetatableKey(lua::Metatables::ENTITY_LASER));
+	LuaEntityLaser::PushPtr(L, player->FireTechXLaser(*position, *direction, radius, source, damageMultiplier));
 	return 1;
 }
 
@@ -4138,6 +4155,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "DoZitEffect", Lua_DoZitEffect },
 		{ "FireBomb", Lua_FireBomb },
 		{ "FireKnife", Lua_FireKnife },
+		{ "FireDelayedBrimstone", Lua_FireDelayedBrimstone },
+		{ "SpawnMawOfVoid", Lua_SpawnMawOfVoid },
 		{ "FireBrimstone", Lua_FireBrimstone },
 		{ "FireTear", Lua_FireTear },
 		{ "FireTechLaser", Lua_FireTechLaser },
