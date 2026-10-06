@@ -587,6 +587,8 @@ namespace lua {
             ENTITY_FAMILIAR_PTR,
             ENTITY_SLOT,
             ENTITY_SLOT_PTR,
+            PATHFINDER,
+            PATHFINDER_PTR,
             MAX_CDATA
         };
 

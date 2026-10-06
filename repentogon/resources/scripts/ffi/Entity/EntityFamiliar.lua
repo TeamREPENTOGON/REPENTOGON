@@ -50,7 +50,7 @@ ffi.cdef [[
     struct EntityTear* L_EntityFamiliar_FireProjectile(struct EntityFamiliar*, struct Vector*);
     void L_EntityFamiliar_PickEnemyTarget(struct EntityFamiliar*, float, int, int, struct Vector*, float);
     int L_EntityFamiliar_GetFollowerPriority(struct EntityFamiliar*);
-    void* L_EntityFamiliar_GetPathfinder(struct EntityFamiliar*);
+    struct PathFinder* L_EntityFamiliar_GetPathfinder(struct EntityFamiliar*);
     bool L_EntityFamiliar_TryAimAtMarkedTarget(struct EntityFamiliar*, struct Vector*, int*, struct Vector*);
     void L_EntityFamiliar_TriggerRoomClear(struct EntityFamiliar*);
     void L_EntityFamiliar_UpdateDirtColor(struct EntityFamiliar*);
@@ -77,7 +77,6 @@ local Getter = helpers.Getter
 local CopyStruct = helpers.CopyStruct
 
 local TYPE_FAMILIAR = 3
-local TYPE_PATHFINDER = 101 -- not an entity type, selects the Pathfinder userdata in the bridge
 
 local function IntegerMethod(export)
     return function(self, value)
@@ -104,7 +103,7 @@ local function GetRandomWisp(rng)
 end
 
 local function GetPathfinder(self)
-    return ffichecks.pointertoclass(repentogon.L_EntityFamiliar_GetPathfinder(self), TYPE_PATHFINDER)
+    return repentogon.L_EntityFamiliar_GetPathfinder(self)
 end
 
 local getters = {

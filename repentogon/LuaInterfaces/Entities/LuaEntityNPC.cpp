@@ -493,7 +493,7 @@ LUA_FUNCTION(Lua_EntityNPC_GetPathfinder) {
 	Entity_NPC* npc = lua::GetLuabridgeUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
 	NPCAI_Pathfinder* pathfinder = &npc->_pathfinder;
-	lua::luabridge::UserdataPtr::push(L, pathfinder, lua::GetMetatableKey(lua::Metatables::PATHFINDER));
+	lua::ffi::pushCdataPtr(L, pathfinder, lua::ffi::CData[lua::ffi::CDataID::PATHFINDER_PTR]);
 
 	return 1;
 }
