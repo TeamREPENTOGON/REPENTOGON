@@ -1400,7 +1400,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Knife* k) {
-			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::Metatables::ENTITY_KNIFE);
+			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::ffi::CData[lua::ffi::CDataID::ENTITY_KNIFE_PTR]);
 		}
 
 		void operator()(Entity_Laser* l) {

@@ -576,6 +576,8 @@ namespace lua {
             ENTITY_TEAR_PTR,
             ENTITY_BOMB,
             ENTITY_BOMB_PTR,
+            ENTITY_KNIFE,
+            ENTITY_KNIFE_PTR,
             MAX_CDATA
         };
 

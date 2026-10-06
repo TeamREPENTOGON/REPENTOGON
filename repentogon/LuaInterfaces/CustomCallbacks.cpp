@@ -7061,6 +7061,7 @@ HOOK_STATIC(LuaEngine, PreEntityDevolve, (Entity* entity) -> bool, __stdcall) {
 			}
 		}
 	}
+	return false;
 }
 
 HOOK_STATIC(LuaEngine, PostBombInit, (Entity_Bomb* bomb) -> void, __stdcall) {
@@ -7083,6 +7084,31 @@ HOOK_STATIC(LuaEngine, PostBombUpdate, (Entity_Bomb* bomb) -> void, __stdcall) {
 		lua::LuaCaller(L).push(callbackid)
 			.push(bomb->_variant)
 			.pushClassPtr<LuaEntityBomb>(bomb)
+			.call(0);
+	}
+}
+
+
+HOOK_STATIC(LuaEngine, PostKnifeInit, (Entity_Knife* knife) -> void, __stdcall) {
+	const int callbackid = 50;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(knife->_subtype)
+			.pushClassPtr<LuaEntityKnife>(knife)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostKnifeUpdate, (Entity_Knife* knife) -> void, __stdcall) {
+	const int callbackid = 51;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(knife->_subtype)
+			.pushClassPtr<LuaEntityKnife>(knife)
 			.call(0);
 	}
 }

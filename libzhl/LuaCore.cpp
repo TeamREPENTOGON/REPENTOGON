@@ -151,6 +151,7 @@ namespace lua {
 			{ lua::ffi::ENTITY_PROJECTILE, lua::ffi::ENTITY_PROJECTILE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PROJECTILE, Metatables::CONST_ENTITY_PROJECTILE } },
 			{ lua::ffi::ENTITY_TEAR, lua::ffi::ENTITY_TEAR_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_TEAR, Metatables::CONST_ENTITY_TEAR } },
 			{ lua::ffi::ENTITY_BOMB, lua::ffi::ENTITY_BOMB_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_BOMB, Metatables::CONST_ENTITY_BOMB } },
+			{ lua::ffi::ENTITY_KNIFE, lua::ffi::ENTITY_KNIFE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_KNIFE, Metatables::CONST_ENTITY_KNIFE } },
 		};
 
 		EntityCDataUserdata s_entityCDataUserdata[16];

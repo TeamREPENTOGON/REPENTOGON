@@ -16,6 +16,12 @@ __thiscall Entity_Player* Entity_Knife::GetPlayer();
 "558bec83e4f883ec0c5356578bf951":
 __thiscall void Entity_Knife::InitHomingPath(Vector direction, Entity* source, float pathOffset<xmm3>);
 
+"558bec83e4f883ec08f30f1055":
+__thiscall void Entity_Knife::Shoot(float percent, float range);
+
+"558becf30f1005":
+__thiscall void Entity_Knife::Reset();
+
 struct Entity_Knife depends (BitSet128) : public Entity { 
 	BitSet128 _tearFlags : 0x410;
 	float _knifeDistance : 0x444;

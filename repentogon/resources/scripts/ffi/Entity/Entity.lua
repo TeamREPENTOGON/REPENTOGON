@@ -157,6 +157,7 @@ ffi.cdef [[
     void* L_Entity_ToFamiliar(void*);
     void* L_Entity_ToPickup(void*);
     void* L_Entity_ToProjectile(void*);
+    void* L_Entity_FireSplitTear(void*, struct Vector*, struct Vector*, float, float, int, int, const char*);
 ]]
 
 local ffi = ffi
@@ -856,7 +857,36 @@ function Entity.SetClassType(entityType, ctype)
     classTypes[entityType] = ctype
 end
 
+local function FireSplitTear(self, position, velocity, damageMultiplier, sizeMultiplier, variant, splitType)
+    ffichecks.checkcdata(1, position, "Vector")
+    ffichecks.checkcdata(2, velocity, "Vector")
+    damageMultiplier = ffichecks.optnumber(damageMultiplier, 0.5)
+    sizeMultiplier = ffichecks.optnumber(sizeMultiplier, 0.6)
+    if variant == nil then
+        variant = 0
+    else
+        ffichecks.checkinteger(5, variant)
+    end
+
+    local splitTypeId, splitTypeName = 0, nil
+    if splitType ~= nil then
+        if type(splitType) == "number" then
+            ffichecks.checkinteger(6, splitType)
+            splitTypeId = splitType
+        else
+            splitTypeName = ffichecks.checkstring(6, splitType)
+        end
+    end
+
+    local tear = repentogon.L_Entity_FireSplitTear(self, position, velocity, damageMultiplier, sizeMultiplier, variant, splitTypeId, splitTypeName)
+    if tear == nil then
+        return nil
+    end
+    return ffi.cast(classTypes[TYPE_TEAR], tear)
+end
+
 Entity.Helpers = {
+    FireSplitTear = FireSplitTear,
     CopyStruct = CopyStruct,
     Getter = Getter,
     VectorGetter = VectorGetter,

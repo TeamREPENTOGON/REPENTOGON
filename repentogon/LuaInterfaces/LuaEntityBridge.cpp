@@ -44,7 +44,6 @@ LUA_FUNCTION(Lua_Entity_PushClass) {
 	case 5: LuaEntityPickup::PushPtr(L, (Entity_Pickup*)pointer); break;
 	case 6: LuaEntitySlot::PushPtr(L, (Entity_Slot*)pointer); break;
 	case 7: LuaEntityLaser::PushPtr(L, (Entity_Laser*)pointer); break;
-	case 8: LuaEntityKnife::PushPtr(L, (Entity_Knife*)pointer); break;
 	case 100: {
 		Entity* entity = (Entity*)pointer;
 		Entity_NPC* npc = entity->ToNPC();

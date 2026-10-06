@@ -134,6 +134,18 @@ LUA_FUNCTION(Lua_FireBomb) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FireKnife) {
+	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity* parent = LuaEntity::Get(L, 2);
+	float rotationOffset = (float)luaL_optnumber(L, 3, 0);
+	bool cantOverwrite = lua_toboolean(L, 4);
+	uint32_t subType = (uint32_t)luaL_optinteger(L, 5, 0);
+	uint32_t variant = (uint32_t)luaL_optinteger(L, 6, 0);
+
+	LuaEntityKnife::PushPtr(L, player->FireKnife(parent, variant, rotationOffset, cantOverwrite, subType));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_FireBrimstone) {
 	Entity_Player* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* direction = lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
@@ -4125,6 +4137,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "DropTrinket", Lua_DropTrinket },
 		{ "DoZitEffect", Lua_DoZitEffect },
 		{ "FireBomb", Lua_FireBomb },
+		{ "FireKnife", Lua_FireKnife },
 		{ "FireBrimstone", Lua_FireBrimstone },
 		{ "FireTear", Lua_FireTear },
 		{ "FireTechLaser", Lua_FireTechLaser },

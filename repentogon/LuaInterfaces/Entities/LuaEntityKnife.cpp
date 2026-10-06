@@ -4,202 +4,77 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../LuaClasses.h"
-#include "../../Patches/ASMPatches/ASMSplitTears.h"
 #include "../../Patches/EntityPlus.h"
 
-LUA_FUNCTION(Lua_KnifeGetHitList) {
-	Entity_Knife * knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	std::vector<unsigned int> hitList = *knife->GetHitEntities();
-
-	lua_newtable(L);
-	int idx = 1;
-	for (int index : hitList) {
-		lua_pushnumber(L, idx);
-		lua_pushinteger(L, index);
-		lua_settable(L, -3);
-		idx++;
-	}
-
-	return 1;
+MOD_EXPORT void L_EntityKnife_Shoot(Entity_Knife* knife, float percent, float range) {
+	knife->Shoot(percent, range);
 }
 
-LUA_FUNCTION(Lua_GetIsSwinging) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	lua_pushboolean(L, knife->_isSwinging);
-	return 1;
+MOD_EXPORT void L_EntityKnife_Reset(Entity_Knife* knife) {
+	knife->Reset();
 }
 
-LUA_FUNCTION(Lua_SetIsSwinging) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_isSwinging = lua::luaL_checkboolean(L, 2);
-	return 0;
+MOD_EXPORT int L_EntityKnife_GetRenderZ(Entity_Knife* knife) {
+	void** vtable = *reinterpret_cast<void***>(knife);
+	return reinterpret_cast<int(__thiscall*)(Entity*)>(vtable[0x34 / sizeof(void*)])(knife);
 }
 
-LUA_FUNCTION(Lua_GetIsSpinAttack) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	lua_pushboolean(L, knife->_isSpinAttack);
-	return 1;
+MOD_EXPORT unsigned int L_EntityKnife_GetHitListSize(Entity_Knife* knife) {
+	return (unsigned int)knife->GetHitEntities()->size();
 }
 
-LUA_FUNCTION(Lua_SetIsSpinAttack) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_isSpinAttack = lua::luaL_checkboolean(L, 2);
-	return 0;
+MOD_EXPORT unsigned int L_EntityKnife_GetHitListEntry(Entity_Knife* knife, unsigned int index) {
+	return (*knife->GetHitEntities())[index];
 }
 
-LUA_FUNCTION(Lua_IsMultidimensionalTouched) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	lua_pushboolean(L, knife->_multidimensionalApplied);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetMultidimensionalTouched) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_multidimensionalApplied = lua::luaL_checkboolean(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_IsPrismTouched) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	lua_pushboolean(L, knife->_prismApplied);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetPrismTouched) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_prismApplied = lua::luaL_checkboolean(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_GetHitboxParentKnife) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
-	Entity* parentKnife = entityPlus ? entityPlus->hitboxSource.GetReference() : nullptr;
-	if (parentKnife && parentKnife->_type == ENTITY_KNIFE) {
-		lua::luabridge::UserdataPtr::push(L, parentKnife, lua::Metatables::ENTITY_KNIFE);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_SetHitboxParentKnife) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Entity_Knife* parentKnife = !lua_isnoneornil(L, 2) ? lua::GetLuabridgeUserdata<Entity_Knife*>(L, 2, lua::Metatables::ENTITY_KNIFE, "EntityKnife") : nullptr;
-	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
-	if (entityPlus) {
-		entityPlus->hitboxSource.SetReference(parentKnife);
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_KnifeRemoveFromHitList) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+MOD_EXPORT void L_EntityKnife_RemoveFromHitList(Entity_Knife* knife, Entity* entity) {
 	auto hitList = knife->GetHitEntities();
-
 	auto iterator = std::find(hitList->begin(), hitList->end(), entity->GetHitListIndex());
 
 	if (iterator != hitList->end()) {
 		std::swap(*iterator, hitList->back());
 		hitList->pop_back();
 	}
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_KnifeAddToHitList) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+MOD_EXPORT void L_EntityKnife_AddToHitList(Entity_Knife* knife, Entity* entity) {
 	int hitListIndex = entity->GetHitListIndex();
 	auto hitList = knife->GetHitEntities();
-	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
 
-	if (!found) {
+	if (std::find(hitList->begin(), hitList->end(), hitListIndex) == hitList->end()) {
 		hitList->push_back(hitListIndex);
 	}
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_KnifeInHitList) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+MOD_EXPORT bool L_EntityKnife_InHitList(Entity_Knife* knife, Entity* entity) {
 	int hitListIndex = entity->GetHitListIndex();
 	auto hitList = knife->GetHitEntities();
-	bool found = std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
 
-	lua_pushboolean(L, found);
-
-	return 1;
+	return std::find(hitList->begin(), hitList->end(), hitListIndex) != hitList->end();
 }
 
-LUA_FUNCTION(Lua_SetKnifeDistance) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_knifeDistance = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_SetKnifeVelocity) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	knife->_knifeVelocity = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_KnifeGetTearFlags) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	lua::ffi::pushCdata(L, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], knife->_tearFlags);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_KnifeSetTearFlags) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	BitSet128* flags = lua::GetCData<BitSet128*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::BITSET_128], "BitSet128");
-
-	knife->_tearFlags = *flags;
-	return 0;
-}
-
-LUA_FUNCTION(Lua_InitHomingPath) {
-	Entity_Knife* knife = lua::GetLuabridgeUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
-	Vector* direction = LuaVector::Get(L, 1);
-	Entity* source = knife;
-	if (!lua_isnoneornil(L, 3)) {
-		source = lua::GetLuabridgeUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
-	} else if (Entity* parent = knife->GetParent()) {
-		source = parent;
+MOD_EXPORT void L_EntityKnife_InitHomingPath(Entity_Knife* knife, Vector* direction, Entity* source) {
+	if (!source) {
+		source = knife;
+		if (Entity* parent = knife->GetParent()) {
+			source = parent;
+		}
 	}
 	knife->InitHomingPath(*direction, source, knife->_pathOffset);
-	return 0;
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+MOD_EXPORT Entity_Knife* L_EntityKnife_GetHitboxParentKnife(Entity_Knife* knife) {
+	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
+	Entity* parentKnife = entityPlus ? entityPlus->hitboxSource.GetReference() : nullptr;
+	if (parentKnife && parentKnife->_type == ENTITY_KNIFE) {
+		return (Entity_Knife*)parentKnife;
+	}
+	return nullptr;
+}
 
-	lua::LuaStackProtector protector(_state);
-
-	luaL_Reg functions[] = {
-		{ "GetHitList", Lua_KnifeGetHitList },
-		{ "GetIsSwinging", Lua_GetIsSwinging },
-		{ "SetIsSwinging", Lua_SetIsSwinging },
-		{ "GetIsSpinAttack", Lua_GetIsSpinAttack },
-		{ "SetIsSpinAttack", Lua_SetIsSpinAttack },
-		{ "IsMultidimensionalTouched", Lua_IsMultidimensionalTouched },
-		{ "SetMultidimensionalTouched", Lua_SetMultidimensionalTouched },
-		{ "IsPrismTouched", Lua_IsPrismTouched },
-		{ "SetPrismTouched", Lua_SetPrismTouched },
-		{ "FireSplitTear", SplitTears::Lua_FireSplitTear },
-		{ "GetHitboxParentKnife", Lua_GetHitboxParentKnife },
-		{ "SetHitboxParentKnife", Lua_SetHitboxParentKnife },
-		{ "RemoveFromHitList", Lua_KnifeRemoveFromHitList },
-		{ "AddToHitList", Lua_KnifeAddToHitList },
-		{ "InHitList", Lua_KnifeInHitList },
-		{ "SetKnifeDistance", Lua_SetKnifeDistance },
-		{ "SetKnifeVelocity", Lua_SetKnifeVelocity },
-		{ "InitHomingPath", Lua_InitHomingPath },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);
-
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY_KNIFE, "TearFlags", Lua_KnifeGetTearFlags, Lua_KnifeSetTearFlags);
+MOD_EXPORT void L_EntityKnife_SetHitboxParentKnife(Entity_Knife* knife, Entity_Knife* parentKnife) {
+	EntityKnifePlus* entityPlus = GetEntityKnifePlus(knife);
+	if (entityPlus) {
+		entityPlus->hitboxSource.SetReference(parentKnife);
+	}
 }

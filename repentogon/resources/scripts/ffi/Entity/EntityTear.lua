@@ -44,7 +44,6 @@ ffi.cdef [[
     void L_EntityTear_AddToHitList(struct EntityTear*, void*);
     bool L_EntityTear_InHitList(struct EntityTear*, void*);
     bool L_EntityTear_SetInitSound(struct EntityTear*, unsigned int);
-    struct EntityTear* L_Entity_FireSplitTear(void*, struct Vector*, struct Vector*, float, float, int, int, const char*);
 ]]
 
 local ffi = ffi
@@ -65,13 +64,6 @@ local function CheckEntity(index, value)
     local pointer = EntityToPointer(value)
     if pointer == nil then
         ffichecks.argerror(index, "Entity expected, got " .. ffichecks.gettype(value), 3)
-    end
-    return pointer
-end
-
-local function PointerOrNil(pointer)
-    if pointer == nil then
-        return nil
     end
     return pointer
 end
@@ -134,28 +126,7 @@ local methods = {
     ClearTearFlags = function(self, flags)
         self.TearFlags = self.TearFlags & ~flags
     end,
-    FireSplitTear = function(self, position, velocity, damageMultiplier, sizeMultiplier, variant, splitType)
-        ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checkcdata(2, velocity, "Vector")
-        damageMultiplier = ffichecks.optnumber(damageMultiplier, 0.5)
-        sizeMultiplier = ffichecks.optnumber(sizeMultiplier, 0.6)
-        if variant == nil then
-            variant = 0
-        else
-            ffichecks.checkinteger(5, variant)
-        end
-
-        local splitTypeId, splitTypeName = 0, nil
-        if splitType ~= nil then
-            if type(splitType) == "number" then
-                ffichecks.checkinteger(6, splitType)
-                splitTypeId = splitType
-            else
-                splitTypeName = ffichecks.checkstring(6, splitType)
-            end
-        end
-        return PointerOrNil(repentogon.L_Entity_FireSplitTear(self, position, velocity, damageMultiplier, sizeMultiplier, variant, splitTypeId, splitTypeName))
-    end,
+    FireSplitTear = Entity.Helpers.FireSplitTear,
     GetDeadEyeIntensity = Getter("DeadEyeIntensityValue"),
     GetDeadEyeSprite = function(self)
         return repentogon.L_EntityTear_GetDeadEyeSprite(self)
@@ -182,7 +153,7 @@ local methods = {
     IsMultidimensionalTouched = Getter("MultidimensionalTouchedValue"),
     IsPrismTouched = Getter("PrismTouchedValue"),
     MakeMultidimensionalCopy = function(self)
-        return PointerOrNil(repentogon.L_EntityTear_MakeMultidimensionalCopy(self))
+        return repentogon.L_EntityTear_MakeMultidimensionalCopy(self)
     end,
     RemoveFromHitList = function(self, entity)
         repentogon.L_EntityTear_RemoveFromHitList(self, CheckEntity(1, entity))

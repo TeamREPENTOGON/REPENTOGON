@@ -208,29 +208,6 @@ end
 -- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
 
 ---------------------------------------------------------
-BeginClass(EntityKnife)
-
--- void EntityKnife:AddTearFlags(BitSet128 Flags)
---	Adds the specified tear flags
-function META:AddTearFlags(f)
-	self.TearFlags = self.TearFlags | f
-end
-
--- void EntityKnife:ClearTearFlags(BitSet128 Flags)
---	Removes the specified tear flags
-function META:ClearTearFlags(f)
-	self.TearFlags = self.TearFlags & ~f
-end
-
--- boolean EntityKnife:HasTearFlags(BitSet128 Flags)
---	Returns true if we have any of the specified tear flags
-function META:HasTearFlags(f)
-	return self.TearFlags & f ~= TearFlags.TEAR_NORMAL
-end
-
-EndClass()
-
----------------------------------------------------------
 BeginClass(EntityLaser)
 
 -- void EntityLaser:AddTearFlags(BitSet128 Flags)
@@ -423,12 +400,6 @@ end
 local Entity_Player_FireBrimstone = META0.FireBrimstone
 function META:FireBrimstone(pos, source, mul)
 	return Entity_Player_FireBrimstone(self, pos, source, mul or 1)
-end
-
--- EntityKnife EntityPlayer:FireKnife(Entity Parent, float RotationOffset = 0, boolean CantOverwrite = false, int SubType = 0, int Variant = 0)
-local Entity_Player_FireKnife = META0.FireKnife
-function META:FireKnife(parent, rotationOffset, cantOverwrite, subType, variant)
-	return Entity_Player_FireKnife(self, parent, variant or 0, rotationOffset or 0, cantOverwrite, subType or 0)
 end
 
 -- EntityTear EntityPlayer:FireTear(Vector Position, Vector Velocity, boolean CanBeEye = true, boolean NoTractorBeam = false, boolean CanTriggerStreakEnd = true, Entity Source = nil, float DamageMultiplier = 1)
