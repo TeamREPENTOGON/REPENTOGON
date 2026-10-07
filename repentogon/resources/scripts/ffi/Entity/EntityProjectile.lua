@@ -34,16 +34,9 @@ local function Flags64(value)
     return signed
 end
 
-local function CheckFlags64(index, value)
-    if ffichecks.isnumber(value) or ffi.istype("int64_t", value) or ffi.istype("uint64_t", value) then
-        return value
-    end
-    ffichecks.argerror(index, "integer expected, got " .. ffichecks.gettype(value), 3)
-end
-
 local function FlagsSetter(field)
     return function(self, value)
-        value = CheckFlags64(1, value)
+        value = ffichecks.checkinteger64(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -57,7 +50,7 @@ end
 
 local function FlagsAdder(field)
     return function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         ffi.setprivate(self, field, ffi.getprivate(self, field) | flags)
     end
 end
@@ -84,7 +77,7 @@ local methods = {
     AddProjectileFlags = FlagsAdder("ProjectileFlagsValue"),
     AddScale = Adder("Scale"),
     ClearProjectileFlags = function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         ffi.setprivate(self, "ProjectileFlagsValue", ffi.getprivate(self, "ProjectileFlagsValue") & ~ffi.cast("uint64_t", flags))
     end,
     Deflect = function(self, velocity)
@@ -92,7 +85,7 @@ local methods = {
         repentogon.L_EntityProjectile_Deflect(self, velocity)
     end,
     HasProjectileFlags = function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         return (ffi.getprivate(self, "ProjectileFlagsValue") & ffi.cast("uint64_t", flags)) ~= 0
     end,
 }

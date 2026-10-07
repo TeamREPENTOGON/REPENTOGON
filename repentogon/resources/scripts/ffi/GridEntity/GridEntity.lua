@@ -118,13 +118,10 @@ GridEntityMT = {
         return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, EntityRef())
     end,
     HurtDamage = function(self, ent, playerDamage, damageFlags, damage, ignoreGridCollision)
-        if ent == nil then
-            ffichecks.argerror(1, "Entity expected, got nil")
-        end
         ffichecks.checkinteger(2, playerDamage)
         ffichecks.checkinteger(3, damageFlags)
         ffichecks.checknumber(4, damage)
-        repentogon.L_GridEntity_HurtDamage(ffi.cast("struct GridEntity*", self), ffichecks.entitytopointer(ent), playerDamage, damageFlags, damage, ffichecks.checkboolean(5, ignoreGridCollision))
+        repentogon.L_GridEntity_HurtDamage(ffi.cast("struct GridEntity*", self), ffichecks.checkentity(1, ent), playerDamage, damageFlags, damage, ffichecks.checkboolean(5, ignoreGridCollision))
     end,
     HurtSurroundings = function(self, enemyDistance, playerDistance, enemyDamage, playerDamage, damageFlags, ignoreGridCol)
         ffichecks.checknumber(1, enemyDistance)

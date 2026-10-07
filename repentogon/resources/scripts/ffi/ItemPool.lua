@@ -218,9 +218,7 @@ ItemPoolMT = {
     AddCollectible = function(self, poolType, items)
         ffichecks.checkinteger(1, poolType)
         CheckValidPool(1, poolType)
-        if type(items) ~= "table" then
-            ffichecks.argerror(2, "Expected table")
-        end
+        ffichecks.checktable(2, items)
 
         local warnings = {}
         for _, desc in ipairs(ParsePoolItems(items, warnings)) do
@@ -235,9 +233,7 @@ ItemPoolMT = {
     AddTemporaryCollectible = function(self, poolType, items)
         ffichecks.checkinteger(1, poolType)
         CheckValidPool(1, poolType)
-        if type(items) ~= "table" then
-            ffichecks.argerror(2, "Expected table")
-        end
+        ffichecks.checktable(2, items)
 
         local warnings = {}
         for _, desc in ipairs(ParsePoolItems(items, warnings)) do
@@ -305,9 +301,7 @@ ItemPoolMT = {
         return intOut[0]
     end,
     GetCollectibleFromList = function(self, list, seed, defaultItem, addToBlacklist, excludeActiveItems)
-        if type(list) ~= "table" then
-            error("Expected a table as second argument", 2)
-        end
+        ffichecks.checktable(1, list)
         if defaultItem == nil then
             defaultItem = 25 -- COLLECTIBLE_BREAKFAST
         else
@@ -437,9 +431,7 @@ ItemPoolMT = {
     RemoveTemporaryCollectible = function(self, poolType, items)
         ffichecks.checkinteger(1, poolType)
         CheckValidPool(1, poolType)
-        if type(items) ~= "table" then
-            ffichecks.argerror(2, "Expected table")
-        end
+        ffichecks.checktable(2, items)
 
         local warnings = {}
         for _, desc in ipairs(ParsePoolItems(items, warnings)) do

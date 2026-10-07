@@ -33,7 +33,7 @@ local repentogon = ffidll
 local function ValidateMusicId(idx, id)
     local max = ffi.new("int[1]")
     if not repentogon.L_MusicManager_ValidateMusicID(id, max) then
-        ffichecks.argerror(idx, string.format("Invalid music ID %d. Min = 0, Max = %d", max[0]), 3)
+        ffichecks.argerror(idx, string.format("Invalid music ID %d. Min = 0, Max = %d", id, max[0]), 3)
     end
 end
 

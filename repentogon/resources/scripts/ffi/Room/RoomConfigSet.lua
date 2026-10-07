@@ -340,9 +340,7 @@ RoomConfigSetMT = {
     __type = "RoomConfigSet",
     __len = GetSize,
     AddRooms = function(self, rooms)
-        if type(rooms) ~= "table" then
-            ffichecks.argerror(1, TypeMessage(rooms, "table"))
-        end
+        ffichecks.checktable(1, rooms)
         return AddLuaRooms(ffi.getprivate(self, "SetID"), rooms)
     end,
     Get = function(self, index)

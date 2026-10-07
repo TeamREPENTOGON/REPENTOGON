@@ -88,6 +88,16 @@ ffichecks.checkinteger = function(index, val, level)
 	end
 end
 
+local int64Type = lffi.typeof("int64_t")
+local uint64Type = lffi.typeof("uint64_t")
+
+ffichecks.checkinteger64 = function(index, val, level)
+	if type(val) == "number" or lffi.istype(int64Type, val) or lffi.istype(uint64Type, val) then
+		return val
+	end
+	ffichecks.argerror(index, "integer expected, got " .. ffichecks.gettype(val), (level or 2) + 1)
+end
+
 ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
 	if not (ffichecks.iscdata(var, ctype) or (allownil and ffichecks.isnil(var))) then
 		local t = ffichecks.gettype(var)
@@ -107,6 +117,12 @@ ffichecks.optnumber = function(var, opt)
 	end
 	return opt
 end
+ffichecks.optinteger = function(var, opt)
+	if math.type(var) == "integer" then
+		return var
+	end
+	return opt
+end
 ffichecks.optboolean = function(var, opt)
 	if var == nil then
 		return opt
@@ -117,6 +133,9 @@ end
 ffichecks.optstring = function(var, opt)
 	if ffichecks.isstring(var) then
 		return var
+	end
+	if ffichecks.isnumber(var) then
+		return tostring(var)
 	end
 	return opt
 end
@@ -190,6 +209,12 @@ ffichecks.entitytopointer = function(entity)
 	end
 	if not pcall(lffi.typeof, entity) then
 		error(string.format("Entity expected, got %s", type(entity)), 3)
+	end
+	return lffi.cast(voidptr, entity)
+end
+ffichecks.checkentity = function(index, entity, level)
+	if entity == nil or not pcall(lffi.typeof, entity) then
+		ffichecks.argerror(index, "Entity expected, got " .. type(entity), (level or 2) + 1)
 	end
 	return lffi.cast(voidptr, entity)
 end

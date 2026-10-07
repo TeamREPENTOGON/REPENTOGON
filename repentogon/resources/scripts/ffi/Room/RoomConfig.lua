@@ -28,9 +28,7 @@ end
 RoomConfig = {
     AddRooms = function(stage, mode, rooms)
         CheckStageAndMode(stage, mode)
-        if type(rooms) ~= "table" then
-            ffichecks.argerror(3, "table expected, got " .. type(rooms))
-        end
+        ffichecks.checktable(3, rooms)
         return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):AddRooms(rooms)
     end,
     GetRandomRoom = function(seed, reduceWeight, stage, roomType, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode)

@@ -60,14 +60,6 @@ local EntityToPointer = ffichecks.entitytopointer
 
 local TYPE_TEAR = 2
 
-local function CheckEntity(index, value)
-    local pointer = EntityToPointer(value)
-    if pointer == nil then
-        ffichecks.argerror(index, "Entity expected, got " .. ffichecks.gettype(value), 3)
-    end
-    return pointer
-end
-
 local getters = {
     Height = Getter("HeightValue"),
     Scale = Getter("ScaleValue"),
@@ -114,7 +106,7 @@ local methods = {
         self.TearFlags = self.TearFlags | flags
     end,
     AddToHitList = function(self, entity)
-        repentogon.L_EntityTear_AddToHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityTear_AddToHitList(self, ffichecks.checkentity(1, entity))
     end,
     ChangeVariant = function(self, variant)
         ffichecks.checkinteger(1, variant)
@@ -148,7 +140,7 @@ local methods = {
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityTear_InHitList(self, CheckEntity(1, entity))
+        return repentogon.L_EntityTear_InHitList(self, ffichecks.checkentity(1, entity))
     end,
     IsMultidimensionalTouched = Getter("MultidimensionalTouchedValue"),
     IsPrismTouched = Getter("PrismTouchedValue"),
@@ -156,7 +148,7 @@ local methods = {
         return repentogon.L_EntityTear_MakeMultidimensionalCopy(self)
     end,
     RemoveFromHitList = function(self, entity)
-        repentogon.L_EntityTear_RemoveFromHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityTear_RemoveFromHitList(self, ffichecks.checkentity(1, entity))
     end,
     ResetSpriteScale = function(self, force)
         repentogon.L_EntityTear_ResetSpriteScale(self, ffichecks.optboolean(force, false))

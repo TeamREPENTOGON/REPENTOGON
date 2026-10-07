@@ -45,14 +45,6 @@ local EntityToPointer = ffichecks.entitytopointer
 
 local TYPE_KNIFE = 8
 
-local function CheckEntity(index, value)
-    local pointer = EntityToPointer(value)
-    if pointer == nil then
-        ffichecks.argerror(index, "Entity expected, got " .. ffichecks.gettype(value), 3)
-    end
-    return pointer
-end
-
 local function NumberSetter(field)
     return function(self, value)
         ffichecks.checknumber(1, value)
@@ -78,7 +70,7 @@ local methods = {
         self.TearFlags = self.TearFlags | flags
     end,
     AddToHitList = function(self, entity)
-        repentogon.L_EntityKnife_AddToHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityKnife_AddToHitList(self, ffichecks.checkentity(1, entity))
     end,
     ClearTearFlags = function(self, flags)
         self.TearFlags = self.TearFlags & ~flags
@@ -105,7 +97,7 @@ local methods = {
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityKnife_InHitList(self, CheckEntity(1, entity))
+        return repentogon.L_EntityKnife_InHitList(self, ffichecks.checkentity(1, entity))
     end,
     InitHomingPath = function(self, direction, source)
         ffichecks.checkcdata(1, direction, "Vector")
@@ -115,7 +107,7 @@ local methods = {
     IsMultidimensionalTouched = Getter("MultidimensionalAppliedValue"),
     IsPrismTouched = Getter("PrismAppliedValue"),
     RemoveFromHitList = function(self, entity)
-        repentogon.L_EntityKnife_RemoveFromHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityKnife_RemoveFromHitList(self, ffichecks.checkentity(1, entity))
     end,
     Reset = function(self)
         repentogon.L_EntityKnife_Reset(self)

@@ -91,10 +91,7 @@ local RoomDescriptorListT = ffi.typeof("struct RoomDescriptorList")
 local attemptedOut = ffi.new("bool[1]")
 
 local function CheckDimension(index, value)
-    if value == nil then
-        return -1
-    end
-    ffichecks.checkinteger(index, value)
+    value = ffichecks.optinteger(value, -1)
     if value < -1 or value > 2 then
         ffichecks.argerror(index, "Invalid Dimension", 3)
     end
@@ -102,10 +99,7 @@ local function CheckDimension(index, value)
 end
 
 local function CheckPlacementSeed(index, value)
-    if value == nil then
-        return 0
-    end
-    ffichecks.checkinteger(index, value)
+    value = ffichecks.optinteger(value, 0)
     if value < 0 then
         ffichecks.argerror(index, "Invalid Seed", 3)
     end

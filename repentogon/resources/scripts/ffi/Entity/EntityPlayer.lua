@@ -528,7 +528,6 @@ local VectorSetter = helpers.VectorSetter
 local BooleanSetter = helpers.BooleanSetter
 local CopyStruct = helpers.CopyStruct
 local Flags64 = helpers.Flags64
-local CheckFlags64 = helpers.CheckFlags64
 local EntityToPointer = ffichecks.entitytopointer
 local traceback = debug.traceback
 
@@ -559,27 +558,8 @@ local function NumberSetter(field)
     end
 end
 
-local function OptInteger(index, value, default, level)
-    if value == nil then
-        return default
-    end
-    ffichecks.checkinteger(index, value, level or 3)
-    return value
-end
-
-local function OptNumber(index, value, default, level)
-    if value == nil then
-        return default
-    end
-    ffichecks.checknumber(index, value, level or 3)
-    return value
-end
-
 local function CheckActiveSlot(index, slot, allowNegative)
-    if slot == nil then
-        return 0
-    end
-    ffichecks.checkinteger(index, slot, 3)
+    slot = ffichecks.optinteger(slot, 0)
     if (not allowNegative and slot < 0) or slot > 3 then
         ffichecks.argerror(index, "Invalid ActiveSlot " .. slot, 3)
     end
@@ -587,7 +567,7 @@ local function CheckActiveSlot(index, slot, allowNegative)
 end
 
 local function ValidatePool(index, pool)
-    pool = OptInteger(index, pool, -1, 4)
+    pool = ffichecks.optinteger(pool, -1)
     if pool > 30 or pool < 0 then
         return -1
     end
@@ -617,9 +597,7 @@ end
 
 local function SetInnateGroup(self, trinket, groupKey, items, addCostumes)
     groupKey = ffichecks.checkstring(1, groupKey)
-    if not ffichecks.istable(items) then
-        ffichecks.argerror(2, "Expected a table")
-    end
+    ffichecks.checktable(2, items)
     addCostumes = ffichecks.optboolean(addCostumes, true)
 
     local ids, counts = {}, {}
@@ -1883,15 +1861,15 @@ local methods = {
         return HeartStatUps(self, true)
     end,
     AddCandyHeartBonus = function(self, cacheFlags, amount)
-        cacheFlags = OptInteger(1, cacheFlags, 0)
-        amount = OptInteger(2, amount, 1)
+        cacheFlags = ffichecks.optinteger(cacheFlags, 0)
+        amount = ffichecks.optinteger(amount, 1)
         if amount ~= 0 then
             repentogon.L_EntityPlayer_AddCandyHeartSoulLocketBonus(self, false, cacheFlags, amount)
         end
     end,
     AddSoulLocketBonus = function(self, cacheFlags, amount)
-        cacheFlags = OptInteger(1, cacheFlags, 0)
-        amount = OptInteger(2, amount, 1)
+        cacheFlags = ffichecks.optinteger(cacheFlags, 0)
+        amount = ffichecks.optinteger(amount, 1)
         if amount ~= 0 then
             repentogon.L_EntityPlayer_AddCandyHeartSoulLocketBonus(self, true, cacheFlags, amount)
         end
@@ -1947,7 +1925,7 @@ local methods = {
         canBeEye = ffichecks.optboolean(canBeEye, true)
         noTractorBeam = ffichecks.optboolean(noTractorBeam, false)
         canTriggerStreakEnd = ffichecks.optboolean(canTriggerStreakEnd, true)
-        damageMultiplier = OptNumber(7, damageMultiplier, 1)
+        damageMultiplier = ffichecks.optnumber(damageMultiplier, 1)
         local flags = (canBeEye and 0x4 or 0) | (noTractorBeam and 0x2 or 0) | (canTriggerStreakEnd and 0x1 or 0)
         return repentogon.L_EntityPlayer_FireTearEx(self, position, velocity, flags, EntityToPointer(source), damageMultiplier)
     end,
@@ -1990,7 +1968,7 @@ local methods = {
         ffichecks.checkinteger(2, targetCount)
         ffichecks.checkcdata(3, rng, "RNG")
         ffichecks.checkcdata(4, item, "ItemConfigItem", true)
-        subtype = OptInteger(5, subtype, -1)
+        subtype = ffichecks.optinteger(subtype, -1)
         local result = {}
         for i = 1, repentogon.L_EntityPlayer_CheckFamiliarEx(self, variant, targetCount, rng, item, subtype) do
             result[i] = repentogon.L_EntityPlayer_GetCheckedFamiliar(i - 1)
@@ -2000,10 +1978,10 @@ local methods = {
 
     QueueItem = function(self, item, charge, touched, golden, varData)
         ffichecks.checkcdata(1, item, "ItemConfigItem")
-        charge = OptInteger(2, charge, 0)
+        charge = ffichecks.optinteger(charge, 0)
         touched = ffichecks.optboolean(touched, false)
         golden = ffichecks.optboolean(golden, false)
-        varData = OptInteger(5, varData, 0)
+        varData = ffichecks.optinteger(varData, 0)
         local flags = 0
         if touched then
             flags = flags + 1
@@ -2039,7 +2017,7 @@ local methods = {
         ffichecks.checkinteger(1, collectible)
         checkBodyAnim = ffichecks.checkboolean(2, checkBodyAnim)
         animName = ffichecks.checkstring(3, animName)
-        frameNum = OptInteger(4, frameNum, -1)
+        frameNum = ffichecks.optinteger(frameNum, -1)
         repentogon.L_EntityPlayer_PlayCollectibleAnim(self, collectible, checkBodyAnim, animName, frameNum)
     end,
     IsCollectibleAnimFinished = function(self, collectible, animName)
@@ -2053,7 +2031,7 @@ local methods = {
     end,
     GetMultiShotParams = function(self, weaponType)
         local result = ffi.new("struct MultiShotParams")
-        repentogon.L_EntityPlayer_GetMultiShotParams(self, OptInteger(1, weaponType, 1), result)
+        repentogon.L_EntityPlayer_GetMultiShotParams(self, ffichecks.optinteger(weaponType, 1), result)
         return result
     end,
     GetMultiShotPositionVelocity = function(self, loopIndex, weaponType, shotDirection, shotSpeed, multiShotParams)
@@ -2071,15 +2049,15 @@ local methods = {
     end,
     GetTearHitParams = function(self, weaponType, damageScale, tearDisplacement, source)
         ffichecks.checkinteger(1, weaponType)
-        damageScale = OptNumber(2, damageScale, 1)
-        tearDisplacement = OptInteger(3, tearDisplacement, 1)
+        damageScale = ffichecks.optnumber(damageScale, 1)
+        tearDisplacement = ffichecks.optinteger(tearDisplacement, 1)
         local result = ffi.new("struct TearParams")
         repentogon.L_EntityPlayer_GetTearHitParams(self, weaponType, damageScale, tearDisplacement, EntityToPointer(source), result)
         return result
     end,
     GetGlyphOfBalanceDrop = function(self, variant, subtype)
-        local variantBuffer = ffi.new("int[1]", OptInteger(1, variant, -1))
-        local subtypeBuffer = ffi.new("int[1]", OptInteger(2, subtype, -1))
+        local variantBuffer = ffi.new("int[1]", ffichecks.optinteger(variant, -1))
+        local subtypeBuffer = ffi.new("int[1]", ffichecks.optinteger(subtype, -1))
         repentogon.L_EntityPlayer_GetGlyphOfBalanceDrop(self, variantBuffer, subtypeBuffer)
         return { variantBuffer[0], subtypeBuffer[0] }
     end,
@@ -2179,7 +2157,7 @@ local methods = {
         if damageFlags == nil then
             damageFlags = 0
         else
-            damageFlags = CheckFlags64(1, damageFlags)
+            damageFlags = ffichecks.checkinteger64(1, damageFlags)
         end
         ffichecks.checkcdata(2, source, "EntityRef", true)
         return repentogon.L_EntityPlayer_HasInvincibility(self, damageFlags, source)
@@ -2274,7 +2252,7 @@ local methods = {
         repentogon.L_EntityPlayer_SetPoopSpell(self, position, spell)
     end,
     RemovePoopSpell = function(self, position)
-        position = OptInteger(1, position, 0)
+        position = ffichecks.optinteger(position, 0)
         if position < 0 or position > 5 then
             ffichecks.argerror(1, "Invalid Poop Spell queue position")
         end
@@ -2304,17 +2282,17 @@ local methods = {
     AddCollectibleEffect = function(self, id, costume, cooldown, additive)
         ffichecks.checkinteger(1, id)
         costume = ffichecks.checkboolean(2, costume)
-        repentogon.L_EntityPlayer_AddCollectibleEffect(self, id, costume, OptInteger(3, cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
+        repentogon.L_EntityPlayer_AddCollectibleEffect(self, id, costume, ffichecks.optinteger(cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
     end,
     AddNullItemEffect = function(self, id, costume, cooldown, additive)
         ffichecks.checkinteger(1, id)
         costume = ffichecks.checkboolean(2, costume)
-        repentogon.L_EntityPlayer_AddNullItemEffect(self, id, costume, OptInteger(3, cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
+        repentogon.L_EntityPlayer_AddNullItemEffect(self, id, costume, ffichecks.optinteger(cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
     end,
     AddTrinketEffect = function(self, id, costume, cooldown, additive)
         ffichecks.checkinteger(1, id)
         costume = ffichecks.checkboolean(2, costume)
-        repentogon.L_EntityPlayer_AddTrinketEffect(self, id, costume, OptInteger(3, cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
+        repentogon.L_EntityPlayer_AddTrinketEffect(self, id, costume, ffichecks.optinteger(cooldown, NO_COOLDOWN), ffichecks.optboolean(additive, true))
     end,
     BlockCollectible = function(self, collectible)
         ffichecks.checkinteger(1, collectible)
@@ -2351,13 +2329,13 @@ local methods = {
     AddInnateCollectible = function(self, collectible, amount, groupKey, duration, addCostume)
         ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        amount = OptInteger(2, amount, 1)
+        amount = ffichecks.optinteger(amount, 1)
         local group = ""
         if groupKey ~= nil and type(groupKey) ~= "boolean" then
             group = ffichecks.checkstring(3, groupKey)
         end
         local newFeatures = type(groupKey) == "string" or type(groupKey) == "number" or type(duration) == "number"
-        duration = OptInteger(4, duration, -1)
+        duration = ffichecks.optinteger(duration, -1)
         addCostume = ffichecks.optboolean(addCostume, true)
 
         if amount < 0 then
@@ -2377,21 +2355,21 @@ local methods = {
     AddInnateTrinket = function(self, trinket, amount, groupKey, duration, addCostume)
         ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        amount = OptInteger(2, amount, 1)
+        amount = ffichecks.optinteger(amount, 1)
         local group = ffichecks.optstring(groupKey, "")
-        duration = OptInteger(4, duration, -1)
+        duration = ffichecks.optinteger(duration, -1)
         addCostume = ffichecks.optboolean(addCostume, true)
         repentogon.L_EntityPlayer_AddInnateItem(self, true, trinket, amount, group, duration, addCostume)
     end,
     RemoveInnateCollectible = function(self, collectible, amount, groupKey)
         ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        return repentogon.L_EntityPlayer_RemoveInnateItem(self, false, collectible, OptInteger(2, amount, 1), ffichecks.optstring(groupKey, ""))
+        return repentogon.L_EntityPlayer_RemoveInnateItem(self, false, collectible, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, ""))
     end,
     RemoveInnateTrinket = function(self, trinket, amount, groupKey)
         ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        return repentogon.L_EntityPlayer_RemoveInnateItem(self, true, trinket, OptInteger(2, amount, 1), ffichecks.optstring(groupKey, ""))
+        return repentogon.L_EntityPlayer_RemoveInnateItem(self, true, trinket, ffichecks.optinteger(amount, 1), ffichecks.optstring(groupKey, ""))
     end,
     GetInnateCollectibleCount = function(self, collectible, groupKey)
         ffichecks.checkinteger(1, collectible)
@@ -2406,12 +2384,12 @@ local methods = {
     SetInnateCollectibleCount = function(self, collectible, count, groupKey, addCostume)
         ffichecks.checkinteger(1, collectible)
         CheckInnateId(false, collectible)
-        return repentogon.L_EntityPlayer_SetInnateItemCount(self, false, collectible, OptInteger(2, count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
+        return repentogon.L_EntityPlayer_SetInnateItemCount(self, false, collectible, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
     end,
     SetInnateTrinketCount = function(self, trinket, count, groupKey, addCostume)
         ffichecks.checkinteger(1, trinket)
         CheckInnateId(true, trinket)
-        return repentogon.L_EntityPlayer_SetInnateItemCount(self, true, trinket, OptInteger(2, count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
+        return repentogon.L_EntityPlayer_SetInnateItemCount(self, true, trinket, ffichecks.optinteger(count, 1), ffichecks.optstring(groupKey, ""), ffichecks.optboolean(addCostume, true))
     end,
     GetInnateCollectibleGroup = function(self, groupKey)
         return SnapshotPairs(repentogon.L_EntityPlayer_SnapshotInnateGroup(self, false, ffichecks.optstring(groupKey, "")))
@@ -2447,9 +2425,7 @@ local methods = {
         return result
     end,
     SetBagOfCraftingContent = function(self, content)
-        if not ffichecks.istable(content) then
-            ffichecks.argerror(1, "Expected a table")
-        end
+        ffichecks.checktable(1, content)
         local length = #content
         if length > 8 then
             ffichecks.argerror(1, "Table cannot be larger than 8 pickups")
@@ -2477,7 +2453,7 @@ local methods = {
         if slot < 0 or slot > 7 then
             ffichecks.argerror(1, string.format("invalid slot id %d", slot))
         end
-        pickup = OptInteger(2, pickup, 0)
+        pickup = ffichecks.optinteger(pickup, 0)
         if pickup < 0 or pickup >= 30 then
             ffichecks.argerror(2, string.format("invalid pickup id %d", pickup))
         end
@@ -2491,7 +2467,7 @@ local methods = {
     end,
     SetBagOfCraftingOutput = function(self, collectible, itemPool)
         ffichecks.checkinteger(1, collectible)
-        repentogon.L_EntityPlayer_SetBagOfCraftingOutput(self, collectible, OptInteger(2, itemPool, -1))
+        repentogon.L_EntityPlayer_SetBagOfCraftingOutput(self, collectible, ffichecks.optinteger(itemPool, -1))
     end,
 
     AddCustomCacheTag = function(self, tags, evaluateItems)

@@ -96,58 +96,16 @@ local VALUE_BOOLEAN = 2
 local VALUE_INTEGER = 3
 local VALUE_FLOAT = 4
 
-local function CheckString(idx, value)
-    local t = type(value)
-    if t == "string" then
-        return value
-    elseif t == "number" then
-        return tostring(value)
-    end
-    ffichecks.argerror(idx, "string expected, got " .. t, 3)
-end
-
-local function OptString(idx, value, default)
-    if value == nil then
-        return default
-    end
-    return CheckString(idx, value)
-end
-
-local function OptNumber(idx, value, default)
-    if value == nil then
-        return default
-    end
-    if type(value) ~= "number" then
-        ffichecks.argerror(idx, "number expected, got " .. type(value), 3)
-    end
-    return value
-end
-
 local function OptCallback(idx, callback)
     if callback == nil then
         return 0
     end
-    if type(callback) ~= "function" then
-        ffichecks.argerror(idx, "function expected, got " .. type(callback), 3)
-    end
+    ffichecks.checkfunction(idx, callback, 3)
     return cfuncs.Ref(callback)
 end
 
-local function CheckBoolean(idx, value)
-    if value == nil then
-        ffichecks.argerror(idx, "boolean expected, got nil", 3)
-    end
-    return not not value
-end
-
-local function CheckTable(idx, value)
-    if type(value) ~= "table" then
-        ffichecks.argerror(idx, "table expected, got " .. type(value), 3)
-    end
-end
-
 local function StringArray(idx, tbl)
-    CheckTable(idx, tbl)
+    ffichecks.checktable(idx, tbl)
     local values = {}
     for i = 1, #tbl do
         local value = tbl[i]
@@ -163,7 +121,7 @@ local function StringArray(idx, tbl)
 end
 
 local function NumberArray(idx, tbl)
-    CheckTable(idx, tbl)
+    ffichecks.checktable(idx, tbl)
     local values = {}
     for i = 1, #tbl do
         local value = tbl[i]
@@ -195,11 +153,11 @@ local function NoElementWithId(id)
 end
 
 local function RemoveElement(id)
-    repentogon.L_ImGui_RemoveElement(CheckString(1, id))
+    repentogon.L_ImGui_RemoveElement(ffichecks.checkstring(1, id))
 end
 
 local function SetSize(id, x, y)
-    id = CheckString(1, id)
+    id = ffichecks.checkstring(1, id)
     ffichecks.checknumber(2, x)
     ffichecks.checknumber(3, y)
     if not repentogon.L_ImGui_SetSize(id, x, y) then
@@ -213,16 +171,16 @@ end
 
 ImGui = {
     AddButton = function(parentId, id, text, callback, isSmall)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
         if not repentogon.L_ImGui_AddButton(parentId, id, text, ref, ffichecks.optboolean(isSmall, false)) then
             ParentNotFound(parentId)
         end
     end,
     AddCallback = function(parentId, type, callback)
-        parentId = CheckString(1, parentId)
+        parentId = ffichecks.checkstring(1, parentId)
         ffichecks.checkinteger(2, type)
         ffichecks.checkfunction(3, callback)
         if not repentogon.L_ImGui_AddCallback(parentId, type, cfuncs.Ref(callback)) then
@@ -230,176 +188,176 @@ ImGui = {
         end
     end,
     AddCheckbox = function(parentId, id, text, callback, checked)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
         if not repentogon.L_ImGui_AddCheckbox(parentId, id, text, ref, ffichecks.optboolean(checked, false)) then
             ParentNotFound(parentId)
         end
     end,
     AddCombobox = function(parentId, id, text, callback, values, index, isSlider)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
         local array, count = StringArray(5, values)
-        if not repentogon.L_ImGui_AddCombobox(parentId, id, text, ref, array, count, OptNumber(6, index, 0), ffichecks.optboolean(isSlider, false)) then
+        if not repentogon.L_ImGui_AddCombobox(parentId, id, text, ref, array, count, ffichecks.optnumber(index, 0), ffichecks.optboolean(isSlider, false)) then
             ParentNotFound(parentId)
         end
     end,
     AddDragFloat = function(parentId, id, text, callback, defaultVal, speed, minVal, maxVal, formatting)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddDragFloat(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, speed, 1),
-            OptNumber(7, minVal, FLT_MIN), OptNumber(8, maxVal, FLT_MAX), OptString(9, formatting, FLOAT_FORMAT_DEFAULT)) then
+        if not repentogon.L_ImGui_AddDragFloat(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(speed, 1),
+            ffichecks.optnumber(minVal, FLT_MIN), ffichecks.optnumber(maxVal, FLT_MAX), ffichecks.optstring(formatting, FLOAT_FORMAT_DEFAULT)) then
             ParentNotFound(parentId)
         end
     end,
     AddDragInteger = function(parentId, id, text, callback, defaultVal, speed, minVal, maxVal, formatting)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddDragInteger(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, speed, 1),
-            OptNumber(7, minVal, 0), OptNumber(8, maxVal, INT_MAX_DEFAULT), OptString(9, formatting, INT_FORMAT_DEFAULT)) then
+        if not repentogon.L_ImGui_AddDragInteger(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(speed, 1),
+            ffichecks.optnumber(minVal, 0), ffichecks.optnumber(maxVal, INT_MAX_DEFAULT), ffichecks.optstring(formatting, INT_FORMAT_DEFAULT)) then
             ParentNotFound(parentId)
         end
     end,
     AddElement = function(parentId, id, type, text)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
         ffichecks.checkinteger(3, type)
-        if not repentogon.L_ImGui_AddElement(parentId, id, type, OptString(4, text, "")) then
+        if not repentogon.L_ImGui_AddElement(parentId, id, type, ffichecks.optstring(text, "")) then
             ParentNotFound(parentId)
         end
     end,
     AddInputColor = function(parentId, id, text, callback, r, g, b, a)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputColor(parentId, id, text, ref, OptNumber(5, r, 0), OptNumber(6, g, 0), OptNumber(7, b, 0), a ~= nil, OptNumber(8, a, 1)) then
+        if not repentogon.L_ImGui_AddInputColor(parentId, id, text, ref, ffichecks.optnumber(r, 0), ffichecks.optnumber(g, 0), ffichecks.optnumber(b, 0), a ~= nil, ffichecks.optnumber(a, 1)) then
             ParentNotFound(parentId)
         end
     end,
     AddInputController = function(parentId, id, text, callback, defaultVal)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputController(parentId, id, text, ref, OptNumber(5, defaultVal, 0)) then
+        if not repentogon.L_ImGui_AddInputController(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0)) then
             ParentNotFound(parentId)
         end
     end,
     AddInputFloat = function(parentId, id, text, callback, defaultVal, step, stepFast)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputFloat(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, step, 1), OptNumber(7, stepFast, 100)) then
+        if not repentogon.L_ImGui_AddInputFloat(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(step, 1), ffichecks.optnumber(stepFast, 100)) then
             ParentNotFound(parentId)
         end
     end,
     AddInputInteger = function(parentId, id, text, callback, defaultVal, step, stepFast)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputInteger(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, step, 1), OptNumber(7, stepFast, 100)) then
+        if not repentogon.L_ImGui_AddInputInteger(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(step, 1), ffichecks.optnumber(stepFast, 100)) then
             ParentNotFound(parentId)
         end
     end,
     AddInputKeyboard = function(parentId, id, text, callback, defaultVal)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputKeyboard(parentId, id, text, ref, OptNumber(5, defaultVal, 0)) then
+        if not repentogon.L_ImGui_AddInputKeyboard(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0)) then
             ParentNotFound(parentId)
         end
     end,
     AddInputText = function(parentId, id, text, callback, inputText, hintText)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputText(parentId, id, text, ref, OptString(5, inputText, ""), OptString(6, hintText, "")) then
+        if not repentogon.L_ImGui_AddInputText(parentId, id, text, ref, ffichecks.optstring(inputText, ""), ffichecks.optstring(hintText, "")) then
             ParentNotFound(parentId)
         end
     end,
     AddInputTextMultiline = function(parentId, id, text, callback, inputText, lineCount)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddInputTextMultiline(parentId, id, text, ref, OptString(5, inputText, ""), OptNumber(6, lineCount, 6)) then
+        if not repentogon.L_ImGui_AddInputTextMultiline(parentId, id, text, ref, ffichecks.optstring(inputText, ""), ffichecks.optnumber(lineCount, 6)) then
             ParentNotFound(parentId)
         end
     end,
     AddPlotHistogram = function(parentId, id, text, values, hintText, minVal, maxVal, height)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local array, count = NumberArray(4, values)
-        if not repentogon.L_ImGui_AddPlotHistogram(parentId, id, text, array, count, OptString(5, hintText, ""),
-            OptNumber(6, minVal, FLT_MIN), OptNumber(7, maxVal, FLT_MAX), OptNumber(8, height, 40)) then
+        if not repentogon.L_ImGui_AddPlotHistogram(parentId, id, text, array, count, ffichecks.optstring(hintText, ""),
+            ffichecks.optnumber(minVal, FLT_MIN), ffichecks.optnumber(maxVal, FLT_MAX), ffichecks.optnumber(height, 40)) then
             ParentNotFound(parentId)
         end
     end,
     AddPlotLines = function(parentId, id, text, values, hintText, minVal, maxVal, height)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local array, count = NumberArray(4, values)
-        if not repentogon.L_ImGui_AddPlotLines(parentId, id, text, array, count, OptString(5, hintText, ""),
-            OptNumber(6, minVal, FLT_MIN), OptNumber(7, maxVal, FLT_MAX), OptNumber(8, height, 40)) then
+        if not repentogon.L_ImGui_AddPlotLines(parentId, id, text, array, count, ffichecks.optstring(hintText, ""),
+            ffichecks.optnumber(minVal, FLT_MIN), ffichecks.optnumber(maxVal, FLT_MAX), ffichecks.optnumber(height, 40)) then
             ParentNotFound(parentId)
         end
     end,
     AddProgressBar = function(parentId, id, text, value, hintText)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
-        if not repentogon.L_ImGui_AddProgressBar(parentId, id, text, OptNumber(4, value, 0), OptString(5, hintText, "__DEFAULT__")) then
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
+        if not repentogon.L_ImGui_AddProgressBar(parentId, id, text, ffichecks.optnumber(value, 0), ffichecks.optstring(hintText, "__DEFAULT__")) then
             ParentNotFound(parentId)
         end
     end,
     AddRadioButtons = function(parentId, id, callback, values, index, sameLine)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
         local ref = OptCallback(3, callback)
         local array, count = StringArray(4, values)
-        if not repentogon.L_ImGui_AddRadioButtons(parentId, id, ref, array, count, OptNumber(5, index, 0), ffichecks.optboolean(sameLine, true)) then
+        if not repentogon.L_ImGui_AddRadioButtons(parentId, id, ref, array, count, ffichecks.optnumber(index, 0), ffichecks.optboolean(sameLine, true)) then
             ParentNotFound(parentId)
         end
     end,
     AddSliderFloat = function(parentId, id, text, callback, defaultVal, minVal, maxVal, formatting)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddSliderFloat(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, minVal, FLT_MIN),
-            OptNumber(7, maxVal, FLT_MAX), OptString(8, formatting, FLOAT_FORMAT_DEFAULT)) then
+        if not repentogon.L_ImGui_AddSliderFloat(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(minVal, FLT_MIN),
+            ffichecks.optnumber(maxVal, FLT_MAX), ffichecks.optstring(formatting, FLOAT_FORMAT_DEFAULT)) then
             ParentNotFound(parentId)
         end
     end,
     AddSliderInteger = function(parentId, id, text, callback, defaultVal, minVal, maxVal, formatting)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = OptString(3, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.optstring(text, "")
         local ref = OptCallback(4, callback)
-        if not repentogon.L_ImGui_AddSliderInteger(parentId, id, text, ref, OptNumber(5, defaultVal, 0), OptNumber(6, minVal, 0),
-            OptNumber(7, maxVal, INT_MAX_DEFAULT), OptString(8, formatting, INT_FORMAT_DEFAULT)) then
+        if not repentogon.L_ImGui_AddSliderInteger(parentId, id, text, ref, ffichecks.optnumber(defaultVal, 0), ffichecks.optnumber(minVal, 0),
+            ffichecks.optnumber(maxVal, INT_MAX_DEFAULT), ffichecks.optstring(formatting, INT_FORMAT_DEFAULT)) then
             ParentNotFound(parentId)
         end
     end,
     AddTab = function(parentId, id, text)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
-        text = CheckString(3, text)
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
+        text = ffichecks.checkstring(3, text)
         local result = repentogon.L_ImGui_AddTab(parentId, id, text)
         if result == 1 then
             ParentNotFound(parentId)
@@ -408,35 +366,35 @@ ImGui = {
         end
     end,
     AddTabBar = function(parentId, id)
-        parentId = CheckString(1, parentId)
-        id = CheckString(2, id)
+        parentId = ffichecks.checkstring(1, parentId)
+        id = ffichecks.checkstring(2, id)
         if not repentogon.L_ImGui_AddTabBar(parentId, id) then
             ParentNotFound(parentId)
         end
     end,
     AddText = function(parentId, text, isWrapped, id)
-        parentId = CheckString(1, parentId)
-        text = OptString(2, text, "")
+        parentId = ffichecks.checkstring(1, parentId)
+        text = ffichecks.optstring(text, "")
         local wrapped = ffichecks.optboolean(isWrapped, false)
-        if not repentogon.L_ImGui_AddText(parentId, text, wrapped, OptString(4, id, "")) then
+        if not repentogon.L_ImGui_AddText(parentId, text, wrapped, ffichecks.optstring(id, "")) then
             ParentNotFound(parentId)
         end
     end,
     CreateMenu = function(id, text)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_CreateMenu(id, CheckString(2, text)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_CreateMenu(id, ffichecks.checkstring(2, text)) then
             error(string.format("Error while adding new Menu '%s'", id), 2)
         end
     end,
     CreateWindow = function(id, title, parentId)
-        id = CheckString(1, id)
-        title = CheckString(2, title)
-        if not repentogon.L_ImGui_CreateWindow(id, title, OptString(3, parentId, nil)) then
+        id = ffichecks.checkstring(1, id)
+        title = ffichecks.checkstring(2, title)
+        if not repentogon.L_ImGui_CreateWindow(id, title, ffichecks.optstring(parentId, nil)) then
             error(string.format("Error while adding new Window '%s'", id), 2)
         end
     end,
     ElementExists = function(id)
-        return repentogon.L_ImGui_ElementExists(CheckString(1, id))
+        return repentogon.L_ImGui_ElementExists(ffichecks.checkstring(1, id))
     end,
     GetGameWindowRect = function()
         local position = Vector(0, 0)
@@ -450,14 +408,14 @@ ImGui = {
         return position
     end,
     GetVisible = function(id)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         if not repentogon.L_ImGui_ElementExists(id) then
             ElementNotFound(id)
         end
         return repentogon.L_ImGui_GetVisible(id)
     end,
     GetWindowChildFlags = function(id)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         local flags = ffi.new("int[1]")
         if not repentogon.L_ImGui_GetWindowChildFlags(id, flags) then
             WindowNotFound(id)
@@ -465,7 +423,7 @@ ImGui = {
         return flags[0]
     end,
     GetWindowFlags = function(id)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         local flags = ffi.new("int[1]")
         if not repentogon.L_ImGui_GetWindowFlags(id, flags) then
             WindowNotFound(id)
@@ -473,7 +431,7 @@ ImGui = {
         return flags[0]
     end,
     GetWindowPinned = function(id)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         local pinned = repentogon.L_ImGui_GetWindowPinned(id)
         if pinned < 0 then
             WindowNotFound(id)
@@ -487,8 +445,8 @@ ImGui = {
         return repentogon.L_ImGui_IsVisible()
     end,
     LinkWindowToElement = function(windowId, elementId)
-        windowId = CheckString(1, windowId)
-        elementId = CheckString(2, elementId)
+        windowId = ffichecks.checkstring(1, windowId)
+        elementId = ffichecks.checkstring(2, elementId)
         local result = repentogon.L_ImGui_LinkWindowToElement(windowId, elementId)
         if result == 1 then
             ffichecks.argerror(1, string.format("No window with id '%s' exists", windowId))
@@ -497,7 +455,7 @@ ImGui = {
         end
     end,
     PushNotification = function(text, severity, lifetime)
-        text = CheckString(1, text)
+        text = ffichecks.checkstring(1, text)
         severity = ffichecks.optnumber(severity, 0)
         if severity < 0 or severity > 3 then
             ffichecks.argerror(2, "Severity needs to be a value between 0 and 3")
@@ -505,14 +463,14 @@ ImGui = {
         repentogon.L_ImGui_PushNotification(text, severity, ffichecks.optnumber(lifetime, 5000))
     end,
     RemoveCallback = function(parentId, type)
-        parentId = CheckString(1, parentId)
+        parentId = ffichecks.checkstring(1, parentId)
         ffichecks.checkinteger(2, type)
         if not repentogon.L_ImGui_RemoveCallback(parentId, type) then
             ffichecks.argerror(1, string.format("No element '%s' found.", parentId))
         end
     end,
     RemoveColor = function(id, type)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checkinteger(2, type)
         if not repentogon.L_ImGui_RemoveColor(id, type) then
             ElementNotFound(id)
@@ -525,7 +483,7 @@ ImGui = {
         repentogon.L_ImGui_Reset()
     end,
     SetColor = function(id, type, r, g, b, a)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checkinteger(2, type)
         ffichecks.checknumber(3, r)
         ffichecks.checknumber(4, g)
@@ -535,14 +493,14 @@ ImGui = {
         end
     end,
     SetHelpmarker = function(id, text)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_SetHelpmarker(id, CheckString(2, text)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_SetHelpmarker(id, ffichecks.checkstring(2, text)) then
             NoElementWithId(id)
         end
     end,
     SetSize = SetSize,
     SetTextColor = function(id, r, g, b, a)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checknumber(2, r)
         ffichecks.checknumber(3, g)
         ffichecks.checknumber(4, b)
@@ -551,39 +509,39 @@ ImGui = {
         end
     end,
     SetTooltip = function(id, text)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_SetTooltip(id, CheckString(2, text)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_SetTooltip(id, ffichecks.checkstring(2, text)) then
             NoElementWithId(id)
         end
     end,
     SetVisible = function(id, visible)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_SetVisible(id, CheckBoolean(2, visible)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_SetVisible(id, ffichecks.checkboolean(2, visible)) then
             ElementNotFound(id)
         end
     end,
     SetWindowChildFlags = function(id, flags)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checkinteger(2, flags)
         if not repentogon.L_ImGui_SetWindowChildFlags(id, flags) then
             WindowNotFound(id)
         end
     end,
     SetWindowFlags = function(id, flags)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checkinteger(2, flags)
         if not repentogon.L_ImGui_SetWindowFlags(id, flags) then
             WindowNotFound(id)
         end
     end,
     SetWindowPinned = function(id, pinned)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_SetWindowPinned(id, CheckBoolean(2, pinned)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_SetWindowPinned(id, ffichecks.checkboolean(2, pinned)) then
             WindowNotFound(id)
         end
     end,
     SetWindowPosition = function(id, x, y)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checknumber(2, x)
         ffichecks.checknumber(3, y)
         if not repentogon.L_ImGui_SetWindowPosition(id, x, y) then
@@ -593,7 +551,7 @@ ImGui = {
     SetWindowSize = SetSize, -- deprecated
     Show = Show,
     UpdateData = function(id, dataType, value)
-        id = CheckString(1, id)
+        id = ffichecks.checkstring(1, id)
         ffichecks.checkinteger(2, dataType)
         if not repentogon.L_ImGui_ElementExists(id) then
             NoElementWithId(id)
@@ -601,13 +559,13 @@ ImGui = {
 
         local supported = true
         if dataType == DATA_LABEL then
-            repentogon.L_ImGui_SetLabel(id, CheckString(3, value))
+            repentogon.L_ImGui_SetLabel(id, ffichecks.checkstring(3, value))
         elseif dataType == DATA_VALUE then
             local kind = repentogon.L_ImGui_GetValueKind(id)
             if kind == VALUE_STRING then
-                repentogon.L_ImGui_SetValueString(id, CheckString(3, value))
+                repentogon.L_ImGui_SetValueString(id, ffichecks.checkstring(3, value))
             elseif kind == VALUE_BOOLEAN then
-                repentogon.L_ImGui_SetValueBoolean(id, CheckBoolean(3, value))
+                repentogon.L_ImGui_SetValueBoolean(id, ffichecks.checkboolean(3, value))
             elseif kind == VALUE_INTEGER then
                 ffichecks.checkinteger(3, value)
                 repentogon.L_ImGui_SetValueInteger(id, value)
@@ -629,7 +587,7 @@ ImGui = {
             ffichecks.checknumber(3, value)
             supported = repentogon.L_ImGui_SetMinMax(id, dataType == DATA_MAX, value)
         elseif dataType == DATA_HINT_TEXT then
-            supported = repentogon.L_ImGui_SetHintText(id, CheckString(3, value))
+            supported = repentogon.L_ImGui_SetHintText(id, ffichecks.checkstring(3, value))
         elseif dataType == DATA_COLOR_VALUES then
             local array, count = NumberArray(3, value)
             supported = repentogon.L_ImGui_SetColorValues(id, array, count)
@@ -642,8 +600,8 @@ ImGui = {
         end
     end,
     UpdateText = function(id, text)
-        id = CheckString(1, id)
-        if not repentogon.L_ImGui_UpdateText(id, CheckString(2, text)) then
+        id = ffichecks.checkstring(1, id)
+        if not repentogon.L_ImGui_UpdateText(id, ffichecks.checkstring(2, text)) then
             NoElementWithId(id)
         end
     end,

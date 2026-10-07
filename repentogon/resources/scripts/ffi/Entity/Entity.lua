@@ -177,13 +177,6 @@ local function Flags64(value)
     return signed
 end
 
-local function CheckFlags64(index, value)
-    if ffichecks.isnumber(value) or ffi.istype("int64_t", value) or ffi.istype("uint64_t", value) then
-        return value
-    end
-    ffichecks.argerror(index, "integer expected, got " .. ffichecks.gettype(value), 3)
-end
-
 local function CopyStruct(ctype, reference)
     local copy = ffi.new(ctype)
     ffi.copy(copy, reference, ffi.sizeof(ctype))
@@ -437,28 +430,6 @@ local function EffectResult(pointer)
     return ffi.cast(classTypes[TYPE_EFFECT], pointer)
 end
 
-local function OptVector(index, value)
-    if value ~= nil then
-        ffichecks.checkcdata(index, value, "Vector")
-    end
-    return value
-end
-
-local function OptColor(index, value)
-    if value ~= nil then
-        ffichecks.checkcdata(index, value, "Color")
-    end
-    return value
-end
-
-local function OptEntityRef(index, value)
-    if value ~= nil then
-        ffichecks.checkcdata(index, value, "EntityRef")
-    end
-    return value
-end
-
-
 local function Methods(table)
     for name, fn in pairs(table) do
         methods[name] = fn
@@ -473,7 +444,7 @@ Methods {
     AddCharmed = BossEffect(repentogon.L_Entity_AddCharmed, false),
     AddConfusion = BossEffect(repentogon.L_Entity_AddConfusion, false),
     AddEntityFlags = function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         ffi.setprivate(self, "EntityFlagsValue", ffi.getprivate(self, "EntityFlagsValue") | flags)
     end,
     AddFear = BossEffect(repentogon.L_Entity_AddFear, false),
@@ -516,7 +487,7 @@ Methods {
     CanDevolve = BoolMethod(repentogon.L_Entity_CanDevolve),
     CanShutDoors = BoolMethod(repentogon.L_Entity_CanShutDoors),
     ClearEntityFlags = function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         ffi.setprivate(self, "EntityFlagsValue", ffi.getprivate(self, "EntityFlagsValue") & ~ffi.cast("uint64_t", flags))
     end,
     CollidesWithGrid = Getter("CollidesWithGridValue"),
@@ -540,7 +511,7 @@ Methods {
         return repentogon.L_Entity_GetBossID(self)
     end,
     GetCollisionCapsule = function(self, offset)
-        OptVector(1, offset)
+        ffichecks.checkcdata(1, offset, "Vector", true)
         local capsule = Capsule()
         repentogon.L_Entity_GetCollisionCapsule(self, offset or Vector(0, 0), capsule)
         return capsule
@@ -645,7 +616,7 @@ Methods {
         return repentogon.L_Entity_HasCommonParentWithEntity(self, EntityToPointer(other))
     end,
     HasEntityFlags = function(self, flags)
-        flags = CheckFlags64(1, flags)
+        flags = ffichecks.checkinteger64(1, flags)
         return (ffi.getprivate(self, "EntityFlagsValue") & ffi.cast("uint64_t", flags)) ~= 0
     end,
     HasFullHealth = function(self)
@@ -681,13 +652,13 @@ Methods {
         repentogon.L_Entity_KillWithSource(self, source)
     end,
     MakeBloodPoof = function(self, position, color, scale)
-        OptVector(1, position)
-        OptColor(2, color)
+        ffichecks.checkcdata(1, position, "Vector", true)
+        ffichecks.checkcdata(2, color, "Color", true)
         return EffectResult(repentogon.L_Entity_MakeBloodPoof(self, position, color, ffichecks.optnumber(scale, 1.0)))
     end,
     MakeGroundPoof = function(self, position, color, scale)
-        OptVector(1, position)
-        OptColor(2, color)
+        ffichecks.checkcdata(1, position, "Vector", true)
+        ffichecks.checkcdata(2, color, "Color", true)
         return EffectResult(repentogon.L_Entity_MakeGroundPoof(self, position, color, ffichecks.optnumber(scale, 1.0)))
     end,
     MultiplyFriction = function(self, value)
@@ -763,22 +734,22 @@ Methods {
     end,
     SpawnBloodEffect = function(self, subtype, position, offset, color, velocity)
         subtype = ffichecks.optnumber(subtype, 0)
-        OptVector(2, position)
-        OptVector(3, offset)
-        OptColor(4, color)
-        OptVector(5, velocity)
+        ffichecks.checkcdata(2, position, "Vector", true)
+        ffichecks.checkcdata(3, offset, "Vector", true)
+        ffichecks.checkcdata(4, color, "Color", true)
+        ffichecks.checkcdata(5, velocity, "Vector", true)
         return EffectResult(repentogon.L_Entity_SpawnBloodEffect(self, subtype, position, offset, color, velocity))
     end,
     SpawnWaterImpactEffects = function(self, position, velocity, scale)
         ffichecks.checkcdata(1, position, "Vector")
-        OptVector(2, velocity)
+        ffichecks.checkcdata(2, velocity, "Vector", true)
         ffichecks.checknumber(3, scale)
         repentogon.L_Entity_SpawnWaterImpactEffects(position, velocity or Vector(0, 0), scale)
     end,
     TakeDamage = function(self, damage, flags, source, damageCountdown)
         ffichecks.checknumber(1, damage)
-        flags = CheckFlags64(2, flags)
-        OptEntityRef(3, source)
+        flags = ffichecks.checkinteger64(2, flags)
+        ffichecks.checkcdata(3, source, "EntityRef", true)
         ffichecks.checkinteger(4, damageCountdown)
         return repentogon.L_Entity_TakeDamage(self, damage, flags, source, damageCountdown)
     end,
@@ -882,7 +853,6 @@ end
 Entity.Helpers = {
     FireSplitTear = FireSplitTear,
     Flags64 = Flags64,
-    CheckFlags64 = CheckFlags64,
     CopyStruct = CopyStruct,
     Getter = Getter,
     VectorGetter = VectorGetter,

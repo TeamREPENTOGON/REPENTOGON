@@ -49,14 +49,6 @@ local PLAYER_CREEP_VARIANTS = {
     [0x36] = true, [0x4e] = true, [0x5a] = true, [0x5c] = true, [0x5d] = true, [0xcc] = true,
 }
 
-local function CheckEntity(index, value)
-    local pointer = EntityToPointer(value)
-    if pointer == nil then
-        ffichecks.argerror(index, "Entity expected, got " .. ffichecks.gettype(value), 3)
-    end
-    return pointer
-end
-
 local function CanAccessTearFlags(self)
     return TEARFLAG_VARIANTS[self.Variant] == true
 end
@@ -156,7 +148,7 @@ EntityEffect = setmetatable({
     CreateLootPreview = function(lootList, position, owner, effect)
         ffichecks.checkcdata(1, lootList, "LootList")
         ffichecks.checkcdata(2, position, "Vector")
-        return repentogon.L_EntityEffect_CreateLootPreview(lootList, position, CheckEntity(3, owner), CheckEntity(4, effect))
+        return repentogon.L_EntityEffect_CreateLootPreview(lootList, position, ffichecks.checkentity(3, owner), ffichecks.checkentity(4, effect))
     end,
     IsPlayerCreep = function(variant)
         ffichecks.checkinteger(1, variant)

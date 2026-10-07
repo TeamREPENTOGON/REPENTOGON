@@ -136,14 +136,6 @@ local marksOut = ffi.new("int[15]")
 local MB_ICONERROR = 0x10
 local MB_OK = 0
 
-local function OptInteger(index, value, default)
-    if value == nil then
-        return default
-    end
-    ffichecks.checkinteger(index, value)
-    return value
-end
-
 local function VectorResult(export, ...)
     local result = Vector(0, 0)
     export(result, ...)
@@ -279,9 +271,9 @@ local isaac = {
         return math.max(0, room:GetAliveEnemiesCount())
     end,
     CountEntities = function(spawner, type, variant, subtype)
-        type = OptInteger(2, type, 0)
-        variant = OptInteger(3, variant, -1)
-        subtype = OptInteger(4, subtype, -1)
+        type = ffichecks.optinteger(type, 0)
+        variant = ffichecks.optinteger(variant, -1)
+        subtype = ffichecks.optinteger(subtype, -1)
         return repentogon.L_Isaac_CountEntities(EntityToPointer(spawner), type, variant, subtype)
     end,
     CreateWeapon = function(weaponType, entity)
@@ -336,33 +328,33 @@ local isaac = {
     end,
     FindByType = function(type, variant, subtype, cache, ignoreFriendly)
         ffichecks.checkinteger(1, type)
-        variant = OptInteger(2, variant, -1)
-        subtype = OptInteger(3, subtype, -1)
+        variant = ffichecks.optinteger(variant, -1)
+        subtype = ffichecks.optinteger(subtype, -1)
         repentogon.L_Isaac_FindByType(type, variant, subtype, ffichecks.optboolean(cache, false), ffichecks.optboolean(ignoreFriendly, false))
         return ffichecks.entityresults()
     end,
     FindInCapsule = function(capsule, partition)
         ffichecks.checkcdata(1, capsule, "Capsule")
-        repentogon.L_Isaac_FindInCapsule(capsule, OptInteger(2, partition, -1))
+        repentogon.L_Isaac_FindInCapsule(capsule, ffichecks.optinteger(partition, -1))
         return ffichecks.entityresults()
     end,
     FindInRadius = function(position, radius, partition)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checknumber(2, radius)
-        repentogon.L_Isaac_FindInRadius(position, radius, OptInteger(3, partition, -1))
+        repentogon.L_Isaac_FindInRadius(position, radius, ffichecks.optinteger(partition, -1))
         return ffichecks.entityresults()
     end,
     FindTargetPit = function(position, targetPosition, pitIndex)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, targetPosition, "Vector")
-        return repentogon.L_Isaac_FindTargetPit(position, targetPosition, OptInteger(3, pitIndex, -1))
+        return repentogon.L_Isaac_FindTargetPit(position, targetPosition, ffichecks.optinteger(pitIndex, -1))
     end,
     GetAchievementIdByName = function(name)
         name = ffichecks.checkstring(1, name)
         return repentogon.L_Isaac_GetAchievementIdByName(name)
     end,
     GetAxisAlignedUnitVectorFromDir = function(direction)
-        return VectorResult(repentogon.L_Isaac_GetAxisAlignedUnitVectorFromDir, OptInteger(1, direction, -1))
+        return VectorResult(repentogon.L_Isaac_GetAxisAlignedUnitVectorFromDir, ffichecks.optinteger(direction, -1))
     end,
     GetBabyIdByName = function(name)
         name = ffichecks.checkstring(1, name)
@@ -411,7 +403,7 @@ local isaac = {
         return repentogon.L_Isaac_GetPillEffectByName(name)
     end,
     GetPlayer = function(index)
-        index = OptInteger(1, index, 0)
+        index = ffichecks.optinteger(index, 0)
         return ffichecks.pointertoplayer(repentogon.L_Isaac_GetPlayer(index))
     end,
     GetPlayerTypeByName = function(name, isBSkin)
@@ -493,7 +485,7 @@ local isaac = {
         return repentogon.L_Isaac_GetCutsceneByName(name)
     end,
     GetDwmWindowAttribute = function(attribute)
-        return repentogon.L_Isaac_GetDwmWindowAttribute(OptInteger(1, attribute, 0))
+        return repentogon.L_Isaac_GetDwmWindowAttribute(ffichecks.optinteger(attribute, 0))
     end,
     GetEntitySubTypeByName = function(name)
         name = ffichecks.checkstring(1, name)
@@ -699,9 +691,7 @@ local isaac = {
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
-        if type(marks) ~= "table" then
-            error(string.format("Expected table as parameter #2, got %s", type(marks)), 2)
-        end
+        ffichecks.checktable(2, marks)
 
         local playerType = 0
         local values = ffi.new("int[15]")
@@ -741,14 +731,11 @@ local isaac = {
         repentogon.L_Isaac_SetCurrentFloorMusic(tonumber(musicId))
     end,
     SetCurrentFloorName = function(floorName)
-        if type(floorName) ~= "string" and type(floorName) ~= "number" then
-            error(string.format("Expected floorname as parameter #1, got %s", type(floorName)), 2)
-        end
-        repentogon.L_Isaac_SetCurrentFloorName(tostring(floorName))
+        repentogon.L_Isaac_SetCurrentFloorName(ffichecks.checkstring(1, floorName))
     end,
     SetDwmWindowAttribute = function(attribute, value)
-        attribute = OptInteger(1, attribute, 0)
-        value = OptInteger(2, value, 0)
+        attribute = ffichecks.optinteger(attribute, 0)
+        value = ffichecks.optinteger(value, 0)
         local prohibited = repentogon.L_Isaac_SetDwmWindowAttribute(attribute, value)
         if prohibited == 1 then
             error("Usage of DWMWA_CLOAK attribute is prohibited!", 2)
@@ -781,7 +768,7 @@ local isaac = {
     ShowErrorDialog = function(title, text, icon, buttons)
         title = ffichecks.checkstring(1, title)
         text = ffichecks.checkstring(2, text)
-        return repentogon.L_Isaac_ShowErrorDialog(title, text, OptInteger(3, icon, MB_ICONERROR), OptInteger(4, buttons, MB_OK))
+        return repentogon.L_Isaac_ShowErrorDialog(title, text, ffichecks.optinteger(icon, MB_ICONERROR), ffichecks.optinteger(buttons, MB_OK))
     end,
     Spawn = function(type, variant, subtype, position, velocity, spawner)
         ffichecks.checkinteger(1, type)
@@ -812,13 +799,13 @@ local isaac = {
         repentogon.L_Isaac_StartDailyGame(date)
     end,
     StartNewGame = function(playerType, challenge, difficulty, seeds, isCustomRun)
-        playerType = OptInteger(1, playerType, 0)
-        challenge = OptInteger(2, challenge, 0)
-        difficulty = OptInteger(3, difficulty, 0)
+        playerType = ffichecks.optinteger(playerType, 0)
+        challenge = ffichecks.optinteger(challenge, 0)
+        difficulty = ffichecks.optinteger(difficulty, 0)
         if ffichecks.iscdata(seeds, "Seeds") then
             repentogon.L_Isaac_StartNewGame(playerType, challenge, difficulty, seeds, 0, false)
         else
-            repentogon.L_Isaac_StartNewGame(playerType, challenge, difficulty, nil, OptInteger(4, seeds, 0), ffichecks.optboolean(isCustomRun, false))
+            repentogon.L_Isaac_StartNewGame(playerType, challenge, difficulty, nil, ffichecks.optinteger(seeds, 0), ffichecks.optboolean(isCustomRun, false))
         end
     end,
     TriggerWindowResize = function()

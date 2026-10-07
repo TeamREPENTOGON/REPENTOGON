@@ -56,9 +56,7 @@ Console = {
     end,
     RegisterMacro = function(name, commands)
         name = ffichecks.checkstring(1, name)
-        if type(commands) ~= "table" then
-            ffichecks.argerror(2, "Expected a table of strings, got " .. type(commands))
-        end
+        ffichecks.checktable(2, commands)
 
         local strings = {}
         for i = 1, #commands do

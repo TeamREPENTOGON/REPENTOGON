@@ -71,15 +71,6 @@ end
 local getters = {}
 local setters = {}
 
-local function Bool(name)
-    getters[name] = function()
-        return Config()[name]
-    end
-    setters[name] = function(value)
-        Config()[name] = not not value
-    end
-end
-
 local function CheckedBool(name, writable)
     getters[name] = function()
         return Config()[name]
@@ -153,25 +144,25 @@ setters.Language = function()
 end
 
 Integer("JacobEsauControls", true, 0, 1)
-Bool("DebugConsoleEnabled")
-Bool("UseBorderlessFullscreen")
-Bool("SaveCommandHistory")
-Bool("FadedConsoleDisplay")
+CheckedBool("DebugConsoleEnabled", true)
+CheckedBool("UseBorderlessFullscreen", true)
+CheckedBool("SaveCommandHistory", true)
+CheckedBool("FadedConsoleDisplay", true)
 Unsigned("ConsoleFont", 0, 2)
 Unsigned("MaxRenderScale", 1, 99)
 Unsigned("MaxScale", 1, 99)
 Integer("AnnouncerVoiceMode", true, 0, 2)
-Bool("MouseControl")
-Bool("PauseOnFocusLost")
-Bool("BulletVisibility")
-Bool("ChargeBars")
-Bool("RumbleEnabled")
-Bool("FoundHUD")
+CheckedBool("MouseControl", true)
+CheckedBool("PauseOnFocusLost", true)
+CheckedBool("BulletVisibility", true)
+CheckedBool("ChargeBars", true)
+CheckedBool("RumbleEnabled", true)
+CheckedBool("FoundHUD", true)
 Integer("ExtraHUDStyle", true, 0, 2)
 Integer("CameraStyle", true, 1, 2)
 Integer("DisplayPopups", true, 0, 2)
 Clamped("Gamma", 0.5, 1.5)
-Bool("Filter")
+CheckedBool("Filter", true)
 
 getters.VSync = function()
     return Config().VSync

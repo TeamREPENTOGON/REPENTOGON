@@ -68,14 +68,6 @@ local EntityToPointer = ffichecks.entitytopointer
 
 local TYPE_LASER = 7
 
-local function CheckEntity(index, value)
-    local pointer = EntityToPointer(value)
-    if pointer == nil then
-        ffichecks.argerror(index, "Entity expected, got " .. ffichecks.gettype(value), 3)
-    end
-    return pointer
-end
-
 local function NumberSetter(field)
     return function(self, value)
         ffichecks.checknumber(1, value)
@@ -136,7 +128,7 @@ local methods = {
         self.TearFlags = self.TearFlags | flags
     end,
     AddToHitList = function(self, entity)
-        repentogon.L_EntityLaser_AddToHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityLaser_AddToHitList(self, ffichecks.checkentity(1, entity))
     end,
     ClearTearFlags = function(self, flags)
         self.TearFlags = self.TearFlags & ~flags
@@ -168,7 +160,7 @@ local methods = {
         return (self.TearFlags & flags) ~= TearFlags.TEAR_NORMAL
     end,
     InHitList = function(self, entity)
-        return repentogon.L_EntityLaser_InHitList(self, CheckEntity(1, entity))
+        return repentogon.L_EntityLaser_InHitList(self, ffichecks.checkentity(1, entity))
     end,
     IsCircleLaser = function(self)
         local subType = self.SubType
@@ -181,7 +173,7 @@ local methods = {
         repentogon.L_EntityLaser_RecalculateSamplesNextUpdate(self)
     end,
     RemoveFromHitList = function(self, entity)
-        repentogon.L_EntityLaser_RemoveFromHitList(self, CheckEntity(1, entity))
+        repentogon.L_EntityLaser_RemoveFromHitList(self, ffichecks.checkentity(1, entity))
     end,
     ResetSpriteScale = function(self)
         repentogon.L_EntityLaser_ResetSpriteScale(self)
@@ -252,7 +244,7 @@ EntityLaser = setmetatable({
         ffichecks.checkcdata(1, start, "Vector")
         ffichecks.checkcdata(2, direction, "Vector")
         ffichecks.checkcdata(3, positionOffset, "Vector")
-        local parentPointer = CheckEntity(4, parent)
+        local parentPointer = ffichecks.checkentity(4, parent)
         ffichecks.checknumber(5, margin)
         local result = Vector(0, 0)
         repentogon.L_EntityLaser_CalculateEndPoint(start, direction, positionOffset, parentPointer, margin, result)

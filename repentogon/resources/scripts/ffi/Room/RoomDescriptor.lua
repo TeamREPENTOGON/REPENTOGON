@@ -202,10 +202,7 @@ end
 RoomDescriptorMT.__newindex = function(self, key, value)
     local flag = FLAG_BITS[key]
     if flag then
-        if type(value) ~= "boolean" then
-            error(string.format("bad value for RoomDescriptor.%s (boolean expected, got %s)", key, type(value)), 2)
-        end
-        if value then
+        if ffichecks.checkboolean(1, value) then
             self.Flags = self.Flags | flag
         else
             self.Flags = self.Flags & ~flag

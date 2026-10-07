@@ -101,20 +101,6 @@ local pathfinderSize = ffi.sizeof("struct PathFinder")
 
 local SIREN = 904
 
-local function OptCData(index, value, ctype)
-    if value ~= nil then
-        ffichecks.checkcdata(index, value, ctype)
-    end
-    return value
-end
-
-local function OptEntity(value)
-    if value == nil then
-        return nil
-    end
-    return EntityToPointer(value)
-end
-
 local function QueryResults(count)
     local results = {}
     if count > 0 then
@@ -192,7 +178,7 @@ local methods = {
         if damage < 0 then
             damage = 0
         end
-        repentogon.L_EntityNPC_ApplyTearflagEffects(self, position, flags, OptEntity(source), damage)
+        repentogon.L_EntityNPC_ApplyTearflagEffects(self, position, flags, EntityToPointer(source), damage)
     end,
     CalcTargetPosition = function(self, distanceLimit)
         ffichecks.checknumber(1, distanceLimit)
@@ -378,8 +364,8 @@ local methods = {
         ffi.setprivate(self, "ShieldStrengthValue", strength)
     end,
     SpawnBloodCloud = function(self, position, color)
-        OptCData(1, position, "Vector")
-        OptCData(2, color, "Color")
+        ffichecks.checkcdata(1, position, "Vector", true)
+        ffichecks.checkcdata(2, color, "Color", true)
         return repentogon.L_EntityNPC_MakeBloodCloud(self, position, color)
     end,
     SpawnBloodSplash = function(self)
@@ -429,7 +415,7 @@ EntityNPC = setmetatable({
     ThrowLeech = function(origin, spawner, target, yPosOffset, big)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowLeech(origin, OptEntity(spawner), target, ffichecks.optnumber(yPosOffset, -10), ffichecks.optboolean(big, false))
+        return repentogon.L_EntityNPC_ThrowLeech(origin, EntityToPointer(spawner), target, ffichecks.optnumber(yPosOffset, -10), ffichecks.optboolean(big, false))
     end,
     ThrowMaggot = function(origin, target, yOffset, fallSpeed)
         ffichecks.checkcdata(1, origin, "Vector")
@@ -444,19 +430,19 @@ EntityNPC = setmetatable({
     ThrowRockSpider = function(origin, spawner, target, variant, yPosOffset)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowRockSpider(origin, OptEntity(spawner), target, ffichecks.optnumber(variant, 0), ffichecks.optnumber(yPosOffset, -10))
+        return repentogon.L_EntityNPC_ThrowRockSpider(origin, EntityToPointer(spawner), target, ffichecks.optnumber(variant, 0), ffichecks.optnumber(yPosOffset, -10))
     end,
     ThrowSpider = function(position, spawner, targetPosition, big, yOffset)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(3, targetPosition, "Vector")
         big = ffichecks.checkboolean(4, big)
         ffichecks.checknumber(5, yOffset)
-        return repentogon.L_EntityNPC_ThrowSpider(position, OptEntity(spawner), targetPosition, big, yOffset)
+        return repentogon.L_EntityNPC_ThrowSpider(position, EntityToPointer(spawner), targetPosition, big, yOffset)
     end,
     ThrowStrider = function(origin, spawner, target)
         ffichecks.checkcdata(1, origin, "Vector")
         ffichecks.checkcdata(3, target, "Vector")
-        return repentogon.L_EntityNPC_ThrowStrider(origin, OptEntity(spawner), target)
+        return repentogon.L_EntityNPC_ThrowStrider(origin, EntityToPointer(spawner), target)
     end,
 }, { __class = NPCMT })
 

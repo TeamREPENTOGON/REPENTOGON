@@ -31,11 +31,7 @@ local repentogon = ffidll
 local ffi = ffi
 
 local function OptColor(color)
-    if color ~= nil and getmetatable(color) == "ffi" then
-        ffichecks.checkcdata(4, color, "Color", false, 4)
-        return color
-    end
-    return Color()
+    return ffichecks.optcdata(color, "Color") or Color()
 end
 
 
@@ -190,9 +186,7 @@ BeamMT = {
         repentogon.L_Beam_SetLayer(self, ResolveLayer(ffi.getprivate(self, "Sprite"), 1, layer))
     end,
     SetPoints = function(self, points)
-        if type(points) ~= "table" then
-            ffichecks.argerror(1, "Expected a table as second argument")
-        end
+        ffichecks.checktable(1, points)
         local count = #points
         if count < 2 then
             ffichecks.argerror(1, "Must have at least two points")
