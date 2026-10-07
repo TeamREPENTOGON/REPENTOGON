@@ -18,6 +18,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMDefinition.h"
 #include "CustomCallbacks.h"
+#include "../Patches/LoadingScreen.h"
 #include "../Utils/Entity/EntityUtils.h"
 
 //Callback tracking for optimizations
@@ -3854,6 +3855,7 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	super();
+	LoadingScreen::SetStatus("Finalizing...");
 	const int callbackid = 1210;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3870,7 +3872,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 // PRE_RENDER
 HOOK_METHOD(Manager, Render, () -> void) {
 	const int callbackid = 1135;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid - 1000) && !LoadingScreen::IsActive()) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 

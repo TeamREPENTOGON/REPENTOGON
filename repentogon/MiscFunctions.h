@@ -10,6 +10,7 @@
 #include <sstream>
 #include <optional>
 #include "document.h" // rapidjson
+#include "Patches/LoadingScreen.h"
 #include <type_traits>
 #include <array>
 #include <string_view>
@@ -95,8 +96,6 @@ namespace REPENTOGON {
 		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (+ REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
 		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
 			SetWindowTextA((HWND)window->HWND, stocktitle);
-			MSG msg;
-			PeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE);
 		}
 	}
 
@@ -243,6 +242,7 @@ namespace REPENTOGON {
 		char newText[128];
 		sprintf(newText, " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
 		ChangeWindowTitle(newText);
+		LoadingScreen::SetStatus(text);
 	}
 
 	static std::string GetRGONGfxAbsolutePath(const char* relpath) {

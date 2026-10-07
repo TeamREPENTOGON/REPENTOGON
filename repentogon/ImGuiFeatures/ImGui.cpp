@@ -24,6 +24,7 @@
 #include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
+#include "../Patches/LoadingScreen.h"
 #include "../REPENTOGONOptions.h"
 #include "MultiViewportEnhanced.h"
 #include "RepentogonImGuiHook.h"
@@ -552,6 +553,10 @@ void LoadImGuiFont() {
 void ImGuiDrawMultiViewports();
 std::optional<HDC> drawImGuiAt = std::nullopt;
 void __stdcall RunImGui(HDC hdc) {
+	if (LoadingScreen::IsActive()) {
+		return;
+	}
+
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
