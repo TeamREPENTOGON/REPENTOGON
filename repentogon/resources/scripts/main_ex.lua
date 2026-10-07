@@ -19,16 +19,6 @@ require("compat53.init")
 -- compat53 overrides ipairs with one that's Lua 5.3 compliant, which is all well and good,
 -- except it does pointer arithmetic on cdata! Not Good!
 -- For cdata, use LuaJIT's built in implementation.
-local function NoIterate() end
-local function EmptyIpairs(object)
-	return NoIterate, object, 0
-end
-for _, mt in ipairs(metatypes) do
-	if rawget(mt, "__ipairs") == nil then
-		rawset(mt, "__ipairs", EmptyIpairs)
-	end
-end
-
 do
 	local compatIpairs = ipairs
 	local rawgetmetatable = getmetatable

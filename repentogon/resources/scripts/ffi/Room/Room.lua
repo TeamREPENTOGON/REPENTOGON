@@ -1,5 +1,6 @@
 ffi.cdef [[
     struct EntityList {
+        private struct EntityList_EL UpdateEL : 0x40;
         int RenderMode : 0xa4;
         int EnemyCount : 0xa8;
         int EnemyCount2 : 0xac;
@@ -149,7 +150,6 @@ ffi.cdef [[
 ]]
 
 local cfuncs = {
-    GetEntities = __Lua_Room_GetEntities,
     MamaMegaExplosion = __Lua_Room_MamaMegaExplosion,
     PickupGridEntity = __Lua_Room_PickupGridEntity,
 }
@@ -329,7 +329,7 @@ RoomMT = {
         return ffi.getprivate(self, "EntityList").EnemyDamageInflicted
     end,
     GetEntities = function(self)
-        return cfuncs.GetEntities(self)
+        return ffi.getprivate(ffi.getprivate(self, "EntityList"), "UpdateEL")
     end,
     GetFloorColor = function(self)
         return ffi.new("struct Color", ffi.getprivate(self, "FloorColor"))
@@ -903,6 +903,5 @@ Room = setmetatable({}, {
     __class = RoomMT,
 })
 
-__Lua_Room_GetEntities = nil
 __Lua_Room_MamaMegaExplosion = nil
 __Lua_Room_PickupGridEntity = nil

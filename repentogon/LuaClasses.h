@@ -735,24 +735,6 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_REF_PTR;
     };
 
-    struct LuaEntityPtr
-    {
-        static constexpr const char* Name = "EntityPtr";
-        using Type = EntityPtr;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PTR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PTR;
-        // Needs custom value vftable
-    };
-
-    struct LuaEntityList
-    {
-        static constexpr const char* Name = "EntityList";
-        using Type = EntityList_EL;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_LIST;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_LIST;
-        // Needs custom value vftable
-    };
-
     struct LuaPathfinder
     {
         static constexpr const char* Name = "Pathfinder";
@@ -1228,8 +1210,6 @@ using LuaEntityProjectile = CDataType<LuaTraits::LuaEntityProjectile>;
 using LuaEntityNPC = CDataType<LuaTraits::LuaEntityNPC>;
 using LuaEntityEffect = CDataType<LuaTraits::LuaEntityEffect>;
 using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;
-using LuaEntityPtr = LuabridgeType<LuaTraits::LuaEntityPtr>;
-using LuaEntityList = LuabridgeType<LuaTraits::LuaEntityList>;
 using LuaPathfinder = CDataType<LuaTraits::LuaPathfinder>;
 using LuaTearParams = CDataType<LuaTraits::LuaTearParams>;
 using LuaProjectileParams = CDataType<LuaTraits::LuaProjectileParams>;

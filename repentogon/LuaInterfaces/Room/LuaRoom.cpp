@@ -394,14 +394,6 @@ extern "C" {
 	}
 }
 
-LUA_FUNCTION(Lua_RoomGetEntities) {
-	Room* room = LuaRoom::Get(L, 1);
-
-	LuaEntityList::PushPtr(L, &room->_entityList._updateEL);
-
-	return 1;
-}
-
 LUA_FUNCTION(Lua_RoomMamaMegaExplosion) {
 	Room* room = LuaRoom::Get(L, 1);
 	Vector position = Vector(0, 0);
@@ -429,7 +421,6 @@ LUA_FUNCTION(Lua_RoomPickupGridEntity)
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
-	lua_register(_state, "__Lua_Room_GetEntities", Lua_RoomGetEntities);
 	lua_register(_state, "__Lua_Room_MamaMegaExplosion", Lua_RoomMamaMegaExplosion);
 	lua_register(_state, "__Lua_Room_PickupGridEntity", Lua_RoomPickupGridEntity);
 

@@ -280,6 +280,7 @@ loadmodule("Room.RoomConfigStage")
 loadmodule("Room.RoomConfig")
 loadmodule("Room.RoomDescriptor")
 loadmodule("Room.RoomTransition")
+loadmodule("EntityList")
 loadmodule("Room.Room")
 loadmodule("Input")
 loadmodule("SFXManager")
@@ -380,6 +381,7 @@ loadmodule("Entity.EntityDelirium")
 loadmodule("Isaac")
 loadmodule("Options")
 loadmodule("Entity.EntityPlayer")
+loadmodule("EntityPtr")
 
 lffi.metatype = ffi_metatype
 
@@ -460,6 +462,16 @@ end
 for _, mt in ipairs(metatypes) do
 	InstallPropertyTable(mt, false)
 	InstallPropertyTable(mt, true)
+end
+
+local function NoIterate() end
+local function EmptyIpairs(object)
+	return NoIterate, object, 0
+end
+for _, mt in ipairs(metatypes) do
+	if rawget(mt, "__ipairs") == nil then
+		rawset(mt, "__ipairs", EmptyIpairs)
+	end
 end
 
 __Lua_Entity_EntityAddress = nil
