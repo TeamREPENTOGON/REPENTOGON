@@ -177,22 +177,21 @@ lffi.metatype = function(ct, mt)
 	return ffi_metatype(ct, mt)
 end
 
-local entityBridges = {
-	EntityAddress = __Lua_Entity_EntityAddress,
-	PushClass = __Lua_Entity_PushClass,
-	PushResults = __Lua_Entity_PushResults,
-}
+lffi.cdef [[
+	unsigned int L_Entity_GetResultsCount();
+	struct Entity* L_Entity_GetResult(unsigned int);
+]]
+
 local voidptr = lffi.typeof("void*")
-local uintptr = lffi.typeof("uintptr_t")
 
 ffichecks.entitytopointer = function(entity)
 	if entity == nil then
 		return nil
 	end
-	if pcall(lffi.typeof, entity) then
-		return lffi.cast(voidptr, entity)
+	if not pcall(lffi.typeof, entity) then
+		error(string.format("Entity expected, got %s", type(entity)), 3)
 	end
-	return lffi.cast(voidptr, entityBridges.EntityAddress(entity))
+	return lffi.cast(voidptr, entity)
 end
 ffichecks.playertopointer = function(player)
 	if player == nil then
@@ -201,12 +200,6 @@ ffichecks.playertopointer = function(player)
 	return lffi.cast(voidptr, player)
 end
 
-ffichecks.pointertoclass = function(pointer, entityType)
-	if pointer == nil then
-		return nil
-	end
-	return entityBridges.PushClass(tonumber(lffi.cast(uintptr, pointer)), entityType)
-end
 local playerPointerType
 ffichecks.pointertoplayer = function(pointer)
 	if pointer == nil then
@@ -215,7 +208,13 @@ ffichecks.pointertoplayer = function(pointer)
 	playerPointerType = playerPointerType or lffi.typeof("struct EntityPlayer*")
 	return lffi.cast(playerPointerType, pointer)
 end
-ffichecks.entityresults = entityBridges.PushResults
+ffichecks.entityresults = function()
+	local results = {}
+	for i = 0, repentogon.L_Entity_GetResultsCount() - 1 do
+		results[i + 1] = repentogon.L_Entity_GetResult(i)
+	end
+	return results
+end
 
 loadmodule("Vector")
 loadmodule("VectorList")
@@ -474,9 +473,6 @@ for _, mt in ipairs(metatypes) do
 	end
 end
 
-__Lua_Entity_EntityAddress = nil
-__Lua_Entity_PushClass = nil
-__Lua_Entity_PushResults = nil
 
 ffi = nil
 ffidll = nil

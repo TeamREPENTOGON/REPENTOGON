@@ -171,47 +171,6 @@ REPENTANCE_PLUS = true
 -- I allow Mod Profiler to live. For now.
 _ENV = _G
 
-------------------------------------------------------------
--- Compatibility wrappers begin here
-
-local META, META0
-local function BeginClass(T)
-	META = {}
-	if type(T) == "function" then
-		META0 = getmetatable(T())
-	else
-		META0 = getmetatable(T).__class
-	end
-end
-
-local function EndClass()
-	local oldIndex = META0.__index
-	local newMeta = META
-	
-	rawset(META0, "__index", function(self, k)
-		return newMeta[k] or oldIndex(self, k)
-	end)
-end
-
-local function tobitset128(n)
-	if type(n) == "number" then
-		return BitSet128(n, 0)
-	else
-		return n
-	end
-end
-
--- Isaac -----------------------------------------------
-
--- EntityPlayer Isaac.GetPlayer(int ID = 0)
--- table Isaac.QueryRadius(Vector Position, float Radius, int Partitions = 0xFFFFFFFF)
--- table Isaac.FindByType(EntityType Type, int Variant = -1, int SubType = -1, bool Cache = false, bool IgnoreFriendly = false)
--- int Isaac.CountEntities(Entity Spawner, EntityType Type = EntityType.ENTITY_NULL, int Variant = -1, int SubType = -1)
-
--- int Isaac.GetPlayerTypeByName(string Name, boolean IsBSkin = false)
-
----------------------------------------------------------
-
 Game_0 = nil
 
 if not _LUADEBUG then

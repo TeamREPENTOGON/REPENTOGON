@@ -26,23 +26,3 @@ MOD_EXPORT void L_HistoryHUD_GetItemRenderOffset(HistoryHUD* historyHUD, int pla
 	}
 	*out = offset;
 }
-
-LUA_FUNCTION(Lua_HistoryHUD_GetPlayer) {
-	HistoryHUD* historyHUD = LuaHistoryHUD::Get(L, 1);
-	int playerIdx = (int)luaL_checkinteger(L, 2);
-
-	const HistoryHUD_Player& historyPlayer = historyHUD->_playerHistoryHuds[playerIdx];
-	if (historyPlayer._player) {
-		LuaEntityPlayer::PushPtr(L, historyPlayer._player);
-	} else {
-		lua_pushnil(L);
-	}
-
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_HistoryHUD_GetPlayer", Lua_HistoryHUD_GetPlayer);
-
-	super();
-}

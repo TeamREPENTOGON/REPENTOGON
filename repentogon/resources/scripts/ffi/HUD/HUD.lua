@@ -25,18 +25,15 @@ ffi.cdef [[
     void L_HUD_Render(struct HUD*);
     void L_HUD_ShowFortuneText(struct HUD*, const char**, int);
     void L_HUD_ShowStackedItemText(struct HUD*, const char*, const char*, bool, bool);
+    void L_HUD_FlashChargeBar(struct HUD*, struct EntityPlayer*, int);
+    void L_HUD_FlashRedHearts(struct HUD*, struct EntityPlayer*);
+    void L_HUD_InvalidateActiveItem(struct HUD*, struct EntityPlayer*, int);
+    void L_HUD_InvalidateCraftingItem(struct HUD*, struct EntityPlayer*);
+    void L_HUD_ShowItemTextPlayer(struct HUD*, struct EntityPlayer*, struct ItemConfigItem*, bool);
 ]]
 
 local repentogon = ffidll
 local ffi = ffi
-
-local cfuncs = {
-    FlashChargeBar = __Lua_HUD_FlashChargeBar,
-    FlashRedHearts = __Lua_HUD_FlashRedHearts,
-    InvalidateActiveItem = __Lua_HUD_InvalidateActiveItem,
-    InvalidateCraftingItem = __Lua_HUD_InvalidateCraftingItem,
-    ShowItemTextPlayer = __Lua_HUD_ShowItemTextPlayer,
-}
 
 local MAX_FORTUNE_LINES = 32
 
@@ -66,10 +63,14 @@ HUDMT = {
         repentogon.L_HUD_AssignPlayerHUDs(self)
     end,
     FlashChargeBar = function(self, player, slot)
-        cfuncs.FlashChargeBar(self, player, slot or 0)
+        ffichecks.checkcdata(1, player, "EntityPlayer", true)
+        slot = slot or 0
+        ffichecks.checkinteger(2, slot)
+        repentogon.L_HUD_FlashChargeBar(self, player, slot)
     end,
     FlashRedHearts = function(self, player)
-        cfuncs.FlashRedHearts(self, player)
+        ffichecks.checkcdata(1, player, "EntityPlayer")
+        repentogon.L_HUD_FlashRedHearts(self, player)
     end,
     GetBossHPBarFill = function(self)
         return ffi.getprivate(self, "BossHPBarFill")
@@ -124,10 +125,14 @@ HUDMT = {
         return ffi.getprivate(ffi.getprivate(self, "MessageMain"), "Sprite")
     end,
     InvalidateActiveItem = function(self, player, slot)
-        cfuncs.InvalidateActiveItem(self, player, slot or 0)
+        ffichecks.checkcdata(1, player, "EntityPlayer", true)
+        slot = slot or 0
+        ffichecks.checkinteger(2, slot)
+        repentogon.L_HUD_InvalidateActiveItem(self, player, slot)
     end,
     InvalidateCraftingItem = function(self, player)
-        cfuncs.InvalidateCraftingItem(self, player)
+        ffichecks.checkcdata(1, player, "EntityPlayer", true)
+        repentogon.L_HUD_InvalidateCraftingItem(self, player)
     end,
     IsVisible = function(self)
         return ffi.getprivate(self, "Visible")
@@ -163,7 +168,9 @@ HUDMT = {
             repentogon.L_HUD_ShowStackedItemText(self, OptString(first), OptString(second),
                 ffichecks.optboolean(third, false), ffichecks.optboolean(fourth, true))
         else
-            cfuncs.ShowItemTextPlayer(self, first, second, ffichecks.optboolean(third, true))
+            ffichecks.checkcdata(1, first, "EntityPlayer")
+            ffichecks.checkcdata(2, second, "ItemConfigItem")
+            repentogon.L_HUD_ShowItemTextPlayer(self, first, second, ffichecks.optboolean(third, true))
         end
     end,
     Update = function(self)
@@ -181,9 +188,3 @@ ffi.metatype("struct HUD", HUDMT)
 HUD = setmetatable({}, {
     __class = HUDMT,
 })
-
-__Lua_HUD_FlashChargeBar = nil
-__Lua_HUD_FlashRedHearts = nil
-__Lua_HUD_InvalidateActiveItem = nil
-__Lua_HUD_InvalidateCraftingItem = nil
-__Lua_HUD_ShowItemTextPlayer = nil

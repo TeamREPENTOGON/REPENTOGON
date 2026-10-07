@@ -12,13 +12,11 @@ ffi.cdef[[
     
     void L_GridEntityLock_Render(struct GridEntityLock*, struct Vector);
     void L_GridEntityLock_Update(struct GridEntityLock*);
+    void L_GridEntityLock_TryUnlock(struct GridEntityLock*, struct EntityPlayer*, bool);
 ]]
 local ffi = ffi
 local repentogon = ffidll
 
-local cfuncs = {
-    TryUnlock = __Lua_GridEntityLock_TryUnlock
-}
 
 local GridEntityLockMT
 GridEntityLockMT = {
@@ -31,7 +29,8 @@ GridEntityLockMT = {
         repentogon.L_GridEntityLock_Update(self)
     end,
     TryUnlock = function(self, player, force)
-        return cfuncs.TryUnlock(self, player, force)
+        ffichecks.checkcdata(1, player, "EntityPlayer")
+        repentogon.L_GridEntityLock_TryUnlock(self, player, ffichecks.checkboolean(2, force))
     end,
 }
 
@@ -52,4 +51,3 @@ end
 local GridEntityLockT = ffi.metatype("struct GridEntityLock", GridEntityLockMT)
 GridEntityLock = setmetatable({}, {__class = GridEntityLockMT})
 
-__Lua_GridEntityLock_TryUnlock = nil

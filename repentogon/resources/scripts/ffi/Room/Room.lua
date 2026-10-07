@@ -147,12 +147,9 @@ ffi.cdef [[
 
     unsigned int L_Room_TMP_GetSpawnGridEntitySeed(int);
     int L_Room_TMP_GetNumItemPools();
+    void L_Room_MamaMegaExplosion(struct Room*, struct Vector*, struct EntityPlayer*);
+    struct EntityEffect* L_Room_PickupGridEntity(struct Room*, int);
 ]]
-
-local cfuncs = {
-    MamaMegaExplosion = __Lua_Room_MamaMegaExplosion,
-    PickupGridEntity = __Lua_Room_PickupGridEntity,
-}
 
 local ffi = ffi
 local repentogon = ffidll
@@ -624,10 +621,15 @@ RoomMT = {
         ffi.setprivate(self, "RoomClearDelay", 10)
     end,
     MamaMegaExplosion = function(self, pos, player)
-        cfuncs.MamaMegaExplosion(self, pos, player)
+        if not ffichecks.iscdata(pos, "Vector") then
+            pos = Vector(0, 0)
+        end
+        ffichecks.checkcdata(2, player, "EntityPlayer", true)
+        repentogon.L_Room_MamaMegaExplosion(self, pos, player)
     end,
     PickupGridEntity = function(self, index)
-        return cfuncs.PickupGridEntity(self, index)
+        ffichecks.checkinteger(1, index)
+        return repentogon.L_Room_PickupGridEntity(self, index)
     end,
     PlayMusic = function(self)
         repentogon.L_Room_PlayMusic(self)
@@ -903,5 +905,3 @@ Room = setmetatable({}, {
     __class = RoomMT,
 })
 
-__Lua_Room_MamaMegaExplosion = nil
-__Lua_Room_PickupGridEntity = nil

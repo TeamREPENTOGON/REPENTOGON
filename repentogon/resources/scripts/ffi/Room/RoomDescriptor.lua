@@ -36,6 +36,10 @@ ffi.cdef [[
 
     void L_RoomDescriptor_AddRestrictedGridIndex(struct RoomDescriptor*, int);
     int L_RoomDescriptor_GetErrorTrinketEffect(struct RoomDescriptor*);
+    struct EntitiesSaveStateVector* L_RoomDescriptor_GetDecoSaveState(struct RoomDescriptor*);
+    struct EntitiesSaveStateVector* L_RoomDescriptor_GetEntitiesSaveState(struct RoomDescriptor*);
+    struct GridEntitiesSaveStateVector* L_RoomDescriptor_GetGridEntitiesSaveState(struct RoomDescriptor*);
+    void L_RoomDescriptor_InitSeeds(struct RoomDescriptor*, struct RNG*);
     int L_RoomDescriptor_GetNeighboringRooms(struct RoomDescriptor*, int*, struct RoomDescriptor**);
     int L_RoomDescriptor_GetRestrictedGridIndexesCount(struct RoomDescriptor*);
     int L_RoomDescriptor_GetRestrictedGridIndexes(struct RoomDescriptor*, int*, int);
@@ -45,13 +49,6 @@ ffi.cdef [[
 
 local ffi = ffi
 local repentogon = ffidll
-
-local cfuncs = {
-    GetDecoSaveState = __Lua_RoomDescriptor_GetDecoSaveState,
-    GetEntitiesSaveState = __Lua_RoomDescriptor_GetEntitiesSaveState,
-    GetGridEntitiesSaveState = __Lua_RoomDescriptor_GetGridEntitiesSaveState,
-    InitSeeds = __Lua_RoomDescriptor_InitSeeds,
-}
 
 local RoomDescriptorListMT; RoomDescriptorListMT = { __type = "RoomDescriptorList" }
 
@@ -85,19 +82,19 @@ RoomDescriptorMT = {
         repentogon.L_RoomDescriptor_AddRestrictedGridIndex(self, gridIndex)
     end,
     GetDecoSaveState = function(self)
-        return cfuncs.GetDecoSaveState(self)
+        return repentogon.L_RoomDescriptor_GetDecoSaveState(self)
     end,
     GetDimension = function(self)
         return ffi.getprivate(self, "Dimension")
     end,
     GetEntitiesSaveState = function(self)
-        return cfuncs.GetEntitiesSaveState(self)
+        return repentogon.L_RoomDescriptor_GetEntitiesSaveState(self)
     end,
     GetErrorTrinketEffect = function(self)
         return repentogon.L_RoomDescriptor_GetErrorTrinketEffect(self)
     end,
     GetGridEntitiesSaveState = function(self)
-        return cfuncs.GetGridEntitiesSaveState(self)
+        return repentogon.L_RoomDescriptor_GetGridEntitiesSaveState(self)
     end,
     GetGroup = function(self)
         return ffi.getprivate(self, "Group")
@@ -160,7 +157,8 @@ RoomDescriptorMT = {
         return result
     end,
     InitSeeds = function(self, rng)
-        cfuncs.InitSeeds(self, rng)
+        ffichecks.checkcdata(1, rng, "RNG")
+        repentogon.L_RoomDescriptor_InitSeeds(self, rng)
     end,
     SetGroup = function(self, group)
         ffichecks.checkinteger(1, group)
@@ -227,8 +225,3 @@ RoomDescriptor = setmetatable({
 }, {
     __class = RoomDescriptorMT,
 })
-
-__Lua_RoomDescriptor_GetDecoSaveState = nil
-__Lua_RoomDescriptor_GetEntitiesSaveState = nil
-__Lua_RoomDescriptor_GetGridEntitiesSaveState = nil
-__Lua_RoomDescriptor_InitSeeds = nil

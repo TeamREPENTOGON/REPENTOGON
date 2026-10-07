@@ -221,20 +221,6 @@ MOD_EXPORT Entity_Player* L_PlayerManager_GetRandomTrinketOwner(int trinket, uns
 	return player;
 }
 
-LUA_FUNCTION(Lua_PlayerManager_PushPlayer) {
-	LuaEntityPlayer::PushPtr(L, (Entity_Player*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_PlayerManager_RemoveCoPlayer) {
-	auto* player = lua::GetLuabridgeUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "Entity_Player");
+MOD_EXPORT void L_PlayerManager_RemoveCoPlayer(Entity_Player* player) {
 	g_Game->GetPlayerManager()->RemoveCoPlayer(player, false);
-	return 0;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_PlayerManager_PushPlayer", Lua_PlayerManager_PushPlayer);
-	lua_register(_state, "__Lua_PlayerManager_RemoveCoPlayer", Lua_PlayerManager_RemoveCoPlayer);
-
-	super();
 }

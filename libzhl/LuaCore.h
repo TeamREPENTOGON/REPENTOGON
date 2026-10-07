@@ -9,76 +9,17 @@
 struct lua_State;
 
 namespace lua {
-    enum class Metatables {
-        BEGIN_NORMAL,
-        ENTITY_TEAR,
-        ACTIVE_ITEM_DESC,
-        ENTITY,
-        ENTITY_BOMB,
-        ENTITY_KNIFE,
-        ENTITY_EFFECT,
-        ENTITY_PLAYER,
-        ENTITY_PICKUP,
-        ENTITY_LIST,
-        ENTITY_NPC,
-        ENTITY_PROJECTILE,
-        ENTITY_FAMILIAR,
-        INT_VALUES,
-        ENTITY_PTR,
-        PATHFINDER,
-        ENTITY_LASER,
-        BEGIN_CONST,
-        CONST_ENTITY_TEAR,
-        CONST_ACTIVE_ITEM_DESC,
-        CONST_ENTITY,
-        CONST_ENTITY_BOMB,
-        CONST_ENTITY_KNIFE,
-        CONST_ENTITY_EFFECT,
-        CONST_ENTITY_PLAYER,
-        CONST_ENTITY_PICKUP,
-        CONST_ENTITY_LIST,
-        CONST_ENTITY_NPC,
-        CONST_ENTITY_PROJECTILE,
-        CONST_ENTITY_FAMILIAR,
-        CONST_INT_VALUES,
-        CONST_ENTITY_PTR,
-        CONST_PATHFINDER,
-        CONST_ENTITY_LASER,
-
-        METATABLES_MAX
-    };
-
     namespace GlobalClasses
     {
       extern LIBZHL_API const char* Isaac;
     }
 
-    namespace metatables
-    {
-        extern LIBZHL_API const char* DeliriumMetatable;
-    }
-
-    LIBZHL_API void UnloadMetatables();
-    LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
-    LIBZHL_API void PushMetatable(lua_State* L, Metatables metatable);
-    LIBZHL_API void* GetMetatableKey(Metatables metatable);
-    LIBZHL_API Metatables GetMetatableIdxFromName(std::string const& name);
-
-    LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
-    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
-    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name);
-
     LIBZHL_API void* TestCData(lua_State* L, int ud, lua_CTypeId ctypeid);
+    LIBZHL_API void* TestEntity(lua_State* L, int ud);
     LIBZHL_API void* CheckCData(lua_State* L, int ud, lua_CTypeId ctypeid, std::string const& name);
-
-    LIBZHL_API void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func);
-    LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
 
     LIBZHL_API void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func);
 
-    LIBZHL_API void RegisterVariable(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterVariableGetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterVariableSetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
     LIBZHL_API void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
     LIBZHL_API void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
     LIBZHL_API void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
@@ -88,45 +29,6 @@ namespace lua {
 
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	
-    /* GetUserdata rationale.
-     * 
-     * CheckUserdata will return a class derived from Userdata.
-     * The layout will be as follows (LSB to the left):
-     * +-------------+------+
-     * | vtable addr | data |
-     * +-------------+------+
-     * 0             4      N
-     *
-     * p points to byte 0 in the structure, p + 0x4 points to the content
-     * of the Userdata object underneath.
-     *
-     * The function returns data interpreted as type T.
-     */
-
-    template<typename T>
-    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
-        void* p = CheckUserdata(L, idx, mt, name);
-        return *(T*)((char*)p + 0x4);
-    }
-
-    // Use this version if you need your userdata to be either the const or non const version
-    // of something. Most of the time you won't need it.
-    template<typename T>
-    T GetLuabridgeUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
-        void* p = CheckUserdata(L, idx, mt, constMt, name);
-        return *(T*)((char*)p + 0x4);
-    }
-
-    template<typename T>
-    std::optional<T> TestUserdata(lua_State* L, int idx, lua::Metatables mt) {
-        void* p = TestUserdata(L, idx, mt);
-        if (p) {
-            return std::make_optional(*(T*)((char*)p + 0x4));
-        }
-
-        return std::nullopt;
-    }
-
     template<typename T>
     T GetRawUserdata(lua_State* L, int idx, const char* mt) {
         void* ud = luaL_checkudata(L, idx, mt);
@@ -190,7 +92,6 @@ namespace lua {
         LuaCaller& pushluaref(int t, int ref);
         LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
-        LuaCaller& push(void* ptr, Metatables meta) = delete;
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
         template<typename T>
         std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) = delete;
@@ -280,99 +181,6 @@ namespace lua {
         int _resultCode;
     };
 
-
-    template<typename T>
-    T UserdataToData(void* ud) {
-        return *(T*)((char*)ud + 4);
-    }
-	
-    /**
-     * The structure of Userdata, UserdataValue and UserdataPtr is taken directly
-     * from the source code of LuaBridge.
-     * 
-     * Warning: Userdata does have a virtual constructor in luabridge. It is
-     * a nop in Userdata and UserdataPtr, but in the case of UserdataValue it
-     * calls the destructor of the stored pointer (if any). This behavior is
-     * not reproduced here. However, the presence of a virtual destructor
-     * creates a vtable, adding 4 bytes of data at the start of the structure.
-     */
-    namespace luabridge {
-        extern LIBZHL_API void* identityKey;
-        extern LIBZHL_API lua_CFunction indexMetaMethod;
-        extern LIBZHL_API lua_CFunction newIndexMetaMethod;
-
-        inline void* getIdentityKey() {
-            return identityKey;
-        }
-
-        class LIBZHL_API Userdata {
-        protected:
-            void* m_p = nullptr;
-
-        public:
-            virtual ~Userdata() { }
-
-            inline void* getPointer() {
-                return m_p;
-            }
-        };
-
-        template<typename T>
-        class UserdataValue : public Userdata {
-        private:
-            UserdataValue<T>(UserdataValue<T> const&);
-            UserdataValue<T>& operator=(UserdataValue<T> const&);
-
-            char m_storage[sizeof(T)];
-
-            UserdataValue() {
-                m_p = getObject();
-            }
-
-            inline T* getObject() {
-                return reinterpret_cast<T*>(m_storage);
-            }
-
-        public:
-            static T* place(lua_State* L, void* key) {
-                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
-                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-                lua_setmetatable(L, -2);
-                return (T*)ud->getPointer();
-            }
-            
-            // this is not a function from the original LuaBridge source
-            static T* place_with_vftable(lua_State* L, void* key, void* vtable)
-            {
-                UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
-                auto** vptr = reinterpret_cast<void**>(ud);
-                *vptr = vtable;
-
-                lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-                lua_setmetatable(L, -2);
-                return (T*)ud->getPointer();
-            }
-
-            template<typename U>
-            static void push(lua_State* L, void* key, U const& u) {
-                new (place(L, key))  U(u);
-            }
-        };
-
-        class LIBZHL_API UserdataPtr : public Userdata {
-        private:
-            UserdataPtr(UserdataPtr const&);
-            UserdataPtr& operator= (UserdataPtr const&);
-
-            explicit UserdataPtr(void* const p);
-
-        public:
-            static void push(lua_State* L, void* const p, void const* const key);
-            static void push(lua_State* L, void* const p, const char* meta);
-            static void push(lua_State* L, void* const p, lua::Metatables mt);
-            static const void* GetVTable();
-        };
-    }
 
     enum BoolCheckModes : uint8_t {
         BOOL_CHECK_MODE_DEFAULT,

@@ -394,35 +394,12 @@ extern "C" {
 	}
 }
 
-LUA_FUNCTION(Lua_RoomMamaMegaExplosion) {
-	Room* room = LuaRoom::Get(L, 1);
-	Vector position = Vector(0, 0);
-	if (LuaVector::IsUnderlyingType(L, 2)) {
-		position = *LuaVector::Get(L, 2);
-	}
-	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 3);
-
+MOD_EXPORT void L_Room_MamaMegaExplosion(Room* room, Vector* pos, Entity_Player* player) {
+	Vector position = *pos;
 	// function handles nullptr player
 	room->MamaMegaExplosion(&position, player);
-
-	return 0;
 }
 
-LUA_FUNCTION(Lua_RoomPickupGridEntity)
-{
-	Room* room = LuaRoom::Get(L, 1);
-	int gridIndex = (int)luaL_checkinteger(L, 2);
-	Entity_Effect* ent = room->PickupGridEntity(gridIndex);
-
-	LuaEntityEffect::PushPtr(L, ent);
-
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-
-	lua_register(_state, "__Lua_Room_MamaMegaExplosion", Lua_RoomMamaMegaExplosion);
-	lua_register(_state, "__Lua_Room_PickupGridEntity", Lua_RoomPickupGridEntity);
-
-	super();
+MOD_EXPORT Entity_Effect* L_Room_PickupGridEntity(Room* room, int gridIndex) {
+	return room->PickupGridEntity(gridIndex);
 }

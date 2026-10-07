@@ -4,7 +4,7 @@ ffi.cdef [[
     } : 0x28;
 
     struct HistoryHUDPlayer {
-        private void* Player : 0x0;
+        private struct EntityPlayer* Player : 0x0;
         private struct HistoryHUDItemData* ItemsFirst : 0x8;
         private struct HistoryHUDItemData* ItemsLast : 0xc;
     } : 0x14;
@@ -28,10 +28,6 @@ ffi.cdef [[
 
 local repentogon = ffidll
 local ffi = ffi
-
-local cfuncs = {
-    GetPlayer = __Lua_HistoryHUD_GetPlayer,
-}
 
 local TRINKET_ID_MASK = 0x7fff
 
@@ -155,7 +151,7 @@ HistoryHUDMT = {
     end,
     GetPlayer = function(self, playerIdx)
         CheckPlayerIndex(playerIdx, 3)
-        return cfuncs.GetPlayer(self, playerIdx)
+        return ffi.getprivate(ffi.getprivate(self, "Players")[playerIdx], "Player")
     end,
     GetPosition = function(self)
         local position = Vector(0, 0)
@@ -179,4 +175,3 @@ HistoryHUD = setmetatable({}, {
     __class = HistoryHUDMT,
 })
 
-__Lua_HistoryHUD_GetPlayer = nil

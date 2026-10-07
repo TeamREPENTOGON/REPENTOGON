@@ -59,28 +59,10 @@ extern "C" {
 	}
 }
 
-LUA_FUNCTION(Lua_GridEntityDoorTryBlowOpen) {
-	GridEntity_Door* door = LuaGridEntityDoor::Get(L, 1);
-	bool fromExplosion = lua::luaL_checkboolean(L, 2);
-	Entity* source = LuaEntity::GetOpt(L, 3);
-
-	lua_pushboolean(L, door->TryBlowOpen(fromExplosion, source));
-	return 1;
+MOD_EXPORT bool L_GridEntityDoor_TryBlowOpen(GridEntity_Door* door, bool fromExplosion, Entity* source) {
+	return door->TryBlowOpen(fromExplosion, source);
 }
 
-LUA_FUNCTION(Lua_GridEntityDoorTryUnlock) {
-	GridEntity_Door* door = LuaGridEntityDoor::Get(L, 1);
-	Entity_Player* player = LuaEntityPlayer::Get(L, 2);
-	bool force = lua::luaL_checkboolean(L, 3);
-
-	lua_pushboolean(L, door->TryUnlock(player, force));
-	return 1;
-}
-
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_GridEntityDoor_TryBlowOpen", Lua_GridEntityDoorTryBlowOpen);
-	lua_register(_state, "__Lua_GridEntityDoor_TryUnlock", Lua_GridEntityDoorTryUnlock);
-
-	super();
+MOD_EXPORT bool L_GridEntityDoor_TryUnlock(GridEntity_Door* door, Entity_Player* player, bool force) {
+	return door->TryUnlock(player, force);
 }

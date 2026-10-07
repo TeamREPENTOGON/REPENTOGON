@@ -22,6 +22,7 @@ ffi.cdef [[
     } : 0xc;
 
     bool L_ItemPool_IsPoolValid(int);
+    int L_ItemPool_GetPillEffect(struct ItemPool*, unsigned int, struct EntityPlayer*);
     int L_ItemPool_GetNumItemPools();
     bool L_ItemPool_GetCollectible(struct ItemPool*, int, bool, uint32_t, int, uint32_t, int*);
     int L_ItemPool_GetTrinket(struct ItemPool*, bool);
@@ -59,10 +60,6 @@ ffi.cdef [[
 
 local ffi = ffi
 local repentogon = ffidll
-
-local cfuncs = {
-    GetPillEffect = __Lua_ItemPool_GetPillEffect,
-}
 
 local ITEM_SIZE = ffi.sizeof("struct ItemPoolItem")
 local intOut = ffi.new("int[1]")
@@ -362,7 +359,11 @@ ItemPoolMT = {
         ffichecks.checkinteger(1, pillEffect)
         return repentogon.L_ItemPool_GetPillColor(self, pillEffect)
     end,
-    GetPillEffect = cfuncs.GetPillEffect,
+    GetPillEffect = function(self, pillColor, player)
+        ffichecks.checkinteger(1, pillColor)
+        ffichecks.checkcdata(2, player, "EntityPlayer", true)
+        return repentogon.L_ItemPool_GetPillEffect(self, pillColor, player)
+    end,
     GetPoolForRoom = function(self, roomType, seed)
         ffichecks.checkinteger(1, roomType)
         ffichecks.checkinteger(2, seed)
@@ -483,4 +484,4 @@ ffi.metatype("struct ItemPool", ItemPoolMT)
 
 ItemPool = setmetatable({}, {__class = ItemPoolMT})
 
-__Lua_ItemPool_GetPillEffect = nil
+

@@ -4,17 +4,15 @@ ffi.cdef[[
         int OverlayID : 0x4;
         struct Sprite Sprite : 0x8;
         int Delay : 0x1144;
+        private struct EntityPlayer* Player : 0x1148;
         struct Sprite MegaMushPlayerSprite : 0x114c;
 	} : 0x1260;
 
     struct ItemOverlay* L_ItemOverlay_Get();
+    void L_ItemOverlay_Show(int, int, struct EntityPlayer*);
 ]]
 
-local cfuncs = {
-    GetPlayer = __Lua_ItemOverlay_GetPlayer,
-    Show = __Lua_ItemOverlay_Show,
-}
-
+local ffi = ffi
 local repentogon = ffidll
 
 local ItemOverlayMT
@@ -42,15 +40,16 @@ ItemOverlay = {
         return GetItemOverlay().OverlayID
     end,
     GetPlayer = function()
-        return cfuncs.GetPlayer()
+        return ffi.getprivate(GetItemOverlay(), "Player")
     end,
     GetSprite = function()
         return GetItemOverlay().Sprite
     end,
     Show = function(giantbookID, delay, player)
-        cfuncs.Show(giantbookID, delay, player)
+        ffichecks.checkinteger(1, giantbookID)
+        delay = delay or 0
+        ffichecks.checkinteger(2, delay)
+        ffichecks.checkcdata(3, player, "EntityPlayer", true)
+        repentogon.L_ItemOverlay_Show(giantbookID, delay, player)
     end,
 }
-
-__Lua_ItemOverlay_GetPlayer = nil
-__Lua_ItemOverlay_Show = nil

@@ -344,17 +344,6 @@ MOD_EXPORT int L_ItemPool_GetPoolForRoom(ItemPool* itemPool, unsigned int roomTy
 	return itemPool->GetPoolForRoom(roomType, seed);
 }
 
-LUA_FUNCTION(Lua_ItemPool_GetPillEffect) {
-	ItemPool* itemPool = LuaItemPool::Get(L, 1);
-	unsigned int pillColor = (unsigned int)luaL_checkinteger(L, 2);
-	Entity_Player* player = LuaEntityPlayer::GetOpt(L, 3);
-
-	lua_pushinteger(L, itemPool->GetPillEffect(pillColor, player));
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_ItemPool_GetPillEffect", Lua_ItemPool_GetPillEffect);
-
-	super();
+MOD_EXPORT int L_ItemPool_GetPillEffect(ItemPool* itemPool, unsigned int pillColor, Entity_Player* player) {
+	return itemPool->GetPillEffect(pillColor, player);
 }

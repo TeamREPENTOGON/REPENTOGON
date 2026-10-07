@@ -17,6 +17,7 @@ ffi.cdef [[
     unsigned int L_GridEntity_GetWaterClipFlags(struct GridEntity*);
     bool L_GridEntity_Hurt(struct GridEntity*, int, struct EntityRef*);
     void L_GridEntity_HurtSurroundings(struct GridEntity*, float, float, float, int, uint64_t, bool);
+    void L_GridEntity_HurtDamage(struct GridEntity*, void*, int, uint64_t, float, bool);
     void L_GridEntity_Init(struct GridEntity*, unsigned int);
     void L_GridEntity_Render(struct GridEntity*, struct Vector);
     void L_GridEntity_ResetWaterClipFlags(struct GridEntity*);
@@ -27,10 +28,6 @@ local ffi = ffi
 local repentogon = ffidll
 
 ffi.reentrant(repentogon.L_GridEntity_Destroy)
-
-local cfuncs = {
-    HurtDamage = __Lua_GridEntity_HurtDamage
-}
 
 local GridEntityType = {
 	GRID_NULL = 0,
@@ -121,7 +118,13 @@ GridEntityMT = {
         return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, EntityRef())
     end,
     HurtDamage = function(self, ent, playerDamage, damageFlags, damage, ignoreGridCollision)
-        cfuncs.HurtDamage(ffi.cast("struct GridEntity*", self), ent, playerDamage, damageFlags, damage, ignoreGridCollision)
+        if ent == nil then
+            ffichecks.argerror(1, "Entity expected, got nil")
+        end
+        ffichecks.checkinteger(2, playerDamage)
+        ffichecks.checkinteger(3, damageFlags)
+        ffichecks.checknumber(4, damage)
+        repentogon.L_GridEntity_HurtDamage(ffi.cast("struct GridEntity*", self), ffichecks.entitytopointer(ent), playerDamage, damageFlags, damage, ffichecks.checkboolean(5, ignoreGridCollision))
     end,
     HurtSurroundings = function(self, enemyDistance, playerDistance, enemyDamage, playerDamage, damageFlags, ignoreGridCol)
         ffichecks.checknumber(1, enemyDistance)
@@ -333,5 +336,3 @@ end
 
 local GridEntityT = ffi.metatype("struct GridEntity", GridEntityMT)
 GridEntity = setmetatable({}, {__class = GridEntityMT})
-
-__Lua_GridEntity_HurtDamage = nil

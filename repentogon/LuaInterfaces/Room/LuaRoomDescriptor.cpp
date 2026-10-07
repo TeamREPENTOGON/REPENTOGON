@@ -62,37 +62,18 @@ extern "C" {
 	}
 };
 
-LUA_FUNCTION(Lua_RoomDescriptorGetDecoSaveState) {
-	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	LuaEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedEffects);
-	return 1;
+MOD_EXPORT void* L_RoomDescriptor_GetDecoSaveState(RoomDescriptor* descriptor) {
+	return &descriptor->SavedEffects;
 }
 
-LUA_FUNCTION(Lua_RoomDescriptorGetEntitiesSaveState) {
-	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	LuaEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedEntities);
-	return 1;
+MOD_EXPORT void* L_RoomDescriptor_GetEntitiesSaveState(RoomDescriptor* descriptor) {
+	return &descriptor->SavedEntities;
 }
 
-
-LUA_FUNCTION(Lua_RoomDescriptorGetGridEntitiesSaveState) {
-	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	LuaGridEntitiesSaveStateVector::PushPtr(L, &descriptor->SavedGridEntities);
-	return 1;
+MOD_EXPORT void* L_RoomDescriptor_GetGridEntitiesSaveState(RoomDescriptor* descriptor) {
+	return &descriptor->SavedGridEntities;
 }
 
-LUA_FUNCTION(Lua_RoomDescriptorInitSeeds) {
-	RoomDescriptor* descriptor = LuaRoomDescriptor::Get(L, 1);
-	RNG* rng = LuaRNG::Get(L, 2);
+MOD_EXPORT void L_RoomDescriptor_InitSeeds(RoomDescriptor* descriptor, RNG* rng) {
 	descriptor->InitSeeds(rng);
-	return 0;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-
-	lua_register(_state, "__Lua_RoomDescriptor_GetDecoSaveState", Lua_RoomDescriptorGetDecoSaveState);
-	lua_register(_state, "__Lua_RoomDescriptor_GetEntitiesSaveState", Lua_RoomDescriptorGetEntitiesSaveState);
-	lua_register(_state, "__Lua_RoomDescriptor_GetGridEntitiesSaveState", Lua_RoomDescriptorGetGridEntitiesSaveState);
-	lua_register(_state, "__Lua_RoomDescriptor_InitSeeds", Lua_RoomDescriptorInitSeeds);
-	super();
 }

@@ -156,9 +156,6 @@ static void RegisterMetatables(lua_State* L) {
 						lua_pop(L, 1);
 					}
 
-					if(lua::GetMetatableIdxFromName(type) != lua::Metatables::METATABLES_MAX) {
-						lua::RegisterMetatable(lua::GetMetatableIdxFromName(type), addr);
-					} 
 					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
 				}
 
@@ -170,15 +167,6 @@ static void RegisterMetatables(lua_State* L) {
 	}
 
 	logger.Log("Done dumping Lua registry\n");
-}
-
-void NukeConstMetatables(lua_State* L) {
-	int diff = (int)lua::Metatables::BEGIN_CONST + 1 - ((int)lua::Metatables::BEGIN_NORMAL + 1);
-	for (int i = (int)lua::Metatables::BEGIN_CONST + 1; i < (int)lua::Metatables::METATABLES_MAX; ++i) {
-		void* key = lua::GetMetatableKey((lua::Metatables)i);
-		lua::PushMetatable(L, (lua::Metatables)(i - diff));
-		lua_rawsetp(L, LUA_REGISTRYINDEX, key);
-	}
 }
 
 static void bind_lua_internals(lua_State* L, int tblIdx)
@@ -230,7 +218,6 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 // Goodbye.
 static void RegisterTrivialUserdata() {
 	luaJIT_setudnofin(__ptr_UserdataPtr_vftable);
-	luaJIT_setudnofin(lua::luabridge::UserdataPtr::GetVTable());
 }
 
 static size_t luaArenaSize = 0;
@@ -492,15 +479,6 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_getglobal(state, "_ClearEntityData");
 	LuaKeys::clearEntityData = luaL_ref(state, LUA_REGISTRYINDEX);
 
-	// Override entity:GetData
-	// TODO: When we jit Entity we can just call the _GetEntityData global directly
-	lua::PushMetatable(_state, lua::Metatables::ENTITY);
-	lua_pushstring(_state, "GetData");
-	lua_getglobal(_state, "_GetEntityData");
-	lua_rawset(_state, -3);
-	lua_pop(_state, 1);
-
-	NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");
 }
 
@@ -619,7 +597,6 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua::LuaStackProtector protector(state);
 	// luaL_openlibs(state);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
-	lua::UnloadMetatables();
 	RegisterMetatables(state);
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	lua_register(state, "Benchmark", LuaBenchmark);

@@ -1,5 +1,6 @@
 ffi.cdef [[
     struct Weapon {
+        private struct Entity* Owner : 0x4;
         private float FireDelay : 0xc;
         private float MaxFireDelay : 0x10;
         private float Charge : 0x14;
@@ -16,15 +17,11 @@ ffi.cdef [[
     bool L_Weapon_IsItemAnimFinished(struct Weapon*, unsigned int);
     void L_Weapon_ClearItemAnim(struct Weapon*, unsigned int);
     void L_Weapon_SetHeadLockTime(struct Weapon*, int);
+    struct Entity* L_Weapon_GetMainEntity(struct Weapon*);
 ]]
 
 local repentogon = ffidll
 local ffi = ffi
-
-local cfuncs = {
-    GetOwner = __Lua_Weapon_GetOwner,
-    GetMainEntity = __Lua_Weapon_GetMainEntity,
-}
 
 local VectorT = ffi.typeof("struct Vector")
 
@@ -45,7 +42,7 @@ WeaponMT = {
         return ffi.getprivate(self, "FireDelay")
     end,
     GetMainEntity = function(self)
-        return cfuncs.GetMainEntity(self)
+        return repentogon.L_Weapon_GetMainEntity(self)
     end,
     GetMaxCharge = function(self)
         return repentogon.L_Weapon_GetMaxCharge(self)
@@ -60,7 +57,7 @@ WeaponMT = {
         return ffi.getprivate(self, "NumFired")
     end,
     GetOwner = function(self)
-        return cfuncs.GetOwner(self)
+        return ffi.getprivate(self, "Owner")
     end,
     GetWeaponType = function(self)
         return ffi.getprivate(self, "WeaponType")
@@ -106,5 +103,3 @@ Weapon = setmetatable({}, {
     __class = WeaponMT,
 })
 
-__Lua_Weapon_GetOwner = nil
-__Lua_Weapon_GetMainEntity = nil

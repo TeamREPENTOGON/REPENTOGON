@@ -5,9 +5,6 @@
 #include "MiscFunctions.h"
 
 template<typename T>
-struct LuaClassTraits;
-
-template<typename T>
 struct LuaArrayProxy
 {
     size_t size = 0;
@@ -18,16 +15,6 @@ namespace LuaClasses
 {
     namespace detail
     {
-        template<typename T, typename = void>
-        struct HasUserdataValueVftable : std::false_type {};
-        
-        template<typename T>
-        struct HasUserdataValueVftable<T, std::void_t<decltype(LuaClassTraits<T>::UserdataValueVftable)>>
-            : std::true_type {};
-
-        template<typename T>
-        constexpr bool HasUserdataValueVftable_v = HasUserdataValueVftable<T>::value;
-
         static void* try_checkudata(lua_State* L, int ud, const char* tname)
         {
             void* p = lua_touserdata(L, ud);
@@ -66,169 +53,6 @@ namespace LuaClasses
         }
     };
 }
-
-template<typename Traits>
-struct LuabridgeType
-{
-private:
-    static constexpr lua::Metatables MT = Traits::MT;
-    static constexpr lua::Metatables CONST_MT = Traits::CONST_MT;
-    using T = typename Traits::Type;
-
-public:
-    static bool IsUnderlyingType(lua_State* L, int index)
-    {
-        return lua_type(L, index) == LUA_TUSERDATA;
-    }
-
-    static T* Get(lua_State* L, int index)
-    {
-        return lua::GetLuabridgeUserdata<T*>(L, index, MT, Traits::Name);
-    }
-
-    static REPENTOGON::Result<T*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
-    {
-        std::optional<T*> p = lua::TestUserdata<T*>(L, index, MT);
-        if (!p) {
-            return REPENTOGON::err(LuaClasses::GetClassError(Traits::Name, lua_type(L, index)));
-        }
-
-        return REPENTOGON::ok(*p);
-    }
-
-    static const T* GetConst(lua_State* L, int index)
-    {
-        return lua::GetLuabridgeUserdata<T*>(L, index, CONST_MT, Traits::Name);
-    }
-
-    static T* GetOpt(lua_State* L, int index)
-    {
-        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
-    }
-
-    static const T* GetConstOpt(lua_State* L, int index)
-    {
-        return !lua_isnoneornil(L, index) ? GetConst(L, index) : nullptr;
-    }
-
-    static T* Place(lua_State* L)
-    {
-        void* key = lua::GetMetatableKey(MT);
-        if constexpr (LuaClasses::detail::HasUserdataValueVftable<T>::value)
-        {
-            return lua::luabridge::UserdataValue<T>::place_with_vftable(L, key, Traits::UserdataValueVftable);
-        }
-        else
-        {
-            return lua::luabridge::UserdataValue<T>::place(L, key);
-        }
-    }
-
-    static T* PlaceConst(lua_State* L)
-    {
-        void* key = lua::GetMetatableKey(CONST_MT);
-        if constexpr (LuaClasses::detail::HasUserdataValueVftable<T>::value)
-        {
-            return lua::luabridge::UserdataValue<T>::place_with_vftable(L, key, Traits::UserdataValueVftable);
-        }
-        else
-        {
-            return lua::luabridge::UserdataValue<T>::place(L, key);
-        }
-    }
-
-    static void Push(lua_State* L, const T& value)
-    {
-        new (Place(L)) T(value);
-    }
-    
-    static void PushConst(lua_State* L, const T& value)
-    {
-        new (PlaceConst(L)) T(value);
-    }
-
-    static void PushPtr(lua_State* L, T* ptr)
-    {
-        lua::luabridge::UserdataPtr::push(L, ptr, lua::GetMetatableKey(MT));
-    }
-
-    static void PushConstPtr(lua_State* L, T* ptr)
-    {
-        lua::luabridge::UserdataPtr::push(L, ptr, lua::GetMetatableKey(CONST_MT));
-    }
-
-    static constexpr lua::LuaClassInterface Interface
-    {
-        [](lua_State* L, const void* value)
-        {
-            Push(L, *static_cast<const T*>(value));
-        },
-
-        [](lua_State* L, void* value)
-        {
-            PushPtr(L, static_cast<T*>(value));
-        }
-    };
-};
-
-template<typename T, const char*& MT>
-struct LuabridgeRGONType
-{
-    static bool IsUnderlyingType(lua_State* L, int index)
-    {
-        return lua_type(L, index) == LUA_TUSERDATA;
-    }
-
-    static T* Get(lua_State* L, int index)
-    {
-        void* p = luaL_checkudata(L, index, MT);
-        return lua::UserdataToData<T*>(p);
-    }
-
-    static REPENTOGON::Result<T*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
-    {
-        void* p = LuaClasses::detail::try_checkudata(L, index, MT);
-        if (!p)
-        {
-            return REPENTOGON::err(LuaClasses::GetClassError(MT, lua_type(L, index)));
-        }
-
-        return REPENTOGON::ok(lua::UserdataToData<T*>(p));
-    }
-
-    static T* GetOpt(lua_State* L, int index)
-    {
-        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
-    }
-
-    static T* Place(lua_State* L)
-    {
-        return lua::luabridge::UserdataValue<T>::place(L, MT);
-    }
-
-    static void Push(lua_State* L, const T& value)
-    {
-        lua::luabridge::UserdataValue<T>::push(L, (void*)MT, value);
-    }
-
-    static void PushPtr(lua_State* L, T* ptr)
-    {
-        lua::luabridge::UserdataPtr::push(L, ptr, MT);
-    }
-
-    static constexpr lua::LuaClassInterface Interface
-    {
-        [](lua_State* L, const void* value)
-        {
-            Push(L, *static_cast<const T*>(value));
-        },
-
-        [](lua_State* L, void* value)
-        {
-            PushPtr(L, static_cast<T*>(value));
-        }
-    };
-};
 
 // template for raw userdata representing the class as a Value.
 template<typename T, const char*& MT>
@@ -410,14 +234,6 @@ struct Lua_EntitySaveState {
 
 namespace LuaTraits
 {
-    struct LuaIntValues
-    {
-        static constexpr const char* Name = "intValues";
-        using Type = LuaArrayProxy<int>;
-        static constexpr lua::Metatables MT = lua::Metatables::INT_VALUES;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_INT_VALUES;
-    };
-
     struct LuaVector
     {
         static constexpr const char* Name = "Vector";
@@ -603,20 +419,10 @@ namespace LuaTraits
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::HUD_PTR;
     };
 
-    struct LuaEntity
-    {
-        static constexpr const char* Name = "Entity";
-        using Type = Entity;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY;
-    };
-
     struct LuaEntityPlayer
     {
         static constexpr const char* Name = "EntityPlayer";
         using Type = Entity_Player;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PLAYER;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PLAYER;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PLAYER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PLAYER_PTR;
     };
@@ -625,8 +431,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityTear";
         using Type = Entity_Tear;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_TEAR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_TEAR;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_TEAR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_TEAR_PTR;
     };
@@ -635,8 +439,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityFamiliar";
         using Type = Entity_Familiar;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_FAMILIAR;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_FAMILIAR;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_FAMILIAR;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_FAMILIAR_PTR;
     };
@@ -645,8 +447,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityBomb";
         using Type = Entity_Bomb;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_BOMB;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_BOMB;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_BOMB;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_BOMB_PTR;
     };
@@ -655,8 +455,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityPickup";
         using Type = Entity_Pickup;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PICKUP;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PICKUP;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PICKUP;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PICKUP_PTR;
     };
@@ -665,8 +463,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityLaser";
         using Type = Entity_Laser;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_LASER;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_LASER;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_LASER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_LASER_PTR;
     };
@@ -675,8 +471,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityKnife";
         using Type = Entity_Knife;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_KNIFE;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_KNIFE;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_KNIFE;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_KNIFE_PTR;
     };
@@ -693,8 +487,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityProjectile";
         using Type = Entity_Projectile;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PROJECTILE;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PROJECTILE;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PROJECTILE;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PROJECTILE_PTR;
     };
@@ -703,8 +495,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityNPC";
         using Type = Entity_NPC;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_NPC;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_NPC;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_NPC;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_NPC_PTR;
     };
@@ -721,8 +511,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "EntityEffect";
         using Type = Entity_Effect;
-        static constexpr lua::Metatables MT = lua::Metatables::ENTITY_EFFECT;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_EFFECT;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_EFFECT;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_EFFECT_PTR;
     };
@@ -739,8 +527,6 @@ namespace LuaTraits
     {
         static constexpr const char* Name = "Pathfinder";
         using Type = NPCAI_Pathfinder;
-        static constexpr lua::Metatables MT = lua::Metatables::PATHFINDER;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_PATHFINDER;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::PATHFINDER;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::PATHFINDER_PTR;
     };
@@ -759,14 +545,6 @@ namespace LuaTraits
         using Type = ProjectileParams;
         static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::PROJECTILE_PARAMS;
         static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::PROJECTILE_PARAMS_PTR;
-    };
-
-    struct LuaActiveItemDesc
-    {
-        static constexpr const char* Name = "ActiveItemDesc";
-        using Type = ActiveItemDesc;
-        static constexpr lua::Metatables MT = lua::Metatables::ACTIVE_ITEM_DESC;
-        static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ACTIVE_ITEM_DESC;
     };
 
     struct LuaGridEntity
@@ -1146,7 +924,6 @@ namespace LuaTraits
     };
 }
 
-using LuaIntValues = LuabridgeType<LuaTraits::LuaIntValues>;
 using LuaVector = CDataType<LuaTraits::LuaVector>;
 using LuaPosVel = CDataType<LuaTraits::LuaPosVel>;
 using LuaBitSet128 = CDataType<LuaTraits::LuaBitSet128>;
@@ -1171,12 +948,34 @@ using LuaRoomDescriptorList = CDataType<LuaTraits::LuaRoomDescriptorList>;
 using LuaItemPool = CDataType<LuaTraits::LuaItemPool>;
 using LuaHUD = CDataType<LuaTraits::LuaHUD>;
 
-struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
+// Accepts any entity cdata (Entity or a subclass), pushes the base Entity class.
+struct LuaEntityType
 {
     static bool IsUnderlyingType(lua_State* L, int index)
     {
-        const int type = lua_type(L, index);
-        return type == LUA_TUSERDATA || type == LUA_TCDATA;
+        return lua_type(L, index) == LUA_TCDATA;
+    }
+
+    static Entity* Get(lua_State* L, int index)
+    {
+        Entity* entity = static_cast<Entity*>(lua::TestEntity(L, index));
+        if (!entity) {
+            luaL_argerror(L, index, LuaClasses::GetClassError("Entity", lua_type(L, index)).message().c_str());
+        }
+        return entity;
+    }
+
+    static REPENTOGON::Result<Entity*, LuaClasses::GetClassError> TryGet(lua_State* L, int index)
+    {
+        if (Entity* entity = static_cast<Entity*>(lua::TestEntity(L, index))) {
+            return REPENTOGON::ok(entity);
+        }
+        return REPENTOGON::err(LuaClasses::GetClassError("Entity", lua_type(L, index)));
+    }
+
+    static Entity* GetOpt(lua_State* L, int index)
+    {
+        return !lua_isnoneornil(L, index) ? Get(L, index) : nullptr;
     }
 
     static void PushPtr(lua_State* L, Entity* ptr)
@@ -1184,11 +983,12 @@ struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
         lua::ffi::pushCdataPtr(L, ptr, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PTR]);
     }
 
+    // Entities only ever live in the game, so both pushes hand Lua a pointer.
     static constexpr lua::LuaClassInterface Interface
     {
         [](lua_State* L, const void* value)
         {
-            Push(L, *static_cast<const Entity*>(value));
+            PushPtr(L, const_cast<Entity*>(static_cast<const Entity*>(value)));
         },
 
         [](lua_State* L, void* value)
@@ -1213,7 +1013,6 @@ using LuaEntityRef = CDataType<LuaTraits::LuaEntityRef>;
 using LuaPathfinder = CDataType<LuaTraits::LuaPathfinder>;
 using LuaTearParams = CDataType<LuaTraits::LuaTearParams>;
 using LuaProjectileParams = CDataType<LuaTraits::LuaProjectileParams>;
-using LuaActiveItemDesc = LuabridgeType<LuaTraits::LuaActiveItemDesc>;
 using LuaGridEntity = CDataType<LuaTraits::LuaGridEntity>;
 using LuaGridEntityRock = CDataType<LuaTraits::LuaGridEntityRock>;
 using LuaGridEntityPit = CDataType<LuaTraits::LuaGridEntityPit>;

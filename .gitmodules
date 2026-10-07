@@ -13,9 +13,6 @@
 [submodule "libs/rapidxml"]
 	path = libs/rapidxml
 	url = https://github.com/discord/rapidxml
-[submodule "libs/LuaBridge"]
-	path = libs/LuaBridge
-	url = https://github.com/vinniefalco/LuaBridge
 [submodule "libs/antlr4"]
 	path = libs/antlr4
 	url = https://github.com/TeamREPENTOGON/antlr4

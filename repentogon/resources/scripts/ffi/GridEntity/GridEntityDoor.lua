@@ -41,15 +41,13 @@ ffi.cdef[[
     void L_GridEntityDoor_SetLocked(struct GridEntityDoor*, bool);
     void L_GridEntityDoor_SetRoomTypes(struct GridEntityDoor*, int, int);
     void L_GridEntityDoor_Update(struct GridEntityDoor*);
+    bool L_GridEntityDoor_TryBlowOpen(struct GridEntityDoor*, bool, void*);
+    bool L_GridEntityDoor_TryUnlock(struct GridEntityDoor*, struct EntityPlayer*, bool);
 ]]
     
 local ffi = ffi
 local repentogon = ffidll
 
-local cfuncs = {
-    TryBlowOpen = __Lua_GridEntityDoor_TryBlowOpen,
-    TryUnlock = __Lua_GridEntityDoor_TryUnlock
-}
 
 local GridEntityDoorMT
 GridEntityDoorMT = {
@@ -118,10 +116,11 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Update(self)
     end,
     TryBlowOpen = function(self, fromExplosion, source)
-        return cfuncs.TryBlowOpen(self, fromExplosion, source)
+        return repentogon.L_GridEntityDoor_TryBlowOpen(self, ffichecks.checkboolean(1, fromExplosion), ffichecks.entitytopointer(source))
     end,
     TryUnlock = function(self, player, force)
-        return cfuncs.TryUnlock(self, player, force)
+        ffichecks.checkcdata(1, player, "EntityPlayer")
+        return repentogon.L_GridEntityDoor_TryUnlock(self, player, ffichecks.checkboolean(2, force))
     end,
 }
 
@@ -162,5 +161,3 @@ end
 local GridEntityDoorT = ffi.metatype("struct GridEntityDoor", GridEntityDoorMT)
 GridEntityDoor = setmetatable({}, {__class = GridEntityDoorMT})
 
-__Lua_GridEntityDoor_TryBlowOpen = nil
-__Lua_GridEntityDoor_TryUnlock = nil

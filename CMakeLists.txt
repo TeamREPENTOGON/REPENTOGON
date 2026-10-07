@@ -25,7 +25,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include
     "${CMAKE_SOURCE_DIR}/libs/lua-compat-5.3/c-api"
     "${CMAKE_SOURCE_DIR}/libs/rapidxml" 
     "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" 
-    "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 

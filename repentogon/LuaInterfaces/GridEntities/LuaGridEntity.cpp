@@ -54,20 +54,6 @@ extern "C" {
 	}
 }
 
-LUA_FUNCTION(Lua_GridEntityHurtDamage)
-{
-	GridEntity* gridEnt = LuaGridEntity::Get(L, 1);
-	Entity* entity = LuaEntity::Get(L, 2);
-	int playerDamage = (int)luaL_checkinteger(L, 3);
-	uint64_t damageFlags = (uint64_t)luaL_checkinteger(L, 4);
-	float enemyDamage = (float)luaL_checknumber(L, 5);
-	bool ignoreGridCol = lua::luaL_checkboolean(L, 6);
+MOD_EXPORT void L_GridEntity_HurtDamage(GridEntity* gridEnt, Entity* entity, int playerDamage, uint64_t damageFlags, float enemyDamage, bool ignoreGridCol) {
 	gridEnt->hurt_func(entity, enemyDamage, playerDamage, damageFlags, ignoreGridCol);
-	return 0;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_GridEntity_HurtDamage", Lua_GridEntityHurtDamage);
-
-	super();
 }

@@ -160,7 +160,7 @@ Entity_Tear* FireSplitTear(Entity* sourceEntity, const Vector pos, const Vector 
 }
 
 LUALIB_API int Lua_FireSplitTear(lua_State* L) {
-	Entity* sourceEntity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* sourceEntity = LuaEntity::Get(L, 1);
 	const Vector pos = *lua::GetCData<Vector*>(L, 2, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const Vector vel = *lua::GetCData<Vector*>(L, 3, lua::ffi::CData[lua::ffi::CDataID::VECTOR], "Vector");
 	const float damageMult = (float)luaL_optnumber(L, 4, 0.5);

@@ -11,51 +11,6 @@
 #include "SigScan.h"
 
 namespace lua {
-	std::map<Metatables, void*> _metatables;
-	std::map<std::string, Metatables> _metatable_idx_from_name;
-	bool _metatable_idx_from_name_initialized = false;
-
-	class UnregistedMetatableException : public std::exception {
-	public:
-		UnregistedMetatableException(Metatables metatable) : _metatable(metatable) {
-			snprintf(_err, 256, "Attempt to get unregistered metatable %d\n", (int)_metatable);
-		}
-
-		const char* what() const override {
-			return _err;
-		}
-
-	private:
-		Metatables _metatable;
-		char _err[256];
-	};
-	
-	void UnloadMetatables() {
-		_metatables.clear();
-	}
-
-	void PushMetatable(lua_State* L, Metatables metatable) {
-		auto iter = _metatables.find(metatable);
-
-		if (iter == _metatables.end()) {
-			throw UnregistedMetatableException(metatable);
-		}
-
-		lua_rawgetp(L, LUA_REGISTRYINDEX, _metatables[metatable]);
-	}
-
-	void* GetMetatableKey(Metatables metatable) {
-		return _metatables[metatable];
-	}
-
-	void RegisterMetatable(Metatables metatable, void* key) {
-		if (_metatables.find(metatable) != _metatables.end()) {
-			return;
-		}
-
-		_metatables[metatable] = key;
-	}
-
 	void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc) {
 		luaL_newmetatable(L, metaname);
 		lua_pushstring(L, "__index");
@@ -80,196 +35,47 @@ namespace lua {
 		lua_pop(L, 1);
 	}
 
-	static void InitMetatableIdxFromName() {
-		_metatable_idx_from_name["EntityTear"] = Metatables::ENTITY_TEAR;
-		_metatable_idx_from_name["ActiveItemDesc"] = Metatables::ACTIVE_ITEM_DESC;
-		_metatable_idx_from_name["Entity"] = Metatables::ENTITY;
-		_metatable_idx_from_name["EntityBomb"] = Metatables::ENTITY_BOMB;
-		_metatable_idx_from_name["EntityKnife"] = Metatables::ENTITY_KNIFE;
-		_metatable_idx_from_name["EntityEffect"] = Metatables::ENTITY_EFFECT;
-		_metatable_idx_from_name["EntityPlayer"] = Metatables::ENTITY_PLAYER;
-		_metatable_idx_from_name["EntityPickup"] = Metatables::ENTITY_PICKUP;
-		_metatable_idx_from_name["EntityList"] = Metatables::ENTITY_LIST;
-		_metatable_idx_from_name["EntityNPC"] = Metatables::ENTITY_NPC;
-		_metatable_idx_from_name["EntityProjectile"] = Metatables::ENTITY_PROJECTILE;
-		_metatable_idx_from_name["EntityFamiliar"] = Metatables::ENTITY_FAMILIAR;
-		_metatable_idx_from_name["intValues"] = Metatables::INT_VALUES;
-		_metatable_idx_from_name["EntityPtr"] = Metatables::ENTITY_PTR;
-		_metatable_idx_from_name["PathFinder"] = Metatables::PATHFINDER;
-		_metatable_idx_from_name["EntityLaser"] = Metatables::ENTITY_LASER;
-
-		_metatable_idx_from_name["const EntityTear"] = Metatables::CONST_ENTITY_TEAR;
-		_metatable_idx_from_name["const ActiveItemDesc"] = Metatables::CONST_ACTIVE_ITEM_DESC;
-		_metatable_idx_from_name["const Entity"] = Metatables::CONST_ENTITY;
-		_metatable_idx_from_name["const EntityBomb"] = Metatables::CONST_ENTITY_BOMB;
-		_metatable_idx_from_name["const EntityKnife"] = Metatables::CONST_ENTITY_KNIFE;
-		_metatable_idx_from_name["const EntityEffect"] = Metatables::CONST_ENTITY_EFFECT;
-		_metatable_idx_from_name["const EntityPlayer"] = Metatables::CONST_ENTITY_PLAYER;
-		_metatable_idx_from_name["const EntityPickup"] = Metatables::CONST_ENTITY_PICKUP;
-		_metatable_idx_from_name["const EntityList"] = Metatables::CONST_ENTITY_LIST;
-		_metatable_idx_from_name["const EntityNPC"] = Metatables::CONST_ENTITY_NPC;
-		_metatable_idx_from_name["const EntityProjectile"] = Metatables::CONST_ENTITY_PROJECTILE;
-		_metatable_idx_from_name["const EntityFamiliar"] = Metatables::CONST_ENTITY_FAMILIAR;
-		_metatable_idx_from_name["const intValues"] = Metatables::CONST_INT_VALUES;
-		_metatable_idx_from_name["const EntityPtr"] = Metatables::CONST_ENTITY_PTR;
-		_metatable_idx_from_name["const PathFinder"] = Metatables::CONST_PATHFINDER;
-		_metatable_idx_from_name["const EntityLaser"] = Metatables::CONST_ENTITY_LASER;
-	}
-
-	Metatables GetMetatableIdxFromName(std::string const& name) {
-		if (!_metatable_idx_from_name_initialized) {
-			InitMetatableIdxFromName();
-			_metatable_idx_from_name_initialized = true;
-		}
-
-		auto iter = _metatable_idx_from_name.find(name);
-		if (iter == _metatable_idx_from_name.end()) {
-			return Metatables::METATABLES_MAX;
-		}
-
-		return _metatable_idx_from_name[name];
-	}
-
 	namespace ffi {
 		lua_CTypeId CData[MAX_CDATA];
 	}
 
 	namespace {
-		struct EntityCDataUserdata {
-			void* vtable;
-			void* entity;
-		};
-
 		struct EntityCDataType {
 			lua::ffi::CDataID id;
 			lua::ffi::CDataID ptrId;
-			lua::Metatables accepted[4];
 		};
 
 		const EntityCDataType s_entityCDataTypes[] = {
-			{ lua::ffi::ENTITY, lua::ffi::ENTITY_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
-			{ lua::ffi::ENTITY_PROJECTILE, lua::ffi::ENTITY_PROJECTILE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PROJECTILE, Metatables::CONST_ENTITY_PROJECTILE } },
-			{ lua::ffi::ENTITY_TEAR, lua::ffi::ENTITY_TEAR_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_TEAR, Metatables::CONST_ENTITY_TEAR } },
-			{ lua::ffi::ENTITY_BOMB, lua::ffi::ENTITY_BOMB_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_BOMB, Metatables::CONST_ENTITY_BOMB } },
-			{ lua::ffi::ENTITY_KNIFE, lua::ffi::ENTITY_KNIFE_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_KNIFE, Metatables::CONST_ENTITY_KNIFE } },
-			{ lua::ffi::ENTITY_LASER, lua::ffi::ENTITY_LASER_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_LASER, Metatables::CONST_ENTITY_LASER } },
-			{ lua::ffi::ENTITY_EFFECT, lua::ffi::ENTITY_EFFECT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_EFFECT, Metatables::CONST_ENTITY_EFFECT } },
-			{ lua::ffi::ENTITY_PICKUP, lua::ffi::ENTITY_PICKUP_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PICKUP, Metatables::CONST_ENTITY_PICKUP } },
-			{ lua::ffi::ENTITY_FAMILIAR, lua::ffi::ENTITY_FAMILIAR_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_FAMILIAR, Metatables::CONST_ENTITY_FAMILIAR } },
-			{ lua::ffi::ENTITY_SLOT, lua::ffi::ENTITY_SLOT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
-			{ lua::ffi::ENTITY_NPC, lua::ffi::ENTITY_NPC_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_NPC, Metatables::CONST_ENTITY_NPC } },
-			{ lua::ffi::ENTITY_DELIRIUM, lua::ffi::ENTITY_DELIRIUM_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_NPC, Metatables::CONST_ENTITY_NPC } },
-			{ lua::ffi::ENTITY_PLAYER, lua::ffi::ENTITY_PLAYER_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PLAYER, Metatables::CONST_ENTITY_PLAYER } },
+			{ lua::ffi::ENTITY, lua::ffi::ENTITY_PTR },
+			{ lua::ffi::ENTITY_PROJECTILE, lua::ffi::ENTITY_PROJECTILE_PTR },
+			{ lua::ffi::ENTITY_TEAR, lua::ffi::ENTITY_TEAR_PTR },
+			{ lua::ffi::ENTITY_BOMB, lua::ffi::ENTITY_BOMB_PTR },
+			{ lua::ffi::ENTITY_KNIFE, lua::ffi::ENTITY_KNIFE_PTR },
+			{ lua::ffi::ENTITY_LASER, lua::ffi::ENTITY_LASER_PTR },
+			{ lua::ffi::ENTITY_EFFECT, lua::ffi::ENTITY_EFFECT_PTR },
+			{ lua::ffi::ENTITY_PICKUP, lua::ffi::ENTITY_PICKUP_PTR },
+			{ lua::ffi::ENTITY_FAMILIAR, lua::ffi::ENTITY_FAMILIAR_PTR },
+			{ lua::ffi::ENTITY_SLOT, lua::ffi::ENTITY_SLOT_PTR },
+			{ lua::ffi::ENTITY_NPC, lua::ffi::ENTITY_NPC_PTR },
+			{ lua::ffi::ENTITY_DELIRIUM, lua::ffi::ENTITY_DELIRIUM_PTR },
+			{ lua::ffi::ENTITY_PLAYER, lua::ffi::ENTITY_PLAYER_PTR },
 		};
-
-		EntityCDataUserdata s_entityCDataUserdata[16];
-		unsigned int s_entityCDataSlot = 0;
-
-		void* TestEntityCData(lua_State* L, int ud, lua::Metatables mt) {
-			if (lua_type(L, ud) != LUA_TCDATA) {
-				return NULL;
-			}
-
-			for (const EntityCDataType& type : s_entityCDataTypes) {
-				void* entity = NULL;
-				if (void* pp = lua::TestCData(L, ud, lua::ffi::CData[type.ptrId])) {
-					entity = *static_cast<void**>(pp);
-				}
-				else if (void* pv = lua::TestCData(L, ud, lua::ffi::CData[type.id])) {
-					entity = pv;
-				}
-				else {
-					continue;
-				}
-
-				for (lua::Metatables accepted : type.accepted) {
-					if (accepted == mt) {
-						EntityCDataUserdata& slot = s_entityCDataUserdata[s_entityCDataSlot++ % 16];
-						slot.vtable = NULL;
-						slot.entity = entity;
-						return &slot;
-					}
-				}
-				return NULL;
-			}
-			return NULL;
-		}
 	}
 
-	void* TestUserdata(lua_State* L, int ud, lua::Metatables mt) {
-		if (void* entity = TestEntityCData(L, ud, mt)) {
-			return entity;
+	void* TestEntity(lua_State* L, int ud) {
+		if (lua_type(L, ud) != LUA_TCDATA) {
+			return NULL;
 		}
 
-		// s = ... userdata ...
-		void* p = lua_touserdata(L, ud);
-		if (p != NULL) {
-			lua::PushMetatable(L, mt); // ... userdata ... meta
-			if (lua_getmetatable(L, ud)) { // ... userdata ... meta meta
-				while (true) {
-					if (!lua_rawequal(L, -1, -2)) {
-						// Check parent metatable
-						lua_pushstring(L, "__parent"); // ... userdata ... meta meta __parent
-						int type = lua_rawget(L, -2); // ... userdata ... meta meta ?parent
-						if (type != LUA_TTABLE) {
-							// Pop the metatable we compare against, the metatable of the userdata
-							// and its attempted parent
-							lua_pop(L, 3);
-							return NULL;
-						}
-
-						lua_remove(L, -2); // ... userdata ... meta parentmeta
-					}
-					else {
-						lua_pop(L, 2);
-						return p;
-					}
-				}
-				// Proof that the while finishes in normal working conditions :
-				// The else case of the if is trivial. Proof that the if iteself finishes
-				// The if can not finish only if lua_rawget(L, -2) never produces something that is not a table.
-				// This means there is an infinite chain of __parent, i.e. a loop.
-				// Then this means the application is bugged and we are no longer in normal work conditions.
-				// Otherwise, the chain of __parent is bounded and the inner if will eventually be entered, therefore the while finishes.
-
-				// Pop the metatable we compare against and the metatable of the userdata
-				lua_pop(L, 2);
-				return p;
+		for (const EntityCDataType& type : s_entityCDataTypes) {
+			if (void* pp = lua::TestCData(L, ud, lua::ffi::CData[type.ptrId])) {
+				return *static_cast<void**>(pp);
 			}
-			else {
-				// Pop the metatable we compare against
-				lua_pop(L, 1); // ... userdata ...
-				return NULL;
+			if (void* pv = lua::TestCData(L, ud, lua::ffi::CData[type.id])) {
+				return pv;
 			}
 		}
 		return NULL;
-	}
-
-	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name) {
-		void* p = TestUserdata(L, ud, mt);
-		if (!p) {
-			lua_getmetatable(L, ud);
-			lua::PushMetatable(L, mt);
-			std::string type = lua_typename(L, lua_type(L, ud));
-			std::string err = name + " expected, got " + type;
-			luaL_argerror(L, ud, err.c_str());
-		}
-		return p;
-	}
-
-	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
-		void* p = TestUserdata(L, ud, mt);
-		if (!p) {
-			p = TestUserdata(L, ud, constMt);
-			if (!p) {
-				lua_getmetatable(L, ud);
-				lua::PushMetatable(L, mt);
-				std::string type = lua_typename(L, lua_type(L, ud));
-				std::string err = name + " expected, got " + type;
-				luaL_argerror(L, ud, err.c_str());
-			}
-		}
-		return p;
 	}
 
 	void* TestCData(lua_State* L, int ud, lua_CTypeId ctypeid) {
@@ -288,48 +94,12 @@ namespace lua {
 		return p;
 	}
 
-	void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func) {
-		lua::PushMetatable(L, mt);
-		lua_pushstring(L, name);
-		lua_pushcfunction(L, func);
-		lua_rawset(L, -3);
-		lua_pop(L, 1);
-	}
-
-	void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions) {
-		luaL_Reg* ptr = functions;
-		lua::PushMetatable(L, mt);
-		while (const char* name = ptr->name) {
-			lua_pushstring(L, name);
-			lua_pushcfunction(L, ptr->func);
-			lua_rawset(L, -3);
-
-			++ptr;
-		}
-		lua_pop(L, 1);
-	}
-
 	void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func) {
 		lua_getglobal(L, className);
 		lua_pushstring(L, funcName);
 		lua_pushcfunction(L, func);
 		lua_rawset(L, -3);
 		lua_pop(L, 1);
-	}
-
-	void RegisterVariable(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
-		lua::PushMetatable(L, mt);
-		RegisterVariableToLoadedMT(L, variableName, getFunc, setFunc);
-	}
-
-	void RegisterVariableGetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func) {
-		lua::PushMetatable(L, mt);
-		RegisterVariableGetterToLoadedMT(L, variableName, func);
-	}
-
-	void RegisterVariableSetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func) {
-		lua::PushMetatable(L, mt);
-		RegisterVariableSetterToLoadedMT(L, variableName, func);
 	}
 
 	void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
@@ -420,99 +190,6 @@ namespace lua {
 		}
 		luaL_addstring(&b, "End Stack Traceback");
 		luaL_pushresult(&b);
-	}
-
-	namespace luabridge {
-		UserdataPtr::UserdataPtr(void* const p) {
-			m_p = p;
-		}
-
-		const void* UserdataPtr::GetVTable() {
-			UserdataPtr ud(nullptr);
-			return *reinterpret_cast<void* const*>(&ud);
-		}
-
-		static void* sUserdataCacheToken = nullptr;
-
-		void UserdataPtr::push(lua_State* L, void* const p, void const* const key) {
-			if (p) {
-				lua_rawgetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
-				if (lua_isnil(L, -1)) {
-					lua_pop(L, 1);
-					lua_newtable(L);
-					lua_rawsetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
-					lua_rawgetp(L, LUA_REGISTRYINDEX, &sUserdataCacheToken);
-				}
-				const int cacheIdx = lua_gettop(L);
-
-				lua_rawgetp(L, cacheIdx, key);
-				if (lua_isnil(L, -1)) {
-					lua_pop(L, 1);
-					lua_newtable(L);
-					lua_newtable(L);
-					lua_pushliteral(L, "v");
-					lua_setfield(L, -2, "__mode");
-					lua_setmetatable(L, -2);
-					lua_pushvalue(L, -1);
-					lua_rawsetp(L, cacheIdx, key);
-				}
-				const int innerIdx = lua_gettop(L);
-
-				lua_pushlightuserdata(L, p);
-				lua_rawget(L, innerIdx);
-				if (lua_type(L, -1) != LUA_TNIL) {
-					lua_remove(L, innerIdx);
-					lua_remove(L, cacheIdx);
-					return;
-				}
-
-				lua_pop(L, 1);
-				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
-				lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-				lua_setmetatable(L, -2);
-				lua_pushlightuserdata(L, p);
-				lua_pushvalue(L, -2);
-				lua_rawset(L, innerIdx);
-				lua_remove(L, innerIdx);
-				lua_remove(L, cacheIdx);
-			}
-			else {
-				lua_pushnil(L);
-			}
-		}
-
-		void UserdataPtr::push(lua_State* L, void* const p, const char* meta) {
-			if (p) {
-				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
-				luaL_setmetatable(L, meta);
-			}
-			else {
-				lua_pushnil(L);
-			}
-		}
-
-		void UserdataPtr::push(lua_State* L, void* const p, lua::Metatables mt) {
-			void* key = lua::GetMetatableKey(mt);
-			push(L, p, key);
-		}
-
-		void* identityKey;
-		static VariableDefinition identityKeyDef("luabridge::IdentityKey", "5357FF15????????68(????????)", &identityKey);
-
-		lua_CFunction indexMetaMethod;
-
-		namespace index {
-			static const HookSystem::ArgData* argdata = nullptr;
-			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", "", typeid(lua_CFunction),
-				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)&indexMetaMethod, true);
-		}
-
-		lua_CFunction newIndexMetaMethod;
-		namespace newIndex {
-			static const HookSystem::ArgData* argdata = nullptr;
-			static FunctionDefinition newIndexMetaMethodDef("luabridge::Namespace::ClassBase::newIndexMetaMethod", "", typeid(lua_CFunction),
-				"558bec53568b7508576a0156ff15????????8b1d", argdata, 1, 0, (void**)&newIndexMetaMethod, true);
-		}
 	}
 
 	namespace callbacks {
@@ -761,10 +438,6 @@ namespace lua {
 		const char* Isaac = "Isaac";
 	}
 
-	namespace metatables
-	{;
-		const char* DeliriumMetatable = "DeliriumMT";
-	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
 		lua_pushstring(L, name.c_str());

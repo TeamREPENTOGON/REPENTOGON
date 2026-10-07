@@ -1467,15 +1467,6 @@ namespace GL {
 			lua::TableAssoc(L, "Type", ctx);
 		}
 
-		void Expose(void* p, LuaRender::ContextType ctx, lua::Metatables mt) {
-			OpenTable();
-			lua::TableAssoc(L, "Type", ctx);
-			lua_pushstring(L, "Data");
-			lua::luabridge::UserdataPtr::push(L, p, mt);
-			lua_rawset(L, -3);
-			CloseTable();
-		}
-
 		void Expose(void* p, LuaRender::ContextType ctx, lua_CTypeId cd) {
 			OpenTable();
 			lua::TableAssoc(L, "Type", ctx);

@@ -27,33 +27,6 @@ MOD_EXPORT void L_Weapon_SetHeadLockTime(Weapon* weapon, int time) {
 	weapon->SetHeadLockTime(time);
 }
 
-LUA_FUNCTION(Lua_WeaponGetOwner) {
-	Weapon* weapon = LuaWeapon::Get(L, 1);
-	Entity* ent = weapon->GetOwner();
-	if (!ent) {
-		lua_pushnil(L);
-	}
-	else {
-		LuaEntity::PushPtr(L, ent);
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_WeaponGetMainEntity) {
-	Weapon* weapon = LuaWeapon::Get(L, 1);
-	Entity* ent = weapon->GetMainEntity();
-	if (!ent) {
-		lua_pushnil(L);
-	}
-	else {
-		LuaEntity::PushPtr(L, ent);
-	}
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	lua_register(_state, "__Lua_Weapon_GetOwner", Lua_WeaponGetOwner);
-	lua_register(_state, "__Lua_Weapon_GetMainEntity", Lua_WeaponGetMainEntity);
-
-	super();
+MOD_EXPORT Entity* L_Weapon_GetMainEntity(Weapon* weapon) {
+	return weapon->GetMainEntity();
 }

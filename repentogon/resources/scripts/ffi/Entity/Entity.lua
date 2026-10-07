@@ -163,7 +163,6 @@ local ffi = ffi
 local repentogon = ffidll
 
 local EntityToPointer = ffichecks.entitytopointer
-local pointerType = ffi.typeof("void*")
 local uintptrType = ffi.typeof("uintptr_t")
 local entityType = ffi.typeof("struct Entity*")
 local projectileType
@@ -422,18 +421,13 @@ local TYPE_LASER = 7
 local TYPE_KNIFE = 8
 local TYPE_EFFECT = 1000
 
--- Classes that are not cdata yet are still pushed as userdata
 local classTypes = {}
 
 local function ToClass(self, wantedType)
     if ffi.getprivate(self, "TypeValue") ~= wantedType then
         return nil
     end
-    local ctype = classTypes[wantedType]
-    if ctype then
-        return ffi.cast(ctype, self)
-    end
-    return ffichecks.pointertoclass(ffi.cast(pointerType, self), wantedType)
+    return ffi.cast(classTypes[wantedType], self)
 end
 
 local function EffectResult(pointer)

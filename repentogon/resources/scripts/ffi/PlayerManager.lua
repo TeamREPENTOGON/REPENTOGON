@@ -19,24 +19,16 @@ ffi.cdef [[
     void L_PlayerManager_SpawnSelectedBaby(int, int);
     void* L_PlayerManager_GetRandomCollectibleOwner(int, unsigned int, struct RNG**);
     void* L_PlayerManager_GetRandomTrinketOwner(int, unsigned int, struct RNG**);
+    void L_PlayerManager_RemoveCoPlayer(struct EntityPlayer*);
 ]]
 
 local ffi = ffi
 local repentogon = ffidll
 
-local cfuncs = {
-    PushPlayer = __Lua_PlayerManager_PushPlayer,
-    RemoveCoPlayer = __Lua_PlayerManager_RemoveCoPlayer,
-}
-
-local uintptr = ffi.typeof("uintptr_t")
 local rngOut = ffi.new("struct RNG*[1]")
 
 local function ToPlayer(ptr)
-    if ptr == nil then
-        return nil
-    end
-    return cfuncs.PushPlayer(tonumber(ffi.cast(uintptr, ptr)))
+    return ffichecks.pointertoplayer(ptr)
 end
 
 PlayerManager = {
@@ -133,7 +125,8 @@ PlayerManager = {
         return repentogon.L_PlayerManager_IsCoopPlay()
     end,
     RemoveCoPlayer = function(player)
-        cfuncs.RemoveCoPlayer(player)
+        ffichecks.checkcdata(1, player, "EntityPlayer")
+        repentogon.L_PlayerManager_RemoveCoPlayer(player)
     end,
     SpawnCoPlayer2 = function(playerType)
         ffichecks.checkinteger(1, playerType)
@@ -149,5 +142,4 @@ PlayerManager = {
     end,
 }
 
-__Lua_PlayerManager_PushPlayer = nil
-__Lua_PlayerManager_RemoveCoPlayer = nil
+

@@ -1,5 +1,6 @@
 ffi.cdef [[
     struct PlayerHUD {
+        private struct EntityPlayer* Player : 0x0;
         private struct HUD* HUD : 0x4;
         private int16_t Index : 0x8;
         private int8_t RedHeartFlashCountdown : 0xc;
@@ -15,10 +16,6 @@ ffi.cdef [[
 
 local repentogon = ffidll
 local ffi = ffi
-
-local cfuncs = {
-    GetPlayer = __Lua_PlayerHUD_GetPlayer,
-}
 
 local PlayerHUDHeartT = ffi.typeof("struct PlayerHUDHeart")
 
@@ -64,7 +61,7 @@ PlayerHUDMT = {
         return repentogon.L_PlayerHUD_GetLayout(self)
     end,
     GetPlayer = function(self)
-        return cfuncs.GetPlayer(self)
+        return ffi.getprivate(self, "Player")
     end,
     RenderActiveItem = function(self, activeSlot, position, alpha, size)
         ffichecks.checkinteger(1, activeSlot)
@@ -91,4 +88,3 @@ PlayerHUD = setmetatable({}, {
     __class = PlayerHUDMT,
 })
 
-__Lua_PlayerHUD_GetPlayer = nil

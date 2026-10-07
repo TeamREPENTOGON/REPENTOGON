@@ -7,8 +7,115 @@
 #include "../../Patches/ASMPatches/ASMCallbacks.h"
 #include "../../Patches/EntityPlus.h"
 
-void CopyStatusEffects(Entity* ent1, Entity* ent2, bool overwrite);
-void ForceCollideLaser(Entity_Laser* laser, Entity* entity);
+void ForceCollideLaser(Entity_Laser* laser, Entity* entity) {
+	if (laser->CanDamageEntity(entity) && !RunPreLaserCollisionCallback(laser, entity)) {
+		laser->DoDamage(entity, laser->_collisionDamage);
+	}
+}
+
+#define nonzero(a,b)	((a == 0) ? (b) : (a))
+
+inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
+	UINT64 statusFlags[2] = { ent1->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS, ent2->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS };
+	UINT64 resFlags = statusFlags[0] ^ statusFlags[1]; // get difference in status flags between ent1 and ent2
+	ent2->_flags |= resFlags; // apply difference in flags to ent2
+
+	ent2->_freezeCountdown = nonzero(ent1->_freezeCountdown, ent2->_freezeCountdown);
+	ent2->_poisonCountdown = nonzero(ent1->_poisonCountdown, ent2->_poisonCountdown);
+	ent2->_slowingCountdown = nonzero(ent1->_slowingCountdown, ent2->_slowingCountdown);
+	ent2->_charmedCountdown = nonzero(ent1->_charmedCountdown, ent2->_charmedCountdown);
+	ent2->_confusionCountdown = nonzero(ent1->_confusionCountdown, ent2->_confusionCountdown);
+	ent2->_midasFreezeCountdown = nonzero(ent1->_midasFreezeCountdown, ent2->_midasFreezeCountdown);
+	ent2->_fearCountdown = nonzero(ent1->_fearCountdown, ent2->_fearCountdown);
+	ent2->_burnCountdown = nonzero(ent1->_burnCountdown, ent2->_burnCountdown);
+	ent2->_bleedingCountdown = nonzero(ent1->_bleedingCountdown, ent2->_bleedingCountdown);
+	ent2->_shrinkCountdown = nonzero(ent1->_shrinkCountdown, ent2->_shrinkCountdown);
+	ent2->_poisonDamage = nonzero(ent1->_poisonDamage, ent2->_poisonDamage);
+	ent2->_burnDamage = nonzero(ent1->_burnDamage, ent2->_burnDamage);
+	ent2->_magnetizedCountdown = nonzero(ent1->_magnetizedCountdown, ent2->_magnetizedCountdown);
+	ent2->_baitedCountdown = nonzero(ent1->_baitedCountdown, ent2->_baitedCountdown);
+	ent2->_knockbackCountdown = nonzero(ent1->_knockbackCountdown, ent2->_knockbackCountdown);
+	ent2->_knockbackDirection = (ent1->_knockbackDirection.x != 0 || ent1->_knockbackDirection.y != 0) ? ent1->_knockbackDirection : ent2->_knockbackDirection;
+	ent2->_iceCountdown = nonzero(ent1->_iceCountdown, ent2->_iceCountdown);
+	ent2->_weaknessCountdown = nonzero(ent1->_weaknessCountdown, ent2->_weaknessCountdown);
+	ent2->_brimstoneMarkCountdown = nonzero(ent1->_brimstoneMarkCountdown, ent2->_brimstoneMarkCountdown);
+	ent2->_shrinkStatus1 = nonzero(ent1->_shrinkStatus1, ent2->_shrinkStatus1);
+	ent2->_shrinkStatus2 = nonzero(ent1->_shrinkStatus2, ent2->_shrinkStatus2);
+
+	if (ent1->_type >= 10 && ent1->_type < 1000) {
+		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
+		if (npc->_isBoss) {
+			ent2->_bossStatusEffectCooldown = std::max(ent1->_bossStatusEffectCooldown, ent2->_bossStatusEffectCooldown);
+		}
+	}
+
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
+		}
+	}
+}
+
+#undef nonzero
+
+inline void FastTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
+	UINT64 statusFlags = ent1->_flags & EntityFlag::FLAG_STATUS_EFFECTS;
+	ent2->_flags &= EntityFlag::FLAG_NON_STATUS_EFFECTS; // remove ent2 status effect flags
+	ent2->_flags |= statusFlags; // add ent1 status effect flags
+
+	ent2->_freezeCountdown = ent1->_freezeCountdown;
+	ent2->_poisonCountdown = ent1->_poisonCountdown;
+	ent2->_slowingCountdown = ent1->_slowingCountdown;
+	ent2->_charmedCountdown = ent1->_charmedCountdown;
+	ent2->_confusionCountdown = ent1->_confusionCountdown;
+	ent2->_midasFreezeCountdown = ent1->_midasFreezeCountdown;
+	ent2->_fearCountdown = ent1->_fearCountdown;
+	ent2->_burnCountdown = ent1->_burnCountdown;
+	ent2->_bleedingCountdown = ent1->_bleedingCountdown;
+	ent2->_shrinkCountdown = ent1->_shrinkCountdown;
+	ent2->_poisonDamage = ent1->_poisonDamage;
+	ent2->_burnDamage = ent1->_burnDamage;
+	ent2->_magnetizedCountdown = ent1->_magnetizedCountdown;
+	ent2->_baitedCountdown = ent1->_baitedCountdown;
+	ent2->_knockbackCountdown = ent1->_knockbackCountdown;
+	ent2->_knockbackDirection = ent1->_knockbackDirection;
+	ent2->_iceCountdown = ent1->_iceCountdown;
+	ent2->_weaknessCountdown = ent1->_weaknessCountdown;
+	ent2->_brimstoneMarkCountdown = ent1->_brimstoneMarkCountdown;
+	ent2->_shrinkStatus1 = ent1->_shrinkStatus1;
+	ent2->_shrinkStatus2 = ent1->_shrinkStatus2;
+
+	if (ent1->_type >= 10 && ent1->_type < 1000) {
+		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
+		if (npc->_isBoss) {
+			ent2->_bossStatusEffectCooldown = ent1->_bossStatusEffectCooldown;
+		}
+	}
+
+	for (ColorParams& p : ent2->_colorParams) {
+		// try to automatically determine what colors should be removed
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			p._duration2 = 1; // make it go away while still properly handling other colors
+		}
+	}
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
+		}
+	}
+}
+
+void CopyStatusEffects(Entity* ent1, Entity* ent2, bool overwrite) {
+	if (overwrite) {
+		FastTrackCopyStatusEffects(ent1, ent2);
+	}
+	else
+	{
+		SlowTrackCopyStatusEffects(ent1, ent2);
+	}
+}
 
 namespace {
 	template<typename Ret, typename... Args>
@@ -384,111 +491,4 @@ MOD_EXPORT Entity_Projectile* L_Entity_ToProjectile(Entity* entity) {
 
 MOD_EXPORT void L_EntityProjectile_Deflect(Entity_Projectile* projectile, Vector* velocity) {
 	projectile->Reflect(nullptr, velocity);
-}
-
-HOOK_STATIC(LuaEngine, GetUserdata, (lua_State* L, int idx, void* key, bool canBeConst) -> void*, __cdecl) {
-	if (lua_type(L, idx) == LUA_TCDATA) {
-		static const lua::Metatables entityClasses[] = {
-			lua::Metatables::ENTITY,
-			lua::Metatables::ENTITY_PROJECTILE,
-			lua::Metatables::ENTITY_TEAR,
-			lua::Metatables::ENTITY_BOMB,
-			lua::Metatables::ENTITY_KNIFE,
-			lua::Metatables::ENTITY_LASER,
-			lua::Metatables::ENTITY_EFFECT,
-			lua::Metatables::ENTITY_PICKUP,
-			lua::Metatables::ENTITY_NPC,
-			lua::Metatables::ENTITY_PLAYER,
-		};
-
-		lua_rawgetp(L, LUA_REGISTRYINDEX, key);
-		lua::Metatables wanted = lua::Metatables::METATABLES_MAX;
-		for (lua::Metatables mt : entityClasses) {
-			lua::PushMetatable(L, mt);
-			const bool match = lua_rawequal(L, -1, -2);
-			lua_pop(L, 1);
-			if (match) {
-				wanted = mt;
-				break;
-			}
-		}
-		lua_pop(L, 1);
-
-		if (wanted != lua::Metatables::METATABLES_MAX) {
-			if (void* userdata = lua::TestUserdata(L, idx, wanted)) {
-				return userdata;
-			}
-		}
-	}
-	return super(L, idx, key, canBeConst);
-}
-
-namespace {
-	Entity* CheckEntityArgument(lua_State* L, int index) {
-		if (lua_isnoneornil(L, index)) {
-			return nullptr;
-		}
-		return lua::GetLuabridgeUserdata<Entity*>(L, index, lua::Metatables::ENTITY, "Entity");
-	}
-
-	int PushEntityOrNil(lua_State* L, Entity* entity) {
-		if (entity) {
-			LuaEntity::PushPtr(L, entity);
-		}
-		else {
-			lua_pushnil(L);
-		}
-		return 1;
-	}
-
-	LUA_FUNCTION(Lua_Entity_GetParentLegacy) {
-		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetParent());
-	}
-
-	LUA_FUNCTION(Lua_Entity_SetParentLegacy) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-		entity->SetParent(CheckEntityArgument(L, 2));
-		return 0;
-	}
-
-	LUA_FUNCTION(Lua_Entity_GetChildLegacy) {
-		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetChild());
-	}
-
-	LUA_FUNCTION(Lua_Entity_SetChildLegacy) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-		entity->SetChild(CheckEntityArgument(L, 2));
-		return 0;
-	}
-
-	LUA_FUNCTION(Lua_Entity_GetTargetLegacy) {
-		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetTarget());
-	}
-
-	LUA_FUNCTION(Lua_Entity_SetTargetLegacy) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-		entity->SetTarget(CheckEntityArgument(L, 2));
-		return 0;
-	}
-
-	LUA_FUNCTION(Lua_Entity_GetSpawnerEntityLegacy) {
-		return PushEntityOrNil(L, lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity")->GetSpawnerEntity());
-	}
-
-	LUA_FUNCTION(Lua_Entity_SetSpawnerEntityLegacy) {
-		Entity* entity = lua::GetLuabridgeUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-		entity->SetSpawnerEntity(CheckEntityArgument(L, 2));
-		return 0;
-	}
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-
-	lua::LuaStackProtector protector(_state);
-
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Parent", Lua_Entity_GetParentLegacy, Lua_Entity_SetParentLegacy);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Child", Lua_Entity_GetChildLegacy, Lua_Entity_SetChildLegacy);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "Target", Lua_Entity_GetTargetLegacy, Lua_Entity_SetTargetLegacy);
-	lua::RegisterVariable(_state, lua::Metatables::ENTITY, "SpawnerEntity", Lua_Entity_GetSpawnerEntityLegacy, Lua_Entity_SetSpawnerEntityLegacy);
 }
