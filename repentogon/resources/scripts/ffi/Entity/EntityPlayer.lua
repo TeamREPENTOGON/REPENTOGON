@@ -518,6 +518,9 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_EntityPlayer_CheckFamiliar)
+ffi.reentrant(repentogon.L_EntityPlayer_CheckFamiliarEx)
+
 local helpers = Entity.Helpers
 local Getter = helpers.Getter
 local VectorGetter = helpers.VectorGetter

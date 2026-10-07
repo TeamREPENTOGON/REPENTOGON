@@ -168,6 +168,9 @@ rawset(Isaac, "RunCallback", function(callbackID, ...) return RunCallback(callba
 REPENTANCE = true
 REPENTANCE_PLUS = true
 
+-- I allow Mod Profiler to live. For now.
+_ENV = _G
+
 ------------------------------------------------------------
 -- Compatibility wrappers begin here
 
