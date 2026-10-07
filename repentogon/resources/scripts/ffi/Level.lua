@@ -311,8 +311,7 @@ LevelMT = {
     GetCurses = function(self)
         return repentogon.L_Level_GetCurses(self)
     end,
-    GetDevilAngelRoomRNG = function(self, index)
-        ffichecks.checkinteger(1, index)
+    GetDevilAngelRoomRNG = function(self)
         return ffi.getprivate(self, "DevilAngelRoomRNG")
     end,
     GetDimension = function(self)
