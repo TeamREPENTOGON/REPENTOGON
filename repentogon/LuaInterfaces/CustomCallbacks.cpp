@@ -1474,41 +1474,29 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 //PRE_USE_CARD (id: 1064)
 HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void) {
 	const int callbackid = 1064;
-	if (CallbackState.test(callbackid - 1000)) { 
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (!CallbackState.test(callbackid - 1000)) { return super(cardType, useFlag); }
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(cardType)
-			.push(cardType)
-			.pushClassPtr<LuaEntityPlayer>(this)
-			.push(useFlag)
-			.call(1);
+	Entity_Player* plr = (Entity_Player*)this;
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.push(cardType)
+		.push(cardType)
+		.pushClassPtr<LuaEntityPlayer>(plr)
+		.push(useFlag)
+		.call(1);
 
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (lua_toboolean(L, -1)) {
-					return;
-				}
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
 			}
 		}
-	}
-
-	const int reimplCallbackid = 5;
-	if (VanillaCallbackState.test(reimplCallbackid)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(reimplCallbackid)
-			.push(cardType)
-			.push(cardType)
-			.pushClassPtr<LuaEntityPlayer>(this)
-			.push(useFlag)
-			.call(0);
+		else {
+			super(cardType, useFlag);
+		}
 	}
 }
 
@@ -7372,6 +7360,20 @@ HOOK_STATIC(LuaEngine, PostPlayerUpdate, (Entity_Player* player) -> void, __stdc
 		lua::LuaCaller(L).push(callbackid)
 			.push(player->_variant)
 			.pushClassPtr<LuaEntityPlayer>(player)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, UseCard, (int card, Entity_Player* player, int useFlags) -> void, __stdcall) {
+	const int callbackid = 5;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(card)
+			.push(card)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.push(useFlags)
 			.call(0);
 	}
 }
