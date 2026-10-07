@@ -354,6 +354,7 @@ void PerformASMPatches() {
 
 	// Lua related
 	ASMPatchLuaGC();
+	ASMPatchLuaLoadMessage();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

@@ -92,12 +92,18 @@ namespace REPENTOGON {
 	extern char moddedtitle[256];
 
 	static void ChangeWindowTitle(const char* text) {
-		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
-		SetWindowTextA(GetActiveWindow(), stocktitle);
+		sprintf(stocktitle, "The Binding of Isaac: Repentance+ %s (+ REPENTOGON %s)%s", &g_GameVersionString, CMAKE_REPENTOGON_VERSION, text);
+		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
+			SetWindowTextA((HWND)window->HWND, stocktitle);
+			MSG msg;
+			PeekMessageA(&msg, NULL, 0, 0, PM_NOREMOVE);
+		}
 	}
 
 	static void SetStockWindowTitle() {
-		SetWindowTextA(GetActiveWindow(), stocktitle);
+		if (_GLFWwindow* window = g_KAGE_Graphics_Manager._window) {
+			SetWindowTextA((HWND)window->HWND, stocktitle);
+		}
 	};
 
 	template <typename T>
