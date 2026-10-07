@@ -45,16 +45,6 @@ extern "C" {
 		return room->DestroyGrid(index, 0, immediate, source);
 	}
 
-	//TODO: we can reimplement this in lua once RNG, Game, SFXManager are moved over
-	__declspec(dllexport) void L_Room_DoLightningStrike(Room* room, unsigned int seed) {
-		RNG rng; // oppa tyrone style
-		rng.game_constructor(seed, 35);
-		float intensity = 1.3f + rng.RandomFloat() * .6f;
-
-		g_Game->_lightningIntensity = intensity;
-		g_Manager->_sfxManager.Play(472, 1.0, 90, false, 0.9f + rng.RandomFloat() * 0.2f, 0);
-	}
-
 	__declspec(dllexport) void L_Room_FindFreePickupSpawnPosition(Room* room, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, Vector* out) {
 		room->FindFreePickupSpawnPosition(out, pos, initialStep, avoidActiveEntities, allowPits, false);
 	}
@@ -146,11 +136,6 @@ extern "C" {
 
 	__declspec(dllexport) float L_Room_GetLightingAlpha(Room* room) {
 		return room->GetLightingAlpha();
-	}
-
-	//TODO: Once we FFI Game, this can live in LuaJIT. I have these going through C because it doesn't actually use Room at all, it would go through Luabridge if I were to do them in Lua now.
-	__declspec(dllexport) float L_Room_GetLightningIntensity(Room* room) {
-		return g_Game->_lightningIntensity;
 	}
 
 	__declspec(dllexport) void L_Room_GetLRoomAreaDesc(Room* room, LRoomAreaDesc* out) {
@@ -264,10 +249,6 @@ extern "C" {
 
 	__declspec(dllexport) void L_Room_SetItemPool(Room* room, int poolType) {
 		roomASM.ItemPool = poolType;
-	}
-
-	__declspec(dllexport) void L_Room_SetLightningIntensity(float intensity) {
-		g_Game->_lightningIntensity = intensity;
 	}
 
 	__declspec(dllexport) void L_Room_SetPauseTimer(Room* room, int duration) {

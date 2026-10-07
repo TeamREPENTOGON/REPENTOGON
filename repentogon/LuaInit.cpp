@@ -77,12 +77,6 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
 }
 
-// Luabridge's UserdataPtrs have finalizers. They do not need finalizers. They are just pointers.
-// Goodbye.
-static void RegisterTrivialUserdata() {
-	luaJIT_setudnofin(__ptr_UserdataPtr_vftable);
-}
-
 static size_t luaArenaSize = 0;
 static size_t forceCollectAt = 0;
 static int forceCollectPercentage = 80;
@@ -101,7 +95,6 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	lua_State* L = g_LuaEngine->_state;
 	luaJIT_setapifatal([](const char* msg) { ZHL::Log("[ERROR] %s", msg); });
-	RegisterTrivialUserdata();
 	forceCollectAt = luaArenaSize / 100 * forceCollectPercentage;
 	if (luaArenaSize)
 		ZHL::Log("[REPENTOGON] Armed Lua heap emergency collection at %u of %u MB\n", forceCollectAt >> 20, luaArenaSize >> 20);

@@ -20,13 +20,6 @@ namespace lua {
 
     LIBZHL_API void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func);
 
-    LIBZHL_API void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
-    LIBZHL_API void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
-    LIBZHL_API void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
-    LIBZHL_API void RegisterVariableSetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
-
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	
     template<typename T>
@@ -49,10 +42,6 @@ namespace lua {
         }
     }
 
-    LIBZHL_API void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function);
-
-    struct lua_global_tag_t {};
-
     class LuaResults;
 
     // used for dynamic pushes in lua caller
@@ -69,7 +58,6 @@ namespace lua {
         LuaCaller& push(bool x);
         LuaCaller& push(lua_CFunction fn, int n = 0);
         LuaCaller& pushfstring(const char* fmt, ...);
-        LuaCaller& push(lua_global_tag_t);
 
         template<typename T>
         std::enable_if_t<std::is_integral_v<T>, LuaCaller&> push(T x) {
@@ -93,10 +81,6 @@ namespace lua {
         LuaCaller& pushluaref(int ref);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
-        template<typename T>
-        std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) = delete;
-        template<typename T>
-        LuaCaller& push(T const& value, lua_CTypeId ctypeid) = delete;
         template<typename LuaClass, typename T>
         LuaCaller& pushClass(const T& value)
         {
@@ -123,9 +107,6 @@ namespace lua {
             ++_n;
             return *this;
         };
-        void* pushUd(size_t size, const char* mt) = delete;
-        template<typename T, typename... Args>
-        T* pushUd(const char* mt, Args&&... args) = delete;
         void pushTable(int narr = 0, int nrec = 0);
 
         LuaResults call(int nresults);
@@ -190,8 +171,6 @@ namespace lua {
 
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
     LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
-
-    LIBZHL_API uint64_t luaL_checkuint64(lua_State* L, int idx);
 
     namespace ffi {
         template<typename T>
@@ -417,42 +396,15 @@ namespace lua {
         return (T*)data;
     }
 
-    struct LIBZHL_API LuaStackRef {
-        LuaStackRef(int ref) : _ref(ref) { }
-        operator int() {
-            return _ref;
-        }
-
-        int _ref;
-    };
-
-    /* The following four functions assume the destination table is at the top of the stack.
-     * If it's not the case you need to use the overload that takes two LuaStackRefs as 
-     * parameters. To do so, push the value you want to set in the table, then give both the
-     * index of this value and of the table as parameters to TableAssoc.
-     */
+    // These assume the destination table is at the top of the stack.
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, int value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, float value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, lua_CFunction fn);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, void* ptr);
-    /* Store in the table at index dstTable the value at index srcObj.
-     * The value at index srcObj is subsequently poped from the stack.
-     */
-    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, LuaStackRef dstTable, LuaStackRef srcObj);
-
-    /* The following four functions assume the destination table is at the top of the stack.
-     * If it's not the case you need to use the overload that takes two LuaStackRefs as
-     * parameters. To do so, push the value you want to set in the table, then give both the
-     * index of this value and of the table as parameters to TableAssoc.
-     */
     LIBZHL_API void TableAssoc(lua_State* L, int key, int value);
     LIBZHL_API void TableAssoc(lua_State* L, int key, float value);
     LIBZHL_API void TableAssoc(lua_State* L, int key, lua_CFunction fn);
     LIBZHL_API void TableAssoc(lua_State* L, int key, void* ptr);
-    /* Store in the table at index dstTable the value at index srcObj.
-     * The value at index srcObj is subsequently poped from the stack.
-     */
-    LIBZHL_API void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj);
 
     namespace callbacks {
         LIBZHL_API bool CheckInteger(lua_State* L, int stackPosition);
@@ -464,7 +416,6 @@ namespace lua {
 
     void LIBZHL_API PushCallbackID(lua_State* L, const char* name, const char* ns = nullptr);
     void LIBZHL_API PushCallbackRegistryKey(lua_State* L = nullptr);
-    int LIBZHL_API LuaCheckMainMenuExists(lua_State* L, const char* className);
 }
 
 #define LUA_FUNCTION(name) static int name(lua_State* L)

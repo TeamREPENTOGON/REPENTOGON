@@ -304,9 +304,6 @@ static __cdecl int LuaEngine::Lua_Print(lua_State* L);
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
 
-"68d8b9f0ff??c700(????????)89??04ff":
-reference void* UserdataPtr_vftable;
-
 struct LuaEngine depends (RunCallbackRegistry, Entity_Player, Vector, GridEntity, LuaBridgeRef) {
 	{{
 	

@@ -231,36 +231,17 @@ local function GetCDataType(ret)
 	return ret.__type
 end
 
--- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
-
-	-- Stick FFI stuff here, for now. Soon we can remove this whole function!
-	if getmetatable(ret) == "ffi" then
+	local mt = getmetatable(ret)
+	if mt == "ffi" then
 		local ok, typ = pcall(GetCDataType, ret)
 		return ok and typ or nil
 	end
 
-	-- TODO directly pcall in here?
-
-	-- Vector will CRASH THE GAME through a pcall if we try getting __name or __type from it, and getmetatable doesn't work on it.
-	-- We have no choice but to check manually.
-	if ret.X and ret.Y then
-		return "Vector"
-	else
-		-- Directly trying __name or __type, too, will crash the game on occasion, even through a pcall.
-		-- Absolute masterclass of an API here. Best in show, really.
-		return getmetatable(ret).__name or getmetatable(ret).__type
+	if type(mt) == "table" then
+		return mt.__type or mt.__name
 	end
 end
-
-local function checkMetatable(mtType)
-	return function(val)
-		if GetMetatableType(val) ~= mtType then
-			return "bad return type (" .. mtType .. " expected, got " .. GetMetatableType(val).__type .. ")"
-		end
-	end
-end
-
 
 local function checkInteger(val)
 	if math.type(val) ~= "integer" then

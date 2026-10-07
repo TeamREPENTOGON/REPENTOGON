@@ -132,10 +132,6 @@ extern "C" {
 		sprite->SetFrame(frame);
 	}
 
-	__declspec(dllexport) void L_Sprite_SetLayerFrame(ANM2* sprite, int id, int frame) {
-		sprite->SetLayerFrame(id, frame);
-	}
-
 	__declspec(dllexport) bool L_Sprite_SetOverlayAnimation(ANM2* sprite, const char* anim, bool reset) {
 		return sprite->SetOverlayAnimation(anim, reset);
 	}

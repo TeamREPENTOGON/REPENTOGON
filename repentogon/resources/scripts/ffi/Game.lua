@@ -36,6 +36,7 @@ ffi.cdef [[
         private struct ColorModifier CurrentColorModifier : 0x66920;
         private struct ColorModifier TargetColorModifier : 0x66938;
         private struct ColorModifier LerpColorModifier : 0x66950;
+        private float LightningIntensity : 0x6699c;
         private float DizzyIntensity : 0x669a0;
         private float DizzyTargetIntensity : 0x669a4;
     } : 0x680e8;

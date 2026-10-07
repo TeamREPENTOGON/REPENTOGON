@@ -102,96 +102,6 @@ namespace lua {
 		lua_pop(L, 1);
 	}
 
-	void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
-		lua_getglobal(L, className);
-		RegisterVariableToLoadedMT(L, variableName, getFunc, setFunc);
-	}
-
-	void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func) {
-		lua_getglobal(L, className);
-		RegisterVariableGetterToLoadedMT(L, variableName, func);
-	}
-
-	void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func) {
-		lua_getglobal(L, className);
-		RegisterVariableSetterToLoadedMT(L, variableName, func);
-	}
-
-	void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
-		if (getFunc) {
-			RegisterVariableGetterToLoadedMT(L, variableName, getFunc, 1);
-		}
-
-		if (setFunc) {
-			RegisterVariableSetterToLoadedMT(L, variableName, setFunc, 1);
-		}
-
-		lua_pop(L, 1);
-	}
-
-	void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop) {
-		lua_pushstring(L, "__propget"); // table, key
-		lua_rawget(L, -2); // table, value
-
-		lua_pushstring(L, variableName); // table, value, string
-		lua_pushcfunction(L, func); // table, value, string, function
-		lua_rawset(L, -3); // table, value
-		lua_pop(L, pop);
-	}
-
-	void RegisterVariableSetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop) {
-		lua_pushstring(L, "__propset");
-		lua_rawget(L, -2);
-
-		lua_pushstring(L, variableName);
-		lua_pushcfunction(L, func);
-		lua_rawset(L, -3);
-		lua_pop(L, pop);
-	}
-
-	void TracebackTillFunction(lua_State* L, const char* msg, int level, lua_CFunction function)
-	{
-		luaL_Buffer b;
-		lua_Debug ar;
-		luaL_buffinit(L, &b);
-		if (msg) {
-			luaL_addstring(&b, msg);
-			luaL_addchar(&b, '\n');
-		}
-
-		luaL_addstring(&b, "Begin Stack Traceback:\n");
-		while (lua_getstack(L, level++, &ar))
-		{
-			lua_getinfo(L, "f", &ar);
-
-			if (lua_iscfunction(L, -1))
-			{
-				lua_CFunction fn = lua_tocfunction(L, -1);
-				if (fn == function) break;
-			}
-
-			lua_getinfo(L, "Sln", &ar);
-			if (*ar.what == 'C')
-			{
-				lua_pushfstring(L, "  %s: in method %s\n", ar.short_src, ar.name ? ar.name : "?");
-			}
-			else
-			{
-				if (ar.name == '\0')
-				{
-					lua_pushfstring(L, "  %s:%d: in function at line %d\n", ar.short_src, ar.currentline, ar.linedefined);
-				}
-				else
-				{
-					lua_pushfstring(L, "  %s:%d: in function '%s'\n", ar.short_src, ar.currentline, ar.name);
-				}
-			}
-			luaL_addvalue(&b);
-		}
-		luaL_addstring(&b, "End Stack Traceback");
-		luaL_pushresult(&b);
-	}
-
 	namespace callbacks {
 		bool CheckInteger(lua_State* L, int stackPosition) {
 			lua_pushinteger(L, stackPosition);
@@ -261,21 +171,6 @@ namespace lua {
 		}
 	}
 
-	uint64_t luaL_checkuint64(lua_State* L, int idx) {
-		const int t = lua_type(L, idx);
-		if (t == LUA_TNUMBER) {
-			return (uint64_t)lua_tonumber(L, idx);
-		}
-		if (t == LUA_TCDATA) {
-			void* payload = lua_tocdata(L, idx);
-			if (payload) {
-				return *(uint64_t*)payload;
-			}
-		}
-		luaL_argerror(L, idx, "number or int64 expected");
-		return 0;
-	}
-
 	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }
 
 	LuaCaller& LuaCaller::push(bool x) {
@@ -300,12 +195,6 @@ namespace lua {
 		va_list va;
 		va_start(va, fmt);
 		return push(fmt, va);
-	}
-
-	LuaCaller& LuaCaller::push(lua_global_tag_t) {
-		lua_pushglobaltable(_L);
-		++_n;
-		return *this;
 	}
 
 	LuaCaller& LuaCaller::push(void* p) {
@@ -463,17 +352,6 @@ namespace lua {
 		lua_rawset(L, -3);
 	}
 
-	void TableAssoc(lua_State* L, std::string const& name, LuaStackRef dstTable, LuaStackRef srcObj) {
-		int src = lua_absindex(L, srcObj);
-		int dst = lua_absindex(L, dstTable);
-
-		lua_pushstring(L, name.c_str());
-		lua_pushvalue(L, src);
-		lua_rawset(L, dst);
-
-		lua_remove(L, src);
-	}
-
 	void TableAssoc(lua_State* L, int key, int value) {
 		lua_pushinteger(L, key);
 		lua_pushinteger(L, value);
@@ -496,17 +374,6 @@ namespace lua {
 		lua_pushinteger(L, key);
 		lua_pushlightuserdata(L, ptr);
 		lua_rawset(L, -3);
-	}
-
-	void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj) {
-		int src = lua_absindex(L, srcObj);
-		int dst = lua_absindex(L, dstTable);
-
-		lua_pushinteger(L, key);
-		lua_pushvalue(L, src);
-		lua_rawset(L, dst);
-
-		lua_remove(L, src);
 	}
 
 	void PushCallbackID(lua_State* L, const char* name, const char* ns) {
@@ -545,10 +412,5 @@ namespace lua {
 		}
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-	}
-
-	int LuaCheckMainMenuExists(lua_State* L, const char* className) {
-		if (g_MenuManager == NULL) { return luaL_error(L, "%s functions can only be used in the main menu", className); }
-		return 0;
 	}
 }

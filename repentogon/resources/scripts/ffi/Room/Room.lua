@@ -69,7 +69,6 @@ ffi.cdef [[
     bool L_Room_DamageGridWithSource(struct Room*, int, float, struct EntityRef*);
     bool L_Room_DestroyGrid(struct Room*, int, bool);
     bool L_Room_DestroyGridWithSource(struct Room*, int, bool, struct EntityRef*);
-    void L_Room_DoLightningStrike(struct Room*, unsigned int);
     void L_Room_FindFreePickupSpawnPosition(struct Room*, struct Vector*, float, bool, bool, struct Vector*);
     void L_Room_FindFreeTilePosition(struct Room*, struct Vector*, float, struct Vector*);
     unsigned int L_Room_GetBossVictoryJingle(struct Room*);
@@ -92,7 +91,6 @@ ffi.cdef [[
     int L_Room_GetItemPool(struct Room*, unsigned int, bool);
     void L_Room_GetLaserTarget(struct Room*, struct Vector*, struct Vector*, struct Vector*);
     float L_Room_GetLightingAlpha(struct Room*);
-    float L_Room_GetLightningIntensity(struct Room*);
     void L_Room_GetLRoomAreaDesc(struct Room*, struct LRoomAreaDesc*);
     void L_Room_GetLRoomTileDesc(struct Room*, struct LRoomTileDesc*);
     int L_Room_GetRail(struct Room*, int);
@@ -118,7 +116,6 @@ ffi.cdef [[
     void L_Room_ScreenWrapPosition(struct Room*, struct Vector*, float, struct Vector*);
     void L_Room_SetBackdropType(struct Room*, int, int);
     void L_Room_SetItemPool(struct Room*, int);
-    void L_Room_SetLightningIntensity(int);
     void L_Room_SetPauseTimer(struct Room*, int);
     void L_Room_SetRailType(struct Room*, int, int);
     void L_Room_ShopReshuffle(struct Room*, bool, bool);
@@ -210,8 +207,10 @@ RoomMT = {
         return repentogon.L_Room_DestroyGridWithSource(self, index, immediate, source)
     end,
     DoLightningStrike = function(self, seed)
-        seed = ffichecks.optnumber(seed, math.random(0, 4294967295))
-        repentogon.L_Room_DoLightningStrike(self, seed)
+        seed = math.floor(ffichecks.optnumber(seed, math.random(1, 4294967295)))
+        local rng = RNG(seed, 35)
+        ffi.setprivate(repentogon.L_Game_Get(), "LightningIntensity", 1.3 + rng:RandomFloat() * 0.6)
+        repentogon.L_SFXManager_Play(SoundEffect.SOUND_THUNDER, 1, 90, false, 0.9 + rng:RandomFloat() * 0.2, 0)
     end,
     EmitBloodFromWalls = function(self, duration, count)
         ffichecks.checkinteger(1, duration)
@@ -432,7 +431,7 @@ RoomMT = {
         return repentogon.L_Room_GetLightingAlpha(self)
     end,
     GetLightningIntensity = function(self)
-        return repentogon.L_Room_GetLightningIntensity(self)
+        return ffi.getprivate(repentogon.L_Game_Get(), "LightningIntensity")
     end,
     GetLRoomAreaDesc = function(self)
         local out = ffi.new("struct LRoomAreaDesc")
@@ -723,11 +722,11 @@ RoomMT = {
     end,
     SetLightningIntensity = function(self, intensity)
         ffichecks.checknumber(1, intensity)
-        repentogon.L_Room_SetLightningIntensity(intensity)
+        ffi.setprivate(repentogon.L_Game_Get(), "LightningIntensity", intensity)
     end,
     SetRedHeartDamage = function(self, value)
         value = ffichecks.optboolean(value, true)
-        ffi.setprivate(self, "RedHeartDamage", true)
+        ffi.setprivate(self, "RedHeartDamage", value)
     end,
     SetPauseTimer = function(self, duration)
         ffichecks.checkinteger(1, duration)
