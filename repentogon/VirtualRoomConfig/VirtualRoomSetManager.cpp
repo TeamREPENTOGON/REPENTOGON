@@ -11,6 +11,7 @@
 #include <fstream>
 #include <unordered_set>
 #include <tuple>
+#include "../Patches/Stages/StageManager.h"
 
 #undef ERROR
 
@@ -20,6 +21,9 @@ typedef LogUtility::LogContext LogContext;
 #define LOG_INFO_HEADER "[INFO] [VirtualRoomSetManager] - "
 #define LOG_WARN_HEADER "[WARN] [VirtualRoomSetManager] -"
 #define LOG_ERROR_HEADER "[ERROR] [VirtualRoomSetManager] - "
+
+// Equivalent of NUM_STB including custom StbTypes
+static uint32_t s_NumStbTypes = NUM_STB;
 
 namespace {
 	static constexpr size_t CHUNK_SIZE = 64 * 1024 / sizeof(RoomConfig_Room); // 64 KB
@@ -240,7 +244,7 @@ static bool WriteDB(const std::string& filePath, uint32_t gameChecksum, RestoreR
 
 static size_t get_num_stages()
 {
-	return NUM_STB;
+	return s_NumStbTypes;
 }
 
 static int normalize_mode(int mode)
@@ -474,6 +478,9 @@ static RoomConfig_Room* add_room(const RoomConfig_Room& room, bool isRestored)
 
 static void try_init_vanilla_room_set(uint32_t stageId, int mode)
 {
+	if (stageId >= NUM_STB)
+		return;
+
 	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
 	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
 	if (!vanillaRoomSet._loaded)
@@ -484,6 +491,9 @@ static void try_init_vanilla_room_set(uint32_t stageId, int mode)
 
 static void commit_room_set_insertion(_VirtualRoomSet& virtualSet, size_t begin, size_t end, uint32_t stageId, int mode)
 {
+	if (stageId >= NUM_STB)
+		return;
+
 	RoomConfig& roomConfig = *g_Game->GetRoomConfig();
 	auto& vanillaRoomSet = roomConfig._stages[stageId]._rooms[mode];
 
@@ -851,6 +861,15 @@ static bool WriteDB(const std::string& filePath, uint32_t gameChecksum, RestoreR
 
 	save.AddMember("Version", DB_VERSION, allocator);
 	save.AddMember("Checksum", gameChecksum, allocator);
+	if (auto& stageOverride = StageManager::GetOverride(slot); stageOverride.HasOverride())
+	{
+		if (auto* customStage = StageManager::GetStage(stageOverride.GetCustomStageID()); customStage && customStage->IsCustom())
+		{
+			rapidjson::Value v;
+			v.SetString(customStage->GetName().c_str(), customStage->GetName().length(), allocator);
+			save.AddMember("CustomStage", v, allocator);
+		}
+	}
 	save.AddMember("Rooms", rapidjson::Value(rapidjson::kArrayType), allocator);
 
 	// serialize rooms
@@ -930,6 +949,25 @@ static bool ReadDB(const std::string& filePath, uint32_t gameChecksum, RestoreRo
 		return false;
 	}
 
+	if (auto& json_customstage = LogUtility::Json::ReadStringMember(doc, "CustomStage", logContext, true))
+	{
+		if (auto* customStage = StageManager::GetStageByName(json_customstage.value()))
+		{
+			if (customStage->IsCustom())
+			{
+				StageManager::GetOverride(slot).Load(*customStage);
+			}
+			else
+			{
+				ZHL::Log(LOG_ERROR_HEADER "CustomStage value seemingly refers to a vanilla stage: \"%s\"\n", json_customstage.value().c_str());
+			}
+		}
+		else
+		{
+			ZHL::Log(LOG_ERROR_HEADER "CustomStage value does not map to any loaded stage: \"%s\"\n", json_customstage.value().c_str());
+		}
+	}
+
 	auto& json_rooms = LogUtility::Json::GetArrayMember(doc, "Rooms", logContext, false); if (!json_rooms) { return false; } // treat this missing as a parse fail
 
 	// deserialize rooms
@@ -975,6 +1013,13 @@ void VirtualRoomSetManager::TryInitializeSet(uint32_t stageId)
 	{
 		GetData().roomSets.resize(greedid + 1);
 	}
+}
+
+uint32_t VirtualRoomSetManager::AddSet()
+{
+	uint32_t stageId = s_NumStbTypes++;
+	TryInitializeSet(stageId);
+	return stageId;
 }
 
 RoomConfig_Room* VirtualRoomSetManager::GetRoomByStageTypeAndVariant_IgnoreStageOverride(uint32_t stage, uint32_t type, uint32_t variant, int mode)
@@ -1189,16 +1234,31 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (uint32_t Stage, uint32_t Mode) -> void
 
 HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsigned int type, unsigned int variant, int mode) -> RoomConfig_Room*)
 {
+	//int originalStage = stage;
+	
+	if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+	{
+		stage = stageOverride.GetCustomStageID();
+	}
+
 	RoomConfig_Room* room = nullptr;
-    if (stage < NUM_STB)
-    {
-        room = super(stage, type, variant, mode);
-    }
+	if (stage < NUM_STB)
+	{
+		room = super(stage, type, variant, mode);
+	}
 
 	if (!room)
 	{
 		room = ::GetRoomById(stage, type, variant, mode);
 	}
+
+	// TODO: Custom variants of something like Home will crash if they don't either implement custom floor generation or include replacements for the usual Home elements.
+	// I do not think this is a good way to handle that, but leaving this commented out for now as a note for later.
+	// Unsure what all floors are affected by this. Blue Womb. Downpour mirror room seems to also apply. Maybe more? Need to think about how to best handle that.
+	//if (!room && stage != originalStage)
+	//{
+	//	room = super(originalStage, type, variant, mode);
+	//}
 
 	if (!room)
 	{
@@ -1210,15 +1270,30 @@ HOOK_METHOD(RoomConfig, GetRoomByStageTypeAndVariant, (unsigned int stage, unsig
 
 HOOK_METHOD(RoomConfig, GetRooms, (int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) -> RoomConfigRoomPtrVector)
 {
-	RoomConfigRoomPtrVector rooms;
-    if (stage < NUM_STB)
-    {
-        rooms = super(stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-    }
+	//int originalStage = stage;
 
+	// TODO: This was the easiest way to apply the rooms for the custom stage, since we can't let the vanilla game throw around custom StbTypes much.
+	// However, this means that attempting to actually fetch the rooms from the overridden stage is impossible.
+	// I think this only really affects calls from lua, and only if you're specifically trying to fetch the rooms from the base stage of the current custom stage.
+	// Still, need to account for that somehow. Maybe just having some context that the call is coming from lua would be good enough.
+
+	if (auto& stageOverride = StageManager::GetCurrentOverride(); stageOverride.IsOverridden(stage))
+	{
+		stage = stageOverride.GetCustomStageID();
+	}
+
+	RoomConfigRoomPtrVector rooms;
+	if (stage < NUM_STB)
+	{
+		rooms = super(stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+	}
 	mode = normalize_mode(mode);
 	_VirtualRoomSet& virtualSet = GetVirtualRoomSet(stage, mode);
 	FilterRooms(rooms, virtualSet, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, *doors, subtype);
+
+	//if (rooms.empty() && stage != originalStage) {
+	//	return super(originalStage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+	//}
 
 	return rooms;
 }
