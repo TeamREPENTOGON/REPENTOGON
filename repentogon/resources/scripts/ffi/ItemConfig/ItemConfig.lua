@@ -99,7 +99,40 @@ rawset(Isaac, "GetItemConfig", function()
     return repentogon.L_ItemConfig_Get()
 end)
 
-rawset(ItemConfig.Config, "ShouldAddCostumeOnPickup", function(item)
+ItemConfig = {
+    Card = ItemConfigCard,
+    Config = ItemConfigConfig,
+    Costume = ItemConfigCostume,
+    Item = ItemConfigItem,
+    PillEffect = ItemConfigPillEffect,
+}
+
+local REMOVED_COLLECTIBLES = { [43] = true, [61] = true, [235] = true }
+
+rawset(ItemConfigConfig, "GetCollectible", function(id)
+    ffichecks.checkinteger(1, id)
+    return repentogon.L_ItemConfig_GetCollectible(repentogon.L_ItemConfig_Get(), id)
+end)
+rawset(ItemConfigConfig, "GetNullItem", function(id)
+    ffichecks.checkinteger(1, id)
+    return repentogon.L_ItemConfig_GetNullItem(repentogon.L_ItemConfig_Get(), id)
+end)
+rawset(ItemConfigConfig, "GetTrinket", function(id)
+    ffichecks.checkinteger(1, id)
+    return repentogon.L_ItemConfig_GetTrinket(repentogon.L_ItemConfig_Get(), id)
+end)
+rawset(ItemConfigConfig, "IsValidCollectible", function(id)
+    ffichecks.checkinteger(1, id)
+    if id <= 0 or REMOVED_COLLECTIBLES[id] then
+        return false
+    end
+    local config = repentogon.L_ItemConfig_Get()
+    if id >= #ffi.getprivate(config, "CollectibleList") then
+        return false
+    end
+    return repentogon.L_ItemConfig_GetCollectible(config, id) ~= nil
+end)
+rawset(ItemConfigConfig, "ShouldAddCostumeOnPickup", function(item)
     ffichecks.checkcdata(1, item, "ItemConfigItem")
     return item.Type ~= 0 and item.AddCostumeOnPickup
 end)

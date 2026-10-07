@@ -44,3 +44,5 @@ TearParamsMT.__newindex = function(self, key, value)
 end
 
 local TearParamsT = ffi.metatype("struct TearParams", TearParamsMT)
+
+TearParams = setmetatable({}, { __class = TearParamsMT })

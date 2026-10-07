@@ -79,3 +79,5 @@ local PathFinderMT = {
 PathFinderMT.__index = PathFinderMT
 
 ffi.metatype("struct PathFinder", PathFinderMT)
+
+PathFinder = setmetatable({}, { __class = PathFinderMT })

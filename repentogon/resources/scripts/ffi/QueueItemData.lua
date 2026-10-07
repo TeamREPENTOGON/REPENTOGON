@@ -43,3 +43,5 @@ QueueItemDataMT.__newindex = function(self, key, value)
 end
 
 local QueueItemDataT = ffi.metatype("struct QueueItemData", QueueItemDataMT)
+
+QueueItemData = setmetatable({}, { __class = QueueItemDataMT })

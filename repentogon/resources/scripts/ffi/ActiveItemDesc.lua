@@ -21,3 +21,5 @@ ActiveItemDescMT = {
 ActiveItemDescMT.__index = ActiveItemDescMT
 
 local ActiveItemDescT = ffi.metatype("struct ActiveItemDesc", ActiveItemDescMT)
+
+ActiveItemDesc = setmetatable({}, { __class = ActiveItemDescMT })

@@ -21,153 +21,8 @@
 
 extern "C" int luaopen_utf8(lua_State* L);
 
-static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
-
 int LuaKeys::runCallbackWithTwoParams = LUA_NOREF;
 int LuaKeys::clearEntityData = LUA_NOREF;
-
-static int LuaDumpRegistry(lua_State* L) {
-	int top = lua_gettop(L);
-	lua_newtable(L);
-	lua_pushnil(L);
-	while (lua_next(L, LUA_REGISTRYINDEX) != 0) {
-		lua_pushvalue(L, -2);
-		lua_pushvalue(L, -2);
-		lua_rawset(L, -5);
-		lua_pop(L, 1);
-	}
-
-	int newtop = lua_gettop(L);
-	if (newtop != top + 1) {
-		ZHL::Log("top = %d, newtop = %d\n", top, newtop);
-		exit(-1);
-	}
-	return 1;
-}
-
-static int LuaExtractFunctions(lua_State* L) {
-	/* int n = lua_gettop(L);
-	std::string path;
-	if (n == 0) {
-		path = "lua_functions.log";
-	} else {
-		if (lua_type(L, 1) == LUA_TSTRING) {
-			path = lua_tostring(L, 1);
-		} else {
-			path = "lua_functions.log";
-		}
-	} */
-
-	lua_newtable(L); // t
-	int i = 0;
-	for (auto iter = _functions.begin(); iter != _functions.end(); ++iter, ++i) {
-		lua_newtable(L); // t t
-
-		lua_pushstring(L, "type"); // t t type 
-		lua_pushstring(L, iter->first.c_str()); // t t type name
-		lua_rawset(L, -3); // t t
-
-		lua_pushstring(L, "functions"); // t t functions
-		lua_newtable(L); // t t functions t
-
-		for (auto fn_iter = iter->second.begin(); fn_iter != iter->second.end(); ++fn_iter) {
-			lua_pushstring(L, fn_iter->first.c_str()); // t t functions t fnname
-			lua_pushlightuserdata(L, fn_iter->second); // t t functions t fname addr
-			lua_rawset(L, -3); // t t functions t
-		}
-
-		lua_rawset(L, -3); // t t
-
-		lua_rawseti(L, -2, i); // t
-	}
-
-	return 1;
-}
-
-static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string, void*>>& functions, FILE* f) {
-	lua_pushnil(L);
-	while (lua_next(L, -3)) {
-		if (lua_type(L, -2) == LUA_TSTRING && lua_tostring(L, -2)[0] != '_') {
-			const char* name = lua_tostring(L, -2);
-			if (lua_type(L, -1) == LUA_TFUNCTION) {
-				const void* addr = lua_topointer(L, -1);
-				unsigned char nupvalues = *(unsigned char*)((char*)addr + 0x7);
-
-				if (nupvalues == 1) {
-					TValue* upvalue = (TValue*)((char*)addr + 0x18);
-					if ((upvalue->it & 0xF) == ~LJ_TUDATA) {
-						GCudata* closure_udata = (GCudata*)gcref(upvalue->gcr);
-						void* fn_addr = *(void**)((char*)closure_udata + 0x18);
-						// fprintf(f, "Found addr of %s at %p\n", name, fn_addr);
-						functions.push_back(std::make_pair(name, fn_addr));
-					}
-				}
-			}
-		}
-		lua_pop(L, 1);
-	}
-}
-
-static void RegisterMetatables(lua_State* L) {
-	ZHL::Logger logger;
-	logger.Log("Dumping Lua registry\n");
-
-	lua_pushnil(L);
-	std::map<std::string, void*> metatables;
-
-	while (lua_next(L, LUA_REGISTRYINDEX)) {
-		if (lua_type(L, -2) == LUA_TLIGHTUSERDATA) { // key value
-			if (lua_type(L, -1) == LUA_TTABLE) { // key value
-				lua_pushstring(L, "__type"); // key value (table) __type
-				int __type = lua_rawget(L, -2); // key table table["__type"]
-
-				if (__type == LUA_TSTRING) {
-					std::string type(lua_tostring(L, -1));
-					void* addr = lua_touserdata(L, -3);
-
-					if (type == "Room" || type == "const Room") {
-						lua_pushstring(L, "GetBossID"); // key table table["__type"] GetBossID
-						int bossID = lua_rawget(L, -3); // key table table["__type"] table["GetBossID"]
-
-						if (bossID == LUA_TNIL) {
-							if (type.find("const") != std::string::npos) {
-								type = "const RoomConfig_Room";
-							}
-							else {
-								type = "RoomConfig_Room";
-							}
-						}
-
-						lua_pop(L, 1); // key table table["__type"]
-					}
-					else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
-						lua_pushstring(L, "Get");
-						int get = lua_rawget(L, -3);
-
-						if (get != LUA_TNIL) {
-							if (type.find("const") != std::string::npos) {
-								type = "const ArrayProxy_RoomDescriptor";
-							}
-							else {
-								type = "ArrayProxy_RoomDescriptor";
-							}
-						}
-
-						lua_pop(L, 1);
-					}
-
-					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
-				}
-
-				lua_pop(L, 1); // key table
-			}
-		}
-
-		lua_pop(L, 1); // key
-	}
-
-	logger.Log("Done dumping Lua registry\n");
-}
 
 static void bind_lua_internals(lua_State* L, int tblIdx)
 {
@@ -198,8 +53,16 @@ static void bind_lua_internals(lua_State* L, int tblIdx)
 }
 
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, INT_MAX, () -> void) {
-	super();
 	lua_State* L = g_LuaEngine->_state;
+
+	lua_newtable(L);
+	lua_setglobal(L, "Isaac");
+
+	if (!this->GetLuaDebug()) {
+		lua_register(L, "require", LuaEngine::Lua_Require);
+	}
+	lua_register(L, "include", LuaEngine::Lua_Include);
+	lua_register(L, "print", LuaEngine::Lua_Print);
 
 	int n = luaopen_jit(L);
 	lua_pop(L, n);
@@ -596,9 +459,6 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua_State *state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	// luaL_openlibs(state);
-	lua_register(state, "DumpRegistry", LuaDumpRegistry);
-	RegisterMetatables(state);
-	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	lua_register(state, "Benchmark", LuaBenchmark);
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);

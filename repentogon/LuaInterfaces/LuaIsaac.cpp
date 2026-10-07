@@ -996,6 +996,14 @@ MOD_EXPORT void L_Isaac_RemoveModData(int ref) {
 	LuaEngine::Isaac_RemoveModData(ModRef(ref));
 }
 
+MOD_EXPORT void L_Isaac_SetBuiltInCallbackState(int callbackId, bool enabled) {
+	Isaac::SetBuiltInCallbackState(callbackId, enabled);
+}
+
+MOD_EXPORT bool L_Isaac_GetBuiltInCallbackState(int callbackId) {
+	return Isaac::GetBuiltInCallbackState(callbackId);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 

@@ -117,6 +117,8 @@ ffi.cdef [[
     const char* L_Isaac_LoadModData(int);
     bool L_Isaac_HasModData(int);
     void L_Isaac_RemoveModData(int);
+    void L_Isaac_SetBuiltInCallbackState(int, bool);
+    bool L_Isaac_GetBuiltInCallbackState(int);
 ]]
 
 local ffi = ffi
@@ -359,6 +361,10 @@ local isaac = {
     GetBabyIdByName = function(name)
         name = ffichecks.checkstring(1, name)
         return repentogon.L_Isaac_GetBabyIdByName(name)
+    end,
+    GetBuiltInCallbackState = function(callbackId)
+        ffichecks.checkinteger(1, callbackId)
+        return repentogon.L_Isaac_GetBuiltInCallbackState(callbackId)
     end,
     GetCardIdByName = function(name)
         name = ffichecks.checkstring(1, name)
@@ -717,6 +723,10 @@ local isaac = {
             error("Invalid Player Type", 2)
         end
         repentogon.L_Isaac_SetCompletionMarks(playerType, values)
+    end,
+    SetBuiltInCallbackState = function(callbackId, enabled)
+        ffichecks.checkinteger(1, callbackId)
+        repentogon.L_Isaac_SetBuiltInCallbackState(callbackId, ffichecks.checkboolean(2, enabled))
     end,
     SetCurrentFloorBackdrop = function(backdropId)
         if tonumber(backdropId) == nil then
