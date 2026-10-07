@@ -26,6 +26,7 @@
 #include "LuaCore.h"
 #include <filesystem>
 #include <regex>
+#include "Stages/StageManager.h"
 
 using namespace rapidxml;
 using namespace std;
@@ -3306,12 +3307,14 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								node[stringlower(attr->name())] = string(attr->value());
 							}
 							int id = toint(node["id"]);
+							/*
 							int music = toint(node["music"]);
 							int backdrop = toint(node["backdrop"]);
 							if ((music == 0) && (node["music"].length() > 0)) {
 								char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
 								auxnode->first_attribute("music")->value(track);
 							}
+							*/
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							inheritdaddy(auxnode, clonedNode);
@@ -3514,9 +3517,14 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
+	RegisterCustomXMLAttr(XMLStuff.StageData, "backdrop", XMLStuff.BackdropData);
+	RegisterCustomXMLAttr(XMLStuff.StageData, "music", XMLStuff.MusicData);
+	RegisterCustomXMLAttr(XMLStuff.StageData, "achievement", XMLStuff.AchievementData);
+
 	if (g_Manager->GetOptions()->ModsEnabled()) {
 		bool iscontentax = iscontent;
 		iscontent = true;
+
 		XMLStuff.AchievementData->Clear();
 		XMLStuff.ModData->achievements.clear();
 		XMLStuff.ModData->achievlistpermod.clear();
@@ -3525,10 +3533,17 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		if (XMLParse(xmldoc, a, "achievements.xml")) {
 			ProcessXmlNode(xmldoc->first_node("achievements"));
 		}
-		iscontent = iscontentax;
-		mclear(a);
 
-		//g_Manager->_stringTable.load_ascii_data("stringtable.sta"); //diabled due to mem corruption (ToDo)
+		char* stages = BuildModdedXML(achieveemntsxmlpreload, "stages.xml", false);
+		xml_document<char>* stagesxmldoc = new xml_document<char>();
+		if (XMLParse(stagesxmldoc, stages, "stages.xml")) {
+			ProcessXmlNode(stagesxmldoc->first_node("stages"));
+		}
+
+		iscontent = iscontentax;
+
+		mclear(a);
+		mclear(stages);
 	}
 
 	super();
@@ -3544,7 +3559,9 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 			}
 		}
 	}
+
 	MultiValXMLParamParseLATE(); //this manages the late custom xml attribute parsing (this makes xml load order meaningless for these)
+	StageManager::StageConfig::PostLoadStages();
 	//RegisterGenericCustomXML("poopoo.xml", "poopoos", "poo");
 	LoadCustomXMLs(); //this loads custom xmls into their respective xmldata structures
 }

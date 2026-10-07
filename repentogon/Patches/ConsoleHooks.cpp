@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <regex>
 
 void LuaReset() {
     // We are building our own map here so that this is *solely* a Lua reset and not an XML one.
@@ -373,6 +374,40 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
 		}
 
 		return;
+	}
+
+	if (in.rfind("stage ", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommand(in, 2);
+		if (cmdlets.size() > 1) {
+			std::string cmd = cmdlets[1];
+			std::transform(cmd.begin(), cmd.end(), cmd.begin(), [](unsigned char c) { return std::tolower(c); });
+
+			std::regex pattern(R"(^(\d+)([a-z]+)$)");
+			std::smatch matches;
+
+			if (std::regex_match(cmd, matches, pattern) && matches.size() > 2) {
+				int levelStage = std::atoi(matches[1].str().c_str());
+				std::string letter = matches[2].str();
+
+				int idx = 0;
+				for (int i = 0; i < letter.size(); i++) {
+					idx += letter[i] - ('a'-1);
+				}
+				if (levelStage == STAGE8 && idx > 0) {
+					idx--;
+				}
+
+				auto stages = StageManager::GetStagesByLevel(levelStage, g_Game->GetMode());
+				if (idx < stages.size()) {
+					StageManager::StageConfig* stage = stages[idx];
+					if (stage->IsCustom()) {
+						bool second = levelStage > 0 && levelStage < STAGE4_3 && (levelStage % 2 == 0);
+						stage->GotoStage(second);
+						return;
+					}
+				}
+			}
+		}
 	}
 
     super(in, out, player);

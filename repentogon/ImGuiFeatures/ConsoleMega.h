@@ -8,9 +8,11 @@
 #include "Lang.h"
 #include "../REPENTOGONOptions.h"
 #include "../VirtualRoomConfig/VirtualRoomSetManager.h"
+#include "../Patches/Stages/StageManager.h"
 #include "MultiViewportEnhanced.h"
 
 #include <sstream>
+#include <unordered_set>
 #include <cctype>
 #include <regex>
 
@@ -503,28 +505,49 @@ struct ConsoleMega : ImGuiWindowObject {
         return console->TextEditCallback(data);
     }
 
-	static std::string GetAutocompleteName(const XMLAttributes& xml, const char* stringCategory = nullptr) {
-		auto nameit = xml.find("name");
-		if (nameit == xml.end()) {
-			return "";
-		}
-		StringTable* stringTable = g_Manager->GetStringTable();
-		const std::string& engName = nameit->second;
-		if (!stringTable || stringTable->language == 0 || !stringCategory) {
-			return engName;
-		}
-		std::string result = engName;
-		if (auto unameit = xml.find("untranslatedname"); unameit != xml.end()) {
-			const std::string& untranslatedName = unameit->second;
-			if (!untranslatedName.empty() && untranslatedName.front() == '#') {
-				bool failed = false;
-				const char* translatedName = stringTable->GetString(stringCategory, stringTable->language, untranslatedName.substr(1).c_str(), &failed);
-				if (!failed && translatedName && result != translatedName) {
-					result += " / " + std::string(translatedName);
-				}
+	static std::string GetAutocompleteName(const std::string& name, const char* stringCategory = nullptr, const std::string& suffix = "") {
+		if (!name.empty() && name.front() == '#' && stringCategory) {
+			const std::string key = name.substr(1);
+			StringTable* stringTable = g_Manager->GetStringTable();
+			bool failed = false;
+
+			std::string englishName;
+			const char* en = stringTable->GetString(stringCategory, 0, key.c_str(), &failed);
+			if (!failed && en) {
+				englishName = en + suffix;
+			}
+
+			if (stringTable->language == 0) {
+				return englishName;
+			}
+
+			std::string localName;
+			const char* tr = stringTable->GetString(stringCategory, stringTable->language, key.c_str(), &failed);
+			if (!failed && tr) {
+				localName = tr + suffix;
+			}
+			
+			if (!localName.empty() && localName != englishName) {
+				return englishName + " / " + localName;
+			} else if (!englishName.empty()) {
+				return englishName;
+			} else {
+				return key + suffix;
 			}
 		}
-		return result;
+		return name + suffix;
+	}
+
+	static std::string GetAutocompleteName(const XMLAttributes& xml, const char* stringCategory = nullptr) {
+		auto nameit = xml.find("untranslatedname");
+		if (nameit != xml.end() && !nameit->second.empty()) {
+			return GetAutocompleteName(nameit->second, stringCategory);
+		}
+		nameit = xml.find("name");
+		if (nameit != xml.end()) {
+			return nameit->second;
+		}
+		return "";
 	}
 
     int TextEditCallback(ImGuiInputTextCallbackData* data)
@@ -611,12 +634,15 @@ struct ConsoleMega : ImGuiWindowObject {
                     const ConsoleCommand* command = GetCommandByName(commandName);
                     if (command == nullptr) return 0;
 
-                    if (command == prev_command && command->autocompleteType!=CUSTOM) {
+					static bool wasGreedMode = false;
+
+                    if (command == prev_command && command->autocompleteType != CUSTOM && g_Game->IsGreedMode() == wasGreedMode) {
                         goto end_of_autocompl_switchcase;  
                     }
                     else {
                         entries.clear();    //clear the entries queue before working with it
                         prev_command = command;
+						wasGreedMode = g_Game->IsGreedMode();
                     };
 
                     switch (command->autocompleteType) {
@@ -704,30 +730,37 @@ struct ConsoleMega : ImGuiWindowObject {
                                 entries.insert(AutocompleteEntry(text, room.Name));
                             };
 
-                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                            int mode = g_Game->IsGreedMode();
+							int mode = g_Game->IsGreedMode();
+                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, mode);
+							if (StageManager::GetCurrentOverride().IsOverridden(stbID)) {
+								// Add custom stage rooms.
+								for (const RoomConfig_Room* room : VirtualRoomSetManager::GetSet(StageManager::GetCurrentOverride().GetCustomStageID(), mode)) {
+									addEntry(*room);
+								}
+							} else {
+								// Add vanilla stage rooms.
+								RoomSet* stageSet = &g_Game->GetRoomConfig()->_stages[stbID]._rooms[mode];
+								RoomConfig_Room* config = stageSet->_configs;
 
-                            // Add stage rooms.
-                            RoomSet* stageSet = &g_Game->GetRoomConfig()->_stages[stbID]._rooms[mode];
-                            RoomConfig_Room* config = stageSet->_configs;
+								for (unsigned int i = 1; i < stageSet->_count; ++i) {
+									addEntry(*config);
+									config++;
+								}
 
-                            for (unsigned int i = 1; i < stageSet->_count; ++i) {
-                                addEntry(*config);
-                                config++;
-                            }
-                            for (const RoomConfig_Room* room : VirtualRoomSetManager::GetVanillaSet(stbID, mode)) {
-                                addEntry(*room);
-                            }
+								for (const RoomConfig_Room* room : VirtualRoomSetManager::GetSet(stbID, mode)) {
+									addEntry(*room);
+								}
+							}
 
                             // Add special rooms.
                             RoomSet* specialSet = &g_Game->GetRoomConfig()->_stages[STB_SPECIAL_ROOMS]._rooms[mode];
-                            config = specialSet->_configs;
+							RoomConfig_Room* config = specialSet->_configs;
 
                             for (unsigned int i = 0; i < specialSet->_count; ++i) {
                                 addEntry(*config);
                                 config++;
                             }
-                            for (const RoomConfig_Room* room : VirtualRoomSetManager::GetVanillaSet(STB_SPECIAL_ROOMS, mode)) {
+                            for (const RoomConfig_Room* room : VirtualRoomSetManager::GetSet(STB_SPECIAL_ROOMS, mode)) {
                                 addEntry(*room);
                             }
 
@@ -735,93 +768,41 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case STAGE: {
+							for (int levelStage = STAGE1_1; levelStage <= (g_Game->IsGreedMode() ? STAGE7_GREED : STAGE8); levelStage++) {
+								std::string levelStr = std::to_string(levelStage);
+								std::string letter = "";
+								for (const StageManager::StageConfig* stage : StageManager::GetStagesByLevel(levelStage, g_Game->IsGreedMode())) {
+									std::string suffix = "";
+									if (!g_Game->IsGreedMode() && levelStage < STAGE4_3) {
+										if (levelStage % 2 == 0) {
+											suffix = " II";
+										} else {
+											suffix = " I";
+										}
+									}
+									std::string name;
+									if (stage->GetStageId() == STB_BLUE_WOMB) {
+										name = LANG.CONSOLE_STAGE_BLUE_WOMB;
+									} else if (stage->GetStageId() == STB_HOME && letter.empty()) {
+										entries.emplace(levelStr, LANG.CONSOLE_STAGE_HOME_DAY);
+										entries.emplace(levelStr + 'a', LANG.CONSOLE_STAGE_HOME_NIGHT);
+										letter = "b";
+										continue;
+									} else {
+										name = GetAutocompleteName(stage->GetName(), "Stages", suffix);
+									}
+									if (name.empty() || name == suffix) {
+										continue;
+									}
+									entries.emplace(levelStr + letter, name);
+									if (letter.empty() || letter.back() == 'z') {
+										letter += 'a';
+									} else {
+										letter.back()++;
+									}
+								}
+							}
 
-                            StringTable * stringTable = g_Manager->GetStringTable();
-                            unsigned int language = stringTable->language;
-
-                            auto GetStr = [&](const char* key, const char* postfix = "") {
-                                char buff[256];
-                                bool unk;
-                                const char* en = stringTable->GetString("Stages", 0, key, &unk);
-                                if (language) {
-                                    const char* tr = stringTable->GetString("Stages", language, key, &unk);
-                                    sprintf_s(buff, "%s%s %s%s", en, postfix, tr, postfix);
-                                }
-                                else {
-                                    sprintf_s(buff, "%s%s", en, postfix);
-                                }
-                                return std::string(buff);
-                            };
-
-                            if (g_Game->IsGreedMode()) {
-                                entries = {
-                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME")),
-                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME")),
-                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME")),
-                                    AutocompleteEntry("2", GetStr("CAVES_NAME")),
-                                    AutocompleteEntry("2a", GetStr("CATACOMBS_NAME")),
-                                    AutocompleteEntry("2b", GetStr("FLOODED_CAVES_NAME")),
-                                    AutocompleteEntry("3", GetStr("DEPTHS_NAME")),
-                                    AutocompleteEntry("3a", GetStr("NECROPOLIS_NAME")),
-                                    AutocompleteEntry("3b", GetStr("DANK_DEPTHS_NAME")),
-                                    AutocompleteEntry("4", GetStr("WOMB_NAME")),
-                                    AutocompleteEntry("4a", GetStr("UTERO_NAME")),
-                                    AutocompleteEntry("4b", GetStr("SCARRED_WOMB_NAME")),
-                                    AutocompleteEntry("5", GetStr("SHEOL_NAME")),
-                                    AutocompleteEntry("6", GetStr("THE_SHOP_NAME")),
-                                    AutocompleteEntry("7", GetStr("ULTRA_GREED_NAME"))
-                                };
-                            }
-                            else {
-                                entries = {
-                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME", " I")),
-                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME", " I")),
-                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME", " I")),
-                                    AutocompleteEntry("1c", GetStr("DOWNPOUR_NAME", " I")),
-                                    AutocompleteEntry("1d", GetStr("DROSS_NAME", " I")),
-                                    AutocompleteEntry("2", GetStr("BASEMENT_NAME", " II")),
-                                    AutocompleteEntry("2a", GetStr("CELLAR_NAME", " II")),
-                                    AutocompleteEntry("2b", GetStr("BURNING_BASEMENT_NAME", " II")),
-                                    AutocompleteEntry("2c", GetStr("DOWNPOUR_NAME", " II")),
-                                    AutocompleteEntry("2d", GetStr("DROSS_NAME", " II")),
-                                    AutocompleteEntry("3", GetStr("CAVES_NAME", " I")),
-                                    AutocompleteEntry("3a", GetStr("CATACOMBS_NAME", " I")),
-                                    AutocompleteEntry("3b", GetStr("FLOODED_CAVES_NAME", " I")),
-                                    AutocompleteEntry("3c", GetStr("MINES_NAME", " I")),
-                                    AutocompleteEntry("3d", GetStr("ASHPIT_NAME", " I")),
-                                    AutocompleteEntry("4", GetStr("CAVES_NAME", " II")),
-                                    AutocompleteEntry("4a", GetStr("CATACOMBS_NAME", " II")),
-                                    AutocompleteEntry("4b", GetStr("FLOODED_CAVES_NAME", " II")),
-                                    AutocompleteEntry("4c", GetStr("MINES_NAME", " II")),
-                                    AutocompleteEntry("4d", GetStr("ASHPIT_NAME", " II")),
-                                    AutocompleteEntry("5", GetStr("DEPTHS_NAME", " I")),
-                                    AutocompleteEntry("5a", GetStr("NECROPOLIS_NAME", " I")),
-                                    AutocompleteEntry("5b", GetStr("DANK_DEPTHS_NAME", " I")),
-                                    AutocompleteEntry("5c", GetStr("MAUSOLEUM_NAME", " I")),
-                                    AutocompleteEntry("5d", GetStr("GEHENNA_NAME", " I")),
-                                    AutocompleteEntry("6", GetStr("DEPTHS_NAME", " II")),
-                                    AutocompleteEntry("6a", GetStr("NECROPOLIS_NAME", " II")),
-                                    AutocompleteEntry("6b", GetStr("DANK_DEPTHS_NAME", " II")),
-                                    AutocompleteEntry("6c", GetStr("MAUSOLEUM_NAME", " II")),
-                                    AutocompleteEntry("6d", GetStr("GEHENNA_NAME", " II")),
-                                    AutocompleteEntry("7", GetStr("WOMB_NAME", " I")),
-                                    AutocompleteEntry("7a", GetStr("UTERO_NAME", " I")),
-                                    AutocompleteEntry("7b", GetStr("SCARRED_WOMB_NAME", " I")),
-                                    AutocompleteEntry("7c", GetStr("CORPSE_NAME", " I")),
-                                    AutocompleteEntry("8", GetStr("WOMB_NAME", " II")),
-                                    AutocompleteEntry("8a", GetStr("UTERO_NAME", " II")),
-                                    AutocompleteEntry("8b", GetStr("SCARRED_WOMB_NAME", " II")),
-                                    AutocompleteEntry("8c", GetStr("CORPSE_NAME", " II")),
-                                    AutocompleteEntry("9", LANG.CONSOLE_STAGE_BLUE_WOMB),
-                                    AutocompleteEntry("10", GetStr("SHEOL_NAME")),
-                                    AutocompleteEntry("10a", GetStr("CATHEDRAL_NAME")),
-                                    AutocompleteEntry("11", GetStr("DARK_ROOM_NAME")),
-                                    AutocompleteEntry("11a", GetStr("CHEST_NAME")),
-                                    AutocompleteEntry("12", GetStr("THE_VOID_NAME")),
-                                    AutocompleteEntry("13", LANG.CONSOLE_STAGE_HOME_DAY),
-                                    AutocompleteEntry("13a", LANG.CONSOLE_STAGE_HOME_NIGHT)
-                                };
-                            }
                             break;
                         }
 

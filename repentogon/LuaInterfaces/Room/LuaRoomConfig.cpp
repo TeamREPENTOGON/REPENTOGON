@@ -63,7 +63,7 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 		return luaL_error(L, "Invalid type %d\n", type);
 	}
 
-	int shape = (int)luaL_optinteger(L, 5, 13); //NUM_ROOMSHAPES
+	int shape = (int)luaL_optinteger(L, 5, NUM_ROOMSHAPES);
 	if (shape < 1 || shape > 13) {
 		return luaL_error(L, "Invalid shape %d\n", shape);
 	}
@@ -147,7 +147,7 @@ LUA_FUNCTION(Lua_RoomConfig_AddRooms)
 		return luaL_argerror(L, 3, REPENTOGON::Lua::GenerateInvalidTypeMessage(L, 3, "table").c_str());
 	}
 
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSet(stageId, mode);
 	int returnParameters = VirtualRoomSetManager::detail::Lua_AddLuaRooms(L, virtualSet, 3);
 	return returnParameters;
 }
@@ -167,7 +167,7 @@ LUA_FUNCTION(Lua_RoomConfig_LoadStb)
 
 	const char* filename = luaL_checkstring(L, 3);
 
-	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetVanillaSet(stageId, mode);
+	VirtualRoomSet virtualSet = VirtualRoomSetManager::GetSet(stageId, mode);
 	int returnParameters = VirtualRoomSetManager::detail::Lua_AddStbRooms(L, virtualSet, filename);
 	return returnParameters;
 }

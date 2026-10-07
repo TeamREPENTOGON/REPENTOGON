@@ -45,7 +45,12 @@ namespace RoomConfigUtility
 	void FinalizeSpawnEntryInsertion(RoomConfig_Room& room, RoomSpawn& roomSpawn, RoomEntry& spawnEntry);
 	bool RoomPassesFilter(RoomConfig_Room& room, uint32_t roomType, uint32_t roomShape, uint32_t minVariant, uint32_t maxVariant, int minDifficulty, int maxDifficulty, uint32_t doors, int subType);
 
-	inline bool IsStageValid(uint32_t stageId) { return STB_SPECIAL_ROOMS <= stageId && stageId < NUM_STB; }
+	inline bool IsStageValid(uint32_t stageId)
+	{
+		// Tweaked due to addition of custom StbType values.
+		// return STB_SPECIAL_ROOMS <= stageId && stageId < NUM_STB;
+		return stageId >= STB_SPECIAL_ROOMS;
+	}
 	inline bool IsModeValid(int mode) { return 0 <= mode && mode <= 1; }
 	inline bool IsRoomTypeValid(uint32_t roomType) { return ROOM_DEFAULT <= roomType && roomType < NUM_ROOMTYPES; }
 	inline bool IsShapeValid(uint32_t roomShape) { return ROOMSHAPE_NULL < roomShape && roomShape < NUM_ROOMSHAPES; }

@@ -42,6 +42,10 @@ public:
 		/// @brief Deletes the restored rooms DB file, also clears the DB itself.
 		static void DeleteSave(const GameStateSaveInfo& saveInfo, bool isRerun);
 
+		/// @brief Adds the rooms stored in the .stb to the specified set.
+		/// @param fileName is expected to correspond to file(s) found @ `<mod root>/content/rooms/<filename>`
+		static void AddStbRooms(const uint32_t stageId, const uint32_t mode, const std::string& fileName);
+
 		// The lua functions are placed here since they are just details for the LUA API
 		// rather than functionality of a VirtualRoomSet
 
@@ -57,10 +61,12 @@ public:
 	};
 
 public:
-	/// @brief Gets the vanilla set extension, using the vanilla RoomSet id.
-	static VirtualRoomSet GetVanillaSet(uint32_t stageId, int mode);
-	/// @brief Creates a new room set.
-	// static VirtualRoomSet CreateSet();
+	/// @brief Gets the roomset extension corresponding to the given stage ID and mode (vanilla or custom).
+	static VirtualRoomSet GetSet(uint32_t stageId, int mode);
+	/// @brief Ensures that the virtual roomset for the given id is initialized.
+	static void InitializeSet(uint32_t stageId);
+	/// @brief Assigns the next unused stage id, initializes the virtual roomset for it, and returns that id.
+	static uint32_t AddSet();
 };
 
 class VirtualRoomSet
