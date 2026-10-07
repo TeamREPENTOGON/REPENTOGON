@@ -460,6 +460,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_NPC_PTR] = lua_ctypeid(L, "EntityNPCPtr");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM] = lua_ctypeid(L, "EntityDelirium");
 	lua::ffi::CData[lua::ffi::CDataID::ENTITY_DELIRIUM_PTR] = lua_ctypeid(L, "EntityDeliriumPtr");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER] = lua_ctypeid(L, "EntityPlayer");
+	lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER_PTR] = lua_ctypeid(L, "EntityPlayerPtr");
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->_unloadModFuncRef->_ref);
 	lua_getglobal(state, "_UnloadMod");

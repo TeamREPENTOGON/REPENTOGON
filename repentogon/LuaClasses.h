@@ -617,6 +617,8 @@ namespace LuaTraits
         using Type = Entity_Player;
         static constexpr lua::Metatables MT = lua::Metatables::ENTITY_PLAYER;
         static constexpr lua::Metatables CONST_MT = lua::Metatables::CONST_ENTITY_PLAYER;
+        static constexpr lua::ffi::CDataID C_DATA_ID = lua::ffi::CDataID::ENTITY_PLAYER;
+        static constexpr lua::ffi::CDataID C_DATA_PTR = lua::ffi::CDataID::ENTITY_PLAYER_PTR;
     };
 
     struct LuaEntityTear
@@ -1215,7 +1217,7 @@ struct LuaEntityType : LuabridgeType<LuaTraits::LuaEntity>
 };
 
 using LuaEntity = LuaEntityType;
-using LuaEntityPlayer = LuabridgeType<LuaTraits::LuaEntityPlayer>;
+using LuaEntityPlayer = CDataType<LuaTraits::LuaEntityPlayer>;
 using LuaEntityTear = CDataType<LuaTraits::LuaEntityTear>;
 using LuaEntityFamiliar = CDataType<LuaTraits::LuaEntityFamiliar>;
 using LuaEntityBomb = CDataType<LuaTraits::LuaEntityBomb>;

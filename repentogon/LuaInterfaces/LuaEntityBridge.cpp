@@ -15,23 +15,8 @@ LUA_FUNCTION(Lua_Entity_EntityAddress) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_Entity_PlayerAddress) {
-	lua_pushnumber(L, (lua_Number)(uintptr_t)LuaEntityPlayer::Get(L, 1));
-	return 1;
-}
-
-LUA_FUNCTION(Lua_Entity_PushPlayer) {
-	LuaEntityPlayer::PushPtr(L, (Entity_Player*)(uintptr_t)luaL_checknumber(L, 1));
-	return 1;
-}
-
 LUA_FUNCTION(Lua_Entity_PushClass) {
-	void* pointer = (void*)(uintptr_t)luaL_checknumber(L, 1);
-	switch ((int)luaL_checkinteger(L, 2)) {
-	case 1: LuaEntityPlayer::PushPtr(L, (Entity_Player*)pointer); break;
-	default: return luaL_error(L, "No FFI-less class for this entity");
-	}
-	return 1;
+	return luaL_error(L, "No FFI-less class for this entity");
 }
 
 LUA_FUNCTION(Lua_Entity_PushResults) {
@@ -45,8 +30,6 @@ LUA_FUNCTION(Lua_Entity_PushResults) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_register(_state, "__Lua_Entity_EntityAddress", Lua_Entity_EntityAddress);
-	lua_register(_state, "__Lua_Entity_PlayerAddress", Lua_Entity_PlayerAddress);
-	lua_register(_state, "__Lua_Entity_PushPlayer", Lua_Entity_PushPlayer);
 	lua_register(_state, "__Lua_Entity_PushClass", Lua_Entity_PushClass);
 	lua_register(_state, "__Lua_Entity_PushResults", Lua_Entity_PushResults);
 

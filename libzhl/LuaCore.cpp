@@ -159,6 +159,7 @@ namespace lua {
 			{ lua::ffi::ENTITY_SLOT, lua::ffi::ENTITY_SLOT_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::METATABLES_MAX, Metatables::METATABLES_MAX } },
 			{ lua::ffi::ENTITY_NPC, lua::ffi::ENTITY_NPC_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_NPC, Metatables::CONST_ENTITY_NPC } },
 			{ lua::ffi::ENTITY_DELIRIUM, lua::ffi::ENTITY_DELIRIUM_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_NPC, Metatables::CONST_ENTITY_NPC } },
+			{ lua::ffi::ENTITY_PLAYER, lua::ffi::ENTITY_PLAYER_PTR, { Metatables::ENTITY, Metatables::CONST_ENTITY, Metatables::ENTITY_PLAYER, Metatables::CONST_ENTITY_PLAYER } },
 		};
 
 		EntityCDataUserdata s_entityCDataUserdata[16];

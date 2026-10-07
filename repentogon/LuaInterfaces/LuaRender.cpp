@@ -1416,7 +1416,7 @@ namespace GL {
 		}
 
 		void operator()(Entity_Player* p) {
-			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::Metatables::ENTITY_PLAYER);
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::ffi::CData[lua::ffi::CDataID::ENTITY_PLAYER_PTR]);
 		}
 
 		void operator()(Entity_Projectile* p) {

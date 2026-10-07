@@ -887,6 +887,8 @@ end
 
 Entity.Helpers = {
     FireSplitTear = FireSplitTear,
+    Flags64 = Flags64,
+    CheckFlags64 = CheckFlags64,
     CopyStruct = CopyStruct,
     Getter = Getter,
     VectorGetter = VectorGetter,

@@ -1474,29 +1474,41 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 //PRE_USE_CARD (id: 1064)
 HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void) {
 	const int callbackid = 1064;
-	if (!CallbackState.test(callbackid - 1000)) { return super(cardType, useFlag); }
-	lua_State* L = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(L);
+	if (CallbackState.test(callbackid - 1000)) { 
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
-	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	Entity_Player* plr = (Entity_Player*)this;
-	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-		.push(cardType)
-		.push(cardType)
-		.pushClassPtr<LuaEntityPlayer>(plr)
-		.push(useFlag)
-		.call(1);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(cardType)
+			.push(cardType)
+			.pushClassPtr<LuaEntityPlayer>(this)
+			.push(useFlag)
+			.call(1);
 
-	if (!result) {
-		if (lua_isboolean(L, -1)) {
-			if (lua_toboolean(L, -1)) {
-				return;
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
 			}
 		}
-		else {
-			super(cardType, useFlag);
-		}
+	}
+
+	const int reimplCallbackid = 5;
+	if (VanillaCallbackState.test(reimplCallbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(reimplCallbackid)
+			.push(cardType)
+			.push(cardType)
+			.pushClassPtr<LuaEntityPlayer>(this)
+			.push(useFlag)
+			.call(0);
 	}
 }
 
@@ -1740,7 +1752,19 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 
 HOOK_STATIC(LuaEngine, PostPlayerInit, (Entity_Player* player) -> void, _stdcall) {
 	player->GetHealthType();  // Trigger GetHealthType callback on init.
-	super(player);
+
+	const int callbackid = 9;
+	if (VanillaCallbackState.test(3)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
+			.push(player->_variant)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.call(0);
+	}
 }
 
 //PRE_FAMILIAR_RENDER (id: 1080)
@@ -7246,7 +7270,7 @@ HOOK_STATIC(LuaEngine, PostNPCDeath, (Entity_NPC* npc) -> void, __stdcall) {
 }
 
 HOOK_STATIC(LuaEngine, PreNPCUpdate, (Entity_NPC* npc) -> bool, __stdcall) {
-	const int callbackid = 69;
+	const int callbackid = 69; // DUDE
 	if (VanillaCallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -7262,6 +7286,94 @@ HOOK_STATIC(LuaEngine, PreNPCUpdate, (Entity_NPC* npc) -> bool, __stdcall) {
 		}
 	}
 	return false;
+}
+
+HOOK_METHOD(LuaEngine, UseItem, (int collectibleType, RNG* rng, Entity_Player* player, unsigned int useFlags, int activeSlot, int customVarData, short* resultFlags) -> bool) {
+	const int callbackid = 3;
+	bool showAnim = false;
+
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(collectibleType)
+			.push(collectibleType)
+			.pushClassPtr<LuaRNG>(rng)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.push(useFlags)
+			.push(activeSlot)
+			.push(customVarData)
+			.call(1);
+
+		if (!result) {
+			if (lua_istable(L, -1)) {
+				uint8_t* flags = reinterpret_cast<uint8_t*>(resultFlags);
+
+				lua_getfield(L, -1, "Discharge");
+				if (!lua_isnil(L, -1)) {
+					flags[0] = lua_toboolean(L, -1);
+				}
+				lua_pop(L, 1);
+
+				lua_getfield(L, -1, "Remove");
+				if (!lua_isnil(L, -1)) {
+					flags[1] = lua_toboolean(L, -1);
+				}
+				lua_pop(L, 1);
+
+				lua_getfield(L, -1, "ShowAnim");
+				if (!lua_isnil(L, -1)) {
+					showAnim = lua_toboolean(L, -1);
+				}
+				lua_pop(L, 1);
+			}
+			else if (!lua_isnil(L, -1)) {
+				showAnim = lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return showAnim;
+}
+
+HOOK_STATIC(LuaEngine, PostPEffectUpdate, (Entity_Player* player) -> void, __stdcall) {
+	const int callbackid = 4;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(player->_type)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.call(0);
+	}
+}
+
+HOOK_METHOD_PRIORITY(LuaEngine, EvaluateItems, INT_MAX, (Entity_Player* player, int cacheFlag) -> void) {
+	const int callbackid = 8;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(cacheFlag)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.push(cacheFlag)
+			.call(0);
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostPlayerUpdate, (Entity_Player* player) -> void, __stdcall) {
+	const int callbackid = 31;
+	if (VanillaCallbackState.test(callbackid)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(player->_variant)
+			.pushClassPtr<LuaEntityPlayer>(player)
+			.call(0);
+	}
 }
 
 void CustomCallbacks::detail::ApplyPatches()

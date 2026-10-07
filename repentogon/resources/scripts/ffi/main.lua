@@ -78,7 +78,7 @@ ffichecks.checkstring = function(index, val, level)
 	return val
 end
 ffichecks.checkboolean = function(index, val, level)
-	if val == nil then ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+	if val == nil then return false end
 	return not not val
 end
 ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
@@ -179,9 +179,7 @@ end
 
 local entityBridges = {
 	EntityAddress = __Lua_Entity_EntityAddress,
-	PlayerAddress = __Lua_Entity_PlayerAddress,
 	PushClass = __Lua_Entity_PushClass,
-	PushPlayer = __Lua_Entity_PushPlayer,
 	PushResults = __Lua_Entity_PushResults,
 }
 local voidptr = lffi.typeof("void*")
@@ -200,24 +198,23 @@ ffichecks.playertopointer = function(player)
 	if player == nil then
 		return nil
 	end
-	return lffi.cast(voidptr, entityBridges.PlayerAddress(player))
+	return lffi.cast(voidptr, player)
 end
 
-local function pointertouserdata(push)
-	return function(pointer)
-		if pointer == nil then
-			return nil
-		end
-		return push(tonumber(lffi.cast(uintptr, pointer)))
-	end
-end
 ffichecks.pointertoclass = function(pointer, entityType)
 	if pointer == nil then
 		return nil
 	end
 	return entityBridges.PushClass(tonumber(lffi.cast(uintptr, pointer)), entityType)
 end
-ffichecks.pointertoplayer = pointertouserdata(entityBridges.PushPlayer)
+local playerPointerType
+ffichecks.pointertoplayer = function(pointer)
+	if pointer == nil then
+		return nil
+	end
+	playerPointerType = playerPointerType or lffi.typeof("struct EntityPlayer*")
+	return lffi.cast(playerPointerType, pointer)
+end
 ffichecks.entityresults = entityBridges.PushResults
 
 loadmodule("Vector")
@@ -382,6 +379,7 @@ loadmodule("Entity.EntityNPC")
 loadmodule("Entity.EntityDelirium")
 loadmodule("Isaac")
 loadmodule("Options")
+loadmodule("Entity.EntityPlayer")
 
 lffi.metatype = ffi_metatype
 
@@ -465,9 +463,7 @@ for _, mt in ipairs(metatypes) do
 end
 
 __Lua_Entity_EntityAddress = nil
-__Lua_Entity_PlayerAddress = nil
 __Lua_Entity_PushClass = nil
-__Lua_Entity_PushPlayer = nil
 __Lua_Entity_PushResults = nil
 
 ffi = nil

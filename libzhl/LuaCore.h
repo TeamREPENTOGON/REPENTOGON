@@ -593,6 +593,8 @@ namespace lua {
             ENTITY_NPC_PTR,
             ENTITY_DELIRIUM,
             ENTITY_DELIRIUM_PTR,
+            ENTITY_PLAYER,
+            ENTITY_PLAYER_PTR,
             MAX_CDATA
         };
 
