@@ -26,6 +26,8 @@ ffi.cdef [[
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_GridEntity_Destroy)
+
 local cfuncs = {
     HurtDamage = __Lua_GridEntity_HurtDamage
 }
