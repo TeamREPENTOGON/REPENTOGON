@@ -37,6 +37,9 @@ void  L_TemporaryEffects_RemoveTrinketEffect(struct TemporaryEffects*, int, int)
 local ffi = ffi
 local repentogon = ffidll
 
+ffi.reentrant(repentogon.L_TemporaryEffects_RemoveNullEffect)
+ffi.reentrant(repentogon.L_TemporaryEffects_RemoveTrinketEffect)
+
 local EffectListMT; EffectListMT = { __type = "EffectList" }
 
 local function el_size(self)
