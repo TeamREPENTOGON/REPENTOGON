@@ -206,28 +206,28 @@ local function ToInteger(value)
 end
 
 local function DeprecatedUndoChallenge(challengeId)
-    ffichecks.checkinteger(1, challengeId)
+    challengeId = ffichecks.checkinteger(1, challengeId)
     repentogon.L_Isaac_UndoChallenge(challengeId)
 end
 
 local isaac = {
     AddPillEffectToPool = function(effect)
-        ffichecks.checkinteger(1, effect)
+        effect = ffichecks.checkinteger(1, effect)
         repentogon.L_Isaac_AddPillEffectToPool(effect)
     end,
     AllMarksFilled = function(playerType)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return repentogon.L_Isaac_AllMarksFilled(playerType)
     end,
     AllTaintedCompletion = function(playerType, group)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
-        ffichecks.checkinteger(1, playerType)
-        ffichecks.checkinteger(2, group)
+        playerType = ffichecks.checkinteger(1, playerType)
+        group = ffichecks.checkinteger(2, group)
         return repentogon.L_Isaac_AllTaintedCompletion(playerType, group)
     end,
     CanStartTrueCoop = function()
@@ -243,12 +243,12 @@ local isaac = {
         repentogon.L_Isaac_ClearBossHazards(ffichecks.optboolean(ignoreNPCs, false))
     end,
     ClearChallenge = function(challengeId)
-        ffichecks.checkinteger(1, challengeId)
+        challengeId = ffichecks.checkinteger(1, challengeId)
         CheckChallengeId(challengeId)
         repentogon.L_Isaac_ClearChallenge(challengeId)
     end,
     ClearCompletionMarks = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
@@ -279,7 +279,7 @@ local isaac = {
         return repentogon.L_Isaac_CountEntities(EntityToPointer(spawner), type, variant, subtype)
     end,
     CreateWeapon = function(weaponType, entity)
-        ffichecks.checkinteger(1, weaponType)
+        weaponType = ffichecks.checkinteger(1, weaponType)
         if entity == nil then
             ffichecks.argerror(2, "Entity expected, got nil")
         end
@@ -317,11 +317,11 @@ local isaac = {
     end,
     Explode = function(position, source, damage)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(3, damage)
+        damage = ffichecks.checknumber(3, damage)
         repentogon.L_Isaac_Explode(position, EntityToPointer(source), damage)
     end,
     FillCompletionMarks = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
@@ -329,7 +329,7 @@ local isaac = {
         return 2
     end,
     FindByType = function(type, variant, subtype, cache, ignoreFriendly)
-        ffichecks.checkinteger(1, type)
+        type = ffichecks.checkinteger(1, type)
         variant = ffichecks.optinteger(variant, -1)
         subtype = ffichecks.optinteger(subtype, -1)
         repentogon.L_Isaac_FindByType(type, variant, subtype, ffichecks.optboolean(cache, false), ffichecks.optboolean(ignoreFriendly, false))
@@ -342,7 +342,7 @@ local isaac = {
     end,
     FindInRadius = function(position, radius, partition)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, radius)
+        radius = ffichecks.checknumber(2, radius)
         repentogon.L_Isaac_FindInRadius(position, radius, ffichecks.optinteger(partition, -1))
         return ffichecks.entityresults()
     end,
@@ -363,7 +363,7 @@ local isaac = {
         return repentogon.L_Isaac_GetBabyIdByName(name)
     end,
     GetBuiltInCallbackState = function(callbackId)
-        ffichecks.checkinteger(1, callbackId)
+        callbackId = ffichecks.checkinteger(1, callbackId)
         return repentogon.L_Isaac_GetBuiltInCallbackState(callbackId)
     end,
     GetCardIdByName = function(name)
@@ -459,8 +459,8 @@ local isaac = {
         return VectorResult(repentogon.L_Isaac_GetCollectibleSpawnPosition, position)
     end,
     GetCompletionMark = function(playerType, completionType)
-        ffichecks.checkinteger(1, playerType)
-        ffichecks.checkinteger(2, completionType)
+        playerType = ffichecks.checkinteger(1, playerType)
+        completionType = ffichecks.checkinteger(2, completionType)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
@@ -476,7 +476,7 @@ local isaac = {
         return MarksToTable(marksOut)
     end,
     GetCompletionMarks = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         repentogon.L_Isaac_GetCompletionMarks(playerType, marksOut)
         return MarksToTable(marksOut, playerType)
     end,
@@ -499,7 +499,7 @@ local isaac = {
     end,
     GetFreeNearPosition = function(position, step)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, step)
+        step = ffichecks.checknumber(2, step)
         return VectorResult(repentogon.L_Isaac_GetFreeNearPosition, position, step)
     end,
     GetGiantBookIdByName = function(name)
@@ -515,12 +515,12 @@ local isaac = {
         if type(language) == "string" then
             language = repentogon.L_Isaac_GetLanguageId(language)
         else
-            ffichecks.checkinteger(3, language)
+            language = ffichecks.checkinteger(3, language)
         end
         return StringOrNil(repentogon.L_Isaac_GetLocalizedString(category, key, language))
     end,
     GetModChallengeClearCount = function(challengeId)
-        ffichecks.checkinteger(1, challengeId)
+        challengeId = ffichecks.checkinteger(1, challengeId)
         return repentogon.L_Isaac_GetModChallengeClearCount(challengeId)
     end,
     GetModChallengeCompletionData = function(modId, challengeName)
@@ -563,8 +563,8 @@ local isaac = {
         return ffi.string(repentogon.L_Isaac_GetWindowTitle())
     end,
     GridSpawn = function(type, variant, position, forced)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
         ffichecks.checkcdata(3, position, "Vector")
         return repentogon.L_Isaac_GridSpawn(type, variant, position, ffichecks.optboolean(forced, false))
     end,
@@ -572,7 +572,7 @@ local isaac = {
         return repentogon.L_Isaac_HasModData(RegistryRef(mod))
     end,
     IsChallengeDone = function(challengeId)
-        ffichecks.checkinteger(1, challengeId)
+        challengeId = ffichecks.checkinteger(1, challengeId)
         CheckChallengeId(challengeId)
         return repentogon.L_Isaac_IsChallengeDone(challengeId)
     end,
@@ -590,7 +590,7 @@ local isaac = {
         return StringOrNil(repentogon.L_Isaac_LoadModDataFromFolder(folderName))
     end,
     PlayCutscene = function(cutscene, shouldClear)
-        ffichecks.checkinteger(1, cutscene)
+        cutscene = ffichecks.checkinteger(1, cutscene)
         repentogon.L_Isaac_PlayCutscene(cutscene, ffichecks.optboolean(shouldClear, false))
     end,
     RGON_GetChangelog = function()
@@ -598,14 +598,14 @@ local isaac = {
     end,
     RegisterMod = function(mod, name, apiVersion)
         name = ffichecks.checkstring(2, name)
-        ffichecks.checkinteger(3, apiVersion)
+        apiVersion = ffichecks.checkinteger(3, apiVersion)
         repentogon.L_Isaac_RegisterMod(RegistryRef(mod), name, apiVersion)
     end,
     RemoveModData = function(mod)
         repentogon.L_Isaac_RemoveModData(RegistryRef(mod))
     end,
     RenderCollectionItem = function(itemId, position, scale, color)
-        ffichecks.checkinteger(1, itemId)
+        itemId = ffichecks.checkinteger(1, itemId)
         ffichecks.checkcdata(2, position, "Vector")
         if not repentogon.L_Isaac_RenderCollectionItem(itemId, position, ffichecks.optcdata(scale, "Vector", nil), ffichecks.optcdata(color, "Color", nil)) then
             ffichecks.argerror(1, "Invalid collectible ID")
@@ -613,24 +613,24 @@ local isaac = {
     end,
     RenderScaledText = function(text, x, y, scaleX, scaleY, red, green, blue, alpha)
         text = ffichecks.checkstring(1, text)
-        ffichecks.checknumber(2, x)
-        ffichecks.checknumber(3, y)
-        ffichecks.checknumber(4, scaleX)
-        ffichecks.checknumber(5, scaleY)
-        ffichecks.checknumber(6, red)
-        ffichecks.checknumber(7, green)
-        ffichecks.checknumber(8, blue)
-        ffichecks.checknumber(9, alpha)
+        x = ffichecks.checknumber(2, x)
+        y = ffichecks.checknumber(3, y)
+        scaleX = ffichecks.checknumber(4, scaleX)
+        scaleY = ffichecks.checknumber(5, scaleY)
+        red = ffichecks.checknumber(6, red)
+        green = ffichecks.checknumber(7, green)
+        blue = ffichecks.checknumber(8, blue)
+        alpha = ffichecks.checknumber(9, alpha)
         repentogon.L_Isaac_GetTextFont():DrawStringScaled(text, x, y, scaleX, scaleY, KColor(red, green, blue, alpha))
     end,
     RenderText = function(text, x, y, red, green, blue, alpha)
         text = ffichecks.checkstring(1, text)
-        ffichecks.checknumber(2, x)
-        ffichecks.checknumber(3, y)
-        ffichecks.checknumber(4, red)
-        ffichecks.checknumber(5, green)
-        ffichecks.checknumber(6, blue)
-        ffichecks.checknumber(7, alpha)
+        x = ffichecks.checknumber(2, x)
+        y = ffichecks.checknumber(3, y)
+        red = ffichecks.checknumber(4, red)
+        green = ffichecks.checknumber(5, green)
+        blue = ffichecks.checknumber(6, blue)
+        alpha = ffichecks.checknumber(7, alpha)
         repentogon.L_Isaac_GetTextFont():DrawString(text, x, y, KColor(red, green, blue, alpha))
     end,
     RenderToWorld = function(position)
@@ -638,19 +638,19 @@ local isaac = {
         return VectorResult(repentogon.L_Isaac_RenderToWorld, position)
     end,
     ReworkBirthright = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         if not repentogon.L_Isaac_ReworkBirthright(playerType) then
             ffichecks.argerror(1, "invalid PlayerType")
         end
     end,
     ReworkCollectible = function(collectible)
-        ffichecks.checkinteger(1, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
         if not repentogon.L_Isaac_ReworkCollectible(collectible) then
             ffichecks.argerror(1, "invalid CollectibleType")
         end
     end,
     ReworkTrinket = function(trinket)
-        ffichecks.checkinteger(1, trinket)
+        trinket = ffichecks.checkinteger(1, trinket)
         if not repentogon.L_Isaac_ReworkTrinket(trinket) then
             ffichecks.argerror(1, "invalid TrinketType")
         end
@@ -668,7 +668,7 @@ local isaac = {
         repentogon.L_Isaac_SaveModData(RegistryRef(mod), data)
     end,
     SetChallengeCompletion = function(challengeId, completed)
-        ffichecks.checkinteger(1, challengeId)
+        challengeId = ffichecks.checkinteger(1, challengeId)
         CheckChallengeId(challengeId)
         ffichecks.checktype(2, completed, "boolean")
         if completed then
@@ -682,9 +682,9 @@ local isaac = {
         return repentogon.L_Isaac_SetClipboard(text)
     end,
     SetCompletionMark = function(playerType, completionType, value)
-        ffichecks.checkinteger(1, playerType)
-        ffichecks.checkinteger(2, completionType)
-        ffichecks.checkinteger(3, value)
+        playerType = ffichecks.checkinteger(1, playerType)
+        completionType = ffichecks.checkinteger(2, completionType)
+        value = ffichecks.checkinteger(3, value)
         if not repentogon.L_Isaac_CompletionMarksInitialized() then
             return
         end
@@ -725,7 +725,7 @@ local isaac = {
         repentogon.L_Isaac_SetCompletionMarks(playerType, values)
     end,
     SetBuiltInCallbackState = function(callbackId, enabled)
-        ffichecks.checkinteger(1, callbackId)
+        callbackId = ffichecks.checkinteger(1, callbackId)
         repentogon.L_Isaac_SetBuiltInCallbackState(callbackId, ffichecks.checkboolean(2, enabled))
     end,
     SetCurrentFloorBackdrop = function(backdropId)
@@ -781,23 +781,23 @@ local isaac = {
         return repentogon.L_Isaac_ShowErrorDialog(title, text, ffichecks.optinteger(icon, MB_ICONERROR), ffichecks.optinteger(buttons, MB_OK))
     end,
     Spawn = function(type, variant, subtype, position, velocity, spawner)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, subtype)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
+        subtype = ffichecks.checkinteger(3, subtype)
         ffichecks.checkcdata(4, position, "Vector")
         ffichecks.checkcdata(5, velocity, "Vector")
         return ffichecks.pointertoentity(repentogon.L_Isaac_Spawn(type, variant, subtype, position, velocity, EntityToPointer(spawner)))
     end,
     SpawnBoss = function(type, variant, subtype, position, velocity, spawner, seed)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, subtype)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
+        subtype = ffichecks.checkinteger(3, subtype)
         ffichecks.checkcdata(4, position, "Vector")
         ffichecks.checkcdata(5, velocity, "Vector")
         if seed == nil then
             seed = repentogon.L_Isaac_GetRoomSpawnSeed()
         else
-            ffichecks.checkinteger(7, seed)
+            seed = ffichecks.checkinteger(7, seed)
         end
         if not (type > 9 and type < 990) then
             error("SpawnBoss only works with NPC-able entity types", 2)
@@ -805,7 +805,7 @@ local isaac = {
         return ffichecks.pointertonpc(repentogon.L_Isaac_SpawnBoss(type, variant, subtype, position, velocity, EntityToPointer(spawner), seed))
     end,
     StartDailyGame = function(date)
-        ffichecks.checkinteger(1, date)
+        date = ffichecks.checkinteger(1, date)
         repentogon.L_Isaac_StartDailyGame(date)
     end,
     StartNewGame = function(playerType, challenge, difficulty, seeds, isCustomRun)
@@ -828,7 +828,7 @@ local isaac = {
             error(string.format("Expected two parameters(MenuId,WorldPosition) got %d\n", count), 2)
         end
         local menuId, position = ...
-        ffichecks.checkinteger(1, menuId)
+        menuId = ffichecks.checkinteger(1, menuId)
         ffichecks.checkcdata(2, position, "Vector")
         local result = Vector(0, 0)
         local status = repentogon.L_Isaac_WorldToMenuPosition(menuId, position, result)

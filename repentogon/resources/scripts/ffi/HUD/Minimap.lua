@@ -58,11 +58,11 @@ Minimap = {
         repentogon.L_Minimap_Refresh()
     end,
     SetHoldTime = function(time)
-        ffichecks.checkinteger(1, time)
+        time = ffichecks.checkinteger(1, time)
         GetMinimap().HoldTime = time
     end,
     SetShakeDuration = function(duration)
-        ffichecks.checkinteger(1, duration)
+        duration = ffichecks.checkinteger(1, duration)
         GetMinimap().ShakeDuration = duration
     end,
     SetShakeOffset = function(offset)
@@ -70,7 +70,7 @@ Minimap = {
         GetMinimap().ShakeOffset = offset
     end,
     SetState = function(state)
-        ffichecks.checkinteger(1, state)
+        state = ffichecks.checkinteger(1, state)
         GetMinimap().State = state
     end,
 }

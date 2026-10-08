@@ -17,7 +17,7 @@ ControllerSelectMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("ControllerSelectMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_ControllerSelectMenu_SetSelectedElement(element)
     end,
 }

@@ -70,7 +70,7 @@ local TYPE_LASER = 7
 
 local function NumberSetter(field)
     return function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -102,7 +102,7 @@ local getters = {
 
 local setters = {
     Angle = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_EntityLaser_SetAngle(self, value)
     end,
     TearFlags = function(self, value)
@@ -179,50 +179,50 @@ local methods = {
         repentogon.L_EntityLaser_ResetSpriteScale(self)
     end,
     RotateToAngle = function(self, angle, speed)
-        ffichecks.checknumber(1, angle)
+        angle = ffichecks.checknumber(1, angle)
         repentogon.L_EntityLaser_RotateToAngle(self, angle, ffichecks.optnumber(speed, 8.0))
     end,
     SetActiveRotation = function(self, delay, degrees, speed, setTimeout)
-        ffichecks.checkinteger(1, delay)
-        ffichecks.checknumber(2, degrees)
-        ffichecks.checknumber(3, speed)
+        delay = ffichecks.checkinteger(1, delay)
+        degrees = ffichecks.checknumber(2, degrees)
+        speed = ffichecks.checknumber(3, speed)
         repentogon.L_EntityLaser_SetActiveRotation(self, delay, degrees, speed, not not setTimeout)
     end,
     SetBlackHpDropChance = function(self, chance)
-        ffichecks.checknumber(1, chance)
+        chance = ffichecks.checknumber(1, chance)
         self.BlackHpDropChance = chance
     end,
     SetDamageMultiplier = NumberSetter("DamageMultiplierValue"),
     SetDisableFollowParent = BooleanSetter("DisableFollowParentValue"),
     SetHomingType = function(self, homingType)
-        ffichecks.checkinteger(1, homingType)
+        homingType = ffichecks.checkinteger(1, homingType)
         self.HomingType = homingType
     end,
     SetInitSound = function(self, soundId)
-        ffichecks.checkinteger(1, soundId)
+        soundId = ffichecks.checkinteger(1, soundId)
         if not repentogon.L_EntityLaser_SetInitSound(self, soundId) then
             ffichecks.argerror(1, "Invalid SoundEffect", 3)
         end
     end,
     SetMaxDistance = function(self, distance)
-        ffichecks.checknumber(1, distance)
+        distance = ffichecks.checknumber(1, distance)
         self.MaxDistance = distance
     end,
     SetMultidimensionalTouched = AnyBooleanSetter("MultidimensionalTouchedValue"),
     SetNumChainedLasers = function(self, count)
-        ffichecks.checkinteger(1, count)
+        count = ffichecks.checkinteger(1, count)
         ffi.setprivate(self, "ChainedLasersValue", count)
     end,
     SetOneHit = AnyBooleanSetter("OneHitValue"),
     SetPrismTouched = BooleanSetter("PrismTouchedValue"),
     SetScale = function(self, scale)
-        ffichecks.checknumber(1, scale)
+        scale = ffichecks.checknumber(1, scale)
         ffi.setprivate(self, "ScaleValue", scale)
         repentogon.L_EntityLaser_ResetSpriteScale(self)
     end,
     SetShrink = BooleanSetter("ShrinkValue"),
     SetTimeout = function(self, timeout)
-        ffichecks.checkinteger(1, timeout)
+        timeout = ffichecks.checkinteger(1, timeout)
         self.Timeout = timeout
     end,
 }
@@ -233,10 +233,10 @@ Entity.SetClassType(TYPE_LASER, ffi.typeof("struct EntityLaser*"))
 
 EntityLaser = setmetatable({
     ShootAngle = function(variant, sourcePosition, angleDegrees, timeout, positionOffset, source)
-        ffichecks.checkinteger(1, variant)
+        variant = ffichecks.checkinteger(1, variant)
         ffichecks.checkcdata(2, sourcePosition, "Vector")
-        ffichecks.checknumber(3, angleDegrees)
-        ffichecks.checkinteger(4, timeout)
+        angleDegrees = ffichecks.checknumber(3, angleDegrees)
+        timeout = ffichecks.checkinteger(4, timeout)
         ffichecks.checkcdata(5, positionOffset, "Vector")
         return repentogon.L_EntityLaser_ShootAngle(variant, sourcePosition, angleDegrees, timeout, positionOffset, EntityToPointer(source))
     end,
@@ -245,7 +245,7 @@ EntityLaser = setmetatable({
         ffichecks.checkcdata(2, direction, "Vector")
         ffichecks.checkcdata(3, positionOffset, "Vector")
         local parentPointer = ffichecks.checkentity(4, parent)
-        ffichecks.checknumber(5, margin)
+        margin = ffichecks.checknumber(5, margin)
         local result = Vector(0, 0)
         repentogon.L_EntityLaser_CalculateEndPoint(start, direction, positionOffset, parentPointer, margin, result)
         return result

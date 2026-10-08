@@ -45,7 +45,7 @@ EntityRefMT.__newindex = function(self, key, value)
         return
     end
     if key == "IsCharmed" then
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         local flags = ffi.getprivate(self, "Flags")
         if value then
             flags = flags | FLAG_CHARMED
@@ -56,7 +56,7 @@ EntityRefMT.__newindex = function(self, key, value)
         return
     end
     if key == "IsFriendly" then
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         local flags = ffi.getprivate(self, "Flags")
         if value then
             flags = flags | FLAG_FRIENDLY

@@ -41,8 +41,8 @@ end
 
 Renderer = {
     CreateImage = function(width, height, name)
-        ffichecks.checkinteger(1, width)
-        ffichecks.checkinteger(2, height)
+        width = ffichecks.checkinteger(1, width)
+        height = ffichecks.checkinteger(2, height)
         name = ffichecks.checkstring(3, name)
         local image = ImageT()
         if not repentogon.L_Renderer_CreateImage(width, height, name, image) then
@@ -62,7 +62,7 @@ Renderer = {
         return repentogon.L_Renderer_GetPixelationAmount()
     end,
     GetShaderByType = function(shaderType)
-        ffichecks.checkinteger(1, shaderType)
+        shaderType = ffichecks.checkinteger(1, shaderType)
         if shaderType < 0 or shaderType >= SHADER_MAX then
             ffichecks.argerror(1, "invalid shader type")
         end

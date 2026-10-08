@@ -114,31 +114,31 @@ GridEntityMT = {
         return repentogon.L_GridEntity_GetWaterClipFlags(ffi.cast("struct GridEntity*", self))
     end,
     Hurt = function(self, damage)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, EntityRef())
     end,
     HurtDamage = function(self, ent, playerDamage, damageFlags, damage, ignoreGridCollision)
-        ffichecks.checkinteger(2, playerDamage)
-        ffichecks.checkinteger(3, damageFlags)
-        ffichecks.checknumber(4, damage)
+        playerDamage = ffichecks.checkinteger(2, playerDamage)
+        damageFlags = ffichecks.checkinteger(3, damageFlags)
+        damage = ffichecks.checknumber(4, damage)
         repentogon.L_GridEntity_HurtDamage(ffi.cast("struct GridEntity*", self), ffichecks.checkentity(1, ent), playerDamage, damageFlags, damage, ffichecks.checkboolean(5, ignoreGridCollision))
     end,
     HurtSurroundings = function(self, enemyDistance, playerDistance, enemyDamage, playerDamage, damageFlags, ignoreGridCol)
-        ffichecks.checknumber(1, enemyDistance)
-        ffichecks.checknumber(2, playerDistance)
-        ffichecks.checknumber(3, enemyDamage)
-        ffichecks.checkinteger(4, playerDamage)
-        ffichecks.checkinteger(5, damageFlags)
-        ffichecks.checkboolean(6, ignoreGridCol)
+        enemyDistance = ffichecks.checknumber(1, enemyDistance)
+        playerDistance = ffichecks.checknumber(2, playerDistance)
+        enemyDamage = ffichecks.checknumber(3, enemyDamage)
+        playerDamage = ffichecks.checkinteger(4, playerDamage)
+        damageFlags = ffichecks.checkinteger(5, damageFlags)
+        ignoreGridCol = ffichecks.checkboolean(6, ignoreGridCol)
         repentogon.L_GridEntity_HurtSurroundings(ffi.cast("struct GridEntity*", self), enemyDistance, playerDistance, enemyDamage, playerDamage, damageFlags, ignoreGridCol)
     end,
     HurtWithSource = function(self, damage, source)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntity_Hurt(ffi.cast("struct GridEntity*", self), damage, source)
     end,
     Init = function(self, seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         repentogon.L_GridEntity_Init(ffi.cast("struct GridEntity*", self), seed)
     end,
     IsBreakableRock = function(self)
@@ -190,15 +190,15 @@ GridEntityMT = {
         repentogon.L_GridEntity_ResetWaterClipFlags(ffi.cast("struct GridEntity*", self))
     end,
     SetType = function(self, newType)
-        ffichecks.checkinteger(1, newType)
+        newType = ffichecks.checkinteger(1, newType)
         self.Desc.Type = newType
     end,
     SetVariant = function(self, variant)
-        ffichecks.checkinteger(1, variant)
+        variant = ffichecks.checkinteger(1, variant)
         self.Desc.Variant = variant
     end,
     SetWaterClipFlags = function(self, flags)
-        ffichecks.checkinteger(1, flags)
+        flags = ffichecks.checkinteger(1, flags)
         repentogon.L_GridEntity_SetWaterClipFlags(ffi.cast("struct GridEntity*", self), flags)
     end,
     ToDecoration = function(self)
@@ -322,11 +322,11 @@ end
 
 GridEntityMT.__newindex = function(self, key, value)
     if key == "State" then
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         self.Desc.State = value
     end
     if key == "VarData" then
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         self.Desc.VarData = value
     end
 end

@@ -27,7 +27,7 @@ StageTransition = {
         return GetStageTransition().SameStage;
     end,
     SetSameStage = function(value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         GetStageTransition().SameStage = value;
     end,
 }

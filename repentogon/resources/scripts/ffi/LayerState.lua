@@ -142,11 +142,11 @@ LayerStateMT = {
         end
     end,
     SetFlipX = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "FlipX", value)
     end,
     SetFlipY = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "FlipY", value)
     end,
     SetPos = function(self, pos)
@@ -154,11 +154,11 @@ LayerStateMT = {
         ffi.setprivate(self, "Pos", pos)
     end,
     SetRenderFlags = function(self, flags)
-        ffichecks.checkinteger(1, flags)
+        flags = ffichecks.checkinteger(1, flags)
         ffi.setprivate(self, "RenderFlags", flags)
     end,
     SetRotation = function(self, rotation)
-        ffichecks.checknumber(1, rotation)
+        rotation = ffichecks.checknumber(1, rotation)
         ffi.setprivate(self, "Rotation", rotation)
     end,
     SetSize = function(self, size)
@@ -170,15 +170,15 @@ LayerStateMT = {
         repentogon.L_LayerState_SetSpritesheet(self, spritesheet)
     end,
     SetVisible = function(self, visible)
-        ffichecks.checkboolean(1, visible)
+        visible = ffichecks.checkboolean(1, visible)
         ffi.setprivate(self, "Visible", visible)
     end,
     SetWrapSMode = function(self, mode)
-        ffichecks.checkinteger(1, mode)
+        mode = ffichecks.checkinteger(1, mode)
         ffi.setprivate(self, "WrapSMode", mode)
     end,
     SetWrapTMode = function(self, mode)
-        ffichecks.checkinteger(1, mode)
+        mode = ffichecks.checkinteger(1, mode)
         ffi.setprivate(self, "WrapTMode", mode)
     end,
 }

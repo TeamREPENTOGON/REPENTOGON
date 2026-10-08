@@ -158,8 +158,8 @@ end
 
 local function SetSize(id, x, y)
     id = ffichecks.checkstring(1, id)
-    ffichecks.checknumber(2, x)
-    ffichecks.checknumber(3, y)
+    x = ffichecks.checknumber(2, x)
+    y = ffichecks.checknumber(3, y)
     if not repentogon.L_ImGui_SetSize(id, x, y) then
         ElementNotFound(id)
     end
@@ -181,7 +181,7 @@ ImGui = {
     end,
     AddCallback = function(parentId, type, callback)
         parentId = ffichecks.checkstring(1, parentId)
-        ffichecks.checkinteger(2, type)
+        type = ffichecks.checkinteger(2, type)
         ffichecks.checkfunction(3, callback)
         if not repentogon.L_ImGui_AddCallback(parentId, type, cfuncs.Ref(callback)) then
             ffichecks.argerror(1, string.format("No element '%s' found.", parentId))
@@ -229,7 +229,7 @@ ImGui = {
     AddElement = function(parentId, id, type, text)
         parentId = ffichecks.checkstring(1, parentId)
         id = ffichecks.checkstring(2, id)
-        ffichecks.checkinteger(3, type)
+        type = ffichecks.checkinteger(3, type)
         if not repentogon.L_ImGui_AddElement(parentId, id, type, ffichecks.optstring(text, "")) then
             ParentNotFound(parentId)
         end
@@ -464,14 +464,14 @@ ImGui = {
     end,
     RemoveCallback = function(parentId, type)
         parentId = ffichecks.checkstring(1, parentId)
-        ffichecks.checkinteger(2, type)
+        type = ffichecks.checkinteger(2, type)
         if not repentogon.L_ImGui_RemoveCallback(parentId, type) then
             ffichecks.argerror(1, string.format("No element '%s' found.", parentId))
         end
     end,
     RemoveColor = function(id, type)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checkinteger(2, type)
+        type = ffichecks.checkinteger(2, type)
         if not repentogon.L_ImGui_RemoveColor(id, type) then
             ElementNotFound(id)
         end
@@ -484,10 +484,10 @@ ImGui = {
     end,
     SetColor = function(id, type, r, g, b, a)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checkinteger(2, type)
-        ffichecks.checknumber(3, r)
-        ffichecks.checknumber(4, g)
-        ffichecks.checknumber(5, b)
+        type = ffichecks.checkinteger(2, type)
+        r = ffichecks.checknumber(3, r)
+        g = ffichecks.checknumber(4, g)
+        b = ffichecks.checknumber(5, b)
         if not repentogon.L_ImGui_SetColor(id, type, r, g, b, ffichecks.optnumber(a, 1)) then
             ElementNotFound(id)
         end
@@ -501,9 +501,9 @@ ImGui = {
     SetSize = SetSize,
     SetTextColor = function(id, r, g, b, a)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checknumber(2, r)
-        ffichecks.checknumber(3, g)
-        ffichecks.checknumber(4, b)
+        r = ffichecks.checknumber(2, r)
+        g = ffichecks.checknumber(3, g)
+        b = ffichecks.checknumber(4, b)
         if not repentogon.L_ImGui_SetTextColor(id, r, g, b, ffichecks.optnumber(a, 1)) then
             ElementNotFound(id)
         end
@@ -522,14 +522,14 @@ ImGui = {
     end,
     SetWindowChildFlags = function(id, flags)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checkinteger(2, flags)
+        flags = ffichecks.checkinteger(2, flags)
         if not repentogon.L_ImGui_SetWindowChildFlags(id, flags) then
             WindowNotFound(id)
         end
     end,
     SetWindowFlags = function(id, flags)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checkinteger(2, flags)
+        flags = ffichecks.checkinteger(2, flags)
         if not repentogon.L_ImGui_SetWindowFlags(id, flags) then
             WindowNotFound(id)
         end
@@ -542,8 +542,8 @@ ImGui = {
     end,
     SetWindowPosition = function(id, x, y)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checknumber(2, x)
-        ffichecks.checknumber(3, y)
+        x = ffichecks.checknumber(2, x)
+        y = ffichecks.checknumber(3, y)
         if not repentogon.L_ImGui_SetWindowPosition(id, x, y) then
             WindowNotFound(id)
         end
@@ -552,7 +552,7 @@ ImGui = {
     Show = Show,
     UpdateData = function(id, dataType, value)
         id = ffichecks.checkstring(1, id)
-        ffichecks.checkinteger(2, dataType)
+        dataType = ffichecks.checkinteger(2, dataType)
         if not repentogon.L_ImGui_ElementExists(id) then
             NoElementWithId(id)
         end
@@ -567,10 +567,10 @@ ImGui = {
             elseif kind == VALUE_BOOLEAN then
                 repentogon.L_ImGui_SetValueBoolean(id, ffichecks.checkboolean(3, value))
             elseif kind == VALUE_INTEGER then
-                ffichecks.checkinteger(3, value)
+                value = ffichecks.checkinteger(3, value)
                 repentogon.L_ImGui_SetValueInteger(id, value)
             elseif kind == VALUE_FLOAT then
-                ffichecks.checknumber(3, value)
+                value = ffichecks.checknumber(3, value)
                 repentogon.L_ImGui_SetValueFloat(id, value)
             else
                 supported = false
@@ -584,7 +584,7 @@ ImGui = {
                 repentogon.L_ImGui_SetListStrings(id, array, count)
             end
         elseif dataType == DATA_MIN or dataType == DATA_MAX then
-            ffichecks.checknumber(3, value)
+            value = ffichecks.checknumber(3, value)
             supported = repentogon.L_ImGui_SetMinMax(id, dataType == DATA_MAX, value)
         elseif dataType == DATA_HINT_TEXT then
             supported = repentogon.L_ImGui_SetHintText(id, ffichecks.checkstring(3, value))

@@ -20,13 +20,13 @@ local FontRenderSettingsMT
 FontRenderSettingsMT = {
     __type = "FontRenderSettings",
     EnableAutoWrap = function(self, width)
-        ffichecks.checkinteger(1, width)
+        width = ffichecks.checkinteger(1, width)
         ffi.setprivate(self, "WrapMode", WRAP_AUTO)
         ffi.setprivate(self, "MaxLineWidth", width)
         ffi.setprivate(self, "LineHeightModifier", 1)
     end,
     EnableTruncation = function(self, width)
-        ffichecks.checkinteger(1, width)
+        width = ffichecks.checkinteger(1, width)
         ffi.setprivate(self, "WrapMode", WRAP_TRUNCATE)
         ffi.setprivate(self, "MaxLineWidth", width)
     end,
@@ -49,19 +49,19 @@ FontRenderSettingsMT = {
         return ffi.getprivate(self, "WrapMode") == WRAP_TRUNCATE
     end,
     SetAlignment = function(self, alignment)
-        ffichecks.checkinteger(1, alignment)
+        alignment = ffichecks.checkinteger(1, alignment)
         ffi.setprivate(self, "Align", alignment)
     end,
     SetLineHeightModifier = function(self, modifier)
-        ffichecks.checknumber(1, modifier)
+        modifier = ffichecks.checknumber(1, modifier)
         ffi.setprivate(self, "LineHeightModifier", modifier)
     end,
     SetMaxCharacters = function(self, maxCharacters)
-        ffichecks.checkinteger(1, maxCharacters)
+        maxCharacters = ffichecks.checkinteger(1, maxCharacters)
         ffi.setprivate(self, "MaxCharacters", maxCharacters)
     end,
     SetMissingCharacterOverride = function(self, character)
-        ffichecks.checkinteger(1, character)
+        character = ffichecks.checkinteger(1, character)
         ffi.setprivate(self, "MissingCharacterOverride", character)
     end,
 }

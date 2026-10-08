@@ -17,7 +17,7 @@ SpecialSeedsMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("SpecialSeedsMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_SpecialSeedsMenu_SetSelectedElement(element)
     end,
 }

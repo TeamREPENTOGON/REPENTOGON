@@ -27,7 +27,7 @@ PillConfigListMT = {
     __len = GetSize,
 
     Get = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index >= GetSize(self) then
             ffichecks.argerror(1, "invalid vector subscript")
         end

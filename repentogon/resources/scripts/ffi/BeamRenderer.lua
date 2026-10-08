@@ -58,7 +58,7 @@ PointMT = {
         ffi.setprivate(self, "Color", color)
     end,
     SetIsWorldSpace = function(self, worldSpace)
-        ffichecks.checkboolean(1, worldSpace)
+        worldSpace = ffichecks.checkboolean(1, worldSpace)
         ffi.setprivate(self, "WorldSpace", worldSpace)
     end,
     SetPosition = function(self, position)
@@ -94,7 +94,7 @@ end
 Point = setmetatable({}, {
     __call = function(_, position, coordinate, width, color, worldSpace)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, coordinate)
+        coordinate = ffichecks.checknumber(2, coordinate)
         return NewPoint(position, coordinate, ffichecks.optnumber(width, 1), color, ffichecks.optboolean(worldSpace, false))
     end,
     __class = PointMT,
@@ -128,7 +128,7 @@ local function ResolveLayer(sprite, idx, layer)
     if type(layer) == "string" then
         return GetLayerByName(sprite, idx, layer, 4)
     end
-    ffichecks.checkinteger(idx, layer, 3)
+    layer = ffichecks.checkinteger(idx, layer, 3)
     return CheckLayerID(sprite, idx, layer, 4)
 end
 
@@ -209,18 +209,18 @@ BeamMT = {
             elseif math.type(layer) == "integer" then
                 layerID = CheckLayerID(sprite, 2, layer, 3)
             end
-            ffichecks.checkboolean(3, useOverlay)
+            useOverlay = ffichecks.checkboolean(3, useOverlay)
             ffi.setprivate(self, "UseOverlay", useOverlay)
             ffi.setprivate(self, "Layer", layerID)
         end
         repentogon.L_Beam_SetSprite(self, sprite)
     end,
     SetUnkBool = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "UnkBool", value)
     end,
     SetUseOverlay = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "UseOverlay", value)
     end,
 }
@@ -239,8 +239,8 @@ Beam = setmetatable({}, {
         local sprite, layer, useOverlay, unk = ...
         ffichecks.checkcdata(1, sprite, "Sprite")
         local layerID = ResolveLayer(sprite, 2, layer)
-        ffichecks.checkboolean(3, useOverlay)
-        ffichecks.checkboolean(4, unk)
+        useOverlay = ffichecks.checkboolean(3, useOverlay)
+        unk = ffichecks.checkboolean(4, unk)
 
         local beam = BeamT()
         repentogon.L_Beam_Init(beam, sprite, layerID, useOverlay, unk)

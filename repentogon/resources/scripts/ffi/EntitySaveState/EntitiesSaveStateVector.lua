@@ -36,14 +36,14 @@ EntitiesSaveStateVectorMT = {
         repentogon.L_EntitiesSaveStateVector_Clear(self)
     end,
     Get = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index >= GetSize(self) then
             ffichecks.argerror(1, string.format("invalid index for Get(): %d", index))
         end
         return MakeHandle(self, index)
     end,
     GetByType = function(self, type, variant, subType)
-        ffichecks.checkinteger(1, type)
+        type = ffichecks.checkinteger(1, type)
         variant = ffichecks.optnumber(variant, 0)
         subType = ffichecks.optnumber(subType, 0)
 

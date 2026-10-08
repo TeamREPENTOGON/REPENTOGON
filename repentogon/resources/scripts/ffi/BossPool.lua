@@ -98,7 +98,7 @@ end
 BossPoolManager = {
     GetLevelBlacklist = GetLevelBlacklist,
     GetPool = function(stbType)
-        ffichecks.checkinteger(1, stbType)
+        stbType = ffichecks.checkinteger(1, stbType)
         if stbType < 0 or stbType >= NUM_STB then
             ffichecks.argerror(1, "invalid STB type")
         end

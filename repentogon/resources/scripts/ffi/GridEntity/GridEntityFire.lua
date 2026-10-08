@@ -28,11 +28,11 @@ GridEntityFireMT = {
         return repentogon.L_GridEntityFire_Hurt(self, 4, source)
     end,
     Hurt = function(self, damage)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         return repentogon.L_GridEntityFire_Hurt(self, damage, EntityRef())
     end,
     HurtWithSource = function(self, damage, source)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntityFire_Hurt(self, damage, source)
     end,

@@ -46,9 +46,9 @@ ItemOverlay = {
         return GetItemOverlay().Sprite
     end,
     Show = function(giantbookID, delay, player)
-        ffichecks.checkinteger(1, giantbookID)
+        giantbookID = ffichecks.checkinteger(1, giantbookID)
         delay = delay or 0
-        ffichecks.checkinteger(2, delay)
+        delay = ffichecks.checkinteger(2, delay)
         ffichecks.checkcdata(3, player, "EntityPlayer", true)
         repentogon.L_ItemOverlay_Show(giantbookID, delay, player)
     end,

@@ -34,7 +34,7 @@ Console = {
         if amount == nil then
             amount = 1
         else
-            ffichecks.checkinteger(1, amount)
+            amount = ffichecks.checkinteger(1, amount)
         end
         repentogon.L_Console_PopHistory(amount)
     end,

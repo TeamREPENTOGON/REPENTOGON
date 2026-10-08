@@ -34,15 +34,15 @@ WeightedOutcomePickerMT = {
         return tonumber(last - first) // ffi.sizeof("struct WeightedOutcomePicker_Outcome")
     end,
     AddOutcomeFloat = function(self, value, weight, scaleFactor)
-        ffichecks.checkinteger(1, value)
-        ffichecks.checknumber(2, weight)
+        value = ffichecks.checkinteger(1, value)
+        weight = ffichecks.checknumber(2, weight)
         scaleFactor = ffichecks.optnumber(scaleFactor, 100)
         local outcome = ffi.new("struct WeightedOutcomePicker_Outcome", { value, math.floor(weight * scaleFactor) })
         repentogon.L_WeightedOutcomePicker_AddOutcomeWeight(self, outcome)
     end,
     AddOutcomeWeight = function(self, value, weight)
-        ffichecks.checkinteger(1, value)
-        ffichecks.checkinteger(2, weight)
+        value = ffichecks.checkinteger(1, value)
+        weight = ffichecks.checkinteger(2, weight)
         local outcome = ffi.new("struct WeightedOutcomePicker_Outcome", { value, weight })
         repentogon.L_WeightedOutcomePicker_AddOutcomeWeight(self, outcome)
     end,
@@ -64,7 +64,7 @@ WeightedOutcomePickerMT = {
         return result
     end,
     RemoveOutcome = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         repentogon.L_WeightedOutcomePicker_RemoveOutcome(self, value)
     end,
 }

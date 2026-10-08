@@ -25,10 +25,10 @@ local ALIGN_TOP_RIGHT = 2
 
 local function DrawStringScaled(self, str, x, y, scaleX, scaleY, color, boxWidth, center)
     str = ffichecks.checkstring(1, str, 3)
-    ffichecks.checknumber(2, x, 3)
-    ffichecks.checknumber(3, y, 3)
-    ffichecks.checknumber(4, scaleX, 3)
-    ffichecks.checknumber(5, scaleY, 3)
+    x = ffichecks.checknumber(2, x, 3)
+    y = ffichecks.checknumber(3, y, 3)
+    scaleX = ffichecks.checknumber(4, scaleX, 3)
+    scaleY = ffichecks.checknumber(5, scaleY, 3)
     ffichecks.checkcdata(6, color, "KColor", false, 3)
     boxWidth = ffichecks.optnumber(boxWidth, 0)
 
@@ -65,10 +65,10 @@ FontMT = {
             return
         end
         str = ffichecks.checkstring(1, str)
-        ffichecks.checknumber(2, x)
-        ffichecks.checknumber(3, y)
-        ffichecks.checknumber(4, param4)
-        ffichecks.checknumber(5, param5)
+        x = ffichecks.checknumber(2, x)
+        y = ffichecks.checknumber(3, y)
+        param4 = ffichecks.checknumber(4, param4)
+        param5 = ffichecks.checknumber(5, param5)
         ffichecks.checkcdata(6, param6, "KColor")
         ffichecks.checkcdata(7, param7, "FontRenderSettings")
         repentogon.L_Font_DrawString(self, str, x, y, param4, param5, param6, param7)
@@ -107,7 +107,7 @@ FontMT = {
         repentogon.L_Font_Load(self, path)
     end,
     SetMissingCharacter = function(self, character)
-        ffichecks.checkinteger(1, character)
+        character = ffichecks.checkinteger(1, character)
         repentogon.L_Font_SetMissingCharacter(self, character)
     end,
     Unload = function(self)

@@ -127,10 +127,10 @@ local RngMT = {
     end,
 
     RandomInt = function(self, min, max)
-		ffichecks.checkinteger(1, min)
+		min = ffichecks.checkinteger(1, min)
 
         if max ~= nil then
-		    ffichecks.checkinteger(2, max)
+		    max = ffichecks.checkinteger(2, max)
         end
 
         if self._seed == 0 then
@@ -150,10 +150,10 @@ local RngMT = {
     end,
 
     PhantomInt = function(self, min, max)
-		ffichecks.checkinteger(1, min)
+		min = ffichecks.checkinteger(1, min)
 
         if max ~= nil then
-		    ffichecks.checkinteger(2, max)
+		    max = ffichecks.checkinteger(2, max)
         end
 
         local oldSeed = self._seed
@@ -167,8 +167,8 @@ local RngMT = {
             shiftIdx = 35
         end
 
-		ffichecks.checkinteger(1, seed)
-		ffichecks.checkinteger(2, shiftIdx)
+		seed = ffichecks.checkinteger(1, seed)
+		shiftIdx = ffichecks.checkinteger(2, shiftIdx)
 
         -- The vanilla API accepts negative values but because it's unsigned, so a wraparound is performed.
         -- This preserves the behavior in case mods use a negative seed for some weird cursed reason
@@ -270,8 +270,8 @@ RNG = setmetatable({}, {
             shiftIdx = 35
         end
 
-		ffichecks.checkinteger(1, seed)
-		ffichecks.checkinteger(2, shiftIdx)
+		seed = ffichecks.checkinteger(1, seed)
+		shiftIdx = ffichecks.checkinteger(2, shiftIdx)
         
         if seed == 0 then
             error("Invalid seed 0 for RNG object")

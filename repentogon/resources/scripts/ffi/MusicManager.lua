@@ -41,7 +41,7 @@ local MusicManagerMT
 MusicManagerMT = {
 	__type = "MusicManager",
     Crossfade = function(self, id, fadeRate)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
         fadeRate = ffichecks.optnumber(fadeRate, 0.08);
         repentogon.L_MusicManager_Crossfade(id, fadeRate);
@@ -50,7 +50,7 @@ MusicManagerMT = {
         repentogon.L_MusicManager_Disable();
     end,
     DisableLayer = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         repentogon.L_MusicManager_DisableLayer(id)
     end,
     Enable = function(self)
@@ -62,7 +62,7 @@ MusicManagerMT = {
         repentogon.L_MusicManager_EnableLayer(layerId, instant)
     end,
     Fadein = function(self, id, volume, fadeRate)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
         volume = ffichecks.optnumber(volume, 1)
         fadeRate = ffichecks.optnumber(fadeRate, 0.08)
@@ -95,23 +95,23 @@ MusicManagerMT = {
         repentogon.L_MusicManager_Pause()
     end,
     PitchSlide = function(self, targetPitch)
-        ffichecks.checknumber(1, targetPitch)
+        targetPitch = ffichecks.checknumber(1, targetPitch)
         repentogon.L_MusicManager_PitchSlide(targetPitch)
     end,
     Play = function(self, id, volume)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
         volume = ffichecks.optnumber(volume, -1)
         repentogon.L_MusicManager_Play(id, volume)
     end,
     PlayJingle = function(self, id, duration)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
         duration = ffichecks.optnumber(duration, 140)
         repentogon.L_MusicManager_PlayJingle(id, duration)
     end,
     Queue = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ValidateMusicId(1, id)
         repentogon.L_MusicManager_Queue(id)
     end,
@@ -122,7 +122,7 @@ MusicManagerMT = {
         repentogon.L_MusicManager_Resume()
     end,
     SetCurrentPitch = function(self, pitch)
-        ffichecks.checknumber(1, pitch)
+        pitch = ffichecks.checknumber(1, pitch)
         repentogon.L_MusicManager_SetCurrentPitch(pitch)
     end,
     StopJingle = function(self)
@@ -132,7 +132,7 @@ MusicManagerMT = {
         repentogon.L_MusicManager_UpdateVolume()
     end,
     VolumeSlide = function(self, targetVolume, fadeRate)
-        ffichecks.checknumber(1, targetVolume)
+        targetVolume = ffichecks.checknumber(1, targetVolume)
         fadeRate = ffichecks.optnumber(fadeRate, 0.08)
         repentogon.L_MusicManager_VolumeSlide(targetVolume, fadeRate)
     end,

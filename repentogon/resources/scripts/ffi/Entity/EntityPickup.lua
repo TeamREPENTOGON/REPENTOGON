@@ -71,7 +71,7 @@ local MAX_CYCLE = 8
 
 local function IntegerSetter(field)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -94,11 +94,11 @@ local getters = {
 
 local setters = {
     Price = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         repentogon.L_EntityPickup_SetPrice(self, value)
     end,
     ShopItemId = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "ShopItemIdValue", math.min(math.max(value, -2), 7))
     end,
     Touched = function(self, value)
@@ -111,7 +111,7 @@ local setters = {
 
 local methods = {
     AddCollectibleCycle = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         local result = repentogon.L_EntityPickup_AddCycleCollectible(self, id)
         if result < 0 then
             ffichecks.argerror(1, "Invalid collectible ID " .. id, 3)
@@ -191,7 +191,7 @@ local methods = {
         if collectibleId == nil then
             collectibleId = 0
         else
-            ffichecks.checkinteger(1, collectibleId)
+            collectibleId = ffichecks.checkinteger(1, collectibleId)
         end
         repentogon.L_EntityPickup_InitFlipState(self, collectibleId, ffichecks.optboolean(setupCollectibleGraphics, true))
     end,
@@ -202,13 +202,13 @@ local methods = {
         return ffi.getprivate(self, "PriceValue") ~= 0
     end,
     MakeShopItem = function(self, shopItemId)
-        ffichecks.checkinteger(1, shopItemId)
+        shopItemId = ffichecks.checkinteger(1, shopItemId)
         repentogon.L_EntityPickup_MakeShopItem(self, shopItemId)
     end,
     Morph = function(self, entityType, variant, subType, keepPrice, keepSeed, ignoreModifiers)
-        ffichecks.checkinteger(1, entityType)
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, subType)
+        entityType = ffichecks.checkinteger(1, entityType)
+        variant = ffichecks.checkinteger(2, variant)
+        subType = ffichecks.checkinteger(3, subType)
         repentogon.L_EntityPickup_Morph(self, entityType, variant, subType, not not keepPrice, not not keepSeed, not not ignoreModifiers)
     end,
     PlayDropSound = function(self)
@@ -229,7 +229,7 @@ local methods = {
         ffi.setprivate(self, "CycleCollectibleCountValue", 0)
     end,
     SetAlternatePedestal = function(self, pedestalType)
-        ffichecks.checkinteger(1, pedestalType)
+        pedestalType = ffichecks.checkinteger(1, pedestalType)
         repentogon.L_EntityPickup_SetAlternatePedestal(self, pedestalType)
     end,
     SetCanRerollOverride = function(self, canReroll)
@@ -252,7 +252,7 @@ local methods = {
         return repentogon.L_EntityPickup_TryFlip(self)
     end,
     TryInitOptionCycle = function(self, numCycle)
-        ffichecks.checkinteger(1, numCycle)
+        numCycle = ffichecks.checkinteger(1, numCycle)
         return repentogon.L_EntityPickup_TryInitOptionCycle(self, numCycle)
     end,
     TryOpenChest = function(self, player)
@@ -274,8 +274,8 @@ EntityPickup = setmetatable({
     GetRandomPickupVelocity = GetRandomPickupVelocity,
     SetupCollectibleGraphics = function(sprite, layerId, collectibleType, blind, seed, loadGraphics)
         ffichecks.checkcdata(1, sprite, "Sprite")
-        ffichecks.checkinteger(2, layerId)
-        ffichecks.checkinteger(3, collectibleType)
+        layerId = ffichecks.checkinteger(2, layerId)
+        collectibleType = ffichecks.checkinteger(3, collectibleType)
         blind = ffichecks.checkboolean(4, blind)
         seed = ffichecks.optnumber(seed, Random())
         loadGraphics = ffichecks.checkboolean(6, loadGraphics)

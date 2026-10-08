@@ -18,7 +18,7 @@ OptionsMenu = {
         return repentogon.L_OptionsMenu_GetSelectedElement()
     end,
     SetSelectedElement = function(element)
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_OptionsMenu_SetSelectedElement(element)
     end,
 }

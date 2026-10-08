@@ -154,14 +154,14 @@ end
 
 local function Adder(field)
     return function(self, amount)
-        ffichecks.checkinteger(1, amount)
+        amount = ffichecks.checkinteger(1, amount)
         ffi.setprivate(self, field, ffi.getprivate(self, field) + amount)
     end
 end
 
 local function ClampedSetter(field)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, field, Clamp(value, 0, 13))
     end
 end
@@ -198,19 +198,19 @@ local getters = {
 
 local setters = {
     BlueWombParTime = function(self, value)
-        ffichecks.checkinteger(3, value)
+        value = ffichecks.checkinteger(3, value)
         ffi.setprivate(self, "BlueWombParTimeValue", value)
     end,
     BossRushParTime = function(self, value)
-        ffichecks.checkinteger(3, value)
+        value = ffichecks.checkinteger(3, value)
         ffi.setprivate(self, "BossRushParTimeValue", value)
     end,
     Challenge = function(self, value)
-        ffichecks.checkinteger(3, value)
+        value = ffichecks.checkinteger(3, value)
         repentogon.L_Game_SetChallenge(self, value)
     end,
     Difficulty = function(self, value)
-        ffichecks.checkinteger(3, value)
+        value = ffichecks.checkinteger(3, value)
         if value >= 0 and value <= 3 then
             ffi.setprivate(self, "DifficultyValue", value)
         end
@@ -222,7 +222,7 @@ local setters = {
         offset.Y = value.Y
     end,
     TimeCounter = function(self, value)
-        ffichecks.checkinteger(3, value)
+        value = ffichecks.checkinteger(3, value)
         ffi.setprivate(self, "TimeCounterValue", value)
     end,
 }
@@ -249,29 +249,29 @@ GameMT = {
 
     AchievementUnlocksDisallowed = BoolMethod(repentogon.L_Game_AchievementUnlocksDisallowed),
     AddDebugFlags = function(self, flags)
-        ffichecks.checkinteger(1, flags)
+        flags = ffichecks.checkinteger(1, flags)
         ffi.setprivate(self, "DebugFlags", ffi.getprivate(self, "DebugFlags") | flags)
     end,
     AddDevilRoomDeal = VoidMethod(repentogon.L_Game_AddDevilRoomDeal),
     AddEncounteredBoss = function(self, type, variant)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
         repentogon.L_Game_AddEncounteredBoss(self, type, variant)
     end,
     AddErasedEnemy = function(self, entityOrType, variant)
         if ffichecks.isnumber(entityOrType) then
-            ffichecks.checkinteger(2, variant)
+            variant = ffichecks.checkinteger(2, variant)
             repentogon.L_Game_AddErasedEnemyByIds(self, entityOrType, variant)
         else
             repentogon.L_Game_AddErasedEnemy(self, EntityToPointer(entityOrType))
         end
     end,
     AddPixelation = function(self, duration)
-        ffichecks.checkinteger(1, duration)
+        duration = ffichecks.checkinteger(1, duration)
         repentogon.L_Game_AddPixelation(self, duration)
     end,
     AddShopVisits = function(self, visitCount)
-        ffichecks.checkinteger(1, visitCount)
+        visitCount = ffichecks.checkinteger(1, visitCount)
         repentogon.L_Game_AddShopVisits(self, visitCount)
     end,
     AddStageWithoutDamage = Incrementer("StagesWithoutDamage"),
@@ -279,37 +279,37 @@ GameMT = {
     AddTreasureRoomsVisited = Incrementer("TreasureRoomsVisited"),
     BombDamage = function(self, position, damage, radius, lineCheck, source, tearFlags, damageFlags, damageSource)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, damage)
-        ffichecks.checknumber(3, radius)
+        damage = ffichecks.checknumber(2, damage)
+        radius = ffichecks.checknumber(3, radius)
         if damageFlags == nil then
             damageFlags = DamageFlag.DAMAGE_EXPLOSION
         else
-            ffichecks.checkinteger(7, damageFlags)
+            damageFlags = ffichecks.checkinteger(7, damageFlags)
         end
         repentogon.L_Game_BombDamage(self, position, damage, radius, lineCheck ~= false, EntityToPointer(source),
             ToBitSet128(tearFlags), damageFlags, ffichecks.optboolean(damageSource, false))
     end,
     BombExplosionEffects = function(self, position, damage, tearFlags, color, source, radiusMult, lineCheck, damageSource, damageFlags)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, damage)
+        damage = ffichecks.checknumber(2, damage)
         radiusMult = ffichecks.optnumber(radiusMult, 1)
         if damageFlags == nil then
             damageFlags = DamageFlag.DAMAGE_EXPLOSION
         else
-            ffichecks.checkinteger(9, damageFlags)
+            damageFlags = ffichecks.checkinteger(9, damageFlags)
         end
         repentogon.L_Game_BombExplosionEffects(self, position, damage, ToBitSet128(tearFlags), ffichecks.optcdata(color, "Color", nil),
             EntityToPointer(source), radiusMult, lineCheck ~= false, damageFlags, ffichecks.optboolean(damageSource, false))
     end,
     BombTearflagEffects = function(self, position, radius, tearFlags, source, radiusMult)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, radius)
+        radius = ffichecks.checknumber(2, radius)
         ffichecks.checkcdata(3, tearFlags, "BitSet128")
         repentogon.L_Game_BombTearflagEffects(self, position, radius, tearFlags, EntityToPointer(source), ffichecks.optnumber(radiusMult, 1))
     end,
     ButterBeanFart = function(self, position, radius, source, showEffect, doSuperKnockback)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, radius)
+        radius = ffichecks.checknumber(2, radius)
         showEffect = ffichecks.checkboolean(4, showEffect)
         doSuperKnockback = ffichecks.checkboolean(5, doSuperKnockback)
         repentogon.L_Game_ButterBeanFart(self, position, radius, EntityToPointer(source), showEffect, doSuperKnockback)
@@ -321,14 +321,14 @@ GameMT = {
         return ffichecks.pointertoeffect(effect)
     end,
     ChangeRoom = function(self, roomIndex, dimension)
-        ffichecks.checkinteger(1, roomIndex)
+        roomIndex = ffichecks.checkinteger(1, roomIndex)
         dimension = ffichecks.optnumber(dimension, -1)
-        ffichecks.checkinteger(2, dimension)
+        dimension = ffichecks.checkinteger(2, dimension)
         repentogon.L_Game_ChangeRoom(self, roomIndex, dimension)
     end,
     CharmFart = function(self, position, radius, source)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, radius)
+        radius = ffichecks.checknumber(2, radius)
         repentogon.L_Game_CharmFart(self, position, radius, EntityToPointer(source))
     end,
     ClearDonationModAngel = Resetter("DonationModAngel"),
@@ -337,8 +337,8 @@ GameMT = {
     ClearStagesWithoutDamage = Resetter("StagesWithoutDamage"),
     ClearStagesWithoutHeartsPicked = Resetter("StagesWithoutHeartsPicked"),
     Darken = function(self, amount, duration)
-        ffichecks.checknumber(1, amount)
-        ffichecks.checkinteger(2, duration)
+        amount = ffichecks.checknumber(1, amount)
+        duration = ffichecks.checkinteger(2, duration)
         ffi.setprivate(self, "TargetDarkness", amount)
         ffi.setprivate(self, "DarknessDuration", duration)
     end,
@@ -348,19 +348,19 @@ GameMT = {
     DonateAngel = Adder("DonationModAngel"),
     DonateGreed = Adder("DonationModGreed"),
     End = function(self, endingID)
-        ffichecks.checkinteger(1, endingID)
+        endingID = ffichecks.checkinteger(1, endingID)
         repentogon.L_Game_End(self, endingID)
     end,
     Fadein = function(self, speed, showIcon, color)
-        ffichecks.checknumber(1, speed)
+        speed = ffichecks.checknumber(1, speed)
         if showIcon == nil then
             showIcon = true
         end
         repentogon.L_Game_Fadein(self, speed, not not showIcon, ffichecks.optcdata(color, "KColor", KColor(0, 0, 0, 1)))
     end,
     Fadeout = function(self, speed, target, color)
-        ffichecks.checknumber(1, speed)
-        ffichecks.checkinteger(2, target)
+        speed = ffichecks.checknumber(1, speed)
+        target = ffichecks.checkinteger(2, target)
         repentogon.L_Game_Fadeout(self, speed, target, ffichecks.optcdata(color, "KColor", KColor(0, 0, 0, 1)))
     end,
     Fart = function(self, position, radius, source, fartScale, fartSubType, color)
@@ -427,12 +427,12 @@ GameMT = {
     GetPlanetariumsVisited = Getter("PlanetariumsVisited"),
     GetPlayer = function(self, index)
         index = ffichecks.optnumber(index, 0)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         return ffichecks.pointertoplayer(repentogon.L_Game_GetPlayer(self, index))
     end,
     GetRandomPlayer = function(self, position, radius)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, radius)
+        radius = ffichecks.checknumber(2, radius)
         return ffichecks.pointertoplayer(repentogon.L_Game_GetRandomPlayer(self, position, radius))
     end,
     GetRoom = Getter("CurrentRoom"),
@@ -442,7 +442,7 @@ GameMT = {
     GetStagesWithoutDamage = Getter("StagesWithoutDamage"),
     GetStagesWithoutHeartsPicked = Getter("StagesWithoutHeartsPicked"),
     GetStateFlag = function(self, flag)
-        ffichecks.checkinteger(1, flag)
+        flag = ffichecks.checkinteger(1, flag)
         return repentogon.L_Game_GetStateFlag(self, flag)
     end,
     GetTargetColorModifier = ColorModifierGetter("TargetColorModifier"),
@@ -450,8 +450,8 @@ GameMT = {
     GetTreasureRoomVisitCount = Getter("TreasureRoomsVisited"),
     GetVictoryLap = Getter("VictoryLap"),
     HasEncounteredBoss = function(self, type, variant)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
         return repentogon.L_Game_HasEncounteredBoss(self, type, variant)
     end,
     HasHallucination = function(self)
@@ -460,9 +460,9 @@ GameMT = {
     IsErased = function(self, entityOrType, variant, subtype)
         if ffichecks.isnumber(entityOrType) then
             variant = ffichecks.optnumber(variant, -1)
-            ffichecks.checkinteger(2, variant)
+            variant = ffichecks.checkinteger(2, variant)
             subtype = ffichecks.optnumber(subtype, -1)
-            ffichecks.checkinteger(3, subtype)
+            subtype = ffichecks.checkinteger(3, subtype)
             return repentogon.L_Game_IsErased(self, entityOrType, variant, subtype)
         end
         return repentogon.L_Game_IsErasedEntity(self, EntityToPointer(entityOrType))
@@ -477,13 +477,13 @@ GameMT = {
     IsStartingFromState = Getter("StartingFromState"),
     MakeShockwave = function(self, position, amplitude, speed, duration)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, amplitude)
-        ffichecks.checknumber(3, speed)
-        ffichecks.checkinteger(4, duration)
+        amplitude = ffichecks.checknumber(2, amplitude)
+        speed = ffichecks.checknumber(3, speed)
+        duration = ffichecks.checkinteger(4, duration)
         repentogon.L_Game_MakeShockwave(self, position, amplitude, speed, duration)
     end,
     MoveToRandomRoom = function(self, iAmErrorRoom, seed, player)
-        ffichecks.checkinteger(2, seed)
+        seed = ffichecks.checkinteger(2, seed)
         if seed == 0 then
             error("The given seed is not valid", 2)
         end
@@ -491,7 +491,7 @@ GameMT = {
     end,
     NextVictoryLap = VoidMethod(repentogon.L_Game_NextVictoryLap),
     RecordPlayerCompletion = function(self, event)
-        ffichecks.checkinteger(1, event)
+        event = ffichecks.checkinteger(1, event)
         if event < 0 or event > 17 then
             error(string.format("Bad CompletionType %d (valid range is 0-17)", event), 2)
         end
@@ -499,9 +499,9 @@ GameMT = {
     end,
     Render = VoidMethod(repentogon.L_Game_Render),
     RemoveErasedEnemy = function(self, type, variant)
-        ffichecks.checkinteger(1, type)
+        type = ffichecks.checkinteger(1, type)
         variant = ffichecks.optnumber(variant, -1)
-        ffichecks.checkinteger(2, variant)
+        variant = ffichecks.checkinteger(2, variant)
         repentogon.L_Game_RemoveErasedEnemy(self, type, variant)
     end,
     RerollEnemy = function(self, entity, unk)
@@ -509,12 +509,12 @@ GameMT = {
     end,
     RerollLevelCollectibles = VoidMethod(repentogon.L_Game_RerollLevelCollectibles),
     RerollLevelPickups = function(self, seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         repentogon.L_Game_RerollLevelPickups(self, seed)
     end,
     SetBloom = function(self, time, strength)
-        ffichecks.checkinteger(1, time)
-        ffichecks.checknumber(2, strength)
+        time = ffichecks.checkinteger(1, time)
+        strength = ffichecks.checknumber(2, strength)
         repentogon.L_Game_SetBloom(self, time, strength)
     end,
     SetColorModifier = function(self, color, lerp, rate)
@@ -525,53 +525,53 @@ GameMT = {
         repentogon.L_Game_SetColorModifier(self, color, not not lerp, ffichecks.optnumber(rate, 0.015))
     end,
     SetDizzyAmount = function(self, targetIntensity, currentIntensity)
-        ffichecks.checknumber(1, targetIntensity)
+        targetIntensity = ffichecks.checknumber(1, targetIntensity)
         if currentIntensity == nil then
             currentIntensity = ffi.getprivate(self, "DizzyIntensity")
         else
-            ffichecks.checknumber(2, currentIntensity)
+            currentIntensity = ffichecks.checknumber(2, currentIntensity)
         end
         ffi.setprivate(self, "DizzyTargetIntensity", targetIntensity)
         ffi.setprivate(self, "DizzyIntensity", currentIntensity)
     end,
     SetDonationModAngel = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "DonationModAngel", value)
     end,
     SetDonationModGreed = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "DonationModGreed", value)
     end,
     SetLastDevilRoomStage = ClampedSetter("LastDevilRoomStage"),
     SetLastLevelWithDamage = ClampedSetter("LastLevelWithDamage"),
     SetLastLevelWithoutHalfHp = ClampedSetter("LastLevelWithoutHalfHp"),
     SetStateFlag = function(self, flag, value)
-        ffichecks.checkinteger(1, flag)
+        flag = ffichecks.checkinteger(1, flag)
         repentogon.L_Game_SetStateFlag(self, flag, ffichecks.optboolean(value, false))
     end,
     ShakeScreen = function(self, timeout)
-        ffichecks.checkinteger(1, timeout)
+        timeout = ffichecks.checkinteger(1, timeout)
         repentogon.L_Game_ShakeScreen(self, timeout)
     end,
     ShowFortune = VoidMethod(repentogon.L_Game_ShowFortune),
     ShowGenericLeaderboard = VoidMethod(repentogon.L_Game_ShowGenericLeaderboard),
     ShowHallucination = function(self, frameCount, backdrop)
-        ffichecks.checkinteger(1, frameCount)
+        frameCount = ffichecks.checkinteger(1, frameCount)
         if backdrop == nil then
             backdrop = BackdropType.NUM_BACKDROPS
         else
-            ffichecks.checkinteger(2, backdrop)
+            backdrop = ffichecks.checkinteger(2, backdrop)
         end
         repentogon.L_Game_ShowHallucination(self, frameCount, backdrop)
     end,
     ShowRule = VoidMethod(repentogon.L_Game_ShowRule),
     Spawn = function(self, type, variant, position, velocity, spawner, subtype, seed)
-        ffichecks.checkinteger(1, type)
-        ffichecks.checkinteger(2, variant)
+        type = ffichecks.checkinteger(1, type)
+        variant = ffichecks.checkinteger(2, variant)
         ffichecks.checkcdata(3, position, "Vector")
         ffichecks.checkcdata(4, velocity, "Vector")
-        ffichecks.checkinteger(6, subtype)
-        ffichecks.checkinteger(7, seed)
+        subtype = ffichecks.checkinteger(6, subtype)
+        seed = ffichecks.checkinteger(7, seed)
         return ffichecks.pointertoentity(repentogon.L_Game_Spawn(self, type, variant, position, velocity, EntityToPointer(spawner), subtype, seed))
     end,
     SpawnBombCrater = function(self, position, radius)
@@ -580,24 +580,24 @@ GameMT = {
     end,
     SpawnParticles = function(self, position, variant, num, speed, color, height, subtype)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, num)
-        ffichecks.checknumber(4, speed)
+        variant = ffichecks.checkinteger(2, variant)
+        num = ffichecks.checkinteger(3, num)
+        speed = ffichecks.checknumber(4, speed)
         repentogon.L_Game_SpawnParticles(self, position, variant, num, speed, ffichecks.optcdata(color, "Color", nil),
             ffichecks.optnumber(height, 100000), ffichecks.optnumber(subtype, 0))
     end,
     StartRoomTransition = function(self, roomIndex, direction, animation, player, dimension)
-        ffichecks.checkinteger(1, roomIndex)
-        ffichecks.checkinteger(2, direction)
+        roomIndex = ffichecks.checkinteger(1, roomIndex)
+        direction = ffichecks.checkinteger(2, direction)
         animation = ffichecks.optnumber(animation, RoomTransitionAnim.WALK)
-        ffichecks.checkinteger(3, animation)
+        animation = ffichecks.checkinteger(3, animation)
         dimension = ffichecks.optnumber(dimension, -1)
-        ffichecks.checkinteger(5, dimension)
+        dimension = ffichecks.checkinteger(5, dimension)
         repentogon.L_Game_StartRoomTransition(self, roomIndex, direction, animation, PlayerToPointer(player), dimension)
     end,
     StartStageTransition = function(self, sameStage, transition, player)
         sameStage = ffichecks.checkboolean(1, sameStage)
-        ffichecks.checkinteger(2, transition)
+        transition = ffichecks.checkinteger(2, transition)
         repentogon.L_Game_StartStageTransition(self, sameStage, transition, PlayerToPointer(player))
     end,
     Update = VoidMethod(repentogon.L_Game_Update),
@@ -607,7 +607,6 @@ GameMT = {
     end,
 }
 
--- Mods hook properties through these, like they did with luabridge. The accessors above read them live.
 GameMT.__propget = getters
 GameMT.__propset = setters
 

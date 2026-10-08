@@ -93,12 +93,12 @@ local methods = {
         return CanAccessTearFlags(self) and (ffi.getprivate(self, "VarDataValue") & flags) ~= TearFlags.TEAR_NORMAL
     end,
     SetDamageSource = function(self, source)
-        ffichecks.checkinteger(1, source)
+        source = ffichecks.checkinteger(1, source)
         self.DamageSource = source
     end,
     SetRadii = function(self, minRadius, maxRadius)
-        ffichecks.checknumber(1, minRadius)
-        ffichecks.checknumber(2, maxRadius)
+        minRadius = ffichecks.checknumber(1, minRadius)
+        maxRadius = ffichecks.checknumber(2, maxRadius)
         self.MinRadius = minRadius
         self.MaxRadius = maxRadius
     end,
@@ -109,7 +109,7 @@ local methods = {
         end
     end,
     SetTimeout = function(self, timeout)
-        ffichecks.checkinteger(1, timeout)
+        timeout = ffichecks.checkinteger(1, timeout)
         self.Timeout = timeout
         self.LifeSpan = timeout
     end,
@@ -151,7 +151,7 @@ EntityEffect = setmetatable({
         return repentogon.L_EntityEffect_CreateLootPreview(lootList, position, ffichecks.checkentity(3, owner), ffichecks.checkentity(4, effect))
     end,
     IsPlayerCreep = function(variant)
-        ffichecks.checkinteger(1, variant)
+        variant = ffichecks.checkinteger(1, variant)
         return PLAYER_CREEP_VARIANTS[variant] == true
     end,
 }, { __class = EffectMT })

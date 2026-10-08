@@ -50,7 +50,7 @@ MultiShotParamsMT = {
         return ffi.getprivate(self, "NumTears")
     end,
     GetSpreadAngle = function(self, weaponType)
-        ffichecks.checkinteger(1, weaponType)
+        weaponType = ffichecks.checkinteger(1, weaponType)
         local field = spreadAngleFields[weaponType]
         if field then
             return ffi.getprivate(self, field) * (spreadAngleScale[weaponType] or 1)
@@ -70,40 +70,40 @@ MultiShotParamsMT = {
         return ffi.getprivate(self, "ShootingSideways")
     end,
     SetIsCrossEyed = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "CrossEyed", value)
     end,
     SetIsShootingBackwards = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "ShootingBackwards", value)
     end,
     SetIsShootingSideways = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "ShootingSideways", value)
     end,
     SetMultiEyeAngle = function(self, angle)
-        ffichecks.checknumber(1, angle)
+        angle = ffichecks.checknumber(1, angle)
         ffi.setprivate(self, "MultiEyeAngle", angle)
     end,
     SetNumEyesActive = function(self, count)
-        ffichecks.checkinteger(1, count)
+        count = ffichecks.checkinteger(1, count)
         ffi.setprivate(self, "NumEyesActive", count)
     end,
     SetNumLanesPerEye = function(self, count)
-        ffichecks.checkinteger(1, count)
+        count = ffichecks.checkinteger(1, count)
         ffi.setprivate(self, "NumLanesPerEye", count)
     end,
     SetNumRandomDirTears = function(self, count)
-        ffichecks.checkinteger(1, count)
+        count = ffichecks.checkinteger(1, count)
         ffi.setprivate(self, "NumRandomDirTears", count)
     end,
     SetNumTears = function(self, count)
-        ffichecks.checkinteger(1, count)
+        count = ffichecks.checkinteger(1, count)
         ffi.setprivate(self, "NumTears", count)
     end,
     SetSpreadAngle = function(self, weaponType, angle)
-        ffichecks.checkinteger(1, weaponType)
-        ffichecks.checknumber(2, angle)
+        weaponType = ffichecks.checkinteger(1, weaponType)
+        angle = ffichecks.checknumber(2, angle)
         local field = spreadAngleFields[weaponType]
         if not field then
             if weaponType >= 1 and weaponType <= 15 then

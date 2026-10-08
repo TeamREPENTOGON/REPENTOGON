@@ -65,7 +65,7 @@ HUDMT = {
     FlashChargeBar = function(self, player, slot)
         ffichecks.checkcdata(1, player, "EntityPlayer", true)
         slot = slot or 0
-        ffichecks.checkinteger(2, slot)
+        slot = ffichecks.checkinteger(2, slot)
         repentogon.L_HUD_FlashChargeBar(self, player, slot)
     end,
     FlashRedHearts = function(self, player)
@@ -127,7 +127,7 @@ HUDMT = {
     InvalidateActiveItem = function(self, player, slot)
         ffichecks.checkcdata(1, player, "EntityPlayer", true)
         slot = slot or 0
-        ffichecks.checkinteger(2, slot)
+        slot = ffichecks.checkinteger(2, slot)
         repentogon.L_HUD_InvalidateActiveItem(self, player, slot)
     end,
     InvalidateCraftingItem = function(self, player)
@@ -144,7 +144,7 @@ HUDMT = {
         repentogon.L_HUD_Render(self)
     end,
     SetBossHPBarFill = function(self, fill)
-        ffichecks.checknumber(1, fill)
+        fill = ffichecks.checknumber(1, fill)
         ffi.setprivate(self, "BossHPBarFill", fill)
     end,
     SetVisible = function(self, visible)

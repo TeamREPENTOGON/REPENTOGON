@@ -32,7 +32,7 @@ RoomConfigSpawnsMT.__index = function(self, k)
 end
 
 function RoomConfigSpawnsMT:Get(idx)
-    ffichecks.checkinteger(1, idx)
+    idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= el_size(self) then return nil end
     return ffi.getprivate(self, "_begin") + idx
 end
@@ -53,7 +53,7 @@ local RoomConfigSpawnMT
 RoomConfigSpawnMT = {
     __type = "RoomConfigSpawn",
     PickEntry = function(self, r)
-        ffichecks.checknumber(1, r)
+        r = ffichecks.checknumber(1, r)
         local entry = repentogon.L_RoomConfigSpawn_PickEntry(self, r)
         if entry == nil then return nil end
         return entry

@@ -18,7 +18,7 @@ end
 VectorListMT.__len = function(self) return el_size(self) end
 
 function VectorListMT:Get(idx)
-    ffichecks.checkinteger(1, idx)
+    idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= el_size(self) then return nil end
     return ffichecks.copyvector(ffi.getprivate(self, "_first")[idx])
 end

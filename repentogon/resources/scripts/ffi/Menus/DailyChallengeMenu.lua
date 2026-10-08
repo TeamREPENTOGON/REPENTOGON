@@ -53,12 +53,12 @@ DailyChallengeMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_DailyChallengeMenu_SetSelectedElement(element)
     end,
     SetState = function(state)
         ffichecks.checkmainmenu("DailyChallengeMenu")
-        ffichecks.checkinteger(1, state)
+        state = ffichecks.checkinteger(1, state)
         repentogon.L_DailyChallengeMenu_SetState(state)
     end,
 }

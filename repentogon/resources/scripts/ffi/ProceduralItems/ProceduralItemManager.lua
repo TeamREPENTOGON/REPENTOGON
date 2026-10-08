@@ -18,12 +18,12 @@ end
 
 ProceduralItemManager = {
     CreateProceduralItem = function(seed, unk)
-        ffichecks.checkinteger(1, seed)
-        ffichecks.checkinteger(2, unk)
+        seed = ffichecks.checkinteger(1, seed)
+        unk = ffichecks.checkinteger(2, unk)
         return repentogon.L_ProceduralItemManager_CreateProceduralItem(seed, unk)
     end,
     GetProceduralItem = function(index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index >= 0 and index < GetProceduralItemCount() then
             return ffi.getprivate(repentogon.L_ProceduralItemManager_Get(), "ItemsFirst")[index]
         end

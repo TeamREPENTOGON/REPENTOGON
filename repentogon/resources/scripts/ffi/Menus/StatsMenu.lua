@@ -82,7 +82,7 @@ StatsMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("StatsMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_StatsMenu_SetSelectedElement(element)
     end,
 }

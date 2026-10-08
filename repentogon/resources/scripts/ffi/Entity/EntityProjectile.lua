@@ -43,7 +43,7 @@ end
 
 local function Adder(field)
     return function(self, amount)
-        ffichecks.checknumber(1, amount)
+        amount = ffichecks.checknumber(1, amount)
         self[field] = self[field] + amount
     end
 end

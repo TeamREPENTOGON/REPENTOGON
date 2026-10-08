@@ -88,7 +88,7 @@ local function Number(name, writable)
     end
     if writable then
         setters[name] = function(value)
-            ffichecks.checknumber(1, value)
+            value = ffichecks.checknumber(1, value)
             Config()[name] = value
         end
     end
@@ -100,7 +100,7 @@ local function Integer(name, writable, min, max)
     end
     if writable then
         setters[name] = function(value)
-            ffichecks.checkinteger(1, value)
+            value = ffichecks.checkinteger(1, value)
             if min and value < min then
                 value = min
             end
@@ -117,7 +117,7 @@ local function Clamped(name, min, max, apply)
         return Config()[name]
     end
     setters[name] = function(value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         if value < min then
             value = min
         end
@@ -188,7 +188,7 @@ getters.SFXVolume = function()
     return Config().SFXVolume
 end
 setters.SFXVolume = function(value)
-    ffichecks.checknumber(1, value)
+    value = ffichecks.checknumber(1, value)
     if value < 0 then
         value = 0
     end

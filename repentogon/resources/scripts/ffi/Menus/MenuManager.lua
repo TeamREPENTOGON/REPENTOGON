@@ -63,7 +63,7 @@ MenuManager = {
     end,
     SetActiveMenu = function(menu)
         ffichecks.checkmainmenu("MenuManager")
-        ffichecks.checkinteger(1, menu)
+        menu = ffichecks.checkinteger(1, menu)
         repentogon.L_MenuManager_SetActiveMenu(menu);
     end,
     SetColorModifier = function(colorModifier, lerp, rate)
@@ -75,7 +75,7 @@ MenuManager = {
     end,
     SetInputMask = function(inputMask)
         ffichecks.checkmainmenu("MenuManager")
-        ffichecks.checkinteger(1, inputMask)
+        inputMask = ffichecks.checkinteger(1, inputMask)
         repentogon.L_MenuManager_SetInputMask(inputMask);
     end,
     SetViewPosition = function(position)

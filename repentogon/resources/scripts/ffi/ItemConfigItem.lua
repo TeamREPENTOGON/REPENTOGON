@@ -45,7 +45,7 @@ bool L_ItemConfigItem_HasCustomTag(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_AddCustomTag(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_RemoveCustomTag(struct ItemConfigItem*, const char*);
 int L_ItemConfigItem_GetCustomCacheTags(struct ItemConfigItem*, const char**);
-int L_ItemConfigItem_HasCustomCacheTag(struct ItemConfigItem*, const char*);
+bool L_ItemConfigItem_HasCustomCacheTag(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_AddCustomCacheTag(struct ItemConfigItem*, const char*);
 void L_ItemConfigItem_RemoveCustomCacheTag(struct ItemConfigItem*, const char*);
 //uint64_t L_ItemConfigItem_GetTags(struct ItemConfigItem* item);
@@ -128,7 +128,7 @@ ItemConfigItemMT = {
         return repentogon.L_ItemConfigItem_HasCustomTag(self, tag)
     end,
     HasTags = function(self, tags)
-        ffichecks.checknumber(2, tags)
+        tags = ffichecks.checknumber(2, tags)
         if tags & self.Tags ~= 0 then
             return true
         end

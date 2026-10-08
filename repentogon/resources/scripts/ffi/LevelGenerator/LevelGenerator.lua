@@ -45,15 +45,15 @@ LevelGeneratorMT = {
         return GetRooms(self, "NonDeadEndsFirst", "NonDeadEndsLast")
     end,
     PlaceRoom = function(self, column, line, shape, neighbor)
-        ffichecks.checkinteger(1, column)
+        column = ffichecks.checkinteger(1, column)
         if column < 0 or column > 12 then
             ffichecks.argerror(1, string.format("invalid column %d, value must be between 0 and 12 (inclusive)", column))
         end
-        ffichecks.checkinteger(2, line)
+        line = ffichecks.checkinteger(2, line)
         if line < 0 or line > 12 then
             ffichecks.argerror(2, string.format("invalid line %d, value must be between 0 and 12 (inclusive)", line))
         end
-        ffichecks.checkinteger(3, shape)
+        shape = ffichecks.checkinteger(3, shape)
         if shape < 0 or shape >= MAX_ROOMSHAPES then
             ffichecks.argerror(3, string.format("invalid room shape %d, value must be between 0 and %d (inclusive)", shape, MAX_ROOMSHAPES - 1))
         end

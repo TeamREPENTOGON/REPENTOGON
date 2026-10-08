@@ -83,7 +83,7 @@ local function SearchHistory(self, trinkets, ids)
             end
         end
     elseif ids ~= nil then
-        ffichecks.checkinteger(1, ids, 3)
+        ids = ffichecks.checkinteger(1, ids, 3)
         filterIDs[trinkets and (ids & TRINKET_ID_MASK) or ids] = true
     end
     local anyFilter = next(filterIDs) ~= nil
@@ -108,7 +108,7 @@ HistoryMT = {
         return CopyItems(self)
     end,
     RemoveHistoryItemByIndex = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         return repentogon.L_History_RemoveHistoryItemByIndex(self, index)
     end,
     SearchCollectibles = function(self, ids)

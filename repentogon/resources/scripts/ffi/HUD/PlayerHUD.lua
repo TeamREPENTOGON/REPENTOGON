@@ -40,7 +40,7 @@ PlayerHUDMT = {
         return ffi.getprivate(self, "HUD")
     end,
     GetHeartByIndex = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index > 23 then
             ffichecks.argerror(1, string.format("invalid index: %d", index))
         end
@@ -64,7 +64,7 @@ PlayerHUDMT = {
         return ffi.getprivate(self, "Player")
     end,
     RenderActiveItem = function(self, activeSlot, position, alpha, size)
-        ffichecks.checkinteger(1, activeSlot)
+        activeSlot = ffichecks.checkinteger(1, activeSlot)
         ffichecks.checkcdata(2, position, "Vector")
         repentogon.L_PlayerHUD_RenderActiveItem(self, activeSlot, position, ffichecks.optnumber(alpha, 1), ffichecks.optnumber(size, 1))
     end,

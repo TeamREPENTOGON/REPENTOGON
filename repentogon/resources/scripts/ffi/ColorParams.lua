@@ -39,23 +39,23 @@ ColorParamsMT = {
         ffi.setprivate(self, "Color", color)
     end,
     SetDuration = function(self, duration)
-        ffichecks.checkinteger(1, duration)
+        duration = ffichecks.checkinteger(1, duration)
         ffi.setprivate(self, "Duration", duration)
     end,
     SetFadeout = function(self, fadeout)
-        ffichecks.checkboolean(1, fadeout)
+        fadeout = ffichecks.checkboolean(1, fadeout)
         ffi.setprivate(self, "Fadeout", fadeout)
     end,
     SetLifespan = function(self, lifespan)
-        ffichecks.checkinteger(1, lifespan)
+        lifespan = ffichecks.checkinteger(1, lifespan)
         ffi.setprivate(self, "Lifespan", lifespan)
     end,
     SetPriority = function(self, priority)
-        ffichecks.checkinteger(1, priority)
+        priority = ffichecks.checkinteger(1, priority)
         ffi.setprivate(self, "Priority", priority)
     end,
     SetShared = function(self, shared)
-        ffichecks.checkboolean(1, shared)
+        shared = ffichecks.checkboolean(1, shared)
         ffi.setprivate(self, "Shared", shared)
     end,
 
@@ -69,10 +69,10 @@ local ColorParamsT = ffi.metatype("struct ColorParams", ColorParamsMT)
 ColorParams = setmetatable({}, {
     __call = function(_, color, priority, duration, fadeout, shared) 
         ffichecks.checkcdata(1, color, "Color")
-        ffichecks.checkinteger(2, priority)
-        ffichecks.checkinteger(3, duration)
-        ffichecks.checkboolean(4, fadeout)
-        ffichecks.checkboolean(5, shared)
+        priority = ffichecks.checkinteger(2, priority)
+        duration = ffichecks.checkinteger(3, duration)
+        fadeout = ffichecks.checkboolean(4, fadeout)
+        shared = ffichecks.checkboolean(5, shared)
         local v = ColorParamsT(priority, color, duration, duration, fadeout, shared)
         return v 
     end,

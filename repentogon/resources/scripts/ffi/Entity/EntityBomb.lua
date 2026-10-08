@@ -37,7 +37,7 @@ local TYPE_BOMB = 4
 
 local function NumberSetter(field)
     return function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -55,7 +55,7 @@ local function Deprecated(message, field)
         return ffi.getprivate(self, field)
     end, function(self, value)
         warn()
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -89,7 +89,7 @@ local methods = {
         self.Flags = self.Flags & ~flags
     end,
     GetCostumeLayerSprite = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index >= 5 then
             error(string.format("Invalid index %d, value must be between 0 and 4", index), 2)
         end
@@ -116,7 +116,7 @@ local methods = {
     IsLoadingCostumes = Getter("LoadCostumesValue"),
     IsPrismTouched = Getter("PrismTouchedValue"),
     SetExplosionCountdown = function(self, countdown)
-        ffichecks.checkinteger(1, countdown)
+        countdown = ffichecks.checkinteger(1, countdown)
         ffi.setprivate(self, "ExplosionCountdownValue", countdown)
         ffi.setprivate(self, "ExplosionCountdownCopyValue", countdown)
     end,

@@ -23,25 +23,25 @@ local SFXManagerMT
 SFXManagerMT = {
 	__type = "SFXManager",
     AdjustPitch = function(self, id, pitch)
-        ffichecks.checkinteger(1, id)
-        ffichecks.checknumber(2, pitch)
+        id = ffichecks.checkinteger(1, id)
+        pitch = ffichecks.checknumber(2, pitch)
         repentogon.L_SFXManager_AdjustPitch(id, pitch)
     end,
     AdjustVolume = function(self, id, volume)
-        ffichecks.checkinteger(1, id)
-        ffichecks.checknumber(2, volume)
+        id = ffichecks.checkinteger(1, id)
+        volume = ffichecks.checknumber(2, volume)
         repentogon.L_SFXManager_AdjustVolume(id, volume)
     end,    
     GetAmbientSoundVolume = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_SFXManager_GetAmbientSoundVolume(id)
     end,
     IsPlaying = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_SFXManager_IsPlaying(id)
     end,
     Play = function(self, id, volume, frameDelay, loop, pitch, pan)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         volume = ffichecks.optnumber(volume, 1)
         frameDelay = ffichecks.optnumber(frameDelay, 2)
         loop = ffichecks.optboolean(loop, false)
@@ -50,17 +50,17 @@ SFXManagerMT = {
         repentogon.L_SFXManager_Play(id, volume, frameDelay, loop, pitch, pan)
     end,
     Preload = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         repentogon.L_SFXManager_Preload(id)
     end,
     SetAmbientSound = function(self, id, volume, pitch)
-        ffichecks.checkinteger(1, id)
-        ffichecks.checknumber(2, volume)
-        ffichecks.checknumber(3, pitch)
+        id = ffichecks.checkinteger(1, id)
+        volume = ffichecks.checknumber(2, volume)
+        pitch = ffichecks.checknumber(3, pitch)
         repentogon.L_SFXManager_SetAmbientSound(id, volume, pitch)
     end,
     Stop = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         repentogon.L_SFXManager_Stop(id)
     end,
     StopLoopingSounds = function(self)

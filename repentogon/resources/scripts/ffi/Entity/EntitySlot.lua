@@ -31,7 +31,7 @@ local COIN_JAM_ANIMS = { [0] = "CoinJam", [1] = "CoinJam2", [2] = "CoinJam3", [3
 
 local function IntegerSetter(field)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -56,7 +56,7 @@ local methods = {
     end,
     SetDonationValue = IntegerSetter("DonationValueValue"),
     SetPrizeCollectible = function(self, collectible)
-        ffichecks.checkinteger(1, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
         repentogon.L_EntitySlot_SetPrizeCollectible(self, collectible)
     end,
     SetPrizeType = IntegerSetter("PrizeTypeValue"),

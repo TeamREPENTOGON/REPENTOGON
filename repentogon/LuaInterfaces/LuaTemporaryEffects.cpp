@@ -14,7 +14,7 @@ extern "C" {
     }
 
     __declspec(dllexport) void L_TemporaryEffects_ClearEffects(TemporaryEffects* effects) {
-        effects->ClearEffects();
+        effects->ClearEffects(false);
     }
 
     __declspec(dllexport) const TemporaryEffect* L_TemporaryEffects_GetCollectibleEffect(TemporaryEffects* effects, int collectibleType) {

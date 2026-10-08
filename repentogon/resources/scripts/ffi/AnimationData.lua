@@ -36,7 +36,7 @@ AnimationDataMT = {
         return ret
     end,
     GetLayer = function(self, layerId)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
 
         if layerId < 0 then return nil end
 
@@ -50,11 +50,11 @@ AnimationDataMT = {
         return animationLayer
     end,
     GetLayerById = function(self, layerId)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         return self:GetLayerByOrder(self:GetLayerOrder(layerId))
     end,
     GetLayerByOrder = function(self, layer)
-        ffichecks.checkinteger(1, layer)
+        layer = ffichecks.checkinteger(1, layer)
         local layers = ffi.getprivate(self, "AnimationLayers")
         if not ffichecks.isnullptr(layers) and layer >= 0 and layer < ffi.getprivate(self, "LayerCount") then
             return ffi.cast("const struct AnimationLayer*", layers + layer)
@@ -62,7 +62,7 @@ AnimationDataMT = {
         return nil
     end,
     GetLayerOrder = function(self, layerId)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         local map = ffi.getprivate(self, "LayerMap")
         if layerId >= 0 and layerId < 64 then
             return map[layerId]

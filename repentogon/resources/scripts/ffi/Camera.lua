@@ -23,7 +23,7 @@ CameraMT = {
         return repentogon.L_Camera_IsPosVisible(self, pos)
     end,
     SetClampEnabled = function(self, clamped)
-        ffichecks.checkboolean(1, clamped)
+        clamped = ffichecks.checkboolean(1, clamped)
         repentogon.L_Camera_SetClampEnabled(self, clamped)
     end,
     SetFocusPosition = function(self, pos)

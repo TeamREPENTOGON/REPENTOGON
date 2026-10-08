@@ -80,19 +80,19 @@ VectorMT = {
 	end,
 
     Clamp = function(self, MinX, MinY, MaxX, MaxY) 
-        ffichecks.checknumber(1, MinX)
-        ffichecks.checknumber(2, MinY)
-        ffichecks.checknumber(3, MaxX)
-        ffichecks.checknumber(4, MaxY)
+        MinX = ffichecks.checknumber(1, MinX)
+        MinY = ffichecks.checknumber(2, MinY)
+        MaxX = ffichecks.checknumber(3, MaxX)
+        MaxY = ffichecks.checknumber(4, MaxY)
         
         self.X = math.min(math.max(self.X, MinX), MaxX)
         self.Y = math.min(math.max(self.Y, MinY), MaxY)
     end,
     Clamped = function(self, MinX, MinY, MaxX, MaxY)
-        ffichecks.checknumber(1, MinX)
-        ffichecks.checknumber(2, MinY)
-        ffichecks.checknumber(3, MaxX)
-        ffichecks.checknumber(4, MaxY)
+        MinX = ffichecks.checknumber(1, MinX)
+        MinY = ffichecks.checknumber(2, MinY)
+        MaxX = ffichecks.checknumber(3, MaxX)
+        MaxY = ffichecks.checknumber(4, MaxY)
         
         return Vector(
             math.min(math.max(self.X, MinX), MaxX),
@@ -130,7 +130,7 @@ VectorMT = {
     end,
     Lerp = function(self, m2, t)
         ffichecks.checkcdata(1, m2, "Vector")
-        ffichecks.checknumber(2, t)
+        t = ffichecks.checknumber(2, t)
         
         local it = 1-t
         
@@ -157,7 +157,7 @@ VectorMT = {
         return res
     end,
     Resize = function(self, NewLength)
-        ffichecks.checknumber(1, NewLength)
+        NewLength = ffichecks.checknumber(1, NewLength)
 
         local length = math.sqrt(self.X * self.X + self.Y * self.Y)
         if length > 0 then
@@ -166,7 +166,7 @@ VectorMT = {
         end
     end,
     Resized = function(self, NewLength)
-        ffichecks.checknumber(1, NewLength)
+        NewLength = ffichecks.checknumber(1, NewLength)
         
         local res = Vector(self.X, self.Y)
         local length = math.sqrt(res.X * res.X + res.Y * res.Y)
@@ -177,7 +177,7 @@ VectorMT = {
         return res
     end,
     Rotated = function(self, Angle)
-        ffichecks.checknumber(1, Angle)
+        Angle = ffichecks.checknumber(1, Angle)
         
         local rads = math.rad(Angle)
         local cos = math.cos(rads)
@@ -194,7 +194,7 @@ local VectorT = ffi.metatype("struct Vector", VectorMT)
 
 Vector = setmetatable({
     FromAngle = function(angle)
-		ffichecks.checknumber(1, angle)
+		angle = ffichecks.checknumber(1, angle)
 		
 		local radians = math.rad(angle)
 		return VectorT(math.cos(radians), math.sin(radians))

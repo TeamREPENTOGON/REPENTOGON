@@ -28,12 +28,12 @@ CollectionMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("CollectionMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_CollectionMenu_SetSelectedElement(element)
     end,
     SetSelectedPage = function(page)
         ffichecks.checkmainmenu("CollectionMenu")
-        ffichecks.checkinteger(1, page)
+        page = ffichecks.checkinteger(1, page)
         repentogon.L_CollectionMenu_SetSelectedPage(page)
     end,
 }

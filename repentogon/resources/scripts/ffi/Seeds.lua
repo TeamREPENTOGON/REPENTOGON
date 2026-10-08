@@ -41,11 +41,11 @@ local SeedsMT
 SeedsMT = {
     __type = "Seeds",
     AddSeedEffect = function(self, seedEffect)
-        ffichecks.checkinteger(1, seedEffect)
+        seedEffect = ffichecks.checkinteger(1, seedEffect)
         repentogon.L_Seeds_AddSeedEffect(self, seedEffect)
     end,
     CanAddSeedEffect = function(self, seedEffect)
-        ffichecks.checkinteger(1, seedEffect)
+        seedEffect = ffichecks.checkinteger(1, seedEffect)
         return repentogon.L_Seeds_CanAddSeedEffect(self, seedEffect)
     end,
     ClearSeedEffects = function(self)
@@ -58,7 +58,7 @@ SeedsMT = {
         return ffi.getprivate(self, "SeedEffectsCount")
     end,
     ForgetStageSeed = function(self, stage)
-        ffichecks.checkinteger(1, stage)
+        stage = ffichecks.checkinteger(1, stage)
         repentogon.L_Seeds_ForgetStageSeed(self, stage)
     end,
     GetNextSeed = function(self)
@@ -68,7 +68,7 @@ SeedsMT = {
         return ffi.getprivate(self, "PlayerInitSeed")
     end,
     GetStageSeed = function(self, stage)
-        ffichecks.checkinteger(1, stage)
+        stage = ffichecks.checkinteger(1, stage)
         if stage < 0 or stage >= NUM_STAGES then
             stage = NUM_STAGES - 1
         end
@@ -81,7 +81,7 @@ SeedsMT = {
         return Seed2String(ffi.getprivate(self, "GameStartSeed"))
     end,
     HasSeedEffect = function(self, seedEffect)
-        ffichecks.checkinteger(1, seedEffect)
+        seedEffect = ffichecks.checkinteger(1, seedEffect)
         return repentogon.L_Seeds_HasSeedEffect(self, seedEffect)
     end,
     IsCustomRun = function(self)
@@ -91,28 +91,28 @@ SeedsMT = {
         return ffi.getprivate(self, "GameStartSeed") ~= 0
     end,
     IsSeedComboBanned = function(self, seedEffect1, seedEffect2)
-        ffichecks.checkinteger(1, seedEffect1)
-        ffichecks.checkinteger(2, seedEffect2)
+        seedEffect1 = ffichecks.checkinteger(1, seedEffect1)
+        seedEffect2 = ffichecks.checkinteger(2, seedEffect2)
         return repentogon.L_Seeds_IsSeedComboBanned(self, seedEffect1, seedEffect2)
     end,
     RemoveBlockingSeedEffects = function(self, seedEffect)
-        ffichecks.checkinteger(1, seedEffect)
+        seedEffect = ffichecks.checkinteger(1, seedEffect)
         repentogon.L_Seeds_RemoveBlockingSeedEffects(self, seedEffect)
     end,
     RemoveSeedEffect = function(self, seedEffect)
-        ffichecks.checkinteger(1, seedEffect)
+        seedEffect = ffichecks.checkinteger(1, seedEffect)
         repentogon.L_Seeds_RemoveSeedEffect(self, seedEffect)
     end,
     Reset = function(self)
         repentogon.L_Seeds_Reset(self)
     end,
     Restart = function(self, challenge)
-        ffichecks.checkinteger(1, challenge)
+        challenge = ffichecks.checkinteger(1, challenge)
         repentogon.L_Seeds_Restart(self, challenge)
     end,
     SetStageSeed = function(self, stage, seed)
-        ffichecks.checkinteger(1, stage)
-        ffichecks.checkinteger(2, seed)
+        stage = ffichecks.checkinteger(1, stage)
+        seed = ffichecks.checkinteger(2, seed)
         if stage < 0 or stage >= NUM_STAGES then
             ffichecks.argerror(1, "Invalid LevelStage (must be between 0 and 13)")
         end
@@ -152,7 +152,7 @@ Seeds = setmetatable({
         return repentogon.L_Seeds_String2Seed(seed) ~= 0
     end,
     Seed2String = function(seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         return Seed2String(seed)
     end,
     String2Seed = function(seed)

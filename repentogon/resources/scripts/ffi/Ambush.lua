@@ -57,16 +57,16 @@ Ambush = {
         return result
     end,
     SetMaxBossChallengeWaves = function(waves)
-        ffichecks.checkinteger(1, waves)
+        waves = ffichecks.checkinteger(1, waves)
         repentogon.L_Ambush_SetMaxBossChallengeWaves(waves)
     end,
     SetMaxBossrushWaves = function(waves)
-        ffichecks.checkinteger(1, waves)
+        waves = ffichecks.checkinteger(1, waves)
         waves = math.min(25, waves);
         repentogon.L_Ambush_SetMaxBossrushWaves(waves)
     end,
     SetMaxChallengeWaves = function(waves)
-        ffichecks.checkinteger(1, waves)
+        waves = ffichecks.checkinteger(1, waves)
         repentogon.L_Ambush_SetMaxChallengeWaves(waves)
     end,
     SpawnBossrushWave = function()

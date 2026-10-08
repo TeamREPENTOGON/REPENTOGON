@@ -17,7 +17,7 @@ CutscenesMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("CutscenesMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_CutscenesMenu_SetSelectedElement(element)
     end,
 }

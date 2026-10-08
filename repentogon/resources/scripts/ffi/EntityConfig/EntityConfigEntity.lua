@@ -171,14 +171,14 @@ EntityConfigEntityMT = {
         return repentogon.L_EntityConfigEntity_HasCustomTag(self, tag)
     end,
     HasEntityTags = function(self, tags)
-        ffichecks.checkinteger(1, tags)
+        tags = ffichecks.checkinteger(1, tags)
         return HasFlags(ffi.getprivate(self, "Tags"), tags)
     end,
     HasFloorAlts = function(self)
         return ffi.getprivate(self, "FloorAlts")
     end,
     HasGibFlags = function(self, flags)
-        ffichecks.checkinteger(1, flags)
+        flags = ffichecks.checkinteger(1, flags)
         return HasFlags(ffi.getprivate(self, "GibFlags"), flags)
     end,
     IsBoss = function(self)

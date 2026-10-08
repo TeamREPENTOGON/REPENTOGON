@@ -83,10 +83,10 @@ local ColorMT = {
     end,
 
     SetColorize = function(self, r, g, b, a)
-        ffichecks.checknumber(1, r)
-        ffichecks.checknumber(2, g)
-        ffichecks.checknumber(3, b)
-        ffichecks.checknumber(4, a)
+        r = ffichecks.checknumber(1, r)
+        g = ffichecks.checknumber(2, g)
+        b = ffichecks.checknumber(3, b)
+        a = ffichecks.checknumber(4, a)
 
         self.RC = r
         self.GC = g
@@ -95,9 +95,9 @@ local ColorMT = {
     end,
 
     SetOffset = function(self, r, g, b)
-        ffichecks.checknumber(1, r)
-        ffichecks.checknumber(2, g)
-        ffichecks.checknumber(3, b)
+        r = ffichecks.checknumber(1, r)
+        g = ffichecks.checknumber(2, g)
+        b = ffichecks.checknumber(3, b)
 
         self.RO = r
         self.GO = g
@@ -105,10 +105,10 @@ local ColorMT = {
     end,
 
     SetTint = function(self, r, g, b, a)
-        ffichecks.checknumber(1, r)
-        ffichecks.checknumber(2, g)
-        ffichecks.checknumber(3, b)
-        ffichecks.checknumber(4, a)
+        r = ffichecks.checknumber(1, r)
+        g = ffichecks.checknumber(2, g)
+        b = ffichecks.checknumber(3, b)
+        a = ffichecks.checknumber(4, a)
 
         self.R = r
         self.G = g
@@ -161,7 +161,7 @@ Color = setmetatable({
     Lerp = function(col1, col2, t)
         ffichecks.checkcdata(1, col1, "Color")
         ffichecks.checkcdata(2, col2, "Color")
-        ffichecks.checknumber(3, t)
+        t = ffichecks.checknumber(3, t)
 
         -- 1-1 recreation from Ghidra decomp
         local x = 1 - t

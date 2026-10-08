@@ -47,7 +47,7 @@ local TYPE_KNIFE = 8
 
 local function NumberSetter(field)
     return function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -122,13 +122,13 @@ local methods = {
     SetKnifeVelocity = NumberSetter("KnifeVelocityValue"),
     SetMultidimensionalTouched = BooleanSetter("MultidimensionalAppliedValue"),
     SetPathFollowSpeed = function(self, speed)
-        ffichecks.checknumber(1, speed)
+        speed = ffichecks.checknumber(1, speed)
         self.PathFollowSpeed = speed
     end,
     SetPrismTouched = BooleanSetter("PrismAppliedValue"),
     Shoot = function(self, percent, range)
-        ffichecks.checknumber(1, percent)
-        ffichecks.checknumber(2, range)
+        percent = ffichecks.checknumber(1, percent)
+        range = ffichecks.checknumber(2, range)
         repentogon.L_EntityKnife_Shoot(self, percent, range)
     end,
 }

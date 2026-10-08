@@ -43,13 +43,13 @@ BitSet128MT = {
         return BitSet128(sl ~ ol, sh ~ oh)
     end,
     __shl = function(self, shift)
-        ffichecks.checknumber(2, shift)
+        shift = ffichecks.checknumber(2, shift)
         local a = self.L << shift
         local b = self.H << shift
         return BitSet128(a, b)
     end,
     __shr = function(self, shift)
-        ffichecks.checknumber(2, shift)
+        shift = ffichecks.checknumber(2, shift)
         local a = self.L >> shift
         local b = self.H >> shift
         return BitSet128(a, b)
@@ -81,14 +81,14 @@ BitSet128MT = {
         end
     end,
     Get = function(self, pos)
-        ffichecks.checknumber(2, pos)
+        pos = ffichecks.checknumber(2, pos)
         local p = pos < 64 and self.L or self.H
         local bit_pos = pos % 64
         return ((p >> bit_pos) & 1) ~= 0
     end,
     Set = function(self, pos, state)
-        ffichecks.checknumber(2, pos)
-        ffichecks.checkboolean(3, state)
+        pos = ffichecks.checknumber(2, pos)
+        state = ffichecks.checkboolean(3, state)
         local bit = U64_ONE << (pos % 64)
         if pos < 64 then
             self.L = state and (self.L | bit) or (self.L & ~bit)

@@ -28,12 +28,12 @@ KeyConfigMenu = {
     end,
     SetSelectedColumn = function(element)
         ffichecks.checkmainmenu("KeyConfigMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_KeyConfigMenu_SetSelectedColumn(element)
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("KeyConfigMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_KeyConfigMenu_SetSelectedElement(element)
     end,
 }

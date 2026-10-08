@@ -53,7 +53,7 @@ CharacterMenu = {
     end,
     GetCharacterMenuIDFromPlayerType = function(character)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, character)
+        character = ffichecks.checkinteger(1, character)
         local ret = repentogon.L_CharacterMenu_GetCharacterMenuIDFromPlayerType(character)
         if ret == -1 then 
             return nil 
@@ -110,7 +110,7 @@ CharacterMenu = {
     end,
     GetPlayerTypeFromCharacterMenuID = function(characterMenuID, tainted)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, characterMenuID)
+        characterMenuID = ffichecks.checkinteger(1, characterMenuID)
         tainted = ffichecks.optboolean(tainted, repentogon.L_CharacterMenu_GetSelectedCharacterMenu() == 1)
         local ret = repentogon.L_CharacterMenu_GetPlayerTypeFromCharacterMenuID(characterMenuID, tainted)
         if ret == -1 then
@@ -160,43 +160,43 @@ CharacterMenu = {
     end,
     SetActiveStatus = function(status)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, status)
+        status = ffichecks.checkinteger(1, status)
         repentogon.L_CharacterMenu_SetActiveStatus(status)
     end,
     SetCharacterWheelDepth = function(value)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_CharacterMenu_SetCharacterWheelDepth(value)
     end,
     SetCharacterWheelWidth = function(value)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_CharacterMenu_SetCharacterWheelWidth(value)
     end,
     SetDifficulty = function(difficulty)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, difficulty)
+        difficulty = ffichecks.checkinteger(1, difficulty)
         repentogon.L_CharacterMenu_SetDifficulty(difficulty)
     end,
     SetIsCharacterUnlocked = function(isUnlocked)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkboolean(1, isUnlocked)
+        isUnlocked = ffichecks.checkboolean(1, isUnlocked)
         repentogon.L_CharacterMenu_SetIsCharacterUnlocked(isUnlocked)
     end,
     SetScrollSpeed = function(speed)
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checknumber(1, speed)
+        speed = ffichecks.checknumber(1, speed)
         repentogon.L_CharacterMenu_SetScrollSpeed(speed)
     end,
     SetSelectedCharacterMenu = function(menu, updateGraphics) 
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, menu)
+        menu = ffichecks.checkinteger(1, menu)
         updateGraphics = ffichecks.optboolean(updateGraphics, false)
         repentogon.L_CharacterMenu_SetSelectedCharacterMenu(menu, updateGraphics)
     end,
     SetSelectedCharacterID = function(charID, updateWheel, skipRotation) 
         ffichecks.checkmainmenu("CharacterMenu")
-        ffichecks.checkinteger(1, charID)
+        charID = ffichecks.checkinteger(1, charID)
         updateWheel = ffichecks.optboolean(updateWheel, false)
         skipRotation = ffichecks.optboolean(skipRotation, false)
         repentogon.L_CharacterMenu_SetSelectedCharacterID(charID, updateWheel, skipRotation)

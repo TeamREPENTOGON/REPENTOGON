@@ -15,30 +15,31 @@ local STB_ULTRA_GREED = 25
 local STB_THE_VOID = 26
 
 local function CheckStageAndMode(stage, mode)
-    ffichecks.checkinteger(1, stage, 3)
-    ffichecks.checkinteger(2, mode, 3)
+    stage = ffichecks.checkinteger(1, stage, 3)
+    mode = ffichecks.checkinteger(2, mode, 3)
     if stage < 0 or stage >= NUM_STB then
         ffichecks.argerror(1, string.format("invalid stage %d", stage), 3)
     end
     if mode < -1 or mode > 1 then
         ffichecks.argerror(2, string.format("invalid mode %d", mode), 3)
     end
+    return stage, mode
 end
 
 RoomConfig = {
     AddRooms = function(stage, mode, rooms)
-        CheckStageAndMode(stage, mode)
+        stage, mode = CheckStageAndMode(stage, mode)
         ffichecks.checktable(3, rooms)
         return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):AddRooms(rooms)
     end,
     GetRandomRoom = function(seed, reduceWeight, stage, roomType, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode)
-        ffichecks.checkinteger(1, seed)
-        ffichecks.checkboolean(2, reduceWeight)
-        ffichecks.checkinteger(3, stage)
+        seed = ffichecks.checkinteger(1, seed)
+        reduceWeight = ffichecks.checkboolean(2, reduceWeight)
+        stage = ffichecks.checkinteger(3, stage)
         if stage < 0 or (stage >= STB_UNUSED1 and stage <= STB_ULTRA_GREED) or stage == STB_THE_VOID or stage >= NUM_STB then
             ffichecks.argerror(3, string.format("invalid stage %d", stage))
         end
-        ffichecks.checkinteger(4, roomType)
+        roomType = ffichecks.checkinteger(4, roomType)
         if roomType < 1 or roomType > 29 then
             ffichecks.argerror(4, string.format("invalid type %d", roomType))
         end
@@ -78,15 +79,15 @@ RoomConfig = {
             error(string.format("Expected three parameters, got %d", n), 2)
         end
         local stage, roomType, variant, mode = ...
-        ffichecks.checkinteger(1, stage)
+        stage = ffichecks.checkinteger(1, stage)
         if stage < 0 or stage >= NUM_STB then
             ffichecks.argerror(1, string.format("StageID must be between 0 and 36 (both inclusive), got %d", stage))
         end
-        ffichecks.checkinteger(2, roomType)
+        roomType = ffichecks.checkinteger(2, roomType)
         if roomType < 1 or roomType > 29 then
             ffichecks.argerror(2, string.format("Type must be between 1 and 29 (both inclusive), got %d", roomType))
         end
-        ffichecks.checkinteger(3, variant)
+        variant = ffichecks.checkinteger(3, variant)
         mode = ffichecks.optnumber(mode, -1)
         if mode < -2 or mode > 1 then
             mode = -1
@@ -94,14 +95,14 @@ RoomConfig = {
         return repentogon.L_RoomConfig_GetRoomByStageTypeAndVariant(stage, roomType, variant, mode)
     end,
     GetStage = function(stage)
-        ffichecks.checkinteger(1, stage)
+        stage = ffichecks.checkinteger(1, stage)
         if stage < 0 or stage > 36 then
             ffichecks.argerror(1, string.format("StageID must be between 0 and 36 (both inclusive), got %d", stage))
         end
         return repentogon.L_RoomConfig_GetStage(stage)
     end,
     LoadStb = function(stage, mode, filename)
-        CheckStageAndMode(stage, mode)
+        stage, mode = CheckStageAndMode(stage, mode)
         filename = ffichecks.checkstring(3, filename)
         return RoomConfigSetT(nil, repentogon.L_RoomConfig_GetVanillaSetID(stage, mode)):LoadStb(filename)
     end,

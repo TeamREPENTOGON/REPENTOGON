@@ -13,15 +13,15 @@ local LevelGeneratorEntryMT
 LevelGeneratorEntryMT = {
     __type = "LevelGeneratorEntry",
     SetAllowedDoors = function(self, doors)
-        ffichecks.checkinteger(1, doors)
+        doors = ffichecks.checkinteger(1, doors)
         ffi.setprivate(self, "Doors", doors)
     end,
     SetColIdx = function(self, column)
-        ffichecks.checkinteger(1, column)
+        column = ffichecks.checkinteger(1, column)
         ffi.setprivate(self, "ColIdx", column)
     end,
     SetLineIdx = function(self, line)
-        ffichecks.checkinteger(1, line)
+        line = ffichecks.checkinteger(1, line)
         ffi.setprivate(self, "LineIdx", line)
     end,
 }

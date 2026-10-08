@@ -70,7 +70,12 @@ ffichecks.iscdata = function(var, ctype)
 	return false
 end
 
-ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, val, "number", (level or 2)+1) end
+ffichecks.checknumber = function(index, val, level)
+	if type(val) == "number" then return val end
+	local n = type(val) == "string" and tonumber(val)
+	if n then return n end
+	ffichecks.checktype(index, val, "number", (level or 2)+1)
+end
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
 ffichecks.checkstring = function(index, val, level)
 	if type(val) == "number" then return tostring(val) end
@@ -82,10 +87,13 @@ ffichecks.checkboolean = function(index, val, level)
 	return not not val
 end
 ffichecks.checktable = function(index, val, level) ffichecks.checktype(index, val, "table", (level or 2)+1) end
-ffichecks.checkinteger = function(index, val, level) 
-	if math.type(val) ~= "integer" then
-		error(string.format("bad argument #%d to '%s' (integer expected, got %s)", index, debug_getinfo(level or 2).name, type(val)), (level or 2)+1)
+ffichecks.checkinteger = function(index, val, level)
+	if math.type(val) == "integer" then return val end
+	if type(val) == "string" then
+		local n = tonumber(val)
+		if math.type(n) == "integer" then return n end
 	end
+	error(string.format("bad argument #%d to '%s' (integer expected, got %s)", index, debug_getinfo(level or 2).name, type(val)), (level or 2)+1)
 end
 
 local int64Type = lffi.typeof("int64_t")
@@ -115,11 +123,15 @@ ffichecks.optnumber = function(var, opt)
 	if ffichecks.isnumber(var) then
 		return var
 	end
-	return opt
+	return type(var) == "string" and tonumber(var) or opt
 end
 ffichecks.optinteger = function(var, opt)
 	if math.type(var) == "integer" then
 		return var
+	end
+	if type(var) == "string" then
+		local n = tonumber(var)
+		if math.type(n) == "integer" then return n end
 	end
 	return opt
 end

@@ -79,11 +79,11 @@ local getters = {
 
 local setters = {
     Height = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_EntityTear_SetHeight(self, value)
     end,
     Scale = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_EntityTear_SetScale(self, value)
     end,
     TearFlags = function(self, value)
@@ -109,7 +109,7 @@ local methods = {
         repentogon.L_EntityTear_AddToHitList(self, ffichecks.checkentity(1, entity))
     end,
     ChangeVariant = function(self, variant)
-        ffichecks.checkinteger(1, variant)
+        variant = ffichecks.checkinteger(1, variant)
         repentogon.L_EntityTear_ChangeVariant(self, variant)
     end,
     ClearHitList = function(self)
@@ -154,17 +154,17 @@ local methods = {
         repentogon.L_EntityTear_ResetSpriteScale(self, ffichecks.optboolean(force, false))
     end,
     SetDeadEyeIntensity = function(self, intensity)
-        ffichecks.checknumber(1, intensity)
+        intensity = ffichecks.checknumber(1, intensity)
         repentogon.L_EntityTear_SetDeadEyeIntensity(self, intensity)
     end,
     SetInitSound = function(self, soundId)
-        ffichecks.checkinteger(1, soundId)
+        soundId = ffichecks.checkinteger(1, soundId)
         if not repentogon.L_EntityTear_SetInitSound(self, soundId) then
             ffichecks.argerror(1, "Invalid SoundEffect", 3)
         end
     end,
     SetKnockbackMultiplier = function(self, multiplier)
-        ffichecks.checknumber(1, multiplier)
+        multiplier = ffichecks.checknumber(1, multiplier)
         self.KnockbackMultiplier = multiplier
     end,
     SetMultidimensionalTouched = BooleanSetter("MultidimensionalTouchedValue"),
@@ -173,7 +173,7 @@ local methods = {
     end,
     SetPrismTouched = BooleanSetter("PrismTouchedValue"),
     SetWaitFrames = function(self, frames)
-        ffichecks.checkinteger(1, frames)
+        frames = ffichecks.checkinteger(1, frames)
         self.WaitFrames = frames
     end,
 }

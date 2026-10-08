@@ -28,7 +28,7 @@ LRoomTileDescMT = {
         return {ffi.getprivate(self, "LowBottomRight")[0], ffi.getprivate(self, "LowBottomRight")[1]}
     end,
     GetRandomTile = function(self, seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         if seed == 0 then
             ffichecks.argerror(2, "Seed must be non-zero!")
         end

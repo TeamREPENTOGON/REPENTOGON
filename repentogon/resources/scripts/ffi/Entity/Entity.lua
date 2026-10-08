@@ -211,21 +211,21 @@ end
 
 local function IntegerSetter(field)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, field, value)
     end
 end
 
 local function NumberSetter(field)
     return function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         ffi.setprivate(self, field, value)
     end
 end
 
 local function BooleanSetter(field)
     return function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -271,7 +271,7 @@ local getters = {
 
 local setters = {
     Variant = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         repentogon.L_Entity_SetVariant(self, value)
     end,
     Position = VectorSetter("PositionValue"),
@@ -296,11 +296,11 @@ local setters = {
         ffi.setprivate(self, "FlipXValue", not not value)
     end,
     Size = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_Entity_SetSizeKeepingMulti(self, value)
     end,
     CollisionDamage = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_Entity_SetCollisionDamage(self, value)
     end,
     Parent = function(self, value)
@@ -363,7 +363,7 @@ end
 local function DurationEffect(export)
     return function(self, source, duration)
         ffichecks.checkcdata(1, source, "EntityRef")
-        ffichecks.checkinteger(2, duration)
+        duration = ffichecks.checkinteger(2, duration)
         export(self, source, duration)
     end
 end
@@ -371,7 +371,7 @@ end
 local function BossEffect(export, bossDefault)
     return function(self, source, duration, ignoreBosses)
         ffichecks.checkcdata(1, source, "EntityRef")
-        ffichecks.checkinteger(2, duration)
+        duration = ffichecks.checkinteger(2, duration)
         export(self, source, duration, ffichecks.optboolean(ignoreBosses, bossDefault))
     end
 end
@@ -379,8 +379,8 @@ end
 local function DamageEffect(export, bossDefault)
     return function(self, source, duration, damage, ignoreBosses)
         ffichecks.checkcdata(1, source, "EntityRef")
-        ffichecks.checkinteger(2, duration)
-        ffichecks.checknumber(3, damage)
+        duration = ffichecks.checkinteger(2, duration)
+        damage = ffichecks.checknumber(3, damage)
         export(self, source, duration, damage, ffichecks.optboolean(ignoreBosses, bossDefault))
     end
 end
@@ -450,7 +450,7 @@ Methods {
     AddFear = BossEffect(repentogon.L_Entity_AddFear, false),
     AddFreeze = BossEffect(repentogon.L_Entity_AddFreeze, false),
     AddHealth = function(self, amount)
-        ffichecks.checknumber(1, amount)
+        amount = ffichecks.checknumber(1, amount)
         local sum = self.HitPoints + amount
         local max = self.MaxHitPoints
         if max <= sum then
@@ -463,7 +463,7 @@ Methods {
     AddKnockback = function(self, source, pushDirection, duration, takeImpactDamage)
         ffichecks.checkcdata(1, source, "EntityRef")
         ffichecks.checkcdata(2, pushDirection, "Vector")
-        ffichecks.checkinteger(3, duration)
+        duration = ffichecks.checkinteger(3, duration)
         takeImpactDamage = ffichecks.checkboolean(4, takeImpactDamage)
         repentogon.L_Entity_AddKnockback(self, source, pushDirection, duration, takeImpactDamage)
     end,
@@ -473,8 +473,8 @@ Methods {
     AddShrink = BossEffect(repentogon.L_Entity_AddShrink, true),
     AddSlowing = function(self, source, duration, amount, color, ignoreBosses)
         ffichecks.checkcdata(1, source, "EntityRef")
-        ffichecks.checkinteger(2, duration)
-        ffichecks.checknumber(3, amount)
+        duration = ffichecks.checkinteger(2, duration)
+        amount = ffichecks.checknumber(3, amount)
         ffichecks.checkcdata(4, color, "Color")
         repentogon.L_Entity_AddSlowing(self, source, duration, amount, color, ffichecks.optboolean(ignoreBosses, false))
     end,
@@ -492,7 +492,7 @@ Methods {
     end,
     CollidesWithGrid = Getter("CollidesWithGridValue"),
     ComputeStatusEffectDuration = function(self, initial, source)
-        ffichecks.checkinteger(1, initial)
+        initial = ffichecks.checkinteger(1, initial)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_Entity_ComputeStatusEffectDuration(self, initial, source)
     end,
@@ -586,7 +586,7 @@ Methods {
         return PosVel(getters.Position(self), getters.Velocity(self))
     end,
     GetPredictedTargetPosition = function(self, target, delay)
-        ffichecks.checknumber(2, delay)
+        delay = ffichecks.checknumber(2, delay)
         local result = Vector(0, 0)
         repentogon.L_Entity_GetPredictedTargetPosition(self, EntityToPointer(target), delay, result)
         return result
@@ -637,8 +637,8 @@ Methods {
     IsEnemy = BoolMethod(repentogon.L_Entity_IsEnemy),
     IsFlying = BoolMethod(repentogon.L_Entity_IsFlying),
     IsFrame = function(self, frame, offset)
-        ffichecks.checkinteger(1, frame)
-        ffichecks.checkinteger(2, offset)
+        frame = ffichecks.checkinteger(1, frame)
+        offset = ffichecks.checkinteger(2, offset)
         return repentogon.L_Entity_IsFrame(self, frame, offset)
     end,
     IsInvincible = Getter("InvincibleValue"),
@@ -662,7 +662,7 @@ Methods {
         return EffectResult(repentogon.L_Entity_MakeGroundPoof(self, position, color, ffichecks.optnumber(scale, 1.0)))
     end,
     MultiplyFriction = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         self.Friction = self.Friction * value
     end,
     PostRender = VoidMethod(repentogon.L_Entity_PostRender),
@@ -679,8 +679,8 @@ Methods {
     ResetWaterClipFlags = VoidMethod(repentogon.L_Entity_ResetWaterClipFlags),
     SetColor = function(self, color, duration, priority, fadeout, share)
         ffichecks.checkcdata(1, color, "Color")
-        ffichecks.checkinteger(2, duration)
-        ffichecks.checkinteger(3, priority)
+        duration = ffichecks.checkinteger(2, duration)
+        priority = ffichecks.checkinteger(3, priority)
         fadeout = ffichecks.checkboolean(4, fadeout)
         share = ffichecks.checkboolean(5, share)
         repentogon.L_Entity_SetColor(self, color, duration, priority, fadeout, share)
@@ -696,7 +696,7 @@ Methods {
         repentogon.L_Entity_SetColorParams(self, list, count)
     end,
     SetDamageCountdown = function(self, countdown)
-        ffichecks.checkinteger(1, countdown)
+        countdown = ffichecks.checkinteger(1, countdown)
         if countdown < 0 then
             countdown = 0
         end
@@ -713,23 +713,23 @@ Methods {
         ffi.setprivate(self, "KnockbackDirectionValue", direction)
     end,
     SetSize = function(self, size, sizeMulti, numGridCollisionPoints)
-        ffichecks.checknumber(1, size)
+        size = ffichecks.checknumber(1, size)
         ffichecks.checkcdata(2, sizeMulti, "Vector")
-        ffichecks.checkinteger(3, numGridCollisionPoints)
+        numGridCollisionPoints = ffichecks.checkinteger(3, numGridCollisionPoints)
         repentogon.L_Entity_SetSize(self, size, sizeMulti, numGridCollisionPoints)
     end,
     SetSpriteFrame = function(self, animation, frame)
         animation = ffichecks.checkstring(1, animation)
-        ffichecks.checkinteger(2, frame)
+        frame = ffichecks.checkinteger(2, frame)
         repentogon.L_Entity_GetSprite(self):SetFrame(animation, frame)
     end,
     SetSpriteOverlayFrame = function(self, animation, frame)
         animation = ffichecks.checkstring(1, animation)
-        ffichecks.checkinteger(2, frame)
+        frame = ffichecks.checkinteger(2, frame)
         repentogon.L_Entity_GetSprite(self):SetOverlayFrame(animation, frame)
     end,
     SetWaterClipFlags = function(self, flags)
-        ffichecks.checkinteger(1, flags)
+        flags = ffichecks.checkinteger(1, flags)
         repentogon.L_Entity_SetWaterClipFlags(self, flags)
     end,
     SpawnBloodEffect = function(self, subtype, position, offset, color, velocity)
@@ -743,14 +743,14 @@ Methods {
     SpawnWaterImpactEffects = function(self, position, velocity, scale)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, velocity, "Vector", true)
-        ffichecks.checknumber(3, scale)
+        scale = ffichecks.checknumber(3, scale)
         repentogon.L_Entity_SpawnWaterImpactEffects(position, velocity or Vector(0, 0), scale)
     end,
     TakeDamage = function(self, damage, flags, source, damageCountdown)
-        ffichecks.checknumber(1, damage)
+        damage = ffichecks.checknumber(1, damage)
         flags = ffichecks.checkinteger64(2, flags)
         ffichecks.checkcdata(3, source, "EntityRef", true)
-        ffichecks.checkinteger(4, damageCountdown)
+        damageCountdown = ffichecks.checkinteger(4, damageCountdown)
         return repentogon.L_Entity_TakeDamage(self, damage, flags, source, damageCountdown)
     end,
     TeleportToRandomPosition = VoidMethod(repentogon.L_Entity_TeleportToRandomPosition),
@@ -806,7 +806,7 @@ Methods {
     TryThrow = function(self, source, direction, force)
         ffichecks.checkcdata(1, source, "EntityRef")
         ffichecks.checkcdata(2, direction, "Vector")
-        ffichecks.checknumber(3, force)
+        force = ffichecks.checknumber(3, force)
         return repentogon.L_Entity_TryThrow(self, source, direction, force)
     end,
     Update = VoidMethod(repentogon.L_Entity_Update),
@@ -830,13 +830,13 @@ local function FireSplitTear(self, position, velocity, damageMultiplier, sizeMul
     if variant == nil then
         variant = 0
     else
-        ffichecks.checkinteger(5, variant)
+        variant = ffichecks.checkinteger(5, variant)
     end
 
     local splitTypeId, splitTypeName = 0, nil
     if splitType ~= nil then
         if type(splitType) == "number" then
-            ffichecks.checkinteger(6, splitType)
+            splitType = ffichecks.checkinteger(6, splitType)
             splitTypeId = splitType
         else
             splitTypeName = ffichecks.checkstring(6, splitType)

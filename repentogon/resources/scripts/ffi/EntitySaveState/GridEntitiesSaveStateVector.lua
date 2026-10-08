@@ -26,14 +26,14 @@ GridEntitiesSaveStateVectorMT = {
         end
     end,
     Get = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index >= GetSize(self) then
             ffichecks.argerror(1, string.format("invalid index for Get(): %d", index))
         end
         return ffi.getprivate(self, "First") + index
     end,
     GetByType = function(self, type)
-        ffichecks.checkinteger(1, type)
+        type = ffichecks.checkinteger(1, type)
 
         local result = {}
         local first = ffi.getprivate(self, "First")

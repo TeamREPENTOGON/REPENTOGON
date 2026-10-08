@@ -181,7 +181,7 @@ SpriteMT = {
         return ffi.getprivate(self, "LayerCount")
     end,
     GetLayerFrameData = function(self, layerId)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         return GetLayerFrameDataInternal(ffi.getprivate(self, "AnimState"), layerId)
     end,
 	GetNullFrame = function(self, name)
@@ -204,14 +204,14 @@ SpriteMT = {
        return ffi.getprivate(self, "OverlayAnimState").AnimFrame
     end,
     GetOverlayLayerFrameData = function(self, layerId)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         return GetLayerFrameDataInternal(ffi.getprivate(self, "OverlayAnimState"), layerId)
     end,
     GetRenderFlags = function(self)
         return ffi.getprivate(self, "RenderFlags")
     end,
     GetSpritesheet = function(self, layer)
-        ffichecks.checkinteger(1, layer)
+        layer = ffichecks.checkinteger(1, layer)
         layer = self:GetLayer(layer)
         if not layer then
             return nil
@@ -221,8 +221,8 @@ SpriteMT = {
     GetTexel = function(self, samplePos, renderPos, alphaThreshold, layerId)
         ffichecks.checkcdata(1, samplePos, "Vector")
         ffichecks.checkcdata(2, renderPos, "Vector")
-        ffichecks.checknumber(3, alphaThreshold)
-        layerId = ffichecks.optnumber(4, layerId, 0)
+        alphaThreshold = ffichecks.checknumber(3, alphaThreshold)
+        layerId = ffichecks.optnumber(layerId, 0)
         local result = ffi.new("struct KColor")
         if repentogon.L_Sprite_GetTexel(self, result, samplePos, renderPos, alphaThreshold, layerId) == nil then
             return nil
@@ -283,7 +283,7 @@ SpriteMT = {
     end,
     LoadRGON = function(self, path, loadGraphics)
         path = ffichecks.checkstring(1, path)
-        ffichecks.checkboolean(2, loadGraphics)
+        loadGraphics = ffichecks.checkboolean(2, loadGraphics)
         repentogon.L_Sprite_LoadRGON(self, path, loadGraphics)
     end,
     LoadGraphics = function(self)
@@ -300,7 +300,7 @@ SpriteMT = {
         repentogon.L_Sprite_PlayOverlay(self, animationName, force)
     end,
     PlayRandom = function(self, seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         repentogon.L_Sprite_PlayRandom(self, seed)
     end,
     Reload = function(self)
@@ -316,14 +316,14 @@ SpriteMT = {
         repentogon.L_Sprite_Render(self, position, topLeftClamp, bottomRightClamp)
     end,
     RenderLayer = function(self, layerId, position, topLeftClamp, bottomRightClamp)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         ffichecks.checkcdata(2, position, "Vector")
         topLeftClamp = ffichecks.optcdata(topLeftClamp, "Vector", Vector.Zero)
         bottomRightClamp = ffichecks.optcdata(bottomRightClamp, "Vector", Vector.Zero)
         repentogon.L_Sprite_RenderLayer(self, layerId, position, topLeftClamp, bottomRightClamp)
     end,
     ReplaceSpritesheet = function(self, layerId, filename, loadGraphics) 
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         filename = ffichecks.checkstring(2, filename)
         loadGraphics = ffichecks.optboolean(loadGraphics, false)
         local successful = repentogon.L_Sprite_ReplaceSpritesheet(self, layerId, filename)
@@ -354,10 +354,10 @@ SpriteMT = {
     end,
     SetFrame = function(self, param, param2)
         if ffichecks.isstring(param) then
-            ffichecks.checknumber(2, param2)
+            param2 = ffichecks.checknumber(2, param2)
             repentogon.L_Sprite_SetFrameWithAnim(self, param, param2)
         else
-            ffichecks.checknumber(1, param)
+            param = ffichecks.checknumber(1, param)
             repentogon.L_Sprite_SetFrame(self, param)
         end
     end,
@@ -367,8 +367,8 @@ SpriteMT = {
         animState:AdvancePosition(animState.AnimData:GetLength() - 1)
     end,
     SetLayerFrame = function(self, layerId, frameNum)
-        ffichecks.checknumber(1, layerId)
-        ffichecks.checknumber(2, frameNum)
+        layerId = ffichecks.checknumber(1, layerId)
+        frameNum = ffichecks.checknumber(2, frameNum)
         animState = ffi.getprivate(self, "AnimState")
         if animState.AnimData == nil then return end
         animState:SetLayerFrame(layerId, frameNum)
@@ -380,30 +380,30 @@ SpriteMT = {
     end,
     SetOverlayFrame = function(self, param, param2)
         if ffichecks.isstring(param) then
-            ffichecks.checknumber(2, param2)
+            param2 = ffichecks.checknumber(2, param2)
             repentogon.L_Sprite_SetOverlayFrameWithAnim(self, param, param2)
         else
-            ffichecks.checknumber(1, param)
+            param = ffichecks.checknumber(1, param)
             repentogon.L_Sprite_SetOverlayFrame(self, param)
         end
     end,
     SetOverlayLayerFrame = function(self, layerId, frameNum)
-        ffichecks.checknumber(1, layerId)
-        ffichecks.checknumber(2, frameNum)
+        layerId = ffichecks.checknumber(1, layerId)
+        frameNum = ffichecks.checknumber(2, frameNum)
         animState = ffi.getprivate(self, "OverlayAnimState")
         if animState.AnimData == nil then return end
         animState:SetLayerFrame(layerId, frameNum)
     end,
     SetOverlayRenderPriority = function(self, renderFirst)
-        ffichecks.checkboolean(1, renderFirst)
+        renderFirst = ffichecks.checkboolean(1, renderFirst)
         ffi.setprivate(self, "OverlayRenderFirst", renderFirst)
     end,
     SetRenderFlags = function(self, renderFlags)
-        ffichecks.checkinteger(1, renderFlags)
+        renderFlags = ffichecks.checkinteger(1, renderFlags)
         return ffi.setprivate(self, "RenderFlags", renderFlags)
     end,
     SetSpritesheet = function(self, layer, spritesheet)
-        ffichecks.checkinteger(1, layer)
+        layer = ffichecks.checkinteger(1, layer)
         ffichecks.checkcdata(2, spritesheet, "Image")
         layer = self:GetLayer(layer)
         if not layer then 

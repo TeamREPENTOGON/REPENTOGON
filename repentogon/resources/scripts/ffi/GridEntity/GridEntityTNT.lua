@@ -22,20 +22,20 @@ local GridEntityTNTMT
 GridEntityTNTMT = {
     __type = "GridEntityTNT",
     Destroy = function(self, immediate)
-        ffichecks.checkboolean(1, immediate)
+        immediate = ffichecks.checkboolean(1, immediate)
         return repentogon.L_GridEntityTNT_Destroy(self, immediate, EntityRef())
     end,
     DestroyWithSource = function(self, immediate, source)
-        ffichecks.checkboolean(1, immediate)
+        immediate = ffichecks.checkboolean(1, immediate)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntityTNT_Destroy(self, immediate, source)
     end,
     Hurt = function(self, damage)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         return repentogon.L_GridEntityTNT_Hurt(self, damage, EntityRef())
     end,
     HurtWithSource = function(self, damage, source)
-        ffichecks.checkinteger(1, damage)
+        damage = ffichecks.checkinteger(1, damage)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_GridEntityTNT_Hurt(self, damage, source)
     end,

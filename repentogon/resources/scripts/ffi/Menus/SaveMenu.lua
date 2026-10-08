@@ -48,13 +48,13 @@ SaveMenu = {
     end,
     SetSlotSpritesheet = function(slot, spritesheet)
         ffichecks.checkmainmenu("SaveMenu")
-        ffichecks.checkinteger(1, slot)
+        slot = ffichecks.checkinteger(1, slot)
         spritesheet = ffichecks.checkstring(2, spritesheet)
         repentogon.L_SaveMenu_SetSlotSpritesheet(slot, spritesheet)
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("SaveMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_SaveMenu_SetSelectedElement(element)
     end,
 }

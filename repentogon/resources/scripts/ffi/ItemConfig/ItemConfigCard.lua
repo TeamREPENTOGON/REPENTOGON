@@ -76,7 +76,7 @@ ItemConfigCardMT = {
             return
         end
         if key == "Weight" then
-            ffichecks.checknumber(3, value)
+            value = ffichecks.checknumber(3, value)
             repentogon.L_ItemConfigCard_SetWeight(self, value)
             return
         end

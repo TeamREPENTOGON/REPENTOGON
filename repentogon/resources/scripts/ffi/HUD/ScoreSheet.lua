@@ -43,9 +43,9 @@ end
 
 ScoreSheet = {
     AddFinishedStage = function(stage, stageType, time)
-        ffichecks.checkinteger(1, stage)
-        ffichecks.checkinteger(2, stageType)
-        ffichecks.checkinteger(3, time)
+        stage = ffichecks.checkinteger(1, stage)
+        stageType = ffichecks.checkinteger(2, stageType)
+        time = ffichecks.checkinteger(3, time)
         repentogon.L_ScoreSheet_AddFinishedStage(stage, stageType, time)
     end,
     Calculate = function()
@@ -106,7 +106,7 @@ ScoreSheet = {
         return GetScoreSheet().TotalScore
     end,
     SetRunEnding = function(ending)
-        ffichecks.checkinteger(1, ending)
+        ending = ffichecks.checkinteger(1, ending)
         GetScoreSheet().RunEnding = ending
     end,
 }

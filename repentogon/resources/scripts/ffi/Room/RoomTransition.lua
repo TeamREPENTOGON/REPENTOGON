@@ -22,7 +22,7 @@ RoomTransition = {
         return repentogon.L_RoomTransition_IsRenderingBossIntro()
     end,
     StartBossIntro = function(BossID1, BossID2)
-        ffichecks.checkinteger(1, BossID1)
+        BossID1 = ffichecks.checkinteger(1, BossID1)
         BossID2 = ffichecks.optnumber(BossID2, 0)
         repentogon.L_RoomTransition_StartBossIntro(BossID1, BossID2)
     end,

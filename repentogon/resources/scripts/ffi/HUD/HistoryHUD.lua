@@ -76,10 +76,11 @@ HistoryHUDItem = setmetatable({}, {
 })
 
 local function CheckPlayerIndex(playerIdx, level)
-    ffichecks.checkinteger(1, playerIdx, level)
+    playerIdx = ffichecks.checkinteger(1, playerIdx, level)
     if playerIdx < 0 or playerIdx > 1 then
         ffichecks.argerror(1, string.format("invalid HistoryHUDPlayer index %d, must be 0 or 1", playerIdx), level)
     end
+    return playerIdx
 end
 
 local function GetHistoryHUDItems(self, playerIdx, includeCollectibles, includeTrinkets, includeNotVisible, offsetsOnly, idFilter)
@@ -119,7 +120,7 @@ local function GetHistoryHUDItems(self, playerIdx, includeCollectibles, includeT
 end
 
 local function GetFilteredItems(self, trinkets, offsetsOnly, playerIdx, ids, includeNotVisible)
-    CheckPlayerIndex(playerIdx, 4)
+    playerIdx = CheckPlayerIndex(playerIdx, 4)
 
     local filter = {}
     if type(ids) == "table" then
@@ -129,7 +130,7 @@ local function GetFilteredItems(self, trinkets, offsetsOnly, playerIdx, ids, inc
             end
         end
     elseif ids ~= nil then
-        ffichecks.checkinteger(2, ids, 3)
+        ids = ffichecks.checkinteger(2, ids, 3)
         filter[trinkets and (ids & TRINKET_ID_MASK) or ids] = true
     end
 
@@ -146,11 +147,11 @@ HistoryHUDMT = {
         return GetFilteredItems(self, false, false, playerIdx, ids, includeNotVisible)
     end,
     GetItems = function(self, playerIdx, includeNotVisible)
-        CheckPlayerIndex(playerIdx, 3)
+        playerIdx = CheckPlayerIndex(playerIdx, 3)
         return GetHistoryHUDItems(self, playerIdx, true, true, ffichecks.optboolean(includeNotVisible, false), false, nil)
     end,
     GetPlayer = function(self, playerIdx)
-        CheckPlayerIndex(playerIdx, 3)
+        playerIdx = CheckPlayerIndex(playerIdx, 3)
         return ffi.getprivate(ffi.getprivate(self, "Players")[playerIdx], "Player")
     end,
     GetPosition = function(self)

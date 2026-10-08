@@ -29,7 +29,7 @@ local WeaponMT
 WeaponMT = {
     __type = "Weapon",
     ClearItemAnim = function(self, item)
-        ffichecks.checkinteger(1, item)
+        item = ffichecks.checkinteger(1, item)
         repentogon.L_Weapon_ClearItemAnim(self, item)
     end,
     GetCharge = function(self)
@@ -66,30 +66,30 @@ WeaponMT = {
         return repentogon.L_Weapon_IsAxisAligned(self)
     end,
     IsItemAnimFinished = function(self, item)
-        ffichecks.checkinteger(1, item)
+        item = ffichecks.checkinteger(1, item)
         return repentogon.L_Weapon_IsItemAnimFinished(self, item)
     end,
     PlayItemAnim = function(self, item, anim, position, charge)
-        ffichecks.checkinteger(1, item)
-        ffichecks.checkinteger(2, anim)
+        item = ffichecks.checkinteger(1, item)
+        anim = ffichecks.checkinteger(2, anim)
         ffichecks.checkcdata(3, position, "Vector")
-        ffichecks.checknumber(4, charge)
+        charge = ffichecks.checknumber(4, charge)
         repentogon.L_Weapon_PlayItemAnim(self, item, anim, position, charge)
     end,
     SetCharge = function(self, charge)
-        ffichecks.checknumber(1, charge)
+        charge = ffichecks.checknumber(1, charge)
         ffi.setprivate(self, "Charge", charge)
     end,
     SetFireDelay = function(self, delay)
-        ffichecks.checknumber(1, delay)
+        delay = ffichecks.checknumber(1, delay)
         ffi.setprivate(self, "FireDelay", delay)
     end,
     SetHeadLockTime = function(self, time)
-        ffichecks.checkinteger(1, time)
+        time = ffichecks.checkinteger(1, time)
         repentogon.L_Weapon_SetHeadLockTime(self, time)
     end,
     SetModifiers = function(self, modifiers)
-        ffichecks.checkinteger(1, modifiers)
+        modifiers = ffichecks.checkinteger(1, modifiers)
         ffi.setprivate(self, "Modifiers", ffi.getprivate(self, "Modifiers") | modifiers)
     end,
 }

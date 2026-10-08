@@ -37,12 +37,12 @@ extern "C" {
 		return room->DamageGrid(index, damage, source);
 	}
 
-	__declspec(dllexport) bool L_Room_DestroyGrid(Room* room, int index, bool immediate) {
-		return room->DestroyGrid(index, 0, immediate);
+	__declspec(dllexport) bool L_Room_DestroyGrid(Room* room, int index, int damage, bool immediate) {
+		return room->DestroyGrid(index, damage, immediate);
 	}
 
-	__declspec(dllexport) bool L_Room_DestroyGridWithSource(Room* room, int index, bool immediate, EntityRef* source) {
-		return room->DestroyGrid(index, 0, immediate, source);
+	__declspec(dllexport) bool L_Room_DestroyGridWithSource(Room* room, int index, int damage, bool immediate, EntityRef* source) {
+		return room->DestroyGrid(index, damage, immediate, source);
 	}
 
 	__declspec(dllexport) void L_Room_FindFreePickupSpawnPosition(Room* room, Vector* pos, float initialStep, bool avoidActiveEntities, bool allowPits, Vector* out) {
@@ -174,7 +174,7 @@ extern "C" {
 		return room->GetRoomConfigStage();
 	}
 
-	__declspec(dllexport) int L_Room_GetSeededCollectible(Room* room, unsigned int seed, float noDecrease) {
+	__declspec(dllexport) int L_Room_GetSeededCollectible(Room* room, unsigned int seed, bool noDecrease) {
 		return ItemPool::GetSeededCollectible(seed, noDecrease, room->_descriptor);
 	}
 

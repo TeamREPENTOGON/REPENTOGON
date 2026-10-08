@@ -67,8 +67,8 @@ ffi.cdef [[
     void L_Room_ClearBossHazards(struct Room*, bool, struct Entity*);
     bool L_Room_DamageGrid(struct Room*, int, float);
     bool L_Room_DamageGridWithSource(struct Room*, int, float, struct EntityRef*);
-    bool L_Room_DestroyGrid(struct Room*, int, bool);
-    bool L_Room_DestroyGridWithSource(struct Room*, int, bool, struct EntityRef*);
+    bool L_Room_DestroyGrid(struct Room*, int, int, bool);
+    bool L_Room_DestroyGridWithSource(struct Room*, int, int, bool, struct EntityRef*);
     void L_Room_FindFreePickupSpawnPosition(struct Room*, struct Vector*, float, bool, bool, struct Vector*);
     void L_Room_FindFreeTilePosition(struct Room*, struct Vector*, float, struct Vector*);
     unsigned int L_Room_GetBossVictoryJingle(struct Room*);
@@ -97,7 +97,7 @@ ffi.cdef [[
     void L_Room_GetRandomPosition(struct Room*, float, struct Vector*);
     int L_Room_GetRandomTileIndex(struct Room*, unsigned int seed);
     int L_Room_GetRoomConfigStage(struct Room*);
-    int L_Room_GetSeededCollectible(struct Room*, float, bool);
+    int L_Room_GetSeededCollectible(struct Room*, unsigned int, bool);
     int L_Room_GetShopItemPrice(struct Room*, unsigned int, unsigned int, int);
     bool L_Room_IsAmbushActive();   
     bool L_Room_IsChampionBossSeed(struct Room*);
@@ -155,11 +155,11 @@ local RoomMT
 RoomMT = {
     __type = "Room",
     CanPickupGridEntity = function(self, gridIndex)
-        ffichecks.checkinteger(1, gridIndex)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
         return repentogon.L_Room_CanPickupGridEntity(self, gridIndex)
     end,
     CanSpawnObstacleAtPosition = function(self, gridIndex, force)
-        ffichecks.checkinteger(1, gridIndex)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
         force = ffichecks.optboolean(force, false)
         return repentogon.L_Room_CanSpawnObstacleAtPosition(self, gridIndex, force)
     end,
@@ -171,7 +171,7 @@ RoomMT = {
     CheckLine = function(self, pos1, pos2, mode, gridPathThreshold, ignoreWalls, ignoreCrushable)
         ffichecks.checkcdata(1, pos1, "Vector")
         ffichecks.checkcdata(2, pos2, "Vector")
-        ffichecks.checkinteger(3, mode)
+        mode = ffichecks.checkinteger(3, mode)
         gridPathThreshold = ffichecks.optnumber(gridPathThreshold, 0)
         ignoreWalls = ffichecks.optboolean(ignoreWalls, false)
         ignoreCrushable = ffichecks.optboolean(ignoreCrushable, false)
@@ -181,30 +181,35 @@ RoomMT = {
         return res, hitPos
     end,
     DamageGrid = function(self, index, damage)
-        ffichecks.checkinteger(1, index)
-        ffichecks.checknumber(2, damage)
+        index = ffichecks.checkinteger(1, index)
+        damage = ffichecks.checknumber(2, damage)
 
         return repentogon.L_Room_DamageGrid(self, index, damage)
     end,
     DamageGridWithSource = function(self, index, damage, source)
-        ffichecks.checkinteger(1, index)
-        ffichecks.checknumber(2, damage)
+        index = ffichecks.checkinteger(1, index)
+        damage = ffichecks.checknumber(2, damage)
         ffichecks.checkcdata(3, source, "EntityRef")
 
         return repentogon.L_Room_DamageGridWithSource(self, index, damage, source)
     end,
-    DestroyGrid = function(self, index, immediate)
-        ffichecks.checkinteger(1, index)
-        ffichecks.checkboolean(2, immediate)
+    -- Vanilla binds these as (int, bool, bool[, EntityRef]) onto Room::DestroyGrid(index, damage, immediate[, source]), so
+    -- the documented Immediate argument is really the damage (0/1) and the actual immediate flag is the argument after it.
+    -- Kept as is for compatibility.
+    DestroyGrid = function(self, index, damage, immediate)
+        index = ffichecks.checkinteger(1, index)
+        damage = ffichecks.checkboolean(2, damage)
+        immediate = ffichecks.checkboolean(3, immediate)
 
-        return repentogon.L_Room_DestroyGrid(self, index, immediate)
+        return repentogon.L_Room_DestroyGrid(self, index, damage and 1 or 0, immediate)
     end,
-    DestroyGridWithSource = function(self, index, immediate, source)
-        ffichecks.checkinteger(1, index)
-        ffichecks.checkboolean(2, immediate)
-        ffichecks.checkcdata(3, source, "EntityRef")
+    DestroyGridWithSource = function(self, index, damage, immediate, source)
+        index = ffichecks.checkinteger(1, index)
+        damage = ffichecks.checkboolean(2, damage)
+        immediate = ffichecks.checkboolean(3, immediate)
+        ffichecks.checkcdata(4, source, "EntityRef", true)
 
-        return repentogon.L_Room_DestroyGridWithSource(self, index, immediate, source)
+        return repentogon.L_Room_DestroyGridWithSource(self, index, damage and 1 or 0, immediate, source)
     end,
     DoLightningStrike = function(self, seed)
         seed = math.floor(ffichecks.optnumber(seed, math.random(1, 4294967295)))
@@ -213,8 +218,8 @@ RoomMT = {
         repentogon.L_SFXManager_Play(SoundEffect.SOUND_THUNDER, 1, 90, false, 0.9 + rng:RandomFloat() * 0.2, 0)
     end,
     EmitBloodFromWalls = function(self, duration, count)
-        ffichecks.checkinteger(1, duration)
-        ffichecks.checkinteger(2, count)
+        duration = ffichecks.checkinteger(1, duration)
+        count = ffichecks.checkinteger(2, count)
         ffi.setprivate(self, "WallBloodDuration", duration)
         ffi.setprivate(self, "WallBloodCount", count)
     end,
@@ -230,7 +235,7 @@ RoomMT = {
     end,
     FindFreeTilePosition = function(self, pos, distanceThreshold)
         ffichecks.checkcdata(1, pos, "Vector")
-        ffichecks.checknumber(2, distanceThreshold)
+        distanceThreshold = ffichecks.checknumber(2, distanceThreshold)
 
         local out = Vector()
         repentogon.L_Room_FindFreeTilePosition(self, pos, distanceThreshold, out)
@@ -283,7 +288,7 @@ RoomMT = {
     end,
     GetClampedPosition = function(self, pos, margin)
         ffichecks.checkcdata(1, pos, "Vector")
-        ffichecks.checknumber(2, margin)
+        margin = ffichecks.checknumber(2, margin)
         local out = Vector()
         repentogon.L_Room_GetClampedPosition(self, pos, margin, out)
         return out
@@ -304,13 +309,13 @@ RoomMT = {
         return repentogon.L_Room_GetDevilRoomChance(self)
     end,
     GetDoor = function(self, slot)
-        ffichecks.checkinteger(1, slot)
+        slot = ffichecks.checkinteger(1, slot)
         local door = repentogon.L_Room_GetDoor(self, slot)
         if door == nil then return nil end
         return door
     end,
     GetDoorSlotPosition = function(self, slot)
-        ffichecks.checkinteger(1, slot)
+        slot = ffichecks.checkinteger(1, slot)
         local out = Vector()
         repentogon.L_Room_GetDoorSlotPosition(self, slot, out)
         return out
@@ -343,7 +348,7 @@ RoomMT = {
         return ffi.getprivate(self, "GreedWaveTimer")
     end,
     GetGridCollision = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         return repentogon.L_Room_GetGridCollision(self, index)
     end,
     GetGridCollisionAtPos = function(self, pos)
@@ -351,7 +356,7 @@ RoomMT = {
         return repentogon.L_Room_GetGridCollisionAtPos(self, pos)
     end,
     GetGridEntity = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index > 447 then return nil end
         local grid = ffi.getprivate(self, "GridEntities")[index]
         if grid == nil then return nil end
@@ -379,15 +384,15 @@ RoomMT = {
             row = gridRow[1]
             column = gridRow[2]
         else
-            ffichecks.checkinteger(1, gridRow)
-            ffichecks.checkinteger(2, gridColumn)
+            gridRow = ffichecks.checkinteger(1, gridRow)
+            gridColumn = ffichecks.checkinteger(2, gridColumn)
             row = gridRow
             column = gridColumn
         end
         return repentogon.L_Room_GetGridIndexByTile(self, row, column);
     end,
     GetGridPath = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 448 then
             return ffi.getprivate(self, "GridPaths")[index]
         end
@@ -401,7 +406,7 @@ RoomMT = {
         if self:GetGridWidth() == 0 then
             return Vector(0, 0)
         end
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         local out = Vector()
         repentogon.L_Room_GetGridPosition(self, index, out)
         return out
@@ -413,7 +418,8 @@ RoomMT = {
         return ffi.getprivate(self, "GridWidth")
     end,
     GetItemPool = function(self, seed, raw)
-        seed = ffichecks.optnumber(seed, math.random(0, 4294967295))
+        seed = ffichecks.optnumber(seed, math.random(1, 4294967295))
+        if seed == 0 then seed = 1 end
         raw = ffichecks.optboolean(raw, false)
         return repentogon.L_Room_GetItemPool(self, seed, raw)
     end,
@@ -447,7 +453,7 @@ RoomMT = {
         return ffi.getprivate(self, "NumRainSpawners")
     end,
     GetRail = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         local ret = repentogon.L_Room_GetRail(self, index)
         if ret == -1 then
             return nil
@@ -462,13 +468,13 @@ RoomMT = {
         return ffi.getprivate(self, "RainIntensity")
     end,
     GetRandomPosition = function(self, margin)
-        ffichecks.checknumber(1, margin)
+        margin = ffichecks.checknumber(1, margin)
         local out = Vector()
         repentogon.L_Room_GetRandomPosition(self, margin, out)
         return out
     end,
     GetRandomTileIndex = function(self, seed)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         return repentogon.L_Room_GetRandomTileIndex(self, seed)
     end,
     GetRedHeartDamage = function(self)
@@ -499,14 +505,14 @@ RoomMT = {
         return ffi.getprivate(self, "SecondBossID")
     end,
     GetSeededCollectible = function(self, seed, noDecrease)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         noDecrease = ffichecks.optboolean(noDecrease, false)
         return repentogon.L_Room_GetSeededCollectible(self, seed, noDecrease)
     end,
     GetShopItemPrice = function(self, entityVariant, entitySubType, shopItemID)
-        ffichecks.checkinteger(1, entityVariant)
-        ffichecks.checkinteger(2, entitySubType)
-        ffichecks.checkinteger(3, shopItemID)
+        entityVariant = ffichecks.checkinteger(1, entityVariant)
+        entitySubType = ffichecks.checkinteger(2, entitySubType)
+        shopItemID = ffichecks.checkinteger(3, shopItemID)
         return repentogon.L_Room_GetShopItemPrice(self, entityVariant, entitySubType, shopItemID)
     end,
     GetShopLevel = function(self)
@@ -582,7 +588,7 @@ RoomMT = {
         return repentogon.L_Room_IsCurrentRoomLastBoss()
     end,
     IsDoorSlotAllowed = function(self, slot)
-        ffichecks.checkinteger(1, slot)
+        slot = ffichecks.checkinteger(1, slot)
         if slot >= 0 and slot < 8 then
             return (ffi.getprivate(self, "RoomDescriptor").Data.Doors & (1 << slot)) ~= 0
         end
@@ -604,13 +610,13 @@ RoomMT = {
         return repentogon.L_Room_IsMirrorWorld()
     end,
     IsPersistentRoomEntity = function(self, entityType, entityVariant)
-        ffichecks.checkinteger(1, entityType)
+        entityType = ffichecks.checkinteger(1, entityType)
         entityVariant = ffichecks.optnumber(entityVariant, 0)
         return repentogon.L_Room_IsPersistentRoomEntity(self, entityType, entityVariant)
     end,
     IsPositionInRoom = function(self, pos, margin)
         ffichecks.checkcdata(1, pos, "Vector")
-        ffichecks.checknumber(2, margin)
+        margin = ffichecks.checknumber(2, margin)
         return repentogon.L_Room_IsPositionInRoom(self, pos, margin)
     end,
     IsSacrificeDone = function(self)
@@ -627,26 +633,26 @@ RoomMT = {
         repentogon.L_Room_MamaMegaExplosion(self, pos, player)
     end,
     PickupGridEntity = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         return repentogon.L_Room_PickupGridEntity(self, index)
     end,
     PlayMusic = function(self)
         repentogon.L_Room_PlayMusic(self)
     end,
     RemoveDoor = function(self, slot)
-        ffichecks.checkinteger(1, slot)
+        slot = ffichecks.checkinteger(1, slot)
         repentogon.L_Room_RemoveDoor(self, slot)
     end,
     RemoveGridEntity = function(self, gridIndex, pathTrail, keepDecoration)
-        ffichecks.checkinteger(1, gridIndex)
-        ffichecks.checkinteger(2, pathTrail)
-        ffichecks.checkboolean(3, keepDecoration)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
+        pathTrail = ffichecks.checkinteger(2, pathTrail)
+        keepDecoration = ffichecks.checkboolean(3, keepDecoration)
         repentogon.L_Room_RemoveGridEntity(self, gridIndex, pathTrail, keepDecoration)
     end,        
     RemoveGridEntityImmediate = function(self, gridIndex, pathTrail, keepDecoration)
-        ffichecks.checkinteger(1, gridIndex)
-        ffichecks.checkinteger(2, pathTrail)
-        ffichecks.checkboolean(3, keepDecoration)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
+        pathTrail = ffichecks.checkinteger(2, pathTrail)
+        keepDecoration = ffichecks.checkboolean(3, keepDecoration)
         repentogon.L_Room_RemoveGridEntityImmediate(self, gridIndex, pathTrail, keepDecoration)
     end, 
     Render = function(self) 
@@ -660,36 +666,36 @@ RoomMT = {
     end,
     ScreenWrapPosition = function(self, pos, margin)
         ffichecks.checkcdata(1, pos, "Vector")
-        ffichecks.checknumber(2, margin)
+        margin = ffichecks.checknumber(2, margin)
         local out = Vector()
         repentogon.L_Room_ScreenWrapPosition(self, pos, margin, out)
         return out
     end,
     SetAmbushDone = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.getprivate(self, "RoomDescriptor").ChallengeDone = value
     end,
     SetBackdropType = function(self, backdropType, changeDecoration)
-        ffichecks.checkinteger(1, backdropType)
-        ffichecks.checkinteger(2, changeDecoration)
+        backdropType = ffichecks.checkinteger(1, backdropType)
+        changeDecoration = ffichecks.checkinteger(2, changeDecoration)
         if backdropType < 0 or backdropType > 61 then
             ffichecks.argerror(1, string.format("Invalid backdrop id %d (min = 0, max = 61)", backdropType))
         end
         repentogon.L_Room_SetBackdropType(self, backdropType, changeDecoration)
     end,
     SetBrokenWatchState = function(self, state)
-        ffichecks.checkinteger(1, state)
+        state = ffichecks.checkinteger(1, state)
         ffi.setprivate(self, "BrokenWatchState", state)
     end,
     SetCardAgainstHumanity = function(self)
         ffi.setprivate(self, "CardAgainstHumanity", true)
     end,
     SetClear = function(self, clear)
-        ffichecks.checkboolean(1, clear)
+        clear = ffichecks.checkboolean(1, clear)
         ffi.getprivate(self, "RoomDescriptor").Clear = clear
     end,
     SetFirstEnemyDead = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         ffi.setprivate(self, "FirstEnemyDead", value)
     end,
     SetFloorColor = function(self, floorColor)
@@ -697,7 +703,7 @@ RoomMT = {
         ffi.setprivate(self, "FloorColor", floorColor)
     end,
     SetGreedWaveTimer = function(self, time)
-        ffichecks.checkinteger(1, time)
+        time = ffichecks.checkinteger(1, time)
         ffi.setprivate(self, "GreedWaveTimer", time)
     end,
     SetItemPool = function(self, type)
@@ -707,8 +713,8 @@ RoomMT = {
         repentogon.L_Room_SetItemPool(self, type)
     end,
     SetGridPath = function(self, index, value)
-        ffichecks.checkinteger(1, index)
-        ffichecks.checkinteger(2, value)
+        index = ffichecks.checkinteger(1, index)
+        value = ffichecks.checkinteger(2, value)
         
         if index < 448 then
             ffi.getprivate(self, "GridPaths")[index] = value
@@ -717,11 +723,11 @@ RoomMT = {
         return false
     end,
     SetLavaIntensity = function(self, intensity)
-        ffichecks.checknumber(1, intensity)
+        intensity = ffichecks.checknumber(1, intensity)
         ffi.setprivate(self, "LavaIntensity", intensity)
     end,
     SetLightningIntensity = function(self, intensity)
-        ffichecks.checknumber(1, intensity)
+        intensity = ffichecks.checknumber(1, intensity)
         ffi.setprivate(repentogon.L_Game_Get(), "LightningIntensity", intensity)
     end,
     SetRedHeartDamage = function(self, value)
@@ -729,12 +735,12 @@ RoomMT = {
         ffi.setprivate(self, "RedHeartDamage", value)
     end,
     SetPauseTimer = function(self, duration)
-        ffichecks.checkinteger(1, duration)
+        duration = ffichecks.checkinteger(1, duration)
         repentogon.L_Room_SetPauseTimer(self, duration)
     end,
     SetRail = function(self, gridIndex, railVariant)
-        ffichecks.checkinteger(1, gridIndex)
-        ffichecks.checkinteger(2, railVariant)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
+        railVariant = ffichecks.checkinteger(2, railVariant)
 
         if not repentogon.L_Room_IsValidGridIndex(self, gridIndex, false) or gridIndex < 0 or gridIndex >= self:GetGridSize() then
             ffichecks.argerror(1, string.format("Invalid grid index %d", gridIndex))
@@ -743,19 +749,19 @@ RoomMT = {
         repentogon.L_Room_SetRailType(self, gridIndex, railVariant)
     end,
     SetRainIntensity = function(self, intensity)
-        ffichecks.checknumber(1, intensity)
+        intensity = ffichecks.checknumber(1, intensity)
         ffi.setprivate(self, "RainIntensity", intensity)
     end,
     SetRoomClearDelay = function(self, delay)
-        ffichecks.checkinteger(1, delay)
+        delay = ffichecks.checkinteger(1, delay)
         ffi.setprivate(self, "RoomClearDelay", delay)
     end,
     SetSacrificeDone = function(self, done)
-        ffichecks.checkboolean(1, done)
+        done = ffichecks.checkboolean(1, done)
         ffi.getprivate(self, "RoomDescriptor").SacrificeDone = done
     end,
     SetSlowDown = function(self, duration)
-        ffichecks.checkinteger(1, duration)
+        duration = ffichecks.checkinteger(1, duration)
         ffi.setprivate(self, "SlowDownDuration", duration)
     end,
     SetWallColor = function(self, wallColor)
@@ -763,7 +769,7 @@ RoomMT = {
         ffi.setprivate(self, "WallColor", wallColor)
     end,
     SetWaterAmount = function(self, amount)
-        ffichecks.checknumber(1, amount)
+        amount = ffichecks.checknumber(1, amount)
         ffi.setprivate(self, "WaterAmount", amount)
     end,
     SetWaterColor = function(self, waterColor)
@@ -781,8 +787,8 @@ RoomMT = {
         ffi.setprivate(self, "WaterCurrent", waterCurrent)
     end,
     ShopReshuffle = function(self, keepCollectibleIdx, reselectSaleItem)
-        ffichecks.checkboolean(1, keepCollectibleIdx)
-        ffichecks.checkboolean(2, reselectSaleItem)
+        keepCollectibleIdx = ffichecks.checkboolean(1, keepCollectibleIdx)
+        reselectSaleItem = ffichecks.checkboolean(2, reselectSaleItem)
         repentogon.L_Room_ShopReshuffle(self, keepCollectibleIdx, reselectSaleItem)
     end,
     ShopRestockFull = function(self)
@@ -795,11 +801,14 @@ RoomMT = {
         repentogon.L_Room_SpawnClearAward(self)
     end,
     SpawnGridEntity = function(self, gridIndex, gridType, variant, seed, varData)
-        ffichecks.checkinteger(1, gridIndex)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
+        if gridIndex < 0 or gridIndex > 447 then
+            error(string.format("Grid index %d invalid", gridIndex), 2)
+        end
         if ffichecks.iscdata(gridType, "GridEntityDesc") then
             return repentogon.L_Room_SpawnGridEntityDesc(self, gridIndex, gridType)
         else
-            ffichecks.checkinteger(2, gridType)
+            gridType = ffichecks.checkinteger(2, gridType)
             variant = ffichecks.optnumber(variant, 0)
             seed = ffichecks.optnumber(seed, repentogon.L_Room_TMP_GetSpawnGridEntitySeed(gridIndex)) -- suboptimal, but it stays fast this way
             varData = ffichecks.optnumber(varData, 0)
@@ -814,20 +823,20 @@ RoomMT = {
         repentogon.L_Room_TriggerClear(self, silent)
     end,
     TriggerOutput = function(self, groupIdx)
-        ffichecks.checkinteger(1, groupIdx)
+        groupIdx = ffichecks.checkinteger(1, groupIdx)
         if groupIdx < 0 or groupIdx > 9 then
             ffichecks.argerror(2, "Invalid output index")
         end
         repentogon.L_Room_TriggerOutput(self, groupIdx)
     end,
     TriggerRestock = function(self, gridIndex, shopItemIdx)
-        ffichecks.checkinteger(1, gridIndex)
-        ffichecks.checkinteger(2, shopItemIdx)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
+        shopItemIdx = ffichecks.checkinteger(2, shopItemIdx)
         repentogon.L_Room_TriggerRestock(self, gridIndex, shopItemIdx)
     end,
     TryGetShopDiscount = function(self, shopItemIdx, price) 
-        ffichecks.checkinteger(1, shopItemIdx)
-        ffichecks.checkinteger(2, price)
+        shopItemIdx = ffichecks.checkinteger(1, shopItemIdx)
+        price = ffichecks.checkinteger(2, price)
         return repentogon.L_Room_TryGetShopDiscount(self, shopItemIdx, price)
     end,
     TryMakeBridge = function(self, pit, rock)
@@ -867,7 +876,7 @@ RoomMT = {
         return repentogon.L_Room_TrySpawnSecretShop(self, force)
     end,
     TrySpawnSpecialQuestDoor = function(self, ignoreStageType)
-        ffichecks.optboolean(ignoreStageType, false)
+        ignoreStageType = ffichecks.optboolean(ignoreStageType, false)
         return repentogon.L_Room_TrySpawnSpecialQuestDoor(self, ignoreStageType)
     end,
     TrySpawnTheVoidDoor = function(self, force)

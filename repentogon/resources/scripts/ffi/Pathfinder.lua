@@ -42,8 +42,8 @@ local PathFinderMT = {
     end,
     FindGridPath = function(self, position, speed, pathMarker, useDirectPath)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, speed)
-        ffichecks.checkinteger(3, pathMarker)
+        speed = ffichecks.checknumber(2, speed)
+        pathMarker = ffichecks.checkinteger(3, pathMarker)
         repentogon.L_PathFinder_FindGridPath(self, position, speed, pathMarker, ffichecks.optboolean(useDirectPath, false))
     end,
     GetEvadeMovementCountdown = Getter("EvadeMovementCountdownValue"),
@@ -57,7 +57,7 @@ local PathFinderMT = {
         return repentogon.L_PathFinder_MoveRandomly(self, not not ignoreStatusEffects)
     end,
     MoveRandomlyAxisAligned = function(self, speed, ignoreStatusEffects)
-        ffichecks.checknumber(1, speed)
+        speed = ffichecks.checknumber(1, speed)
         repentogon.L_PathFinder_MoveRandomlyAxisAligned(self, speed, not not ignoreStatusEffects)
     end,
     MoveRandomlyBoss = function(self, ignoreStatusEffects)
@@ -70,7 +70,7 @@ local PathFinderMT = {
     end,
     SimulatePlayerMovement = function(self, movement, speed)
         ffichecks.checkcdata(1, movement, "Vector")
-        ffichecks.checknumber(2, speed)
+        speed = ffichecks.checknumber(2, speed)
         repentogon.L_PathFinder_SimulatePlayerMovement(self, movement, speed)
     end,
     UpdateGridIndex = VoidMethod(repentogon.L_PathFinder_UpdateGridIndex),

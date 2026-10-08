@@ -33,45 +33,45 @@ end
 
 PlayerManager = {
     AnyoneHasCollectible = function(collectible, ignoreModifiers)
-        ffichecks.checkinteger(1, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
         return repentogon.L_PlayerManager_AnyoneHasCollectible(collectible, ffichecks.optboolean(ignoreModifiers, false))
     end,
     AnyoneHasTrinket = function(trinket, ignoreModifiers)
-        ffichecks.checkinteger(1, trinket)
+        trinket = ffichecks.checkinteger(1, trinket)
         return repentogon.L_PlayerManager_AnyoneHasTrinket(trinket, ffichecks.optboolean(ignoreModifiers, false))
     end,
     AnyoneIsPlayerType = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return repentogon.L_PlayerManager_FirstPlayerByType(playerType) ~= nil
     end,
     AnyPlayerTypeHasBirthright = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return repentogon.L_PlayerManager_AnyPlayerTypeHasBirthright(playerType)
     end,
     AnyPlayerTypeHasCollectible = function(playerType, collectible, ignoreModifiers)
-        ffichecks.checkinteger(1, playerType)
-        ffichecks.checkinteger(2, collectible)
+        playerType = ffichecks.checkinteger(1, playerType)
+        collectible = ffichecks.checkinteger(2, collectible)
         return repentogon.L_PlayerManager_AnyPlayerTypeHasCollectible(playerType, collectible, ffichecks.optboolean(ignoreModifiers, false))
     end,
     AnyPlayerTypeHasTrinket = function(playerType, trinket, ignoreModifiers)
-        ffichecks.checkinteger(1, playerType)
-        ffichecks.checkinteger(2, trinket)
+        playerType = ffichecks.checkinteger(1, playerType)
+        trinket = ffichecks.checkinteger(2, trinket)
         return repentogon.L_PlayerManager_AnyPlayerTypeHasTrinket(playerType, trinket, ffichecks.optboolean(ignoreModifiers, false))
     end,
     FirstBirthrightOwner = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return ToPlayer(repentogon.L_PlayerManager_FirstBirthrightOwner())
     end,
     FirstCollectibleOwner = function(collectible, lazSharedGlobalTag)
-        ffichecks.checkinteger(1, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
         return ToPlayer(repentogon.L_PlayerManager_FirstCollectibleOwner(collectible, ffichecks.optboolean(lazSharedGlobalTag, true)))
     end,
     FirstPlayerByType = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return ToPlayer(repentogon.L_PlayerManager_FirstPlayerByType(playerType))
     end,
     FirstTrinketOwner = function(trinket, arg2, arg3)
-        ffichecks.checkinteger(1, trinket)
+        trinket = ffichecks.checkinteger(1, trinket)
         local legacySignature = arg2 == nil or ffichecks.iscdata(arg2, "RNG")
         local lazSharedGlobalTag = arg2
         if legacySignature then
@@ -82,14 +82,14 @@ PlayerManager = {
     end,
     GetEsauJrState = function(index)
         index = ffichecks.optnumber(index, 0)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index < 0 or index > 3 then
             error(string.format("Invalid index %d", index), 2)
         end
         return ToPlayer(repentogon.L_PlayerManager_GetEsauJrState(index))
     end,
     GetNumCollectibles = function(collectible, ignoreModifiers)
-        ffichecks.checkinteger(1, collectible)
+        collectible = ffichecks.checkinteger(1, collectible)
         return repentogon.L_PlayerManager_GetNumCollectibles(collectible, ffichecks.optboolean(ignoreModifiers, false))
     end,
     GetPlayers = function()
@@ -100,8 +100,8 @@ PlayerManager = {
         return players
     end,
     GetRandomCollectibleOwner = function(collectible, seed)
-        ffichecks.checkinteger(1, collectible)
-        ffichecks.checkinteger(2, seed)
+        collectible = ffichecks.checkinteger(1, collectible)
+        seed = ffichecks.checkinteger(2, seed)
         local player = repentogon.L_PlayerManager_GetRandomCollectibleOwner(collectible, seed, rngOut)
         if player == nil then
             return nil, nil
@@ -109,8 +109,8 @@ PlayerManager = {
         return ToPlayer(player), rngOut[0]
     end,
     GetRandomTrinketOwner = function(trinket, seed)
-        ffichecks.checkinteger(1, trinket)
-        ffichecks.checkinteger(2, seed)
+        trinket = ffichecks.checkinteger(1, trinket)
+        seed = ffichecks.checkinteger(2, seed)
         local player = repentogon.L_PlayerManager_GetRandomTrinketOwner(trinket, seed, rngOut)
         if player == nil then
             return nil, nil
@@ -118,7 +118,7 @@ PlayerManager = {
         return ToPlayer(player), rngOut[0]
     end,
     GetTotalTrinketMultiplier = function(trinket)
-        ffichecks.checkinteger(1, trinket)
+        trinket = ffichecks.checkinteger(1, trinket)
         return repentogon.L_PlayerManager_GetTotalTrinketMultiplier(trinket)
     end,
     IsCoopPlay = function()
@@ -129,12 +129,12 @@ PlayerManager = {
         repentogon.L_PlayerManager_RemoveCoPlayer(player)
     end,
     SpawnCoPlayer2 = function(playerType)
-        ffichecks.checkinteger(1, playerType)
+        playerType = ffichecks.checkinteger(1, playerType)
         return ToPlayer(repentogon.L_PlayerManager_SpawnCoPlayer2(playerType))
     end,
     SpawnSelectedBaby = function(babyType, controllerIndex)
-        ffichecks.checkinteger(1, babyType)
-        ffichecks.checkinteger(2, controllerIndex)
+        babyType = ffichecks.checkinteger(1, babyType)
+        controllerIndex = ffichecks.checkinteger(2, controllerIndex)
         repentogon.L_PlayerManager_SpawnSelectedBaby(babyType, controllerIndex)
     end,
     TriggerRoomClear = function()

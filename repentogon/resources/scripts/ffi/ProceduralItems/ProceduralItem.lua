@@ -28,7 +28,7 @@ ProceduralItemMT = {
         return ffi.getprivate(self, "Damage")
     end,
     GetEffect = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         if index >= 0 and index < GetEffectCount(self) then
             return ffi.getprivate(self, "EffectsFirst")[index]
         end

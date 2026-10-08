@@ -50,23 +50,23 @@ MinimapConfigMT = {
         ffi.setprivate(self, "BorderPadding", padding)
     end,
     SetBorderScale = function(self, scale)
-        ffichecks.checknumber(1, scale)
+        scale = ffichecks.checknumber(1, scale)
         ffi.setprivate(self, "BorderScale", scale)
     end,
     SetI1 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "I1", value)
     end,
     SetI2 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "I2", value)
     end,
     SetIconNum = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, "IconNum", value)
     end,
     SetPosOffsetX = function(self, offset)
-        ffichecks.checknumber(1, offset)
+        offset = ffichecks.checknumber(1, offset)
         ffi.setprivate(self, "PosOffsetX", offset)
     end,
     SetVec1 = function(self, vec)

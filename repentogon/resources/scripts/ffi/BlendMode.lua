@@ -44,7 +44,7 @@ BlendModeMT = {
         elseif type(first) == "table" then
             parts = first
         else
-            ffichecks.checknumber(1, first)
+            first = ffichecks.checknumber(1, first)
             local preset = blendModes[math.floor(first) + 1]
             if preset then
                 self.RGBSourceFactor, self.RGBDestFactor = preset[1], preset[2]
@@ -124,7 +124,7 @@ BlendMode = setmetatable({
         return BlendModeT(equation, srcRGB, dstRGB, srcAlpha, dstAlpha)
     end,
     NewFromType = function(blendType) 
-        ffichecks.checknumber(1, blendType)
+        blendType = ffichecks.checknumber(1, blendType)
         
         blendType = math.floor(blendType)
         if blendType < 0 or blendType > 4 then

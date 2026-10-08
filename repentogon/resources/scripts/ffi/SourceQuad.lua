@@ -70,7 +70,7 @@ SourceQuad = setmetatable({
     NewFromBounds = function(TopLeft, BottomRight, UV)
         ffichecks.checkcdata(1, TopLeft, "Vector")
         ffichecks.checkcdata(2, BottomRight, "Vector")
-        ffichecks.checkboolean(3, UV)
+        UV = ffichecks.checkboolean(3, UV)
         local sq = SourceQuadT(
             TopLeft,
             Vector(BottomRight.X, TopLeft.Y),
@@ -82,8 +82,8 @@ SourceQuad = setmetatable({
     end, 
     NewFromRectangle = function(TopLeft, Width, Height, UV)
         ffichecks.checkcdata(1, TopLeft, "Vector")
-        ffichecks.checknumber(2, Width)
-        ffichecks.checknumber(3, Height)
+        Width = ffichecks.checknumber(2, Width)
+        Height = ffichecks.checknumber(3, Height)
         local sq = SourceQuadT(
             TopLeft,
             Vector(TopLeft.X + Width, TopLeft.Y),

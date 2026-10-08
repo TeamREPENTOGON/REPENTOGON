@@ -20,7 +20,7 @@ local deliriumType = ffi.typeof("struct EntityDelirium*")
 
 local function IntegerSetter(field)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         ffi.setprivate(self, field, value)
     end
 end
@@ -65,7 +65,7 @@ local methods = {
         ffi.setprivate(self, "DeliriumCycleValue", cycle)
     end,
     SetTeleportationTimer = function(self, timer)
-        ffichecks.checkinteger(1, timer)
+        timer = ffichecks.checkinteger(1, timer)
         if timer < 0 then
             error(string.format("Invalid transformation timer %d (positive number required)\n", timer), 2)
         elseif timer > TELEPORTATION_TIMER_MAX then
@@ -77,14 +77,14 @@ local methods = {
         ffi.setprivate(self, "DeliriumCycleValue", cycle | (timer << 0xF))
     end,
     Transform = function(self, entityType, variant, callback)
-        ffichecks.checkinteger(1, entityType)
+        entityType = ffichecks.checkinteger(1, entityType)
         if entityType < TYPE_ENTITY_GAPER then
             error(string.format("Invalid EntityType %d for Delirium\n", entityType), 2)
         end
         if variant == nil then
             variant = 0
         else
-            ffichecks.checkinteger(2, variant)
+            variant = ffichecks.checkinteger(2, variant)
         end
         repentogon.L_EntityDelirium_Transform(self, entityType, variant, ffichecks.optboolean(callback, false))
     end,

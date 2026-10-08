@@ -85,7 +85,7 @@ DestinationQuadMT = {
         self:Translate(anchor)
     end,
     Rotate = function(self, rotation, anchor)
-        ffichecks.checknumber(1, rotation)
+        rotation = ffichecks.checknumber(1, rotation)
         ffichecks.checkcdata(2, anchor, "Vector")
 
         local radians = rotation * math.pi / 180
@@ -185,8 +185,8 @@ DestinationQuad = setmetatable({
     end, 
     NewFromRectangle = function(TopLeft, Width, Height)
         ffichecks.checkcdata(1, TopLeft, "Vector")
-        ffichecks.checknumber(2, Width)
-        ffichecks.checknumber(3, Height)
+        Width = ffichecks.checknumber(2, Width)
+        Height = ffichecks.checknumber(3, Height)
         local dq = DestinationQuadT(
             TopLeft,
             Vector(TopLeft.X + Width, TopLeft.Y),

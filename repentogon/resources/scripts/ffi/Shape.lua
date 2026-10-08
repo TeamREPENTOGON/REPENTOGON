@@ -21,14 +21,14 @@ ShapeMT = {
     end,
     Circle = function(self, position, size)
         ffichecks.checkcdata(1, position, "Vector")
-        ffichecks.checknumber(2, size)
+        size = ffichecks.checknumber(2, size)
         repentogon.L_Shape_Circle(self, position, size)
     end,
     GetTimeout = function(self)
         return ffi.getprivate(self, "Timeout")
     end,
     SetTimeout = function(self, timeout)
-        ffichecks.checkinteger(1, timeout)
+        timeout = ffichecks.checkinteger(1, timeout)
         ffi.setprivate(self, "Timeout", timeout)
     end,
 }

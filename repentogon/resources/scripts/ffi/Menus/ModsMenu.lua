@@ -18,7 +18,7 @@ ModsMenu = {
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("ModsMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_ModsMenu_SetSelectedElement(element)
     end,
     WasListEdited = function()

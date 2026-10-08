@@ -29,7 +29,7 @@ RoomConfigEntriesMT.__index = function(self, k)
 end
 
 function RoomConfigEntriesMT:Get(idx)
-    ffichecks.checkinteger(1, idx)
+    idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= el_size(self) then return nil end
     return ffi.getprivate(self, "_begin") + idx
 end

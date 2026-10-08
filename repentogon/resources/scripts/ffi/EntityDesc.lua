@@ -54,31 +54,31 @@ EntityDescMT = {
         return ffi.getprivate(self, "PlayerControlled")
     end,
     SetChampionId = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         ffi.setprivate(self, "ChampionId", CheckChampionId(1, id))
     end,
     SetHealth = function(self, health)
-        ffichecks.checknumber(1, health)
+        health = ffichecks.checknumber(1, health)
         ffi.setprivate(self, "Health", health)
     end,
     SetMaxHealth = function(self, maxHealth)
-        ffichecks.checknumber(1, maxHealth)
+        maxHealth = ffichecks.checknumber(1, maxHealth)
         ffi.setprivate(self, "MaxHealth", maxHealth)
     end,
     SetPlayerControlled = function(self, playerControlled)
-        ffichecks.checkboolean(1, playerControlled)
+        playerControlled = ffichecks.checkboolean(1, playerControlled)
         ffi.setprivate(self, "PlayerControlled", playerControlled)
     end,
     SetSubtype = function(self, subtype)
-        ffichecks.checkinteger(1, subtype)
+        subtype = ffichecks.checkinteger(1, subtype)
         ffi.setprivate(self, "Subtype", subtype)
     end,    
     SetType = function(self, entityType)
-        ffichecks.checkinteger(1, entityType)
+        entityType = ffichecks.checkinteger(1, entityType)
         ffi.setprivate(self, "Type", CheckEntityType(1, entityType))
     end,
     SetVariant = function(self, variant)
-        ffichecks.checkinteger(1, variant)
+        variant = ffichecks.checkinteger(1, variant)
         ffi.setprivate(self, "Variant", variant)
     end,
 }

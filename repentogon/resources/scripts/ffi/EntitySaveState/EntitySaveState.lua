@@ -127,57 +127,57 @@ EntitySaveStateMT = {
         return GetData(self).Variant
     end,
     SetB1 = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         GetData(self).B1 = value
     end,
     SetB2 = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         GetData(self).B2 = value
     end,
     SetF1 = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         GetData(self).F1 = value
     end,
     SetF2 = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         GetData(self).F2 = value
     end,
     SetI1 = function(self, value)
         local data = GetData(self)
         if HasFloatI1(data) then
-            ffichecks.checknumber(1, value)
+            value = ffichecks.checknumber(1, value)
             data.I1.Float = value
         else
-            ffichecks.checkinteger(1, value)
+            value = ffichecks.checkinteger(1, value)
             data.I1.Int = value
         end
     end,
     SetI2 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I2 = value
     end,
     SetI3 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I3 = value
     end,
     SetI4 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I4 = value
     end,
     SetI5 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I5 = value
     end,
     SetI6 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I6 = value
     end,
     SetI7 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         repentogon.L_EntitySaveState_GetI7(GetData(self))[0] = value
     end,
     SetI8 = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).I8 = value
     end,
     SetPos = function(self, position)
@@ -187,25 +187,25 @@ EntitySaveStateMT = {
         target.Y = position.Y
     end,
     SetSubType = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).SubType = value
     end,
     SetType = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).Type = value
     end,
     SetU1 = function(self, value)
         local data = GetData(self)
         if data.Type == 5 then
-            ffichecks.checkboolean(1, value)
+            value = ffichecks.checkboolean(1, value)
             data.U1 = value and 1 or 0
         else
-            ffichecks.checkinteger(1, value)
+            value = ffichecks.checkinteger(1, value)
             data.U1 = value
         end
     end,
     SetVariant = function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         GetData(self).Variant = value
     end,
 }

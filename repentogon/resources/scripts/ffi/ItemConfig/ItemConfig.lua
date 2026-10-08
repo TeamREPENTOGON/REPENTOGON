@@ -30,18 +30,18 @@ ItemConfigMT = {
         if id == nil then
             id = self
         end
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_CanRerollCollectible(id)
     end,
     GetCard = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_GetCard(self, id)
     end,
     GetCards = function(self)
         return ffi.getprivate(self, "CardList")
     end,
     GetCollectible = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_GetCollectible(self, id)
     end,
     GetCollectibles = function(self)
@@ -61,26 +61,26 @@ ItemConfigMT = {
         return result
     end,
     GetNullItem = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_GetNullItem(self, id)
     end,
     GetNullItems = function(self)
         return ffi.getprivate(self, "NullItemList")
     end,
     GetPillEffect = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_GetPillEffect(self, id)
     end,
     GetPillEffects = function(self)
         return ffi.getprivate(self, "PillEffectList")
     end,
     GetTaggedItems = function(self, tags)
-        ffichecks.checknumber(1, tags)
+        tags = ffichecks.checknumber(1, tags)
         local list = repentogon.L_ItemConfig_GetTaggedItems(self, tags)
         return ffichecks.vectortotable(ffi.getprivate(list, "Begin"), ffi.getprivate(list, "End"), 4)
     end,
     GetTrinket = function(self, id)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         return repentogon.L_ItemConfig_GetTrinket(self, id)
     end,
     GetTrinkets = function(self)
@@ -110,19 +110,19 @@ ItemConfig = {
 local REMOVED_COLLECTIBLES = { [43] = true, [61] = true, [235] = true }
 
 rawset(ItemConfigConfig, "GetCollectible", function(id)
-    ffichecks.checkinteger(1, id)
+    id = ffichecks.checkinteger(1, id)
     return repentogon.L_ItemConfig_GetCollectible(repentogon.L_ItemConfig_Get(), id)
 end)
 rawset(ItemConfigConfig, "GetNullItem", function(id)
-    ffichecks.checkinteger(1, id)
+    id = ffichecks.checkinteger(1, id)
     return repentogon.L_ItemConfig_GetNullItem(repentogon.L_ItemConfig_Get(), id)
 end)
 rawset(ItemConfigConfig, "GetTrinket", function(id)
-    ffichecks.checkinteger(1, id)
+    id = ffichecks.checkinteger(1, id)
     return repentogon.L_ItemConfig_GetTrinket(repentogon.L_ItemConfig_Get(), id)
 end)
 rawset(ItemConfigConfig, "IsValidCollectible", function(id)
-    ffichecks.checkinteger(1, id)
+    id = ffichecks.checkinteger(1, id)
     if id <= 0 or REMOVED_COLLECTIBLES[id] then
         return false
     end

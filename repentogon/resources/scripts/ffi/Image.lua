@@ -98,10 +98,10 @@ ImageMT = {
     end,
 
     GetTexelRegion = function(self, x, y, w, h)
-        ffichecks.checkinteger(1, x)
-        ffichecks.checkinteger(2, y)
-        ffichecks.checkinteger(3, w)
-        ffichecks.checkinteger(4, h)
+        x = ffichecks.checkinteger(1, x)
+        y = ffichecks.checkinteger(2, y)
+        w = ffichecks.checkinteger(3, w)
+        h = ffichecks.checkinteger(4, h)
 
         local n = w * h * 4
         local buf = ffi.new("uint8_t[?]", n)

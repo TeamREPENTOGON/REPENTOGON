@@ -51,7 +51,7 @@ EffectListMT.__index = function(self, k)
 end
 
 function EffectListMT:Get(idx)
-    ffichecks.checknumber(2, idx)
+    idx = ffichecks.checknumber(2, idx)
     local n = el_size(self)
     if idx < 0 or idx >= n then return nil end
     return ffi.cast("ConstTemporaryEffect*", ffi.getprivate(self, "_begin") + idx)
@@ -66,21 +66,21 @@ local TemporaryEffectsMT
 TemporaryEffectsMT = {
     __type = "TemporaryEffects",
     AddCollectibleEffect = function(self, CollectibleType, AddCostume, Count)
-        ffichecks.checkinteger(1, CollectibleType)
+        CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         AddCostume = ffichecks.optboolean(AddCostume, true)
         Count = ffichecks.optnumber(Count, 1)
 
         repentogon.L_TemporaryEffects_AddCollectibleEffect(self, CollectibleType, AddCostume, Count)
     end,
     AddNullEffect = function(self, NullId, AddCostume, Count)
-        ffichecks.checkinteger(1, NullId)
+        NullId = ffichecks.checkinteger(1, NullId)
         AddCostume = ffichecks.optboolean(AddCostume, true)
         Count = ffichecks.optnumber(Count, 1)
 
         repentogon.L_TemporaryEffects_AddNullEffect(self, NullId, AddCostume, Count)
     end,
     AddTrinketEffect = function(self, TrinketType, AddCostume, Count)
-        ffichecks.checkinteger(1, TrinketType)
+        TrinketType = ffichecks.checkinteger(1, TrinketType)
         AddCostume = ffichecks.optboolean(AddCostume, true)
         Count = ffichecks.optnumber(Count, 1)
 
@@ -90,60 +90,60 @@ TemporaryEffectsMT = {
         repentogon.L_TemporaryEffects_ClearEffects(self)
     end,
     GetCollectibleEffect = function(self, CollectibleType)
-        ffichecks.checkinteger(1, CollectibleType)
+        CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         local effect = repentogon.L_TemporaryEffects_GetCollectibleEffect(self, CollectibleType)
         if effect == nil then return nil end
         return effect
     end,
     GetCollectibleEffectNum = function(self, CollectibleType)
-        ffichecks.checkinteger(1, CollectibleType)
+        CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         return repentogon.L_TemporaryEffects_GetCollectibleEffectNum(self, CollectibleType)
     end,
     GetEffectsList = function(self) return ffi.getprivate(self, "Effects") end,
     GetNullEffect = function(self, NullId)
-        ffichecks.checkinteger(1, NullId)
+        NullId = ffichecks.checkinteger(1, NullId)
         local effect = repentogon.L_TemporaryEffects_GetNullEffect(self, NullId)
         if effect == nil then return nil end
         return effect
     end,
     GetNullEffectNum = function(self, NullId)
-        ffichecks.checkinteger(1, NullId)
+        NullId = ffichecks.checkinteger(1, NullId)
         return repentogon.L_TemporaryEffects_GetNullEffectNum(self, NullId)
     end,
     GetTrinketEffect = function(self, TrinketType)
-        ffichecks.checkinteger(1, TrinketType)
+        TrinketType = ffichecks.checkinteger(1, TrinketType)
         local effect = repentogon.L_TemporaryEffects_GetTrinketEffect(self, TrinketType)
         if effect == nil then return nil end
         return effect
     end,
     GetTrinketEffectNum = function(self, TrinketType)
-        ffichecks.checkinteger(1, TrinketType)
+        TrinketType = ffichecks.checkinteger(1, TrinketType)
         return repentogon.L_TemporaryEffects_GetTrinketEffectNum(self, TrinketType)
     end,
     HasCollectibleEffect = function(self, CollectibleType)
-        ffichecks.checkinteger(1, CollectibleType)
+        CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         return repentogon.L_TemporaryEffects_HasCollectibleEffect(self, CollectibleType)
     end,
     HasNullEffect = function(self, NullId)
-        ffichecks.checkinteger(1, NullId)
+        NullId = ffichecks.checkinteger(1, NullId)
         return repentogon.L_TemporaryEffects_HasNullEffect(self, NullId)
     end,
     HasTrinketEffect = function(self, TrinketType)
-        ffichecks.checkinteger(1, TrinketType)
+        TrinketType = ffichecks.checkinteger(1, TrinketType)
         return repentogon.L_TemporaryEffects_HasTrinketEffect(self, TrinketType)
     end,
     RemoveCollectibleEffect = function(self, CollectibleType, Count)
-        ffichecks.checkinteger(1, CollectibleType)
+        CollectibleType = ffichecks.checkinteger(1, CollectibleType)
         Count = ffichecks.optnumber(Count, 1)
         return repentogon.L_TemporaryEffects_RemoveCollectibleEffect(self, CollectibleType, Count)
     end,
     RemoveNullEffect = function(self, NullId, Count)
-        ffichecks.checkinteger(1, NullId)
+        NullId = ffichecks.checkinteger(1, NullId)
         Count = ffichecks.optnumber(Count, 1)
         return repentogon.L_TemporaryEffects_RemoveNullEffect(self, NullId, Count)
     end,
     RemoveTrinketEffect = function(self, TrinketType, Count)
-        ffichecks.checkinteger(1, TrinketType)
+        TrinketType = ffichecks.checkinteger(1, TrinketType)
         Count = ffichecks.optnumber(Count, 1)
         return repentogon.L_TemporaryEffects_RemoveTrinketEffect(self, TrinketType, Count)
     end,

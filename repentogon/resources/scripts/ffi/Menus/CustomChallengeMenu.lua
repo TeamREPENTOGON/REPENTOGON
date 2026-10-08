@@ -17,7 +17,7 @@ CustomChallengeMenu = {
     end,
     SetSelectedChallengeID = function(element)
         ffichecks.checkmainmenu("CustomChallengeMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_CustomChallengeMenu_SetSelectedChallengeID(element)
     end,
 }

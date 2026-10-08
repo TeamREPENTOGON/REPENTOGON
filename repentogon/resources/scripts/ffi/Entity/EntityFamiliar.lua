@@ -80,7 +80,7 @@ local TYPE_FAMILIAR = 3
 
 local function IntegerMethod(export)
     return function(self, value)
-        ffichecks.checkinteger(1, value)
+        value = ffichecks.checkinteger(1, value)
         export(self, value)
     end
 end
@@ -129,11 +129,11 @@ local setters = {
 local methods = {
     AddCoins = IntegerMethod(repentogon.L_EntityFamiliar_AddCoins),
     AddHearts = function(self, hearts)
-        ffichecks.checkinteger(1, hearts)
+        hearts = ffichecks.checkinteger(1, hearts)
         self.Hearts = self.Hearts + hearts
     end,
     AddKeys = function(self, keys)
-        ffichecks.checkinteger(1, keys)
+        keys = ffichecks.checkinteger(1, keys)
         self.Keys = self.Keys + keys
     end,
     AddToDelayed = VoidMethod(repentogon.L_EntityFamiliar_AddToDelayed),
@@ -190,15 +190,15 @@ local methods = {
     IsLilDelirium = Getter("IsLilDeliriumValue"),
     MoveDelayed = IntegerMethod(repentogon.L_EntityFamiliar_MoveDelayed),
     MoveDiagonally = function(self, speed)
-        ffichecks.checknumber(1, speed)
+        speed = ffichecks.checknumber(1, speed)
         repentogon.L_EntityFamiliar_MoveDiagonally(self, speed)
     end,
     PickEnemyTarget = function(self, maxDistance, frameInterval, flags, coneDirection, coneAngle)
-        ffichecks.checknumber(1, maxDistance)
+        maxDistance = ffichecks.checknumber(1, maxDistance)
         frameInterval = frameInterval == nil and 13 or frameInterval
         flags = flags == nil and 0 or flags
-        ffichecks.checkinteger(2, frameInterval)
-        ffichecks.checkinteger(3, flags)
+        frameInterval = ffichecks.checkinteger(2, frameInterval)
+        flags = ffichecks.checkinteger(3, flags)
         if type(coneDirection) == "cdata" then
             ffichecks.checkcdata(4, coneDirection, "Vector")
         else
@@ -210,7 +210,7 @@ local methods = {
     PlayFloatAnim = IntegerMethod(repentogon.L_EntityFamiliar_PlayFloatAnim),
     PlayShootAnim = IntegerMethod(repentogon.L_EntityFamiliar_PlayShootAnim),
     RecalculateOrbitOffset = function(self, layer, add)
-        ffichecks.checkinteger(1, layer)
+        layer = ffichecks.checkinteger(1, layer)
         return repentogon.L_EntityFamiliar_RecalculateOrbitOffset(self, layer, not not add)
     end,
     RemoveFromDelayed = VoidMethod(repentogon.L_EntityFamiliar_RemoveFromDelayed),
@@ -221,7 +221,7 @@ local methods = {
         repentogon.L_EntityFamiliar_SetLilDelirium(self, not not isLilDelirium)
     end,
     SetMoveDelayNum = function(self, frames)
-        ffichecks.checkinteger(1, frames)
+        frames = ffichecks.checkinteger(1, frames)
         ffi.setprivate(self, "MoveDelayNumValue", frames)
     end,
     Shoot = VoidMethod(repentogon.L_EntityFamiliar_Shoot),
@@ -232,7 +232,7 @@ local methods = {
         if direction == nil then
             direction = -1
         else
-            ffichecks.checkinteger(2, direction)
+            direction = ffichecks.checkinteger(2, direction)
         end
 
         local aim = aimDirection ~= nil and Vector(aimDirection.X, aimDirection.Y) or Vector(0, 0)
@@ -258,7 +258,7 @@ Entity.SetClassType(TYPE_FAMILIAR, ffi.typeof("struct EntityFamiliar*"))
 
 EntityFamiliar = setmetatable({
     GetOrbitDistance = function(layer)
-        ffichecks.checkinteger(1, layer)
+        layer = ffichecks.checkinteger(1, layer)
         local result = Vector(0, 0)
         repentogon.L_EntityFamiliar_GetOrbitDistance(layer, result)
         return result

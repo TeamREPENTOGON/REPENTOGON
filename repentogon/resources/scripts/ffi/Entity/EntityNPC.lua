@@ -157,7 +157,7 @@ local setters = {
         ffi.copy(ffi.getprivate(self, "PathfinderValue"), value, pathfinderSize)
     end,
     Scale = function(self, value)
-        ffichecks.checknumber(1, value)
+        value = ffichecks.checknumber(1, value)
         repentogon.L_EntityNPC_SetScale(self, value)
     end,
     V1 = VectorSetter("V1Value"),
@@ -168,7 +168,7 @@ local methods = {
     AnimWalkFrame = function(self, horizontalAnim, verticalAnim, threshold)
         horizontalAnim = ffichecks.checkstring(1, horizontalAnim)
         verticalAnim = ffichecks.checkstring(2, verticalAnim)
-        ffichecks.checknumber(3, threshold)
+        threshold = ffichecks.checknumber(3, threshold)
         repentogon.L_EntityNPC_AnimWalkFrame(self, horizontalAnim, verticalAnim, threshold)
     end,
     ApplyTearflagEffects = function(self, position, flags, source, damage)
@@ -181,7 +181,7 @@ local methods = {
         repentogon.L_EntityNPC_ApplyTearflagEffects(self, position, flags, EntityToPointer(source), damage)
     end,
     CalcTargetPosition = function(self, distanceLimit)
-        ffichecks.checknumber(1, distanceLimit)
+        distanceLimit = ffichecks.checknumber(1, distanceLimit)
         local result = Vector(0, 0)
         repentogon.L_EntityNPC_CalcTargetPosition(self, distanceLimit, result)
         return result
@@ -197,22 +197,22 @@ local methods = {
         repentogon.L_EntityNPC_ClearFlyingOverride(self)
     end,
     FireBossProjectiles = function(self, numProjectiles, targetPosition, trajectoryModifier, params)
-        ffichecks.checkinteger(1, numProjectiles)
+        numProjectiles = ffichecks.checkinteger(1, numProjectiles)
         if numProjectiles <= 0 then
             error(string.format("Invalid amount of projectiles %d\n", numProjectiles), 2)
         end
         ffichecks.checkcdata(2, targetPosition, "Vector")
-        ffichecks.checknumber(3, trajectoryModifier)
+        trajectoryModifier = ffichecks.checknumber(3, trajectoryModifier)
         ffichecks.checkcdata(4, params, "ProjectileParams")
         return repentogon.L_EntityNPC_FireBossProjectiles(self, numProjectiles, targetPosition, trajectoryModifier, params)
     end,
     FireBossProjectilesEx = function(self, numProjectiles, targetPosition, trajectoryModifier, params)
-        ffichecks.checkinteger(1, numProjectiles)
+        numProjectiles = ffichecks.checkinteger(1, numProjectiles)
         if numProjectiles <= 0 then
             error(string.format("Invalid amount of projectiles %d\n", numProjectiles), 2)
         end
         ffichecks.checkcdata(2, targetPosition, "Vector")
-        ffichecks.checknumber(3, trajectoryModifier)
+        trajectoryModifier = ffichecks.checknumber(3, trajectoryModifier)
         ffichecks.checkcdata(4, params, "ProjectileParams")
         return ProjectileResults(repentogon.L_EntityNPC_FireBossProjectilesEx(self, numProjectiles, targetPosition, trajectoryModifier, params))
     end,
@@ -223,14 +223,14 @@ local methods = {
         if backdrop == nil then
             backdrop = repentogon.L_EntityNPC_GetBackdropId()
         else
-            ffichecks.checkinteger(4, backdrop)
+            backdrop = ffichecks.checkinteger(4, backdrop)
         end
         return repentogon.L_EntityNPC_FireGridEntity(self, sprite, desc, velocity, math.min(backdrop, 1))
     end,
     FireProjectiles = function(self, position, velocity, mode, params)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, velocity, "Vector")
-        ffichecks.checkinteger(3, mode)
+        mode = ffichecks.checkinteger(3, mode)
         if mode < 0 or mode > 9 then
             error(string.format("Invalid projectile mode %d\n", mode % 4294967296), 2)
         end
@@ -240,7 +240,7 @@ local methods = {
     FireProjectilesEx = function(self, position, velocity, mode, params)
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(2, velocity, "Vector")
-        ffichecks.checkinteger(3, mode)
+        mode = ffichecks.checkinteger(3, mode)
         if mode < 0 or mode > 9 then
             error(string.format("Invalid projectile mode %d\n", mode % 4294967296), 2)
         end
@@ -305,46 +305,46 @@ local methods = {
         repentogon.L_EntityNPC_KillUnique(self)
     end,
     MakeChampion = function(self, seed, championColorIdx, init)
-        ffichecks.checkinteger(1, seed)
+        seed = ffichecks.checkinteger(1, seed)
         if championColorIdx == nil then
             championColorIdx = -1
         else
-            ffichecks.checkinteger(2, championColorIdx)
+            championColorIdx = ffichecks.checkinteger(2, championColorIdx)
         end
         repentogon.L_EntityNPC_MakeChampion(self, seed, championColorIdx, not not init)
     end,
     MakeSplat = function(self, scale)
-        ffichecks.checknumber(1, scale)
+        scale = ffichecks.checknumber(1, scale)
         return repentogon.L_EntityNPC_MakeSplat(self, scale)
     end,
     Morph = function(self, entityType, variant, subType, championColorIdx)
-        ffichecks.checkinteger(1, entityType)
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, subType)
-        ffichecks.checkinteger(4, championColorIdx)
+        entityType = ffichecks.checkinteger(1, entityType)
+        variant = ffichecks.checkinteger(2, variant)
+        subType = ffichecks.checkinteger(3, subType)
+        championColorIdx = ffichecks.checkinteger(4, championColorIdx)
         repentogon.L_EntityNPC_Morph(self, entityType, variant, subType, championColorIdx)
     end,
     PlaySound = function(self, id, volume, frameDelay, loop, pitch)
-        ffichecks.checkinteger(1, id)
+        id = ffichecks.checkinteger(1, id)
         repentogon.L_EntityNPC_PlaySound(self, id, ffichecks.optnumber(volume, 1.0), ffichecks.optnumber(frameDelay, 2),
             ffichecks.optboolean(loop, false), ffichecks.optnumber(pitch, 1.0))
     end,
     QueryNPCsGroup = function(self, groupIdx)
-        ffichecks.checkinteger(1, groupIdx)
+        groupIdx = ffichecks.checkinteger(1, groupIdx)
         return QueryResults(repentogon.L_EntityNPC_QueryNPCsGroup(self, groupIdx))
     end,
     QueryNPCsSpawnerType = function(self, entityType, variant, onlyEnemies)
-        ffichecks.checkinteger(1, entityType)
-        ffichecks.checkinteger(2, variant)
+        entityType = ffichecks.checkinteger(1, entityType)
+        variant = ffichecks.checkinteger(2, variant)
         return QueryResults(repentogon.L_EntityNPC_QueryNPCsSpawnerType(self, entityType, variant, not not onlyEnemies))
     end,
     QueryNPCsType = function(self, entityType, variant)
-        ffichecks.checkinteger(1, entityType)
-        ffichecks.checkinteger(2, variant)
+        entityType = ffichecks.checkinteger(1, entityType)
+        variant = ffichecks.checkinteger(2, variant)
         return QueryResults(repentogon.L_EntityNPC_QueryNPCsType(self, entityType, variant))
     end,
     ReplaceSpritesheet = function(self, layerId, spritesheet, loadGraphics)
-        ffichecks.checkinteger(1, layerId)
+        layerId = ffichecks.checkinteger(1, layerId)
         spritesheet = ffichecks.checkstring(2, spritesheet)
         return repentogon.L_EntityNPC_ReplaceSpritesheet(self, layerId, spritesheet, ffichecks.optboolean(loadGraphics, false))
     end,
@@ -352,7 +352,7 @@ local methods = {
         repentogon.L_EntityNPC_ResetPathFinderTarget(self)
     end,
     SetControllerId = function(self, controllerId)
-        ffichecks.checknumber(1, controllerId)
+        controllerId = ffichecks.checknumber(1, controllerId)
         ffi.setprivate(self, "ControllerIdValue", controllerId)
     end,
     SetFlyingOverride = function(self, isFlying)
@@ -360,7 +360,7 @@ local methods = {
         repentogon.L_EntityNPC_SetFlyingOverride(self, isFlying)
     end,
     SetShieldStrength = function(self, strength)
-        ffichecks.checknumber(1, strength)
+        strength = ffichecks.checknumber(1, strength)
         ffi.setprivate(self, "ShieldStrengthValue", strength)
     end,
     SpawnBloodCloud = function(self, position, color)
@@ -376,11 +376,11 @@ local methods = {
         if pointer == nil then
             ffichecks.argerror(1, "Entity expected, got " .. ffichecks.gettype(target), 3)
         end
-        ffichecks.checkinteger(2, duration)
+        duration = ffichecks.checkinteger(2, duration)
         return repentogon.L_EntityNPC_TryForceTarget(self, pointer, duration)
     end,
     TrySplit = function(self, defaultDamage, source, doScreenEffects)
-        ffichecks.checknumber(1, defaultDamage)
+        defaultDamage = ffichecks.checknumber(1, defaultDamage)
         ffichecks.checkcdata(2, source, "EntityRef")
         return repentogon.L_EntityNPC_TrySplit(self, defaultDamage, source, ffichecks.optboolean(doScreenEffects, true))
     end,
@@ -436,7 +436,7 @@ EntityNPC = setmetatable({
         ffichecks.checkcdata(1, position, "Vector")
         ffichecks.checkcdata(3, targetPosition, "Vector")
         big = ffichecks.checkboolean(4, big)
-        ffichecks.checknumber(5, yOffset)
+        yOffset = ffichecks.checknumber(5, yOffset)
         return repentogon.L_EntityNPC_ThrowSpider(position, EntityToPointer(spawner), targetPosition, big, yOffset)
     end,
     ThrowStrider = function(origin, spawner, target)

@@ -20,11 +20,27 @@ ffi.cdef[[
 local ffi = ffi
 local repentogon = ffidll
 
+local GRID_ENTITY_TYPES = {
+    "GridEntity", "GridEntityDecoration", "GridEntityDoor", "GridEntityFire", "GridEntityGravity", "GridEntityLock",
+    "GridEntityPit", "GridEntityPoop", "GridEntityPressurePlate", "GridEntityRock", "GridEntitySpikes", "GridEntityStairs",
+    "GridEntityStatue", "GridEntityTNT", "GridEntityTeleporter", "GridEntityTrapDoor", "GridEntityWall", "GridEntityWeb",
+}
+
 local GridEntityPitMT
 GridEntityPitMT = {
     __type = "GridEntityPit",
     MakeBridge = function(self, parent)
-        parent = ffichecks.optcdata(1, parent, nil)
+        -- Like vanilla: nil, or any grid entity.
+        if parent ~= nil then
+            local valid = false
+            for _, ctype in ipairs(GRID_ENTITY_TYPES) do
+                if ffichecks.iscdata(parent, ctype) then valid = true; break end
+            end
+            if not valid then
+                ffichecks.argerror(1, "GridEntity expected, got " .. ffichecks.gettype(parent))
+            end
+            parent = ffi.cast("struct GridEntity*", parent)
+        end
         repentogon.L_GridEntityPit_MakeBridge(self, parent)
     end,
     PostInit = function(self)
@@ -35,7 +51,7 @@ GridEntityPitMT = {
         repentogon.L_GridEntityPit_Render(self, offset)
     end,
     SetLadder = function(self, value)
-        ffichecks.checkboolean(1, value)
+        value = ffichecks.checkboolean(1, value)
         self.HasLadder = value
         repentogon.L_GridEntityPit_UpdateCollision(self)
     end,

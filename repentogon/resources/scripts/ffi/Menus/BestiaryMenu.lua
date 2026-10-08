@@ -48,12 +48,12 @@ BestiaryMenu = {
     end,
     SetSelectedPage = function(page)
         ffichecks.checkmainmenu("BestiaryMenu")
-        ffichecks.checkinteger(1, page)
+        page = ffichecks.checkinteger(1, page)
         repentogon.L_BestiaryMenu_SetSelectedPage(page);
     end,
     SetSelectedElement = function(element)
         ffichecks.checkmainmenu("BestiaryMenu")
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_BestiaryMenu_SetSelectedElement(element);
     end,
 }

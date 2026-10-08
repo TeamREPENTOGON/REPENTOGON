@@ -28,9 +28,9 @@ LootListMT = {
         return entries
     end,
     PushEntry = function(self, entType, variant, subType, seed, rng)
-        ffichecks.checkinteger(1, entType)
-        ffichecks.checkinteger(2, variant)
-        ffichecks.checkinteger(3, subType)
+        entType = ffichecks.checkinteger(1, entType)
+        variant = ffichecks.checkinteger(2, variant)
+        subType = ffichecks.checkinteger(3, subType)
         seed = ffichecks.optnumber(seed, Random())
         ffichecks.checkcdata(5, rng, "RNG", true)
         repentogon.L_LootList_PushEntry(self, entType, variant, subType, seed, rng)

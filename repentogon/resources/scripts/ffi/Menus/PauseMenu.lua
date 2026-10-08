@@ -31,11 +31,11 @@ PauseMenu = {
         return repentogon.L_PauseMenu_GetStatsSprite()
     end,
     SetSelectedElement = function(element)
-        ffichecks.checkinteger(1, element)
+        element = ffichecks.checkinteger(1, element)
         repentogon.L_PauseMenu_SetSelectedElement(element)
     end,
     SetState = function(state)
-        ffichecks.checkinteger(1, state)
+        state = ffichecks.checkinteger(1, state)
         repentogon.L_PauseMenu_SetState(state)
     end,
 }

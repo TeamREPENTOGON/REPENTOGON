@@ -81,7 +81,7 @@ GridEntityDoorMT = {
         return self.Desc.State == 2
     end,
     IsRoomType = function(self, roomType)
-        ffichecks.checkinteger(1, roomType)
+        roomType = ffichecks.checkinteger(1, roomType)
         if self.CurrentRoomType ~= roomType and self.TargetRoomType ~= roomType then
             return false
         end
@@ -104,12 +104,12 @@ GridEntityDoorMT = {
         repentogon.L_GridEntityDoor_Render(self, offset)
     end,
     SetLocked = function(self, locked)
-        ffichecks.checkboolean(1, locked)
+        locked = ffichecks.checkboolean(1, locked)
         repentogon.L_GridEntityDoor_SetLocked(self, locked)
     end,
     SetRoomTypes = function(self, currentRoomType, targetRoomType)
-        ffichecks.checkinteger(1, currentRoomType)
-        ffichecks.checkinteger(2, targetRoomType)
+        currentRoomType = ffichecks.checkinteger(1, currentRoomType)
+        targetRoomType = ffichecks.checkinteger(2, targetRoomType)
         repentogon.L_GridEntityDoor_SetRoomTypes(self, currentRoomType, targetRoomType)
     end,
     Update = function(self)

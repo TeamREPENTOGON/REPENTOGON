@@ -16,7 +16,7 @@ EntityListMT = {
         return ffi.getprivate(self, "SizeValue")
     end,
     Get = function(self, index)
-        ffichecks.checkinteger(1, index)
+        index = ffichecks.checkinteger(1, index)
         local size = ffi.getprivate(self, "SizeValue")
         if size == 0 then
             return nil

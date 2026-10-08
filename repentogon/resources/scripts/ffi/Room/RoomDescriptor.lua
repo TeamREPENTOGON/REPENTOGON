@@ -64,7 +64,7 @@ RoomDescriptorListMT.__index = function(self, k)
 end
 
 function RoomDescriptorListMT:Get(idx)
-    ffichecks.checkinteger(1, idx)
+    idx = ffichecks.checkinteger(1, idx)
     if idx < 0 or idx >= rdl_size(self) then return nil end
     return ffi.getprivate(self, "_data") + idx
 end
@@ -78,7 +78,7 @@ local RoomDescriptorMT
 RoomDescriptorMT = {
     __type = "RoomDescriptor",
     AddRestrictedGridIndex = function(self, gridIndex) 
-        ffichecks.checkinteger(1, gridIndex)
+        gridIndex = ffichecks.checkinteger(1, gridIndex)
         repentogon.L_RoomDescriptor_AddRestrictedGridIndex(self, gridIndex)
     end,
     GetDecoSaveState = function(self)
@@ -161,11 +161,11 @@ RoomDescriptorMT = {
         repentogon.L_RoomDescriptor_InitSeeds(self, rng)
     end,
     SetGroup = function(self, group)
-        ffichecks.checkinteger(1, group)
+        group = ffichecks.checkinteger(1, group)
         ffi.setprivate(self, "Group", group)
     end,
     SetTaintedKeeperCoinSpawns = function(self, num)
-        ffichecks.checkinteger(1, num)
+        num = ffichecks.checkinteger(1, num)
         ffi.setprivate(self, "TaintedKeeperCoinSpawns", num)
     end,
 }
