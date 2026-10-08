@@ -678,8 +678,8 @@ RoomMT = {
     SetBackdropType = function(self, backdropType, changeDecoration)
         backdropType = ffichecks.checkinteger(1, backdropType)
         changeDecoration = ffichecks.checkinteger(2, changeDecoration)
-        if backdropType < 0 or backdropType > 61 then
-            ffichecks.argerror(1, string.format("Invalid backdrop id %d (min = 0, max = 61)", backdropType))
+        if backdropType < 0 then -- custom ids above 61 get handled by the hook in Patches/XMLData.cpp
+            ffichecks.argerror(1, string.format("Invalid backdrop id %d", backdropType))
         end
         repentogon.L_Room_SetBackdropType(self, backdropType, changeDecoration)
     end,
