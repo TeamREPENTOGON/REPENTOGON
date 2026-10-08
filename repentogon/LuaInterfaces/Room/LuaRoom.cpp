@@ -76,10 +76,11 @@ LUA_FUNCTION(Lua_RoomSetBackdrop) {
 	Room* room = lua::GetLuabridgeUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	lua_Integer id = luaL_checkinteger(L, 2);
 	if (id < 0) {
-		luaL_error(L, "Invalid backdrop id %d (min = 0, max = 61)", id);
+		luaL_error(L, "Invalid backdrop id %d", id);
 	}
 	lua_Integer changeDecoration = luaL_checkinteger(L, 3);
 	Backdrop* backdrop = room->GetBackdrop();
+	// custom ids above 61 get handled by the hook in Patches/XMLData.cpp
 	backdrop->Init((unsigned int)id, (bool)changeDecoration);
 	return 0;
 }
